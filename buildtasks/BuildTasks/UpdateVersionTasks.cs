@@ -184,6 +184,7 @@ namespace BuildTasks
                 Console.WriteLine("Updating toolkit manifest: " + manifestFile);
                 PatchFile(manifestFile, "<Version>", "</Version>");
                 PatchFile(manifestFile, "Id=\"|%CurrentProject%;GetVsixGuid|\" Version=\"", "\"");
+                PatchFile(manifestFile, "Id=\"|%CurrentProject%;GetVsixGuid2022|\" Version=\"", "\"");
             }
 
             var assemblyVersionFile = Directory.GetFiles(Path.Combine(this.RepositoryRoot, "buildtools") , "AssemblyVersion.cs").FirstOrDefault();

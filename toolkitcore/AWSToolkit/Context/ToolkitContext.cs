@@ -1,6 +1,7 @@
 ﻿using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AWSToolkit.Context
@@ -21,5 +22,6 @@ namespace Amazon.AWSToolkit.Context
         public IAwsConnectionManager ConnectionManager { get; set; }
         public ICredentialManager CredentialManager { get; set; }
         public ICredentialSettingsManager CredentialSettingsManager { get; set; }
+        public IAWSToolkitShellProvider ToolkitHost { get; set; }
     }
 }

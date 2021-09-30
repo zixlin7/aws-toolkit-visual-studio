@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Shared
@@ -80,6 +82,21 @@ namespace Amazon.AWSToolkit.Shared
         /// <param name="hostedControl"></param>
         /// <returns></returns>
         bool ShowModalFrameless(IAWSToolkitControl hostedControl);
+
+        /// <summary>
+        /// Hosts a control within a modal dialog.
+        /// The modal dialog used is a VS SDK based DialogWindow, which accounts
+        /// for modal state within Visual Studio properly.
+        /// <seealso cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.platformui.dialogwindow"/>
+        /// </summary>
+        /// <remarks>
+        /// Hosted controls should migrate from <see cref="ShowModal"/> calls to
+        /// <see cref="ShowInModalDialogWindow"/> as they are set up with the new Toolkit Theming.
+        /// </remarks>
+        /// <param name="hostedControl">Control to host in a DialogWindow</param>
+        /// <param name="buttons">Buttons to show in the dialog</param>
+        /// <returns>true if dialog was accepted (eg: Ok/Yes button), false if cancelled</returns>
+        bool ShowInModalDialogWindow(IAWSToolkitControl hostedControl, MessageBoxButton buttons);
 
         /// <summary>
         /// 
@@ -202,6 +219,12 @@ namespace Amazon.AWSToolkit.Shared
         /// to the system default browser (in a separate process) if necessary.
         /// </param>
         void OpenInBrowser(string url, bool preferInternalBrowser);
+
+        /// <summary>
+        /// Get the User's current selected Project in the IDE.
+        /// </summary>
+        /// <returns>The current selected project.</returns>
+        Project GetSelectedProject();
 
         /// <summary>
         /// Uses the unique id of the supplied control to find an opened editor window

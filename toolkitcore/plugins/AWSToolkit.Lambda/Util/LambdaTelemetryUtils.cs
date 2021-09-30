@@ -1,9 +1,13 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using log4net;
+﻿using log4net;
 using System;
 using System.Diagnostics;
+
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Lambda;
+
+using LambdaDeploy = Amazon.AWSToolkit.Telemetry.LambdaDeploy;
 
 namespace Amazon.AWSToolkit.Lambda.Util
 {
@@ -18,6 +22,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
             public string RegionId { get; set; }
             public string TargetFramework { get; set; }
             public PackageType LambdaPackageType { get; set; }
+            public Architecture LambdaArchitecture { get; set; }
         }
 
         public static void RecordLambdaDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, RecordLambdaDeployProperties lambdaDeploymentProperties)
@@ -33,6 +38,8 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     Runtime = new AwsToolkit.Telemetry.Events.Generated.Runtime(
                         lambdaDeploymentProperties.Runtime?.Value ?? "unknown"),
                     Platform = lambdaDeploymentProperties.TargetFramework,
+                    LambdaArchitecture =
+                        new LambdaArchitecture(lambdaDeploymentProperties.LambdaArchitecture?.Value ?? "unknown")
                 });
             }
             catch (Exception e)

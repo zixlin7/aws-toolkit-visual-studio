@@ -30,10 +30,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     /// </summary>
     public partial class UploadFunctionDetailsPage : INotifyPropertyChanged
     {
-        const string HandlerTooltipBase = "The function within your code that Lambda calls to begin execution.";
-        const string HandlerTooltipDotNet = "For .NET, it is in the form: <assembly>::<type>::<method>";
-        const string HandlerTooltipGeneric = "For Node.js, it is the module-name.export value of your function.";
-        const string HandlerTooltipCustomRuntime = "For custom runtimes the handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
         private const int AccountRegionChangedDebounceMs = 250;
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPage));
@@ -170,10 +166,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     .ForEach(x => ViewModel.HandlerTypeSuggestions.Add(x.Type));
             }
 
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Architecture))
+            {
+                var architecture = hostWizard[UploadFunctionWizardProperties.Architecture] as string;
+                ViewModel.Architecture = ViewModel.GetArchitectureOrDefault(architecture, LambdaArchitecture.X86);
+            }
+
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Runtime))
             {
-                var runtime = hostWizard[UploadFunctionWizardProperties.Runtime] as Amazon.Lambda.Runtime;
-                ViewModel.Runtime = ViewModel.Runtimes.FirstOrDefault(x => x.Value == runtime?.Value);
+                var runtime = hostWizard[UploadFunctionWizardProperties.Runtime] as string;
+                ViewModel.Runtime = ViewModel.Runtimes.FirstOrDefault(x => x.Value == runtime);
             }
 
             UpdateImageRepos().LogExceptionAndForget();
@@ -205,6 +207,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 ViewModel.ImageTag = hostWizard.CollectedProperties[UploadFunctionWizardProperties.ImageTag] as string;
             }
 
+            SetPanelsForDeploymentType(deploymentType);
             ViewModel.SaveSettings = true;
         }
 
@@ -237,6 +240,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     ViewModel.PackageType = Amazon.Lambda.PackageType.Zip;
                     ViewModel.CanEditPackageType = false;
                     break;
+            }
+        }
+
+        private void SetPanelsForDeploymentType(DeploymentType deploymentType)
+        {
+            if (deploymentType == DeploymentType.Generic)
+            {
+                // NodeJS/Non-Netcore workflow does not support image deploys at this time.
+                ViewModel.PackageType = Amazon.Lambda.PackageType.Zip;
+                ViewModel.CanEditPackageType = false;
             }
         }
 
@@ -310,11 +323,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         private bool ShowDotNetHandlerComponents =>
             ViewModel.Runtime != null && ViewModel.Runtime.IsNetCore && !ViewModel.Runtime.IsCustomRuntime;
 
-        private static RuntimeOption GetRuntimeOptionForFramework(string framework)
+        private static RuntimeOption GetRuntimeOptionForFramework(string framework, LambdaArchitecture architecture)
         {
             if (!RuntimeByFramework.TryGetValue(framework, out var runtimeOption))
             {
-                runtimeOption = RuntimeOption.PROVIDED;
+                runtimeOption = architecture.Value.Equals(LambdaArchitecture.Arm.Value) ? RuntimeOption.PROVIDED_AL2 : RuntimeOption.PROVIDED;
             }
 
             return runtimeOption;
@@ -441,7 +454,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             if (e.PropertyName == nameof(ViewModel.Framework))
             {
                 // Set the Runtime to a compatible value
-                ViewModel.Runtime = GetRuntimeOptionForFramework(ViewModel.Framework);
+                ViewModel.Runtime = GetRuntimeOptionForFramework(ViewModel.Framework, ViewModel.Architecture);
             }
 
             if (e.PropertyName == nameof(ViewModel.Runtime))
@@ -542,44 +555,22 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         private void OnRuntimeChanged()
         {
+            ViewModel.UpdateArchitectureState();
+
             // Set the Framework to a compatible value
             if (ViewModel.Runtime != null && FrameworkByRuntime.TryGetValue(ViewModel.Runtime, out var framework))
             {
                 ViewModel.SetFrameworkIfExists(framework);
             }
 
-            ViewModel.HandlerTooltip = CreateHandlerTooltip();
-            ViewModel.DotNetHandlerVisibility = ShowDotNetHandlerComponents ? Visibility.Visible : Visibility.Collapsed;
-            ViewModel.HandlerVisibility = !ShowDotNetHandlerComponents ? Visibility.Visible : Visibility.Collapsed;
+            ViewModel.HandlerHelpText = ViewModel.CreateHandlerHelpText();
+            ViewModel.HandlerTooltip = ViewModel.CreateHandlerTooltip();
             
             // Toggle control visibilities
             var showConfigAndFramework = ViewModel.Runtime?.IsNetCore ?? false;
             ViewModel.ConfigurationVisibility = showConfigAndFramework ? Visibility.Visible : Visibility.Collapsed;
             ViewModel.FrameworkVisibility = showConfigAndFramework ? Visibility.Visible : Visibility.Collapsed;
             ViewModel.ShowSaveSettings = showConfigAndFramework;
-        }
-
-        private string CreateHandlerTooltip()
-        {
-            var tooltipText = "";
-            if (ViewModel.Runtime == RuntimeOption.PROVIDED)
-            {
-                tooltipText = HandlerTooltipCustomRuntime;
-            }
-            else if (ViewModel.Runtime?.IsNetCore ?? false)
-            {
-                tooltipText = HandlerTooltipDotNet;
-            }
-            else
-            {
-                tooltipText = HandlerTooltipGeneric;
-            }
-
-            return string.Format("{1}{0}{0}{2}",
-                Environment.NewLine,
-                HandlerTooltipBase,
-                tooltipText
-            );
         }
 
         private bool AllRequiredFieldsForZipAreSet()
@@ -590,6 +581,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
 
             if (ViewModel.Runtime == null)
+            {
+                return false;
+            }
+
+            if (ViewModel.Architecture == null)
             {
                 return false;
             }
@@ -612,7 +608,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 }
             }
 
-            if (ViewModel.Runtime != RuntimeOption.PROVIDED && string.IsNullOrEmpty(ViewModel.Handler))
+            if (!ViewModel.Runtime.IsCustomRuntime && string.IsNullOrEmpty(ViewModel.Handler))
             {
                 return false;
             }
@@ -622,6 +618,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         private bool AllRequiredFieldsForImageAreSet()
         {
+            if (ViewModel.Architecture == null)
+            {
+                return false;
+            }
             if (!File.Exists(ViewModel.Dockerfile))
             {
                 return false;

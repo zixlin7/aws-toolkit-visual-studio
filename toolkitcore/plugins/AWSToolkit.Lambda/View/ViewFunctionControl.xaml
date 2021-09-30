@@ -170,22 +170,26 @@
                 Style="{DynamicResource awsTextBlockBaseStyle}"
                 Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}, FallbackValue={x:Static Visibility.Collapsed}}"
                 Text="Image URI:" />
-            <TextBox
-                Grid.Row="3"
-                Grid.Column="1"
-                Margin="5,0,0,0"
+            <WrapPanel
+                Grid.Row="3" Grid.Column="1"
+                HorizontalAlignment="Left" >
+                <TextBox
+                    Margin="5,0,0,0"
                 HorizontalAlignment="Stretch"
                 Style="{DynamicResource awsSelectableTextBoxStyle}"
                 Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Zip}}"
                 Text="{Binding Runtime, Converter={StaticResource ConstantClassConverter}}" />
             <TextBox
-                Grid.Row="3"
-                Grid.Column="1"
                 Margin="5,0,0,0"
                 HorizontalAlignment="Stretch"
                 Style="{DynamicResource awsSelectableTextBoxStyle}"
                 Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}}"
                 Text="{Binding ImageUri}" />
+                <TextBox
+                    Margin="3 0 0 0"
+                    Style="{DynamicResource awsSelectableTextBoxStyle}"
+                    Text="{Binding Architectures, StringFormat={}[{0}]}" />
+            </WrapPanel>
 
             <TextBlock
                 Grid.Row="3"

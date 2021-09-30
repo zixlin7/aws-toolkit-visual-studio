@@ -9,6 +9,8 @@
     xmlns:wizardControls="clr-namespace:Amazon.AWSToolkit.Lambda.WizardPages.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:util="clr-namespace:Amazon.AWSToolkit.Lambda.Util"
+    xmlns:model="clr-namespace:Amazon.AWSToolkit.Lambda.Model"
+    xmlns:vm="clr-namespace:Amazon.AWSToolkit.Lambda.ViewModel"
     xmlns:lambda="clr-namespace:Amazon.Lambda;assembly=AWSSDK.Lambda"
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
     d:DesignHeight="600"
@@ -25,6 +27,12 @@
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <commonUi:InverseBooleanConverter x:Key="InverseBooleanConverter" />
             <util:PackageTypeToVisibilityConverter x:Key="PackageTypeToVisibilityConverter" />
+            <util:ArchitectureToBoolConverter x:Key="ArchitectureToBoolConverter" />
+            <DataTemplate x:Key="LambdaArchitecture" DataType="model:LambdaArchitecture">
+                <Label 
+                    Style="{DynamicResource awsLabelBaseStyle}"
+                    Content="{Binding DisplayName}" />
+            </DataTemplate>
         </ResourceDictionary>
     </commonUi:BaseAWSUserControl.Resources>
 
@@ -52,6 +60,7 @@
             <!-- Grid contains Package Type and Lambda Runtime controls -->
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -86,8 +95,8 @@
 
                 <!-- Runtime -->
                 <Label
-                    Grid.Row="0" Grid.Column="3"
-                    Margin="9 0 0 0"
+                    Grid.Row="1" Grid.Column="0"
+                    Margin="0 9 0 0"
                     VerticalAlignment="Center"
                     Style="{DynamicResource awsWizardFieldLabelStyle}"
                     IsEnabled="{Binding ViewModel.CanEditRuntime}"
@@ -100,16 +109,16 @@
                     or a label explaining that runtime is not applicable (for Image Package type)
                 -->
                 <Label
-                    Grid.Row="0" Grid.Column="4"
-                    Margin="9 0 0 0"
+                    Grid.Row="1" Grid.Column="1"
+                    Margin="9 9 0 0"
                     Style="{DynamicResource awsWizardFieldLabelStyle}"
                     IsEnabled="{Binding ViewModel.CanEditRuntime}"
                     Visibility="{Binding ViewModel.CanEditRuntime, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                     Content="Not Applicable to Image based Functions" />
                 <ComboBox
                     Name="Runtime" x:FieldModifier="private"
-                    Grid.Row="0" Grid.Column="4"
-                    Margin="9 0 0 0"
+                    Grid.Row="1" Grid.Column="1"
+                    Margin="9 9 0 0"
                     DisplayMemberPath="DisplayName"
                     IsEnabled="{Binding ViewModel.CanEditRuntime}"
                     Visibility="{Binding ViewModel.CanEditRuntime, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -117,6 +126,38 @@
                     ItemsSource="{Binding ViewModel.Runtimes}"
                     SelectedItem="{Binding ViewModel.Runtime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Style="{DynamicResource awsComboBoxStyle}" />
+
+                <!-- Architecture -->
+                <Label
+                    Grid.Row="1" Grid.Column="3"
+                    Margin="9 9 0 0"
+                    VerticalAlignment="Center"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Content="Architecture:"
+                    Target="{Binding ElementName=Architecture}" />
+
+                <StackPanel
+                    Grid.Row="1" Grid.Column="4"
+                    Margin="12 9 0 0"
+                    Orientation="Horizontal">
+
+                    <RadioButton
+                        GroupName="LambdaArchitecture"
+                        Style="{DynamicResource awsRadioButtonBaseStyle}"
+                        ContentTemplate="{StaticResource LambdaArchitecture}"
+                        IsChecked="{Binding ViewModel.Architecture, Mode=TwoWay, Converter={StaticResource ArchitectureToBoolConverter}, ConverterParameter={x:Static model:LambdaArchitecture.X86}}"
+                        Content="{x:Static model:LambdaArchitecture.X86}"
+                        />
+                    <RadioButton
+                        Margin="12 0 0 0"
+                        GroupName="LambdaArchitecture"
+                        Style="{DynamicResource awsRadioButtonBaseStyle}"
+                        ContentTemplate="{StaticResource LambdaArchitecture}"
+                        IsChecked="{Binding ViewModel.Architecture, Mode=TwoWay, Converter={StaticResource ArchitectureToBoolConverter}, ConverterParameter={x:Static model:LambdaArchitecture.Arm}}"
+                        IsEnabled="{Binding ViewModel.SupportsArmArchitecture}"
+                        Content="{x:Static model:LambdaArchitecture.Arm}"
+                        />
+                </StackPanel>
             </Grid>
 
             <!-- ZIP based Upload settings; Visibility is mutually exclusive with IMAGE settings -->

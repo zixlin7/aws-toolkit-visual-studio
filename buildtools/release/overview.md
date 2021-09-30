@@ -1,6 +1,6 @@
 Note: This edition of the toolkit is for Visual Studio 2017 and 2019 only. If you require the toolkit for Visual Studio 2013 and/or 2015, please use the installer available for download [here](https://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi).
 
-For issues or questions about this extension please open a GitHub issue at https://github.com/aws/aws-sdk-net.
+For issues or questions about this extension please open a GitHub issue at https://github.com/aws/aws-toolkit-visual-studio.
 
 The AWS Toolkit provides Visual Studio project templates that you can use as starting points for AWS console and web applications. As your application runs, you can use the AWS Explorer to view the AWS resources used by the application. For example, if your application creates buckets in Amazon S3, you can use AWS Explorer to view those buckets and their contents. If you need to provision AWS resources for your application, you can create them manually using the AWS Explorer or use the CloudFormation templates included with the AWS Toolkit to provision web application environments hosted on Amazon EC2.
 

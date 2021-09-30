@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
+
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AWSToolkit.Telemetry.Internal
 {
@@ -23,5 +26,12 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         bool IsTelemetryEnabled { get; set; }
 
         void Initialize(ITelemetryClient telemetryClient);
+
+        /// <summary>
+        /// Sends feedback information
+        /// </summary>
+        /// <param name="sentiment">feedback sentiment eg. positive/negative</param>
+        /// <param name="comment">feedback comment</param>
+        Task SendFeedback(Sentiment sentiment, string comment);
     }
 }

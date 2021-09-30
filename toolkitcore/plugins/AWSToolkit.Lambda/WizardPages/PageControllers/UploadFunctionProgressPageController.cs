@@ -207,6 +207,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 var runtime = HostingWizard[UploadFunctionWizardProperties.Runtime] as string;
                 var functionName = HostingWizard[UploadFunctionWizardProperties.FunctionName] as string;
                 var description = HostingWizard[UploadFunctionWizardProperties.Description] as string;
+                var architecture = HostingWizard[UploadFunctionWizardProperties.Architecture] as string;
                 var configuration = HostingWizard[UploadFunctionWizardProperties.Configuration] as string;
                 var framework = HostingWizard[UploadFunctionWizardProperties.Framework] as string;
 
@@ -257,6 +258,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 var request = new CreateFunctionRequest
                 {
                     Runtime = runtime,
+                    Architectures = new List<string> { architecture },
                     FunctionName = functionName,
                     PackageType = packageType,
                     Description = description,

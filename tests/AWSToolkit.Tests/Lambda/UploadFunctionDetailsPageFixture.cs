@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+using Amazon.AWSToolkit.Lambda.ViewModel;
+
 namespace AWSToolkit.Tests.Lambda
 {
     public class UploadFunctionDetailsPageFixture : IDisposable
@@ -45,6 +47,7 @@ namespace AWSToolkit.Tests.Lambda
 
             viewModel.PackageType = PackageType.Zip;
             viewModel.Runtime = RuntimeOption.NetCore_v2_1;
+            viewModel.Architecture = LambdaArchitecture.X86;
 
             viewModel.SourceCodeLocation = TestLocation.TestFolder;
             viewModel.FunctionName = "some-lambda-function";
@@ -64,6 +67,7 @@ namespace AWSToolkit.Tests.Lambda
             var viewModel = Page.ViewModel;
 
             viewModel.PackageType = PackageType.Image;
+            viewModel.Architecture = LambdaArchitecture.X86;
 
             viewModel.Dockerfile = dockerfilePath;
             viewModel.FunctionName = "some-lambda-function";

@@ -1,4 +1,4 @@
-<Project ToolsVersion="14.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="14.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
         <InternalBuildTools Condition="'$(InternalBuildTools)'==''">$(MSBuildProjectDirectory)\..\buildtasks</InternalBuildTools>
@@ -23,8 +23,9 @@
         <UpdateVersions Condition="'$(UpdateVersions)'==''">false</UpdateVersions>
         <AWSToolkitVersionNumber Condition="'$(AWSToolkitVersion)'==''"></AWSToolkitVersionNumber>
         <AWSDeployVersionNumber Condition="'$(AWSDeployVersion)'==''"></AWSDeployVersionNumber>
+        <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
 
-    	<AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
+        <AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
 
 		<PushHostedFiles Condition="'$(PushHostedFiles)'==''">true</PushHostedFiles>
         <HostedFilesBucket Condition="'$(HostedFilesBucket)'==''">aws-vs-toolkit</HostedFilesBucket>
@@ -56,6 +57,12 @@
         <Message Text="Fetching endpoints manifest"/>
         <CallTarget Targets="get-latest-endpoint-data"/>
     </Target>
+	<!-- verify - Verifies nuget packages for the Visual Studio Toolkit solution are signed -->
+	<Target Name="verify">
+		<Message Text="Verifying nuget packages"/>
+		<Exec IgnoreExitCode="false" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe verify -All $(NuGetPackageRoot)**\*.nupkg" />
+	</Target>
+
 
     <!-- compile - compiles the Visual Studio Toolkit solution; does not restore, does not run tests -->
     <Target Name="compile">
@@ -125,7 +132,6 @@
             <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\AWSToolkit.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
-            <TestAssemblies Include="..\tests\AWSToolkit.VisualStudio.Shared.Tests\bin\$(Configuration)\AWSToolkit.VisualStudio.Shared.Tests.dll" />
         </ItemGroup>        
 
         <MakeDir Directories="$(TestResults)" />
@@ -170,10 +176,10 @@
 		<MakeDir Directories="$(IconsDest)" />
 
 		<Copy
-			SourceFiles="..\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico"
+			SourceFiles="..\vspackages\AwsToolkitPackageResources\AWSCloudFormationProject.ico"
 			DestinationFiles="$(IconsDest)\AWSCloudFormationProject.ico" />
 		<Copy
-			SourceFiles="..\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationTemplate.ico"
+			SourceFiles="..\vspackages\AwsToolkitPackageResources\AWSCloudFormationTemplate.ico"
 			DestinationFiles="$(IconsDest)\AWSCloudFormationTemplate.ico" />
     </Target>
 
@@ -368,6 +374,17 @@
         <Message Text="Listing VSIX Contents..." />
         <Exec Command="powershell.exe $(MSBuildThisFileDirectory)listZipContents.ps1 -vsixFileName $(VsixFileName) -outputFileName $(OutputFileName)" />
     </Target>
+
+    <Target Name="list-vsix-contents-2022">
+        <Message Text="$(Configuration) - Listing VSIX Contents"/>
+
+        <PropertyGroup>
+            <VsixFileName>$(Deployment)\$(VisualStudioVersion)\$(Configuration)\AWSToolkitPackage.v17.vsix</VsixFileName>
+            <OutputFileName>$(Deployment)\$(VisualStudioVersion)\$(Configuration)\_vsixContents-2022.txt</OutputFileName>
+        </PropertyGroup>
+        <Message Text="Listing VSIX Contents..." />
+        <Exec Command="powershell.exe $(MSBuildThisFileDirectory)listZipContents.ps1 -vsixFileName $(VsixFileName) -outputFileName $(OutputFileName)" />
+    </Target>
     
 	<Target Name="compare-hostedfiles-all" DependsOnTargets="compare-hostedfiles;compare-hostedfiles-bjs" />
 
@@ -474,7 +491,7 @@
 
 	<!-- Runs a guided script to generate a release candidate -->
 	<!-- Requires Python 3.9+ -->
-	<Target Name="queueCandidate">
+	<Target Name="queueRelease">
 		<PropertyGroup>
 			<ReleaseScriptDirectory>$(MSBuildProjectDirectory)\release</ReleaseScriptDirectory>
 			<RepositoryDirectory>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RepositoryDirectory>

@@ -91,6 +91,11 @@
         public static readonly string Runtime = "runtime";
 
         /// <summary>
+        /// The Lambda function's architecture (eg: x86, ARM)
+        /// </summary>
+        public static readonly string Architecture = "architecture";
+
+        /// <summary>
         /// The deployment package type of the Lambda function
         /// Valid values: Zip, Image
         /// </summary>

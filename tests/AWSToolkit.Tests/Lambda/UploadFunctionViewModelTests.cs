@@ -1,16 +1,20 @@
-﻿using Amazon.AWSToolkit.Lambda.ViewModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.AWSToolkit.Lambda.ViewModel;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.ECR;
 using Amazon.ECR.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
+
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.Lambda
@@ -19,6 +23,22 @@ namespace AWSToolkit.Tests.Lambda
     {
         const string SampleFunctionName = "someFunction";
         private static readonly string[] SampleRepositoryNames = new string[] {"somerepo", "somerepo2"};
+
+        public static readonly IEnumerable<object[]> DotNetRuntimes = RuntimeOption.ALL_OPTIONS
+            .Where(r => r.IsNetCore)
+            .Where(r => !r.IsCustomRuntime)
+            .Select(r => Enumerable.Repeat(r, 1).ToArray())
+            .ToArray();
+
+        public static readonly IEnumerable<object[]> JsRuntimes = RuntimeOption.ALL_OPTIONS
+            .Where(r => r.IsNode)
+            .Select(r => Enumerable.Repeat(r, 1).ToArray())
+            .ToArray();
+
+        public static readonly IEnumerable<object[]> CustomRuntimes = RuntimeOption.ALL_OPTIONS
+            .Where(r => r.IsCustomRuntime)
+            .Select(r => Enumerable.Repeat(r, 1).ToArray())
+            .ToArray();
 
         private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
         public readonly ToolkitContextFixture ToolkitContextFixture = new ToolkitContextFixture();
@@ -175,6 +195,125 @@ namespace AWSToolkit.Tests.Lambda
 
             Assert.False(_sut.TryGetFunctionConfig("fakeFunction", out _));
             Assert.True(_sut.TryGetFunctionConfig(SampleFunctionName, out _));
+        }
+
+        [Theory]
+        [MemberData(nameof(DotNetRuntimes))]
+        public void CreateHandlerHelpText_DotNetRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipDotNet, _sut.CreateHandlerHelpText());
+        }
+
+        [Theory]
+        [MemberData(nameof(JsRuntimes))]
+        public void CreateHandlerHelpText_NodeRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipGeneric, _sut.CreateHandlerHelpText());
+        }
+
+        [Theory]
+        [MemberData(nameof(CustomRuntimes))]
+        public void CreateHandlerHelpText_CustomRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipCustomRuntime, _sut.CreateHandlerHelpText());
+        }
+
+        [Theory]
+        [MemberData(nameof(DotNetRuntimes))]
+        public void CreateHandlerTooltip_DotNetRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            var handlerTooltip = _sut.CreateHandlerTooltip();
+
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipDotNet, handlerTooltip);
+        }
+
+        [Theory]
+        [MemberData(nameof(JsRuntimes))]
+        public void CreateHandlerTooltip_NodeRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            var handlerTooltip = _sut.CreateHandlerTooltip();
+
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipGeneric, handlerTooltip);
+        }
+
+        [Theory]
+        [MemberData(nameof(CustomRuntimes))]
+        public void CreateHandlerTooltip_CustomRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            var handlerTooltip = _sut.CreateHandlerTooltip();
+
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipCustomRuntime, handlerTooltip);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRuntimesWithoutArmSupport))]
+        public void UpdateArchitectureState_WithoutArmSupport(RuntimeOption runtime)
+        {
+            _sut.Architecture = LambdaArchitecture.Arm;
+            _sut.Runtime = runtime;
+            _sut.UpdateArchitectureState();
+
+            Assert.False(_sut.SupportsArmArchitecture);
+            Assert.Equal(LambdaArchitecture.X86, _sut.Architecture);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRuntimesWithArmSupport))]
+        public void UpdateArchitectureState_WithArmSupport(RuntimeOption runtime)
+        {
+            _sut.Architecture = LambdaArchitecture.Arm;
+            _sut.Runtime = runtime;
+            _sut.UpdateArchitectureState();
+
+            Assert.True(_sut.SupportsArmArchitecture);
+            Assert.Equal(LambdaArchitecture.Arm, _sut.Architecture);
+        }
+
+        public static IEnumerable<object[]> GetRuntimesWithoutArmSupport()
+        {
+            return new List<RuntimeOption[]>
+            {
+                new RuntimeOption[] { null },
+                new RuntimeOption[] { RuntimeOption.NetCore_v2_1 },
+                new RuntimeOption[] { RuntimeOption.PROVIDED },
+                new RuntimeOption[] {RuntimeOption.PROVIDED_AL2},
+            };
+        }
+
+        public static IEnumerable<object[]> GetRuntimesWithArmSupport()
+        {
+            var noArmSupport = GetRuntimesWithoutArmSupport().SelectMany(x => x).OfType<RuntimeOption>();
+            return RuntimeOption.ALL_OPTIONS
+                .Except(noArmSupport)
+                .Select(x => new object[] { x })
+                .ToList();
+        }
+
+        [Theory]
+        [MemberData(nameof(CreateGetArchitectureOrDefaultTestData))]
+        public void GetArchitectureOrDefault(string architectureValue, LambdaArchitecture expectedArchitecture)
+        {
+            Assert.Equal(expectedArchitecture,
+                _sut.GetArchitectureOrDefault(architectureValue, LambdaArchitecture.X86));
+        }
+
+        public static IEnumerable<object[]> CreateGetArchitectureOrDefaultTestData()
+        {
+            return new List<object[]>
+            {
+                new object[] { LambdaArchitecture.Arm.Value, LambdaArchitecture.Arm },
+                new object[] { "garbage-value", LambdaArchitecture.X86 },
+                new object[] { null, LambdaArchitecture.X86 },
+            };
         }
 
         private void SetupEcrClient()

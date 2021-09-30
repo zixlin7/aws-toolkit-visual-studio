@@ -2,6 +2,7 @@
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Moq;
 
@@ -19,6 +20,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public Mock<IRegionProvider> RegionProvider { get; } = new Mock<IRegionProvider>();
         public Mock<IAwsServiceClientManager> ServiceClientManager { get; } = new Mock<IAwsServiceClientManager>();
         public Mock<ITelemetryLogger> TelemetryLogger { get; } = new Mock<ITelemetryLogger>();
+        public Mock<IAWSToolkitShellProvider> ToolkitHost { get; } = new Mock<IAWSToolkitShellProvider>();
 
         public ToolkitContextFixture()
         {
@@ -29,6 +31,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
                 RegionProvider = RegionProvider.Object,
                 ServiceClientManager = ServiceClientManager.Object,
                 TelemetryLogger = TelemetryLogger.Object,
+                ToolkitHost = ToolkitHost.Object
             };
         }
     }

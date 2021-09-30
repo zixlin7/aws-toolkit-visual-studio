@@ -8,10 +8,15 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Internal;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.ToolkitTelemetry;
+using Amazon.ToolkitTelemetry.Model;
+
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
+
+using PostMetricsRequest = Amazon.AWSToolkit.Telemetry.Internal.PostMetricsRequest;
 using SdkPostMetricsRequest = Amazon.ToolkitTelemetry.Model.PostMetricsRequest;
+using Sentiment = Amazon.ToolkitTelemetry.Sentiment;
 
 namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
@@ -100,7 +105,44 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             ), Times.Once);
         }
 
+
         private bool AreEqual(SdkPostMetricsRequest expectedRequest, SdkPostMetricsRequest actualRequest)
+        {
+            var expectedJson = JsonConvert.SerializeObject(expectedRequest);
+            var actualJson = JsonConvert.SerializeObject(actualRequest);
+
+            return expectedJson == actualJson;
+        }
+    }
+
+
+    public class TelemetryClientPostFeedbackTests : TelemetryClientTestsBase
+    {
+        private readonly PostFeedbackRequest _sampleClientRequest;
+
+        public TelemetryClientPostFeedbackTests() : base()
+        {
+            _sampleClientRequest = new PostFeedbackRequest()
+            {
+                Sentiment = Sentiment.Positive,
+                Comment = "good"
+            };
+
+            ProductEnvironment.ApplyTo(_sampleClientRequest);
+        }
+
+        [Fact]
+        public async Task SendFeedback()
+        {
+            await TelemetryClient.SendFeedback(AwsToolkit.Telemetry.Events.Core.Sentiment.Positive, "good");
+
+            TelemetrySdk.Verify(mock => mock.PostFeedbackAsync(
+                It.Is<PostFeedbackRequest>(request => AreEqual(_sampleClientRequest, request)),
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+        }
+
+        private bool AreEqual(PostFeedbackRequest expectedRequest, PostFeedbackRequest actualRequest)
         {
             var expectedJson = JsonConvert.SerializeObject(expectedRequest);
             var actualJson = JsonConvert.SerializeObject(actualRequest);

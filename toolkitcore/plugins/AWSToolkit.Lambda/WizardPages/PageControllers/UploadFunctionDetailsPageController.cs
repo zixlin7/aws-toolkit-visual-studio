@@ -131,6 +131,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             HostingWizard[UploadFunctionWizardProperties.FunctionName] = _pageUI.ViewModel.FunctionName;
             HostingWizard[UploadFunctionWizardProperties.Description] = _pageUI.ViewModel.Description;
             HostingWizard[UploadFunctionWizardProperties.PackageType] = _pageUI.ViewModel.PackageType;
+            HostingWizard[UploadFunctionWizardProperties.Architecture] = _pageUI.ViewModel.Architecture.Value;
 
             if (_pageUI.ViewModel.PackageType.Equals(PackageType.Zip))
             {

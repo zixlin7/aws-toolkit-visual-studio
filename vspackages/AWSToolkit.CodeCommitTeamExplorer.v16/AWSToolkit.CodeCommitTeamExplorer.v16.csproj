@@ -81,8 +81,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="..\AWSToolkit.CodeCommitTeamExplorer.v15\Base\TeamExplorerBase.cs" />
-    <Compile Include="..\AWSToolkit.CodeCommitTeamExplorer.v15\Base\TeamExplorerInvitationBase.cs" />
     <Compile Include="..\AWSToolkit.CodeCommitTeamExplorer.v15\CodeCommit\Connect\ConnectionSection.cs" />
     <Compile Include="..\AWSToolkit.CodeCommitTeamExplorer.v15\CodeCommit\Connect\InvitationSection.cs" />
     <Compile Include="..\AWSToolkit.CodeCommitTeamExplorer.v15\CodeCommit\Controllers\BaseCodeCommitController.cs" />
@@ -201,5 +199,6 @@
       <Version>4.5.0</Version>
     </PackageReference>
   </ItemGroup>
+  <Import Project="..\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

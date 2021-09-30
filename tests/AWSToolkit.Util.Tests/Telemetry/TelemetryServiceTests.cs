@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Internal;
@@ -149,6 +151,23 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             );
         }
 
+        [Fact]
+        public async Task SendFeedback()
+        {
+            _sut.Initialize(_clientId, _telemetryClient.Object, _telemetryPublisher.Object);
+
+            await _sut.SendFeedback(Sentiment.Positive, "");
+
+            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Once);
+        }
+
+        [Fact]
+        public async Task SendFeedback_Throws()
+        {
+            await Assert.ThrowsAsync<Exception>(() => _sut.SendFeedback(Sentiment.Positive, ""));
+
+            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Never);
+        }
 
         [Fact]
         public void Dispose()

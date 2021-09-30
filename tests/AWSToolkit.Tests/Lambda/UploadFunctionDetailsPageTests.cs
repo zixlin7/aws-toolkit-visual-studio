@@ -69,6 +69,24 @@ namespace AWSToolkit.Tests.Lambda
             Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
         }
 
+        [StaFact]
+        public void Image_Architecture_Null()
+        {
+            Fixture.SetValidImageDeployValues();
+
+            Fixture.Page.ViewModel.Architecture = null;
+            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
+        }
+
+        [StaFact]
+        public void Zip_Architecture_Null()
+        {
+            Fixture.SetValidZipDeployValues();
+
+            Fixture.Page.ViewModel.Architecture = null;
+            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
+        }
+
         [StaTheory]
         [InlineData(null, "x", "x")]
         [InlineData("", "x", "x")]
@@ -87,7 +105,7 @@ namespace AWSToolkit.Tests.Lambda
             Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v2_1;
             Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
 
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.PROVIDED;
+            Fixture.Page.ViewModel.Runtime = RuntimeOption.PROVIDED_AL2;
             Assert.True(Fixture.Page.AllRequiredFieldsAreSet);
         }
 
@@ -169,31 +187,17 @@ namespace AWSToolkit.Tests.Lambda
         }
 
         [StaFact]
+        public void ArchitectureAffectsRuntime()
+        {
+            AssertArchitectureAffectsRuntime(LambdaArchitecture.X86, RuntimeOption.PROVIDED);
+            AssertArchitectureAffectsRuntime(LambdaArchitecture.Arm, RuntimeOption.PROVIDED_AL2);
+        }
+
+        [StaFact]
         public void RuntimeAffectsFramework()
         {
             AssertRuntimeAffectsFramework(RuntimeOption.NetCore_v2_1, Frameworks.NetCoreApp21);
             AssertRuntimeAffectsFramework(RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31);
-        }
-
-        /// <summary>
-        /// Either the DotNet Handler or the normal Handler are shown depending on Runtime.
-        /// DotNet handler has the Assembly/Type/Method components.
-        /// </summary>
-        [StaFact]
-        public void RuntimeAffectsHandlerVisibility()
-        {
-            var runtimesShowingDotNetHandler = new RuntimeOption[]
-            {
-                RuntimeOption.NetCore_v2_1,
-                RuntimeOption.NetCore_v3_1,
-            };
-
-            UploadFunctionDetailsPageFixture.RuntimeOptions
-                .ToList()
-                .ForEach(runtime =>
-                {
-                    AssertRuntimeAffectsHandlerVisibility(runtime, runtimesShowingDotNetHandler.Contains(runtime));
-                });
         }
 
         [StaFact]
@@ -204,6 +208,7 @@ namespace AWSToolkit.Tests.Lambda
                 RuntimeOption.NetCore_v2_1,
                 RuntimeOption.NetCore_v3_1,
                 RuntimeOption.PROVIDED,
+                RuntimeOption.PROVIDED_AL2,
             };
 
             UploadFunctionDetailsPageFixture.RuntimeOptions
@@ -248,15 +253,6 @@ namespace AWSToolkit.Tests.Lambda
             Assert.Equal(expectedFramework, Fixture.Page.ViewModel.Framework);
         }
 
-        private void AssertRuntimeAffectsHandlerVisibility(RuntimeOption runtime, bool expectedDotNetHandlerVisibility)
-        {
-            Fixture.Page.ViewModel.Runtime = runtime;
-            Assert.Equal(expectedDotNetHandlerVisibility ? Visibility.Visible : Visibility.Collapsed,
-                Fixture.Page.ViewModel.DotNetHandlerVisibility);
-            Assert.Equal(!expectedDotNetHandlerVisibility ? Visibility.Visible : Visibility.Collapsed,
-                Fixture.Page.ViewModel.HandlerVisibility);
-        }
-
         private void AssertRuntimeAffectsConfigFrameworkSettingsVisibility(RuntimeOption runtime, bool expectedShow)
         {
             Fixture.Page.ViewModel.Runtime = runtime;
@@ -266,5 +262,14 @@ namespace AWSToolkit.Tests.Lambda
                 Fixture.Page.ViewModel.FrameworkVisibility);
             Assert.Equal(expectedShow, Fixture.Page.ViewModel.ShowSaveSettings);
         }
+
+        private void AssertArchitectureAffectsRuntime(LambdaArchitecture architecture, RuntimeOption expectedRuntime)
+        {
+            Fixture.Page.ViewModel.Framework = Frameworks.NetCoreApp10;
+            Fixture.Page.ViewModel.Architecture = architecture;
+            Fixture.Page.ViewModel.Framework = Frameworks.Net50;
+            Assert.Equal(expectedRuntime, Fixture.Page.ViewModel.Runtime);
+        }
+
     }
 }

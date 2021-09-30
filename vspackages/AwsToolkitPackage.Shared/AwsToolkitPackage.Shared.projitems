@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>cc1b2316-c330-410c-a3f3-097ca45713d8</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Amazon.AWSToolkit.VisualStudio</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AWSToolkitPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BeanstalkBuildAndDeployController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BeanstalkProjectPersistenceInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BuildAndDeploymentControllerBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BuildProcessors\CoreCLRWebAppProjectBuildProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BuildProcessors\DotNetCLIWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BuildProcessors\IBuildProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BuildProcessors\MSDeployWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BuildProcessors\WebAppProjectBuildProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BuildProcessors\WebSiteProjectBuildProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CloudFormationBuildAndDeployController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\BaseCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Lambda\AddServerlessTemplateCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Lambda\DeployLambdaCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\CreateIssueCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewFeedbackPanelCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewGettingStartedCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewUserGuideCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CustomProvideEditorFactoryAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\BeanstalkConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\BeanstalkDeploymentProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\CloudFormationDeploymentProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\EbToolsDeploymentProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\IDeploymentProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\CloudFormationTemplateProjectFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\CloudFormationTemplateProjectNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateEditorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateFileNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Controller\FirstRunController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Model\FirstRunModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml.cs">
+      <DependentUpon>FirstRunControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Guids.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedEditorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedEditorPane.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedUserControl.Designer.cs">
+      <DependentUpon>HostedUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\NavigatorVsUIHierarchy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Images\VsImageProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUsageEmitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Loggers\IBuildAndDeploymentLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Loggers\IDEConsoleLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Loggers\MSBuildLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messaging.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NativeMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NuGet\CodeArtifactNuGetCredentialProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PkgCmdID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Registration\AWSCommandLineRegistrationAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Services\AWSLegacyDeploymentPersistenceService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\AWSToolkitShellProviderService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\VsWebProjectInfoExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\GeneralOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\GeneralOptionsPageControl.xaml.cs">
+      <DependentUpon>GeneralOptionsPageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPageForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPageForm.Designer.cs">
+      <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\MetricsOutputWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInfoBarManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInformationDialog.xaml.cs">
+      <DependentUpon>TelemetryInformationDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryNotice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Themes\ThemeFontResources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Themes\ThemeResourceKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Themes\ToolkitThemeBrushKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Themes\ToolkitThemeFontKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Themes\ToolkitThemeProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\AWSNavigatorToolControl.xaml.cs">
+      <DependentUpon>AWSNavigatorToolControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\AWSNavigatorToolWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\DteVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\ProjectExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\WindowExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\InfoBarUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ToolkitProductEnvironment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\VsAppId\IVsAppId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\WindowFrameNotificationController.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)ShellOptions\GeneralOptionsPageControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInformationDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Themes\BaseToolkitStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Themes\_AWSToolkitDefaultTheme.15.0.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Themes\ControlStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)ToolWindow\AWSNavigatorToolControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)AWSToolkitPackage.resx">
+      <SubType>Designer</SubType>
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)HostedEditor\HostedUserControl.resx">
+      <DependentUpon>HostedUserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPageForm.resx">
+      <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

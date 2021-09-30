@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.Composition;
+
+using Amazon.AWSToolkit.AwsServices;
+
 using Microsoft.VisualStudio.Utilities;
 
 namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 {
     public static class TemplateContentType
     {
-        public const string ContentType = "CloudFormationTemplate";
-        public const string Extension = ".template";
+        internal const string ContentType = "CloudFormationTemplate";
 
         /// <summary>
         /// Exports the Template content type
@@ -21,7 +23,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
         /// </summary>
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(TemplateContentType.ContentType)]
-        [FileExtension(TemplateContentType.Extension)]
+        [FileExtension(ToolkitFileTypes.CloudFormationTemplateExtension)]
         public static FileExtensionToContentTypeDefinition TemplateFileExtension { get; set; }
     }
 }

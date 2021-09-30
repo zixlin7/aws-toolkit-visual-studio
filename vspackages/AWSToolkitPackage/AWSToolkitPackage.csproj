@@ -27,7 +27,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>$(BuildConstants);DEBUG;VS2017_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>
@@ -40,8 +40,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DeployExtension>True</DeployExtension>
-    <DeployVSTemplates>True</DeployVSTemplates>
+    <!-- Only deploy into Experimental VS instance if the solution is loaded in VS 2017 or 2019 -->
+    <DeployExtension>False</DeployExtension>
+    <DeployExtension Condition=" '$(VisualStudioVersion)' == '15.0' Or '$(VisualStudioVersion)' == '16.0' ">True</DeployExtension>
+    <DeployVSTemplates>False</DeployVSTemplates>
+    <DeployVSTemplates Condition=" '$(VisualStudioVersion)' == '15.0' Or '$(VisualStudioVersion)' == '16.0' ">True</DeployVSTemplates>
     <IncludeDebugSymbolsInVSIXContainer>True</IncludeDebugSymbolsInVSIXContainer>
     <VSSDKTargetPlatformRegRootSuffix>Exp</VSSDKTargetPlatformRegRootSuffix>
   </PropertyGroup>
@@ -49,7 +52,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants)</DefineConstants>
+    <DefineConstants>$(BuildConstants);VS2017_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -105,74 +108,70 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\BaseCommand.cs" />
-    <Compile Include="Commands\Lambda\AddServerlessTemplateCommand.cs" />
-    <Compile Include="Commands\Lambda\DeployLambdaCommand.cs" />
-    <Compile Include="Commands\Toolkit\CreateIssueCommand.cs" />
-    <Compile Include="Commands\Toolkit\ViewUserGuideCommand.cs" />
-    <Compile Include="Images\VsImageProvider.cs" />
-    <Compile Include="NativeMethods.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BuildProcessors\DotNetCLIWrapper.cs" />
-    <Compile Include="NuGet\CodeArtifactNuGetCredentialProvider.cs" />
-    <Compile Include="Editors\CloudFormation\CloudFormationTemplateProjectFactory.cs" />
-    <Compile Include="Editors\CloudFormation\CloudFormationTemplateProjectNode.cs" />
-    <Compile Include="Editors\CloudFormation\TemplateEditorFactory.cs" />
-    <Compile Include="Editors\CloudFormation\TemplateFileNode.cs" />
-    <Compile Include="FirstRun\Controller\FirstRunController.cs" />
-    <Compile Include="FirstRun\Model\FirstRunModel.cs" />
-    <Compile Include="FirstRun\View\FirstRunControl.xaml.cs">
-      <DependentUpon>FirstRunControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Lambda\LambdaTesterEventListener.cs" />
-    <Compile Include="Lambda\LambdaTesterUsageEmitter.cs" />
-    <Compile Include="Lambda\LambdaTesterUtilities.cs" />
-    <Compile Include="CustomProvideEditorFactoryAttribute.cs" />
-    <Compile Include="Registration\AWSCommandLineRegistrationAttribute.cs" />
-    <Compile Include="Guids.cs" />
-    <Compile Include="Messaging.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="AWSToolkitPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Telemetry\MetricsOutputWindow.cs" />
-    <Compile Include="Telemetry\TelemetryInfoBar.cs" />
-    <Compile Include="Telemetry\TelemetryInfoBarManager.cs" />
-    <Compile Include="Telemetry\TelemetryInformationDialog.xaml.cs">
-      <DependentUpon>TelemetryInformationDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Telemetry\TelemetryManager.cs" />
-    <Compile Include="Telemetry\TelemetryNotice.cs" />
-    <Compile Include="Utilities\DTE\DteVersion.cs" />
-    <Compile Include="Utilities\DTE\WindowExtensionMethods.cs" />
-    <Compile Include="Utilities\DTE\ProjectExtensionMethods.cs" />
-    <Compile Include="Utilities\InfoBarUtils.cs" />
-    <Compile Include="Utilities\ToolkitProductEnvironment.cs" />
-    <Compile Include="Utilities\VsAppId\IVsAppId.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\templates\basic-serverless.template">
+      <Link>Resources\basic-serverless.template</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="AWSToolkitPackage.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\basic-serverless.template" />
     <Resource Include="$(BuildRoot)\hostedfiles\endpoints.json">
       <Link>HostedFiles\endpoints.json</Link>
     </Resource>
-    <Content Include="log4net.config">
+    <Resource Include="..\AwsToolkitPackageResources\CodeCommit32x32.png">
+      <Link>Resources\CodeCommit32x32.png</Link>
+    </Resource>
+    <Resource Include="..\AwsToolkitPackageResources\CodeCommit16x16.png">
+      <Link>Resources\CodeCommit16x16.png</Link>
+    </Resource>
+    <Resource Include="..\AwsToolkitPackageResources\CodeArtifact32x32.png">
+      <Link>Resources\CodeArtifact32x32.png</Link>
+    </Resource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\AWSCloudFormationProject.ico">
+      <Link>Resources\AWSCloudFormationProject.ico</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\AWSCloudFormationTemplate.ico">
+      <Link>Resources\AWSCloudFormationTemplate.ico</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\CloudFormationTemplateNode.png">
+      <Link>Resources\CloudFormationTemplateNode.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\CloudFormationTemplateProjectNode.png">
+      <Link>Resources\CloudFormationTemplateProjectNode.png</Link>
+    </EmbeddedResource>
+    <Content Include="..\AwsToolkitPackageResources\aws-icon.png">
+      <Link>Resources\aws-icon.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\AwsToolkitPackageResources\aws.png">
+      <Link>Resources\aws.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <VSCTCompile Include="..\AwsToolkitPackageResources\AWSToolkitPackage.15.0.vsct">
+      <Link>AWSToolkitPackage.15.0.vsct</Link>
+      <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
+    </VSCTCompile>
+    <Content Include="..\AwsToolkitPackageResources\AWSToolkitPackage.vsct">
+      <Link>AWSToolkitPackage.vsct</Link>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="..\AwsToolkitPackageResources\File.ico">
+      <Link>Resources\File.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\AwsToolkitPackageResources\Package.ico">
+      <Link>Resources\Package.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Resource Include="..\AwsToolkitPackageResources\SignUp.png">
+      <Link>Resources\SignUp.png</Link>
+    </Resource>
+    <Content Include="..\AwsToolkitPackageResources\log4net.config">
+      <Link>log4net.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -181,15 +180,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\aws-icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="$(BuildRoot)\toolkitcore\AmazonCLIExtensions\Amazon.Lambda.Tools\Resources\build-lambda-zip.exe">
-      <Link>Resources\build-lambda-zip.exe</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    <None Include="..\AwsToolkitPackageResources\VsctImages_32bit.png">
+      <Link>Resources\VsctImages_32bit.png</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(BuildRoot)\vspackages\manifests\15.0\source.extension.vsixmanifest">
@@ -197,325 +190,14 @@
       <Link>\source.extension.vsixmanifest</Link>
     </None>
   </ItemGroup>
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\AwsSdks.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\CloudFormationProjectBundling.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ItemTemplates.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Licenses.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Plugins.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectReferences.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectTemplates.xml" />
   <ItemGroup>
-    <None Include="Resources\vsctimages_32bit.png" />
-    <EmbeddedResource Include="Resources\CloudFormationTemplateProjectNode.png" />
-    <EmbeddedResource Include="Resources\CloudFormationTemplateNode.png" />
-    <EmbeddedResource Include="Resources\AWSCloudFormationTemplate.ico" />
-    <EmbeddedResource Include="Resources\AWSCloudFormationProject.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <VSCTCompile Include="AWSToolkitPackage.15.0.vsct">
-      <ResourceName>Menus.ctmenu</ResourceName>
-      <SubType>Designer</SubType>
-    </VSCTCompile>
-    <Content Include="AWSToolkitPackage.vsct">
-      <SubType>Designer</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BeanstalkBuildAndDeployController.cs" />
-    <Compile Include="BeanstalkProjectPersistenceInfo.cs" />
-    <Compile Include="BuildAndDeploymentControllerBase.cs" />
-    <Compile Include="CloudFormationBuildAndDeployController.cs" />
-    <Compile Include="BuildProcessors\CoreCLRWebAppProjectBuildProcessor.cs" />
-    <Compile Include="BuildProcessors\IBuildProcessor.cs" />
-    <Compile Include="BuildProcessors\MSDeployWrapper.cs" />
-    <Compile Include="BuildProcessors\WebAppProjectBuildProcessor.cs" />
-    <Compile Include="BuildProcessors\WebSiteProjectBuildProcessor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DeploymentProcessors\*.cs" />
-    <Compile Include="Loggers\*.cs" />
-    <Compile Include="Services\AWSLegacyDeploymentPersistenceService.cs" />
-    <Compile Include="Services\AWSToolkitShellProviderService.cs" />
-    <Compile Include="Themes\ThemeFontResources.cs" />
-    <Compile Include="IEditor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="HostedEditor\HostedEditorFactory.cs" />
-    <Compile Include="HostedEditor\HostedEditorPane.cs" />
-    <Compile Include="HostedEditor\HostedUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="HostedEditor\HostedUserControl.Designer.cs">
-      <DependentUpon>HostedUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HostedEditor\NavigatorVsUIHierarchy.cs" />
-    <EmbeddedResource Include="HostedEditor\HostedUserControl.resx">
-      <DependentUpon>HostedUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ShellOptions\GeneralOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ShellOptions\GeneralOptionsPageControl.xaml.cs">
-      <DependentUpon>GeneralOptionsPageControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ShellOptions\ProxyOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ShellOptions\ProxyOptionsPageForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ShellOptions\ProxyOptionsPageForm.Designer.cs">
-      <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="ShellOptions\ProxyOptionsPageForm.resx">
-      <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ToolWindow\AWSNavigatorToolControl.xaml.cs">
-      <DependentUpon>AWSNavigatorToolControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ToolWindow\AWSNavigatorToolWindow.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\CodeCommit32x32.png" />
-    <Resource Include="Resources\CodeArtifact32x32.png" />
-    <Resource Include="Resources\SignUp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PkgCmdID.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="FirstRun\View\FirstRunControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ShellOptions\GeneralOptionsPageControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Telemetry\TelemetryInformationDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\_AWSToolkitDefaultTheme.15.0.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ToolWindow\AWSNavigatorToolControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="License.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.JsonChecker.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.JsonChecker.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.log4net.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.log4net.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.libgit2sharp.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.libgit2sharp.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.Newtonsoft.Json.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.Newtonsoft.Json.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\aws.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Resource Include="Resources\CodeCommit16x16.png" />
-    <Content Include="Resources\File.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\Package.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="$(OutputRoot)\AmazonCLIExtensions.dll">
-      <Link>AmazonCLIExtensions.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFormation.dll">
-      <Link>Plugins\AWSToolkit.CloudFormation.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFormation.Interface.dll">
-      <Link>Plugins\AWSToolkit.CloudFormation.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.dll">
-      <Link>Plugins\AWSToolkit.CodeCommit.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.Interface.dll">
-      <Link>Plugins\AWSToolkit.CodeCommit.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.DynamoDB.dll">
-      <Link>Plugins\AWSToolkit.DynamoDB.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.DynamoDB.Interface.dll">
-      <Link>Plugins\AWSToolkit.DynamoDB.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFront.dll">
-      <Link>Plugins\AWSToolkit.CloudFront.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFront.Interface.dll">
-      <Link>Plugins\AWSToolkit.CloudFront.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.EC2.dll">
-      <Link>Plugins\AWSToolkit.EC2.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.EC2.Interface.dll">
-      <Link>Plugins\AWSToolkit.EC2.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ECS.dll">
-      <Link>Plugins\AWSToolkit.ECS.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ECS.Interface.dll">
-      <Link>Plugins\AWSToolkit.ECS.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ElasticBeanstalk.dll">
-      <Link>Plugins\AWSToolkit.ElasticBeanstalk.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ElasticBeanstalk.Interface.dll">
-      <Link>Plugins\AWSToolkit.ElasticBeanstalk.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.IdentityManagement.dll">
-      <Link>Plugins\AWSToolkit.IdentityManagement.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.IdentityManagement.Interface.dll">
-      <Link>Plugins\AWSToolkit.IdentityManagement.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.Lambda.dll">
-      <Link>Plugins\AWSToolkit.Lambda.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.Lambda.Interface.dll">
-      <Link>Plugins\AWSToolkit.Lambda.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.PolicyEditor.dll">
-      <Link>Plugins\AWSToolkit.PolicyEditor.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.RDS.dll">
-      <Link>Plugins\AWSToolkit.RDS.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.RDS.Interface.dll">
-      <Link>Plugins\AWSToolkit.RDS.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.S3.dll">
-      <Link>Plugins\AWSToolkit.S3.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.S3.Interface.dll">
-      <Link>Plugins\AWSToolkit.S3.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeArtifact.dll">
-      <Link>Plugins\AWSToolkit.CodeArtifact.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeArtifact.Interface.dll">
-      <Link>Plugins\AWSToolkit.CodeArtifact.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SimpleDB.dll">
-      <Link>Plugins\AWSToolkit.SimpleDB.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SimpleDB.Interface.dll">
-      <Link>Plugins\AWSToolkit.SimpleDB.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SNS.dll">
-      <Link>Plugins\AWSToolkit.SNS.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SNS.Interface.dll">
-      <Link>Plugins\AWSToolkit.SNS.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SQS.dll">
-      <Link>Plugins\AWSToolkit.SQS.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SQS.Interface.dll">
-      <Link>Plugins\AWSToolkit.SQS.Interface.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <Visible>false</Visible>
-    </Content>
     <Content Include="$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>Microsoft.WindowsAPICodePack.dll</Link>
@@ -534,360 +216,13 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\thirdparty\PemToPPKConverter.exe">
-      <Link>Plugins\PemToPPKConverter.exe</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\dotnet-lambda.dll">
-      <Link>Plugins\dotnet-lambda.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\AWSDeploymentLib.dll">
-      <Link>Plugins\AWSDeploymentLib.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(OutputRoot)\AWSSDK.AutoScaling.dll">
-      <Link>AWSSDK.AutoScaling.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CloudFormation.dll">
-      <Link>AWSSDK.CloudFormation.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CloudFront.dll">
-      <Link>AWSSDK.CloudFront.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CloudWatch.dll">
-      <Link>AWSSDK.CloudWatch.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CloudWatchLogs.dll">
-      <Link>AWSSDK.CloudWatchLogs.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CloudWatchEvents.dll">
-      <Link>AWSSDK.CloudWatchEvents.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CodeCommit.dll">
-      <Link>AWSSDK.CodeCommit.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CodeArtifact.dll">
-      <Link>AWSSDK.CodeArtifact.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CognitoIdentity.dll">
-      <Link>AWSSDK.CognitoIdentity.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.CognitoSync.dll">
-      <Link>AWSSDK.CognitoSync.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.Core.dll">
-      <Link>AWSSDK.Core.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.DynamoDBv2.dll">
-      <Link>AWSSDK.DynamoDBv2.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.EC2.dll">
-      <Link>AWSSDK.EC2.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.ECR.dll">
-      <Link>AWSSDK.ECR.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.ECS.dll">
-      <Link>AWSSDK.ECS.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.ElasticBeanstalk.dll">
-      <Link>AWSSDK.ElasticBeanstalk.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.ElasticLoadBalancing.dll">
-      <Link>AWSSDK.ElasticLoadBalancing.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.ElasticLoadBalancingV2.dll">
-      <Link>AWSSDK.ElasticLoadBalancingV2.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.IdentityManagement.dll">
-      <Link>AWSSDK.IdentityManagement.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.KeyManagementService.dll">
-      <Link>AWSSDK.KeyManagementService.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.Kinesis.dll">
-      <Link>AWSSDK.Kinesis.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.Lambda.dll">
-      <Link>AWSSDK.Lambda.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.MobileAnalytics.dll">
-      <Link>AWSSDK.MobileAnalytics.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.RDS.dll">
-      <Link>AWSSDK.RDS.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.S3.dll">
-      <Link>AWSSDK.S3.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.SecurityToken.dll">
-      <Link>AWSSDK.SecurityToken.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.SimpleDB.dll">
-      <Link>AWSSDK.SimpleDB.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.SimpleNotificationService.dll">
-      <Link>AWSSDK.SimpleNotificationService.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.SQS.dll">
-      <Link>AWSSDK.SQS.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.SSO.dll">
-      <Link>AWSSDK.SSO.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.SSOOIDC.dll">
-      <Link>AWSSDK.SSOOIDC.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-  </ItemGroup>
-  <!-- Additional dependency content for the tasks, which we handle in the package project 
-       right now, as trying to flag this as 'content' in the cloudformation.msbuldtasks project
-       triggers the content to also be placed at the vsix root, causing load errors due to 
-       multiple copies of awssdk.core. When we figure out output groups we should be able to do 
-       this bundling work in the right project and have it be picked up automatically when the 
-       package builds. Note that direct build dependencies get picked up automatically due to
-       the IncludeOutputGroupsInVSIX setting on the msbuildtasks project reference.
-  -->
-  <ItemGroup>
-    <Content Include="Resources\AWSCloudFormationProject.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>AWSCloudFormationProject.ico</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="Resources\AWSCloudFormationTemplate.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>AWSCloudFormationTemplate.ico</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.Core.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>AWSSDK.Core.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\log4net.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>log4net.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-      <Visible>false</Visible>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(OutputRoot)\AWSSDK.Extensions.dll">
-      <Link>AWSSDK.Extensions.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
-      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
-      <Name>AWSSDK.Extensions</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
-      <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
-      <Name>AWSToolkit.CloudFormation.Interface</Name>
-      <Private>False</Private>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
-      <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
-      <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
-      <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
-      <Name>AWSToolkit.Lambda.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj">
-      <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>
-      <Name>AWSToolkit.Lambda</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
-      <Name>AWSToolkit.Util</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
-      <Name>AWSToolkit</Name>
-      <Private>False</Private>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
-      <Project>{6ae302db-2304-47c8-8e3c-96c85ac1d469}</Project>
-      <Name>AWSToolkit.CloudFormation</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
-      <Project>{e3d3dffd-6668-44be-9d8e-823f53b58f29}</Project>
-      <Name>AWSToolkit.ECS.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj">
-      <Project>{a09c427c-dbf7-49c8-9590-e99ad60dece2}</Project>
-      <Name>AWSToolkit.ECS</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
-      <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
-      <Name>AWSToolkit.ElasticBeanstalk</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeArtifact.Interface\AWSToolkit.CodeArtifact.Interface.csproj">
-      <Project>{f1a54c06-a4a8-4e6b-b7fa-8469105408b3}</Project>
-      <Name>AWSToolkit.CodeArtifact.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
-      <Project>{a2f72d39-eef5-4c08-b573-d8c5740ced2c}</Project>
-      <Name>AWSToolkit.CodeArtifact</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
-      <Project>{b8cfce12-d441-46a5-a415-c763e1e2beb0}</Project>
-      <Name>AWSToolkit.CodeCommit.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj">
-      <Project>{9aa7dd53-7bc4-4971-bc0c-0540a391dc22}</Project>
-      <Name>AWSToolkit.CodeCommit</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">
-      <Project>{a01edd42-f7f5-4e20-8deb-9f66f2980662}</Project>
-      <Name>AWSToolkit.S3</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.EditorExtensions\AWSToolkit.CloudFormation.EditorExtensions.csproj">
       <Project>{18023934-17cf-421e-87c2-61838b7498c6}</Project>
       <Name>AWSToolkit.CloudFormation.EditorExtensions</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\AWSToolkit.CloudFormation.MSBuildTasks.csproj">
-      <Project>{fe98588c-7fee-414e-9eab-f36bf64c88c0}</Project>
-      <Name>AWSToolkit.CloudFormation.MSBuildTasks</Name>
-      <InstallRoot>MSBuild</InstallRoot>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
-      <Project>{4cee1a45-e01e-4bcc-8145-5c593adf28bc}</Project>
-      <Name>AWSToolkit.CloudFormation.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.TemplateWizards\AWSToolkit.CloudFormation.TemplateWizards.csproj">
       <Project>{0588d27b-7d87-4b33-9120-4c0a9e7d6665}</Project>
@@ -895,36 +230,15 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationProjectTemplate\CloudFormationProjectTemplate.csproj">
-      <Project>{EB2C31E6-3ED8-4F0E-A726-194DA87C8F95}</Project>
-      <Name>CloudFormationProjectTemplate</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationTemplate\CloudFormationTemplate.csproj">
-      <Project>{877BECE0-1933-4BA8-8D68-78140A541B67}</Project>
-      <Name>CloudFormationTemplate</Name>
-      <VSIXSubPath>ItemTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\vspackages\lambda\AWSToolkit.Lambda.TemplateWizards\AWSToolkit.Lambda.TemplateWizards.csproj">
       <Project>{783e4198-a8f1-4e74-af3e-0001b0ad516b}</Project>
       <Name>AWSToolkit.Lambda.TemplateWizards</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.csproj">
-      <Project>{AF0AE340-7C91-40F9-A074-0F1A4F03F8E9}</Project>
-      <Name>LambdaFunctionProjectTemplate</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
+    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
-      <Name>AWSToolkit.VisualStudio.Shared</Name>
+      <Name>AwsToolkit.VsSdk.Common</Name>
     </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj">
       <Project>{94f578fb-afeb-4c67-bd0d-c5797e50e9e8}</Project>
@@ -940,148 +254,89 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj">
-      <Project>{cbde5be9-4047-445a-82a2-ade0d06708be}</Project>
-      <Name>MsbuildFunctionTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.csproj">
-      <Project>{418C57E1-B2B9-441F-8B88-1C7776011724}</Project>
-      <Name>MsbuildFunctionWithTestsTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.csproj">
-      <Project>{12205d6a-e262-4f8b-8344-2b5a93bbb775}</Project>
-      <Name>MsbuildServerlessTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj">
-      <Project>{22c00710-a6e5-4f49-92ce-a5a2dd71c24a}</Project>
-      <Name>MsbuildServerlessWithTestsTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <!-- FSharp Lambda -->
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.csproj">
-      <Project>{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}</Project>
-      <Name>MsbuildFunctionTemplateFSharp</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplateFSharp\MsbuildFunctionWithTestsTemplateFSharp.csproj">
-      <Project>{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}</Project>
-      <Name>MsbuildFunctionWithTestsTemplateFSharp</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplateFSharp\MsbuildServerlessTemplateFSharp.csproj">
-      <Project>{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}</Project>
-      <Name>MsbuildServerlessTemplateFSharp</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplateFSharp\MsbuildServerlessWithTestsTemplateFSharp.csproj">
-      <Project>{D14A5D26-391E-4327-A1DC-29572D4521FF}</Project>
-      <Name>MsbuildServerlessWithTestsTemplateFSharp</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AWSSDK.AutoScaling">
-      <Version>3.5.4.0</Version>
+      <Version>3.7.5.25</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.5.3.2</Version>
+      <Version>3.7.5.17</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudFront">
-      <Version>3.5.6.16</Version>
+      <Version>3.7.3.36</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.5.1.8</Version>
+      <Version>3.7.2.29</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchEvents">
-      <Version>3.5.4.33</Version>
+      <Version>3.7.4.18</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.1.48</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
-      <Version>3.5.2.13</Version>
+      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoSync">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.1.69</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.5.3.2</Version>
+      <Version>3.7.3.13</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>3.5.4.31</Version>
+      <Version>3.7.0.74</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.5.31.7</Version>
+      <Version>3.7.30.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ECR">
-      <Version>3.5.1.25</Version>
+      <Version>3.7.1.5</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ECS">
-      <Version>3.5.3.12</Version>
+      <Version>3.7.2.49</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticBeanstalk">
-      <Version>3.5.2.30</Version>
+      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancing">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancingV2">
-      <Version>3.5.5.35</Version>
+      <Version>3.7.1.1</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.5.1.2</Version>
+      <Version>3.7.2.53</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.KeyManagementService">
-      <Version>3.5.2.13</Version>
+      <Version>3.7.2.17</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.5.7.7</Version>
+      <Version>3.7.4.0</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.RDS">
-      <Version>3.5.13.1</Version>
+      <Version>3.7.5.9</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.5.8.8</Version>
+      <Version>3.7.3.6</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SecurityToken">
-      <Version>3.5.1.53</Version>
+      <Version>3.7.1.63</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleDB">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.5.1.44</Version>
+      <Version>3.7.2.44</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.5.1.21</Version>
+      <Version>3.7.1.16</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.4</Version>
+      <Version>1.0.17</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.4</Version>
+      <Version>1.0.17</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>
@@ -1097,15 +352,24 @@
       <Version>4.9.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>15.9.3043</Version>
+      <Version>16.10.1055</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.3.0</Version>
     </PackageReference>
+    <!-- Community.VisualStudio.Toolkit - This package is versioned based on the major version of 
+      Visual Studio that it supports.
+      The version referenced MUST be no higher than the version that corresponds with the lowest 
+      Major version of Visual Studio supported by this Toolkit. 
+      (For a Toolkit that supports VS 2017, the version must be 15.0.*.*) -->
+    <PackageReference Include="Community.VisualStudio.Toolkit" ExcludeAssets="Runtime">
+      <Version>15.0.75.103</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup />
+  <Import Project="..\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

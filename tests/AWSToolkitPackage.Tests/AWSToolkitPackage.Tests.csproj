@@ -45,15 +45,19 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DeploymentProcessors\BeanstalkConfigurationTests.cs" />
+    <Compile Include="Feedback\FeedbackPanelViewModelTests.cs" />
+    <Compile Include="Feedback\SendFeedbackCommandTests.cs" />
     <Compile Include="FirstRun\FirstRunControllerTests.cs" />
     <Compile Include="Images\VsImageProviderTests.cs" />
     <Compile Include="Lambda\ProjectCreatorUtilitiesTests.cs" />
     <Compile Include="Navigator\NavigatorViewModelTests.cs" />
+    <Compile Include="Shared\Services\VsWebProjectInfoExtensionsTests.cs" />
     <Compile Include="Telemetry\TelemetryInfoBarTests.cs" />
     <Compile Include="UIThreadFixture.cs" />
     <Compile Include="Lambda\LambdaTesterUsageEmitterTests.cs" />
@@ -61,6 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DTE\DteVersionTests.cs" />
     <Compile Include="Utilities\DTE\ProjectExtensionMethodsTests.cs" />
+    <Compile Include="Utilities\WindowFrameNotificationControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
@@ -71,9 +76,9 @@
       <Project>{783E4198-A8F1-4E74-AF3E-0001B0AD516B}</Project>
       <Name>AWSToolkit.Lambda.TemplateWizards</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\vspackages\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
+    <ProjectReference Include="..\..\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
       <Project>{81552EFA-46B0-4EBE-BC29-5BA6A7628207}</Project>
-      <Name>AWSToolkit.VisualStudio.Shared</Name>
+      <Name>AwsToolkit.VsSdk.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
@@ -127,11 +132,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Xunit.StaFact">
+      <Version>0.3.18</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="DeploymentProcessors\expected-aws-beanstalk-configuration.json" />
     <None Include="DeploymentProcessors\simple-beanstalk-configuration.json" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -8,7 +8,10 @@ using System.Diagnostics;
 using System.Threading;
 using Amazon.AWSToolkit.Lambda.Controller;
 using System.IO;
+using System.Linq;
+
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -34,15 +37,14 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         {
             var logger = new DeployToolLogger(this.FunctionUploader);
             var deploymentProperties = new LambdaTelemetryUtils.RecordLambdaDeployProperties();
-
             try
             {
+                var architectureList = uploadState.GetRequestArchitectures();
                 deploymentProperties.RegionId = uploadState.Region?.Id;
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
                 deploymentProperties.NewResource = IsNewResource(uploadState);
                 deploymentProperties.LambdaPackageType = uploadState.Request?.PackageType;
-
                 var command = new DeployFunctionCommand(logger, uploadState.SourcePath, new string[0]);
                 command.DisableInteractive = true;
                 command.LambdaClient = this.LambdaClient;
@@ -61,6 +63,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.PackageType = uploadState.Request?.PackageType;
                 command.TargetFramework = uploadState.Framework;
                 command.Runtime = uploadState.Request.Runtime;
+                if (architectureList.Count == 1)
+                {
+                    deploymentProperties.LambdaArchitecture = architectureList.First();
+                    command.Architecture = architectureList.First();
+                }
                 command.EnvironmentVariables = uploadState.Request?.Environment?.Variables;
                 command.KMSKeyArn = uploadState.Request?.KMSKeyArn;
                 command.TracingMode = uploadState.Request?.TracingConfig?.Mode;

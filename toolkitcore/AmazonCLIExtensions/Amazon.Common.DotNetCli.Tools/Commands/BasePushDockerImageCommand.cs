@@ -60,7 +60,12 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
         public string ImageTagUniqueSeed { get; set; }
 
         public BasePushDockerImageCommand(IToolLogger logger, string workingDirectory, string[] args)
-            : base(logger, workingDirectory, CommandOptions, args)
+            : this(logger, workingDirectory, CommandOptions, args)
+        {
+        }
+
+        protected BasePushDockerImageCommand(IToolLogger logger, string workingDirectory, IList<CommandOption> commandOptions, string[] args)
+            : base(logger, workingDirectory, commandOptions, args)
         {
         }
 
@@ -123,6 +128,10 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
                 }
 
                 await PushToECR(dockerCli, sourceDockerTag, ecrTag);
+            }
+            else
+            {
+                this.PushedImageUri = destinationDockerTag;
             }
 
             return true;
@@ -234,10 +243,15 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
                 throw new ToolsException($"Error failed to find file \"{fullDockerfilePath}\" to build the Docker image", ToolsException.CommonErrorCode.DockerBuildFailed);
             }
 
-            if (dockerCli.Build(dockerBuildWorkingDirectory, fullDockerfilePath, dockerImageTag, dockerBuildOptions) != 0)
+            if (ExecuteDockerBuild(dockerCli, dockerBuildWorkingDirectory, fullDockerfilePath, dockerImageTag, dockerBuildOptions) != 0)
             {
                 throw new ToolsException("Error executing \"docker build\"", ToolsException.CommonErrorCode.DockerBuildFailed);
             }
+        }
+
+        protected virtual int ExecuteDockerBuild(DockerCLIWrapper dockerCli, string dockerBuildWorkingDirectory, string fullDockerfilePath, string dockerImageTag, string dockerBuildOptions)
+        {
+            return dockerCli.Build(dockerBuildWorkingDirectory, fullDockerfilePath, dockerImageTag, dockerBuildOptions);
         }
 
         private async Task PushToECR(DockerCLIWrapper dockerCli, string sourceDockerImageTag, string destinationDockerImageTag)
@@ -502,7 +516,7 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
 
                     data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_DOCKER_TAG.ConfigFileKey, tag);
                 }
-              
+
                 data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY.ConfigFileKey, command.GetStringValueOrDefault(this.DockerBuildWorkingDirectory, CommonDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY, false));
                 data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_OPTIONS.ConfigFileKey, command.GetStringValueOrDefault(this.DockerBuildOptions, CommonDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_OPTIONS, false));
                 data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_HOST_BUILD_OUTPUT.ConfigFileKey, command.GetStringValueOrDefault(this.HostBuildOutput, CommonDefinedCommandOptions.ARGUMENT_HOST_BUILD_OUTPUT, false));

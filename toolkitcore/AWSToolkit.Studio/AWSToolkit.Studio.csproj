@@ -68,10 +68,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.5.3.2</Version>
+      <Version>3.7.3.13</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.10</Version>
@@ -217,9 +217,9 @@
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
+    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
-      <Name>AWSToolkit.VisualStudio.Shared</Name>
+      <Name>AwsToolkit.VsSdk.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

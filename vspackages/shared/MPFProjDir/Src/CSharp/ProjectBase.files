@@ -361,10 +361,6 @@
       <Link>ProjectBase\RegisteredProjectType.cs</Link>
       <Visible>true</Visible>
     </Compile>
-    <Compile Include="$(ProjectBasePath)\SettingsPage.cs">
-      <Link>ProjectBase\SettingsPage.cs</Link>
-      <Visible>true</Visible>
-    </Compile>
     <Compile Include="$(ProjectBasePath)\SingleFileGenerator.cs">
       <Link>ProjectBase\SingleFileGenerator.cs</Link>
       <Visible>true</Visible>

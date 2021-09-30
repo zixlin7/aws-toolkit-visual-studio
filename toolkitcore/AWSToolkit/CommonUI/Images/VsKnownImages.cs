@@ -18,6 +18,8 @@
         Cancel, 
         DeleteListItem, 
         Edit,
+        FeedbackFrown,
+        FeedbackSmile,
         Refresh,
         Remove,
         StatusError,

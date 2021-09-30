@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
+using Sentiment = Amazon.AwsToolkit.Telemetry.Events.Core.Sentiment;
+
 namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
     public class TelemetryPublisherTests : IDisposable
@@ -339,6 +341,23 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             Assert.Empty(_eventQueue);
             VerifyPostMetricsCalls(1, Times.Exactly(2));
+        }
+
+        [Fact]
+        public async Task SendFeedback()
+        {
+            _sut.Initialize(_telemetryClient.Object);
+           await _sut.SendFeedback(Sentiment.Positive, "");
+
+           _telemetryClient.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Once);
+        }
+
+        [Fact]
+        public async Task SendFeedback_Throws()
+        {
+            await Assert.ThrowsAsync<Exception>(() => _sut.SendFeedback(Sentiment.Positive, ""));
+
+            _telemetryClient.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Never);
         }
 
         public void Dispose()

@@ -75,6 +75,10 @@ namespace Amazon.AWSToolkit.CommonUI
 
         public virtual bool IsUniquePerAccountAndRegion => true;
 
+        public virtual string AcceptButtonText => string.Empty;
+
+        public virtual string RejectButtonText  => string.Empty;
+
         public virtual bool Validated()
         {
             return true;
@@ -96,6 +100,11 @@ namespace Amazon.AWSToolkit.CommonUI
 
         public virtual void OnEditorOpened(bool success)
         {
+        }
+
+        public virtual bool CanClose()
+        {
+            return true;
         }
 
         public virtual bool SupportsBackGroundDataLoad => false;

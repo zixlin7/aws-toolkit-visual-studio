@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  References to other projects in the solution that are common to AWSToolkitPackage.xxx Projects
+
+  If you have the solution open in Visual Studio and make changes to this file, you will need to close the 
+  solution and re-open it in order to pick up your changes.
+-->
+<Project ToolsVersion="15.0" DefaultTargets="Build"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+
+  <!--
+    Projects with logic required by code within AWSToolkitPackage.xxx Projects.
+    In general, try to avoid adding dependencies to Plugin projects. 
+    Plugin logic is intended to be encapsulated behind Plugin Interface projects.
+  -->
+
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
+      <Name>AWSSDK.Extensions</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
+      <Name>AWSToolkit.Util</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
+      <Name>AWSToolkit</Name>
+      <Private>False</Private>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
+      <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
+      <Name>AWSToolkit.CloudFormation.Interface</Name>
+      <Private>False</Private>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
+      <Project>{6ae302db-2304-47c8-8e3c-96c85ac1d469}</Project>
+      <Name>AWSToolkit.CloudFormation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeArtifact.Interface\AWSToolkit.CodeArtifact.Interface.csproj">
+      <Project>{f1a54c06-a4a8-4e6b-b7fa-8469105408b3}</Project>
+      <Name>AWSToolkit.CodeArtifact.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
+      <Project>{a2f72d39-eef5-4c08-b573-d8c5740ced2c}</Project>
+      <Name>AWSToolkit.CodeArtifact</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
+      <Project>{b8cfce12-d441-46a5-a415-c763e1e2beb0}</Project>
+      <Name>AWSToolkit.CodeCommit.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj">
+      <Project>{9aa7dd53-7bc4-4971-bc0c-0540a391dc22}</Project>
+      <Name>AWSToolkit.CodeCommit</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
+      <Project>{e3d3dffd-6668-44be-9d8e-823f53b58f29}</Project>
+      <Name>AWSToolkit.ECS.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj">
+      <Project>{a09c427c-dbf7-49c8-9590-e99ad60dece2}</Project>
+      <Name>AWSToolkit.ECS</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
+      <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
+      <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
+      <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
+      <Name>AWSToolkit.Lambda.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj">
+      <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>
+      <Name>AWSToolkit.Lambda</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">
+      <Project>{a01edd42-f7f5-4e20-8deb-9f66f2980662}</Project>
+      <Name>AWSToolkit.S3</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
+      <Project>{4cee1a45-e01e-4bcc-8145-5c593adf28bc}</Project>
+      <Name>AWSToolkit.CloudFormation.Parser</Name>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

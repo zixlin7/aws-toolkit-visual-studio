@@ -15,8 +15,8 @@ namespace AWSToolkit.Tests.Lambda
         {
             Assert.True(RuntimeOption.NetCore_v2_1.IsNetCore);
             Assert.False(RuntimeOption.NetCore_v2_1.IsNode);
-            Assert.True(RuntimeOption.NodeJS_v10_X.IsNode);
-            Assert.False(RuntimeOption.NodeJS_v10_X.IsNetCore);
+            Assert.True(RuntimeOption.NodeJS_v12_X.IsNode);
+            Assert.False(RuntimeOption.NodeJS_v12_X.IsNetCore);
         }
 
         [Fact]

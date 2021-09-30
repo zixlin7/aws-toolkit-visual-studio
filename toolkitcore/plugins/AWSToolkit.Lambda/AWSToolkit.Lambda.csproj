@@ -78,6 +78,7 @@
     <Compile Include="Model\EventSourceWrapper.cs" />
     <Compile Include="Model\Frameworks.cs" />
     <Compile Include="Model\KeyAndAliasWrapper.cs" />
+    <Compile Include="Model\LambdaArchitecture.cs" />
     <Compile Include="Model\LogStreamWrapper.cs" />
     <Compile Include="Model\RuntimeOption.cs" />
     <Compile Include="Model\SampleEvent.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Nodes\LambdaRootViewMetaNode.cs" />
     <Compile Include="Nodes\LambdaRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ArchitectureToBoolConverter.cs" />
     <Compile Include="Util\FunctionStateUtils.cs" />
     <Compile Include="Util\LambdaTesterInstaller.cs" />
     <Compile Include="Util\LambdaTelemetryUtils.cs" />
@@ -141,9 +143,6 @@
     </Compile>
     <Compile Include="WizardPages\Controls\UploadImageFunctionControl.xaml.cs">
       <DependentUpon>UploadImageFunctionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WizardPages\Controls\UploadNetFunctionHandlerControl.xaml.cs">
-      <DependentUpon>UploadNetFunctionHandlerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="WizardPages\Controls\UploadZipFunctionControl.xaml.cs">
       <DependentUpon>UploadZipFunctionControl.xaml</DependentUpon>
@@ -270,10 +269,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WizardPages\Controls\UploadNetFunctionHandlerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="WizardPages\Controls\UploadZipFunctionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -321,43 +316,43 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.5.3.2</Version>
+      <Version>3.7.5.17</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchEvents">
-      <Version>3.5.4.33</Version>
+      <Version>3.7.4.18</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.1.48</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>3.5.4.31</Version>
+      <Version>3.7.0.74</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.5.31.7</Version>
+      <Version>3.7.30.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.5.1.2</Version>
+      <Version>3.7.2.53</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.KeyManagementService">
-      <Version>3.5.2.13</Version>
+      <Version>3.7.2.17</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Kinesis">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.5.7.7</Version>
+      <Version>3.7.4.0</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.5.0.72</Version>
+      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.5.8.8</Version>
+      <Version>3.7.3.6</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.5.1.44</Version>
+      <Version>3.7.2.44</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.5.1.21</Version>
+      <Version>3.7.1.16</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>

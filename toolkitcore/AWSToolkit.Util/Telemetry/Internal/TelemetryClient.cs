@@ -7,7 +7,11 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.Runtime;
 using Amazon.ToolkitTelemetry;
+using Amazon.ToolkitTelemetry.Model;
+
 using log4net;
+
+using Sentiment = Amazon.AwsToolkit.Telemetry.Events.Core.Sentiment;
 
 namespace Amazon.AWSToolkit.Telemetry.Internal
 {
@@ -68,7 +72,17 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             await _telemetry.PostMetricsAsync(clientRequest, cancellationToken);
         }
 
-        // TODO : PostFeedback wrapper
+        public async Task SendFeedback(Sentiment sentiment, string comment)
+        {
+            var request = new PostFeedbackRequest()
+            {
+                Sentiment = new ToolkitTelemetry.Sentiment(sentiment.Value),
+                Comment = comment
+            };
+            _productEnvironment.ApplyTo(request);
+
+            await _telemetry.PostFeedbackAsync(request);
+        }
 
         public void Dispose()
         {

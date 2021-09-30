@@ -44,11 +44,14 @@ namespace AWSToolkit.Tests.ECS
             ec2LaunchTypeField.ToList().ForEach(field =>
             {
                 var ec2LaunchType = field.GetValue(null) as LaunchType;
-                Assert.NotNull(ec2LaunchType);
-                SetWizardLaunchType(ec2LaunchType.Value);
+                if (!ec2LaunchType.Equals(LaunchType.EXTERNAL))
+                {
+                    Assert.NotNull(ec2LaunchType);
+                    SetWizardLaunchType(ec2LaunchType.Value);
 
-                Assert.True(expectedMetricsTypes.Contains(EcsTelemetryUtils.GetMetricsEcsLaunchType(_wizard.Object)),
-                    $"Unhandled EC2 Launch Type. Metrics would be emitted as unknown type: {ec2LaunchType.Value}");
+                    Assert.True(expectedMetricsTypes.Contains(EcsTelemetryUtils.GetMetricsEcsLaunchType(_wizard.Object)),
+                        $"Unhandled EC2 Launch Type. Metrics would be emitted as unknown type: {ec2LaunchType.Value}");
+                }
             });
         }
 

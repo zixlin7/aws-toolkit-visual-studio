@@ -38,8 +38,8 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             var request = new ListGroupsRequest();
             ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
 
-            var response = this.IAMClient.ListGroups(request);
-            var items = response.Groups.Select(@group => new IAMGroupViewModel(this._metaNode.IAMGroupViewMetaNode, this, @group)).Cast<IViewModel>().ToList();
+            var paginator = this.IAMClient.Paginators.ListGroups(request);
+            var items = paginator.Groups.Select(@group => new IAMGroupViewModel(this._metaNode.IAMGroupViewMetaNode, this, @group)).Cast<IViewModel>().ToList();
 
             SetChildren(items);
         }    

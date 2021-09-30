@@ -42,7 +42,6 @@
         public static readonly IToolkitHostInfo Vs2015 = new ToolkitHostInfo("AWSToolkitPackage.VS2015", "2015");
         public static readonly IToolkitHostInfo Vs2017 = new ToolkitHostInfo("AWSToolkitPackage.VS2017", "2017");
         public static readonly IToolkitHostInfo Vs2019 = new ToolkitHostInfo("AWSToolkitPackage.VS2019", "2019");
-
-        public static readonly IToolkitHostInfo VsMinimumSupportedVersion = Vs2017;
+        public static readonly IToolkitHostInfo Vs2022 = new ToolkitHostInfo("AWSToolkitPackage.VS2022", "2022");
     }
 }

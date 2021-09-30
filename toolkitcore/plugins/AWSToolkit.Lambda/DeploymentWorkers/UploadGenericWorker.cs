@@ -56,10 +56,15 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
             try
             {
+                var architectureList = uploadState.GetRequestArchitectures();
                 deploymentProperties.RegionId = uploadState.Region?.Id;
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
                 deploymentProperties.LambdaPackageType = uploadState.Request?.PackageType;
+                if (architectureList.Count == 1)
+                {
+                    deploymentProperties.LambdaArchitecture = architectureList.First();
+                }
 
                 if (uploadState.SelectedRole != null)
                 {
@@ -267,6 +272,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                         FunctionName = uploadState.Request.FunctionName,
                         ZipFile = lambdaCodeStream
                     };
+                    var architectureList = uploadState.GetRequestArchitectures();
+                    if (architectureList.Count == 1)
+                    {
+                        uploadCodeRequest.Architectures = architectureList;
+                    }
                     this.LambdaClient.UpdateFunctionCode(uploadCodeRequest);
                 }
                 catch (Exception e)

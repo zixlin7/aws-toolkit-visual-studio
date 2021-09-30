@@ -4,13 +4,17 @@ using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.S3.Model;
+
+using log4net;
 
 
 namespace Amazon.AWSToolkit.S3.Jobs
 {
     public class DeleteFilesJob : QueueProcessingJob
     {
+        static ILog Logger = LogManager.GetLogger(typeof(DeleteFilesJob));
         BucketBrowserController _controller;
         List<BucketBrowserModel.ChildItem> _itemsToBeRemoved;
         HashSet<BucketBrowserModel.ChildItem> _itemsSuccessfullyRemoved = new HashSet<BucketBrowserModel.ChildItem>();
@@ -111,27 +115,37 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
             public void Execute()
             {
-                var request = new DeleteObjectsRequest()
+                try
                 {
-                    BucketName = this._job._controller.BucketName,
-                    Quiet = false
-                };
-
-                foreach (var key in this._s3Keys)
-                {
-                    request.AddKey(key);
-                }
-
-                var response = this._job._controller.S3Client.DeleteObjects(request);
-
-                lock (this._job)
-                {
-                    this._job._numberOfDeletedKeys += response.DeletedObjects.Count;
-
-                    foreach (var deletedObjects in response.DeletedObjects)
+                    var request = new DeleteObjectsRequest()
                     {
-                        this._job._keysToSelectedChildItems[deletedObjects.Key] = null;
+                        BucketName = this._job._controller.BucketName,
+                        Quiet = false
+                    };
+
+                    foreach (var key in this._s3Keys)
+                    {
+                        request.AddKey(key);
                     }
+
+                    var response = this._job._controller.S3Client.DeleteObjects(request);
+                
+
+                    lock (this._job)
+                    {
+                        this._job._numberOfDeletedKeys += response.DeletedObjects.Count;
+
+                        foreach (var deletedObjects in response.DeletedObjects)
+                        {
+                            this._job._keysToSelectedChildItems[deletedObjects.Key] = null;
+                            this._job._controller.RecordDeleteObjectMetric(Result.Succeeded);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    this._job._controller.RecordDeleteObjectMetric(Result.Failed);
+                    Logger.Error(e);
                 }
             }
         }

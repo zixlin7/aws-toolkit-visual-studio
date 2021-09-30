@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.DynamoDB.View;
 using Amazon.AWSToolkit.DynamoDB.View.Columns;
 using Amazon.AWSToolkit.DynamoDB.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.DocumentModel;
@@ -22,11 +26,20 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
         const int UNFILTER_LIMIT = 100;
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(TableBrowserController));
 
+        private readonly ToolkitContext _toolkitContext;
+        private readonly string _accountId;
+
         TableBrowserControl _control;
         TableBrowserModel _model;
         DynamoDBTableViewModel _rootModel;
         Search _lastSearch;
         Table _lastTable;
+
+        public TableBrowserController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+            _accountId = _toolkitContext.ConnectionManager.ActiveAccountId;
+        }
 
         public override ActionResults Execute(IViewModel model)
         {
@@ -114,8 +127,58 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             if (this._model.ScanConditions.Count == 0)
                 config.Limit = UNFILTER_LIMIT;
 
-            this._lastSearch = this._lastTable.Scan(config);
+            this._lastSearch = ScanLastTable(config);
             return FetchFromLastSearch(1);
+        }
+
+        private Search ScanLastTable(ScanOperationConfig config)
+        {
+            Result result = Result.Failed;
+            try
+            {
+                var scanResults = this._lastTable.Scan(config);
+                result = Result.Succeeded;
+
+                return scanResults;
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error scanning DynamoDB table", e);
+                result = Result.Failed;
+                throw;
+            }
+            finally
+            {
+                RecordTableScan(result);
+            }
+        }
+
+        private void RecordTableScan(Result result)
+        {
+            try
+            {
+                _toolkitContext.TelemetryLogger.RecordDynamodbFetchRecords(new DynamodbFetchRecords()
+                {
+                    AwsAccount = GetAccountId(),
+                    AwsRegion = this._rootModel?.DynamoDBRootViewModel?.Region?.Id ?? MetadataValue.Invalid,
+                    DynamoDbFetchType = DynamoDbFetchType.Scan,
+                    Result = result,
+                });
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error(e);
+            }
+        }
+
+        private string GetAccountId()
+        {
+            if (string.IsNullOrWhiteSpace(_accountId))
+            {
+                return MetadataValue.Invalid;
+            }
+
+            return _accountId;
         }
 
         public DynamoDBColumnDefinition[] FetchFromLastSearch(int pages)

@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Common AWS SDK links for AWSToolkitPackage.xxx Projects
+  If you have the solution open in Visual Studio and make changes to this file, you will need to close the 
+  solution and re-open it in order to pick up your changes.
+-->
+<Project ToolsVersion="15.0" DefaultTargets="Build"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+
+  <!-- Copy AWS SDK dlls into the VSIX -->
+  <ItemGroup>
+    <Content Include="$(OutputRoot)\AWSSDK.AutoScaling.dll">
+      <Link>AWSSDK.AutoScaling.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CloudFormation.dll">
+      <Link>AWSSDK.CloudFormation.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CloudFront.dll">
+      <Link>AWSSDK.CloudFront.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CloudWatch.dll">
+      <Link>AWSSDK.CloudWatch.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CloudWatchLogs.dll">
+      <Link>AWSSDK.CloudWatchLogs.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CloudWatchEvents.dll">
+      <Link>AWSSDK.CloudWatchEvents.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CodeCommit.dll">
+      <Link>AWSSDK.CodeCommit.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CodeArtifact.dll">
+      <Link>AWSSDK.CodeArtifact.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CognitoIdentity.dll">
+      <Link>AWSSDK.CognitoIdentity.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CognitoSync.dll">
+      <Link>AWSSDK.CognitoSync.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.Core.dll">
+      <Link>AWSSDK.Core.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.DynamoDBv2.dll">
+      <Link>AWSSDK.DynamoDBv2.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.EC2.dll">
+      <Link>AWSSDK.EC2.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.ECR.dll">
+      <Link>AWSSDK.ECR.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.ECS.dll">
+      <Link>AWSSDK.ECS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.ElasticBeanstalk.dll">
+      <Link>AWSSDK.ElasticBeanstalk.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.ElasticLoadBalancing.dll">
+      <Link>AWSSDK.ElasticLoadBalancing.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.ElasticLoadBalancingV2.dll">
+      <Link>AWSSDK.ElasticLoadBalancingV2.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.IdentityManagement.dll">
+      <Link>AWSSDK.IdentityManagement.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.KeyManagementService.dll">
+      <Link>AWSSDK.KeyManagementService.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.Kinesis.dll">
+      <Link>AWSSDK.Kinesis.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.Lambda.dll">
+      <Link>AWSSDK.Lambda.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.MobileAnalytics.dll">
+      <Link>AWSSDK.MobileAnalytics.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.RDS.dll">
+      <Link>AWSSDK.RDS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.S3.dll">
+      <Link>AWSSDK.S3.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.SecurityToken.dll">
+      <Link>AWSSDK.SecurityToken.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.SimpleDB.dll">
+      <Link>AWSSDK.SimpleDB.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.SimpleNotificationService.dll">
+      <Link>AWSSDK.SimpleNotificationService.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.SQS.dll">
+      <Link>AWSSDK.SQS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.SSO.dll">
+      <Link>AWSSDK.SSO.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.SSOOIDC.dll">
+      <Link>AWSSDK.SSOOIDC.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+  </ItemGroup>
+
+</Project>

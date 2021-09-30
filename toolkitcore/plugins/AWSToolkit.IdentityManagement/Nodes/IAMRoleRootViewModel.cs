@@ -40,8 +40,8 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
         {
             var request = new ListRolesRequest();
             ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
-            var response = this.IAMClient.ListRoles(request);
-            var items = response.Roles.Select(role => new IAMRoleViewModel(this._metaNode.IAMRoleViewMetaNode, this, role)).Cast<IViewModel>().ToList();
+            var paginator = this.IAMClient.Paginators.ListRoles(request);
+            var items = paginator.Roles.Select(role => new IAMRoleViewModel(this._metaNode.IAMRoleViewMetaNode, this, role)).Cast<IViewModel>().ToList();
 
             SetChildren(items);
         }    

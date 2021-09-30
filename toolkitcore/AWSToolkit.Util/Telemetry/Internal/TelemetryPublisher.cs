@@ -9,6 +9,8 @@ using Amazon.AWSToolkit.Util;
 using Amazon.ToolkitTelemetry;
 using log4net;
 
+using Sentiment = Amazon.AwsToolkit.Telemetry.Events.Core.Sentiment;
+
 namespace Amazon.AWSToolkit.Telemetry.Internal
 {
     /// <summary>
@@ -132,6 +134,16 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             StartPublisherLoop();
 
             LOGGER.Debug("TelemetryPublisher Timer started");
+        }
+
+        public async Task SendFeedback(Sentiment sentiment, string comment)
+        {
+            if (_telemetryClient == null)
+            {
+                throw new Exception("Telemetry Client is not initialized");
+            }
+
+            await _telemetryClient.SendFeedback(sentiment, comment);
         }
 
         /// <summary>

@@ -4,11 +4,11 @@ using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-
 
 namespace Amazon.AWSToolkit.S3.Jobs
 {
@@ -78,6 +78,9 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
         protected override void ExecuteJob()
         {
+            long successCount = 0;
+            long failCount = 0;
+
             this.CurrentStatus = "Generating list of keys to download";
             this._keysToBeDownloaded = this._controller.GetListOfKeys(this._childItems, false);
 
@@ -101,20 +104,31 @@ namespace Amazon.AWSToolkit.S3.Jobs
                     FilePath = filepath,
                     Key = key
                 };
-                request.WriteObjectProgressEvent += this.writeFileProgressCallback;
+                request.WriteObjectProgressEvent += this.WriteFileProgressCallback;
 
                 try
                 {
                     utility.Download(request);
+                    successCount++;
                 }
                 catch (AmazonS3Exception e)
                 {
+                    failCount++;
                     if (e.ErrorCode == "InvalidObjectState")
                         throw new UnrestoredObjectException(string.Format("Object {0} needs to be restored before downloading.", key));
                     else
                         throw;
                 }
                 this.ProgressValue++;
+            }
+
+            if (successCount != 0)
+            {
+                this._controller.RecordDownloadObjectsMetric(successCount, Result.Succeeded);
+            }
+            if (failCount != 0)
+            {
+                this._controller.RecordDownloadObjectsMetric(failCount, Result.Failed);
             }
         }
 
@@ -124,7 +138,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
             return filepath;
         }
 
-        private void writeFileProgressCallback(object sender, WriteObjectProgressArgs e)
+        private void WriteFileProgressCallback(object sender, WriteObjectProgressArgs e)
         {
             if (this._keysToBeDownloaded.Count == 1)
             {

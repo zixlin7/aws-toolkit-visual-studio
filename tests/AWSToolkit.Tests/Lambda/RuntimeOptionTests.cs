@@ -24,8 +24,10 @@ namespace AWSToolkit.Tests.Lambda
         public void IsCustomRuntime()
         {
             Assert.True(RuntimeOption.PROVIDED.IsCustomRuntime);
+            Assert.True(RuntimeOption.PROVIDED_AL2.IsCustomRuntime);
             Assert.Empty(_runtimeOptions
                 .Where(r => r != RuntimeOption.PROVIDED)
+                .Where(r => r != RuntimeOption.PROVIDED_AL2)
                 .Where(r => r.IsCustomRuntime)
             );
         }

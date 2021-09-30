@@ -187,11 +187,11 @@ namespace Amazon.AWSToolkit.DynamoDB.View
         void executeQuery()
         {
             this._ctlDataGrid.CommitEdit(DataGridEditingUnit.Row, true);
-            // Check if there is uncommited changes before executing a new query
+            // Check if there is uncommitted changes before executing a new query
             if (this._ctlCommitChangesBtn.IsEnabled)
             {
                 if (ToolkitFactory.Instance.ShellProvider.Confirm("Commit Changes",
-                            "There are uncommited changes.  Do you wish to commit changes before scanning table?"))
+                            "There are uncommitted changes.  Do you wish to commit changes before scanning table?"))
                 {
                     if (!commitChanges())
                     {

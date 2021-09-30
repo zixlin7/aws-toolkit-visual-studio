@@ -18,9 +18,16 @@ namespace Amazon.AWSToolkit
         /// VS 2013: 9510184f-8135-4f8a-ab8a-23be77c345e2
         /// VS 2015: f2884b07-5122-4e23-acd7-4d93df18709e
         /// VS 2017 (current Toolkit): 12ed248b-6d4a-47eb-be9e-8eabea0ff119
+        /// VS 2022: 0B82CB16-0E52-4363-9BC0-61E758689176
         /// </summary>
-        public const string ToolkitPackageGuidStr = "12ed248b-6d4a-47eb-be9e-8eabea0ff119";
-        public static readonly Guid ToolkitPackageGuid = new Guid(ToolkitPackageGuidStr);
+        public static class ToolkitPackageGuids
+        {
+            public const string Vs20172019AsString = "12ed248b-6d4a-47eb-be9e-8eabea0ff119";
+            public static readonly Guid Vs20172019 = new Guid(Vs20172019AsString);
+
+            public const string Vs2022AsString = "0B82CB16-0E52-4363-9BC0-61E758689176";
+            public static readonly Guid Vs2022 = new Guid(Vs2022AsString);
+        }
 
         public const string AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME = "serverless.template";
 

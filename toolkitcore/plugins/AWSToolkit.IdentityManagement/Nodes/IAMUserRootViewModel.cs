@@ -42,8 +42,8 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             var request = new ListUsersRequest();
             ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
 
-            var response = this.IAMClient.ListUsers(request);
-            var items = response.Users.Select(user => new IAMUserViewModel(this._metaNode.IAMUserViewMetaNode, this, user)).Cast<IViewModel>().ToList();
+            var paginator = this.IAMClient.Paginators.ListUsers(request);
+            var items = paginator.Users.Select(user => new IAMUserViewModel(this._metaNode.IAMUserViewMetaNode, this, user)).Cast<IViewModel>().ToList();
 
             SetChildren(items);
         }

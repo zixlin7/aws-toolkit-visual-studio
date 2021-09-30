@@ -26,12 +26,16 @@
   </PropertyGroup>
 
   <!-- 
-    Provides a constant you can use in a ifdef if you have code that only runs on VS2019 or higher.
+    Provides a constant you can use in a ifdef if you have code that only runs on VS20xx or higher.
     NOTE: make sure you aren't clobbering the BuildConstants by using $(BuildConstants) first when using <DefineConstants/>
     e.g. <DefineConstants>$(BuildConstants);MY_COOL_CONSTANT;</DefineConstants>
   -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '15.0'">
+    <BuildConstants>$(BuildConstants);VS2017;VS2017_OR_LATER;</BuildConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '16.0'">
-    <BuildConstants>$(BuildConstants);VS2019;VS2019_OR_LATER;</BuildConstants>
+    <BuildConstants>$(BuildConstants);VS2017_OR_LATER;VS2019;VS2019_OR_LATER;</BuildConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(SuppressCommonAssemblyMetadata)">

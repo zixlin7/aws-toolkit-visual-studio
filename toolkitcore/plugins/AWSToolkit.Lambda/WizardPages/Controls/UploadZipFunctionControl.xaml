@@ -20,9 +20,11 @@
 
             <Style TargetType="TextBox" BasedOn="{StaticResource awsTextBoxStyle}">
                 <Setter Property="MinHeight" Value="23" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
             <Style x:Key="controlComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource awsComboBoxStyle}">
                 <Setter Property="MinHeight" Value="23" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
         </ResourceDictionary>
     </commonUi:BaseAWSUserControl.Resources>
@@ -192,18 +194,10 @@
             SelectedItem="{Binding Framework, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             />
 
-        <local:UploadNetFunctionHandlerControl
-            Grid.Row="4" Grid.Column="0"
-            Grid.ColumnSpan="6"
-            Margin="0 12 0 0"
-            Visibility="{Binding DotNetHandlerVisibility}"
-            />
-
         <Label
-            Grid.Row="5" Grid.Column="0"
+            Grid.Row="4" Grid.Column="0"
             Content="_Handler:"
             Margin="0 12 0 0"
-            Visibility="{Binding HandlerVisibility}"
             Style="{DynamicResource awsLabelBaseStyle}"
             VerticalAlignment="Center"
             Target="{Binding ElementName=Handler}"
@@ -212,12 +206,22 @@
 
         <TextBox
             Name="Handler" x:FieldModifier="private"
-            Grid.Row="5" Grid.Column="1"
+            Grid.Row="4" Grid.Column="1"
             Grid.ColumnSpan="4"
             Margin="9 12 0 0"
-            Visibility="{Binding HandlerVisibility}"
             Text="{Binding Handler, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             ToolTip="{Binding HandlerTooltip}"
+            />
+
+        <TextBox
+            Grid.Row="5" Grid.Column="1"
+            Grid.ColumnSpan="4"
+            Margin="9 3 0 0"
+            Style="{DynamicResource awsSelectableTextBoxStyle}"
+            Foreground="{DynamicResource awsFieldHintTextForegroundBrushKey}"
+            MinHeight="23"
+            TextWrapping="Wrap"
+            Text="{Binding HandlerHelpText}"
             />
 
     </Grid>

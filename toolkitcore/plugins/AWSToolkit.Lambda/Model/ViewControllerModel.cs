@@ -199,6 +199,17 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set { SetProperty(ref _packageType, value, () => PackageType); }
         }
 
+
+        private string _architectures;
+        /// <summary>
+        /// Represents the architectures associated with the lambda function
+        /// </summary>
+        public string Architectures
+        {
+            get => _architectures;
+            set { SetProperty(ref _architectures, value, () => Architectures); }
+        }
+
         string _role;
 
         public string Role
