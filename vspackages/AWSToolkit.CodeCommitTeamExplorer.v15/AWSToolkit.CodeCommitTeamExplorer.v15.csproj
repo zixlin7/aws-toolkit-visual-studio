@@ -71,46 +71,6 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="CodeCommit\GitUtilities.cs" />
-    <Compile Include="CodeCommit\TeamExplorerConnectService.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="CodeCommit\Connect\ConnectionSection.cs" />
-    <Compile Include="CodeCommit\Connect\InvitationSection.cs" />
-    <Compile Include="CodeCommit\Controllers\BaseCodeCommitController.cs" />
-    <Compile Include="CodeCommit\Controllers\CloneRepositoryController.cs" />
-    <Compile Include="CodeCommit\Controllers\ConnectController.cs" />
-    <Compile Include="CodeCommit\Controllers\CreateRepositoryController.cs" />
-    <Compile Include="CodeCommit\Controls\ConnectControl.xaml.cs">
-      <DependentUpon>ConnectControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="CodeCommit\Controls\ConnectionSectionControl.xaml.cs">
-      <DependentUpon>ConnectionSectionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="CodeCommit\Model\ConnectSectionViewModel.cs" />
-    <Compile Include="CredentialManagement\GitCredentials.cs" />
-    <Compile Include="CredentialManagement\NativeMethods.cs" />
-    <Compile Include="CredentialManagement\TeamExplorerConnection.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="CodeCommit\Controls\ConnectControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="CodeCommit\Controls\ConnectionSectionControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
       <Name>AWSToolkit.Util</Name>
@@ -129,14 +89,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\CodeCommit16x16.png" />
-    <Resource Include="Resources\CodeCommit32x32.png" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>15.0.1</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\AWSToolkit.CodeCommitTeamExplorer.Shared\Resources\CodeCommit16x16.png">
+      <Link>Resources\CodeCommit16x16.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="..\AWSToolkit.CodeCommitTeamExplorer.Shared\Resources\CodeCommit32x32.png">
+      <Link>Resources\CodeCommit32x32.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="..\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

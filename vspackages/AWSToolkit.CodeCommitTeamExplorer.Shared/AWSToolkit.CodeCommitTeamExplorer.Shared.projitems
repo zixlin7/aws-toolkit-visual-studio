@@ -11,5 +11,49 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Base\TeamExplorerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\TeamExplorerInvitationBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Connect\ConnectionSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Connect\InvitationSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Controllers\BaseCodeCommitController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Controllers\CloneRepositoryController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Controllers\ConnectController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Controllers\CreateRepositoryController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Controls\ConnectControl.xaml.cs">
+      <DependentUpon>ConnectControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Controls\ConnectionSectionControl.xaml.cs">
+      <DependentUpon>ConnectionSectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\GitUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Model\ConnectSectionViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\TeamExplorerConnectService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CredentialManagement\GitCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CredentialManagement\NativeMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CredentialManagement\TeamExplorerConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)CodeCommit\Controls\ConnectControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)CodeCommit\Controls\ConnectionSectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="$(MSBuildThisFileDirectory)Resources\CodeCommit16x16.png" />
+    <Resource Include="$(MSBuildThisFileDirectory)Resources\CodeCommit32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
