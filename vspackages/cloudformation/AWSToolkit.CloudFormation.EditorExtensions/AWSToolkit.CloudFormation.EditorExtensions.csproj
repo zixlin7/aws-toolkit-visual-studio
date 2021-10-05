@@ -48,53 +48,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BraceMatchingPresenter.cs" />
-    <Compile Include="BracketCloser.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DragInExistingStack.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="EditorContants.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ErrorTagger.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IErrorListReporter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IntellisenseListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IntellisenseProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuickInfoListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="QuickInfoSourceProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="RegionTagger.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SyntaxHighlighter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TemplateContentType.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TemplateViewCreationListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Intellisense_IntrinsicFunction.png" />
-    <EmbeddedResource Include="Resources\Intellisense_ObjectKey.png" />
-    <EmbeddedResource Include="Resources\Intellisense_Ref.png" />
-    <EmbeddedResource Include="Resources\Intellisense_Value.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
@@ -125,5 +79,6 @@
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
+  <Import Project="..\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

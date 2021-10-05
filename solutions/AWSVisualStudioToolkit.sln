@@ -178,10 +178,13 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AWSToolkit.CodeCommitTeamEx
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkit.Lambda.TemplateWizards.Shared", "..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.shproj", "{0ED4AF1C-27CC-4BA8-8333-F941D45246C9}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CloudFormation.EditorExtensions.Shared", "..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.shproj", "{C64B9BF2-2D41-4358-A7E9-7FFE42A29CBC}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{038b2cf8-0089-4ed1-beba-a7d64390190e}*SharedItemsImports = 4
 		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{0ed4af1c-27cc-4ba8-8333-f941d45246c9}*SharedItemsImports = 13
+		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{18023934-17cf-421e-87c2-61838b7498c6}*SharedItemsImports = 4
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{260eb803-0c5d-4000-b920-4e8af84820ca}*SharedItemsImports = 4
 		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5739ee0e-1e8c-4ac6-9aaa-f58c7345b9a8}*SharedItemsImports = 4
 		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{783e4198-a8f1-4e74-af3e-0001b0ad516b}*SharedItemsImports = 4
@@ -190,6 +193,7 @@ Global
 		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{98fc1018-a866-4b34-90d8-c432efef5d2a}*SharedItemsImports = 13
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{a27787ed-5a7a-455a-9e90-caeb9030f850}*SharedItemsImports = 13
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{b102b42b-06ec-47f9-8dc1-e5729b62172e}*SharedItemsImports = 4
+		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{c64b9bf2-2d41-4358-a7e9-7ffe42a29cbc}*SharedItemsImports = 13
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{cc1b2316-c330-410c-a3f3-097ca45713d8}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -534,6 +538,7 @@ Global
 		{260EB803-0C5D-4000-B920-4E8AF84820CA} = {BDF238D0-23E9-4131-861C-47C94F5D6018}
 		{98FC1018-A866-4B34-90D8-C432EFEF5D2A} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
 		{0ED4AF1C-27CC-4BA8-8333-F941D45246C9} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
+		{C64B9BF2-2D41-4358-A7E9-7FFE42A29CBC} = {63BEB71C-D666-4F32-B8D0-620763DDA61A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
