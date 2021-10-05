@@ -196,7 +196,7 @@
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Licenses.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Plugins.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectReferences.xml" />
-  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectTemplates.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectTemplates.v15.xml" />
   <ItemGroup>
     <Content Include="$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

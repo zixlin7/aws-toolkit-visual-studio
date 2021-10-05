@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- 
-  Visual Studio Project Templates that are Common to AWSToolkitPackage.xxx Projects
+  Visual Studio Project Templates that are referenced by the VS 2017/2019 Toolkit in AWSToolkitPackage.csproj
 
   These are the things that integrate into Visual Studio's "New Project" system.
 
