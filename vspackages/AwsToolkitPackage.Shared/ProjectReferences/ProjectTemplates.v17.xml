@@ -25,15 +25,15 @@
   </ItemGroup> -->
 
   <!-- Related to NodeJs based Lambda function projects -->
-  <!-- <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.csproj">
-      <Project>{AF0AE340-7C91-40F9-A074-0F1A4F03F8E9}</Project>
-      <Name>LambdaFunctionProjectTemplate</Name>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.v17.csproj">
+      <Project>{630D31A1-6D34-4A7E-863C-A09B5F11888A}</Project>
+      <Name>LambdaFunctionProjectTemplate.v17</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-  </ItemGroup> -->
+  </ItemGroup>
 
   <!-- Related to C# based Lambda function projects -->
   <!-- <ItemGroup>

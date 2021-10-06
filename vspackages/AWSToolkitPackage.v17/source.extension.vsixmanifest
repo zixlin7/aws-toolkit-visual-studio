@@ -28,6 +28,7 @@
 
         <!-- Lambda related Project Templates -->
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.Lambda.TemplateWizards.v17" Path="|AWSToolkit.Lambda.TemplateWizards.v17|" AssemblyName="|AWSToolkit.Lambda.TemplateWizards.v17;AssemblyName|" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaFunctionProjectTemplate.v17" d:TargetPath="|LambdaFunctionProjectTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
 
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Extensions.dll" AssemblyName="AWSSDK.Extensions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.AutoScaling.dll" AssemblyName="AWSSDK.AutoScaling, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
