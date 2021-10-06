@@ -36,22 +36,22 @@
   </ItemGroup>
 
   <!-- Related to C# based Lambda function projects -->
-  <!-- <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj">
-      <Project>{cbde5be9-4047-445a-82a2-ade0d06708be}</Project>
-      <Name>MsbuildFunctionTemplate</Name>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.v17.csproj">
+      <Project>{FE4AE7CE-8775-406E-82A4-A4095803E8BD}</Project>
+      <Name>MsbuildFunctionTemplate.v17</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.csproj">
-      <Project>{418C57E1-B2B9-441F-8B88-1C7776011724}</Project>
-      <Name>MsbuildFunctionWithTestsTemplate</Name>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.v17.csproj">
+      <Project>{F3641AC2-FAE4-4201-9F99-C7898BE10F00}</Project>
+      <Name>MsbuildFunctionWithTestsTemplate.v17</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-  </ItemGroup> -->
+  </ItemGroup>
 
   <!-- Related to C# based Serverless application projects -->
   <!-- <ItemGroup>

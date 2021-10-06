@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(BuildConstants);DEBUG;TRACE;VS2022</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -29,7 +29,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
+    <DefineConstants>$(BuildConstants);TRACE;VS2022</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

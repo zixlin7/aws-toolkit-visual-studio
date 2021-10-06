@@ -7,18 +7,18 @@
   </PropertyGroup>
   <PropertyGroup>
     <!-- Because multiple projects are sharing the same folder, ensure each builds to a separate location -->
-    <BaseIntermediateOutputPath>obj-v15\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>obj-v17\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <Import Project="$(BuildRoot)\buildtools\Package.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{418C57E1-B2B9-441F-8B88-1C7776011724}</ProjectGuid>
+    <ProjectGuid>{F3641AC2-FAE4-4201-9F99-C7898BE10F00}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MsbuildFunctionWithTestsTemplate</RootNamespace>
-    <AssemblyName>MsbuildFunctionWithTestsTemplate</AssemblyName>
+    <AssemblyName>MsbuildFunctionWithTestsTemplate.v17</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
@@ -54,7 +54,7 @@
     <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="Lambda.WithTests.vstemplate">
+    <VSTemplate Include="Lambda.WithTests.v17.vstemplate">
       <OutputSubPath>AWS Lambda</OutputSubPath>
       <SubType>Designer</SubType>
     </VSTemplate>
