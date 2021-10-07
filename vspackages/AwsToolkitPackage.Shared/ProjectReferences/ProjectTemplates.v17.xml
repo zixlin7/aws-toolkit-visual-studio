@@ -72,22 +72,22 @@
   </ItemGroup> -->
 
   <!-- Related to F# based Lambda function projects -->
-  <!-- <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.csproj">
-      <Project>{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}</Project>
-      <Name>MsbuildFunctionTemplateFSharp</Name>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.v17.csproj">
+      <Project>{A9C98031-E563-469B-8ADC-405A7918EDA7}</Project>
+      <Name>MsbuildFunctionTemplateFSharp.v17</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplateFSharp\MsbuildFunctionWithTestsTemplateFSharp.csproj">
-      <Project>{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}</Project>
-      <Name>MsbuildFunctionWithTestsTemplateFSharp</Name>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplateFSharp\MsbuildFunctionWithTestsTemplateFSharp.v17.csproj">
+      <Project>{3A2E6C72-6704-4566-8A08-B2A1B222C3EB}</Project>
+      <Name>MsbuildFunctionWithTestsTemplateFSharp.v17</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-  </ItemGroup> -->
+  </ItemGroup>
 
   <!-- Related to F# based Serverless application projects -->
   <!-- <ItemGroup>
