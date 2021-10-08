@@ -68,6 +68,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SetupVSTemplateArchives.cs" />
     <Compile Include="UpdateVersionTasks.cs" />
+    <Compile Include="VersionManagement\GetVersionTask.cs" />
+    <Compile Include="VersionManagement\CreateTestVersionTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BuildCommon\BuildCommon.csproj">

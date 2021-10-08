@@ -1,0 +1,36 @@
+﻿name: Create a VSIX Test Build
+
+on:
+    push:
+        branches: [master, release/stable]
+    pull_request:
+        branches: [master, feature/*, release/*]
+
+jobs:
+    build:
+        name: Build using VS 2019
+        runs-on: windows-2019
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Add msbuild to PATH
+              uses: microsoft/setup-msbuild@v1.0.2
+              with:
+                  vs-version: "[16.0,17.0)"
+
+            - name: Create Test Build
+              run: msbuild buildtools\build.proj /t:build-test-toolkit
+
+            - name: Build Artifact for VS 2017/19 Toolkit
+              if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: Toolkit-2017-2019
+                  path: Deployment/16.0/Release/AWSToolkitPackage.vsix
+
+            - name: Build Artifact for VS 2022 Toolkit
+              if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: Toolkit-2022
+                  path: Deployment/16.0/Release/AWSToolkitPackage.v17.vsix

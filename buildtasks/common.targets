@@ -77,6 +77,14 @@
 
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.VersionManagement.GetVersionTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.VersionManagement.CreateTestVersionTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
     TaskName="BuildTasks.UpdateInstallVersionsTask" />
 
   <UsingTask
