@@ -2,7 +2,7 @@
 
 on:
     push:
-        branches: [master, release/stable]
+        branches: [master, feature/*, release/stable]
     pull_request:
         branches: [master, feature/*, release/*]
 
