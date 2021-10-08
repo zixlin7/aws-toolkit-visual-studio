@@ -54,22 +54,22 @@
   </ItemGroup>
 
   <!-- Related to C# based Serverless application projects -->
-  <!-- <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.csproj">
-      <Project>{12205d6a-e262-4f8b-8344-2b5a93bbb775}</Project>
-      <Name>MsbuildServerlessTemplate</Name>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.v17.csproj">
+      <Project>{C052E98D-5160-48E3-8112-03AEC3F108E3}</Project>
+      <Name>MsbuildServerlessTemplate.v17</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj">
-      <Project>{22c00710-a6e5-4f49-92ce-a5a2dd71c24a}</Project>
-      <Name>MsbuildServerlessWithTestsTemplate</Name>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.v17.csproj">
+      <Project>{6B6E6BB1-8A45-4EC0-8BAB-F55E8F0B3AE3}</Project>
+      <Name>MsbuildServerlessWithTestsTemplate.v17</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-  </ItemGroup> -->
+  </ItemGroup>
 
   <!-- Related to F# based Lambda function projects -->
   <ItemGroup>
@@ -90,21 +90,21 @@
   </ItemGroup>
 
   <!-- Related to F# based Serverless application projects -->
-  <!-- <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplateFSharp\MsbuildServerlessTemplateFSharp.csproj">
-      <Project>{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}</Project>
-      <Name>MsbuildServerlessTemplateFSharp</Name>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplateFSharp\MsbuildServerlessTemplateFSharp.v17.csproj">
+      <Project>{43CF9104-9389-4ED9-9FDB-F55814DD7DC2}</Project>
+      <Name>MsbuildServerlessTemplateFSharp.v17</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplateFSharp\MsbuildServerlessWithTestsTemplateFSharp.csproj">
-      <Project>{D14A5D26-391E-4327-A1DC-29572D4521FF}</Project>
-      <Name>MsbuildServerlessWithTestsTemplateFSharp</Name>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplateFSharp\MsbuildServerlessWithTestsTemplateFSharp.v17.csproj">
+      <Project>{7AC9F81A-1C89-468C-A3BC-FE87EF1A11F2}</Project>
+      <Name>MsbuildServerlessWithTestsTemplateFSharp.v17</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-  </ItemGroup> -->
+  </ItemGroup>
 
 </Project>

@@ -7,18 +7,18 @@
   </PropertyGroup>
   <PropertyGroup>
     <!-- Because multiple projects are sharing the same folder, ensure each builds to a separate location -->
-    <BaseIntermediateOutputPath>obj-v15\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>obj-v17\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <Import Project="$(BuildRoot)\buildtools\Package.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{D14A5D26-391E-4327-A1DC-29572D4521FF}</ProjectGuid>
+    <ProjectGuid>{6B6E6BB1-8A45-4EC0-8BAB-F55E8F0B3AE3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MsbuildServerlessWithTestsTemplateFSharp</RootNamespace>
-    <AssemblyName>MsbuildServerlessWithTestsTemplateFSharp</AssemblyName>
+    <RootNamespace>MsbuildServerlessWithTestsTemplate</RootNamespace>
+    <AssemblyName>MsbuildServerlessWithTestsTemplate.v17</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
@@ -50,11 +50,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="LambdaTemplateProject.ico" />
-    <None Include="BlueprintBaseName.fsproj" />
+    <None Include="BlueprintBaseName.csproj" />
     <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="Serverless.WithTests.vstemplate">
+    <VSTemplate Include="Serverless.WithTests.v17.vstemplate">
       <OutputSubPath>AWS Lambda</OutputSubPath>
       <SubType>Designer</SubType>
     </VSTemplate>
