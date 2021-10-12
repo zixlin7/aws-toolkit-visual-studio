@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -55,8 +56,8 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                 OnLaunch, 
                 this.OnLaunchResponse, 
                 false,
-                this.GetType().Assembly, 
-                "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.launch-cluster.png"));
+                typeof(AwsImageResourcePath).Assembly,
+                AwsImageResourcePath.ElasticContainerServiceCluster.Path));
 
         public override string MarketingWebSite => "https://aws.amazon.com/ecs/";
     }

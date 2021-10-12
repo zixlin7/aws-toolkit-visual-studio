@@ -14,6 +14,8 @@
     /// </summary>
     public enum VsKnownImages
     {
+        Add,
+        AddLink,
         AddUser,
         Cancel, 
         DeleteListItem, 
@@ -22,6 +24,7 @@
         FeedbackSmile,
         Refresh,
         Remove,
+        RemoveLink,
         StatusError,
         StatusWarning,
     }

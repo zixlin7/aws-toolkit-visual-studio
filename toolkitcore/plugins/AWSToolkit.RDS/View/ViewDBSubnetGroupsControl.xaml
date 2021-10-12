@@ -15,6 +15,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
 
@@ -31,7 +32,7 @@
                 <Button Click="onCreateClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\CreateDBSubnetGroup.png"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource ToolkitImages}, Path=RdsSubnetGroups}"/>
                             <TextBlock>Create</TextBlock>
                         </WrapPanel>
                     </Button.Content>

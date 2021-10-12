@@ -1,4 +1,6 @@
-﻿namespace Amazon.AWSToolkit.EC2.Nodes
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+
+namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class SecurityGroupsViewModel : FeatureViewModel
     {
@@ -9,6 +11,6 @@
 
         public override string ToolTip => "Create and manage EC2 and VPC security groups.";
 
-        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.security-groups.png";
+        protected override string IconName => AwsImageResourcePath.Ec2SecurityGroup.Path;
     }
 }

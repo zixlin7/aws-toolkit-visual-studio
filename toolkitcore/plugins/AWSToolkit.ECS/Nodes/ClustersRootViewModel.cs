@@ -5,6 +5,7 @@ using Amazon.ECS;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.ECS.Model;
 using log4net;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
@@ -24,7 +25,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public IAmazonECS ECSClient => this._ecsClient;
 
-        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.clusters.png";
+        protected override string IconName => AwsImageResourcePath.ElasticContainerServiceCluster.Path;
 
         protected override void LoadChildren()
         {

@@ -14,6 +14,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
 
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="FontFamily" Value="VsFont.EnvironmentFontFamily"/>
@@ -33,7 +34,9 @@
 
         <Image Grid.Row="0" 
                Grid.Column="0"
-               Source="/AWSToolkitPackage;component/Resources/CodeCommit32x32.png"
+               Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCommit}"
+               Width="32"
+               Height="32"
                VerticalAlignment="Center"
                Margin="0,-6,4,0"
                />

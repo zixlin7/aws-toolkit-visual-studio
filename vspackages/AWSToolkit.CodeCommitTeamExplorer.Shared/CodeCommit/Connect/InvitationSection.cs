@@ -9,6 +9,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.Base;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.CommonUI;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
@@ -65,7 +67,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
             Provider = "Amazon, Inc.";
             Description = Resources.CodeCommitInvitationBlurbText;
 
-            Icon = LoadSectionIcon("Resources/CodeCommit32x32.png");
+            Icon = CreateDrawingBrush(ToolkitImages.CodeCommit);
 
             IsVisible = TeamExplorerConnection.ActiveConnection == null;
             TeamExplorerConnection.OnTeamExplorerBindingChanged += (oldConnection, newConnection) => { IsVisible = newConnection == null; };

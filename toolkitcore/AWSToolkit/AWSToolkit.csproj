@@ -102,6 +102,9 @@
     </Compile>
     <Compile Include="CommonUI\Components\GroupedAccountComparer.cs" />
     <Compile Include="CommonUI\Converters\NullableInverseBooleanConverter.cs" />
+    <Compile Include="CommonUI\Images\AwsImageResourcePath.cs" />
+    <Compile Include="CommonUI\Images\ImageSourceFactory.cs" />
+    <Compile Include="CommonUI\ToolkitImages.cs" />
     <Compile Include="CommonUI\VsImages.cs" />
     <Compile Include="CommonUI\Components\AccountAndRegionPickerViewModel.cs" />
     <Compile Include="CommonUI\Components\AccountAndRegionPickerViewModelDesignerData.cs" />
@@ -651,6 +654,67 @@
     <EmbeddedResource Include="Resources\save.png" />
     <EmbeddedResource Include="Resources\upload.png" />
     <EmbeddedResource Include="Resources\warning.png" />
+    <EmbeddedResource Include="Resources\AWS.png" />
+    <EmbeddedResource Include="Resources\AWS-16x16.png" />
+    <EmbeddedResource Include="Resources\AWS-32x32.png" />
+    <EmbeddedResource Include="Resources\AWS-box.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ServiceIcons\App-Runner.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\CloudFormation.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\CloudFront.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\CloudWatch.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\CodeArtifact.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\CodeCommit.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\DynamoDB.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\EC2.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Elastic-Beanstalk.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Elastic-Container-Registry.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Elastic-Container-Service.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Identity-and-Access-Management.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Kinesis.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Lambda.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\RDS.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\SimpleDB.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Simple-Notification-Service.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Simple-Queue-Service.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Simple-Storage-Service.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\Virtual-Private-Cloud.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ResourceIcons\CloudFormation-Stack.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\CloudFormation-Template.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\CloudFront-Download-Distribution.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\CloudFront-Streaming-Distribution.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\CodeArtifact-Repository.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\CodeCommit-Repository.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\DynamoDB-Table.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\EC2-AMI.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\EC2-Elastic-IP-Address.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\EC2-Instances.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\EC2-Key-Pairs.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\EC2-Security-Group.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\EC2-Volumes.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\ECR-Repository.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\ECS-Task-Definition.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\Elastic-Beanstalk-Application.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\Elastic-Beanstalk-Environment.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\Elastic-Container-Service-Cluster.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\IAM-Role.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\IAM-User.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\IAM-User-Group.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\RDS-DB-Instances.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\RDS-Security-Group.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\RDS-Subnet-Groups.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\SimpleDB-Table.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\SNS-Topic.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\SQS-Queue.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\VPC-Elastic-IP.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\VPC-Internet-Gateway.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\VPC-Network-Access-Control-List.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\VPC-Route-Tables.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\VPC-Security-Group.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\VPC-VPCs.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Logos\logo_aws.png" />
@@ -808,6 +872,5 @@
       <Version>2.0.12</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

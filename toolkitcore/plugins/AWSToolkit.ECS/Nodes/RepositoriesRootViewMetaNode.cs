@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -23,8 +25,8 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                     OnCreateRepository,
                     null,
                     false,
-                    this.GetType().Assembly,
-                    "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.new_repository.png")
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.EcrRepository.Path)
             );
     }
 }

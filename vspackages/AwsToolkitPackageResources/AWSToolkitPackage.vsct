@@ -159,14 +159,14 @@
       -->
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidCodeArtifactSelectProfile" priority="0x0100" type="Button">
-        <Icon guid="guidImages" id="bmpAWSExplorer" />
+        <Icon guid="guidAwsServiceImages" id="imgCodeArtifact" />
         <Strings>
           <ButtonText>Select Profile for AWS CodeArtifact</ButtonText>
         </Strings>
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidAWSNavigator" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpAWSExplorer" />
+        <Icon guid="guidAwsLogoImages" id="imgAws" />
         <Strings>
           <CommandName>AWS.Explorer</CommandName>
           <ButtonText>AWS Explorer</ButtonText>
@@ -175,7 +175,7 @@
       </Button>
       
       <Button guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpPublishToAWSECS" />
+        <Icon guid="guidAwsServiceImages" id="imgECS" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -187,7 +187,7 @@
       </Button>
       
       <Button guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpPublishToAWSEB" />
+        <Icon guid="guidAwsServiceImages" id="imgBeanstalk" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -199,7 +199,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpRepublishToAWS" />
+        <Icon guid="guidAwsLogoImages" id="imgAwsBox" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -212,7 +212,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidDeployTemplateSolutionExplorer" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpDeployTemplate" />
+        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -225,7 +225,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostSolutionExplorer" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpEstimateTemplateCost" />
+        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -238,7 +238,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateSolutionExplorer" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpFormatTemplate" />
+        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -251,7 +251,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidDeployTemplateActiveDocument" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpDeployTemplate" />
+        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -264,7 +264,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostActiveDocument" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpEstimateTemplateCost" />
+        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -277,7 +277,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateActiveDocument" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpFormatTemplate" />
+        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -290,7 +290,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidAddAWSServerlessTemplate" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpTemplate" />
+        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -302,7 +302,7 @@
       </Button>      
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidAddCloudFormationTemplate" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpTemplate" />
+        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -314,7 +314,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaSolutionExplorer" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpPublishToAWSLambda" />
+        <Icon guid="guidAwsServiceImages" id="imgLambda" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -327,7 +327,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaServerlessTemplate" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpPublishToAWSLambda" />
+        <Icon guid="guidAwsServiceImages" id="imgLambda" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -340,7 +340,7 @@
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidTeamExplorerConnect" type="Button">
-        <Icon guid="guidImages" id="bmpCodeCommit" />
+        <Icon guid="guidAwsServiceImages" id="imgCodeCommit" />
         <Strings>
           <ButtonText>Connect to &amp;AWS CodeCommit</ButtonText>
         </Strings>
@@ -460,7 +460,18 @@
       inside a button definition. An important aspect of this declaration is that the element id
       must be the actual index (1-based) of the bitmap inside the bitmap strip. 
       -->
-      <Bitmap guid="guidImages" href="..\AwsToolkitPackageResources\VsctImages_32bit.png" usedList="bmpAWSExplorer,bmpPublishToAWSEB,bmpRepublishToAWS,bmpDeployTemplate,bmpEstimateTemplateCost,bmpFormatTemplate,bmpTemplate,bmpPublishToAWSLambda,bmpCodeCommit,bmpPublishToAWSECS" />
+
+      <!-- guidAwsServiceImages 
+        Generate source image with create-service-list from buildtools\imagelist.proj 
+        Ensure referenced image positions are in sync in this file whenever you alter the image
+      -->
+      <Bitmap guid="guidAwsServiceImages" href="..\AwsToolkitPackageResources\vsct-images-services.png" usedList="imgCodeArtifact,imgCodeCommit,imgCloudFormation,imgBeanstalk,imgECS,imgLambda" />
+
+      <!-- guidAwsLogoImages 
+        Generate source image with create-aws-logo-list from buildtools\imagelist.proj 
+        Ensure referenced image positions are in sync in this file whenever you alter the image
+      -->
+      <Bitmap guid="guidAwsLogoImages" href="..\AwsToolkitPackageResources\vsct-images-aws-logos.png" usedList="imgAwsBox,imgAws" />
 
     </Bitmaps>
 
@@ -765,17 +776,18 @@
 
     <GuidSymbol name="guid_VSPackageEditorFactory" value="{7b907bed-beab-4f29-b133-3bc88632e45a}" />
 
-    <GuidSymbol name="guidImages" value="{44633430-3a5d-441b-9f15-bbce1b57d289}">
-      <IDSymbol name="bmpAWSExplorer" value="1" />
-      <IDSymbol name="bmpPublishToAWSEB" value="2" />
-      <IDSymbol name="bmpRepublishToAWS" value="3" />
-      <IDSymbol name="bmpDeployTemplate" value="4" />
-      <IDSymbol name="bmpEstimateTemplateCost" value="5" />
-      <IDSymbol name="bmpFormatTemplate" value="6" />
-      <IDSymbol name="bmpTemplate" value="7" />
-      <IDSymbol name="bmpPublishToAWSLambda" value="8"/>
-      <IDSymbol name="bmpCodeCommit" value="9"/>
-      <IDSymbol name="bmpPublishToAWSECS" value="10"/>
+    <GuidSymbol name="guidAwsServiceImages" value="{0E177935-7994-424D-9FF5-3B607F662A02}">
+      <IDSymbol name="imgCodeArtifact" value="1" />
+      <IDSymbol name="imgCodeCommit" value="2" />
+      <IDSymbol name="imgCloudFormation" value="3" />
+      <IDSymbol name="imgBeanstalk" value="4" />
+      <IDSymbol name="imgECS" value="5" />
+      <IDSymbol name="imgLambda" value="6" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidAwsLogoImages" value="{64C95AA5-4F7F-4E6F-81D1-4A0B83C2971A}">
+      <IDSymbol name="imgAwsBox" value="1" />
+      <IDSymbol name="imgAws" value="2" />
     </GuidSymbol>
     
     <!-- see comment at top of file regarding venusids.h; these are the two ids we need

@@ -4,6 +4,7 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 
 using log4net;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.S3.Nodes
 {
@@ -11,8 +12,8 @@ namespace Amazon.AWSToolkit.S3.Nodes
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(S3BucketViewModel));
 
-        private static readonly string BucketIcon = 
-            "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.bucket.png";
+        private static readonly string BucketIcon =
+                AwsImageResourcePath.SimpleStorageService.Path;
 
         private static readonly string BucketPendingDeleteIcon =
             "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.bucket_pending_delete.png";

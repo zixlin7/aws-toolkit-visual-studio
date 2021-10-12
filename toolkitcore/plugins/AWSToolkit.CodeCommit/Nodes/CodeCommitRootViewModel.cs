@@ -8,6 +8,7 @@ using Amazon.CodeCommit.Model;
 using Amazon.Runtime;
 using Amazon.AWSToolkit.CodeCommit.Interface.Nodes;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.CodeCommit.Nodes
 {
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
 
         public override string ToolTip => "AWS CodeCommit";
 
-        protected override string IconName => "Amazon.AWSToolkit.CodeCommit.Resources.EmbeddedImages.service-root-node.png";
+        protected override string IconName => AwsImageResourcePath.CodeCommit.Path;
 
         protected override void LoadChildren()
         {

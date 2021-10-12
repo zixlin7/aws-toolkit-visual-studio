@@ -123,9 +123,6 @@
     <Resource Include="..\AwsToolkitPackageResources\CodeCommit16x16.png">
       <Link>Resources\CodeCommit16x16.png</Link>
     </Resource>
-    <Resource Include="..\AwsToolkitPackageResources\CodeArtifact32x32.png">
-      <Link>Resources\CodeArtifact32x32.png</Link>
-    </Resource>
     <EmbeddedResource Include="..\AwsToolkitPackageResources\AWSCloudFormationProject.ico">
       <Link>Resources\AWSCloudFormationProject.ico</Link>
     </EmbeddedResource>
@@ -180,9 +177,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="..\AwsToolkitPackageResources\VsctImages_32bit.png">
-      <Link>Resources\VsctImages_32bit.png</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(BuildRoot)\vspackages\manifests\15.0\source.extension.vsixmanifest">

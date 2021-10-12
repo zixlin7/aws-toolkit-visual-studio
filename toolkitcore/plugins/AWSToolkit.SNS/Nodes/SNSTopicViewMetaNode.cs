@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -33,7 +35,8 @@ namespace Amazon.AWSToolkit.SNS.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("View Topic", OnViewTopic, null, true, null,null),
+                new ActionHandlerWrapper("View Topic", OnViewTopic, null, true, typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.SnsTopic.Path),
                 new ActionHandlerWrapper("Edit Policy", OnEditPolicy, null, false, null, "policy.png"),
                 null,
                 new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")

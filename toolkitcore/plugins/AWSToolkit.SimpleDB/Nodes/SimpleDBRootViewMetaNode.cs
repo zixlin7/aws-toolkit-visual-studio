@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
-
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -35,7 +35,8 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(new ActionHandlerWrapper("Create Domain...",
-                OnDomainCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnDomainCreateResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.domain-create.png"));
+                OnDomainCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnDomainCreateResponse), false, typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.SimpleDbTable.Path));
 
         public override string MarketingWebSite => "https://aws.amazon.com/simpledb/";
     }

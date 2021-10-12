@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.DynamoDBv2;
 
@@ -25,7 +27,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         public string Table => this._table;
 
-        protected override string IconName => "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png";
+        protected override string IconName => AwsImageResourcePath.DynamoDbTable.Path;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

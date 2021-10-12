@@ -9,6 +9,7 @@ using log4net;
 using Amazon.Runtime;
 using System;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.CodeArtifact.Nodes
 {
@@ -26,7 +27,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Nodes
 
         public override string ToolTip => "Amazon CodeArtifact is a fully managed artifact repository service that makes it easy for organizations of any size to securely store, publish, and share software packages used in their software development process.";
 
-        protected override string IconName => "Amazon.AWSToolkit.CodeArtifact.Resources.EmbeddedImages.service-root-icon.png";
+        protected override string IconName => AwsImageResourcePath.CodeArtifact.Path;
 
         public IAmazonCodeArtifact CodeArtifactClient => this._codeArtifactClient.Value;
 

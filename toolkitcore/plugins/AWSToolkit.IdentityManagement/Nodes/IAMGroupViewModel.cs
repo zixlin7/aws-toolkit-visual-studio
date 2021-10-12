@@ -2,7 +2,7 @@
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.AWSToolkit.Navigator.Node;
-
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 {
@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
         }
 
 
-        protected override string IconName => "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.group-service-root.png";
+        protected override string IconName => AwsImageResourcePath.IamUserGroup.Path;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

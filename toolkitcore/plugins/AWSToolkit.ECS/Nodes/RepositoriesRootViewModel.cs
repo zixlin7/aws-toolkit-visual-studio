@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.ECR;
@@ -25,8 +27,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public IAmazonECR ECRClient => this._ecrClient;
 
-        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png";
-
+        protected override string IconName => AwsImageResourcePath.ElasticContainerRegistry.Path;
         protected override void LoadChildren()
         {
             var items = new List<IViewModel>();

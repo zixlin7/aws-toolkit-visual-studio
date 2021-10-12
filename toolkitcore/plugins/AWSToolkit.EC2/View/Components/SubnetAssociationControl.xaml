@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -20,7 +21,7 @@
             <Button Click="onAddSubnetClick">
                 <Button.Content>
                     <WrapPanel>
-                        <Image Width="16" Height="16" Source="..\..\Resources\Images\subnet-add.png"/>
+                        <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=AddLink}"/>
                         <TextBlock>Associate Subnet</TextBlock>
                     </WrapPanel>
                 </Button.Content>
@@ -28,7 +29,7 @@
             <Button Click="onDeleteSubnetClick" Name="_ctlDelete">
                 <Button.Content>
                     <WrapPanel>
-                        <Image Width="16" Height="16" Source="..\..\Resources\Images\subnet-remove.png"/>
+                        <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=RemoveLink}"/>
                         <TextBlock>Disassociate</TextBlock>
                     </WrapPanel>
                 </Button.Content>
@@ -36,7 +37,7 @@
             <Button Click="onRefreshClick">
                 <Button.Content>
                     <WrapPanel>
-                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=Refresh}"/>
                         <TextBlock>Refresh</TextBlock>
                     </WrapPanel>
                 </Button.Content>

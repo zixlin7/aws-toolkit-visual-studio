@@ -1,4 +1,6 @@
-﻿namespace Amazon.AWSToolkit.EC2.Nodes
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+
+namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class NetworkAclViewModel : FeatureViewModel
     {
@@ -9,6 +11,6 @@
 
         public override string ToolTip => "Create and associate network acls with subnets.";
 
-        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.networkacl.png";
+        protected override string IconName => AwsImageResourcePath.VpcNetworkAccessControlList.Path;
     }
 }

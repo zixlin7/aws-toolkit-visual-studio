@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -32,7 +33,9 @@
 
         <Image Grid.Row="0" 
                Grid.Column="0"
-               Source="/AWSToolkit.CodeCommit;component/Resources/CodeCommit32x32.png"
+               Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCommit}"
+               Height="32"
+               Width="32"
                VerticalAlignment="Top"
                HorizontalAlignment="Left"
                Margin="0,4,4,0"

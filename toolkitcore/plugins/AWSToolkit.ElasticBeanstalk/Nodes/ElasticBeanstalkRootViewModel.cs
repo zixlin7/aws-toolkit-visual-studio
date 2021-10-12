@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 {
@@ -29,7 +30,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             "Elastic Beanstalk will automatically handle the deployment details of capacity " +
             "provisioning, load balancing, auto-scaling, and application health monitoring.";
 
-        protected override string IconName => "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.rootviewnode.png";
+        protected override string IconName => AwsImageResourcePath.ElasticBeanstalk.Path;
 
         public IAmazonElasticBeanstalk BeanstalkClient => this._beanstalkClient.Value;
 

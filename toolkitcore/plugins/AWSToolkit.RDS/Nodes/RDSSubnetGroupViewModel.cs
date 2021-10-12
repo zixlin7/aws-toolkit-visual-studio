@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.Navigator.Node;
 
 using log4net;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
 {
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
 
         public IAmazonRDS RDSClient => this._rdsClient;
 
-        protected override string IconName => "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBSubnetGroups.png";
+        protected override string IconName => AwsImageResourcePath.RdsSubnetGroups.Path;
 
         public DBSubnetGroupWrapper SubnetGroup => this._subnetGroup;
     }

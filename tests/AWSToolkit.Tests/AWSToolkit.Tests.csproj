@@ -63,6 +63,7 @@
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
+    <Compile Include="CommonUI\ToolkitImagesTest.cs" />
     <Compile Include="CommonUI\VsImagesTests.cs" />
     <Compile Include="CommonUI\VsKnownImagesTests.cs" />
     <Compile Include="CommonUI\WizardExtensionMethodsTests.cs" />

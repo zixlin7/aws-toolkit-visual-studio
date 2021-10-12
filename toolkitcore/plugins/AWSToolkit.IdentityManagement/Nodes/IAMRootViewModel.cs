@@ -5,6 +5,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 {
@@ -46,7 +47,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             }
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.service-root.png";
+        protected override string IconName => AwsImageResourcePath.IdentityAndAccessManagement.Path;
 
         public IAmazonIdentityManagementService IAMClient => this._iamClient.Value;
 

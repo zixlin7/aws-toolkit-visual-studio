@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.ECS;
@@ -24,7 +26,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public IAmazonECS ECSClient => this._ecsClient;
 
-        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.taskdef.png";
+        protected override string IconName => AwsImageResourcePath.EcsTaskDefinition.Path;
 
         protected override void LoadChildren()
         {

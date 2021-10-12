@@ -14,6 +14,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
 
             <Style x:Key="RepositoriesListItemContainerStyle" TargetType="{x:Type ListBoxItem}">
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -79,8 +80,8 @@
                     <Image Grid.Column="0" 
                            Width="16"
                            Height="16"
-                           Source="/AWSToolkitPackage;component/Resources/CodeCommit16x16.png"
-                    />
+                           Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCommit}"
+                           />
                     <TextBlock Grid.Column="1" 
                                Style="{DynamicResource awsTextBlockBaseStyle}"
                                Text="{Binding Name}"

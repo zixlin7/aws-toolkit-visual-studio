@@ -65,6 +65,10 @@
 
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.Images.GenerateImageListTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
     TaskName="BuildTasks.UpdatePowerShellVersionTask" />
 
   <UsingTask

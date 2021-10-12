@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.IdentityManagement.Model;
 
 using Amazon.AWSToolkit.Navigator;
@@ -28,6 +30,6 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             }
         }
 
-        public override IList<ActionHandlerWrapper> Actions => BuildActionHandlerList(new ActionHandlerWrapper("Create Group...", OnCreateGroup, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateGroupResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.group-service-root.png"));
+        public override IList<ActionHandlerWrapper> Actions => BuildActionHandlerList(new ActionHandlerWrapper("Create Group...", OnCreateGroup, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateGroupResponse), false, typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.IamUserGroup.Path));
     }
 }

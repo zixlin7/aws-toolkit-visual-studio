@@ -16,6 +16,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
 
@@ -33,7 +34,7 @@
                 <Button Click="onCreateInternetGatewayClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\internet-gateway_new.png"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Add}"/>
                             <TextBlock>Create Internet Gateway</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -41,7 +42,7 @@
                 <Button Click="onDeleteInternetGatewayClick" Name="_ctlDelete" IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\internet-gateway_delete.png"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Cancel}"/>
                             <TextBlock>Delete</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -49,7 +50,7 @@
                 <Button Click="onAttachClick" Name="_ctlAttach" IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\internet-gateway_attach-vpc.png"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=AddLink}"/>
                             <TextBlock>Attach to VPC</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -57,7 +58,7 @@
                 <Button Click="onDetachClick" Name="_ctlDetach" IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\internet-gateway_detach-vpc.png"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=RemoveLink}"/>
                             <TextBlock>Detach from VPC</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -65,7 +66,7 @@
                 <Button Click="onRefreshClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Refresh}"/>
                             <TextBlock>Refresh</TextBlock>
                         </WrapPanel>
                     </Button.Content>

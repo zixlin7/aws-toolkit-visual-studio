@@ -14,6 +14,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
 
@@ -60,7 +61,7 @@
                         <Image
                             Width="16"
                             Height="16"
-                            Source="..\Resources\Images\delete_stack.png" />
+                            Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" />
                         <TextBlock VerticalAlignment="Center">Delete Stack</TextBlock>
                     </WrapPanel>
                 </Button.Content>
@@ -86,8 +87,7 @@
                         <Image
                             Width="16"
                             Height="16"
-                            DataContext="{DynamicResource CommonIcons}"
-                            Source="{Binding RefreshIcon}" />
+                            Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
                         <TextBlock>Refresh</TextBlock>
                     </WrapPanel>
                 </Button.Content>

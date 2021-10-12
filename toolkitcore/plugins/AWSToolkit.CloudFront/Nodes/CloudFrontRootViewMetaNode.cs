@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -44,9 +45,11 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
                 new ActionHandlerWrapper("Create Distribution...", OnCreateDistribution, null, false,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.distribution.png"),
-                new ActionHandlerWrapper("Create Streaming Distribution...", OnCreateStreamingDistribution, null, false, 
-                    this.GetType().Assembly, "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.streaming-distribution.png"),
+                  typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.CloudFrontDownloadDistribution.Path),
+                new ActionHandlerWrapper("Create Streaming Distribution...", OnCreateStreamingDistribution, null, false,
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.CloudFrontStreamingDistribution.Path),
                 new ActionHandlerWrapper("View Origin Access Identities...", OnViewOriginAccessIdentities, null, false, null, null));
 
 

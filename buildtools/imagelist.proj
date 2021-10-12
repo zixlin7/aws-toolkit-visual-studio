@@ -1,0 +1,94 @@
+﻿<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <InternalBuildTools Condition="'$(InternalBuildTools)'==''">$(MSBuildProjectDirectory)\..\buildtasks</InternalBuildTools>
+  </PropertyGroup>
+
+  <Import Project="$(InternalBuildTools)\references.targets"
+          Condition="Exists('$(InternalBuildTools)\references.targets')" />
+  <Import Project="$(InternalBuildTools)\common.targets" Condition="Exists('$(InternalBuildTools)\common.targets')" />
+
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+		<BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+
+  <!-- create-service-list 
+    creates a png image list from service icons, for use with vsct 
+    vsct files reference images from an image list, and are how images are associated with menu items
+  -->
+  <Target Name="create-service-list" DependsOnTargets="build-tools">
+    <ItemGroup>
+      <!--
+         Order Matters!!! 
+         Images are referenced by position in vspackages\AwsToolkitPackageResources\AWSToolkitPackage.vsct
+         If you are adding images, you'll likely want to add them to the end of the list.
+         Ensure the references in the .vsct file align with the position of each image in here.
+      -->
+      <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\ServiceIcons\CodeArtifact.png" />
+      <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\ServiceIcons\CodeCommit.png" />
+      <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\ServiceIcons\CloudFormation.png" />
+      <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\ServiceIcons\Elastic-Beanstalk.png" />
+      <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\ServiceIcons\Elastic-Container-Service.png" />
+      <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\ServiceIcons\Lambda.png" />
+    </ItemGroup>
+
+    <GenerateImageListTask 
+      ImagePaths="@(ImagePaths)" 
+      OutputFilename="$(BuildRoot)\vspackages\AwsToolkitPackageResources\vsct-images-services.png" 
+      />
+  </Target>
+
+  <!-- create-service-list 
+    creates a png image list from AWS logo icons, for use with vsct 
+    vsct files reference images from an image list, and are how images are associated with menu items
+  -->
+  <Target Name="create-aws-logo-list" DependsOnTargets="build-tools">
+    <ItemGroup>
+      <!--
+         Order Matters!!! 
+         Images are referenced by position in vspackages\AwsToolkitPackageResources\AWSToolkitPackage.vsct
+         If you are adding images, you'll likely want to add them to the end of the list.
+         Ensure the references in the .vsct file align with the position of each image in here.
+      -->
+      <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\AWS-box.png" />
+      <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\AWS-32x32.png" />
+    </ItemGroup>
+
+    <GenerateImageListTask 
+      ImagePaths="@(ImagePaths)" 
+      OutputFilename="$(BuildRoot)\vspackages\AwsToolkitPackageResources\vsct-images-aws-logos.png" 
+      />
+  </Target>
+
+  <!-- create-cloudformation
+    creates a png image list for CloudFormation icon, for use with project icon shown in solution explorer 
+	when a CloudFormation project is loaded
+  -->
+  <Target Name="create-cloudformation" DependsOnTargets="build-tools">
+	  <ItemGroup>
+		  <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\ServiceIcons\CloudFormation.png" />
+	  </ItemGroup>
+
+	  <GenerateImageListTask
+		  ImagePaths="@(ImagePaths)"
+		  OutputFilename="$(BuildRoot)\vspackages\AwsToolkitPackageResources\CloudFormationTemplateProjectNode.png"
+	  />
+  </Target>
+
+  <!-- create-cloudformation-template
+    creates a png image list for CloudFormation Template icon, for use with template icon shown in solution explorer 
+	when a CloudFormation project is loaded
+  -->
+  <Target Name="create-cloudformation-template" DependsOnTargets="build-tools">
+	  <ItemGroup>
+		  <ImagePaths Include="$(BuildRoot)\toolkitcore\AWSToolkit\Resources\ResourceIcons\CloudFormation-Template.png" />
+	  </ItemGroup>
+
+	  <GenerateImageListTask
+		  ImagePaths="@(ImagePaths)"
+		  OutputFilename="$(BuildRoot)\vspackages\AwsToolkitPackageResources\CloudFormationTemplateNode.png"
+	  />
+  </Target>
+
+</Project>

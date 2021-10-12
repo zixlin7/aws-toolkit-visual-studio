@@ -294,24 +294,7 @@
     <Resource Include="Resources\Images\upload.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\dynamodb-service.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\kinesis-service.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\s3-service.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\sns-service.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\cloudwatch-service.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\new-bucket.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\trace-timeline.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\sqs-service.png" />
     <Content Include="Resources\Images\trace-timeline.png" />
   </ItemGroup>
   <ItemGroup>

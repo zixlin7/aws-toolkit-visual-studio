@@ -5,6 +5,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
 {
@@ -22,7 +23,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
 
         public override string ToolTip => "Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud.";
 
-        protected override string IconName => "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.ServiceIcon.png";
+        protected override string IconName => AwsImageResourcePath.Rds.Path;
 
         public IAmazonRDS RDSClient => this._rdsClient.Value;
 

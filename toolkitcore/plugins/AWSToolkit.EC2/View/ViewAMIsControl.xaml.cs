@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Utils;
@@ -126,7 +127,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
                 MenuItem launchInstance = new MenuItem() { Header = "Launch Instance" };
                 launchInstance.Click += this.onLaunchInstanceClick;
-                launchInstance.Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.launch-instance.png");
+                launchInstance.Icon = IconHelper.GetIcon(typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.Ec2.Path);
 
                 MenuItem properties = new MenuItem() { Header = "Properties" };
                 properties.Click += this.onPropertiesClick;

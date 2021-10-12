@@ -4,6 +4,7 @@ using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
 
 using Amazon.AWSToolkit.CodeCommit.Interface.Nodes;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.CodeCommit.Nodes
 {
@@ -20,7 +21,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
             this.CodeCommitClient = this.CodeCommitRootViewModel.CodeCommitClient;
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.CodeCommit.Resources.EmbeddedImages.repository-node.png";
+        protected override string IconName => AwsImageResourcePath.CodeCommitRepository.Path;
 
         public IAmazonCodeCommit CodeCommitClient { get; }
 

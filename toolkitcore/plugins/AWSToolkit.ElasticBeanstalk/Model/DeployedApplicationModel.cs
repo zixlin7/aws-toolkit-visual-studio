@@ -2,6 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Media;
+
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
@@ -17,9 +21,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
 
         public string SelectedEnvironmentName { get; set; }
 
-        public Stream ApplicationIcon => Assembly.GetExecutingAssembly().GetManifestResourceStream("Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application.png");
+        public ImageSource ApplicationIcon => ToolkitImages.ElasticBeanstalkApplication;
 
-        public Stream EnvironmentIcon => Assembly.GetExecutingAssembly().GetManifestResourceStream("Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.environment.png");
+        public ImageSource EnvironmentIcon => ToolkitImages.ElasticBeanstalkEnvironment;
 
         internal DeployedApplicationModel(string applicationName)
         {

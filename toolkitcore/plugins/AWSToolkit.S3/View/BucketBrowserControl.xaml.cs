@@ -21,6 +21,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.S3.Model;
@@ -159,7 +160,7 @@ namespace Amazon.AWSToolkit.S3.View
                 string currentPath = "";
 
                 // Add bucket entry to represent the root.
-                this._ctlBreadCrumbPanel.Children.Add(createBreadCrumbImage(currentPath, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.bucket.png"));
+                this._ctlBreadCrumbPanel.Children.Add(createS3BucketBreadCrumbImage());
                 this._ctlBreadCrumbPanel.Children.Add(createBreadCrumbTextBlock(currentPath, this._model.BucketName));
 
 
@@ -216,6 +217,16 @@ namespace Amazon.AWSToolkit.S3.View
             textItem.Margin = new Thickness(3, 0, 0, 0);
             textItem.MouseLeftButtonDown += new MouseButtonEventHandler(breadCrumbMouseLeftButtonDown);
             return textItem;
+        }
+
+        private Image createS3BucketBreadCrumbImage()
+        {
+            Image img = new Image();
+            img.Cursor = Cursors.Hand;
+            img.MouseLeftButtonDown += new MouseButtonEventHandler(breadCrumbMouseLeftButtonDown);
+            img.Source = ToolkitImages.SimpleStorageService;
+            img.Width = img.Height = 16;
+            return img;
         }
 
         private Image createBreadCrumbImage(string breadCrumbpath, string path)
@@ -593,7 +604,8 @@ namespace Amazon.AWSToolkit.S3.View
 
             this._cloudFrontInvalidation = new MenuItem();
             this._cloudFrontInvalidation.Header = "CloudFront Invalidate";
-            this._cloudFrontInvalidation.Icon = IconHelper.GetIcon(assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.cloudfront-distribution.png");
+            this._cloudFrontInvalidation.Icon = IconHelper.GetIcon(typeof(AwsImageResourcePath).Assembly,
+                AwsImageResourcePath.CloudFrontDownloadDistribution.Path);
             this._cloudFrontInvalidation.Click += new RoutedEventHandler(onRequestInvalidationClick);
 
             this._generatePreSignedURL = new MenuItem();

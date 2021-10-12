@@ -2,6 +2,7 @@
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.Lambda.Nodes
 {
@@ -29,7 +30,7 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
 
         public string FunctionArn => this._functionArn;
 
-        protected override string IconName => "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.service-root.png";
+        protected override string IconName => AwsImageResourcePath.Lambda.Path;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

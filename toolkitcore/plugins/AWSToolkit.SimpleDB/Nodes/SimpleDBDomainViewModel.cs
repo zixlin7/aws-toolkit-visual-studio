@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Amazon.SimpleDB;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.SimpleDB.Nodes
 {
@@ -24,7 +25,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
 
         public string Domain => this._domain;
 
-        protected override string IconName => "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.domain-node.png";
+        protected override string IconName => AwsImageResourcePath.SimpleDbTable.Path;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

@@ -2,6 +2,7 @@
 
 //using Amazon.SimpleNotificationService.Model;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -46,9 +47,10 @@ namespace Amazon.AWSToolkit.SNS.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(new ActionHandlerWrapper("Create Topic...", OnCreateTopic, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateTopicResponse), false,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.create_topic.png"),
+                   typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.SnsTopic.Path),
                 new ActionHandlerWrapper("View Subscriptions", OnViewSubscriptions, null, false,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.view_subscription.png"));
+                  null, null));
 
         public override string MarketingWebSite => "https://aws.amazon.com/sns/";
     }

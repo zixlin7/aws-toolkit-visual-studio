@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 
@@ -20,7 +21,7 @@ namespace Amazon.AWSToolkit.EC2.Nodes
 
         public override string ToolTip => "Amazon Elastic Compute Cloud delivers scalable, pay-as-you-go compute capacity in the cloud.";
 
-        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.service-root-icon.png";
+        protected override string IconName => AwsImageResourcePath.Ec2.Path;
 
 
         protected override void LoadChildren()

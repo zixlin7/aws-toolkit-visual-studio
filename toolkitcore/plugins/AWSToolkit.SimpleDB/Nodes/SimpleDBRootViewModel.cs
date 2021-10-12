@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.SimpleDB.Nodes
 {
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
 
         public override string ToolTip => "Amazon SimpleDB is a highly available, scalable, and flexible non-relational data store that offloads the work of database administration. Developers simply store and query data items via web services requests, and Amazon SimpleDB does the rest.";
 
-        protected override string IconName => "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.service-root-icon.png";
+        protected override string IconName => AwsImageResourcePath.SimpleDb.Path;
 
         public IAmazonSimpleDB SimpleDBClient => this._sdbClient.Value;
 

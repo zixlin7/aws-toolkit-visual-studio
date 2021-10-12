@@ -96,7 +96,7 @@ namespace Amazon.AWSToolkit.SNS.View
 
             MenuItem deleteItem = new MenuItem();
             deleteItem.Header = "Delete Subscription";
-            deleteItem.Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.delete_subscription.png");
+            deleteItem.Icon = IconHelper.GetIcon(null, "delete.png");
             deleteItem.Click += new RoutedEventHandler(onDeleteRows);
 
             MenuItem properties = new MenuItem() { Header = "Properties" };

@@ -1,4 +1,5 @@
-﻿using Amazon.CloudFront.Model;
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+using Amazon.CloudFront.Model;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
 {
@@ -18,7 +19,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             this.Aliases = distribution.Aliases;
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.streaming-distribution.png";
+        protected override string IconName => AwsImageResourcePath.CloudFrontStreamingDistribution.Path;
 
         public static string GetName(StreamingDistribution distribution)
         {

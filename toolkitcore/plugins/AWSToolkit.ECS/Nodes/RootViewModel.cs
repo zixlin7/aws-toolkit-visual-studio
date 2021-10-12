@@ -7,6 +7,7 @@ using Amazon.ECS;
 using Amazon.ECR;
 using Amazon.Runtime;
 using log4net;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
@@ -33,7 +34,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             + "and manage Docker containers. Images may be managed using Amazon Elastic Container Registry (Amazon ECR), "
             + "a managed AWS Docker registry service";
 
-        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.service-root-icon.png";
+        protected override string IconName => AwsImageResourcePath.ElasticContainerService.Path;
 
 
         protected override void LoadChildren()

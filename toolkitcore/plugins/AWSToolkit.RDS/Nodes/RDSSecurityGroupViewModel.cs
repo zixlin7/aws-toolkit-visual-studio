@@ -5,6 +5,7 @@ using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.Navigator.Node;
 
 using log4net;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
 {
@@ -22,7 +23,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             this._rdsClient = viewModel.RDSClient;
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.SecurityGroup.png";
+        protected override string IconName => AwsImageResourcePath.RdsSecurityGroup.Path;
 
         public IAmazonRDS RDSClient => this._rdsClient;
 

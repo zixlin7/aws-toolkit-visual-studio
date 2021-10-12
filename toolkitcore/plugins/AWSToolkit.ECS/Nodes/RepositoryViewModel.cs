@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.ECS.Model;
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+using Amazon.AWSToolkit.ECS.Model;
 using Amazon.ECR;
 using log4net;
 
@@ -24,7 +25,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public RepositoryWrapper Repository => this._repository;
 
-        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png";
+        protected override string IconName => AwsImageResourcePath.EcrRepository.Path;
 
         public string RepositoryName => _repository.Name;
     }

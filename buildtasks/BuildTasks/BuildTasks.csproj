@@ -59,6 +59,8 @@
     <Compile Include="CompareToS3Task.cs" />
     <Compile Include="DownloadFromS3Task.cs" />
     <Compile Include="EC2QuickLaunchGeneratorTask.cs" />
+    <Compile Include="Images\GenerateImageListTask.cs" />
+    <Compile Include="Images\ImageList.cs" />
     <Compile Include="KeyScannerTask.cs" />
     <Compile Include="PatchVsixManifestPackageIdTask.cs" />
     <Compile Include="UpdateAwsSdkVersionsTask.cs" />

@@ -1,4 +1,5 @@
-﻿using Amazon.CloudFront.Model;
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+using Amazon.CloudFront.Model;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
 {
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             get;
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.distribution.png";
+        protected override string IconName => AwsImageResourcePath.CloudFrontDownloadDistribution.Path;
 
         public static string GetName(Distribution distribution)
         {

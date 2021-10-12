@@ -4,6 +4,7 @@ using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 {
@@ -40,7 +41,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 
         public ApplicationDescription Application => this._application;
 
-        protected override string IconName => "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application.png";
+        protected override string IconName => AwsImageResourcePath.ElasticBeanstalkApplication.Path;
 
         protected override void LoadChildren()
         {
