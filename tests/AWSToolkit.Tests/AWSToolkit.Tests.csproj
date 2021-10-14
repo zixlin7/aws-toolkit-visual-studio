@@ -64,6 +64,7 @@
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
     <Compile Include="CommonUI\ToolkitImagesTest.cs" />
+    <Compile Include="CommonUI\TemplateParserTests.cs" />
     <Compile Include="CommonUI\VsImagesTests.cs" />
     <Compile Include="CommonUI\VsKnownImagesTests.cs" />
     <Compile Include="CommonUI\WizardExtensionMethodsTests.cs" />
@@ -192,6 +193,10 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj">
       <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>
       <Name>AWSToolkit.Lambda</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
+      <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
+      <Name>AWSToolkit.CloudFormation.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SNS\AWSToolkit.SNS.csproj">
       <Project>{fe4c0e46-0427-46e1-8cc9-4b26fb15f728}</Project>
