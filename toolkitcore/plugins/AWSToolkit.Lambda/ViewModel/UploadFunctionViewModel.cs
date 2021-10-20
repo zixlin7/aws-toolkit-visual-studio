@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 
         private static readonly ICollection<RuntimeOption> RuntimesWithoutArmSupport = new List<RuntimeOption>()
         {
-            RuntimeOption.NetCore_v2_1, RuntimeOption.PROVIDED, RuntimeOption.PROVIDED_AL2
+            RuntimeOption.PROVIDED, RuntimeOption.PROVIDED_AL2
         };
 
         private readonly AccountAndRegionPickerViewModel _connectionViewModel;

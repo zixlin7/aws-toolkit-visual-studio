@@ -283,7 +283,6 @@ namespace AWSToolkit.Tests.Lambda
             return new List<RuntimeOption[]>
             {
                 new RuntimeOption[] { null },
-                new RuntimeOption[] { RuntimeOption.NetCore_v2_1 },
                 new RuntimeOption[] { RuntimeOption.PROVIDED },
                 new RuntimeOption[] {RuntimeOption.PROVIDED_AL2},
             };

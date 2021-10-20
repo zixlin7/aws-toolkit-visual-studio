@@ -46,7 +46,7 @@ namespace AWSToolkit.Tests.Lambda
             var viewModel = Page.ViewModel;
 
             viewModel.PackageType = PackageType.Zip;
-            viewModel.Runtime = RuntimeOption.NetCore_v2_1;
+            viewModel.Runtime = RuntimeOption.NetCore_v3_1;
             viewModel.Architecture = LambdaArchitecture.X86;
 
             viewModel.SourceCodeLocation = TestLocation.TestFolder;
