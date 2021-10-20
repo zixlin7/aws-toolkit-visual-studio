@@ -21,16 +21,30 @@ jobs:
             - name: Create Test Build
               run: msbuild buildtools\build.proj /t:build-test-toolkit
 
+            - name: Generate Hash for VS 2017/19 Tookit
+              run: |
+                $ARTIFACT_HASH = (Get-FileHash Deployment/16.0/Release/AWSToolkitPackage.vsix -Algorithm SHA384).Hash
+                echo $ARTIFACT_HASH > Deployment/16.0/Release/AWSToolkitPackage.vsix.sha384
+
+            - name: Generate Hash for VS 2022 Tookit
+              run: |
+                $ARTIFACT_HASHv17 = (Get-FileHash Deployment/16.0/Release/AWSToolkitPackage.v17.vsix -Algorithm SHA384).Hash
+                echo $ARTIFACT_HASHv17 > Deployment/16.0/Release/AWSToolkitPackage.v17.vsix.sha384
+
             - name: Build Artifact for VS 2017/19 Toolkit
               if: always()
               uses: actions/upload-artifact@v2
               with:
                   name: Toolkit-2017-2019
-                  path: Deployment/16.0/Release/AWSToolkitPackage.vsix
+                  path: |
+                    Deployment/16.0/Release/AWSToolkitPackage.vsix
+                    Deployment/16.0/Release/AWSToolkitPackage.vsix.sha384
 
             - name: Build Artifact for VS 2022 Toolkit
               if: always()
               uses: actions/upload-artifact@v2
               with:
                   name: Toolkit-2022
-                  path: Deployment/16.0/Release/AWSToolkitPackage.v17.vsix
+                  path: |
+                    Deployment/16.0/Release/AWSToolkitPackage.v17.vsix
+                    Deployment/16.0/Release/AWSToolkitPackage.v17.vsix.sha384
