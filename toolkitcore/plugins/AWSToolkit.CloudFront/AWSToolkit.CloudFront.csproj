@@ -278,12 +278,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\new-bucket.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\distribution.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\service-root.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\streaming-distribution.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFront">
@@ -293,5 +288,6 @@
       <Version>2.0.12</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

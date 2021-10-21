@@ -2,6 +2,7 @@
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 {
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 
         public EnvironmentDescription Environment => this._Environment;
 
-        protected override string IconName => "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.environment.png";
+        protected override string IconName => AwsImageResourcePath.ElasticBeanstalkEnvironment.Path;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {            

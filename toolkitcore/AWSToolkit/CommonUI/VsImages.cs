@@ -21,15 +21,26 @@ namespace Amazon.AWSToolkit.CommonUI
             _imageProvider = imageProvider;
         }
 
+        public BitmapSource Add => _imageProvider?.GetImage(VsKnownImages.Add, 16);
+        public BitmapSource AddLink => _imageProvider?.GetImage(VsKnownImages.AddLink, 16);
         public BitmapSource AddUser => _imageProvider?.GetImage(VsKnownImages.AddUser, 16);
         public BitmapSource Cancel => _imageProvider?.GetImage(VsKnownImages.Cancel, 16);
+        public BitmapSource Cloud => _imageProvider?.GetImage(VsKnownImages.Cloud, 16);
+        public BitmapSource Cloud32 => _imageProvider?.GetImage(VsKnownImages.Cloud, 32);
+        public BitmapSource Copy => _imageProvider?.GetImage(VsKnownImages.Copy, 16);
         public BitmapSource DeleteListItem => _imageProvider?.GetImage(VsKnownImages.DeleteListItem, 16);
         public BitmapSource Edit => _imageProvider?.GetImage(VsKnownImages.Edit, 16);
         public BitmapSource FeedbackFrown => _imageProvider?.GetImage(VsKnownImages.FeedbackFrown, 16);
         public BitmapSource FeedbackSmile => _imageProvider?.GetImage(VsKnownImages.FeedbackSmile, 16);
         public BitmapSource Refresh => _imageProvider?.GetImage(VsKnownImages.Refresh, 16);
         public BitmapSource Remove => _imageProvider?.GetImage(VsKnownImages.Remove, 16);
+        public BitmapSource RemoveLink => _imageProvider?.GetImage(VsKnownImages.RemoveLink, 16);
         public BitmapSource StatusError => _imageProvider?.GetImage(VsKnownImages.StatusError, 16);
+        public BitmapSource StatusError32 => _imageProvider?.GetImage(VsKnownImages.StatusError, 32);
+        public BitmapSource StatusInformation => _imageProvider?.GetImage(VsKnownImages.StatusInformation, 16);
+        public BitmapSource StatusInformation32 => _imageProvider?.GetImage(VsKnownImages.StatusInformation, 32);
+        public BitmapSource StatusOK => _imageProvider?.GetImage(VsKnownImages.StatusOK, 16);
+        public BitmapSource StatusOK32 => _imageProvider?.GetImage(VsKnownImages.StatusOK, 32);
         public BitmapSource StatusWarning => _imageProvider?.GetImage(VsKnownImages.StatusWarning, 16);
     }
 }

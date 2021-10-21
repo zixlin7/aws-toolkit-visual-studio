@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Visual Studio Project Templates that are referenced by the VS 2022 Toolkit in AWSToolkitPackage.v17.csproj
+
+  These are the things that integrate into Visual Studio's "New Project" system.
+
+  If you have the solution open in Visual Studio and make changes to this file, you will need to close the 
+  solution and re-open it in order to pick up your changes.
+-->
+<Project ToolsVersion="15.0" DefaultTargets="Build"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+
+  <!-- Related to CloudFormation projects -->
+  <!-- <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationProjectTemplate\CloudFormationProjectTemplate.csproj">
+      <Project>{EB2C31E6-3ED8-4F0E-A726-194DA87C8F95}</Project>
+      <Name>CloudFormationProjectTemplate</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+  </ItemGroup> -->
+
+  <!-- Related to NodeJs based Lambda function projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.v17.csproj">
+      <Project>{630D31A1-6D34-4A7E-863C-A09B5F11888A}</Project>
+      <Name>LambdaFunctionProjectTemplate.v17</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to C# based Lambda function projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.v17.csproj">
+      <Project>{FE4AE7CE-8775-406E-82A4-A4095803E8BD}</Project>
+      <Name>MsbuildFunctionTemplate.v17</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.v17.csproj">
+      <Project>{F3641AC2-FAE4-4201-9F99-C7898BE10F00}</Project>
+      <Name>MsbuildFunctionWithTestsTemplate.v17</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to C# based Serverless application projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.v17.csproj">
+      <Project>{C052E98D-5160-48E3-8112-03AEC3F108E3}</Project>
+      <Name>MsbuildServerlessTemplate.v17</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.v17.csproj">
+      <Project>{6B6E6BB1-8A45-4EC0-8BAB-F55E8F0B3AE3}</Project>
+      <Name>MsbuildServerlessWithTestsTemplate.v17</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to F# based Lambda function projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.v17.csproj">
+      <Project>{A9C98031-E563-469B-8ADC-405A7918EDA7}</Project>
+      <Name>MsbuildFunctionTemplateFSharp.v17</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplateFSharp\MsbuildFunctionWithTestsTemplateFSharp.v17.csproj">
+      <Project>{3A2E6C72-6704-4566-8A08-B2A1B222C3EB}</Project>
+      <Name>MsbuildFunctionWithTestsTemplateFSharp.v17</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to F# based Serverless application projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplateFSharp\MsbuildServerlessTemplateFSharp.v17.csproj">
+      <Project>{43CF9104-9389-4ED9-9FDB-F55814DD7DC2}</Project>
+      <Name>MsbuildServerlessTemplateFSharp.v17</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplateFSharp\MsbuildServerlessWithTestsTemplateFSharp.v17.csproj">
+      <Project>{7AC9F81A-1C89-468C-A3BC-FE87EF1A11F2}</Project>
+      <Name>MsbuildServerlessWithTestsTemplateFSharp.v17</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

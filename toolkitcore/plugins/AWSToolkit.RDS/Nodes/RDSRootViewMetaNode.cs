@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -35,6 +36,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(new ActionHandlerWrapper("Launch Instance...",
-                OnLaunchDBInstance, new ActionHandlerWrapper.ActionResponseHandler(this.OnLaunchDBInstanceResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBInstance_Launch.png"));
+                OnLaunchDBInstance, new ActionHandlerWrapper.ActionResponseHandler(this.OnLaunchDBInstanceResponse), false, typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.RdsDbInstances.Path));
     }
 }

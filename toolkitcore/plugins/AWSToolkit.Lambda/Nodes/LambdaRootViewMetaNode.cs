@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -33,7 +34,9 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("Create New Function", OnUploadFunction, new ActionHandlerWrapper.ActionResponseHandler(this.OnUploadFunctionResponse), false, null, null)
+                new ActionHandlerWrapper("Create New Function", OnUploadFunction, new ActionHandlerWrapper.ActionResponseHandler(this.OnUploadFunctionResponse), false,
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.Lambda.Path)
             );
 
 

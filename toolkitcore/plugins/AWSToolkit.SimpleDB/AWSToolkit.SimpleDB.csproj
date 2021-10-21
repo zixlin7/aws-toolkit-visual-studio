@@ -164,9 +164,6 @@
     <Resource Include="Resources\Images\commit-changes.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\domain-create.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\domain-node.png" />
   </ItemGroup>
   <ItemGroup>

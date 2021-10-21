@@ -143,6 +143,10 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
   - Contains the code used by AwsToolkit.VsSdk.Common
   - This is a [shared project](https://docs.microsoft.com/en-us/xamarin/cross-platform/app-fundamentals/shared-projects?tabs=windows). Projects that reference a shared project act as if they naturally contain the same files and resources.
   - This allows the one codebase to service extensions for multiple major versions of Visual Studio: https://docs.microsoft.com/en-us/visualstudio/extensibility/migration/update-visual-studio-extension?view=vs-2022#use-shared-projects-for-multi-targeting
+- PublishToAws
+  - Responsible for newer "Publish to AWS" functionality
+  - Contains all of the implementation except for the commands, which are set up in AWSToolkitPackage
+  - Supports VS 2019 and newer (.NET Framework 4.7.2 implementation)
 - Tests
   - AmazonCLIExtensions.Tests
     - Tests related to the AmazonCLIExtensions project
@@ -156,6 +160,8 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
     - Tests related to the AWSToolkitPackage project
   - AwsToolkit.Tests.Integration
     - Home of Integration tests for any aspect of the Toolkit
+  - PublishToAws.Tests
+    - Tests related to the PublishToAws project
 
 [toolkitarchitecture]: architecture.svg
 [packagereferences]: package-references.svg

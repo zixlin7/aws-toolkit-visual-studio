@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 
@@ -20,7 +21,7 @@ namespace Amazon.AWSToolkit.EC2.Nodes
 
         public override string ToolTip => "Amazon Virtual Private Cloud (Amazon VPC) lets you provision a private, isolated section of the Amazon Web Services (AWS) Cloud where you can launch AWS resources in a virtual network that you define.";
 
-        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.vpc_service_root.png";
+        protected override string IconName => AwsImageResourcePath.VirtualPrivateCloud.Path;
 
         protected override void LoadChildren()
         {

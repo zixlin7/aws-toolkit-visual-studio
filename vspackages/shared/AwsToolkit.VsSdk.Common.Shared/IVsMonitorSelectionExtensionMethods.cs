@@ -63,10 +63,7 @@ namespace Amazon.AwsToolkit.VsSdk.Common
                     return null;
                 }
 
-                var result = hierarchy.GetProperty(projectItemId,
-                    (int) __VSHPROPID.VSHPROPID_ExtObject, out var projectItem);
-
-                if (result != VSConstants.S_OK)
+                if (!VsHierarchyHelpers.TryGetExtObject(hierarchy, projectItemId, out var projectItem))
                 {
                     return null;
                 }

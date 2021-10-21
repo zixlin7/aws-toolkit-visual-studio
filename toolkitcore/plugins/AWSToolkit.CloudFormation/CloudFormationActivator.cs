@@ -49,6 +49,10 @@ namespace Amazon.AWSToolkit.CloudFormation
             if (serviceType == typeof(IAWSToolkitDeploymentService))
                 return this as IAWSToolkitDeploymentService;
 
+            if (serviceType == typeof(ICloudFormationViewer))
+            {
+                return new CloudFormationViewer(ToolkitContext.ToolkitHost, ToolkitFactory.Instance.Navigator);
+            }
             return null;
         }
 

@@ -23,6 +23,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\BaseCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Lambda\AddServerlessTemplateCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Lambda\DeployLambdaCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Publishing\BasePublishToAwsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Publishing\PublishToAwsCommandSolutionExplorer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Publishing\PublishToAwsCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\CreateIssueCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewFeedbackPanelCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewGettingStartedCommand.cs" />
@@ -73,7 +76,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Services\AWSLegacyDeploymentPersistenceService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\AWSToolkitShellProviderService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\VsWebProjectInfoExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>

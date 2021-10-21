@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -21,10 +23,10 @@ namespace Amazon.AWSToolkit.EC2.Nodes
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
                 new ActionHandlerWrapper("Launch instance...", OnLaunch, new ActionHandlerWrapper.ActionResponseHandler(this.OnLaunchResponse), false,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.launch-instance.png"),
+                    typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.Ec2Instances.Path),
                 null,
                 new ActionHandlerWrapper("View", OnView, null, true,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.instance.png")
+                    typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.Ec2Instances.Path)
             );
     }
 }

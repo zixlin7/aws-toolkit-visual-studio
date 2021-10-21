@@ -294,7 +294,7 @@
 
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <StackPanel x:Name="_tviPanel" Orientation="Horizontal">
+                        <StackPanel x:Name="_tviPanel" Orientation="Horizontal"  Margin="0 2 0 0">
                             <AutomationProperties.AutomationId>
                                 <Binding StringFormat="ResourceTree_{0}" Path="Name" />
                             </AutomationProperties.AutomationId>

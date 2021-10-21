@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.ECS.Model;
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+using Amazon.AWSToolkit.ECS.Model;
 using Amazon.ECS;
 using log4net;
 
@@ -24,6 +25,6 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public ClusterWrapper Cluster => this._cluster;
 
-        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.clusters.png";
+        protected override string IconName => AwsImageResourcePath.ElasticContainerServiceCluster.Path;
     }
 }

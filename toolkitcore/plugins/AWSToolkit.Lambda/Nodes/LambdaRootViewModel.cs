@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Lambda;
@@ -23,7 +24,7 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
 
         public override string ToolTip => "AWS Lambda is a compute service that runs your code in response to events and automatically manages the compute resources.";
 
-        protected override string IconName => "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.service-root.png";
+        protected override string IconName => AwsImageResourcePath.Lambda.Path;
 
         public IAmazonLambda LambdaClient => this._lambdaClient.Value;
 

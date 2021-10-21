@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
@@ -11,8 +13,8 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                     OnView,
                     null,
                     true,
-                    this.GetType().Assembly,
-                    "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.taskdef.png")
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.EcsTaskDefinition.Path)
             );
     }
 }

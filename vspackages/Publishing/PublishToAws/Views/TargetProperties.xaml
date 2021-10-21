@@ -1,0 +1,106 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.Publish.Views.TargetProperties"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Amazon.AWSToolkit.Publish.Views"
+             xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             themes:ToolkitThemes.UseToolkitTheme="True"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source=".\SystemCapabilityTemplate.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <commonUi:VsImages x:Key="VsImages" />
+            <converters:SystemCapabilitiesToVisibilityConverter x:Key="SystemCapabilitiesToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <ScrollViewer
+        VerticalScrollBarVisibility="Auto"
+        >
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Show Missing System Dependencies -->
+            <Grid 
+                Grid.Row="0" Grid.Column="0"
+                Margin="0 0 0 18"
+                Visibility="{Binding SystemCapabilities, Converter={StaticResource SystemCapabilitiesToVisibilityConverter}}"
+                >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0" Grid.Column="0" 
+                    VerticalAlignment="Top"
+                    FontWeight="Bold"
+                    Text="Missing system capabilities" />
+
+                <ItemsControl
+                    Grid.Row="1" Grid.Column="0"
+                    HorizontalContentAlignment="Stretch"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ItemTemplate="{StaticResource SystemCapabilityTemplate}"
+                    ItemsSource="{Binding SystemCapabilities}" />
+
+            </Grid>
+
+            <!-- Show Target Description -->
+            <Grid 
+                Grid.Row="1" Grid.Column="0"
+                Margin="0 0 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0" Grid.Column="0" 
+                    VerticalAlignment="Top"
+                    FontWeight="Bold"
+                    Text="Target details" />
+
+                <TextBlock
+                    Grid.Row="1" Grid.Column="0"
+                    Margin="0 6 0 0"
+                    TextWrapping="Wrap"
+                    Text="{Binding TargetDescription}"
+                    />
+
+            </Grid>
+
+            <!-- Show Settings -->
+            <StackPanel 
+                Grid.Row="2" Grid.Column="0"
+                Margin="0 18 0 0"
+                Orientation="Vertical"
+                >
+
+                <TextBlock
+                    VerticalAlignment="Top"
+                    FontWeight="Bold"
+                    Text="Publish details" />
+
+                <TextBlock Margin="0 6 0 0">
+                    <Hyperlink Command="{Binding ConfigTargetCommand}">Edit publish settings</Hyperlink>
+                </TextBlock>
+
+                <TextBlock
+                    Margin="0 6 0 0"
+                    TextWrapping="Wrap"
+                    Text="{Binding PublishSummary}" />
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
+</UserControl>

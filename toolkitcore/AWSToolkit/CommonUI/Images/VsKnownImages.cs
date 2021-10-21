@@ -14,15 +14,22 @@
     /// </summary>
     public enum VsKnownImages
     {
+        Add,
+        AddLink,
         AddUser,
-        Cancel, 
+        Cancel,
+        Cloud,
+        Copy,
         DeleteListItem, 
         Edit,
         FeedbackFrown,
         FeedbackSmile,
         Refresh,
         Remove,
+        RemoveLink,
         StatusError,
+        StatusInformation,
+        StatusOK,
         StatusWarning,
     }
 }

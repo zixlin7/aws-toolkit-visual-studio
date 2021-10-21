@@ -4,9 +4,9 @@ using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
-using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.CloudFormation.Nodes
 {
@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             return model;
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.service-root-node.png";
+        protected override string IconName => AwsImageResourcePath.CloudFormation.Path ;
 
         public IAmazonCloudFormation CloudFormationClient => this._cloudFormationClient.Value;
 

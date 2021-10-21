@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Visual Studio Project Templates that are referenced by the VS 2017/2019 Toolkit in AWSToolkitPackage.csproj
+
+  These are the things that integrate into Visual Studio's "New Project" system.
+
+  If you have the solution open in Visual Studio and make changes to this file, you will need to close the 
+  solution and re-open it in order to pick up your changes.
+-->
+<Project ToolsVersion="15.0" DefaultTargets="Build"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+
+  <!-- Related to CloudFormation projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationProjectTemplate\CloudFormationProjectTemplate.csproj">
+      <Project>{EB2C31E6-3ED8-4F0E-A726-194DA87C8F95}</Project>
+      <Name>CloudFormationProjectTemplate</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to NodeJs based Lambda function projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.csproj">
+      <Project>{AF0AE340-7C91-40F9-A074-0F1A4F03F8E9}</Project>
+      <Name>LambdaFunctionProjectTemplate</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to C# based Lambda function projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj">
+      <Project>{cbde5be9-4047-445a-82a2-ade0d06708be}</Project>
+      <Name>MsbuildFunctionTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.csproj">
+      <Project>{418C57E1-B2B9-441F-8B88-1C7776011724}</Project>
+      <Name>MsbuildFunctionWithTestsTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to C# based Serverless application projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.csproj">
+      <Project>{12205d6a-e262-4f8b-8344-2b5a93bbb775}</Project>
+      <Name>MsbuildServerlessTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj">
+      <Project>{22c00710-a6e5-4f49-92ce-a5a2dd71c24a}</Project>
+      <Name>MsbuildServerlessWithTestsTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to F# based Lambda function projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.csproj">
+      <Project>{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}</Project>
+      <Name>MsbuildFunctionTemplateFSharp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionWithTestsTemplateFSharp\MsbuildFunctionWithTestsTemplateFSharp.csproj">
+      <Project>{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}</Project>
+      <Name>MsbuildFunctionWithTestsTemplateFSharp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- Related to F# based Serverless application projects -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessTemplateFSharp\MsbuildServerlessTemplateFSharp.csproj">
+      <Project>{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}</Project>
+      <Name>MsbuildServerlessTemplateFSharp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildServerlessWithTestsTemplateFSharp\MsbuildServerlessWithTestsTemplateFSharp.csproj">
+      <Project>{D14A5D26-391E-4327-A1DC-29572D4521FF}</Project>
+      <Name>MsbuildServerlessWithTestsTemplateFSharp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

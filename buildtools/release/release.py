@@ -411,7 +411,7 @@ def fetch(remote: git.Remote, src_branch: str) -> Commit:
 
 def find_remote_repo(repo: git.Repo, remote_name: str) -> str:
     """Attempts to locate a remote GitHub repository using a git remote URL"""
-    remote = get_remote(repo, remote_name)
+    remote = repo.remote(remote_name)
     url = list(remote.urls)[0]
     
     if url.find('github') == -1:
@@ -616,7 +616,7 @@ def select_notes() -> str:
 
     return ''
 
-def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig) -> str:
+def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig, remote_name: str) -> str:
     """Runs the given hooks and commits all changes to the candidate branch specified by the release config."""
     version = str(config.version)
     candidate_branch = f'release/candidate/v{version}'
@@ -661,7 +661,7 @@ def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig) -> s
     reporter.start()
 
     try:
-        get_remote(repo).push(f'HEAD:refs/heads/{candidate_branch}')
+        repo.remote(remote_name).push(f'HEAD:refs/heads/{candidate_branch}')
         reporter.complete()
     except Exception as err:
         reporter.complete(success=False)
@@ -700,9 +700,6 @@ def parse_changes(root: str, version: str, body: str = '') -> str:
         return f'{title}\n{body}\n### Changelog\n{changelog}'
     except Exception as err:
         exit(reason='Failed to read changelog from ".changes" directory', tips=err)
-
-def get_remote(repo: git.Repo, name: str = None) -> git.Remote:
-    return repo.remote(name)
 
 def cleanup(original_branch: str = None):
     """Stops all running threads and checksout the original git branch if applicable."""
@@ -802,7 +799,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, lambda sig, frame: exit())
     sys.excepthook = lambda exctype, value, traceback: exception_hook(value, original_branch)
     
-    remote = get_remote(repo, remote_name)
+    remote = repo.remote(remote_name)
     development_commit = fetch(remote, development_branch)
     release_commit = fetch(remote, release_branch)
 
@@ -829,7 +826,7 @@ if __name__ == '__main__':
     if not verify:
         exit(reason='Aborting release.')
     
-    candidate = push_candidate(repo, pre_commit_hooks, config)
+    candidate = push_candidate(repo, pre_commit_hooks, config, remote_name)
 
     print('Creating PR...')
     make_pr(str(config.version), candidate, find_remote_repo(repo, remote_name))

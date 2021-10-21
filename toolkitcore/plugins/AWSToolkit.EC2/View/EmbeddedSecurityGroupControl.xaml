@@ -10,6 +10,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -131,7 +132,7 @@
                     Click="AddPermission_Click"
                     >
                 <StackPanel Orientation="Horizontal">
-                    <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}" />
+                    <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Add}" />
                     <TextBlock>Add Rule</TextBlock>
                 </StackPanel>
             </Button>
@@ -165,7 +166,7 @@
                         <DataTemplate>
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Button Click="RemovePermission_Click">
-                                    <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}" />
+                                    <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" />
                                 </Button>
                             </StackPanel>
                         </DataTemplate>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -30,8 +31,8 @@ namespace Amazon.AWSToolkit.EC2.Nodes
         }
 
         public override IList<ActionHandlerWrapper> Actions =>
-            BuildActionHandlerList(new ActionHandlerWrapper("Launch instance...", OnLaunch, new ActionHandlerWrapper.ActionResponseHandler(this.OnLaunchResponse), false, 
-                this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.launch-instance.png"));
+            BuildActionHandlerList(new ActionHandlerWrapper("Launch instance...", OnLaunch, new ActionHandlerWrapper.ActionResponseHandler(this.OnLaunchResponse), false,
+                typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.Ec2Instances.Path));
 
         public override string MarketingWebSite => "https://aws.amazon.com/ec2/";
     }

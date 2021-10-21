@@ -107,17 +107,17 @@ namespace Amazon.AWSToolkit.Lambda.Model
                 switch (this.ServiceName)
                 {
                     case DYNAMODB_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.dynamodb-service.png").Source;
+                        return ToolkitImages.DynamoDb;
                     case KINESIS_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.kinesis-service.png").Source;
+                        return ToolkitImages.Kinesis;
                     case S3_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.s3-service.png").Source;
+                        return ToolkitImages.SimpleStorageService;
                     case SNS_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.sns-service.png").Source;
+                        return ToolkitImages.SimpleNotificationService;
                     case SQS_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.sqs-service.png").Source;
+                        return ToolkitImages.SimpleQueueService;
                     case EVENTS_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.cloudwatch-service.png").Source;
+                        return ToolkitImages.CloudWatch;
                     default:
                         return null;
                 }

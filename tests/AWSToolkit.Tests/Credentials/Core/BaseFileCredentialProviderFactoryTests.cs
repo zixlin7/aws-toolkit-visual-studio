@@ -5,6 +5,7 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.Runtime.CredentialManagement;
 using Moq;
 using Xunit;

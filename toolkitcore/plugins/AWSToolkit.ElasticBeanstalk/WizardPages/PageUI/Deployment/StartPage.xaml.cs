@@ -6,8 +6,10 @@ using System.Linq;
 using System.Windows;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
+using Amazon.AWSToolkit.Publish.Banner;
 using Amazon.AWSToolkit.Regions;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
@@ -29,10 +31,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public AccountAndRegionPickerViewModel Connection { get; }
 
-        public StartPage(ToolkitContext toolkitContext)
+        public PublishBannerViewModel PublishBanner { get; }
+
+        public StartPage(ToolkitContext toolkitContext, IAWSWizard wizard)
         {
             Connection = new AccountAndRegionPickerViewModel(toolkitContext);
             Connection.SetServiceFilter(new List<string>() {ElasticBeanstalkServiceName});
+
+            PublishBanner = PublishBannerViewModelFactory.Create(toolkitContext);
+            PublishBanner.Origin = ElasticBeanstalkServiceName;
+            new PublishBannerPropertyChangedHandler(PublishBanner, wizard);
 
             InitializeComponent();
             DataContext = this;

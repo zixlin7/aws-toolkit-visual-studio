@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -39,7 +41,8 @@ namespace Amazon.AWSToolkit.SQS.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("View Queue", OnView, null, true, null, null),
+                new ActionHandlerWrapper("View Queue", OnView, null, true, typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.SqsQueue.Path),
                 new ActionHandlerWrapper("Permissions...", OnPermissions, null, false, null, null),
                 new ActionHandlerWrapper("Edit Policy", OnEditPolicy, null, false, null, "policy.png"),
                 null,

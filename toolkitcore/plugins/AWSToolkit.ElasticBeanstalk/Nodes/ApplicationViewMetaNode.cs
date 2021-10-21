@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -33,7 +35,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("View Status", OnApplicationStatus, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application_view.png"),
+                new ActionHandlerWrapper("View Status", OnApplicationStatus, null, true, typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.ElasticBeanstalkApplication.Path),
                 null,
                 new ActionHandlerWrapper("Delete", OnDeleteApplication, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteApplicationResponse), false, null, "delete.png")
             );

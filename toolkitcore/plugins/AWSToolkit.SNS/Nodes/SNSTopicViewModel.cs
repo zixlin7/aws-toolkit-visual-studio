@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Amazon.SimpleNotificationService;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.SNS.Nodes
 {
@@ -18,7 +19,7 @@ namespace Amazon.AWSToolkit.SNS.Nodes
             this._topicArn = topicArn;
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.topic-node.png";
+        protected override string IconName => AwsImageResourcePath.SnsTopic.Path;
 
         public SNSRootViewModel SNSRootViewModel => this._snsRootViewModel;
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -41,6 +42,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(new ActionHandlerWrapper("Create Stack...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false,
-                this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.create_stack.png"));
+                typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.CloudFormationStack.Path));
     }
 }

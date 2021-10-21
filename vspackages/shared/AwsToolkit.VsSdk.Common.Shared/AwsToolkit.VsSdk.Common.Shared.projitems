@@ -13,14 +13,23 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\OkCancelDialogWindowHost.xaml.cs">
       <DependentUpon>OkCancelDialogWindowHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\OkDialogWindowHost.xaml.cs">
+      <DependentUpon>OkDialogWindowHost.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsHierarchyHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSLambdaUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSWebProjectInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\OkCancelDialogWindowHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\OkDialogWindowHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

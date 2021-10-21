@@ -2,6 +2,7 @@
 using Amazon.AWSToolkit.Navigator.Node;
 using log4net;
 using Amazon.CodeArtifact.Model;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.CodeArtifact.Nodes
 {
@@ -10,7 +11,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Nodes
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(RepoViewModel));
 
         private static readonly string RepoIcon =
-            "Amazon.AWSToolkit.CodeArtifact.Resources.EmbeddedImages.bucket.png";
+             AwsImageResourcePath.CodeArtifactRepository.Path;
 
         RepoViewMetaNode _metaNode;
         DomainViewModel _serviceModel;

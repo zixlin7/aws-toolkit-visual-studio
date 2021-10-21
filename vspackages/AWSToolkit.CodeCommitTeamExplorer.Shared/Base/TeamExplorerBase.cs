@@ -49,5 +49,17 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.Base
 
             return new DrawingBrush(drawing);
         }
+
+        public static DrawingBrush CreateDrawingBrush(ImageSource imageSource)
+        {
+            var drawing = new DrawingGroup();
+            drawing.Children.Add(new GeometryDrawing
+            {
+                Brush = new ImageBrush(imageSource),
+                Geometry = new RectangleGeometry(new Rect(new Size(imageSource.Width, imageSource.Height)))
+            });
+
+            return new DrawingBrush(drawing);
+        }
     }
 }

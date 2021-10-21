@@ -5,6 +5,7 @@ using Amazon.EC2.Model;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using log4net;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
 {
@@ -17,7 +18,7 @@ namespace Amazon.AWSToolkit.EC2.Nodes
         {
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.instance.png";
+        protected override string IconName => AwsImageResourcePath.Ec2Instances.Path;
 
         public override string ToolTip => "Manage EC2 instances and launch new EC2 instances";
 

@@ -6,173 +6,55 @@
     xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.WizardPages.PageUI"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    xmlns:publishbanner="clr-namespace:Amazon.AWSToolkit.Publish.Banner;assembly=AWSToolkit"
     d:DesignHeight="400"
     d:DesignWidth="600"
     mc:Ignorable="d">
     
     
 
-
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <!--  a/c picker  -->
-            <RowDefinition Height="Auto" />
-            <!--  runtime selector  -->
-            <RowDefinition Height="Auto" />
-            <!--  function source  -->
-            <RowDefinition Height="Auto" />
-            <!--  function details, switchable  -->
-            <RowDefinition Height="Auto" />
-            <!--  open view on upload  -->
-            <RowDefinition Height="Auto" />
-            <!--  persist settings  -->
-        </Grid.RowDefinitions>
-
-        <Grid x:Name="_ctlAccountPanel" Grid.Row="0">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <!--  a/c picker  -->
+                <RowDefinition Height="Auto" />
+                <!--  runtime selector  -->
+                <RowDefinition Height="Auto" />
+                <!--  function source  -->
+                <RowDefinition Height="Auto" />
+                <!--  function details, switchable  -->
+                <RowDefinition Height="Auto" />
+                <!--  open view on upload  -->
+                <RowDefinition Height="Auto" />
+                <!--  persist settings  -->
             </Grid.RowDefinitions>
 
-            <Label
-                Grid.Row="0"
-                Margin="0"
-                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
-                Profile
-            </Label>
+            <publishbanner:PublishBanner
+                Grid.Row="0" 
+                DataContext = "{Binding PublishBanner}" />
 
-            <commoncomponents:AccountAndRegionPicker
-                Grid.Row="1"
-                Margin="8,0,4,0" 
-                DataContext="{Binding Connection}"
-                ConnectionChanged="_ctlAccountAndRegion_PropertyChanged"
-                />
-
-        </Grid>
-
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Label
-                Grid.Row="0"
-                Margin="0"
-                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
-                Docker Image Build
-            </Label>
-
-            <Grid
-                Grid.Row="1"
-                Grid.ColumnSpan="2"
-                Visibility="Visible">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="130" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
+            <Grid x:Name="_ctlAccountPanel" Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Label
                     Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="10,0,4,2"
-                    VerticalAlignment="Center"
-                    Style="{DynamicResource awsLabelBaseStyle}">
-                    _Configuration:
+                    Margin="0"
+                    Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+                    Profile
                 </Label>
 
-
-                <ComboBox
-                    Name="_ctlConfigurationPicker"
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Margin="16,0,4,2"
-                    SelectedIndex="0"
-                    SelectedItem="{Binding Configuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Style="{DynamicResource awsComboBoxStyle}" />
-
-                <Label
+                <commoncomponents:AccountAndRegionPicker
                     Grid.Row="1"
-                    Grid.Column="0"
-                    Margin="10,2,4,2"
-                    VerticalAlignment="Center"
-                    Style="{DynamicResource awsLabelBaseStyle}">
-                    Docker Repository:
-                </Label>
-
-                <ComboBox
-                    Name="_ctlDockerRepositoryPicker"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="16,2,4,2"
-                    IsEditable="True"
-                    SelectedIndex="0"
-                    SelectionChanged="_ctlDockerRepositoryPicker_SelectionChanged"
-                    Style="{DynamicResource awsComboBoxStyle}"
-                    TextBoxBase.TextChanged="_ctlDockerRepositoryPicker_TextChanged" />
-
-                <Label
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Margin="10,2,4,2"
-                    VerticalAlignment="Center"
-                    Style="{DynamicResource awsLabelBaseStyle}">
-                    _Tag:
-                </Label>
-
-                <ComboBox
-                    Name="_ctlDockerTagPicker"
-                    Grid.Row="1"
-                    Grid.Column="3"
-                    Margin="16,2,4,2"
-                    IsEditable="True"
-                    SelectedIndex="0"
-                    SelectionChanged="_ctlDockerTagPicker_SelectionChanged"
-                    Style="{DynamicResource awsComboBoxStyle}"
-                    TextBoxBase.TextChanged="_ctlDockerTagPicker_TextChanged" />
-
-
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Margin="10,2,4,2"
-                    VerticalAlignment="Center"
-                    Style="{DynamicResource awsLabelBaseStyle}">
-                    _Working Directory:
-                </Label>
-                <TextBox
-                    Name="_ctlWorkingDirectory"
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="3"
-                    Margin="16,2,4,2"
-                    Style="{DynamicResource awsTextBoxStyle}"
+                    Margin="8,0,4,0" 
+                    DataContext="{Binding Connection}"
+                    ConnectionChanged="_ctlAccountAndRegion_PropertyChanged"
                     />
-                <TextBlock
-                    Name="_ctlExecutionRoleDescription"
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="4"
-                    Margin="30,4,4,0"
-                    FontStyle="Italic"
-                    Style="{DynamicResource awsInfoTextStyle}"
-                    TextWrapping="Wrap">
-                    The directory to execute "docker build". If blank the Dockerfile will be inspected to determine
-                    if the build should happen from the solution file's directory or the directory with the Dockerfile. 
-                    In cases where the directory is incorrectly determined you can specify which directory to run the build from.
-                </TextBlock>
-                
+
             </Grid>
 
             <Grid Grid.Row="2">
@@ -183,76 +65,201 @@
                 </Grid.RowDefinitions>
 
                 <Label
-                Grid.Row="0"
-                Margin="0"
-                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
-                    Deployment Target
+                    Grid.Row="0"
+                    Margin="0"
+                    Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+                    Docker Image Build
                 </Label>
 
-                <ComboBox
-                    Name="_ctlDeploymentOptionPicker"
+                <Grid
                     Grid.Row="1"
-                    Grid.Column="0"
-                    Margin="16,2,4,2"
-                    SelectedIndex="0"
-                    SelectionChanged="_ctlDeploymentOptionPicker_SelectionChanged"
-                    Style="{DynamicResource awsComboBoxStyle}">
+                    Grid.ColumnSpan="2"
+                    Visibility="Visible">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="10,0,4,2"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        _Configuration:
+                    </Label>
 
 
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch">
-                                <Border
-                                    HorizontalAlignment="Stretch"
-                                    Padding="2"
-                                    Background="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
-                                    BorderBrush="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
-                                    BorderThickness="2"
-                                    CornerRadius="4"
-                                    >
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="760"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="3,0,3,0" Text="{Binding Title}" Style="{DynamicResource awsTextBlock122PercentStyle}" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="3,3,3,0" TextWrapping="Wrap" Text="{Binding InfoText}" Style="{DynamicResource awsInfoTextStyle}"/>
-                                    </Grid>
-                                </Border>
-                            </Grid>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
+                    <ComboBox
+                        Name="_ctlConfigurationPicker"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="16,0,4,2"
+                        SelectedIndex="0"
+                        SelectedItem="{Binding Configuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{DynamicResource awsComboBoxStyle}" />
+
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="10,2,4,2"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        Docker Repository:
+                    </Label>
+
+                    <ComboBox
+                        Name="_ctlDockerRepositoryPicker"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="16,2,4,2"
+                        IsEditable="True"
+                        SelectedIndex="0"
+                        SelectionChanged="_ctlDockerRepositoryPicker_SelectionChanged"
+                        Style="{DynamicResource awsComboBoxStyle}"
+                        TextBoxBase.TextChanged="_ctlDockerRepositoryPicker_TextChanged" />
+
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Margin="10,2,4,2"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        _Tag:
+                    </Label>
+
+                    <ComboBox
+                        Name="_ctlDockerTagPicker"
+                        Grid.Row="1"
+                        Grid.Column="3"
+                        Margin="16,2,4,2"
+                        IsEditable="True"
+                        SelectedIndex="0"
+                        SelectionChanged="_ctlDockerTagPicker_SelectionChanged"
+                        Style="{DynamicResource awsComboBoxStyle}"
+                        TextBoxBase.TextChanged="_ctlDockerTagPicker_TextChanged" />
+
+
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="10,2,4,2"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        _Working Directory:
+                    </Label>
+                    <TextBox
+                        Name="_ctlWorkingDirectory"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        Margin="16,2,4,2"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        />
+                    <TextBlock
+                        Name="_ctlExecutionRoleDescription"
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Margin="30,4,4,0"
+                        FontStyle="Italic"
+                        Style="{DynamicResource awsInfoTextStyle}"
+                        TextWrapping="Wrap">
+                        The directory to execute "docker build". If blank the Dockerfile will be inspected to determine
+                        if the build should happen from the solution file's directory or the directory with the Dockerfile. 
+                        In cases where the directory is incorrectly determined you can specify which directory to run the build from.
+                    </TextBlock>
                     
-                </ComboBox>
+                </Grid>
 
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label
+                    Grid.Row="0"
+                    Margin="0"
+                    Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+                        Deployment Target
+                    </Label>
+
+                    <ComboBox
+                        Name="_ctlDeploymentOptionPicker"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="16,2,4,2"
+                        SelectedIndex="0"
+                        SelectionChanged="_ctlDeploymentOptionPicker_SelectionChanged"
+                        Style="{DynamicResource awsComboBoxStyle}">
+
+
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Border
+                                        HorizontalAlignment="Stretch"
+                                        Padding="2"
+                                        Background="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                        BorderBrush="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                        BorderThickness="2"
+                                        CornerRadius="4"
+                                        >
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto"/>
+                                                <RowDefinition Height="auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="760"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="3,0,3,0" Text="{Binding Title}" Style="{DynamicResource awsTextBlock122PercentStyle}" />
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="3,3,3,0" TextWrapping="Wrap" Text="{Binding InfoText}" Style="{DynamicResource awsInfoTextStyle}"/>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        
+                    </ComboBox>
+
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <CheckBox
+                    Grid.Row="0"
+                    Name="_ctlPersistSettings"
+                    Margin="18,8,4,2"
+                    IsChecked="True"
+                    Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                    Save settings to aws-ecs-tools-defaults.json and configure project for command line deployment.
+                </CheckBox>
+                <TextBlock
+                        Grid.Row="1"
+                        Margin="16,2,4,0"
+                        FontStyle="Italic"
+                        Style="{DynamicResource awsInfoTextStyle}"
+                        TextWrapping="Wrap">
+                    If this is checked the dotnet CLI tool package Amazon.ECS.Tools will be added to the project. Once
+                    added you can do future deployments from the command line. Run the command "dotnet ecs --help" for more information.
+                </TextBlock>
             </Grid>
         </Grid>
-
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <CheckBox
-                Grid.Row="0"
-                Name="_ctlPersistSettings"
-                Margin="18,8,4,2"
-                IsChecked="True"
-                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-                Save settings to aws-ecs-tools-defaults.json and configure project for command line deployment.
-            </CheckBox>
-            <TextBlock
-                    Grid.Row="1"
-                    Margin="16,2,4,0"
-                    FontStyle="Italic"
-                    Style="{DynamicResource awsInfoTextStyle}"
-                    TextWrapping="Wrap">
-                If this is checked the dotnet CLI tool package Amazon.ECS.Tools will be added to the project. Once
-                added you can do future deployments from the command line. Run the command "dotnet ecs --help" for more information.
-            </TextBlock>
-        </Grid>
-    </Grid>
+    </ScrollViewer>
 </commonUi:BaseAWSUserControl>

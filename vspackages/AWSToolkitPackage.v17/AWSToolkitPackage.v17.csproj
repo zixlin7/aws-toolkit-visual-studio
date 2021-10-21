@@ -120,11 +120,17 @@
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Licenses.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Plugins.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectReferences.xml" />
-  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectTemplates.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectTemplates.v17.xml" />
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\vspackages\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj">
       <Project>{260eb803-0c5d-4000-b920-4e8af84820ca}</Project>
       <Name>AwsToolkit.VsSdk.Common.v17</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\AWSToolkit.Lambda.TemplateWizards.v17\AWSToolkit.Lambda.TemplateWizards.v17.csproj">
+      <Project>{3F04815A-2A4B-4B28-B683-053A46D6A076}</Project>
+      <Name>AWSToolkit.Lambda.TemplateWizards.v17</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -235,12 +241,15 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-4-31709-430" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.3177-preview3">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.4207-preview4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="NuGet.VisualStudio">
       <Version>4.9.4</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>5.0.2</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.5.4</Version>

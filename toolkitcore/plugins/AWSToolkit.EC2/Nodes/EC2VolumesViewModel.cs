@@ -1,4 +1,6 @@
-﻿namespace Amazon.AWSToolkit.EC2.Nodes
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+
+namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class EC2VolumesViewModel : FeatureViewModel
     {
@@ -9,6 +11,6 @@
 
         public override string ToolTip => "Create and manage EC2 volumes";
 
-        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.volume.png";
+        protected override string IconName => AwsImageResourcePath.Ec2Volumes.Path;
     }
 }

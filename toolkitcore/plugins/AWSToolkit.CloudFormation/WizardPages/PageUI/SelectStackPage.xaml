@@ -20,6 +20,7 @@
                 <Setter Property="FontWeight" Value="Bold" />
                 <Setter Property="FontSize" Value="13" />
             </Style>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -117,7 +118,7 @@
                         <Image
                             Width="16"
                             Height="16"
-                            Source="..\..\Resources\Images\create_topic.png" />
+                            Source="{Binding Source={StaticResource ToolkitImages}, Path=SnsTopic}" />
                         <TextBlock Margin="5,0,5,0">New Topic</TextBlock>
                     </WrapPanel>
                 </Button.Content>

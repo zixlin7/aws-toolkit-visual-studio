@@ -167,8 +167,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\table.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\table_add.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\table_delete.png" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Resources\ScanConditionTableResourceDictionary.xaml">

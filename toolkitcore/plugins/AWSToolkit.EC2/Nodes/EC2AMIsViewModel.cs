@@ -1,4 +1,6 @@
-﻿namespace Amazon.AWSToolkit.EC2.Nodes
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+
+namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class EC2AMIsViewModel : FeatureViewModel
     {
@@ -9,6 +11,6 @@
 
         public override string ToolTip => "View and manage Amazon Machine Images and create new EC2 instances from Amazon Machine Images";
 
-        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.ami.png";
+        protected override string IconName => AwsImageResourcePath.Ec2Ami.Path;
     }
 }

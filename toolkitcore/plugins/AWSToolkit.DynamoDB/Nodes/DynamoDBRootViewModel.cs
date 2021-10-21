@@ -9,6 +9,7 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.AWSToolkit.DynamoDB.Util;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.DynamoDB.Nodes
 {
@@ -38,7 +39,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         public override string ToolTip => "Amazon DynamoDB is a fast, highly scalable, highly available, cost-effective, non-relational database service.";
 
-        protected override string IconName => "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png";
+        protected override string IconName => AwsImageResourcePath.DynamoDb.Path;
 
         public override string Name
         {

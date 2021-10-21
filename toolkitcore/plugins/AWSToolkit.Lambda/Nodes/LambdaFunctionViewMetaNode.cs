@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -27,7 +29,8 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("View Function", OnOpen, null, true, null, null),
+                new ActionHandlerWrapper("View Function", OnOpen, null, true, typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.Lambda.Path),
                 null,
                 new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
             );

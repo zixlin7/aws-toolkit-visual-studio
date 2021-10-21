@@ -229,13 +229,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\role.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\role_add.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\user_add.png" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AWSSDK.IdentityManagement">
       <Version>3.7.2.53</Version>
     </PackageReference>

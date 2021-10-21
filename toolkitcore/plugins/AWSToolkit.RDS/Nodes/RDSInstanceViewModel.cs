@@ -5,6 +5,7 @@ using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.Navigator.Node;
 
 using log4net;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
 {
@@ -28,7 +29,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
 
         public RDSInstanceRootViewModel InstanceRootViewModel => this._parentViewModel;
 
-        protected override string IconName => "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBInstances.png";
+        protected override string IconName => AwsImageResourcePath.RdsDbInstances.Path;
 
         public DBInstanceWrapper DBInstance => this._instance;
     }

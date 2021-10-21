@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -40,7 +41,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("Open", OnOpen, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png"),
+                new ActionHandlerWrapper("Open", OnOpen, null, true, typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.DynamoDbTable.Path),
                 new ActionHandlerWrapper("Stream Properties...", OnStreamProperties, null, false, null, null),
                 new ActionHandlerWrapper("Table Properties...", OnProperties, null, false, null, "properties.png"),
                 null,

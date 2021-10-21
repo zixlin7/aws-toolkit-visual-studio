@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.Publish.Banner.PublishBanner"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+            <Style TargetType="Label" BasedOn="{StaticResource awsLabelBaseStyle}" />
+            <Style TargetType="Button" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
+                <Setter Property="MinWidth" Value="75" />
+                <Setter Property="Height" Value="23" />
+                <Setter Property="Margin" Value="0 0 5 0"></Setter>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border 
+        Background="{DynamicResource awsFieldRequiredBackgroundBrushKey}" 
+        Padding="5" 
+        Visibility="{Binding ShowBanner, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <Label 
+                    Style="{DynamicResource awsLabelBoldStyle}" 
+                    Content="A new AWS Publishing experience is available" />
+
+                <Label Content="You can return to this experience at any time" />
+            </StackPanel>
+
+            <Button 
+                Grid.Column="1" 
+                Content="Learn more" 
+                Command="{Binding LearnMoreCommand}" />
+
+            <Button 
+                Grid.Column="2" 
+                Content="Switch to new experience"
+                Command="{Binding SwitchToNewExperienceCommand}"/>
+
+        </Grid>
+    </Border>
+</UserControl>

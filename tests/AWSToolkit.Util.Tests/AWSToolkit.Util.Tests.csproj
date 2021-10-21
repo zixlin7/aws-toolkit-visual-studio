@@ -48,9 +48,13 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\LogExceptionAndForgetChangedHandlerTests.cs" />
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
     <Compile Include="PickSolutionStackNameTests.cs" />
     <Compile Include="ProjectFileUtilitiesTests.cs" />
+    <Compile Include="Publish\PublishableProjectSpecificationTests.cs" />
+    <Compile Include="Publish\PublishSetting\DeploySettingsTests.cs" />
+    <Compile Include="Publish\PublishSetting\FilePublishSettingsRepositoryTest.cs" />
     <Compile Include="Regions\EndpointsExtensionMethodsTests.cs" />
     <Compile Include="Regions\EndpointsTests.cs" />
     <Compile Include="Regions\RegionProviderTests.cs" />
@@ -74,6 +78,7 @@
     <Compile Include="Settings\MobileAnalyticsSettingsTest.cs" />
     <Compile Include="Settings\SettingsPersistenceBaseTests.cs" />
     <Compile Include="Settings\ToolkitSettingsTests.cs" />
+    <Compile Include="Solutions\ProjectFileTests.cs" />
     <Compile Include="Tasks\TaskExtensionMethodsTests.cs" />
     <Compile Include="Telemetry\ModelExtensionMethodsTests.cs" />
     <Compile Include="Telemetry\TelemetryClientTests.cs" />
@@ -82,6 +87,7 @@
     <Compile Include="Telemetry\TestHelper.cs" />
     <Compile Include="Resources\TestResources.cs" />
     <Compile Include="Solutions\ProjectTests.cs" />
+    <Compile Include="Util\FrameworkNameHelperTests.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
     <Compile Include="Util\ZipUtilTests.cs" />
   </ItemGroup>
@@ -168,6 +174,30 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\sample-endpoints.json" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Solutions\SampleProjects\AspNet.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Solutions\SampleProjects\FSharp.fsproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Solutions\SampleProjects\LambdaTester-Compatible.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Solutions\SampleProjects\NoTargetFramework.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Solutions\SampleProjects\VisualBasic.vbproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Solutions\SampleProjects\DotNetFrameworkProject.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Solutions\SampleProjects\DotNetStandard.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -41,6 +41,7 @@
     <AssemblyOriginatorKeyFile>..\..\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,14 +52,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context\ConnectionManagerFixture.cs" />
+    <Compile Include="Context\FakeCredentialIdentifier.cs" />
+    <Compile Include="Context\FakeProgressDialog.cs" />
+    <Compile Include="Context\NoOpToolkitShellProvider.cs" />
+    <Compile Include="Context\ProjectFixture.cs" />
     <Compile Include="Context\ToolkitContextFixture.cs" />
     <Compile Include="IntegrationTest.cs" />
     <Compile Include="IO\PlaceholderFile.cs" />
     <Compile Include="IO\ReflectionHelpers.cs" />
     <Compile Include="IO\TemporaryTestLocation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleData\SampleFrameworkNames.cs" />
     <Compile Include="Settings\FakeSettingsPersistence.cs" />
     <Compile Include="Settings\FakeToolkitSettings.cs" />
+    <Compile Include="Settings\Publish\InMemoryPublishSettingsRepository.cs" />
     <Compile Include="VisualStudio\SolutionExplorerFixture.cs" />
     <Compile Include="TestExtensions\Vs2019OrLaterFactAttribute.cs" />
   </ItemGroup>
@@ -82,6 +90,11 @@
     <PackageReference Include="xunit.extensibility.core">
       <Version>2.4.1</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Context\AspNet.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

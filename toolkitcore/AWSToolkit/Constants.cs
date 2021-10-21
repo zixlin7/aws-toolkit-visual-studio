@@ -29,6 +29,9 @@ namespace Amazon.AWSToolkit
             public static readonly Guid Vs2022 = new Guid(Vs2022AsString);
         }
 
+        public const string PublishToAwsPackageGuidStr = "e9576543-4ce6-4081-afcb-4a6ee4246e52";
+        public static readonly Guid PublishToAwsPackageGuid = new Guid(PublishToAwsPackageGuidStr);
+
         public const string AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME = "serverless.template";
 
         public static readonly TimeSpan? DEFAULT_S3_TIMEOUT = TimeSpan.FromMilliseconds(int.MaxValue);

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="2.0.0" Type="Project"
+    xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>AWS Serverless Application with Tests (.NET Core - F#)</Name>
+    <Description>A F# AWS Serverless application uses the power of AWS Lambda and AWS CloudFormation to build a cloud-enabled serverless application.</Description>
+    <Icon>LambdaTemplateProject.ico</Icon>
+    <ProjectType>FSharp</ProjectType>
+    <DefaultName>AWSServerless</DefaultName>
+    <SortOrder>200</SortOrder>
+    <TemplateID>B3344718-DFBB-4430-A30F-F433BAE07F11</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <CreateInPlace>true</CreateInPlace>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LanguageTag>F#</LanguageTag>
+    <PlatformTag>AWS</PlatformTag>
+    <ProjectTypeTag>Cloud</ProjectTypeTag>
+    <ProjectTypeTag>Serverless</ProjectTypeTag>
+  </TemplateData>
+
+  <TemplateContent>
+    <Project File="BlueprintBaseName.fsproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="Readme.md">Readme.md</ProjectItem>
+    </Project>
+  </TemplateContent>
+
+
+  <WizardExtension>
+    <Assembly>AWSToolkit.Lambda.TemplateWizards.v17,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
+    <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild.ServerlessNETCoreFunctionWithTestsFSharpWizard</FullClassName>
+  </WizardExtension>
+
+</VSTemplate>

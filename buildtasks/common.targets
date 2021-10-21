@@ -65,6 +65,10 @@
 
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.Images.GenerateImageListTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
     TaskName="BuildTasks.UpdatePowerShellVersionTask" />
 
   <UsingTask
@@ -74,6 +78,14 @@
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
     TaskName="BuildTasks.UpdateVSToolkitVersionTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.VersionManagement.GetVersionTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.VersionManagement.CreateTestVersionTask" />
 
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"

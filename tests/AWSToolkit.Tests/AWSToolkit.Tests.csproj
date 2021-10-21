@@ -51,11 +51,13 @@
   <ItemGroup>
     <Compile Include="Clients\AwsServiceClientManagerTests.cs" />
     <Compile Include="Clients\ServiceClientCreatorTests.cs" />
+    <Compile Include="CloudFormation\CloudFormationViewerTests.cs" />
     <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
     <Compile Include="CodeArtifact\ConfigurationTests.cs" />
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
     <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
+    <Compile Include="Commands\ShowExceptionAndForgetCommandTests.cs" />
     <Compile Include="CommonUI\AccountAndRegionPickerViewModelTests.cs" />
     <Compile Include="CommonUI\AccountViewModelGroupConverterTests.cs" />
     <Compile Include="CommonUI\BaseModelTests.cs" />
@@ -63,6 +65,10 @@
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
+    <Compile Include="CommonUI\InverseVisibilityConverterTests.cs" />
+    <Compile Include="CommonUI\NullableInverseBooleanConverterTests.cs" />
+    <Compile Include="CommonUI\ToolkitImagesTest.cs" />
+    <Compile Include="CommonUI\TemplateParserTests.cs" />
     <Compile Include="CommonUI\VsImagesTests.cs" />
     <Compile Include="CommonUI\VsKnownImagesTests.cs" />
     <Compile Include="CommonUI\WizardExtensionMethodsTests.cs" />
@@ -74,7 +80,6 @@
     <Compile Include="Credentials\Core\BaseFileCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\CredentialManagerTest.cs" />
     <Compile Include="Credentials\Core\CredentialSettingsManagerTests.cs" />
-    <Compile Include="Credentials\Core\FakeCredentialIdentifier.cs" />
     <Compile Include="Credentials\Core\NoopToolkitSettingsRepository.cs" />
     <Compile Include="Credentials\Core\ProfileCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\TestProfileCredentialProviderFactory.cs" />
@@ -103,6 +108,11 @@
     <Compile Include="ECS\EcsTelemetryUtilsTests.cs" />
     <Compile Include="ECS\EcsWizardUtilsTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
+    <Compile Include="Commands\LearnMoreCommandTests.cs" />
+    <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />
+    <Compile Include="Publish\Banner\PublishBannerPropertyChangedHandlerTests.cs" />
+    <Compile Include="Publish\Banner\SwitchToNewExperienceCommandTests.cs" />
+    <Compile Include="Publish\Banner\PublishBannerViewModelTests.cs" />
     <Compile Include="ElasticBeanstalk\SolutionStackUtilsTests.cs" />
     <Compile Include="ElasticBeanstalk\WizardToEbToolsCommandTests.cs" />
     <Compile Include="Lambda\AddEventSourceControllerTests.cs" />
@@ -119,7 +129,6 @@
     <Compile Include="Lambda\UploadGenericWorkerTests.cs" />
     <Compile Include="Lambda\UploadNETCoreWorkerTests.cs" />
     <Compile Include="Lambda\ViewFunctionControllerTests.cs" />
-    <Compile Include="CommonUI\NullableInverseBooleanConverterTests.cs" />
     <Compile Include="PluginActivator\PluginActivatorUtilitiesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
@@ -164,6 +173,10 @@
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
+      <Project>{6AE302DB-2304-47C8-8E3C-96C85AC1D469}</Project>
+      <Name>AWSToolkit.CloudFormation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
       <Project>{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}</Project>
       <Name>AWSToolkit.CodeArtifact</Name>
@@ -191,6 +204,10 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj">
       <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>
       <Name>AWSToolkit.Lambda</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
+      <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
+      <Name>AWSToolkit.CloudFormation.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SNS\AWSToolkit.SNS.csproj">
       <Project>{fe4c0e46-0427-46e1-8cc9-4b26fb15f728}</Project>

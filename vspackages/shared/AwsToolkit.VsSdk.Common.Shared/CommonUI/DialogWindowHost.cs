@@ -36,6 +36,8 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                     return new OkCancelDialogWindowHost(hostedControl, MessageBoxButton.OKCancel, shellProvider);
                 case MessageBoxButton.YesNo:
                     return new OkCancelDialogWindowHost(hostedControl, MessageBoxButton.YesNo, shellProvider);
+                case MessageBoxButton.OK:
+                    return new OkDialogWindowHost(hostedControl);
                 default:
                     throw new NotImplementedException($"{nameof(DialogWindowHost)} does not support {buttons}");
             }

@@ -1,0 +1,204 @@
+﻿<commonui:BaseAWSUserControl 
+    x:Class="Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls.ConnectionSectionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+    mc:Ignorable="d" 
+    d:DesignHeight="150" d:DesignWidth="200">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
+
+            <Style x:Key="RepositoriesListItemContainerStyle" TargetType="{x:Type ListBoxItem}">
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Padding" Value="1"/>
+
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="{DynamicResource awsWindowTextBrushKey}" />
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border x:Name="Bd"
+                                    Padding="{TemplateBinding Padding}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{DynamicResource awsCommandBarHover}" />
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                                        <Condition Property="IsSelected" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{DynamicResource awsCommandBarSelectedBorder}" />
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                </MultiTrigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.3"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="RepositoriesListItemDataTemplate">
+                <Grid MouseRightButtonDown="OnRepositoryMouseRightButtonDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="0" 
+                           Width="16"
+                           Height="16"
+                           Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCommit}"
+                           />
+                    <TextBlock Grid.Column="1" 
+                               Style="{DynamicResource awsTextBlockBaseStyle}"
+                               Text="{Binding Name}"
+                               Margin="2,0"
+                    />
+                    <Separator Grid.Column="2" 
+                               Style="{DynamicResource awsVerticalSeparatorStyle}"
+                    />
+                    <TextBlock Grid.Column="3" 
+                               Text="{Binding LocalFolder}" 
+                               Style="{DynamicResource awsTextBlockBaseStyle}" 
+                               Foreground="{DynamicResource awsGrayBrushKey}"
+                               TextTrimming="CharacterEllipsis"
+                               Margin="2,0,2,0"
+                               ToolTip="{Binding LocalFolder}"
+                    />
+                </Grid>
+            </DataTemplate>
+            
+            <converters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- This grid shows the Connection Warning status if the Credentials are not valid -->
+        <Grid
+            Grid.Row="0" Grid.Column="0"
+            Margin="0 0 0 6"
+            Background="{DynamicResource awsFieldRequiredBackgroundBrushKey}"
+            Visibility="{Binding IsAccountValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+            >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Image
+                Grid.Row="0" Grid.Column="0"
+                Height="16" Width="16"
+                Margin="9 3 0 3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                DataContext="{DynamicResource CommonIcons}"
+                Source="{Binding Source={StaticResource VsImages}, Path=StatusWarning}" />
+            <TextBlock
+                Grid.Row="0" Grid.Column="1"
+                Margin="9 3 0 3"
+                TextWrapping="Wrap"
+                Foreground="{DynamicResource awsFieldRequiredTextForegroundBrushKey}"
+                Text="{Binding AccountValidationMessage}" />
+            <Button
+                Grid.Row="0" Grid.Column="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Margin="9 3 9 3"
+                Height="23" Width="50"
+                Command="{Binding RefreshConnection}"
+                Content="Retry"
+                />
+        </Grid>
+
+        <!-- Shows a row of command links, like Clone, Create, and Sign out -->
+        <WrapPanel 
+            Grid.Row="1" Grid.Column="0"
+            Orientation="Horizontal" Margin="6,0,0,6" 
+            >
+            <Button Style="{StaticResource ActionLinkButton}" 
+                    KeyboardNavigation.TabIndex="0" 
+                    Command="{Binding CloneCommand}"
+                    Content="Clone"              
+                    />
+            <Separator Style="{DynamicResource awsVerticalSeparatorStyle}" />
+            <Button Style="{StaticResource ActionLinkButton}" 
+                    KeyboardNavigation.TabIndex="1" 
+                    Command="{Binding CreateCommand}"
+                    Content="Create"
+                    />
+            <Separator Style="{DynamicResource awsVerticalSeparatorStyle}" />
+            <Button Style="{StaticResource ActionLinkButton}" 
+                    KeyboardNavigation.TabIndex="2" 
+                    Command="{Binding SignoutCommand}"
+                    Content="{Binding SignoutLabel, UpdateSourceTrigger=PropertyChanged}"
+                    />
+        </WrapPanel>
+
+        <!-- Lists the repos synced locally -->
+        <ListBox x:Name="_ctlRepositoriesList" 
+             Grid.Row="2" Grid.Column="0"
+             Style="{DynamicResource awsListBoxStyle}"
+             ItemsSource="{Binding Repositories, UpdateSourceTrigger=PropertyChanged}"
+             SelectedItem="{Binding Path=SelectedRepository}"
+             ItemContainerStyle="{StaticResource RepositoriesListItemContainerStyle}"
+             ItemTemplate="{StaticResource RepositoriesListItemDataTemplate}"
+             MouseDoubleClick="OnRepositoryMouseDoubleClick"
+             Background="Transparent"
+             BorderBrush="Transparent"
+             VerticalAlignment="Top"
+             HorizontalContentAlignment="Stretch"
+             TextSearch.TextPath="Name"
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+             VirtualizingPanel.IsVirtualizing="True"
+             VirtualizingPanel.ScrollUnit="Pixel"
+             VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+             Visibility="{Binding Repositories, Converter={StaticResource HasItemsVisibilityConverter}}"
+             />
+    </Grid>
+
+</commonui:BaseAWSUserControl>

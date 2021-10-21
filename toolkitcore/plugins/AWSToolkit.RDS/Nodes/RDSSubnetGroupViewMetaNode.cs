@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
@@ -8,7 +10,8 @@ namespace Amazon.AWSToolkit.RDS.Nodes
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
                 new ActionHandlerWrapper("View", OnView, null, true,
-                    this.GetType().Assembly, null),
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.RdsSubnetGroups.Path),
                 null,
                 new ActionHandlerWrapper("Delete Subnet Group", OnDelete, null, false,
                     null, "delete.png")

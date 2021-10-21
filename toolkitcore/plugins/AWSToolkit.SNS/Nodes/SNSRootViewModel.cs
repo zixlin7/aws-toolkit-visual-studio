@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.SNS.Nodes
 {
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.SNS.Nodes
 
         public override string ToolTip => "Amazon Simple Notification Service (Amazon SNS) is a web service that makes it easy to set up, operate, and send notifications from the cloud. It provides developers with a highly scalable, flexible, and cost-effective capability to publish messages from an application and immediately deliver them to subscribers or other applications. It is designed to make web-scale computing easier for developers.";
 
-        protected override string IconName => "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.service-root-icon.png";
+        protected override string IconName => AwsImageResourcePath.SimpleNotificationService.Path;
 
         public IAmazonSimpleNotificationService SNSClient => this._snsClient.Value;
 

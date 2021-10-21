@@ -1,4 +1,6 @@
-﻿namespace Amazon.AWSToolkit.EC2.Nodes
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+
+namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class EC2KeyPairsViewModel : FeatureViewModel
     {
@@ -9,6 +11,6 @@
 
         public override string ToolTip => "Manage EC2 key pairs and store private keys";
 
-        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.key-pairs.gif";
+        protected override string IconName => AwsImageResourcePath.Ec2KeyPairs.Path;
     }
 }

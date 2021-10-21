@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Runtime.Versioning;
+
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Solutions
 {
@@ -6,35 +9,30 @@ namespace Amazon.AWSToolkit.Solutions
     {
         public string Name { get; }
         public string Path { get; }
-        public ProjectType Type { get; }
+        public FrameworkName TargetFramework { get; }
 
-        public Project(string name, string path, ProjectType type)
+        public Project(string name, string path, FrameworkName targetFramework)
         {
             Name = name;
             Path = path;
-            Type = type;
+            TargetFramework = targetFramework;
         }
 
         public bool IsNetCore()
         {
-            return ProjectType.NetCore.Equals(Type);
+            return FrameworkNameHelper.IsDotNetCore(TargetFramework);
         }
 
         public bool IsNetFramework()
         {
-            return ProjectType.NetFramework.Equals(Type);
-        }
-
-        public bool IsUnknown()
-        {
-            return ProjectType.Unknown.Equals(Type);
+            return FrameworkNameHelper.IsDotNetFramework(TargetFramework);
         }
 
         public bool Equals(Project other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Name == other.Name && Path == other.Path && Type == other.Type;
+            return Name == other.Name && Path == other.Path && TargetFramework == other.TargetFramework;
         }
 
         public override bool Equals(object obj)
@@ -51,7 +49,7 @@ namespace Amazon.AWSToolkit.Solutions
             {
                 var hashCode = (Name != null ? Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Path != null ? Path.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (int)Type;
+                hashCode = (hashCode * 397) ^ (TargetFramework != null ? TargetFramework.GetHashCode() : 0);
                 return hashCode;
             }
         }
@@ -64,6 +62,11 @@ namespace Amazon.AWSToolkit.Solutions
         public static bool operator !=(Project left, Project right)
         {
             return !Equals(left, right);
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Name)}: {Name}, {nameof(Path)}: {Path}, {nameof(TargetFramework)}: {TargetFramework}";
         }
     }
 }

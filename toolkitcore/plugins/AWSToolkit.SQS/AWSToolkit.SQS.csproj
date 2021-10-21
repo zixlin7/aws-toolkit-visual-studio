@@ -139,7 +139,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\queue-add.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\queue-node.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\service-root-icon.png" />
   </ItemGroup>

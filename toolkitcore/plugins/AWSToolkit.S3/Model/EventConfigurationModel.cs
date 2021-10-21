@@ -185,11 +185,11 @@ namespace Amazon.AWSToolkit.S3.Model
                 switch (this.ServiceName)
                 {
                     case SNS_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.sns-service-icon.png").Source;
+                        return ToolkitImages.SimpleNotificationService;
                     case SQS_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.sqs-service-icon.png").Source;
+                        return ToolkitImages.SimpleQueueService;
                     case LAMBDA_FRIENDLY_NAME:
-                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.lambda-service-icon.png").Source;
+                        return ToolkitImages.Lambda;
                     default:
                         return null;
                 }

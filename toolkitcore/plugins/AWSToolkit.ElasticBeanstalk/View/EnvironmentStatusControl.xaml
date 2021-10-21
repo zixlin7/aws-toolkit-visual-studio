@@ -14,6 +14,8 @@
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
                 <ResourceDictionary Source="EditorTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
+            <commonui:VsImages x:Key="VsImages" />
 
             <!-- style is referenced through codebehind, so don't delete -->
             <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
@@ -79,7 +81,7 @@
             <Menu>
                 <MenuItem x:Name="environmentMenu">
                     <MenuItem.Icon>
-                        <Image Source="..\Resources\Images\environment.png" Margin="0" />
+                        <Image Height="16" Width="16" Source="{Binding Source={StaticResource ToolkitImages}, Path=ElasticBeanstalkEnvironment}" Margin="0" />
                     </MenuItem.Icon>
                     <MenuItem.HeaderTemplate>
                         <DataTemplate>
@@ -113,9 +115,6 @@
                               Header="Rebuild" 
                               Click="onRebuildEnvironment"
                               >
-                        <MenuItem.Icon>
-                            <Image Source="..\Resources\Images\rebuild.png" />
-                        </MenuItem.Icon>
                     </MenuItem>
                     <Separator />
                     <MenuItem x:Name="_ctlTerminate" 
@@ -123,7 +122,7 @@
                               Click="onTerminateEnvironment"
                               >
                         <MenuItem.Icon>
-                            <Image Source="..\Resources\Images\terminate.png" />
+                            <Image Height="16" Width="16" Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>

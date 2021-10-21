@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.ECS.Model;
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+using Amazon.AWSToolkit.ECS.Model;
 using Amazon.ECS;
 using log4net;
 
@@ -24,7 +25,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public TaskDefinitionWrapper TaskDefinition => this._taskDefinition;
 
-        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.taskdef.png";
+        protected override string IconName => AwsImageResourcePath.EcsTaskDefinition.Path;
 
         public string Family => _taskDefinition.Family;
     }

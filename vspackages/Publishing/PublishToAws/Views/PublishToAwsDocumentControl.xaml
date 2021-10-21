@@ -1,0 +1,104 @@
+﻿<commonUi:BaseAWSControl x:Class="Amazon.AWSToolkit.Publish.Views.PublishToAwsDocumentControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:views="clr-namespace:Amazon.AWSToolkit.Publish.Views"
+             xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.Publish.ViewModels"
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+             xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
+             themes:ToolkitThemes.UseToolkitTheme="True"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <commonUi:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:SessionVisibilityConverter x:Key="SessionVisibilityConverter" />
+        </ResourceDictionary>
+    </commonUi:BaseAWSControl.Resources>
+    <DockPanel
+        LastChildFill="True"
+        Margin="6 6 6 6"
+        >
+        <views:PublishDocumentHeader DockPanel.Dock="Top" Visibility="Collapsed" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Label
+                Grid.Row="0" Grid.Column="0"
+                Margin="0 0 9 0"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
+                FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontWeightKey}}"
+                Content="{Binding ProjectName}"
+                ContentStringFormat="Publish to AWS: {0}" />
+
+            <ProgressBar 
+                Grid.Row="0" Grid.Column="1" 
+                Height="8"
+                VerticalAlignment="Center"
+                IsIndeterminate="True"
+                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+            <views:PublishOptions Grid.Row="0" Grid.Column="2"/>
+
+            <!-- This shows the appropriate view within this document based on the value of ViewStage -->
+            <ContentPresenter 
+                Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                Visibility="{Binding SessionId, Converter={StaticResource SessionVisibilityConverter}}"
+                Content="{Binding}">
+                <ContentPresenter.Resources>
+                    <DataTemplate x:Key="ViewTarget">
+                        <views:SelectTargetView />
+                    </DataTemplate>
+                    <DataTemplate x:Key="ViewConfigure">
+                        <views:ConfigureTargetView />
+                    </DataTemplate>
+                    <DataTemplate x:Key="ViewPublish">
+                        <views:PublishApplicationView />
+                    </DataTemplate>
+                </ContentPresenter.Resources>
+
+                <ContentPresenter.Style>
+                    <Style TargetType="{x:Type ContentPresenter}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewStage}" Value="Target">
+                                <Setter Property="ContentTemplate" Value="{StaticResource ViewTarget}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ViewStage}" Value="Configure">
+                                <Setter Property="ContentTemplate" Value="{StaticResource ViewConfigure}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ViewStage}" Value="Publish">
+                                <Setter Property="ContentTemplate" Value="{StaticResource ViewPublish}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentPresenter.Style>
+            </ContentPresenter>
+
+            <!-- Footer containing actions relevant to the Target and Configure views -->
+            <views:PublishDocumentFooter 
+                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                Margin="0 18 0 0">
+                <views:PublishDocumentFooter.Style>
+                    <Style TargetType="{x:Type views:PublishDocumentFooter}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewStage}" Value="Publish">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </views:PublishDocumentFooter.Style>
+            </views:PublishDocumentFooter>
+        </Grid>
+    </DockPanel>
+</commonUi:BaseAWSControl>

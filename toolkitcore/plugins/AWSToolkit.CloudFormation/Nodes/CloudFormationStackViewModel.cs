@@ -4,6 +4,7 @@ using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.CloudFormation.Nodes
 {
@@ -23,7 +24,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             this._cloudFormationClient = this._serviceModel.CloudFormationClient;
         }
 
-        protected override string IconName => "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.stack-node.png";
+        protected override string IconName => AwsImageResourcePath.CloudFormationStack.Path;
 
         public IAmazonCloudFormation CloudFormationClient => this._cloudFormationClient;
 

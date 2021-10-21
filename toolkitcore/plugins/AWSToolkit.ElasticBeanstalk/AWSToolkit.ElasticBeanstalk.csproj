@@ -417,12 +417,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\application.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\application_new.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\environment.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\environment_new.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\EmbeddedImages\Failed.png" />
     <Resource Include="Resources\EmbeddedImages\Validated.png" />
   </ItemGroup>
@@ -451,18 +445,11 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\rebuild.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\application_view.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\environment_view.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\rootviewnode.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\refresh.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\SnapshotLogs.png" />
   </ItemGroup>

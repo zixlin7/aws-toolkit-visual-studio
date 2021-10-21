@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Moq;
@@ -14,6 +16,10 @@ namespace Amazon.AWSToolkit.Tests.Common.VisualStudio
         // Param names have been kept consistent with the function's documentation
         // ReSharper disable IdentifierTypo
         // ReSharper disable InconsistentNaming
+        delegate void GetPropertyCallback(uint itemId, int propertyId, out object value);
+
+        private delegate void GetProjectOfUniqueNameDelegate(string pszUniqueName, out IVsHierarchy ppHierarchy);
+
         private delegate void GetCurrentSelectionDelegate(out IntPtr ppHier,
             out uint pitemid,
             out IVsMultiItemSelect ppMIS,
@@ -27,6 +33,7 @@ namespace Amazon.AWSToolkit.Tests.Common.VisualStudio
         // ReSharper restore InconsistentNaming
 
         private readonly Mock<IVsMonitorSelection> _monitorSelection = new Mock<IVsMonitorSelection>();
+        private readonly Mock<IVsSolution> _solution = new Mock<IVsSolution>();
         private readonly Mock<IVsHierarchy> _hierarchy = new Mock<IVsHierarchy>();
 
         private object _currentSelection = null;
@@ -34,12 +41,14 @@ namespace Amazon.AWSToolkit.Tests.Common.VisualStudio
         private int _getCurrentSelectionReturnValue = VSConstants.S_OK;
 
         public IVsMonitorSelection MonitorSelection => _monitorSelection.Object;
+        public IVsSolution Solution => _solution.Object;
 
         public SolutionExplorerFixture()
         {
             IntPtr hierarchyPtr, selectionContainerPtr;
             uint projectItemId;
             IVsMultiItemSelect mis;
+            IVsHierarchy tempHierarchy;
 
             _monitorSelection.Setup(
                     m => m.GetCurrentSelection(out hierarchyPtr, out projectItemId, out mis, out selectionContainerPtr))
@@ -59,6 +68,14 @@ namespace Amazon.AWSToolkit.Tests.Common.VisualStudio
                     ppSC = IntPtr.Zero;
                 }))
                 .Returns(() => _getCurrentSelectionReturnValue);
+
+            _solution.Setup(
+                    m => m.GetProjectOfUniqueName(It.IsAny<string>(), out tempHierarchy))
+                .Callback(new GetProjectOfUniqueNameDelegate((string uniqueName, out IVsHierarchy hierarchy) =>
+                {
+                    hierarchy = _hierarchy.Object;
+                }))
+                .Returns(() => VSConstants.S_OK);
 
 
             object prjItemObject = null;
@@ -94,6 +111,20 @@ namespace Amazon.AWSToolkit.Tests.Common.VisualStudio
             _getCurrentSelectionHierarchy = Marshal.GetIUnknownForObject(_hierarchy.Object);
             _getCurrentSelectionReturnValue = VSConstants.S_OK;
             _currentSelection = selection;
+        }
+
+        public void SetProjectTargetFramework(FrameworkName framework)
+        {
+            var getProperty = new GetPropertyCallback((uint itemId, int propId, out object propertyValue) =>
+            {
+                propertyValue = framework.FullName;
+            });
+
+            object tempValue;
+            _hierarchy.Setup(
+                    m => m.GetProperty(It.IsAny<uint>(), (int) __VSHPROPID4.VSHPROPID_TargetFrameworkMoniker, out tempValue))
+                .Callback(getProperty)
+                .Returns(() => VSConstants.S_OK);
         }
     }
 }

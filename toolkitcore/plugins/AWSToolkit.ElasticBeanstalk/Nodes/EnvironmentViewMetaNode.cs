@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -32,12 +34,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("View Status", OnEnvironmentStatus, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.environment_view.png"),
+                new ActionHandlerWrapper("View Status", OnEnvironmentStatus, null, true, typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.ElasticBeanstalkEnvironment.Path),
                 null,
                 new ActionHandlerWrapper("Restart App", OnRestartApp, null, false, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.restart.png"),
-                new ActionHandlerWrapper("Rebuild Environment", OnRebuildingEnvironment, null, false, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.rebuild.png"),
+                new ActionHandlerWrapper("Rebuild Environment", OnRebuildingEnvironment, null, false, null, null),
                 null,
-                new ActionHandlerWrapper("Terminate Environment", OnTerminateEnvironment, null, false, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.terminate.png")
+                new ActionHandlerWrapper("Terminate Environment", OnTerminateEnvironment, null, false, null, "delete.png")
             );
     }
 }

@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
                 <ResourceDictionary Source="../ResourceStrings.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -75,7 +76,7 @@
                         <Image
                             Width="16"
                             Height="16"
-                            Source="..\..\Resources\Images\new-bucket.png" />
+                            Source="{Binding Source={StaticResource ToolkitImages}, Path=SimpleStorageService}"/>
                         <TextBlock Margin="5,0">Create New Bucket</TextBlock>
                     </WrapPanel>
                 </Button.Content>

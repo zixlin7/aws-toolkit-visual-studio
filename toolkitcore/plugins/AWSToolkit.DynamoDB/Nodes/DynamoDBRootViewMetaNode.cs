@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.DynamoDB.Util;
 using Amazon.AWSToolkit.Regions;
 using Amazon.DynamoDBv2;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.DynamoDB.Nodes
 {
@@ -70,7 +71,8 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("Create Table...", OnTableCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnTableCreateResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table_add.png"),
+                new ActionHandlerWrapper("Create Table...", OnTableCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnTableCreateResponse), false, typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.DynamoDbTable.Path),
                 new ActionHandlerWrapper("Connect to DynamoDB Local", OnStartLocal, new ActionHandlerWrapper.ActionResponseHandler(this.OnDynamoDBLocalStartResponse), false, null, null),
                 new ActionHandlerWrapper("Stop DynamoDB Local", OnStopLocal, new ActionHandlerWrapper.ActionResponseHandler(this.OnDynamoDBLocalStopResponse), false, null, null));
 

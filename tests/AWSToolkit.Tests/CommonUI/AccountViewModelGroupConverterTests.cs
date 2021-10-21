@@ -2,6 +2,8 @@
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.Converters;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Tests.Common.Context;
+
 using AWSToolkit.Tests.Credentials.Core;
 using Xunit;
 

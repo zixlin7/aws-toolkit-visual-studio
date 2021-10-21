@@ -377,11 +377,6 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\bucket_pending_delete.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\lambda-service-icon.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\sns-service-icon.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\sqs-service-icon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFront">
       <Version>3.7.3.36</Version>
     </PackageReference>

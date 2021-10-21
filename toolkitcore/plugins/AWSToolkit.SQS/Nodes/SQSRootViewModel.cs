@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.SQS.Nodes
 {
@@ -27,7 +28,7 @@ namespace Amazon.AWSToolkit.SQS.Nodes
 
         public override string ToolTip => "Amazon Simple Queue Service (Amazon SQS) offers a reliable, highly scalable, hosted queue for storing messages as they travel between computers. By using Amazon SQS, developers can simply move data between distributed components of their applications that perform different tasks, without losing messages or requiring each component to be always available.";
 
-        protected override string IconName => "Amazon.AWSToolkit.SQS.Resources.EmbeddedImages.service-root-icon.png";
+        protected override string IconName => AwsImageResourcePath.SimpleQueueService.Path;
 
         public IAmazonSQS SQSClient => this._sqsClient.Value;
 

@@ -2,11 +2,13 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
+using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Solutions;
@@ -15,6 +17,7 @@ using Amazon.AWSToolkit.VisualStudio.Utilities;
 using Amazon.AwsToolkit.VsSdk.Common;
 
 using AwsToolkit.VsSdk.Common.CommonUI;
+using AwsToolkit.VsSdk.Common.Notifications;
 
 using Microsoft;
 using Microsoft.VisualStudio;
@@ -342,6 +345,19 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             return t;
         }
 
+        public T ExecuteOnUIThread<T>(Func<System.Threading.Tasks.Task<T>> asyncFunc)
+        {
+            async Task<T> TaskFunc()
+            {
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return await asyncFunc();
+            }
+
+            T result = this._hostPackage.JoinableTaskFactory.Run<T>(TaskFunc);
+
+            return result;
+        }
+
         public IntPtr GetParentWindowHandle()
         {
             return _hostPackage.GetParentWindowHandle();
@@ -445,7 +461,34 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             });
         }
 
-        public Project GetSelectedProject() => VSUtility.SelectedWebProject.AsProject();
+        public Project GetSelectedProject()
+        {
+            var vsMonitorSelection = _hostPackage.GetVSShellService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
+            Assumes.Present(vsMonitorSelection);
+
+            var hierarchy = vsMonitorSelection.GetCurrentSelectionVsHierarchy(out var itemId);
+            if (hierarchy == null)
+            {
+                return null;
+            }
+
+            if (!VsHierarchyHelpers.TryGetExtObject(hierarchy, itemId, out var extObject))
+            {
+                return null;
+            }
+
+            if (!(extObject is EnvDTE.Project dteProject))
+            {
+                return null;
+            }
+
+            if (!VsHierarchyHelpers.TryGetTargetFramework(hierarchy, itemId, out var targetFramework))
+            {
+                return null;
+            }
+
+            return new Project(dteProject.Name, dteProject.FileName, targetFramework);
+        }
 
         public void CloseEditor(IAWSToolkitControl editorControl)
         {
@@ -502,6 +545,16 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 }
             }
         }
+
+        public async Task<IProgressDialog> CreateProgressDialog()
+        {
+            var dialogFactory =
+                await _hostPackage.GetServiceAsync(
+                    typeof(SVsThreadedWaitDialogFactory)) as IVsThreadedWaitDialogFactory;
+            var dialog = new ProgressDialog(dialogFactory);
+            return dialog;
+        }
+
         #endregion
 
         private AWSToolkitShellProviderService() { }

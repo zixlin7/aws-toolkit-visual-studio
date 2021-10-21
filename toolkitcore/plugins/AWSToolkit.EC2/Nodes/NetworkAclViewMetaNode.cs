@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
@@ -9,7 +11,7 @@ namespace Amazon.AWSToolkit.EC2.Nodes
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
                 new ActionHandlerWrapper("View", OnView, null, true,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.networkacl.png")
+                    typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.VpcNetworkAccessControlList.Path)
             );
     }
 }

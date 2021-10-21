@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.S3.Clipboard;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.S3.Nodes
 {
@@ -26,7 +27,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
 
         public override string ToolTip => "Amazon S3 is storage for the Internet. It’s a simple storage service that offers software developers a highly-scalable, reliable, and low-latency data storage infrastructure at very low costs.";
 
-        protected override string IconName => "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.service-root-icon.png";
+        protected override string IconName => AwsImageResourcePath.SimpleStorageService.Path;
 
         public IAmazonS3 S3Client => this._s3Client.Value;
 

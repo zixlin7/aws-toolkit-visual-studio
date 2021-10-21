@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
 {
@@ -27,7 +28,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             "It integrates with other AWS services to give you an easy way to " +
             "distribute content to end users with low latency and high data transfer speeds.";
 
-        protected override string IconName => "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.service-root.png";
+        protected override string IconName => AwsImageResourcePath.CloudFront.Path;
 
         public IAmazonCloudFront CFClient => this._cfClient.Value;
 

@@ -26,6 +26,14 @@
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
 
+        <!-- Lambda and Serverless related Project Templates -->
+        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.Lambda.TemplateWizards.v17" Path="|AWSToolkit.Lambda.TemplateWizards.v17|" AssemblyName="|AWSToolkit.Lambda.TemplateWizards.v17;AssemblyName|" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaFunctionProjectTemplate.v17" d:TargetPath="|LambdaFunctionProjectTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MsbuildFunctionTemplate.v17" d:TargetPath="|MsbuildFunctionTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MsbuildFunctionWithTestsTemplate.v17" d:TargetPath="|MsbuildFunctionWithTestsTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MsbuildServerlessTemplate.v17" d:TargetPath="|MsbuildServerlessTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MsbuildServerlessWithTestsTemplate.v17" d:TargetPath="|MsbuildServerlessWithTestsTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Extensions.dll" AssemblyName="AWSSDK.Extensions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.AutoScaling.dll" AssemblyName="AWSSDK.AutoScaling, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudFormation.dll" AssemblyName="AWSSDK.CloudFormation, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -33,8 +34,9 @@ namespace Amazon.AWSToolkit.SQS.Nodes
         }
 
         public override IList<ActionHandlerWrapper> Actions =>
-            BuildActionHandlerList(new ActionHandlerWrapper("Create Queue...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false, this.GetType().Assembly,
-                "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.queue-add.png"));
+            BuildActionHandlerList(new ActionHandlerWrapper("Create Queue...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false,
+                typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.SqsQueue.Path));
 
         public override string MarketingWebSite => "https://aws.amazon.com/sqs/";
     }

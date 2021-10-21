@@ -7,25 +7,28 @@ namespace AWSToolkit.Tests.Lambda
 {
     public class LambdaModel
     {
-        public LambdaModel()
-        { }
+        [Fact]
+        public void RuntimeOptionsAreNetCore()
+        {
+            Assert.True(RuntimeOption.NetCore_v3_1.IsNetCore);
+            Assert.False(RuntimeOption.NetCore_v3_1.IsNode);
+            Assert.False(RuntimeOption.NetCore_v3_1.IsCustomRuntime);
+        }
 
         [Fact]
-        public void RuntimeOptionsIsNodeOrIsNetCore()
+        public void RuntimeOptionsAreNode()
         {
-            Assert.True(RuntimeOption.NetCore_v2_1.IsNetCore);
-            Assert.False(RuntimeOption.NetCore_v2_1.IsNode);
             Assert.True(RuntimeOption.NodeJS_v12_X.IsNode);
             Assert.False(RuntimeOption.NodeJS_v12_X.IsNetCore);
+            Assert.False(RuntimeOption.NodeJS_v12_X.IsCustomRuntime);
         }
 
         [Fact]
         public void RuntimeClass()
         {
-            var x = RuntimeOption.NetCore_v2_1;
-            Assert.Equal(".NET Core v2.1", x.DisplayName);
-            Assert.Equal("dotnetcore2.1", x.Value);
-            Assert.True(x.GetType().GetConstructors().Length == 0, "Public constructor, should not be able to create a runtime option!");
+            var runtime = RuntimeOption.NetCore_v3_1;
+            Assert.Equal(".NET Core v3.1", runtime.DisplayName);
+            Assert.Equal("dotnetcore3.1", runtime.Value);
         }
 
         [Fact]

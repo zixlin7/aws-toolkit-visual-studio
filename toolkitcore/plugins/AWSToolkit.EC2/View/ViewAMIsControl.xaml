@@ -16,6 +16,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <commonui:ToolkitImages x:Key="ToolkitImages" />
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
 
@@ -42,7 +44,7 @@
                             <Image
                                 Width="16"
                                 Height="16"
-                                Source="..\Resources\Images\launch-instance.png" />
+                                Source="{Binding Source={StaticResource ToolkitImages},Path=Ec2Instances}" />
                             <TextBlock>Launch Instance</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -56,7 +58,7 @@
                             <Image
                                 Width="16"
                                 Height="16"
-                                Source="..\Resources\Images\deregisterami.png" />
+                                Source="{Binding Source={StaticResource VsImages}, Path=Remove}" />
                             <TextBlock>De-register</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -67,8 +69,7 @@
                             <Image
                                 Width="16"
                                 Height="16"
-                                DataContext="{DynamicResource CommonIcons}"
-                                Source="{Binding RefreshIcon}" />
+                                Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
                             <TextBlock>Refresh</TextBlock>
                         </WrapPanel>
                     </Button.Content>

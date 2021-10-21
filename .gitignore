@@ -11,6 +11,7 @@
 **/bin_vs2010/
 **/bin/
 **/obj/
+**/obj-v1?/
 **/TestResults/
 **/Temp/
 **/NuGet.exe

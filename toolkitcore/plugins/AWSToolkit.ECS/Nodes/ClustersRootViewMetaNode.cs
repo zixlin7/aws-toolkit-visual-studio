@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -23,8 +25,8 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                     OnLaunchCluster, 
                     null, 
                     false,
-                    this.GetType().Assembly, 
-                    "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.launch_cluster.png")
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.ElasticContainerServiceCluster.Path)
             );
     }
 }

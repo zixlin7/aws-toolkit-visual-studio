@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Amazon.SQS;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.CommonUI.Images;
 
 namespace Amazon.AWSToolkit.SQS.Nodes
 {
@@ -21,7 +22,7 @@ namespace Amazon.AWSToolkit.SQS.Nodes
         }
 
 
-        protected override string IconName => "Amazon.AWSToolkit.SQS.Resources.EmbeddedImages.queue-node.png";
+        protected override string IconName => AwsImageResourcePath.SqsQueue.Path;
 
 
         public string QueueUrl => this._url;

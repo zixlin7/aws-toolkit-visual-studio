@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
@@ -19,10 +21,12 @@ namespace Amazon.AWSToolkit.RDS.Nodes
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
                 new ActionHandlerWrapper("Create...", OnCreate, null, false,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.CreateDBSubnetGroup.png"),
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.RdsSubnetGroups.Path),
                 null,
                 new ActionHandlerWrapper("View", OnView, null, true,
-                    this.GetType().Assembly, null)
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.RdsSubnetGroups.Path)
             );
     }
 }

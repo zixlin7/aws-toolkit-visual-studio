@@ -127,7 +127,6 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\send-message.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\service-root-icon.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\topic-node.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\view_subscription.png" />
     <Resource Include="Resources\Images\publish_to_topic.png" />
     <Resource Include="Resources\Images\send-message.png" />
   </ItemGroup>

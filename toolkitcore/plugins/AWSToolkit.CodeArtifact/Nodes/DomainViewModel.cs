@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.Navigator.Node;
+﻿using Amazon.AWSToolkit.CommonUI.Images;
+using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.CodeArtifact;
 using Amazon.CodeArtifact.Interface.Nodes;
 using Amazon.CodeArtifact.Model;
@@ -13,7 +14,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Nodes
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(RepoViewModel));
 
         private static readonly string DomainIcon =
-            "Amazon.AWSToolkit.CodeArtifact.Resources.EmbeddedImages.bucket.png";
+           AwsImageResourcePath.CodeArtifactRepository.Path;
 
         DomainViewMetaNode _metaNode;
         private CodeArtifactRootViewModel _serviceModel;

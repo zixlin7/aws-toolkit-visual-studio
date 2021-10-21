@@ -16,6 +16,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
 
     </commonui:BaseAWSView.Resources>
@@ -33,7 +34,7 @@
                 <Button Click="onAllocateAddressClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\elastic-ip-new.png"/>
+                            <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=Add}"/>
                             <TextBlock>Allocate New Address</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -41,7 +42,7 @@
                 <Button Click="onReleaseAddressClick" Name="_ctlRelease" IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\elastic-ip-release.png"/>
+                            <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=Cancel}"/>
                             <TextBlock>Release Address</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -49,7 +50,7 @@
                 <Button Click="onAssociateAddressClick" Name="_ctlAssociate" IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\elastic-ip-associate.png"/>
+                            <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=AddLink}"/>
                             <TextBlock>Associate Address</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -57,7 +58,7 @@
                 <Button Click="onDisassociateAddressClick" Name="_ctlDisassociate" IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\elastic-ip-disassociate.png"/>
+                            <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=RemoveLink}"/>
                             <TextBlock>Disassociate Address</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -65,7 +66,7 @@
                 <Button Click="onRefreshClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Refresh}"/>
                             <TextBlock>Refresh</TextBlock>
                         </WrapPanel>
                     </Button.Content>

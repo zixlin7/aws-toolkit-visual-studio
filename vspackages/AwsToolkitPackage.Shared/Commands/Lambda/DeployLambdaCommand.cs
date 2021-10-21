@@ -12,8 +12,10 @@ using EnvDTE;
 
 using log4net;
 
+using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Flavor;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
 
 using Task = System.Threading.Tasks.Task;
@@ -29,6 +31,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
         static readonly ILog Logger = LogManager.GetLogger(typeof(DeployLambdaCommand));
 
         private readonly IAWSToolkitShellProvider _toolkitShell;
+        private readonly IVsMonitorSelection _monitorSelection;
 
         /// <summary>
         /// Caches the Lambda plugin. Use <see cref="LambdaPlugin"/> to access.
@@ -56,18 +59,21 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
             }
         }
 
-        public DeployLambdaCommand(IAWSToolkitShellProvider toolkitShell)
+        public DeployLambdaCommand(IAWSToolkitShellProvider toolkitShell, IVsMonitorSelection monitorSelection)
         {
             _toolkitShell = toolkitShell;
+            _monitorSelection = monitorSelection;
         }
 
-        public static Task<DeployLambdaCommand> InitializeAsync(
+        public static async Task<DeployLambdaCommand> InitializeAsync(
             IAWSToolkitShellProvider toolkitShell,
             Guid menuGroup, int commandId,
             AsyncPackage package)
         {
-            return InitializeAsync(
-                () => new DeployLambdaCommand(toolkitShell),
+            var monitorSelection = await package.GetServiceAsync(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
+
+            return await InitializeAsync(
+                () => new DeployLambdaCommand(toolkitShell, monitorSelection),
                 menuGroup, commandId,
                 package);
         }
@@ -188,33 +194,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
                     return;
                 }
 
-                if (VSUtility.IsLambdaDotnetProject ||
-                    (VSUtility.SelectedFileMatchesName(Amazon.AWSToolkit.Constants
-                        .AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME) && VSUtility.GetSelectedItemFullPath() != null))
+                if (IsLambdaProject())
                 {
                     menuCommand.Visible = true;
-                }
-                else
-                {
-                    // Check if it is a valid Node.js Lambda project.
-                    uint selectedItemId;
-                    var hierarchyNode = VSUtility.GetCurrentVSHierarchySelection(out selectedItemId);
-                    if (hierarchyNode == null)
-                    {
-                        return;
-                    }
-
-                    // even though we have a catch block, testing for non-null smooths debugging
-                    if (hierarchyNode is IVsAggregatableProjectCorrected ap)
-                    {
-                        string projTypeGuids = string.Empty;
-                        ap.GetAggregateProjectTypeGuids(out projTypeGuids);
-                        if (string.Equals(GuidList.guidNodeJSConsoleProjectFactoryString, projTypeGuids,
-                            StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            menuCommand.Visible = true;
-                        }
-                    }
                 }
             }
             catch
@@ -222,6 +204,32 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
                 // Swallow error for stability -- menu will not be visible
                 // do not log - this is invoked each time the menu is opened
             }
+        }
+
+        private bool IsLambdaProject()
+        {
+            try
+            {
+                if (VSUtility.IsLambdaDotnetProject)
+                {
+                    return true;
+                }
+
+                if (VSUtility.IsLambdaServerlessProject())
+                {
+                    return true;
+                }
+
+                if (VSUtility.IsLambdaNodeJsProject(_monitorSelection))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                // Swallow error for stability 
+            }
+            return false;
         }
 
         private async Task<bool> TrySaveAllDocumentsAsync()

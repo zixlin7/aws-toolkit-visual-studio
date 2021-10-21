@@ -102,7 +102,7 @@ namespace AWSToolkit.Tests.Lambda
             Fixture.Page.ViewModel.HandlerType = type;
             Fixture.Page.ViewModel.HandlerMethod = method;
 
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v2_1;
+            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v3_1;
             Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
 
             Fixture.Page.ViewModel.Runtime = RuntimeOption.PROVIDED_AL2;
@@ -118,7 +118,7 @@ namespace AWSToolkit.Tests.Lambda
             Fixture.Page.ViewModel.Handler = handler;
 
             // Handler can not be empty for non-Custom runtimes
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v2_1;
+            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v3_1;
             Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
 
             // Handler can be empty for Custom runtimes
@@ -181,7 +181,7 @@ namespace AWSToolkit.Tests.Lambda
         public void FrameworkAffectsRuntime()
         {
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp10, RuntimeOption.PROVIDED);
-            AssertFrameworkSetsRuntime(Frameworks.NetCoreApp21, RuntimeOption.NetCore_v2_1);
+            AssertFrameworkSetsRuntime(Frameworks.NetCoreApp21, RuntimeOption.PROVIDED);
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp31, RuntimeOption.NetCore_v3_1);
             AssertFrameworkSetsRuntime(Frameworks.Net50, RuntimeOption.PROVIDED);
         }
@@ -196,7 +196,6 @@ namespace AWSToolkit.Tests.Lambda
         [StaFact]
         public void RuntimeAffectsFramework()
         {
-            AssertRuntimeAffectsFramework(RuntimeOption.NetCore_v2_1, Frameworks.NetCoreApp21);
             AssertRuntimeAffectsFramework(RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31);
         }
 
@@ -205,7 +204,6 @@ namespace AWSToolkit.Tests.Lambda
         {
             var runtimesToShow = new RuntimeOption[]
             {
-                RuntimeOption.NetCore_v2_1,
                 RuntimeOption.NetCore_v3_1,
                 RuntimeOption.PROVIDED,
                 RuntimeOption.PROVIDED_AL2,
@@ -223,7 +221,7 @@ namespace AWSToolkit.Tests.Lambda
         [StaFact]
         public void DotNetHandlerComponentsAffectHandler()
         {
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v2_1;
+            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v3_1;
 
             Fixture.Page.ViewModel.HandlerAssembly = "aaa";
             Fixture.Page.ViewModel.HandlerType = "ttt";

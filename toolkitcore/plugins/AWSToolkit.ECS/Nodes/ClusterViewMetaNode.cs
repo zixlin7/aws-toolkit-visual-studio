@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 
 
@@ -18,15 +20,15 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                     OnView, 
                     null, 
                     true,
-                    this.GetType().Assembly, 
-                    "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.clusters.png"),
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.ElasticContainerServiceCluster.Path),
                 null,
                 new ActionHandlerWrapper("Delete",
                     OnDelete,
                     null,
                     false,
-                    this.GetType().Assembly,
-                    "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.delete-cluster.png")
+                    null,
+                    "delete.png")
             );
     }
 }

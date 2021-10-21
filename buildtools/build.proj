@@ -132,6 +132,7 @@
             <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\AWSToolkit.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
+            <TestAssemblies Include="..\tests\PublishToAws.Tests\bin\$(Configuration)\PublishToAws.Tests.dll" />
         </ItemGroup>        
 
         <MakeDir Directories="$(TestResults)" />
@@ -278,6 +279,51 @@
 			VersionNumber="$(AWSToolkitVersionNumber)"
 			WaitForDebugger="false"
 			/>
+	</Target>
+	
+    <!-- apply-test-version: 
+        This sets the Toolkit's version to the most recently released version, except that the 4th digit (Revision) is 
+        stamped with the current month and day. To override the automatically generated version, set the "Version" parameter.
+
+        This is intended for quickly creating test builds, where the version is less critical, but having incremental daily
+        granularity would help make it easier to install newer test builds.
+     -->
+	<Target Name="apply-test-version" DependsOnTargets="build-tools">
+        <GetVersionTask Filename="$(MSBuildProjectDirectory)\release\config.json">
+            <Output TaskParameter="Version" PropertyName="InitialVersion" />
+        </GetVersionTask>
+
+        <Message Text="Current version: $(InitialVersion)" />
+
+		<CreateTestVersionTask InitialVersion="$(InitialVersion)">
+            <Output TaskParameter="Version" PropertyName="TestVersion" />
+        </CreateTestVersionTask>
+
+        <PropertyGroup>
+            <!-- If the parameter "Version" was specified, override the generated version  -->
+            <TestVersion Condition=" '$(Version)' != '' ">$(Version)</TestVersion>
+        </PropertyGroup>
+
+        <Message Text="Test Version will be: $(TestVersion)" />
+
+        <MSBuild
+            Projects="$(MSBuildProjectFullPath)"
+            Properties="UpdateVersions=true;AWSToolkitVersionNumber=$(TestVersion)"
+            Targets="update-version" />
+	</Target>
+
+    <!-- build-test-toolkit: 
+        This applies a version to the Toolkit, then produces a Release build of the VSIX that can be used for testing purposes.
+        The version is automatically assigned (see apply-test-version), but can be explicitly set using the "Version" parameter.
+
+        This is intended for quickly creating test builds, where the version is less critical, but having incremental daily
+        granularity would help make it easier to install newer test builds.
+     -->
+	<Target Name="build-test-toolkit" DependsOnTargets="build-tools;apply-test-version">
+        <MSBuild
+            Projects="$(MSBuildProjectFullPath)"
+            Properties="Configuration=Release"
+            Targets="restore;compile" />
 	</Target>
 
     <Target Name="keyscan" Condition="$(RunKeyScan)" DependsOnTargets="build-tools">

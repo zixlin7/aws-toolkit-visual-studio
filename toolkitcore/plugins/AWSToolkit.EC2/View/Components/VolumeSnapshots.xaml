@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -20,7 +21,7 @@
             <Button Click="onCreateSnapshotClick" IsEnabled="{Binding CanAddSnapshots}">
                 <Button.Content>
                     <WrapPanel>
-                        <Image Width="16" Height="16" Source="..\..\Resources\Images\create-snapshot.png"/>
+                        <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Add}"/>
                         <TextBlock>Create Snapshot</TextBlock>
                     </WrapPanel>
                 </Button.Content>
@@ -28,7 +29,7 @@
             <Button Click="onRefreshClick">
                 <Button.Content>
                     <WrapPanel>
-                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Refresh}"/>
                         <TextBlock>Refresh</TextBlock>
                     </WrapPanel>
                 </Button.Content>

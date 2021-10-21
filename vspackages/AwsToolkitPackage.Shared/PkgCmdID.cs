@@ -7,7 +7,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     {
         // command ids
         public const uint cmdidAWSNavigator                 = 0x101;
-        public const uint cmdidPublishToAWS                 = 0x102;
+        public const uint cmdidPublishToElasticBeanstalk    = 0x102;
         public const uint cmdIdRepublishToAWS               = 0x103;
         public const uint cmdidPublishContainerToAWS        = 0x104;
         public const uint cmdidCodeArtifactSelectProfile    = 0x105;
@@ -25,6 +25,9 @@ namespace Amazon.AWSToolkit.VisualStudio
         public const uint cmdidDeployToLambdaServerlessTemplate = 0x301;
 
         public const uint cmdidTeamExplorerConnect = 0x400;
+
+        public const uint cmdidPublishToAws = 0x0500;
+        public const uint cmdidPublishToAwsSolutionExplorer = 0x0501;
 
         public const uint cmdidViewUserGuide = 0x0601;
         public const uint cmdidViewUserGuide2017 = 0x0602;

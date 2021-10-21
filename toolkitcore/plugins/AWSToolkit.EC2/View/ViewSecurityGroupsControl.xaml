@@ -13,6 +13,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
 
@@ -31,7 +32,7 @@
                 <Button Click="onCreateClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\security-groups-add.png"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Add}"/>
                             <TextBlock>Create Security Group</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -39,7 +40,7 @@
                 <Button Click="onDeleteSecurityGroupsClick" Name="_ctlDelete" IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\security-groups-delete.png"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Cancel}"/>
                             <TextBlock>Delete</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -47,7 +48,7 @@
                 <Button Click="onRefreshClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Refresh}"/>
                             <TextBlock>Refresh</TextBlock>
                         </WrapPanel>
                     </Button.Content>

@@ -45,8 +45,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="CloudFormationProjectTemplate.ico" />
-    <None Include="CloudFormationProjectTemplate.cfproj" />
+	<None Include="CloudFormationProjectTemplate.ico" />
+	<None Include="CloudFormationProjectTemplate.cfproj" />
     <None Include="CloudFormation.template" />
     <None Include="ReadMe.txt" />
   </ItemGroup>

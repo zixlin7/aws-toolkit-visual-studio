@@ -65,10 +65,13 @@ using Amazon.AWSToolkit.CodeArtifact.Controller;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.PluginServices.Publishing;
+using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Themes;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Commands.Lambda;
+using Amazon.AWSToolkit.VisualStudio.Commands.Publishing;
 using Amazon.AWSToolkit.VisualStudio.Commands.Toolkit;
 using Amazon.AWSToolkit.VisualStudio.Images;
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
@@ -148,6 +151,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         private TelemetryManager _telemetryManager;
         private TelemetryInfoBarManager _telemetryInfoBarManager;
         private DateTime _startInitializeOn;
+        private IPublishSettingsRepository _publishSettingsRepository;
 
         private MetricsOutputWindow _metricsOutputWindow;
 
@@ -523,7 +527,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         // Create the command for the tool window
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAWSNavigator, ShowToolWindow, null);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidCodeArtifactSelectProfile, CodeArtifactSelectProfile, null);
-                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishToAWS, PublishToAWS, PublishMenuCommand_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishToElasticBeanstalk, PublishToAWS, PublishMenuCommand_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdIdRepublishToAWS, RepublishToAWS, RepublishMenuCommand_BeforeQueryStatus);
 
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployTemplateSolutionExplorer, DeployTemplateSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
@@ -549,10 +553,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 });
 
-                var hostVersion = DteVersion.AsHostInfo(dteVersion);
+                var hostInfo = DteVersion.AsHostInfo(dteVersion);
                 ThemeUtil.Initialize(dteVersion);
                 ToolkitThemes.Initialize(new ToolkitThemeProvider());
-
+                _publishSettingsRepository = new FilePublishSettingsRepository();
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
 
                 _metricsOutputWindow = await CreateMetricsOutputWindow();
@@ -563,7 +567,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
-                InstantiateToolkitShellProviderService(hostVersion);
+                InstantiateToolkitShellProviderService(hostInfo);
 
                 // Enable UIs to access VS-provided images
                 await InitializeImageProviderAsync();
@@ -588,12 +592,13 @@ namespace Amazon.AWSToolkit.VisualStudio
                     ConnectionManager = _toolkitCredentialInitializer.AwsConnectionManager,
                     CredentialManager = _toolkitCredentialInitializer.CredentialManager,
                     CredentialSettingsManager = _toolkitCredentialInitializer.CredentialSettingsManager,
-                    ToolkitHost = ToolkitShellProviderService
+                    ToolkitHost = ToolkitShellProviderService,
+                    ToolkitHostInfo = hostInfo
                 };
 
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
 
-                await InitializeAwsToolkitMenuCommandsAsync(hostVersion);
+                await InitializeAwsToolkitMenuCommandsAsync(hostInfo);
 
                 await DeployLambdaCommand.InitializeAsync(
                     ToolkitShellProviderService,
@@ -608,6 +613,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                     ToolkitShellProviderService,
                     GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidAddAWSServerlessTemplate,
                     this);
+
+                await InitializePublishToAwsAsync(hostInfo);
 
                 await ToolkitFactory.InitializeToolkit(
                     navigator,
@@ -795,6 +802,49 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception e)
             {
                 LOGGER.Error("Unable to set up event listeners for the Lambda Tester", e);
+            }
+        }
+
+        private async Task InitializePublishToAwsAsync(IToolkitHostInfo hostVersion)
+        {
+            try
+            {
+                // Publish to AWS is implemented with .NET 4.7.2, which VS 2017 doesn't target.
+                // Only activate this functionality for VS 2019 (and newer versions when they are available).
+                if (hostVersion != ToolkitHosts.Vs2019)
+                {
+                    return;
+                }
+
+                LOGGER.Debug("Setting up Publish to AWS functionality");
+
+                await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+
+                // Activate the Publish to AWS Package and initialize it
+                if (!(await GetServiceAsync(typeof(SInitializePublishToAwsPackage)) is IInitializePublishToAwsPackage initPublishPackageService))
+                {
+                    return;
+                }
+
+                await initPublishPackageService.InitializePackage(_toolkitContext, ToolkitShellProviderService);
+
+                // Publish to AWS commands can be initialized below, now that the Publishing Package is initialized
+
+                await PublishToAwsCommand.InitializeAsync(
+                    new PublishToAwsCommand(_toolkitContext, ToolkitShellProviderService, _publishSettingsRepository),
+                    GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidPublishToAws,
+                    this);
+
+                await PublishToAwsCommandSolutionExplorer.InitializeAsync(
+                    new PublishToAwsCommandSolutionExplorer(_toolkitContext, ToolkitShellProviderService, _publishSettingsRepository),
+                    GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidPublishToAwsSolutionExplorer,
+                    this);
+
+                LOGGER.Debug("Publish to AWS functionality initialized");
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Failed to properly set up Publish to AWS functionality", e);
             }
         }
 
@@ -1001,9 +1051,34 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (CloudFormationPluginAvailable || BeanstalkPluginAvailable)
                 {
                     var pi = VSUtility.SelectedWebProject;
-                    publishMenuCommand.Visible
-                        = (pi != null
-                            && pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.NotWebProjectType);
+                    var isWebProjectType = pi != null
+                                           && pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.NotWebProjectType;
+
+                    // Only support web projects
+                    if (!isWebProjectType)
+                    {
+                        return;
+                    }
+
+                    if (IsVS2019Host())
+                    {
+                        var project = _toolkitContext.ToolkitHost.GetSelectedProject();
+                        if (project != null && project.IsNetFramework())
+                        {
+                            // Always allow .NET Framework projects (unless new Publish experience adds support for .NET Framework projects)
+                            publishMenuCommand.Visible = true;
+                        }
+                        else
+                        {
+                            // Not .NET Framework... show the command, unless user has opted in to the new publish experience
+                            publishMenuCommand.Visible = IsOldPublishExperienceEnabled();
+                        }
+                    }
+                    else
+                    {
+                        publishMenuCommand.Visible = isWebProjectType;
+                    }
+                   
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
             }
@@ -1154,13 +1229,21 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 if (AWSECSPlugin != null)
                 {
-                    publishMenuCommand.Visible = VSUtility.IsNETCoreDockerProject;
+                    publishMenuCommand.Visible = IsVS2019Host()
+                                                ? VSUtility.IsNETCoreDockerProject && IsOldPublishExperienceEnabled()
+                                                : VSUtility.IsNETCoreDockerProject;
+
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
             }
             catch (Exception)
             {
             }
+        }
+
+        private bool IsVS2019Host()
+        {
+            return _toolkitContext.ToolkitHostInfo == ToolkitHosts.Vs2019;
         }
 
         /// <summary>
@@ -1930,6 +2013,23 @@ namespace Amazon.AWSToolkit.VisualStudio
                 }
 
                 return false;
+            });
+        }
+
+        internal bool IsOldPublishExperienceEnabled()
+        {
+            return this.JoinableTaskFactory.Run(async () =>
+            {
+                try
+                {
+                    var publishSettings = await _publishSettingsRepository.GetAsync();
+                    return publishSettings.ShowOldPublishExperience;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Error retrieving publish settings", e);
+                    return true;
+                }
             });
         }
 

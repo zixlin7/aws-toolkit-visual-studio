@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -32,12 +34,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("Open", OnOpen, null, true, null, null),
+                new ActionHandlerWrapper("Open", OnOpen, null, true, typeof(AwsImageResourcePath).Assembly, AwsImageResourcePath.CloudFormationStack.Path),
                 new ActionHandlerWrapper("Save Configuration", OnCreateConfig, null, false,
                     this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.import.png"),
                 null,
                 new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.delete_stack.png")
+                    null, "delete.png")
             );
     }
 }

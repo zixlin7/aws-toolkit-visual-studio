@@ -38,14 +38,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         private static readonly IDictionary<string, RuntimeOption> RuntimeByFramework =
             new Dictionary<string, RuntimeOption>(StringComparer.OrdinalIgnoreCase)
             {
-                {Frameworks.NetCoreApp21, RuntimeOption.NetCore_v2_1},
                 {Frameworks.NetCoreApp31, RuntimeOption.NetCore_v3_1},
             };
 
         private static readonly IDictionary<RuntimeOption, string> FrameworkByRuntime =
             new Dictionary<RuntimeOption, string>()
             {
-                {RuntimeOption.NetCore_v2_1, Frameworks.NetCoreApp21},
                 {RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31},
             };
 
@@ -100,7 +98,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             SetPanelsForOriginatorAndType();
 
             ViewModel.Runtime = deploymentType == DeploymentType.NETCore
-                ? RuntimeOption.NetCore_v2_1
+                ? RuntimeOption.NetCore_v3_1
                 : RuntimeOption.NodeJS_v12_X;
 
             if (ViewModel.Runtime.IsNetCore)
