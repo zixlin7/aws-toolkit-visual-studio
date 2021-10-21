@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fixed an issue where autocompletion in CloudFormation templates would replace too much text"
-}

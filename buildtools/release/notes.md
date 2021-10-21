@@ -1,11 +1,7 @@
-## 1.22.0.0 (2021-09-29)
+## 1.23.0.0 (2021-10-21)
 
 ### Changelog
-- **Bug Fix** - Fixed an issue where the Import CSV button on the Getting Started page showed no results  
-- **Bug Fix** - Fix issue of only showing one page of IAM resources in AWS explorer
-- **Deprecation** - Removed the nodejs10.x runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details.
-- **Feature** - Added a menu item to submit quick toolkit feedback, available from the "AWS Toolkit" menu, located in the "Extensions" menu ("Tools" menu in Visual Studio 2017)
-- **Feature** - Lambda ARM Support: Deploy .NET Core 3.1 Lambda ARM functions to AWS Lambda.
-- **Feature** - Added support for Lambda Custom Runtime (AL2) deployment.
-- **Feature** - Lambda ARM Support: Deploy Zip-based Node.js 12 Lambda ARM functions to AWS Lambda.
-- **Feature** - The Toolkit's Getting Started Guide can now be accessed from the "AWS Toolkit" menu, located in the "Extensions" menu ("Tools" menu in Visual Studio 2017)
+- **Bug Fix** - Fixed an issue where autocompletion in CloudFormation templates would replace too much text
+- **Deprecation** - Removed the dotnetcore2.1 runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details.
+- **Feature** - A new, simplified experience for publishing your .NET applications to AWS is now available as a preview feature within Visual Studio 2019. This experience is based on the AWS .NET deployment tool (https://github.com/aws/aws-dotnet-deploy), and gives you publishing recommendations based on your application. This new experience can be enabled from the existing Beanstalk and Container publishing dialogs. For more details, see https://aws.amazon.com/blogs/developer/simplify-dotnet-publication-toolkit/ and https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/publish-experience.html
+- **Feature** - Icons for AWS services have been updated throughout the Toolkit.
