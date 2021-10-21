@@ -142,6 +142,17 @@ We may ask you to sign a [Contributor License Agreement (CLA)](https://en.wikipe
 
 ## Developing Visual Studio Extensions
 
+### User Experience (UX) Guidelines
+
+UIs and experiences that match Visual Studio's UX guidance generally feel like they belong in the IDE, and can be more intuitive for users.
+
+The extension has a lot of UIs, which will take time to align with these guidelines. New UIs should make a best effort to adhere to the Visual Studio User Experience guidelines.
+
+* Guideline Hub: https://docs.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/visual-studio-user-experience-guidelines
+* Noteworthy entries:
+  * Style and casing for UI Text: https://docs.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/fonts-and-formatting-for-visual-studio#BKMK_TextStyle
+  * Layout and spacing for UI controls: https://docs.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio
+
 ### Async / Multithreading
 
 Properly leveraging UI and Background threads reduces the chances of negatively impacting the IDE's overall performance and stability.

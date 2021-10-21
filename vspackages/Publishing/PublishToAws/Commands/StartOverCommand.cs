@@ -1,0 +1,67 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.ViewModels;
+using Amazon.AWSToolkit.Publish.Views;
+
+using log4net;
+
+namespace Amazon.AWSToolkit.Publish.Commands
+{
+    /// <summary>
+    /// Resets the publish experience state and brings users to the Target selection screen.
+    /// Intended for use after completing a Publish.
+    /// </summary>
+    public class StartOverCommand : PublishFooterCommand
+    {
+        public static readonly ILog Logger = LogManager.GetLogger(typeof(StartOverCommand));
+        private readonly PublishToAwsDocumentControl _control;
+
+        public StartOverCommand(PublishToAwsDocumentViewModel viewModel,
+            PublishToAwsDocumentControl publishToAwsDocumentControl) : base(viewModel)
+        {
+            _control = publishToAwsDocumentControl;
+        }
+
+        public override bool CanExecute(object paramter)
+        {
+            return PublishDocumentViewModel.ViewStage == PublishViewStage.Publish
+                && !PublishDocumentViewModel.IsPublishing;
+        }
+
+        protected override async Task ExecuteCommandAsync()
+        {
+            var cancellationToken = PublishDocumentViewModel.PublishContext.PublishPackage.DisposalToken;
+            using (var _ = new DocumentLoadingIndicator(PublishDocumentViewModel,
+                PublishDocumentViewModel.JoinableTaskFactory))
+            {
+                try
+                {
+                    var initialIsRepublishValue = PublishDocumentViewModel.IsRepublish;
+
+                    await PublishDocumentViewModel.RestartDeploymentSessionAsync(cancellationToken)
+                        .ConfigureAwait(false);
+
+                    await PublishDocumentViewModel.InitializePublishTargets(cancellationToken).ConfigureAwait(false);
+
+                    // If user chose a new publish target and the publish failed, re-choose that setting
+                    if (PublishDocumentViewModel.ProgressStatus == ProgressStatus.Fail)
+                    {
+                        await PublishDocumentViewModel.SetIsRepublish(initialIsRepublishValue, cancellationToken).ConfigureAwait(false);
+                    }
+
+                    await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    PublishDocumentViewModel.ViewStage = PublishViewStage.Target;
+                    PublishDocumentViewModel.ProgressStatus = ProgressStatus.Loading;
+                    PublishDocumentViewModel.PublishProgress = string.Empty;
+                }
+                catch (Exception e)
+                {
+                    PublishDocumentViewModel.PublishContext.ToolkitShellProvider.OutputError(new Exception($"Failed to reset the Publish to AWS view: {e.Message}", e), Logger);
+                }
+            }
+        }
+    }
+}

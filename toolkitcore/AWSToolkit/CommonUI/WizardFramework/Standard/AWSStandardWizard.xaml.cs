@@ -174,16 +174,6 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         {
         }
 
-        //void StyleWizardFromProperties()
-        //{
-        //    if (_awsbasewizardimpl.ispropertyset(awswizardconstants.wizardoptions.propkey_navcontainerbackground))
-        //    {
-        //        var navcontainerbackgroundkey 
-        //            = _awsbasewizardimpl.getproperty(awswizardconstants.wizardoptions.propkey_navcontainerbackground) as string;
-        //        _wizardfootercontainer.setresourcereference(panel.backgroundproperty, navcontainerbackgroundkey);
-        //    }
-        //}
-
         #region IAWSWizard implementation
 
         string IAWSWizard.WizardID => _awsBaseWizardImpl.WizardID;

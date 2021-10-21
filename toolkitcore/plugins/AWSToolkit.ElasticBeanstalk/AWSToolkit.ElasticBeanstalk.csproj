@@ -450,7 +450,6 @@
   <ItemGroup>
     <Resource Include="Resources\Images\refresh.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\SnapshotLogs.png" />
   </ItemGroup>

@@ -1,0 +1,96 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
+                    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit">
+    <!-- 
+        This file defines the "editors" used for each data type used by Publish configuration details. 
+        Everything is tied together by PropertyTemplateSelector, which is used in the Configuration View to 
+        select the appropriate control for rendering for each configuration detail.
+    -->
+
+    <commonUi:VsImages x:Key="VsImages" />
+
+    <!-- ValidationErrorTemplate decorates a control, showing a validation message on the screen -->
+    <ControlTemplate x:Key="ValidationErrorTemplate">
+        <Grid MaxWidth="{Binding ElementName=AdornedElement, Path=ActualWidth}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                BorderBrush="Red" BorderThickness="1">
+                <AdornedElementPlaceholder Name="AdornedElement"  />
+            </Border>
+            <Border
+                Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" BorderThickness="1"
+                Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
+                />
+            <Image 
+                Grid.Row="1" Grid.Column="0"
+                Height="16" Width="16" 
+                Margin="9 9 9 9"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                DataContext="{DynamicResource VsImages}"
+                Source="{Binding StatusWarning}" />
+            <TextBlock 
+                Grid.Row="1" Grid.Column="1"
+                Margin="0 9 9 9" 
+                TextWrapping="Wrap"
+                MaxWidth="{Binding ElementName=Q, Path=ActualWidth}"
+                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                Text="{Binding /ErrorContent}" />
+        </Grid>
+    </ControlTemplate>
+
+    <DataTemplate x:Key="BlankEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <!-- Show nothing -->
+    </DataTemplate>
+
+    <DataTemplate x:Key="EnumEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <ComboBox
+            Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+            IsEditable="False"
+            DisplayMemberPath="Value"
+            SelectedValuePath="Key"
+            ItemsSource="{Binding ValueMappings}"
+            SelectedValue="{Binding Value, ValidatesOnDataErrors=True}"
+        />
+    </DataTemplate>
+    <DataTemplate x:Key="TextEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <TextBox 
+            Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+            Text="{Binding Value, ValidatesOnDataErrors=True}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="NumericEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <TextBox 
+            Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+            Text="{Binding Value, ValidatesOnDataErrors=True}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="BooleanEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <CheckBox
+            Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+            IsChecked="{Binding Value, ValidatesOnDataErrors=True}" 
+            Content="{Binding Name}" />
+    </DataTemplate>
+
+    <models:PropertyTemplateSelector 
+        x:Key="PropertyTemplateSelector" 
+        BlankEditor="{StaticResource BlankEditor}"
+        TextEditor="{StaticResource TextEditor}"
+        NumericEditor="{StaticResource NumericEditor}"
+        BooleanEditor="{StaticResource BooleanEditor}"
+        EnumEditor="{StaticResource EnumEditor}"
+        />
+
+</ResourceDictionary>

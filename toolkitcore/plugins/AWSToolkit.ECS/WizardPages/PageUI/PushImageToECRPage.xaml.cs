@@ -16,6 +16,7 @@ using System.Linq;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Publish.Banner;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Util;
 
@@ -35,6 +36,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         public PushImageToECRPageController PageController { get; }
         public AccountAndRegionPickerViewModel Connection { get; }
 
+        public PublishBannerViewModel PublishBanner { get; }
+
         IAmazonECR _ecrClient;
 
         private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
@@ -45,6 +48,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             Connection.SetServiceFilter(new List<string>() {ECRServiceName});
 
             PageController = pageController;
+
+            PublishBanner = PublishBannerViewModelFactory.Create(toolkitContext);
+            PublishBanner.Origin = ECRServiceName;
+            new PublishBannerPropertyChangedHandler(PublishBanner, PageController.HostingWizard);
 
             InitializeComponent();
             DataContext = this;

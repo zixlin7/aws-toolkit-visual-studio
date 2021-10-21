@@ -3,6 +3,7 @@ using System.Windows;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 
@@ -162,6 +163,8 @@ namespace Amazon.AWSToolkit.Shared
         /// <param name="action"></param>
         void ExecuteOnUIThread(Action action);
 
+        T ExecuteOnUIThread<T>(Func<Task<T>> asyncFunc);
+
         /// <summary>
         /// 
         /// </summary>
@@ -238,6 +241,14 @@ namespace Amazon.AWSToolkit.Shared
         /// </summary>
         /// <param name="fileName"></param>
         void CloseEditor(string fileName);
+
+        /// <summary>
+        /// Create an object that abstracts the Visual Studio progress dialog.
+        /// Used with long running tasks.
+        ///
+        /// Caller is responsible for disposing.
+        /// </summary>
+        Task<IProgressDialog> CreateProgressDialog();
     }
 
     /// <summary>

@@ -51,8 +51,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CryptoUtil.cs" />
+    <Compile Include="Events\LogExceptionAndForgetChangedHandler.cs" />
     <Compile Include="Exceptions\IamToolkitException.cs" />
     <Compile Include="Exceptions\LambdaToolkitException.cs" />
+    <Compile Include="Exceptions\NodeNotFoundException.cs" />
     <Compile Include="Exceptions\ToolkitException.cs" />
     <Compile Include="HostedFileContentLoader.cs" />
     <Compile Include="HostedFilesSettings.cs" />
@@ -63,8 +65,17 @@
     <Compile Include="MobileAnalytics\AnalyticsCognitoAWSCredentials.cs" />
     <Compile Include="MobileAnalytics\ClientContext.cs" />
     <Compile Include="MobileAnalytics\ClientContextConfig.cs" />
+    <Compile Include="Publish\PublishableProjectSpecification.cs" />
+    <Compile Include="Publish\PublishSetting\DeployServerSettings.cs" />
     <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
     <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
+    <Compile Include="Publish\PublishSetting\FilePublishSettingsRepository.cs" />
+    <Compile Include="Publish\PublishSetting\IPublishSettingsRepository.cs" />
+    <Compile Include="Publish\PublishSetting\PortRange.cs" />
+    <Compile Include="Publish\PublishSetting\PublishSettings.cs" />
+    <Compile Include="Settings\SettingsException.cs" />
+    <Compile Include="Shell\DotnetProcess.cs" />
+    <Compile Include="Shell\HeadlessProcess.cs" />
     <Compile Include="ProjectFileUtilities.cs" />
     <Compile Include="Regions\Manifest\Endpoints.cs" />
     <Compile Include="Regions\IRegionProvider.cs" />
@@ -97,6 +108,7 @@
     <Compile Include="Settings\ToolkitSettings.cs" />
     <Compile Include="Settings\IToolkitSettingsRepository.cs" />
     <Compile Include="Settings\ToolkitSettingsWatcher.cs" />
+    <Compile Include="Solutions\ProjectFile.cs" />
     <Compile Include="Tasks\TaskExtensionMethods.cs" />
     <Compile Include="Telemetry\ClientId.cs" />
     <Compile Include="Telemetry\IMetricsOutputWindow.cs" />
@@ -123,6 +135,7 @@
     <Compile Include="Solutions\ProjectType.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Util\DebounceDispatcher.cs" />
+    <Compile Include="Util\FrameworkNameHelper.cs" />
     <Compile Include="Util\HttpStatusCodeExtensionMethods.cs" />
     <Compile Include="Util\IToolkitHostInfo.cs" />
     <Compile Include="Util\IToolkitTimer.cs" />

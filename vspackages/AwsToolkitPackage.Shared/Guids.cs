@@ -46,8 +46,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         public const string guidTemplateEditorFactoryString = "ec06ded3-700f-4ce3-9313-8e2324ba885d";
         public static readonly Guid guidTemplateEditorFactory = new Guid(guidTemplateEditorFactoryString);
 
-        public const string guidNodeJSConsoleProjectFactoryString = "{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}";
-
         public static readonly Guid SHLMainMenuGuid = new Guid(0xd309f791, 0x903f, 0x11d0, 0x9e, 0xfc, 0x00, 0xa0, 0xc9, 0x11, 0x00, 0x4f);
 
         // Team Explorer integration

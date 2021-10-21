@@ -11,6 +11,9 @@ namespace Amazon.AWSToolkit.CommonUI
     {
         public static ImageSource Aws => ImageSourceFactory.GetImageSource(AwsImageResourcePath.Aws.Path);
 
+        public static ImageSource AppRunner =>
+            ImageSourceFactory.GetImageSource(AwsImageResourcePath.AppRunner.Path);
+
         public static ImageSource CloudFormation =>
             ImageSourceFactory.GetImageSource(AwsImageResourcePath.CloudFormation.Path);
 
@@ -145,5 +148,7 @@ namespace Amazon.AWSToolkit.CommonUI
             ImageSourceFactory.GetImageSource(AwsImageResourcePath.VpcRouteTables.Path);
 
         public static ImageSource VpcVpcs => ImageSourceFactory.GetImageSource(AwsImageResourcePath.VpcVpcs.Path);
+
+        public static ImageSource Megaphone => ImageSourceFactory.GetImageSource(AwsImageResourcePath.Megaphone.Path);
     }
 }

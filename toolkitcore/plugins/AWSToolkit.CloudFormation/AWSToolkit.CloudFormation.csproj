@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloudFormationActivator.cs" />
+    <Compile Include="CloudFormationViewer.cs" />
     <Compile Include="Controllers\BaseStackController.cs" />
     <Compile Include="Controllers\CreateStackController.cs" />
     <Compile Include="Controllers\DeleteStackController.cs" />

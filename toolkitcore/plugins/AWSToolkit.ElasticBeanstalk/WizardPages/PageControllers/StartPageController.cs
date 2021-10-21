@@ -93,7 +93,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new StartPage(_toolkitContext);
+                _pageUI = new StartPage(_toolkitContext, HostingWizard);
                 _pageUI.PropertyChanged += OnPagePropertyChanged;
 
                 string templateManifest = S3FileFetcher.Instance.GetFileContent(DeploymentTemplateWrapperBase.TEMPLATEMANIFEST_FILE);

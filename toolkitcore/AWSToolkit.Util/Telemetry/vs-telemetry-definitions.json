@@ -1,24 +1,104 @@
-{
-    "types": [{
+﻿{
+    "types": [
+        {
             "name": "codeartifactPackageType",
             "type": "string",
             "description": "The CodeArtifact package type"
-        }],
+        },
+        {
+            "name": "published",
+            "type": "boolean",
+            "description": "Whether or not the user published an application"
+        },
+        {
+            "name": "applicationType",
+            "type": "string", 
+            "description": "The type of application being published"
+        },
+        {
+            "name": "initialPublish",
+            "type": "boolean",
+            "description": "Whether this was the initial publish or a republish"
+        },
+        {
+            "name": "defaultConfiguration",
+            "type": "boolean",
+            "description": "Whether or not the default configuration values were used. False if at least one value was adjusted"
+        },
+        {
+            "name": "recommendedTarget",
+            "type": "boolean",
+            "description": "Whether or not the recommended deployment target was used (initial publish only)"
+        },
+        {
+            "name": "recipeId",
+            "type": "string",
+            "description":  "The recipe used for the deployment" 
+        }
+    ],
     "metrics": [
         {
             "name": "serverlessapplication_deploy",
             "description": "Called when deploying a Serverless Application Project",
-            "metadata": [{ "type": "result" }]
+            "metadata": [ { "type": "result" } ]
         },
         {
             "name": "codeartifact_getRepoUrl",
             "description": "Called when user selects a profile",
-            "metadata": [{ "type": "result" }, { "type": "codeartifactPackageType" }]
+            "metadata": [
+                { "type": "result" },
+                { "type": "codeartifactPackageType" }
+            ]
         },
         {
             "name": "codeartifact_setRepoCredentialProfile",
             "description": "Called when user get an endpoint url",
-            "metadata": [{ "type": "result" }, { "type": "codeartifactPackageType" }]
+            "metadata": [
+                { "type": "result" },
+                { "type": "codeartifactPackageType" }
+            ]
+        },
+        {
+            "name": "publish_start",
+            "description": "Called when user starts the Publish to AWS workflow",
+            "metadata": [ { "type": "result" } ]
+        },
+        {
+            "name": "publish_end",
+            "description": "Called when user exits the Publish to AWS workflow",
+            "metadata": [
+                { "type": "published" },
+                { "type": "duration" }
+            ]
+        },
+        {
+            "name": "publish_deploy",
+            "description": "Called when user publishes the project",
+            "metadata": [
+                { "type": "result" },
+                { "type": "framework", "required": false },
+                { "type": "duration" },
+                { "type": "applicationType", "required": false },
+                { "type": "initialPublish" },
+                { "type": "defaultConfiguration" },
+                { "type": "recommendedTarget", "required": false },
+                { "type":  "recipeId" }
+            ] 
+        },
+        {
+            "name": "publish_optIn",
+            "description": "Called when user opts into Publish to AWS experience",
+            "metadata": [
+                { "type": "result" },
+                { "type": "serviceType" }
+            ]
+        },
+        {
+            "name": "publish_optOut",
+            "description": "Called when user opts out of Publish to AWS experience",
+            "metadata": [
+                {"type": "result" }
+            ] 
         }
     ]
 }

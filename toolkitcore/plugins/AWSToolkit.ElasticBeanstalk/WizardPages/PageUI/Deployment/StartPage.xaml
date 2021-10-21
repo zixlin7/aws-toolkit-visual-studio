@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.Model"
     xmlns:svcmodel="clr-namespace:Amazon.ElasticBeanstalk.Model;assembly=AWSSDK.ElasticBeanstalk"
+    xmlns:publishbanner="clr-namespace:Amazon.AWSToolkit.Publish.Banner;assembly=AWSToolkit"
     d:DataContext="{d:DesignInstance designData:ApplicationEnvironmentsDesignTimeContext,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="300"
@@ -86,6 +87,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -95,22 +97,29 @@
             <ColumnDefinition Width=".3*" />
         </Grid.ColumnDefinitions>
 
+        <publishbanner:PublishBanner
+            Grid.Row="0" 
+            Grid.Column="0" 
+            Grid.ColumnSpan="2"
+            DataContext = "{Binding PublishBanner}" />
+
         <Label
             Grid.ColumnSpan="2"
-            Margin="0"
+            Margin="0 5 0 0"
+            Grid.Row="1"
             Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
             Profile
         </Label>
 
         <commoncomponents:AccountAndRegionPicker
-                Grid.Row="1" Grid.ColumnSpan="2"
+                Grid.Row="2" Grid.ColumnSpan="2"
                 Margin="8,2,4,2" 
                 DataContext="{Binding Connection}"
                 ConnectionChanged="ConnectionChanged"
                 />
 
         <Label
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="0,12,0,0"
@@ -120,7 +129,7 @@
 
         <RadioButton
             x:Name="_btnDeployNew"
-            Grid.Row="3"
+            Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="12,16,0,0"
@@ -133,7 +142,7 @@
 
         <RadioButton
             x:Name="_btnRedeploy"
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="12,16,0,8"
@@ -146,7 +155,7 @@
 
         <TreeView
             x:Name="_existingDeploymentsTree"
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="28,4,4,8"
@@ -158,5 +167,6 @@
             ItemsSource="{Binding ExistingDeployments}"
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
             SelectedItemChanged="_existingDeploymentsTree_OnSelectedItemChanged" />
+
     </Grid>
 </commonui:BaseAWSUserControl>

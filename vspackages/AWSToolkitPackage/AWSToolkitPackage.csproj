@@ -192,6 +192,157 @@
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectReferences.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectTemplates.v15.xml" />
   <ItemGroup>
+    <!-- Publish To AWS related DLLs -->
+    <!-- TODO : TEMP!!! Reference from Output after we switch to NuGet Package reference and remove from thirdparty -->
+    <Content Include="$(BuildRoot)\thirdparty\AWS.Deploy.ServerMode.Client.dll">
+      <Link>AWS.Deploy.ServerMode.Client.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <!-- Publish to AWS transient DLLs. These need to be referenced to be included in the VSIX. 
+      These can be removed once we migrate to sdk-style project files. -->
+    <Content Include="$(OutputRoot)\Microsoft.AspNetCore.SignalR.Client.dll">
+      <Link>Microsoft.AspNetCore.SignalR.Client.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.AspNetCore.SignalR.Client.Core.dll">
+      <Link>Microsoft.AspNetCore.SignalR.Client.Core.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.AspNetCore.SignalR.Common.dll">
+      <Link>Microsoft.AspNetCore.SignalR.Common.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.AspNetCore.SignalR.Protocols.Json.dll">
+      <Link>Microsoft.AspNetCore.SignalR.Protocols.Json.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.AspNetCore.Connections.Abstractions.dll">
+      <Link>Microsoft.AspNetCore.Connections.Abstractions.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.AspNetCore.Http.Connections.Client.dll">
+      <Link>Microsoft.AspNetCore.Http.Connections.Client.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.AspNetCore.Http.Connections.Common.dll">
+      <Link>Microsoft.AspNetCore.Http.Connections.Common.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.AspNetCore.Http.Features.dll">
+      <Link>Microsoft.AspNetCore.Http.Features.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.Extensions.DependencyInjection.dll">
+      <Link>Microsoft.Extensions.DependencyInjection.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.Extensions.DependencyInjection.Abstractions.dll">
+      <Link>Microsoft.Extensions.DependencyInjection.Abstractions.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.Extensions.Logging.dll">
+      <Link>Microsoft.Extensions.DependencyInjection.Abstractions.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.Extensions.Logging.Abstractions.dll">
+      <Link>Microsoft.Extensions.DependencyInjection.Abstractions.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.Extensions.Options.dll">
+      <Link>Microsoft.Extensions.Options.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\NuGet.Protocol.dll">
+      <Link>NuGet.Protocol.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\NuGet.Packaging.dll">
+      <Link>NuGet.Packaging.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\NuGet.Configuration.dll">
+      <Link>NuGet.Configuration.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\NuGet.Versioning.dll">
+      <Link>NuGet.Versioning.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\NuGet.Common.dll">
+      <Link>NuGet.Common.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\NuGet.Frameworks.dll">
+      <Link>NuGet.Frameworks.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\System.Diagnostics.DiagnosticSource.dll">
+      <Link>System.Diagnostics.DiagnosticSource.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.Extensions.Primitives.dll">
+      <Link>Microsoft.Extensions.Primitives.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\System.Buffers.dll">
+      <Link>System.Buffers.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\System.Memory.dll">
+      <Link>System.Memory.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\System.Numerics.Vectors.dll">
+      <Link>System.Numerics.Vectors.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\System.Text.Json.dll">
+      <Link>System.Text.Json.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\System.Text.Encodings.Web.dll">
+      <Link>System.Text.Encodings.Web.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Microsoft.Bcl.AsyncInterfaces.dll">
+      <Link>Microsoft.Bcl.AsyncInterfaces.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\System.Threading.Channels.dll">
+      <Link>System.Threading.Channels.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>Microsoft.WindowsAPICodePack.dll</Link>
@@ -244,6 +395,13 @@
       <Project>{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}</Project>
       <Name>AWSToolkit.CodeCommitTeamExplorer.v16</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\Publishing\PublishToAws\PublishToAws.csproj">
+      <Project>{9A9A823B-967E-4BB5-809F-A78C1668C363}</Project>
+      <Name>PublishToAws</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3bPkgdefProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
@@ -349,6 +507,9 @@
       <Version>16.10.1055</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>5.0.2</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.3.0</Version>

@@ -57,7 +57,8 @@
     <Compile Include="Images\VsImageProviderTests.cs" />
     <Compile Include="Lambda\ProjectCreatorUtilitiesTests.cs" />
     <Compile Include="Navigator\NavigatorViewModelTests.cs" />
-    <Compile Include="Shared\Services\VsWebProjectInfoExtensionsTests.cs" />
+    <Compile Include="Publishing\PublishToAwsCommandSolutionExplorerTests.cs" />
+    <Compile Include="Publishing\PublishToAwsCommandTests.cs" />
     <Compile Include="Telemetry\TelemetryInfoBarTests.cs" />
     <Compile Include="UIThreadFixture.cs" />
     <Compile Include="Lambda\LambdaTesterUsageEmitterTests.cs" />

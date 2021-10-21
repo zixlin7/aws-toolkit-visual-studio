@@ -6,11 +6,14 @@ using System.Xml;
 
 using Amazon.AWSToolkit;
 
+using EnvDTE;
+
 using log4net;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Project;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Flavor;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Constants = Amazon.AWSToolkit.Constants;
@@ -25,6 +28,8 @@ namespace Amazon.AwsToolkit.VsSdk.Common
         private const string _dotNetCoreWebCapability = "DotNetCoreWeb";
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(VSUtility));
+
+        public const string guidNodeJSConsoleProjectFactoryString = "{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}";
 
         public static string QueryProjectIDGuid(IVsHierarchy projectHier)
         {
@@ -196,26 +201,8 @@ namespace Amazon.AwsToolkit.VsSdk.Common
                 try
                 {
                     var project = GetSelectedProject();
-                    if (project == null)
-                        return false;
 
-                    var projectContent = File.ReadAllText(project.FileName);
-                    if (projectContent.Contains("\"Amazon.Lambda.Tools\""))
-                        return true;
-
-                    if (ProjectFileUtilities.IsProjectType(projectContent, ProjectFileUtilities.LAMBDA_PROJECT_TYPE_ID))
-                        return true;
-
-
-                    var projectJsonPath = Path.Combine(new FileInfo(project.FileName).DirectoryName, "project.json");
-                    if(File.Exists(projectJsonPath))
-                    {
-                        var content = File.ReadAllText(projectJsonPath);
-                        if (content.Contains("\"Amazon.Lambda.Tools\""))
-                            return true;
-                    }
-
-                    return false;
+                    return IsLambdaNetProject(project);
                 }
                 catch
                 {
@@ -276,6 +263,12 @@ namespace Amazon.AwsToolkit.VsSdk.Common
         public static IVsHierarchy GetCurrentVSHierarchySelection(out uint projectItemId)
         {
             var monitorSelection = (IVsMonitorSelection)Package.GetGlobalService(typeof(SVsShellMonitorSelection));
+            return GetCurrentVSHierarchySelection(monitorSelection, out projectItemId);
+        }
+
+        public static IVsHierarchy GetCurrentVSHierarchySelection(IVsMonitorSelection monitorSelection,
+            out uint projectItemId)
+        {
             return monitorSelection.GetCurrentSelectionVsHierarchy(out projectItemId);
         }
 
@@ -293,6 +286,72 @@ namespace Amazon.AwsToolkit.VsSdk.Common
             }
 
             return vsProject;
+        }
+
+        public static bool IsLambdaNetProject(Project project)
+        {
+            try
+            {
+                if (project == null)
+                {
+                    return false;
+                }
+                
+                var projectContent = File.ReadAllText(project.FileName);
+                if (projectContent.Contains("\"Amazon.Lambda.Tools\""))
+                {
+                    return true;
+                }
+
+                if (ProjectFileUtilities.IsProjectType(projectContent, ProjectFileUtilities.LAMBDA_PROJECT_TYPE_ID))
+                {
+                    return true;
+                }
+
+                var projectJsonPath = Path.Combine(new FileInfo(project.FileName).DirectoryName, "project.json");
+                if (File.Exists(projectJsonPath))
+                {
+                    var content = File.ReadAllText(projectJsonPath);
+                    if (content.Contains("\"Amazon.Lambda.Tools\""))
+                        return true;
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static bool IsLambdaServerlessProject()
+        {
+            return SelectedFileMatchesName(Constants
+                .AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME) && GetSelectedItemFullPath() != null;
+        }
+
+        public static bool IsLambdaNodeJsProject(IVsMonitorSelection monitorSelection)
+        {
+            // Check if it is a valid Node.js Lambda project.
+            var hierarchyNode = GetCurrentVSHierarchySelection(monitorSelection, out _);
+
+            if (hierarchyNode == null)
+            {
+                return false;
+            }
+            // even though we have a catch block, testing for non-null smooths debugging
+            if (hierarchyNode is IVsAggregatableProjectCorrected ap)
+            {
+                ap.GetAggregateProjectTypeGuids(out var projTypeGuids);
+
+                if (string.Equals(guidNodeJSConsoleProjectFactoryString, projTypeGuids,
+                    StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

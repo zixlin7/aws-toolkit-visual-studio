@@ -17,7 +17,9 @@
         Add,
         AddLink,
         AddUser,
-        Cancel, 
+        Cancel,
+        Cloud,
+        Copy,
         DeleteListItem, 
         Edit,
         FeedbackFrown,
@@ -26,6 +28,8 @@
         Remove,
         RemoveLink,
         StatusError,
+        StatusInformation,
+        StatusOK,
         StatusWarning,
     }
 }

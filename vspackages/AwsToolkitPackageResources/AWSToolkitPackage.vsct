@@ -186,7 +186,7 @@
         </Strings>
       </Button>
       
-      <Button guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0000" type="Button">
+      <Button guid="guid_VSPackageCmdSet" id="cmdidPublishToElasticBeanstalk" priority="0x0000" type="Button">
         <Icon guid="guidAwsServiceImages" id="imgBeanstalk" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -337,6 +337,30 @@
           <ButtonText>Publish to AWS Lambda...</ButtonText>
           <ToolTipText>Upload the project to AWS Lambda</ToolTipText>
         </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidPublishToAws" priority="0x0000" type="Button">
+         <Icon guid="guidAwsLogoImages" id="imgAws" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.PublishToAws</CommandName>
+          <ButtonText>Publish to AWS...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidPublishToAwsSolutionExplorer" priority="0x0000" type="Button">
+        <Icon guid="guidAwsLogoImages" id="imgAws" />
+	      <CommandFlag>DefaultInvisible</CommandFlag>
+	      <CommandFlag>DynamicVisibility</CommandFlag>
+	      <CommandFlag>DefaultDisabled</CommandFlag>
+	      <CommandFlag>TextChanges</CommandFlag>
+	      <Strings>
+          <CommandName>AWS.PublishToAws.SolutionExplorer</CommandName>
+          <ButtonText>Publish to AWS...</ButtonText>
+	      </Strings>
       </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidTeamExplorerConnect" type="Button">
@@ -540,7 +564,7 @@
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0601">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
-    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0602">
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToElasticBeanstalk" priority="0x0602">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0603">
@@ -551,7 +575,7 @@
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0501">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_BUILD_SELECTION" />
     </CommandPlacement>
-    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0502">
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToElasticBeanstalk" priority="0x0502">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_BUILD_SELECTION" />
     </CommandPlacement>
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0503">
@@ -559,7 +583,7 @@
     </CommandPlacement>
 
     <!-- Place immediately after Publish Selection (text changes) command on web site context menu -->
-    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0302">
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToElasticBeanstalk" priority="0x0302">
       <Parent guid="guidVenusCmdId" id="IDG_CTX_BUILD" />
     </CommandPlacement>
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0303">
@@ -648,7 +672,16 @@
     </CommandPlacement>
 
     <!-- New Publish To Aws commands -->
-    <!-- TODO : PLACEHOLDER -->
+
+    <!-- "Publish to AWS" menu in the Build menu, under the VS "Publish" menu item -->
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidPublishToAws" priority="0x0500">
+  	  <Parent guid="guidSHLMainMenu" id="IDG_VS_BUILD_SELECTION"/>
+    </CommandPlacement>
+
+    <!-- "Publish to AWS" menu in the Solution Explorer context menu, under the VS "Publish" menu item -->
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidPublishToAwsSolutionExplorer" priority="0x0600">
+	    <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
+    </CommandPlacement>
     <!-- END New Publish To Aws commands -->
 
     <!-- AWS Toolkit Menu Command Placements -->
@@ -695,11 +728,11 @@
   debugging, editing a file or when the user is using a specific designer. 
   -->
   <VisibilityConstraints>
-    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToElasticBeanstalk" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
     <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
-    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" context="UICONTEXT_SolutionHasSingleProject" />
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToElasticBeanstalk" context="UICONTEXT_SolutionHasSingleProject" />
     <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" context="UICONTEXT_SolutionHasSingleProject" />
-    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" context="UICONTEXT_SolutionHasMultipleProjects" />
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToElasticBeanstalk" context="UICONTEXT_SolutionHasMultipleProjects" />
     <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" context="UICONTEXT_SolutionHasMultipleProjects" />
   </VisibilityConstraints>
 
@@ -713,7 +746,7 @@
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guid_VSPackageCmdSet" value="{8ba6f49c-ca32-4bc4-a71c-77b8503b93c2}">
       <IDSymbol name="cmdidAWSNavigator" value="0x0101" />
-      <IDSymbol name="cmdidPublishToAWS" value="0x0102" />
+      <IDSymbol name="cmdidPublishToElasticBeanstalk" value="0x0102" />
       <IDSymbol name="cmdidRepublishToAWS" value="0x0103" />
       <IDSymbol name="cmdidPublishContainerToAWS" value="0x0104" />
       <IDSymbol name="cmdidCodeArtifactSelectProfile" value="0x0105" />
@@ -733,7 +766,8 @@
       <IDSymbol name="cmdidTeamExplorerConnect" value="0x0400"/>
 
       <!-- New "Publish to AWS" commands -->
-      <!-- TODO : PLACEHOLDER -->
+      <IDSymbol name="cmdidPublishToAws" value="0x0500"/>
+      <IDSymbol name="cmdidPublishToAwsSolutionExplorer" value="0x0501"/>
       <!-- END New "Publish to AWS" commands -->
 
       <!-- 0x06xx - Commands within the "AWS Toolkit" Menu -->

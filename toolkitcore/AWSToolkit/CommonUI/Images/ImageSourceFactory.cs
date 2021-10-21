@@ -25,7 +25,7 @@ namespace Amazon.AWSToolkit.CommonUI.Images
             if (stream == null)
             {
                 return null;
-            }
+            }    
 
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();

@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.Publish.Views.PublishDocumentHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Amazon.AWSToolkit.Publish.Views"
+             xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.Publish.ViewModels"
+             xmlns:regions="clr-namespace:Amazon.AWSToolkit.Regions;assembly=AWSToolkit.Util"
+             xmlns:credentialsCore="clr-namespace:Amazon.AWSToolkit.Credentials.Core;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" 
+             Background="#FFE4E48A">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <DataTemplate DataType="{x:Type regions:ToolkitRegion}">
+                <Label Content="{Binding DisplayName}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type credentialsCore:ICredentialIdentifier}">
+                <Label Content="{Binding DisplayName}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type credentialsCore:SharedCredentialIdentifier}">
+                <Label Content="{Binding DisplayName}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type credentialsCore:SDKCredentialIdentifier}">
+                <Label Content="{Binding DisplayName}" />
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="Temporary Development header! This is only here until we have a more formal view established." FontWeight="Bold" />
+        
+        <Label Grid.Row="1" Grid.Column="0" Content="Credentials Id" />
+        <Label Grid.Row="1" Grid.Column="1" Content="{Binding CredentialsId}" />
+        
+        <Label Grid.Row="2" Grid.Column="0" Content="Region" />
+        <Label Grid.Row="2" Grid.Column="1" Content="{Binding Region}" />
+
+        <Label Grid.Row="1" Grid.Column="2" Content="View Stage" />
+        <ComboBox Grid.Row="1" Grid.Column="3" 
+                  SelectedItem="{Binding ViewStage}"
+                  >
+            <ComboBox.Items>
+                <viewModels:PublishViewStage>Target</viewModels:PublishViewStage>
+                <viewModels:PublishViewStage>Configure</viewModels:PublishViewStage>
+                <viewModels:PublishViewStage>Publish</viewModels:PublishViewStage>
+            </ComboBox.Items>
+        </ComboBox>
+
+        <Button Grid.Row="1" Grid.Column="4" Margin="9 0 0 0" Content="HealthCheck" Click="HealthCheck_OnClick" />
+
+        <Label Grid.Row="2" Grid.Column="2" Content="Project" />
+        <Label Grid.Row="2" Grid.Column="3" Content="{Binding ProjectPath}" />
+
+        <Label Grid.Row="3" Grid.Column="0" Content="SessionId" />
+        <Label Grid.Row="3" Grid.Column="1" Content="{Binding SessionId}" />
+
+        <Label Grid.Row="3" Grid.Column="2" Content="IsPublishing" />
+        <CheckBox Grid.Row="3" Grid.Column="3" IsChecked="{Binding IsPublishing}" />
+
+</Grid>
+</UserControl>

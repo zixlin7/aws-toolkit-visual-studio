@@ -92,6 +92,9 @@
     <Compile Include="Clients\IAwsServiceClientManager.cs" />
     <Compile Include="Clients\ServiceClientCreator.cs" />
     <Compile Include="Commands\AsyncRelayCommand.cs" />
+    <Compile Include="Commands\CommandException.cs" />
+    <Compile Include="Commands\LearnMoreCommandFactory.cs" />
+    <Compile Include="Commands\ShowExceptionAndForgetCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="CommonUI\AssociatedIconAttribute.cs" />
     <Compile Include="CommonUI\CommandHandler.cs" />
@@ -101,9 +104,11 @@
       <DependentUpon>CredentialsSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\Components\GroupedAccountComparer.cs" />
+    <Compile Include="CommonUI\Converters\InverseVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\NullableInverseBooleanConverter.cs" />
     <Compile Include="CommonUI\Images\AwsImageResourcePath.cs" />
     <Compile Include="CommonUI\Images\ImageSourceFactory.cs" />
+    <Compile Include="CommonUI\Notifications\Progress\IProgressDialog.cs" />
     <Compile Include="CommonUI\ToolkitImages.cs" />
     <Compile Include="CommonUI\VsImages.cs" />
     <Compile Include="CommonUI\Components\AccountAndRegionPickerViewModel.cs" />
@@ -174,6 +179,16 @@
     <Compile Include="Navigator\NavigatorCommand.cs" />
     <Compile Include="Navigator\NavigatorViewModel.cs" />
     <Compile Include="Navigator\NavigatorControlExtensionMethods.cs" />
+    <Compile Include="PluginServices\Publishing\IInitializePublishToAwsPackage.cs" />
+    <Compile Include="PluginServices\Publishing\IPublishToAws.cs" />
+    <Compile Include="PluginServices\Publishing\ShowPublishToAwsDocumentArgs.cs" />
+    <Compile Include="Publish\Banner\PublishBanner.xaml.cs">
+      <DependentUpon>PublishBanner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Publish\Banner\PublishBannerPropertyChangedHandler.cs" />
+    <Compile Include="Publish\Banner\PublishBannerViewModel.cs" />
+    <Compile Include="Publish\Banner\PublishBannerViewModelFactory.cs" />
+    <Compile Include="Publish\Banner\SwitchToNewExperienceCommandFactory.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeBrushKeys.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeFontKeys.cs" />
     <Compile Include="Themes\IToolkitThemeBrushKeys.cs" />
@@ -520,6 +535,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Publish\Banner\PublishBanner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Themes\Default\Brushes.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -658,6 +677,7 @@
     <EmbeddedResource Include="Resources\AWS-16x16.png" />
     <EmbeddedResource Include="Resources\AWS-32x32.png" />
     <EmbeddedResource Include="Resources\AWS-box.png" />
+    <EmbeddedResource Include="Resources\Megaphone.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\ServiceIcons\App-Runner.png" />
@@ -872,5 +892,6 @@
       <Version>2.0.12</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

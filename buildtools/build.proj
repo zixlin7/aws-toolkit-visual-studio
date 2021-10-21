@@ -132,6 +132,7 @@
             <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\AWSToolkit.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
+            <TestAssemblies Include="..\tests\PublishToAws.Tests\bin\$(Configuration)\PublishToAws.Tests.dll" />
         </ItemGroup>        
 
         <MakeDir Directories="$(TestResults)" />

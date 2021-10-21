@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "A new, simplified experience for publishing your .NET applications to AWS is now available as a preview feature within Visual Studio 2019. This experience is based on the AWS .NET deployment tool (https://github.com/aws/aws-dotnet-deploy), and gives you publishing recommendations based on your application. This new experience can be enabled from the existing Beanstalk and Container publishing dialogs. For more details, see https://aws.amazon.com/blogs/developer/simplify-dotnet-publication-toolkit/ and https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/publish-experience.html"
+}

@@ -109,6 +109,8 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SSO.dll" AssemblyName="AWSSDK.SSOOIDC, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SSOOIDC.dll" AssemblyName="AWSSDK.SSOOIDC, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
 
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="PublishToAws" Path="|PublishToAws;PkgdefProjectOutputGroup|" />
+
     </Assets>
     <Prerequisites>
         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="|%CurrentProject%;GetVsixVSTarget|" DisplayName="Visual Studio core editor" />

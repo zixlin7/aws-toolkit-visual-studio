@@ -53,6 +53,7 @@
     <Compile Include="CloudFormationConstants.cs" />
     <Compile Include="CloudFormationDeploymentWizardProperties.cs" />
     <Compile Include="IAWSCloudFormation.cs" />
+    <Compile Include="ICloudFormationViewer.cs" />
     <Compile Include="Nodes\ICloudFormationRootViewMetaNode.cs" />
     <Compile Include="Nodes\ICloudFormationRootViewModel.cs" />
     <Compile Include="Nodes\ICloudFormationStackViewMetaNode.cs" />

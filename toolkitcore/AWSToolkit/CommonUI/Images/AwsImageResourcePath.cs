@@ -8,6 +8,8 @@
         public static readonly AwsImageResourcePath Aws =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.AWS.png");
 
+        public static readonly AwsImageResourcePath AppRunner =
+            new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.App-Runner.png");
 
         public static readonly AwsImageResourcePath CloudFormation =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CloudFormation.png");
@@ -159,6 +161,10 @@
 
         public static readonly AwsImageResourcePath VpcVpcs =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ResourceIcons.VPC-VPCs.png");
+        
+        public static readonly AwsImageResourcePath Megaphone =
+            new AwsImageResourcePath("Amazon.AWSToolkit.Resources.Megaphone.png");
+
 
         public AwsImageResourcePath(string path)
         {
