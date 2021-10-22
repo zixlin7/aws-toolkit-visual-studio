@@ -8,15 +8,12 @@ using Amazon.AWSToolkit.Lambda;
 using Amazon.AWSToolkit.Lambda.WizardPages;
 using Amazon.AWSToolkit.Shared;
 
-using EnvDTE;
+using EnvDTE80;
 
 using log4net;
 
-using Microsoft;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Flavor;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Threading;
 
 using Task = System.Threading.Tasks.Task;
 
@@ -238,7 +235,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
             {
                 await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                if (!(await Package.GetServiceAsync(typeof(EnvDTE.DTE)) is DTE dte))
+                if (!(await Package.GetServiceAsync(typeof(EnvDTE.DTE)) is DTE2 dte))
                 {
                     return false;
                 }

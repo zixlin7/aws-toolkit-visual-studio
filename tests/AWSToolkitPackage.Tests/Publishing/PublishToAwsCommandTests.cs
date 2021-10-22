@@ -13,6 +13,8 @@ using Amazon.AWSToolkit.VisualStudio.Commands.Publishing;
 
 using EnvDTE;
 
+using EnvDTE80;
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -31,7 +33,7 @@ namespace AWSToolkitPackage.Tests.Publishing
             ToolkitContext toolkitContext,
             IAWSToolkitShellProvider toolkitShell,
             IPublishSettingsRepository publishSettingsRepository,
-            DTE dte,
+            DTE2 dte,
             IVsMonitorSelection monitorSelection,
             IVsSolution solution,
             IPublishToAws publishToAws)
@@ -105,7 +107,7 @@ namespace AWSToolkitPackage.Tests.Publishing
             },
         };
 
-        private readonly Mock<DTE> _dte = new Mock<DTE>();
+        private readonly Mock<DTE2> _dte = new Mock<DTE2>();
         private readonly Mock<Solution> _solution = new Mock<Solution>();
         private readonly Mock<SelectedItems> _selectedItems = new Mock<SelectedItems>();
         private readonly Mock<Project> _sampleProject;

@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Microsoft.VisualStudio.TemplateWizard;
-using Microsoft.VisualStudio;
-using EnvDTE;
-using Amazon.Lambda;
+
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers;
-using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.SimpleWorkers;
+using Amazon.Lambda;
+
+using EnvDTE;
+
+using EnvDTE80;
+
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.TemplateWizard;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 {
@@ -88,10 +93,10 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 
         private bool IsNodeJSPluginIsInstalled(object automationObject)
         {
-            if(!(automationObject is DTE))
+            if (!(automationObject is DTE2 dte))
+            {
                 return true;
-
-            DTE dte = (DTE)automationObject;
+            }
 
             try
             {

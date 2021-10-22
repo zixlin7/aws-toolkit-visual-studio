@@ -1,10 +1,13 @@
 ﻿using System;
+
 using Amazon.AWSToolkit.Lambda;
+
 using EnvDTE;
 
 using EnvDTE80;
 
 using log4net;
+
 using Microsoft.VisualStudio.Shell;
 
 namespace Amazon.AWSToolkit.VisualStudio.Lambda
@@ -52,7 +55,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
                 LOGGER.Debug("Initializing Lambda Tester event listener");
                 ThreadHelper.ThrowIfNotOnUIThread();
 
-                if (!(_hostPackage.GetVSShellService(typeof(EnvDTE.DTE)) is DTE dte))
+                if (!(_hostPackage.GetVSShellService(typeof(EnvDTE.DTE)) is DTE2 dte))
                 {
                     LOGGER.Error("Unable to get DTE. Lambda Tester will not be automatically configured this session.");
                     return;
@@ -143,8 +146,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
                 //determine configuration
-                var dte =(EnvDTE.DTE) newProgram.DTE;
-                var config = dte?.Solution?.SolutionBuild?.ActiveConfiguration?.Name ?? "Debug";
+                var config = newProgram.DTE?.Solution?.SolutionBuild?.ActiveConfiguration?.Name ?? "Debug";
                 bool debug = string.Equals("Debug", config, StringComparison.OrdinalIgnoreCase);
                 _usageEmitter.EmitIfLambdaTester(newProcess.Name, newProcess.ProcessID, debug);
             }

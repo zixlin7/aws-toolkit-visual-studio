@@ -4,6 +4,8 @@ using System.IO;
 using System.Windows.Forms;
 
 using Amazon.AWSToolkit.AwsServices;
+
+using EnvDTE80;
 using Amazon.AWSToolkit.CloudFormation.EditorExtensions;
 
 using Microsoft.VisualStudio.Project;
@@ -59,7 +61,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 
             var rootDir = Path.GetDirectoryName(pszProjectFilename);
 
-            var dte = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+            var dte = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
             var projectFirstChild = this.FirstChild;
 
             if (projectFirstChild != null)

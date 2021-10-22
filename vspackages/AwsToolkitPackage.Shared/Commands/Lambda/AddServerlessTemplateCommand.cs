@@ -2,11 +2,13 @@
 using System.IO;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.Lambda;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AwsToolkit.VsSdk.Common;
 
 using EnvDTE;
+
+using EnvDTE80;
 
 using log4net;
 
@@ -93,7 +95,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
                 }
 
                 await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
-                if (await Package.GetServiceAsync(typeof(DTE)) is DTE dte)
+                if (await Package.GetServiceAsync(typeof(DTE)) is DTE2 dte)
                 {
                     dte.ItemOperations.OpenFile(destinationFile);
                 }

@@ -1,13 +1,17 @@
 ﻿using System;
+
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.VisualStudio.Utilities.VsAppId;
+
+using EnvDTE80;
+
 using Microsoft.VisualStudio.Shell;
 
 namespace Amazon.AWSToolkit.VisualStudio.Utilities
 {
     internal static class ToolkitProductEnvironment
     {
-        internal static ProductEnvironment CreateProductEnvironment(IVsAppId vsAppId, EnvDTE.DTE dte)
+        internal static ProductEnvironment CreateProductEnvironment(IVsAppId vsAppId, DTE2 dte)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var env = new ProductEnvironment
@@ -23,7 +27,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities
             return env;
         }
 
-        private static string GetParentProduct(IVsAppId vsAppId, EnvDTE.DTE dte)
+        private static string GetParentProduct(IVsAppId vsAppId, DTE2 dte)
         {
             try
             {
@@ -44,7 +48,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities
         /// <summary>
         /// This is the fallback resolver, returning a less exact VS Product Name
         /// </summary>
-        private static string GetParentProduct(EnvDTE.DTE dte)
+        private static string GetParentProduct(DTE2 dte)
         {
             try
             {
@@ -57,7 +61,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities
             }
         }
 
-        private static string GetParentProductVersion(IVsAppId vsAppId, EnvDTE.DTE dte)
+        private static string GetParentProductVersion(IVsAppId vsAppId, DTE2 dte)
         {
             try
             {
@@ -78,7 +82,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities
         /// <summary>
         /// This is the fallback resolver, returning a less exact VS Product version
         /// </summary>
-        private static string GetParentProductVersion(EnvDTE.DTE dte)
+        private static string GetParentProductVersion(DTE2 dte)
         {
             try
             {
