@@ -174,7 +174,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
                 {
                     if (errorListReporter != null)
                     {
-                        Task newError = ConvertToErrorTask(errorToken, errorListReporter);
+                        var newError = ConvertToErrorTask(errorToken, errorListReporter);
                         errorListReporter.Tasks.Add(newError);
                     }
 

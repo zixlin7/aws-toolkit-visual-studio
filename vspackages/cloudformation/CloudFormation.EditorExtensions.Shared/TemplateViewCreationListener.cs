@@ -133,19 +133,23 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 
             public TaskProvider.TaskCollection Tasks => errorListProvider.Tasks;
 
+#if VS2022_OR_LATER
+            public bool Navigate(TaskListItem task, Guid logicalView)
+#else
             public bool Navigate(Microsoft.VisualStudio.Shell.Task task, Guid logicalView)
+#endif
             {
-                return this.errorListProvider.Navigate(task, logicalView);
+                return errorListProvider.Navigate(task, logicalView);
             }
 
             public void ResumeRefresh()
             {
-                this.errorListProvider.ResumeRefresh();
+                errorListProvider.ResumeRefresh();
             }
 
             public void SuspendRefresh()
             {
-                this.errorListProvider.SuspendRefresh();
+                errorListProvider.SuspendRefresh();
             }
         }
     }

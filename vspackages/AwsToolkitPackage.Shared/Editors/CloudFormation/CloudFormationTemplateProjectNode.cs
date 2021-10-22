@@ -4,9 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using Amazon.AWSToolkit.AwsServices;
-#if !VS2022_OR_LATER
 using Amazon.AWSToolkit.CloudFormation.EditorExtensions;
-#endif
 
 using Microsoft.VisualStudio.Project;
 using Microsoft.VisualStudio.Shell;
@@ -18,13 +16,7 @@ using VSProjectUtilities = Microsoft.VisualStudio.Project.Utilities;
 
 namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 {
-    // TODO : VS2022_CloudFormationTemplateProjectNode : After CloudFormation.EditorExtensions supports VS 2022,
-    // restore CloudFormationTemplateProjectNode to a single declaration that implements IErrorListReporter (IDE-5960)
-#if VS2022_OR_LATER
-    public class CloudFormationTemplateProjectNode : ProjectNode, IVsDeferredSaveProject
-#else
     public class CloudFormationTemplateProjectNode : ProjectNode, IErrorListReporter, IVsDeferredSaveProject
-#endif
     {
         private static ImageList projectNodeImageList;
         internal static int cloudFormationProjectImageIndex;
@@ -218,28 +210,25 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
             return false;
         }
 
-        #region IErrorListReporter Implementation
-        // TODO : VS2022_CloudFormationTemplateProjectNode : Implement IErrorListReporter after CloudFormation.EditorExtensions
-        // supports VS 2022 (IDE-5960)
-#if !VS2022_OR_LATER
-
         Microsoft.VisualStudio.Shell.TaskProvider.TaskCollection IErrorListReporter.Tasks => this.TaskProvider.Tasks;
 
+#if VS2022_OR_LATER
+        bool IErrorListReporter.Navigate(TaskListItem task, Guid logicalView)
+#else
         bool IErrorListReporter.Navigate(Microsoft.VisualStudio.Shell.Task task, Guid logicalView)
+        #endif
         {            
-            return this.TaskProvider.Navigate(task, logicalView);
+            return TaskProvider.Navigate(task, logicalView);
         }
 
         void IErrorListReporter.ResumeRefresh()
         {
-            this.TaskProvider.ResumeRefresh();
+            TaskProvider.ResumeRefresh();
         }
 
         void IErrorListReporter.SuspendRefresh()
         {
-            this.TaskProvider.SuspendRefresh();
+            TaskProvider.SuspendRefresh();
         }
-#endif
-        #endregion
     }
 }
