@@ -23,9 +23,9 @@ namespace Amazon.AWSToolkit.Publish.Banner
 
         public bool ShowBanner => CanUseNewExperience();
 
-        private bool CanUseNewExperience() => HostIs2019OrHigher() && IsProjectPublishable();
+        private bool CanUseNewExperience() => HostIs2019() && IsProjectPublishable();
 
-        private bool HostIs2019OrHigher() => ToolkitContext.ToolkitHostInfo != ToolkitHosts.Vs2017;
+        private bool HostIs2019() => ToolkitContext.ToolkitHostInfo == ToolkitHosts.Vs2019;
 
         private bool _closeCurrentPublishExperience = false;
 
