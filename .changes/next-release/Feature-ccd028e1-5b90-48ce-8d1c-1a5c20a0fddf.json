@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "This release of the Toolkit includes an updated signing certificate, so that the VSIX installation process does not show an error message."
+}
