@@ -1,3 +1,6 @@
+v1.23.0.1 (2021-10-26)
+* This release of the Toolkit includes an updated signing certificate, so that the VSIX installation process does not show an error message.
+
 v1.23.0.0 (2021-10-21)
 * Fixed an issue where autocompletion in CloudFormation templates would replace too much text
 * Removed the dotnetcore2.1 runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details.
