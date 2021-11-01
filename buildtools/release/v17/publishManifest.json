@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json.schemastore.org/vsix-publish",
+    "categories": [
+        "Setup & Deployment",
+        "Source Control",
+        "Web"
+    ],
+    "identity": {
+        "internalName": "AWSToolkitforVisualStudio2022"
+    },
+    "private": true,
+    "overview": "overview.md",
+    "publisher": "AmazonWebServices",
+    "repo": "https://github.com/aws/aws-toolkit-visual-studio",
+    "qna": false
+}
