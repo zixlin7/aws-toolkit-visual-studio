@@ -1,12 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
-                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit">
+                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+                    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit">
 
     <!-- Apply the VS Button Theme as the default Button theme -->
     <Style 
         x:Key="{x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}" 
         TargetType="Button" 
         BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ButtonStyleKey}}" />
+
+    <!-- Apply the VS Hyperlink Theme as the default for our custom types -->
+    <Style
+        TargetType="commonUi:BrowserHyperLink" 
+        BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ThemedDialogHyperlinkStyleKey}}" />
 
 </ResourceDictionary>

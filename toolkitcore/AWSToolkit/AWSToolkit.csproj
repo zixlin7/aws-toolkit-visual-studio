@@ -97,6 +97,7 @@
     <Compile Include="Commands\ShowExceptionAndForgetCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="CommonUI\AssociatedIconAttribute.cs" />
+    <Compile Include="CommonUI\BrowserHyperLink.cs" />
     <Compile Include="CommonUI\CommandHandler.cs" />
     <Compile Include="CommonUI\Components\AccountViewModelGroup.cs" />
     <Compile Include="CommonUI\Converters\AccountViewModelGroupConverter.cs" />

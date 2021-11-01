@@ -2,14 +2,15 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
                     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit">
+                    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit">
 
     <commonUi:VsImages x:Key="VsImages" />
-    
+    <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
     <DataTemplate x:Key="SystemCapabilityTemplate" DataType="{x:Type models:TargetSystemCapability}">
         <Grid 
-                    Margin="12"
-                    >
+            Margin="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <!-- Column 2: Spacing between Icon and Text -->
@@ -22,27 +23,38 @@
             </Grid.RowDefinitions>
 
             <Image
-                        Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                        VerticalAlignment="Top"
-                        DataContext="{DynamicResource VsImages}"
-                        Source="{Binding StatusError}"
-                        />
+                Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                VerticalAlignment="Top"
+                DataContext="{DynamicResource VsImages}"
+                Source="{Binding StatusError}"/>
 
             <TextBlock
-                        Grid.Column="2"
-                        FontWeight="Bold"
-                        HorizontalAlignment="Left"
-                        TextWrapping="Wrap"
-                        Text="{Binding Name}"
-                        />
+                Grid.Column="2"
+                FontWeight="Bold"
+                HorizontalAlignment="Left"
+                TextWrapping="Wrap"
+                Text="{Binding Name}"
+                Visibility="{Binding HasUrl, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
 
             <TextBlock
-                        Grid.Row="1" Grid.Column="2"
-                        Margin="0 3 0 0"
-                        HorizontalAlignment="Left"
-                        TextWrapping="Wrap"
-                        Text="{Binding Message}"
-                        />
+                Grid.Column="2"
+                FontWeight="Bold"
+                HorizontalAlignment="Left"
+                TextWrapping="Wrap"
+                Visibility="{Binding HasUrl, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <commonUi:BrowserHyperLink 
+                    NavigateUri="{Binding InstallationUrl}"
+                    ToolTip="{Binding InstallationUrl}">
+                    <Run Text="{Binding Name, Mode=OneWay}" />
+                </commonUi:BrowserHyperLink>
+            </TextBlock>
+
+            <TextBlock
+                Grid.Row="1" Grid.Column="2"
+                Margin="0 3 0 0"
+                HorizontalAlignment="Left"
+                TextWrapping="Wrap"
+                Text="{Binding Message}"/>
         </Grid>
     </DataTemplate>
     

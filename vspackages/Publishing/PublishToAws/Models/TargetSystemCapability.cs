@@ -2,23 +2,27 @@
 
 using AWS.Deploy.ServerMode.Client;
 
+using Microsoft.VisualStudio.PlatformUI;
+
 namespace Amazon.AWSToolkit.Publish.Models
 {
     public class TargetSystemCapability : IEquatable<TargetSystemCapability>
     {
-        public string Name { get; set; }
+        public string Name { get; }
 
-        public bool Installed { get; set; }
+        public bool Installed { get; }
 
         /// <summary>
         /// Indicates whether a tool can be used even if it is installed.
         /// Docker, as an example, can be installed but in Windows container mode. It needs to be in Linux container mode to be used.
         /// </summary>
-        public bool Available { get; set; }
+        public bool Available { get; }
 
-        public string Message { get; set; }
+        public string Message { get;  }
 
-        public string InstallationUrl { get; set; }
+        public string InstallationUrl { get; }
+
+        public bool HasUrl => !string.IsNullOrEmpty(InstallationUrl) && InstallationUrl.StartsWith("http");
 
         public TargetSystemCapability(SystemCapabilitySummary systemCapabilitySummary)
         {
