@@ -85,6 +85,9 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\templates\basic-serverless.template">
+      <Link>Resources\basic-serverless.template</Link>
+    </EmbeddedResource>
     <Content Include="..\AwsToolkitPackageResources\aws.png">
       <Link>Resources\aws.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -268,6 +271,26 @@
     </Content>
     <Content Include="$(OutputRoot)\System.Threading.Channels.dll">
       <Link>System.Threading.Channels.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Microsoft.WindowsAPICodePack.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.Shell.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Microsoft.WindowsAPICodePack.Shell.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Newtonsoft.Json.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
