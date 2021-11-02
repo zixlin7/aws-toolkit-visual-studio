@@ -519,7 +519,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         private static RegistryKey OpenTEGitSourceControlRegistryKey(string path)
         {
             string TEGitKey;
-            if (string.Equals(ToolkitFactory.Instance?.ShellProvider.HostInfo.Version, ToolkitHosts.Vs2019.Version))
+            if (string.Equals(ToolkitFactory.Instance?.ShellProvider.HostInfo.Version, ToolkitHosts.Vs2022.Version))
+            {
+                TEGitKey = @"Software\Microsoft\VisualStudio\17.0\TeamFoundation\GitSourceControl";
+            }
+            else if (string.Equals(ToolkitFactory.Instance?.ShellProvider.HostInfo.Version, ToolkitHosts.Vs2019.Version))
             {
                 TEGitKey = @"Software\Microsoft\VisualStudio\16.0\TeamFoundation\GitSourceControl";
             }

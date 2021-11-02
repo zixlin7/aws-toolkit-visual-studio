@@ -126,6 +126,12 @@
       <Project>{260eb803-0c5d-4000-b920-4e8af84820ca}</Project>
       <Name>AwsToolkit.VsSdk.Common.v17</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.CodeCommitTeamExplorer.v17\AWSToolkit.CodeCommitTeamExplorer.v17.csproj">
+      <Project>{5A075C30-BB90-4095-98D2-508E92B3ED2D}</Project>
+      <Name>AWSToolkit.CodeCommitTeamExplorer.v17</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
     <ProjectReference Include="..\lambda\AWSToolkit.Lambda.TemplateWizards.v17\AWSToolkit.Lambda.TemplateWizards.v17.csproj">
       <Project>{3F04815A-2A4B-4B28-B683-053A46D6A076}</Project>
       <Name>AWSToolkit.Lambda.TemplateWizards.v17</Name>
@@ -247,7 +253,8 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-4-31709-430" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.4207-preview4">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools">
+      <Version>17.0.5322-preview5-g2cf1b9c5</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

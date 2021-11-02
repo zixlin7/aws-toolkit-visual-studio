@@ -38,6 +38,9 @@
         <!-- Cloudformation Editor -->
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="CloudFormation.EditorExtensions.v17" Path="|CloudFormation.EditorExtensions.v17|" />
 
+        <!-- Team Explorer - CodeCommit -->
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AWSToolkit.CodeCommitTeamExplorer.v17" Path="|AWSToolkit.CodeCommitTeamExplorer.v17|" />
+
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Extensions.dll" AssemblyName="AWSSDK.Extensions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.AutoScaling.dll" AssemblyName="AWSSDK.AutoScaling, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudFormation.dll" AssemblyName="AWSSDK.CloudFormation, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />

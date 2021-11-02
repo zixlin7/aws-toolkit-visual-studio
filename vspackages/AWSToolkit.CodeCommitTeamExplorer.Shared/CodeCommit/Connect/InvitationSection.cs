@@ -163,10 +163,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
             {
                 if (_vsShell == null) { return; }
 
-                // TODO : VS2022_TeamExplorerPackageDetection : Once the TeamExplorer projects are
-                // set up to leverage Shared Projects, update this code to (ifdef) conditionally
-                // reference the appropriate Toolkit Package Guid (IDE-5965)
-                var packageGuid = Constants.ToolkitPackageGuids.Vs20172019;
+                var packageGuid = GetToolkitPackageGuid();
                 var isLoaded = _vsShell.IsPackageLoaded(ref packageGuid, out var _);
                 if (isLoaded != VSConstants.S_OK)
                 {
@@ -189,6 +186,15 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
                     _packageLoadedTimer.Start();
                 }
             }
+        }
+
+        private Guid GetToolkitPackageGuid()
+        {
+#if VS2022
+            return Constants.ToolkitPackageGuids.Vs2022;
+#else
+            return Constants.ToolkitPackageGuids.Vs20172019;
+#endif
         }
     }
 }
