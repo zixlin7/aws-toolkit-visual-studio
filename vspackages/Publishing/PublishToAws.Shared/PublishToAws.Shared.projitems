@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>820d848a-e3c5-4dac-9465-9a6b8726d419</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Amazon.AWSToolkit.Publish</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ConfigCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\CopyToClipboardCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\PersistBannerVisibilityCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ReenableOldPublishCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\StackViewerCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetViewCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\ConfigurationDetailsToVisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishResourcesToVisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishTargetsToVisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\RepublishTargetsToVisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\SessionVisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\SystemCapabilitiesToVisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\TargetsToVisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\DeployCli.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\DeployCliInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\DeployCliInstallerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\GetCurrentCliVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\InstallDeployCli.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\InstallOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\InstallOptionsFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\InstallResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\ProcessData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\ProcessExitHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\ProcessLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\VerifyDeployCli.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PropertyTemplateSelector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishApplicationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishDialogStepProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishRecommendation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishResource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishResourceTemplateSelector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\RepublishTarget.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SessionDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ShowPublishDialogStep.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SummaryGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\TargetSystemCapability.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NuGet\NoVersionFoundException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NuGet\NuGetRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Package\InitializePublishToAwsPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Package\IPublishToAwsPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Package\PublishToAws.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Package\PublishToAwsPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PublishDocumentViewModelChangeHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\CliServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\CliServerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ICliServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DocumentLoadingIndicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProgressStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishToAwsDocumentViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishViewStage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ConfigureTargetView.xaml.cs">
+      <DependentUpon>ConfigureTargetView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ExistingTargetDetailsView.xaml.cs">
+      <DependentUpon>ExistingTargetDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\NewTargetDetailsView.xaml.cs">
+      <DependentUpon>NewTargetDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishApplicationView.xaml.cs">
+      <DependentUpon>PublishApplicationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishDocumentFooter.xaml.cs">
+      <DependentUpon>PublishDocumentFooter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishDocumentHeader.xaml.cs">
+      <DependentUpon>PublishDocumentHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishOptions.xaml.cs">
+      <DependentUpon>PublishOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishOptionsBanner.xaml.cs">
+      <DependentUpon>PublishOptionsBanner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishResources.xaml.cs">
+      <DependentUpon>PublishResources.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishToAwsDocumentControl.xaml.cs">
+      <DependentUpon>PublishToAwsDocumentControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ReenableOldPublishDialog.xaml.cs">
+      <DependentUpon>ReenableOldPublishDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\SelectTargetView.xaml.cs">
+      <DependentUpon>SelectTargetView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\TargetProperties.xaml.cs">
+      <DependentUpon>TargetProperties.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Views\ConfigureTargetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\ExistingTargetDetailsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\NewTargetDetailsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\PropertyEditors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\PublishApplicationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\PublishDocumentFooter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\PublishDocumentHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\PublishOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\PublishOptionsBanner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\PublishResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\PublishToAwsDocumentControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\ReenableOldPublishDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\SelectTargetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\SystemCapabilityTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\TargetProperties.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+</Project>

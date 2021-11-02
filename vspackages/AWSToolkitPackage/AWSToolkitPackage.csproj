@@ -490,6 +490,14 @@
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
       <Version>1.0.17</Version>
     </PackageReference>
+    <!-- Community.VisualStudio.Toolkit - This package is versioned based on the major version of 
+      Visual Studio that it supports.
+      The version referenced MUST be no higher than the version that corresponds with the lowest 
+      Major version of Visual Studio supported by this Toolkit. 
+      (For a Toolkit that supports VS 2017, the version must be 15.0.*.*) -->
+    <PackageReference Include="Community.VisualStudio.Toolkit" ExcludeAssets="Runtime">
+      <Version>15.0.75.103</Version>
+    </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>
     </PackageReference>
@@ -500,13 +508,13 @@
       <Version>15.0.1</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="NuGet.VisualStudio">
-      <Version>4.9.4</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
       <Version>16.10.1055</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="NuGet.VisualStudio">
+      <Version>4.9.4</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Json">
       <Version>5.0.2</Version>
@@ -514,16 +522,7 @@
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.3.0</Version>
     </PackageReference>
-    <!-- Community.VisualStudio.Toolkit - This package is versioned based on the major version of 
-      Visual Studio that it supports.
-      The version referenced MUST be no higher than the version that corresponds with the lowest 
-      Major version of Visual Studio supported by this Toolkit. 
-      (For a Toolkit that supports VS 2017, the version must be 15.0.*.*) -->
-    <PackageReference Include="Community.VisualStudio.Toolkit" ExcludeAssets="Runtime">
-      <Version>15.0.75.103</Version>
-    </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="..\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

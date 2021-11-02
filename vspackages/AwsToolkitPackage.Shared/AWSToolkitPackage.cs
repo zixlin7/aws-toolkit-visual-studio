@@ -811,9 +811,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             try
             {
-                // Publish to AWS is implemented with .NET 4.7.2, which VS 2017 doesn't target.
-                // Only activate this functionality for VS 2019 (and newer versions when they are available).
-                if (hostVersion != ToolkitHosts.Vs2019)
+                if (!hostVersion.SupportsPublishToAwsExperience())
                 {
                     return;
                 }
@@ -1062,7 +1060,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         return;
                     }
 
-                    if (IsVS2019Host())
+                    if (_toolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience())
                     {
                         var project = _toolkitContext.ToolkitHost.GetSelectedProject();
                         if (project != null && project.IsNetFramework())
@@ -1231,7 +1229,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 if (AWSECSPlugin != null)
                 {
-                    publishMenuCommand.Visible = IsVS2019Host()
+                    publishMenuCommand.Visible = _toolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience()
                                                 ? VSUtility.IsNETCoreDockerProject && IsOldPublishExperienceEnabled()
                                                 : VSUtility.IsNETCoreDockerProject;
 
@@ -1241,11 +1239,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception)
             {
             }
-        }
-
-        private bool IsVS2019Host()
-        {
-            return _toolkitContext.ToolkitHostInfo == ToolkitHosts.Vs2019;
         }
 
         /// <summary>

@@ -182,6 +182,7 @@
     <Compile Include="Navigator\NavigatorControlExtensionMethods.cs" />
     <Compile Include="PluginServices\Publishing\IInitializePublishToAwsPackage.cs" />
     <Compile Include="PluginServices\Publishing\IPublishToAws.cs" />
+    <Compile Include="PluginServices\Publishing\PublishToAwsExtensionMethods.cs" />
     <Compile Include="PluginServices\Publishing\ShowPublishToAwsDocumentArgs.cs" />
     <Compile Include="Publish\Banner\PublishBanner.xaml.cs">
       <DependentUpon>PublishBanner.xaml</DependentUpon>

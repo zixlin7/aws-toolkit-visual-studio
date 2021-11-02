@@ -223,6 +223,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFormation.EditorExtens
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommitTeamExplorer.v17", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer.v17\AWSToolkit.CodeCommitTeamExplorer.v17.csproj", "{5A075C30-BB90-4095-98D2-508E92B3ED2D}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PublishToAws.Shared", "..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.shproj", "{820D848A-E3C5-4DAC-9465-9A6B8726D419}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublishToAws.v17", "..\vspackages\Publishing\PublishToAws.v17\PublishToAws.v17.csproj", "{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{038b2cf8-0089-4ed1-beba-a7d64390190e}*SharedItemsImports = 4
@@ -231,12 +235,15 @@ Global
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{260eb803-0c5d-4000-b920-4e8af84820ca}*SharedItemsImports = 4
 		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{368a798c-38d1-4dc0-bc08-4102af381302}*SharedItemsImports = 4
 		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{3f04815a-2a4b-4b28-b683-053a46d6a076}*SharedItemsImports = 4
+		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{463eb6a0-df14-4e66-a01a-8384aaa51ab0}*SharedItemsImports = 4
 		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5739ee0e-1e8c-4ac6-9aaa-f58c7345b9a8}*SharedItemsImports = 4
 		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5a075c30-bb90-4095-98d2-508e92b3ed2d}*SharedItemsImports = 4
 		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{783e4198-a8f1-4e74-af3e-0001b0ad516b}*SharedItemsImports = 4
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{81552efa-46b0-4ebe-bc29-5ba6a7628207}*SharedItemsImports = 4
+		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{820d848a-e3c5-4dac-9465-9a6b8726d419}*SharedItemsImports = 13
 		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{94f578fb-afeb-4c67-bd0d-c5797e50e9e8}*SharedItemsImports = 4
 		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{98fc1018-a866-4b34-90d8-c432efef5d2a}*SharedItemsImports = 13
+		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{9a9a823b-967e-4bb5-809f-a78c1668c363}*SharedItemsImports = 4
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{a27787ed-5a7a-455a-9e90-caeb9030f850}*SharedItemsImports = 13
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{b102b42b-06ec-47f9-8dc1-e5729b62172e}*SharedItemsImports = 4
 		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{c64b9bf2-2d41-4358-a7e9-7ffe42a29cbc}*SharedItemsImports = 13
@@ -873,6 +880,14 @@ Global
 		{5A075C30-BB90-4095-98D2-508E92B3ED2D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5A075C30-BB90-4095-98D2-508E92B3ED2D}.Release|x86.ActiveCfg = Release|Any CPU
 		{5A075C30-BB90-4095-98D2-508E92B3ED2D}.Release|x86.Build.0 = Release|Any CPU
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}.Debug|x86.Build.0 = Debug|Any CPU
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}.Release|x86.ActiveCfg = Release|Any CPU
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -976,6 +991,8 @@ Global
 		{7AC9F81A-1C89-468C-A3BC-FE87EF1A11F2} = {A4E1E142-C1D6-47F8-8D76-AB0A9CBC9D22}
 		{368A798C-38D1-4DC0-BC08-4102AF381302} = {63BEB71C-D666-4F32-B8D0-620763DDA61A}
 		{5A075C30-BB90-4095-98D2-508E92B3ED2D} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
+		{820D848A-E3C5-4DAC-9465-9A6B8726D419} = {02EF9285-F05C-4353-9F85-BA2637CECA82}
+		{463EB6A0-DF14-4E66-A01A-8384AAA51AB0} = {02EF9285-F05C-4353-9F85-BA2637CECA82}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
