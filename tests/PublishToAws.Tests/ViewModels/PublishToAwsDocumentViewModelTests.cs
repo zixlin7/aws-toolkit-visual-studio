@@ -812,6 +812,58 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
+        public async Task RefreshSystemCapabilities_CapabilityInstalled()
+        {
+            await SetupPublishView();
+            _deployToolController.Setup(mock =>
+                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
+
+            Assert.Empty(_sut.MissingCapabilities.Missing);
+            Assert.Empty(_sut.MissingCapabilities.Resolved);
+        }
+
+        [Fact]
+        public async Task RefreshSystemCapabilities_CapabilityMissing()
+        {
+            await SetupPublishView();
+            _deployToolController.Setup(mock =>
+                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(CreateSampleSystemCapabilities);
+
+            await _sut.RefreshSystemCapabilities(_cancelToken);
+
+            Assert.Contains("Docker", _sut.MissingCapabilities.Missing);
+            Assert.Empty(_sut.MissingCapabilities.Resolved);
+        }
+
+        private static List<TargetSystemCapability> CreateSampleSystemCapabilities()
+        {
+            var systemCapabilities = new List<TargetSystemCapability>();
+            var summary = new SystemCapabilitySummary()
+            {
+                Name = "Docker", Message = "Please install Docker", Installed = false
+            };
+            var capability = new TargetSystemCapability(summary);
+            systemCapabilities.Add(capability);
+            return systemCapabilities;
+        }
+
+        [Fact]
+        public async Task RefreshSystemCapabilities_CapabilityResolved()
+        {
+            await SetupPublishView();
+            _deployToolController.Setup(mock =>
+                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(CreateSampleSystemCapabilities);
+
+            await _sut.RefreshSystemCapabilities(_cancelToken);
+            _deployToolController.Setup(mock =>
+                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
+            await _sut.RefreshSystemCapabilities(_cancelToken);
+
+            Assert.Contains("Docker", _sut.MissingCapabilities.Missing);
+            Assert.Contains("Docker", _sut.MissingCapabilities.Resolved);
+        }
+
+        [Fact]
         public async Task ClearPublishedResources()
         {
             _sut.PublishedStackName = "foo";

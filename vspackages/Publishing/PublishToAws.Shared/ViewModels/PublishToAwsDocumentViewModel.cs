@@ -20,6 +20,7 @@ using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.Runtime;
 
 using AWS.Deploy.ServerMode.Client;
@@ -120,6 +121,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             new ObservableCollection<ConfigurationDetail>();
         private ObservableCollection<PublishResource> _publishResources =
             new ObservableCollection<PublishResource>();
+
+        public readonly MissingCapabilities MissingCapabilities =
+            new MissingCapabilities();
+
+
         public PublishToAwsDocumentViewModel(PublishApplicationContext publishContext)
         {
             _publishContext = publishContext;
@@ -1178,6 +1184,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 SystemCapabilities = capabilities;
+                MissingCapabilities.Update(GetPublishRecipeId(), SystemCapabilities);
             }
             catch (Exception e)
             {
@@ -1296,13 +1303,32 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public void RecordPublishEndMetric(bool published)
         {
+            Dictionary<string, object> capabilityMetrics = CreateCapabilityMetrics();
             this._publishContext.TelemetryLogger.RecordPublishEnd(new PublishEnd()
             {
                 AwsAccount = _publishContext.ConnectionManager.ActiveAccountId,
                 AwsRegion = _publishContext.ConnectionManager.ActiveRegion.Id,
                 Duration = WorkflowDuration.Elapsed.TotalMilliseconds,
                 Published = published
-            });
+            }, capabilityMetrics);
+        }
+
+        private Dictionary<string, object> CreateCapabilityMetrics()
+        {
+            var capabilityMetrics = new Dictionary<string, object>();
+            Action<string> addToCapabilityMetrics = (key) => capabilityMetrics[key] = true;
+
+            MissingCapabilities
+                .Resolved
+                .ToList()
+                .ForEach(capability => addToCapabilityMetrics($"resolvedComponent_{capability}"));
+
+            MissingCapabilities
+                .Missing
+                .ToList()
+                .ForEach(capability => addToCapabilityMetrics($"missingComponent_{capability}"));
+
+            return capabilityMetrics;
         }
 
         private void RecordPublishDeployMetric(Result result)

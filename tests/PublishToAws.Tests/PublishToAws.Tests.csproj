@@ -86,6 +86,7 @@
     <Compile Include="Util\ImageSourceExtensionMethods.cs" />
     <Compile Include="Util\RecipeServiceImageResolverTests.cs" />
     <Compile Include="ViewModels\DeployToolControllerTests.cs" />
+    <Compile Include="ViewModels\MissingCapabilitiesTests.cs" />
     <Compile Include="ViewModels\PublishToAwsDocumentViewModelTests.cs" />
     <Compile Include="Fixtures\SamplePublishData.cs" />
   </ItemGroup>

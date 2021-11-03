@@ -68,6 +68,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DocumentLoadingIndicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MissingCapabilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProgressStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishToAwsDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishViewStage.cs" />
