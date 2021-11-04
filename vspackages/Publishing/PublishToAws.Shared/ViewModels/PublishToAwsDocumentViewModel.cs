@@ -688,10 +688,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public async Task RefreshSystemCapabilities(CancellationToken cancellationToken)
         {
             var capabilities = new ObservableCollection<TargetSystemCapability>();
-
+            var recipeId = string.Empty;
             try
             {
                 ThrowIfSessionIsNotCreated();
+                recipeId = GetPublishRecipeId();
 
                 var systemCapabilities = await DeployToolController.GetCompatibilityAsync(SessionId, cancellationToken)
                     .ConfigureAwait(false);
@@ -705,7 +706,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             finally
             {
                 await SetSystemCapabilities(capabilities, cancellationToken);
-
+                UpdateMissingCapabilities(recipeId, capabilities);
                 if (capabilities.Any())
                 {
                     var message = $"{ProjectName} cannot be published to {Recommendation.Name}, system dependencies are missing ({capabilities.Count}).";
@@ -713,6 +714,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                     _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
                 }
             }
+        }
+
+        private void UpdateMissingCapabilities(string recipeId, ObservableCollection<TargetSystemCapability> capabilities)
+        {
+            MissingCapabilities.Update(recipeId, capabilities);
         }
 
         /// <summary>
@@ -1184,7 +1190,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 SystemCapabilities = capabilities;
-                MissingCapabilities.Update(GetPublishRecipeId(), SystemCapabilities);
             }
             catch (Exception e)
             {
