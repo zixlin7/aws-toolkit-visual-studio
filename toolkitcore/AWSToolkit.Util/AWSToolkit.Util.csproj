@@ -124,6 +124,7 @@
     <Compile Include="Telemetry\Internal\TelemetryPublisher.cs" />
     <Compile Include="Telemetry\TelemetryService.cs" />
     <Compile Include="Telemetry\ToolkitTelemetryEvents.generated.cs" />
+    <Compile Include="Telemetry\ToolkitTelemetryEventsSupplemental.cs" />
     <Compile Include="ToolkitAppDataPath.cs" />
     <Compile Include="ToolkitSettingsConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

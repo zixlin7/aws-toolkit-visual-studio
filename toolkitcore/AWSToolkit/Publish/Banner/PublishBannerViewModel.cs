@@ -1,11 +1,11 @@
 ﻿using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Solutions;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Publish.Banner
 {
@@ -23,9 +23,9 @@ namespace Amazon.AWSToolkit.Publish.Banner
 
         public bool ShowBanner => CanUseNewExperience();
 
-        private bool CanUseNewExperience() => HostIs2019OrHigher() && IsProjectPublishable();
+        private bool CanUseNewExperience() => IsPublishToAwsSupported() && IsProjectPublishable();
 
-        private bool HostIs2019OrHigher() => ToolkitContext.ToolkitHostInfo != ToolkitHosts.Vs2017;
+        private bool IsPublishToAwsSupported() => ToolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience();
 
         private bool _closeCurrentPublishExperience = false;
 

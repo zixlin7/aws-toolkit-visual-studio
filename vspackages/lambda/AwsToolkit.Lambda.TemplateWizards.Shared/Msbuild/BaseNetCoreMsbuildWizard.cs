@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Microsoft.VisualStudio.TemplateWizard;
-using EnvDTE;
+using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers;
-using System.IO.Compression;
 using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
+
+using EnvDTE;
+
+using EnvDTE80;
 
 using log4net;
+
+using Microsoft.VisualStudio.TemplateWizard;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 {
@@ -179,7 +184,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
             return true;
         }
 
-        DTE _dte;
+        DTE2 _dte;
         Dictionary<string, string> _replacementsDictionary;
         Blueprint _blueprint;
 
@@ -189,7 +194,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
         {
             try
             {
-                this._dte = (DTE)automationObject;
+                this._dte = (DTE2)automationObject;
                 this._replacementsDictionary = replacementsDictionary;
 
                 IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.View.NewAWSLambdaProject", new Dictionary<string, object>());

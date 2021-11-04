@@ -1,3 +1,15 @@
+# Toolkit release manifests
+
+This folder contains content relevant to:
+* preparing a commit for release
+* publishing the Toolkit into the Marketplace
+* producing a GitHub tagged release
+
+Marketplace manifests are specific to each Toolkit extension. These reside in folders named by their associated Visual Studio version, and the folders are referenced by the release pipeline.
+
+* `v15`: Toolkit for VS 2017 & 2019
+* `v17`: Toolkit for VS 2022
+
 ### Setup
 - Install Python 3.9+ (32-bit)
   - Script was tested with 3.9.6

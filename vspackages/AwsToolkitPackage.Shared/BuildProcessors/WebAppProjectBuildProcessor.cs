@@ -1,16 +1,20 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using log4net;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Build.Framework;
-
-using Amazon.AWSToolkit.MobileAnalytics;
+using System.Linq;
 
 using Amazon.AwsToolkit.VsSdk.Common;
+using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using Amazon.AWSToolkit.MobileAnalytics;
+
+using EnvDTE80;
+
+using log4net;
+
+using Microsoft;
+using Microsoft.Build.Framework;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
 {
@@ -60,7 +64,8 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                     uint solutionEventsCookie;
                     solnBuildManager.AdviseUpdateSolutionEvents(this, out solutionEventsCookie);
 
-                    var dte = taskInfo.HostServiceProvider(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                    var dte = taskInfo.HostServiceProvider(typeof(EnvDTE.DTE)) as DTE2;
+                    Assumes.Present(dte);
                     var solution = dte.Solution;
                     var solutionBuild2 = (EnvDTE80.SolutionBuild2)solution.SolutionBuild;
 

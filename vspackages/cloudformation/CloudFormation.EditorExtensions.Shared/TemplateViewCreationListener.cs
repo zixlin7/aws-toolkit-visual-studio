@@ -1,13 +1,16 @@
 ﻿using System;
-using System.Text;
-using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Shell;
+using System.Text;
+
+using EnvDTE80;
 
 using log4net;
+
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 {
@@ -87,7 +90,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
             if (string.IsNullOrEmpty(filePath))
                 return new ErrorListReporter(this.ServiceProvider);
 
-            var dte = ServiceProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+            var dte = ServiceProvider.GetService(typeof(EnvDTE.DTE)) as DTE2;
             if(dte == null)
                 return new ErrorListReporter(this.ServiceProvider);
 
@@ -133,19 +136,23 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 
             public TaskProvider.TaskCollection Tasks => errorListProvider.Tasks;
 
+#if VS2022_OR_LATER
+            public bool Navigate(TaskListItem task, Guid logicalView)
+#else
             public bool Navigate(Microsoft.VisualStudio.Shell.Task task, Guid logicalView)
+#endif
             {
-                return this.errorListProvider.Navigate(task, logicalView);
+                return errorListProvider.Navigate(task, logicalView);
             }
 
             public void ResumeRefresh()
             {
-                this.errorListProvider.ResumeRefresh();
+                errorListProvider.ResumeRefresh();
             }
 
             public void SuspendRefresh()
             {
-                this.errorListProvider.SuspendRefresh();
+                errorListProvider.SuspendRefresh();
             }
         }
     }

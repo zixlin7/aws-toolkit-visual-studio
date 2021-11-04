@@ -7,17 +7,16 @@ using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.AWSToolkit.Util;
 using Amazon.AwsToolkit.VsSdk.Common;
 
 using EnvDTE;
+using EnvDTE80;
 using log4net;
 
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Threading;
 using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
@@ -33,7 +32,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
         protected readonly ToolkitContext ToolkitContext;
         protected readonly IAWSToolkitShellProvider ToolkitShellProvider;
 
-        protected DTE Dte { get; private set; }
+        protected DTE2 Dte { get; private set; }
         protected IVsMonitorSelection MonitorSelection { get; private set; }
         protected IVsSolution Solution { get; private set; }
         protected IPublishToAws PublishToAws { get; private set; }
@@ -55,7 +54,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
             ToolkitContext toolkitContext,
             IAWSToolkitShellProvider toolkitShell,
             IPublishSettingsRepository publishSettingsRepository,
-            DTE dte,
+            DTE2 dte,
             IVsMonitorSelection monitorSelection,
             IVsSolution solution,
             IPublishToAws publishToAws)
@@ -74,7 +73,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            command.Dte = await package.GetServiceAsync(typeof(DTE)) as DTE;
+            command.Dte = await package.GetServiceAsync(typeof(DTE)) as DTE2;
             Assumes.Present(command.Dte);
 
             command.MonitorSelection = await package.GetServiceAsync(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;

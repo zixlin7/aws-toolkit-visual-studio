@@ -1,11 +1,16 @@
 ﻿using System;
 using System.IO;
+
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using Amazon.AWSToolkit.MobileAnalytics;
+
+using EnvDTE80;
+
 using log4net;
+
+using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-
-using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
 {
@@ -46,7 +51,8 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                 // references are taken care of. Note that project settings (in the solution file)
                 // mean the build output can be well away from the actual source.
                 //dteProject.DTE.ExecuteCommand("Build.BuildSolution", string.Empty);
-                var dte = taskInfo.HostServiceProvider(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                var dte = taskInfo.HostServiceProvider(typeof(EnvDTE.DTE)) as DTE2;
+                Assumes.Present(dte);
                 var solution = dte.Solution;
                 var solutionBuild2 = (EnvDTE80.SolutionBuild2)solution.SolutionBuild;
 

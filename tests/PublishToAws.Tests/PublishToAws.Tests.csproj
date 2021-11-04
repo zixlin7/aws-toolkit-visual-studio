@@ -72,6 +72,7 @@
     <Compile Include="Models\DisplayedResourceSummaryExtensionMethodTests.cs" />
     <Compile Include="Models\PublishDialogStepProcessorTests.cs" />
     <Compile Include="Models\PublishResourceTemplateSelectorTests.cs" />
+    <Compile Include="Models\TargetSystemCapabilityTests.cs" />
     <Compile Include="PublishDocumentViewModelChangeHandlerTests.cs" />
     <Compile Include="Util\ConfigurationDetailBuilder.cs" />
     <Compile Include="Models\ConfigurationDetailTests.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Util\ImageSourceExtensionMethods.cs" />
     <Compile Include="Util\RecipeServiceImageResolverTests.cs" />
     <Compile Include="ViewModels\DeployToolControllerTests.cs" />
+    <Compile Include="ViewModels\MissingCapabilitiesTests.cs" />
     <Compile Include="ViewModels\PublishToAwsDocumentViewModelTests.cs" />
     <Compile Include="Fixtures\SamplePublishData.cs" />
   </ItemGroup>

@@ -10,6 +10,7 @@ using System.ComponentModel.Design;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using EnvDTE;
+using EnvDTE80;
 using Microsoft.Samples.VisualStudio.IDE.OptionsPage;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -510,7 +511,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 #endif
 
-                    var dte = (EnvDTE.DTE)(await GetServiceAsync(typeof(EnvDTE.DTE)));
+                    var dte = (DTE2)await GetServiceAsync(typeof(EnvDTE.DTE));
+                    Assumes.Present(dte);
                     dteVersion = dte.Version;
                     dteEdition = dte.Edition;
 
@@ -699,7 +701,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                 try
                 {
-                    var dte = (EnvDTE.DTE) await GetServiceAsync(typeof(EnvDTE.DTE));
+                    var dte = (DTE2) await GetServiceAsync(typeof(EnvDTE.DTE));
                     var vsAppId = (IVsAppId) await GetServiceAsync(typeof(IVsAppId));
 
                     return ToolkitProductEnvironment.CreateProductEnvironment(vsAppId, dte);
@@ -809,9 +811,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             try
             {
-                // Publish to AWS is implemented with .NET 4.7.2, which VS 2017 doesn't target.
-                // Only activate this functionality for VS 2019 (and newer versions when they are available).
-                if (hostVersion != ToolkitHosts.Vs2019)
+                if (!hostVersion.SupportsPublishToAwsExperience())
                 {
                     return;
                 }
@@ -1060,7 +1060,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         return;
                     }
 
-                    if (IsVS2019Host())
+                    if (_toolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience())
                     {
                         var project = _toolkitContext.ToolkitHost.GetSelectedProject();
                         if (project != null && project.IsNetFramework())
@@ -1229,7 +1229,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 if (AWSECSPlugin != null)
                 {
-                    publishMenuCommand.Visible = IsVS2019Host()
+                    publishMenuCommand.Visible = _toolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience()
                                                 ? VSUtility.IsNETCoreDockerProject && IsOldPublishExperienceEnabled()
                                                 : VSUtility.IsNETCoreDockerProject;
 
@@ -1239,11 +1239,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception)
             {
             }
-        }
-
-        private bool IsVS2019Host()
-        {
-            return _toolkitContext.ToolkitHostInfo == ToolkitHosts.Vs2019;
         }
 
         /// <summary>
@@ -1629,7 +1624,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <param name="seedProperties"></param>
         void SeedAvailableBuildConfigurations(VSWebProjectInfo projectInfo, Dictionary<string, object> seedProperties)
         {
-            var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+            var dte = (DTE2)GetService(typeof(EnvDTE.DTE));
+            Assumes.Present(dte);
             var solutionBuild = dte.Solution.SolutionBuild;
             var solutionConfigurations = solutionBuild.SolutionConfigurations;
 
@@ -2082,7 +2078,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                 {
                     if (activeDocument)
                     {
-                        var dte = GetGlobalService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                        var dte = GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
+                        Assumes.Present(dte);
 
                         if (dte.ActiveDocument != null)
                         {
@@ -2131,7 +2128,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             try
             {
-                var dte = GetGlobalService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                var dte = GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
+                Assumes.Present(dte);
                 var prjItem = dte.ActiveDocument.ProjectItem;
                 DeployTemplate(prjItem);
             }
@@ -2192,7 +2190,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             try
             {
-                var dte = GetGlobalService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                var dte = GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
+                Assumes.Present(dte);
                 var prjItem = dte.ActiveDocument.ProjectItem;
                 EstimateTemplateCost(prjItem);
             }
@@ -2282,7 +2281,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 {
                     await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                    if (!(GetGlobalService(typeof(EnvDTE.DTE)) is DTE dte))
+                    if (!(GetGlobalService(typeof(EnvDTE.DTE)) is DTE2 dte))
                     {
                         return;
                     }

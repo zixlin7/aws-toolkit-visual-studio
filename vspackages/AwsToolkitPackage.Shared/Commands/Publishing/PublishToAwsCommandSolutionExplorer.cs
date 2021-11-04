@@ -5,6 +5,8 @@ using Amazon.AWSToolkit.Shared;
 
 using EnvDTE;
 
+using EnvDTE80;
+
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
@@ -29,7 +31,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
             ToolkitContext toolkitContext,
             IAWSToolkitShellProvider toolkitShell,
             IPublishSettingsRepository publishSettingsRepository,
-            DTE dte,
+            DTE2 dte,
             IVsMonitorSelection monitorSelection,
             IVsSolution solution,
             IPublishToAws publishToAws)

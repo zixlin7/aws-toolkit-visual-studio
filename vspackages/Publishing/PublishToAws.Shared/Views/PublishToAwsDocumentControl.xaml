@@ -25,6 +25,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -34,8 +35,13 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
+            <views:PublishOptionsBanner 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                Visibility="{Binding IsOptionsBannerEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
+            
             <Label
-                Grid.Row="0" Grid.Column="0"
+                Grid.Row="1" Grid.Column="0"
                 Margin="0 0 9 0"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
                 FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontWeightKey}}"
@@ -43,17 +49,17 @@
                 ContentStringFormat="Publish to AWS: {0}" />
 
             <ProgressBar 
-                Grid.Row="0" Grid.Column="1" 
+                Grid.Row="1" Grid.Column="1" 
                 Height="8"
                 VerticalAlignment="Center"
                 IsIndeterminate="True"
                 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
-            <views:PublishOptions Grid.Row="0" Grid.Column="2"/>
+            <views:PublishOptions Grid.Row="1" Grid.Column="2"/>
 
             <!-- This shows the appropriate view within this document based on the value of ViewStage -->
             <ContentPresenter 
-                Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                 Visibility="{Binding SessionId, Converter={StaticResource SessionVisibilityConverter}}"
                 Content="{Binding}">
                 <ContentPresenter.Resources>
@@ -87,7 +93,7 @@
 
             <!-- Footer containing actions relevant to the Target and Configure views -->
             <views:PublishDocumentFooter 
-                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
                 Margin="0 18 0 0">
                 <views:PublishDocumentFooter.Style>
                     <Style TargetType="{x:Type views:PublishDocumentFooter}">

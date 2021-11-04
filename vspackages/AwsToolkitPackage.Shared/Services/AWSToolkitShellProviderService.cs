@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
+using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
@@ -14,14 +15,14 @@ using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
-using Amazon.AwsToolkit.VsSdk.Common;
 
 using AwsToolkit.VsSdk.Common.CommonUI;
 using AwsToolkit.VsSdk.Common.Notifications;
 
+using EnvDTE80;
+
 using Microsoft;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -158,7 +159,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         {
             try
             {
-                var dte = (EnvDTE.DTE)_hostPackage.GetVSShellService(typeof(EnvDTE.DTE));
+                var dte = (DTE2) _hostPackage.GetVSShellService(typeof(EnvDTE.DTE));
                 dte.ItemOperations.OpenFile(fileName, EnvDTEConstants.vsViewKindTextView);
             }
             catch (Exception e)

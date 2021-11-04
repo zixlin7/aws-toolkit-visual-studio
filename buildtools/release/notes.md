@@ -1,7 +1,5 @@
-## 1.23.0.0 (2021-10-21)
+## 1.23.1.0 (2021-11-04)
 
 ### Changelog
-- **Bug Fix** - Fixed an issue where autocompletion in CloudFormation templates would replace too much text
-- **Deprecation** - Removed the dotnetcore2.1 runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details.
-- **Feature** - A new, simplified experience for publishing your .NET applications to AWS is now available as a preview feature within Visual Studio 2019. This experience is based on the AWS .NET deployment tool (https://github.com/aws/aws-dotnet-deploy), and gives you publishing recommendations based on your application. This new experience can be enabled from the existing Beanstalk and Container publishing dialogs. For more details, see https://aws.amazon.com/blogs/developer/simplify-dotnet-publication-toolkit/ and https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/publish-experience.html
-- **Feature** - Icons for AWS services have been updated throughout the Toolkit.
+- **Feature** - Adding hyperlink to help guide installation of missing system dependencies in the New Publish Experience.
+- **Feature** - A preview version of the AWS Toolkit is now available for Visual Studio 2022 from the Marketplace. It is a separate extension from the AWS Toolkit for Visual Studio 2017 and 2019. Not all of the Toolkit functionality is available in this version - see https://github.com/aws/aws-toolkit-visual-studio/issues/167 for details.
