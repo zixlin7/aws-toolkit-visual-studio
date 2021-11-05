@@ -107,8 +107,10 @@
     <Compile Include="ECS\DeployTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsTelemetryUtilsTests.cs" />
     <Compile Include="ECS\EcsWizardUtilsTests.cs" />
+    <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
     <Compile Include="Commands\LearnMoreCommandTests.cs" />
+    <Compile Include="ElasticBeanstalk\Wizard\AWSWizardAsserter.cs" />
     <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />
     <Compile Include="Publish\Banner\PublishBannerPropertyChangedHandlerTests.cs" />
     <Compile Include="Publish\Banner\SwitchToNewExperienceCommandTests.cs" />
@@ -250,8 +252,10 @@
     <Content Include="ElasticBeanstalk\Resources\self-contained-redeploy-no-proxy.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ElasticBeanstalk\Resources\windows-self-contained.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="CommonUI\Resources\short-form.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -266,6 +270,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

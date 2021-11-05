@@ -1,13 +1,6 @@
 ﻿using Amazon.AWSToolkit.VisualStudio.BuildProcessors;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using Microsoft.VisualStudio.Threading;
-
-using Amazon.AWSToolkit.VisualStudio.Loggers;
 using Amazon.AWSToolkit.ElasticBeanstalk;
 
 namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors

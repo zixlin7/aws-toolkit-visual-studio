@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Amazon.AWSToolkit;
-using Amazon.IdentityManagement;
+﻿using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using AWSDeployment;
 using Moq;

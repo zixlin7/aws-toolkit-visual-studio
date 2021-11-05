@@ -41,6 +41,7 @@
     <AssemblyOriginatorKeyFile>..\..\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,6 +59,7 @@
     <Compile Include="Context\NoOpToolkitShellProvider.cs" />
     <Compile Include="Context\ProjectFixture.cs" />
     <Compile Include="Context\ToolkitContextFixture.cs" />
+    <Compile Include="Wizard\InMemoryAWSWizard.cs" />
     <Compile Include="IntegrationTest.cs" />
     <Compile Include="IO\PlaceholderFile.cs" />
     <Compile Include="IO\ReflectionHelpers.cs" />

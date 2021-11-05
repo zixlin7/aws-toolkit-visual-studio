@@ -80,6 +80,25 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
                 cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionInstanceSubnets]);
         }
 
+        [Fact]
+        public void ShouldSetSelfContainedOnWindowsDeploy()
+        {
+            // arrange.
+            var properties = LoadProperties("windows-self-contained.json");
+
+            // act.
+            var cliCommand = CreateEmptyDeployEnvironmentCommand();
+            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, _sampleRegion);
+
+            // assert.
+            Assert.True(cliCommand.DeployEnvironmentOptions.SelfContained);
+        }
+
+        private DeployEnvironmentCommand CreateEmptyDeployEnvironmentCommand()
+        {
+            return new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
+        }
 
         [Fact]
         public void CompareApplicationLoadbalancerDeploy()
