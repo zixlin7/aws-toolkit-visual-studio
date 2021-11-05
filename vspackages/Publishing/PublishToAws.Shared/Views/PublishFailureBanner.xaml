@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.Publish.Views.PublishFailureBanner"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d"
+             themes:ToolkitThemes.UseToolkitTheme="True">
+    <Border Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
+            BorderThickness="1" Padding="1"
+            BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}">
+        <Grid>
+            <WrapPanel 
+                Margin="6 6 6 6"
+                Grid.Row="0" Grid.Column="0"
+                Orientation="Vertical" 
+                >
+                <TextBlock
+                    FontWeight="Bold"
+                    HorizontalAlignment="Left"
+                    TextWrapping="Wrap">
+                    <TextBlock>Need help understanding this failure?</TextBlock>
+                    
+                </TextBlock>
+
+                <TextBlock
+                    Margin="0 3 0 0"
+                    TextWrapping="Wrap">
+                    <commonUi:BrowserHyperLink
+                        NavigateUri="https://github.com/aws/aws-toolkit-visual-studio/issues/new/choose"
+                        ToolTip="https://github.com/aws/aws-toolkit-visual-studio/issues/new/choose">
+                        <Run Text="Open an issue on Github" />
+                    </commonUi:BrowserHyperLink>
+                    <TextBlock>and describe your deployment.</TextBlock>
+                </TextBlock>
+            </WrapPanel>
+        </Grid>
+    </Border>
+</UserControl>
+
