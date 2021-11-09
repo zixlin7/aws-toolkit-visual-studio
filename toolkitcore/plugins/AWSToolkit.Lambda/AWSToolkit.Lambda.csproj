@@ -340,6 +340,9 @@
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Threading">
+      <Version>15.0.240</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

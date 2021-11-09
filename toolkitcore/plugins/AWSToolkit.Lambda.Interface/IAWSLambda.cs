@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.Lambda
 {
@@ -6,6 +7,6 @@ namespace Amazon.AWSToolkit.Lambda
     {
         void UploadFunctionFromPath(Dictionary<string, object> seedProperties);
 
-        void EnsureLambdaTesterConfigured(string projectPath);
+        Task EnsureLambdaTesterConfiguredAsync(string projectPath);
     }
 }

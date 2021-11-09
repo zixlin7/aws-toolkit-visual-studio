@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Improved solution load times by installing Lambda Test Tool asynchronously with it's progress status visible in Task Status Center."
+}

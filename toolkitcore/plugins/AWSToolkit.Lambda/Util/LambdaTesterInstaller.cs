@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Lambda.LambdaTester;
 using Amazon.Common.DotNetCli.Tools;
 using log4net;
+
+using Microsoft.VisualStudio.Threading;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -49,10 +55,11 @@ namespace Amazon.AWSToolkit.Lambda.Util
         /// Unknown if the dotnet installer could handle concurrent executions, and the "tester installed"
         /// state does not have concurrent locking.
         /// </summary>
-        public static void Install(string projectPath)
+        public static async Task InstallAsync(string projectPath)
         {
             try
             {
+                await TaskScheduler.Default;
                 var project = new Project(projectPath);
                 if (!IsLambdaTesterSupported(project))
                 {
@@ -69,7 +76,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 // This prevents slower load times when opening solutions with many projects.
                 if (!IsTesterInstalled(toolConfig))
                 {
-                    var retVal = InstallLambdaTester(toolConfig, Path.GetDirectoryName(projectPath));
+                    var retVal = await InstallLambdaTesterAsync(toolConfig, Path.GetDirectoryName(projectPath)).ConfigureAwait(false);
                     if (retVal == 0)
                     {
                         MarkTesterInstalled(toolConfig);
@@ -151,7 +158,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
         /// <param name="toolConfig">Lambda Tester to install</param>
         /// <param name="workingDir">Where to run the install command from</param>
         /// <returns>Installation return code</returns>
-        private static int InstallLambdaTester(ToolConfig toolConfig, string workingDir)
+        private static async Task<int> InstallLambdaTesterAsync(ToolConfig toolConfig, string workingDir)
         {
             var installedTesterPath =
                 GenerateToolConfigCombinedPath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
@@ -159,7 +166,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
             var cmd = File.Exists(installedTesterPath) ? "update" : "install";
 
             LOGGER.Debug("Attempting to install or update Lambda Tester dotnet tool");
-            return RunToolCommand(workingDir, cmd, toolConfig);
+            return await RunToolCommandAsync(workingDir, cmd, toolConfig).ConfigureAwait(false);
         }
 
         private static void MarkTesterInstalled(ToolConfig toolConfig)
@@ -231,7 +238,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
             File.WriteAllText(fullPath, content);
         }
 
-        private static int RunToolCommand(string projectDirectory, string command, ToolConfig toolConfig)
+        private static async Task<int> RunToolCommandAsync(string projectDirectory, string command, ToolConfig toolConfig)
         {
             var dotnetCLI = DotNetCLIWrapper.FindExecutableInPath("dotnet.exe");
             if (dotnetCLI == null)
@@ -273,9 +280,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     proc.EnableRaisingEvents = true;
                 }
 
-                proc.WaitForExit();
-
-                exitCode = proc.ExitCode;
+                exitCode = await proc.WaitForExitAsync(default(CancellationToken));
             }
 
             LOGGER.Info($"dotnet {arguments.ToString()}");

@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Amazon.AWSToolkit.Lambda;
+using Amazon.AWSToolkit.Tasks;
 
 using EnvDTE;
 
@@ -9,6 +10,8 @@ using EnvDTE80;
 using log4net;
 
 using Microsoft.VisualStudio.Shell;
+
+using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.VisualStudio.Lambda
 {
@@ -82,9 +85,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
 
         private void OnSolutionOpened()
         {
+            ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+            {
+                await new TaskNotifier().ShowTaskStatusAsync(async () => await OnSolutionOpenedAsync(), _hostPackage);
+            }).Task.LogExceptionAndForget();
+        }
+
+
+        private async Task OnSolutionOpenedAsync()
+        {
             try
             {
-                ThreadHelper.ThrowIfNotOnUIThread();
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
                 if (!(_hostPackage.GetVSShellService(typeof(DTE)) is DTE2 dte))
                 {
@@ -104,7 +116,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
                 }
 
                 // Configure Lambda Tester usage in the Solution's Projects
-                LambdaTesterUtilities.EnsureLambdaTesterConfigured(dte.Solution, _lambdaPlugin.Value);
+                await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(dte.Solution, _lambdaPlugin.Value, ThreadHelper.JoinableTaskFactory);
             }
             catch (Exception e)
             {
@@ -114,10 +126,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
 
         private void OnProjectAddedToSolution(Project project)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+            {
+                await new TaskNotifier().ShowTaskStatusAsync(async () => await OnProjectAddedToSolutionAsync(project), _hostPackage);
+            }).Task.LogExceptionAndForget();
+            
+        }
 
+        private async Task OnProjectAddedToSolutionAsync(Project project)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             // Configure Lambda Tester usage in Project
-            LambdaTesterUtilities.EnsureLambdaTesterConfigured(project, _lambdaPlugin.Value);
+            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(project, _lambdaPlugin.Value, ThreadHelper.JoinableTaskFactory);
         }
 
         private void RegisterDebuggerEvents(DTE2 dte)
