@@ -27,5 +27,20 @@ namespace AWSToolkit.Tests.ElasticBeanstalk.Wizard
         {
             Assert.Equal(true, wizard[DeploymentWizardProperties.AppOptions.propkey_BuildSelfContainedBundle]);
         }
+
+        public static void AssertUsingEbTools(this IAWSWizard wizard)
+        {
+            Assert.True(UsingEbTools(wizard));
+        }
+
+        private static bool UsingEbTools(IAWSWizard wizard)
+        {
+            return true.Equals(wizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy]);
+        }
+
+        public static void AssertNotUsingEbTools(this IAWSWizard wizard)
+        {
+            Assert.False(UsingEbTools(wizard));
+        }
     }
 }

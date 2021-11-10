@@ -59,10 +59,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Wizard
             throw new NotImplementedException();
         }
 
-        public bool IsPropertySet(string key)
-        {
-            throw new NotImplementedException();
-        }
+        public bool IsPropertySet(string key) => CollectedProperties.ContainsKey(key);
 
         public bool Run()
         {

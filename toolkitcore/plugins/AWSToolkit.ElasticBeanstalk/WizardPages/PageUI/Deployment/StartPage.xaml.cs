@@ -54,7 +54,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         public AccountViewModel SelectedAccount
         {
             get => Connection.Account;
-            protected set
+            set
             {
                 if (IsInitialized)
                 {

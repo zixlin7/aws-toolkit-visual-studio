@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.Publish.Models;
@@ -11,10 +9,7 @@ using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
-using Amazon.AWSToolkit.Themes;
 using Amazon.Runtime;
-
-using AWS.Deploy.ServerMode.Client;
 
 using Microsoft.VisualStudio.Threading;
 
@@ -66,21 +61,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Common
         public void StubPublishPackageGetServiceAsync(Type serviceType, ICliServer cliServer)
         {
             PublishPackage.Setup(mock => mock.GetServiceAsync(serviceType)).ReturnsAsync(cliServer);
-        }
-
-        /// <summary>
-        /// Used by tests that instantiate UserControls which reference theme related resources.
-        /// Tests don't typically have an Application.Current reference, so we create one for the
-        /// purpose of the tests that need it.
-        /// </summary>
-        public void SetupApplicationWithBaseThemeResources()
-        {
-            var app = new Application();
-
-            var resourceDictionary = new ResourceDictionary();
-            resourceDictionary[ToolkitThemeResourceKeys.ButtonStyle] = new Style() { TargetType = typeof(Button) };
-
-            app.Resources.MergedDictionaries.Add(resourceDictionary);
         }
 
         public void StubCliServerStartAsyncToThrow()

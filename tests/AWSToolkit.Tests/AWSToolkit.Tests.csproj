@@ -110,6 +110,7 @@
     <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
     <Compile Include="Commands\LearnMoreCommandTests.cs" />
+    <Compile Include="ElasticBeanstalk\StartPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\Wizard\AWSWizardAsserter.cs" />
     <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />
     <Compile Include="Publish\Banner\PublishBannerPropertyChangedHandlerTests.cs" />
@@ -183,6 +184,10 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
       <Project>{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}</Project>
       <Name>AWSToolkit.CodeArtifact</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
+      <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
+      <Name>AWSToolkit.EC2.Interface</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
       <Project>{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}</Project>

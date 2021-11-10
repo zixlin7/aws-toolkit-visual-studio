@@ -53,12 +53,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account\AccountFixture.cs" />
     <Compile Include="Context\ConnectionManagerFixture.cs" />
     <Compile Include="Context\FakeCredentialIdentifier.cs" />
     <Compile Include="Context\FakeProgressDialog.cs" />
     <Compile Include="Context\NoOpToolkitShellProvider.cs" />
     <Compile Include="Context\ProjectFixture.cs" />
     <Compile Include="Context\ToolkitContextFixture.cs" />
+    <Compile Include="ToolkitTheme.cs" />
     <Compile Include="Wizard\InMemoryAWSWizard.cs" />
     <Compile Include="IntegrationTest.cs" />
     <Compile Include="IO\PlaceholderFile.cs" />
