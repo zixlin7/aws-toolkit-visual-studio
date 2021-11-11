@@ -455,6 +455,15 @@
 	</Target>
 
 	<Target Name="compare-hostedfiles-bjs" DependsOnTargets="build-tools">
+
+        <ItemGroup>
+            <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" />
+            <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.json" />
+            <FileException Include="$(HostedFilesFolder)\endpoints.json" />
+            <FileException Include="$(HostedFilesFolder)\.editorconfig" />
+            <FileException Include="$(HostedFilesFolder)\flags\**\*.png" />
+        </ItemGroup>
+
         <CompareToS3Task
             Bucket="$(BJSHostedFilesBucket)"
             S3Path=""
@@ -524,6 +533,7 @@
         <UploadHostedFilesTask
 				Bucket="$(BJSHostedFilesBucket)"
 				S3Path=""
+				KeyExceptions="ServiceEndPoints.xml;ServiceEndPoints.json;endpoints.json;.editorconfig"
 				LocalPath="$(HostedFilesFolder)"
 				CredentialSet="$(BJSCredentials)"
 				RegionValue="cn-north-1">
