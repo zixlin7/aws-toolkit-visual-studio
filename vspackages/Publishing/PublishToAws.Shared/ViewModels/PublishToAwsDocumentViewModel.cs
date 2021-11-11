@@ -937,34 +937,40 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public async Task PublishApplication()
         {
             PublishDuration.Start();
-            var finalStatusMessage = "";
+            var finalStatusMessage = new StringBuilder();
             var progressStatus = ProgressStatus.Fail;
             var result = Result.Failed;
+            var errorCode = string.Empty;
             try
             {
                 _publishContext.ToolkitShellProvider.OutputToHostConsole($"Starting to publish {ProjectName}");
                 await DeployToolController.StartDeploymentAsync(SessionId).ConfigureAwait(false);
 
                 // wait for the deployment to finish
-                var deployStatus = await WaitForDeployment(SessionId).ConfigureAwait(false);
-                _publishContext.ToolkitShellProvider.UpdateStatus($"{DeploymentStatusMessage}{deployStatus}");
+                var deployStatusOutput = await WaitForDeployment(SessionId).ConfigureAwait(false);
+                _publishContext.ToolkitShellProvider.UpdateStatus($"{DeploymentStatusMessage}{deployStatusOutput.Status}");
 
-                if (deployStatus != DeploymentStatus.Success)
+                if (deployStatusOutput.Status != DeploymentStatus.Success)
                 {
-                    finalStatusMessage = $"{StackName} could not be published as {TargetRecipe}";
+                    finalStatusMessage.Append($"{StackName} could not be published as {TargetRecipe}");
                     progressStatus = ProgressStatus.Fail;
                     result = Result.Failed;
+                    if (deployStatusOutput.Exception != null)
+                    {
+                        errorCode = deployStatusOutput.Exception.ErrorCode;
+                        finalStatusMessage.Append($": {deployStatusOutput.Exception.Message}");
+                    }
                 }
                 else
                 {
-                    finalStatusMessage = $"{StackName} Published as {TargetRecipe}";
+                    finalStatusMessage.Append($"{StackName} Published as {TargetRecipe}");
                     progressStatus = ProgressStatus.Success;
                     result = Result.Succeeded;
                 }
             }
             catch (Exception e)
             {
-                finalStatusMessage = $"{ProjectName} failed to publish to AWS.";
+                finalStatusMessage.Append($"{ProjectName} failed to publish to AWS.");
                 progressStatus = ProgressStatus.Fail;
                 result = Result.Failed;
                 _publishContext.ToolkitShellProvider.UpdateStatus($"{DeploymentStatusMessage}Error");
@@ -972,10 +978,10 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await ReportFinalStatus(progressStatus, finalStatusMessage);
+                await ReportFinalStatus(progressStatus, finalStatusMessage.ToString());
                 PublishDuration.Stop();
                 SetIsPublishing(false);
-                RecordPublishDeployMetric(result);
+                RecordPublishDeployMetric(result, errorCode);
             }
         }
 
@@ -1050,7 +1056,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Keep polling for deployment status and wait for it to finish until timeout
         /// </summary>
         /// <param name="sessionId"></param>
-        private async Task<DeploymentStatus> WaitForDeployment(string sessionId)
+        private async Task<GetDeploymentStatusOutput> WaitForDeployment(string sessionId)
         {
             await WaitUntil(async () =>
             {
@@ -1061,7 +1067,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 return status != null && status != DeploymentStatus.Executing;
             }, TimeSpan.FromSeconds(1));
 
-            return (await DeployToolController.GetDeploymentStatusAsync(sessionId)).Status;
+            return await DeployToolController.GetDeploymentStatusAsync(sessionId);
         }
 
         /// <summary>
@@ -1336,7 +1342,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return capabilityMetrics;
         }
 
-        private void RecordPublishDeployMetric(Result result)
+        private void RecordPublishDeployMetric(Result result, string errorCode)
         {
             var payload = new PublishDeploy()
             {
@@ -1352,6 +1358,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             if (payload.InitialPublish)
             {
                 payload.RecommendedTarget = Recommendation.IsRecommended;
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorCode))
+            {
+                payload.ErrorCode = errorCode;
             }
 
             this._publishContext.TelemetryLogger.RecordPublishDeploy(payload);

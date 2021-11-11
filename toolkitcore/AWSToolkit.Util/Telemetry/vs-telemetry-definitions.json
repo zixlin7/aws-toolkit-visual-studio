@@ -12,8 +12,13 @@
         },
         {
             "name": "applicationType",
-            "type": "string", 
+            "type": "string",
             "description": "The type of application being published"
+        },
+        {
+            "name": "errorCode",
+            "type": "string",
+            "description": "The error code associated with an operation"
         },
         {
             "name": "initialPublish",
@@ -33,7 +38,7 @@
         {
             "name": "recipeId",
             "type": "string",
-            "description":  "The recipe used for the deployment" 
+            "description": "The recipe used for the deployment"
         }
     ],
     "metrics": [
@@ -82,7 +87,8 @@
                 { "type": "initialPublish" },
                 { "type": "defaultConfiguration" },
                 { "type": "recommendedTarget", "required": false },
-                { "type":  "recipeId" }
+                { "type": "recipeId" },
+                { "type": "errorCode", "required": false }
             ] 
         },
         {

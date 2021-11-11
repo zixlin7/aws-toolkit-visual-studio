@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
@@ -41,6 +42,16 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             
         private static readonly GetDeploymentStatusOutput DeploymentResultSuccess =
             new GetDeploymentStatusOutput() { Status = DeploymentStatus.Success };
+
+        private static readonly GetDeploymentStatusOutput DeploymentResultFail =
+            new GetDeploymentStatusOutput()
+            {
+                Status = DeploymentStatus.Error,
+                Exception = new DeployToolExceptionSummary()
+                {
+                    ErrorCode = "FailedToDeployCdkApplication", Message = "Failed to deploy cdk app"
+                }
+            };
 
         private readonly ApplyConfigSettingsOutput _sampleSetOptionSettingOutput =
             new ApplyConfigSettingsOutput();
@@ -230,25 +241,42 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.True(_sut.HasValidationErrors());
         }
 
-        [Fact]
+        [StaFact]
         public async Task PublishApplication()
         {
             await SetupPublishView();
 
-            StubSuccessfulGetDeploymentStatus();
+            StubGetDeploymentStatus(DeploymentResultSuccess);
 
             await _sut.PublishApplication();
 
             Assert.Equal(_sampleApplicationName, _sut.StackName);
+            Assert.Equal(ProgressStatus.Success, _sut.ProgressStatus);
             AssertPublishCallsAreCorrect();
+            VerifyNoErrorCodeEmitted();
         }
 
-        private void StubSuccessfulGetDeploymentStatus()
+        [StaFact]
+        public async Task PublishApplication_Failed()
+        {
+            await SetupPublishView();
+
+            StubGetDeploymentStatus(DeploymentResultFail);
+
+            await _sut.PublishApplication();
+
+            Assert.Equal(ProgressStatus.Fail, _sut.ProgressStatus);
+            Assert.Contains(DeploymentResultFail.Exception.Message, _sut.PublishProgress);
+            AssertPublishCallsAreCorrect();
+            VerifyErrorCodeEmitted();
+        }
+
+        private void StubGetDeploymentStatus(GetDeploymentStatusOutput statusOutput)
         {
             _deployToolController.SetupSequence(mock => mock.GetDeploymentStatusAsync(_sampleSessionId))
                 .Returns(Task.FromResult(DeploymentResultExecuting))
-                .Returns(Task.FromResult(DeploymentResultSuccess))
-                .Returns(Task.FromResult(DeploymentResultSuccess));
+                .Returns(Task.FromResult(statusOutput))
+                .Returns(Task.FromResult(statusOutput));
         }
 
         private void AssertPublishCallsAreCorrect()
@@ -272,7 +300,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await SetupRepublishView();
 
-            StubSuccessfulGetDeploymentStatus();
+            StubGetDeploymentStatus(DeploymentResultSuccess);
 
             await _sut.PublishApplication();
 
@@ -1063,6 +1091,21 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Equal(stackName, _sut.StackName);
             Assert.Equal(targetRecipe, _sut.TargetRecipe);
             Assert.Equal(expectedRecommendationDescription, _sut.TargetDescription);
+        }
+
+        private void VerifyErrorCodeEmitted()
+        {
+            _publishContextFixture.TelemetryLogger.Verify(
+                mock => mock.Record(It.Is<Metrics>(m =>
+                    m.Data.Any(p => p.Metadata.Values.Contains(DeploymentResultFail.Exception.ErrorCode)))),
+                Times.Once);
+        }
+
+        private void VerifyNoErrorCodeEmitted()
+        {
+            _publishContextFixture.TelemetryLogger.Verify(
+                mock => mock.Record(It.Is<Metrics>(m =>
+                    m.Data.Any(p => p.Metadata.Keys.Contains("errorCode")))), Times.Never);
         }
 
         private void CreateSampleSummaryConfigurationDetail()
