@@ -499,7 +499,7 @@
       <Version>15.0.75.103</Version>
     </PackageReference>
     <PackageReference Include="log4net">
-      <Version>2.0.12</Version>
+      <Version>2.0.13</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Data.Services">
       <Version>9.0.21023</Version>
