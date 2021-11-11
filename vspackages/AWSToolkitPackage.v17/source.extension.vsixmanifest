@@ -26,6 +26,7 @@
     </Prerequisites>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
 
         <!-- Lambda and Serverless related Project Templates -->
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.Lambda.TemplateWizards.v17" Path="|AWSToolkit.Lambda.TemplateWizards.v17|" AssemblyName="|AWSToolkit.Lambda.TemplateWizards.v17;AssemblyName|" />

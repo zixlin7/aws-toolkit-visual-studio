@@ -71,7 +71,7 @@
       <Version>2.0.13</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>17.0.0-previews-4-31709-430</Version>
+      <Version>17.0.31902.203</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
