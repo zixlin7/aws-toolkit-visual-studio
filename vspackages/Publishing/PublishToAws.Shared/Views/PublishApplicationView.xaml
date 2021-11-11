@@ -18,8 +18,8 @@
             </ResourceDictionary.MergedDictionaries>
             <commonUi:VsImages x:Key="VsImages" />
             <converters:PublishResourcesToVisibilityConverter x:Key="PublishResourcesToVisibilityConverter" />
-            <converters:PublishFailureBannerToVisibilityConverter x:Key="PublishFailureBannerToVisibilityConverter" />
             <commonUiConverters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="0 10 0 0">
@@ -128,7 +128,7 @@
 
             <local:PublishFailureBanner
                 DockPanel.Dock="Top"
-                Visibility="{Binding ProgressStatus, Converter={StaticResource PublishFailureBannerToVisibilityConverter}}"/>
+                Visibility="{Binding IsFailureBannerEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <TextBox
                 HorizontalScrollBarVisibility="Auto"

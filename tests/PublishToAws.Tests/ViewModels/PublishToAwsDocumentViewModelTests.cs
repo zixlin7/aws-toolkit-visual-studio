@@ -37,6 +37,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         private static readonly string _sampleSessionId = Guid.NewGuid().ToString();
         private static readonly string _sampleApplicationName = $"Sample-app-{Guid.NewGuid()}";
 
+
+        private static readonly GetDeploymentStatusOutput DeploymentResultError =
+            new GetDeploymentStatusOutput() { Status = DeploymentStatus.Error };
+
         private static readonly GetDeploymentStatusOutput DeploymentResultExecuting =
             new GetDeploymentStatusOutput() { Status = DeploymentStatus.Executing };
             
@@ -194,6 +198,35 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.False(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
+        [Fact]
+        public async Task HasFailureBannerDisabled_NotPublished()
+        {
+            await SetupPublishView();
+
+            Assert.False(_sut.IsFailureBannerEnabled);
+        }
+
+        [Fact]
+        public async Task HasFailureBannerDisabled_SuccessfullyPublished()
+        {
+            await SetupPublishView();
+            StubGetDeploymentStatus(DeploymentResultSuccess);
+
+            await _sut.PublishApplication();
+
+            Assert.False(_sut.IsFailureBannerEnabled);
+        }
+
+        [Fact]
+        public async Task HasFailureBannerEnabled()
+        {
+            await SetupPublishView();
+            StubGetDeploymentStatus(DeploymentResultFail);
+
+            await _sut.PublishApplication();
+
+            Assert.True(_sut.IsFailureBannerEnabled);
+        }
 
         [Fact]
         public void HasValidationErrors_WithError()

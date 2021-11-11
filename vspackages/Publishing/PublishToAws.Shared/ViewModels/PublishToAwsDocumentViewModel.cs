@@ -72,6 +72,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private bool _isLoading;
         private bool _publishTargetsLoaded;
         private bool _isOptionsBannerEnabled;
+        private bool _isFailureBannerEnabled;
         private bool _isOldPublishExperienceEnabled;
         private bool _isRepublish;
         private bool _isDefaultConfig = true;
@@ -87,6 +88,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private TargetCommand _backToTargetCommand;
         private ICommand _startOverCommand;
         private ICommand _persistOptionsSettingsCommand;
+        private ICommand _closeFailureBannerCommand;
         private ICommand _learnMoreCommand;
         private ICommand _feedbackCommand;
         private ICommand _reenableOldPublishCommand;
@@ -177,6 +179,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _isOptionsBannerEnabled;
             set => SetProperty(ref _isOptionsBannerEnabled, value);
+        }
+
+        /// <summary>
+        /// Whether or not the UI should show the publish failure banner
+        /// </summary>
+        public bool IsFailureBannerEnabled
+        {
+            get => _isFailureBannerEnabled;
+            set => SetProperty(ref _isFailureBannerEnabled, value);
         }
 
         /// <summary>
@@ -360,6 +371,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set => SetProperty(ref _persistOptionsSettingsCommand, value);
         }
 
+        /// <summary>
+        /// Command that closes publish failure banner
+        /// </summary>
+        public ICommand CloseFailureBannerCommand
+        {
+            get => _closeFailureBannerCommand;
+            set => SetProperty(ref _closeFailureBannerCommand, value);
+        }
         /// <summary>
         /// Command that allows viewing the created CloudFormation stack
         /// </summary>
@@ -981,6 +1000,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 await ReportFinalStatus(progressStatus, finalStatusMessage.ToString());
                 PublishDuration.Stop();
                 SetIsPublishing(false);
+                SetIsFailureBannerEnabled(progressStatus == ProgressStatus.Fail);
                 RecordPublishDeployMetric(result, errorCode);
             }
         }
@@ -990,6 +1010,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
             {
                 IsPublishing = value;
+            });
+        }
+
+        private void SetIsFailureBannerEnabled(bool value)
+        {
+            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
+            {
+                IsFailureBannerEnabled = value;
             });
         }
 

@@ -7,22 +7,31 @@
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              mc:Ignorable="d"
              themes:ToolkitThemes.UseToolkitTheme="True">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"  >
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Border Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
             BorderThickness="1" Padding="1"
             BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}">
         <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
             <WrapPanel 
                 Margin="6 6 6 6"
                 Grid.Row="0" Grid.Column="0"
-                Orientation="Vertical" 
-                >
+                Orientation="Vertical">
                 <TextBlock
                     FontWeight="Bold"
                     HorizontalAlignment="Left"
-                    TextWrapping="Wrap">
-                    <TextBlock>Need help understanding this failure?</TextBlock>
-                    
-                </TextBlock>
+                    TextWrapping="Wrap"
+                    Text="Need help understanding this failure?"/>
 
                 <TextBlock
                     Margin="0 3 0 0"
@@ -35,6 +44,14 @@
                     <TextBlock>and describe your deployment.</TextBlock>
                 </TextBlock>
             </WrapPanel>
+
+            <Button 
+                Grid.Row="0" Grid.Column="1" 
+                Margin="0 0 3 0" 
+                Command="{Binding CloseFailureBannerCommand}"
+                VerticalAlignment="Top"
+                Content="&#x2715;">
+            </Button>
         </Grid>
     </Border>
 </UserControl>

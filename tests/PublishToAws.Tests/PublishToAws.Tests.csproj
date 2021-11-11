@@ -54,6 +54,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CloseFailureBannerCommandTests.cs" />
     <Compile Include="Commands\ConfigCommandTests.cs" />
     <Compile Include="Commands\CopyToClipboardCommandTests.cs" />
     <Compile Include="Commands\PersistPublishSettingsCommandTests.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="Commands\StartOverCommandTests.cs" />
     <Compile Include="Commands\TargetCommandTests.cs" />
     <Compile Include="Converters\ConfigurationDetailsToVisibilityConverterTests.cs" />
-    <Compile Include="Converters\PublishFailureBannerToVisibilityConverterTests.cs" />
     <Compile Include="Converters\PublishResourcesToVisibilityConverterTests.cs" />
     <Compile Include="Converters\TargetsToVisibilityConverterTests.cs" />
     <Compile Include="Fixtures\PublishFooterCommandFixture.cs" />
