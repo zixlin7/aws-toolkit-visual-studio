@@ -107,8 +107,11 @@
     <Compile Include="ECS\DeployTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsTelemetryUtilsTests.cs" />
     <Compile Include="ECS\EcsWizardUtilsTests.cs" />
+    <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
     <Compile Include="Commands\LearnMoreCommandTests.cs" />
+    <Compile Include="ElasticBeanstalk\StartPageControllerTests.cs" />
+    <Compile Include="ElasticBeanstalk\Wizard\AWSWizardAsserter.cs" />
     <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />
     <Compile Include="Publish\Banner\PublishBannerPropertyChangedHandlerTests.cs" />
     <Compile Include="Publish\Banner\SwitchToNewExperienceCommandTests.cs" />
@@ -182,6 +185,10 @@
       <Project>{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}</Project>
       <Name>AWSToolkit.CodeArtifact</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
+      <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
+      <Name>AWSToolkit.EC2.Interface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
       <Project>{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}</Project>
       <Name>AWSToolkit.ECS.Interface</Name>
@@ -250,8 +257,10 @@
     <Content Include="ElasticBeanstalk\Resources\self-contained-redeploy-no-proxy.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ElasticBeanstalk\Resources\windows-self-contained.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="CommonUI\Resources\short-form.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -266,6 +275,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

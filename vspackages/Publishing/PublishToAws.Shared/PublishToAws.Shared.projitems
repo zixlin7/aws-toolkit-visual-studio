@@ -9,6 +9,7 @@
     <Import_RootNamespace>Amazon.AWSToolkit.Publish</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\CloseFailureBannerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ConfigCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\CopyToClipboardCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PersistBannerVisibilityCommand.cs" />
@@ -90,6 +91,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishDocumentHeader.xaml.cs">
       <DependentUpon>PublishDocumentHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishFailureBanner.xaml.cs">
+      <DependentUpon>PublishFailureBanner.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishOptions.xaml.cs">
       <DependentUpon>PublishOptions.xaml</DependentUpon>
     </Compile>
@@ -140,6 +144,10 @@
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishDocumentHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\PublishFailureBanner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishOptions.xaml">
       <SubType>Designer</SubType>

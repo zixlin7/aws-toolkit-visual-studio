@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
@@ -14,9 +13,9 @@ using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
-    internal class CoreCLRApplicationOptionsPageController : IAWSWizardPageController
+    public class CoreCLRApplicationOptionsPageController : IAWSWizardPageController
     {
-        private CoreCLRApplicationOptionsPage _pageUI;
+        protected CoreCLRApplicationOptionsPage _pageUI;
         private bool RedeployingAppVersion = false;
 
         public string PageID => GetType().FullName;
@@ -363,10 +362,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon] = this._pageUI.EnableXRayDaemon;
             HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth] = this._pageUI.EnableEnhancedHealth;
 
+            HostingWizard[DeploymentWizardProperties.AppOptions.propkey_BuildSelfContainedBundle] = this._pageUI.BuildSelfContainedBundle;
+
             if (this._pageUI.IsLinuxDeployment)
             {
                 HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_ReverseProxyMode] = this._pageUI.SelectedReverseProxyOption;
-                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_BuildSelfContainedBundle] = this._pageUI.BuildSelfContainedBundle;
             }
         }
 

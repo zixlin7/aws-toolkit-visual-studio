@@ -212,10 +212,6 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Model
 
         public static string GetBlueprintsPath(string vsVersion)
         {
-            // TODO : VS2022_HostedBlueprints : Remove the ifdef override once a 2022 folder has been published to hostedfiles (IDE-6050)
-#if VS2022
-            vsVersion = Util.ToolkitHosts.Vs2019.Version;
-#endif
             return $"{BlueprintsManifestPathMsbuildStyle}/vs{vsVersion}";
         }
 

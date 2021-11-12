@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 
@@ -54,9 +56,9 @@ namespace Amazon.AWSToolkit.Lambda
             controller.UploadFunctionFromPath(seedProperties);
         }
 
-        public void EnsureLambdaTesterConfigured(string projectPath)
+        public async Task EnsureLambdaTesterConfiguredAsync(string projectPath)
         {
-            LambdaTesterInstaller.Install(projectPath);
+            await LambdaTesterInstaller.InstallAsync(projectPath);
         }
     }
 }

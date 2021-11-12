@@ -97,6 +97,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             var targetCommand = new TargetCommand(viewModel);
             var startOverCommand = new StartOverCommand(viewModel, this);
             var optionsCommand = new PersistBannerVisibilityCommand(_publishContext.PublishSettingsRepository, viewModel);
+            var closeFailureBannerCommand = CloseFailureBannerCommandFactory.Create(viewModel);
             var stackViewerCommand = StackViewerCommandFactory.Create(viewModel);
             var copyToClipboardCommand = CopyToClipboardCommand.Create(viewModel);
 
@@ -110,6 +111,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             viewModel.BackToTargetCommand = targetCommand;
             viewModel.StartOverCommand = startOverCommand;
             viewModel.PersistOptionsSettingsCommand = optionsCommand;
+            viewModel.CloseFailureBannerCommand = closeFailureBannerCommand;
             viewModel.ReenableOldPublishCommand = CreateReenableOldPublishCommand(viewModel);
             viewModel.StackViewerCommand = stackViewerCommand;
             viewModel.CopyToClipboardCommand = copyToClipboardCommand;

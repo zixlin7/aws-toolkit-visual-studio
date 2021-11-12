@@ -61,6 +61,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterEventListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUsageEmitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lambda\TaskNotifier.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Loggers\IBuildAndDeploymentLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Loggers\IDEConsoleLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Loggers\MSBuildLogger.cs" />

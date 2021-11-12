@@ -126,7 +126,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             // If the deployment package is a directory then that indicates we have the project location and we still need to build the project.
             // In that case switch to use Amazon.ElasticBeanstalk.Tools to do the combined build and deployment. This is currently just done
             // for Linux .NET Core deployments.
-            if(Directory.Exists(deploymentPackage))
+            if (Directory.Exists(deploymentPackage))
             {
                 var command = new DeployWithEbToolsCommand(deploymentPackage, deploymentProperties);
                 ThreadPool.QueueUserWorkItem(command.Execute);

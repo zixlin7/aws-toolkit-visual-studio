@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     public class StartPageController : IAWSWizardPageController
     {
-        StartPage _pageUI;
+        protected StartPage _pageUI;
         private bool _pageUiActivated = false;
 
         readonly object _syncLock = new object();
@@ -255,16 +255,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             // record if the selected account/region is restricted to vpc usage only, for downstream pages to act upon (as all new
             // accounts and regions are vpc only, we'll assume so if the query fails)
             var vpcOnly = true;
-            var ec2PluginService = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
+            var ec2PluginService = GetEc2PluginService();
             if (ec2PluginService != null)
                 vpcOnly = ec2PluginService.IsVpcOnly(_pageUI.SelectedAccount, _pageUI.SelectedRegion);
             HostingWizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_VpcOnlyMode, vpcOnly);
 
-            if (_pageUI.RedeploySelected)
+            if (IsRedeploy())
             {
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, true);
                 HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CreateNewEnv] = false;
-                var selectedDeployment = _pageUI.SelectedDeployment;
+                var selectedDeployment = GetSelectedDeployment();
                 var selectedEnvironment = selectedDeployment.Environments.FirstOrDefault(env => env.EnvironmentName == selectedDeployment.SelectedEnvironmentName);
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName, selectedDeployment.ApplicationName);
                 HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack] =
@@ -326,6 +326,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     = AWSDeployment.CommonParameters.DefaultIisAppPathFormat;
             }
         }
+
+        protected virtual IAWSEC2 GetEc2PluginService()
+        {
+            return ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
+        }
+
+        protected virtual bool IsRedeploy() => _pageUI.RedeploySelected;
+
+        protected virtual DeployedApplicationModel GetSelectedDeployment() => _pageUI.SelectedDeployment;
 
         private void OnPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {

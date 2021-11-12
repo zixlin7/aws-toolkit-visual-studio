@@ -409,7 +409,7 @@ def fetch(remote: git.Remote, src_branch: str) -> Commit:
         reporter.complete(success=False)
         exit(reason=err)
 
-def find_remote_repo(repo: git.Repo, remote_name: str) -> str:
+def find_remote_repo_url(repo: git.Repo, remote_name: str) -> str:
     """Attempts to locate a remote GitHub repository using a git remote URL"""
     remote = repo.remote(remote_name)
     url = list(remote.urls)[0]
@@ -417,9 +417,26 @@ def find_remote_repo(repo: git.Repo, remote_name: str) -> str:
     if url.find('github') == -1:
         exit(reason='Unable to find a remote GitHub repository')
 
-    parts = url.split('/')
+    return url
 
-    return '/'.join(parts[-2:])
+def get_remote_url_org(remote_url: str) -> str:
+    """
+    Example: 
+    https://github.com/aws/aws-toolkit-visual-studio-staging.git -> aws
+    """
+    parts = remote_url.split('/')
+    return parts[-2]
+
+def get_remote_url_repo(remote_url: str) -> str:
+    """
+    Example: 
+    https://github.com/aws/aws-toolkit-visual-studio-staging.git -> aws-toolkit-visual-studio-staging
+    """
+    parts = remote_url.split('/')
+    repo_name = parts[-1]
+    if (parts[-1].endswith(".git")):
+        repo_name = repo_name[:-4]
+    return repo_name
 
 def run_hooks(hooks: list[str], config: ReleaseConfig):
     if len(hooks) == 0:
@@ -442,30 +459,42 @@ def run_hooks(hooks: list[str], config: ReleaseConfig):
             reporter.complete(success=False)
             exit(2, tips=dim_text(err.stdout))
 
-def login_github(remote: str) -> Repository:
-    while True:
-        username = input('Enter username [Skip if using token]: ')
+def get_remote_repo_with_valid_access(organization: str, repo: str) -> Repository:
+    # Verify that user has access to proceed by trying to obtain the repo
+    remote_repo = None
+    while remote_repo is None:
+        github = login_github()
+        remote_repo = get_repo(github, org, repo_name)
+    
+    return remote_repo
 
-        if username == '':
-            token = prompt('Enter token: ', is_password=True)
-            gh = Github(token)
-        else:
-            password = prompt('Enter password: ', is_password=True)
-            gh = Github(username, password)
-        
-        token = None
-        password = None
+def login_github() -> Github:
+    """
+    Prompts for a PAT and returns a GitHub client
+    """
+    token = prompt('Enter your GitHub PAT: ', is_password=True)
+    gh = Github(token)
+    del(token)
+    return gh
 
-        try: # See if we have access
-            return gh.get_repo(remote)
-        except Exception as err:
-            print(colored(f'Login failed: {err}', 'red'))
-
-def make_pr(version: str, head: str, remote: str):
-    target = login_github(remote)
-
+def get_repo(github: Github, organization: str, repo: str) -> Repository:
+    """
+    github - GitHub client
+    organization - eg 'aws'
+    repo - eg 'aws-toolkit-visual-studio-staging'
+    """
     try:
-        pr = target.create_pull(title=f'Merge release candidate for v{version}', body=PR_BODY, head=head, base='release/stable')
+        org = github.get_organization(organization)
+        return org.get_repo(repo)
+    except Exception as err:
+        # one reason for failure is if we don't have access
+        print(colored(f'Unable to get repo {organization} / {repo} from GitHub client. Is your PAT valid? Do you have access?', 'red'))
+        print(colored(f'{err}', 'red'))
+        return None
+
+def make_pr(version: str, head: str, repo: Repository):
+    try:
+        pr = repo.create_pull(title=f'Merge release candidate for v{version}', body=PR_BODY, head=head, base='release/stable')
     except Exception as err:
         exit(reason='PR creation failed.', tips=err)
 
@@ -785,6 +814,17 @@ if __name__ == '__main__':
     except:
         exit(reason='Failed to find a git repository.')
 
+    remote_url = find_remote_repo_url(repo, remote_name)
+    org = get_remote_url_org(remote_url)
+    repo_name = get_remote_url_repo(remote_url)
+
+    print("Working with the following repo:")
+    print(f'Organization: {org}')
+    print(f'Repo: {repo_name}')
+    print()
+
+    remote_repo = get_remote_repo_with_valid_access(org, repo_name)
+
     if repo.is_dirty(untracked_files=True):
         exit(reason='Working branch has unsaved changes.', tips=colored('Commit or stash any changes before running this script.', 'yellow'))
 
@@ -829,6 +869,6 @@ if __name__ == '__main__':
     candidate = push_candidate(repo, pre_commit_hooks, config, remote_name)
 
     print('Creating PR...')
-    make_pr(str(config.version), candidate, find_remote_repo(repo, remote_name))
+    make_pr(str(config.version), candidate, remote_repo)
 
     exit()

@@ -4,35 +4,43 @@ using System.Linq;
 using Amazon.AWSToolkit.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Lambda;
 using EnvDTE;
-using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
+
 using Moq;
 using Xunit;
+
+using Task = System.Threading.Tasks.Task;
 
 namespace AWSToolkitPackage.Tests.Lambda
 {
     [Collection(UIThreadFixtureCollection.CollectionName)]
-    public class EnsureLambdaTesterConfigured
+    public class EnsureLambdaTesterConfigured 
     {
         private readonly UIThreadFixture _fixture;
         private readonly Mock<IAWSLambda> _lambdaPluginMock = new Mock<IAWSLambda>();
+        private readonly JoinableTaskFactory _taskFactory;
 
         public EnsureLambdaTesterConfigured(UIThreadFixture fixture)
         {
             _fixture = fixture;
+#pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
+            var taskCollection = new JoinableTaskContext();
+#pragma warning restore VSSDK005
+            _taskFactory = taskCollection.Factory;
         }
 
         [Fact]
-        public void ThrowsExceptionIfLambdaPluginIsNull()
+        public async Task ThrowsExceptionIfLambdaPluginIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
                 Project project = null;
-                LambdaTesterUtilities.EnsureLambdaTesterConfigured(project, null);
+                await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(project, null, _taskFactory);
             });
         }
 
         [Fact]
-        public void SolutionIsConfiguredForTester()
+        public async Task SolutionIsConfiguredForTester()
         {
             var project = new Mock<Project>();
             project.Setup(x => x.Kind).Returns("csharpproject");
@@ -43,25 +51,25 @@ namespace AWSToolkitPackage.Tests.Lambda
             var solution = new Mock<Solution>();
             solution.Setup(x => x.Projects).Returns(projects.Object);
 
-            LambdaTesterUtilities.EnsureLambdaTesterConfigured(solution.Object, _lambdaPluginMock.Object);
+            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(solution.Object, _lambdaPluginMock.Object, _taskFactory);
 
-            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfigured(project.Object.FileName), Times.Once);
+            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfiguredAsync(project.Object.FileName), Times.Once);
         }
 
         [Fact]
-        public void ProjectIsConfiguredForTester()
+        public async Task ProjectIsConfiguredForTester()
         {
             var project = new Mock<Project>();
             project.Setup(x => x.Kind).Returns("csharpproject");
             project.Setup(x => x.FileName).Returns("child-project-1.csproj");
 
-            LambdaTesterUtilities.EnsureLambdaTesterConfigured(project.Object, _lambdaPluginMock.Object);
+            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(project.Object, _lambdaPluginMock.Object, _taskFactory);
 
-            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfigured(project.Object.FileName), Times.Once);
+            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfiguredAsync(project.Object.FileName), Times.Once);
         }
 
         [Fact]
-        public void ChildProjectsAreConfiguredForTester()
+        public async Task ChildProjectsAreConfiguredForTester()
         {
             // Set up a folder project that contains two non-folder projects
             var childProject1 = new Mock<Project>();
@@ -78,10 +86,10 @@ namespace AWSToolkitPackage.Tests.Lambda
             parentFolderProject.Setup(x => x.Kind).Returns("{66A26720-8FB5-11D2-AA7E-00C04F688DDE}"); // GuidList.VSProjectTypeProjectFolder
             parentFolderProject.Setup(x => x.ProjectItems).Returns(projectItemsMock.Object);
 
-            LambdaTesterUtilities.EnsureLambdaTesterConfigured(parentFolderProject.Object, _lambdaPluginMock.Object);
+            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(parentFolderProject.Object, _lambdaPluginMock.Object, _taskFactory);
 
-            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfigured(childProject1.Object.FileName), Times.Once);
-            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfigured(childProject2.Object.FileName), Times.Once);
+            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfiguredAsync(childProject1.Object.FileName), Times.Once);
+            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfiguredAsync(childProject2.Object.FileName), Times.Once);
         }
 
         private Mock<ProjectItems> CreateProjectItemsMock(params Mock<Project>[] projects)

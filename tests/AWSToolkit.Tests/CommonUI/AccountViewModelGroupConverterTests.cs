@@ -1,10 +1,8 @@
 ﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.Converters;
-using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Tests.Common.Context;
+using Amazon.AWSToolkit.Tests.Common.Account;
 
-using AWSToolkit.Tests.Credentials.Core;
 using Xunit;
 
 namespace AWSToolkit.Tests.CommonUI
@@ -13,14 +11,9 @@ namespace AWSToolkit.Tests.CommonUI
     {
         private readonly AccountViewModelGroupConverter _sut = new AccountViewModelGroupConverter();
 
-        private readonly AccountViewModel _sharedCredentialAccount =
-            new AccountViewModel(null, null, new SharedCredentialIdentifier("sharedProfile"), null);
-
-        private readonly AccountViewModel _sdkCredentialAccount =
-            new AccountViewModel(null, null, new SDKCredentialIdentifier("sdkProfile"), null);
-
-        private readonly AccountViewModel _alternateCredentialAccount =
-            new AccountViewModel(null, null, FakeCredentialIdentifier.Create("altProfile"), null);
+        private readonly AccountViewModel _sharedCredentialAccount = AccountFixture.CreateSharedCredentialAccount();
+        private readonly AccountViewModel _sdkCredentialAccount = AccountFixture.CreateSdkCredentialAccount();
+        private readonly AccountViewModel _alternateCredentialAccount = AccountFixture.CreateFakeCredentialAccount();
 
         [Fact]
         public void Convert()

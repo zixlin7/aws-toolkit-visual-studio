@@ -19,6 +19,7 @@
             <commonUi:VsImages x:Key="VsImages" />
             <converters:PublishResourcesToVisibilityConverter x:Key="PublishResourcesToVisibilityConverter" />
             <commonUiConverters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="0 10 0 0">
@@ -124,6 +125,10 @@
                 MaxWidth="400"
                 Margin="12 0 0 0"
                 Visibility="{Binding PublishResources, Converter={StaticResource PublishResourcesToVisibilityConverter}}"/>
+
+            <local:PublishFailureBanner
+                DockPanel.Dock="Top"
+                Visibility="{Binding IsFailureBannerEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <TextBox
                 HorizontalScrollBarVisibility="Auto"

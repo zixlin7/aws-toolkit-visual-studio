@@ -25,7 +25,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
 
         public ImageSource EnvironmentIcon => ToolkitImages.ElasticBeanstalkEnvironment;
 
-        internal DeployedApplicationModel(string applicationName)
+        public DeployedApplicationModel(string applicationName)
         {
             ApplicationName = applicationName;
             Environments = new List<EnvironmentDescription>();
