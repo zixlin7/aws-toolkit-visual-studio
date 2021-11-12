@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Added the CodeArtifact NuGet Credentials provider into the Visual Studio 2022 Toolkit."
-}
