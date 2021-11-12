@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -225,6 +226,49 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             await _sut.PublishApplication();
 
+            Assert.True(_sut.IsFailureBannerEnabled);
+        }
+
+        public class FailureBannerEnabledSpy
+        {
+            private PublishToAwsDocumentViewModel _viewModel;
+            public int falseCount;
+            public int trueCount;
+
+            public FailureBannerEnabledSpy(PublishToAwsDocumentViewModel viewModel)
+            {
+                _viewModel = viewModel;
+                _viewModel.PropertyChanged += OnHandle;
+            }
+
+            public void OnHandle(object sender, PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.IsFailureBannerEnabled))
+                {
+                    if (_viewModel.IsFailureBannerEnabled)
+                    {
+                        trueCount += 1;
+                    }
+                    else
+                    {
+                        falseCount += 1;
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public async Task HasFailureBannerDisabledAtStartOfPublish()
+        {
+            FailureBannerEnabledSpy _spy = new FailureBannerEnabledSpy(_sut);
+            _sut.IsFailureBannerEnabled = true;
+            await SetupPublishView();
+            StubGetDeploymentStatus(DeploymentResultFail);
+
+            await _sut.PublishApplication();
+
+            Assert.Equal(1, _spy.falseCount);
+            Assert.Equal(2, _spy.trueCount);
             Assert.True(_sut.IsFailureBannerEnabled);
         }
 

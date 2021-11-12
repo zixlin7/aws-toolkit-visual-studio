@@ -962,6 +962,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             var errorCode = string.Empty;
             try
             {
+                SetIsFailureBannerEnabled(false);
                 _publishContext.ToolkitShellProvider.OutputToHostConsole($"Starting to publish {ProjectName}");
                 await DeployToolController.StartDeploymentAsync(SessionId).ConfigureAwait(false);
 
