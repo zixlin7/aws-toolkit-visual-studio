@@ -60,6 +60,7 @@
     <Compile Include="HostedFilesSettings.cs" />
     <Compile Include="HostManagerClientRequest.cs" />
     <Compile Include="IAMUtilities.cs" />
+    <Compile Include="IISPath.cs" />
     <Compile Include="MobileAnalytics\AMAConstants.cs" />
     <Compile Include="MobileAnalytics\AMAServiceCallHandler.cs" />
     <Compile Include="MobileAnalytics\AnalyticsCognitoAWSCredentials.cs" />

@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\LogExceptionAndForgetChangedHandlerTests.cs" />
+    <Compile Include="IisPathTests.cs" />
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
     <Compile Include="PickSolutionStackNameTests.cs" />
     <Compile Include="ProjectFileUtilitiesTests.cs" />

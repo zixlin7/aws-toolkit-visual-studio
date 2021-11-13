@@ -300,6 +300,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 }
             }
 
+            if (IsWindows())
+            {
+                AddIISPropertiesTo(command);
+            }
+
             command.DeployEnvironmentOptions.SelfContained =
                 getValue<bool>(DeploymentWizardProperties.AppOptions.propkey_BuildSelfContainedBundle);
 
@@ -363,6 +368,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                 command.DeployEnvironmentOptions.AdditionalOptions[OptionSecurityGroups] = existingSecurityGroupValue;
             }
+        }
+
+        private bool IsWindows()
+        {
+            return !getValue<bool>(BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack);
+        }
+
+        private void AddIISPropertiesTo(DeployEnvironmentCommand command)
+        {
+            var iisPath = new IisPath(getValue<string>(DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath));
+            command.DeployEnvironmentOptions.IISWebSite = iisPath.WebSite;
+            command.DeployEnvironmentOptions.UrlPath = iisPath.AppPath;
         }
 
         public Dictionary<string, string> BuildAdditionalOptionsCollection(

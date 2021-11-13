@@ -16,7 +16,7 @@
     "versionLabel": "v20200619062156",
     "vpcOnlyMode": true,
     "redeploy": false,
-    "deployIisAppPath": "Default Web Site/",
+    "deployIisAppPath": "Default Web Site/Test",
     "name": "WindowsContainedTest",
     "envName": "WindowsContainedTest-prod",
     "createNewEnv": true,
