@@ -23,7 +23,7 @@ using InstanceType = Amazon.AWSToolkit.EC2.InstanceType;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
-    internal class AWSOptionsPageController : IAWSWizardPageController
+    public class AWSOptionsPageController : IAWSWizardPageController
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(AWSOptionsPageController));
 
@@ -44,7 +44,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2008, 9},
         };
 
-        private AWSOptionsPage _pageUI;
+        protected AWSOptionsPage _pageUI;
         private string _lastSeenAccount = string.Empty;
         private string _lastSeenRegion = string.Empty;
         private readonly List<string> _availableSolutionStacks = new List<string>();
@@ -52,6 +52,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         readonly object _syncLock = new object();
 
         int _workersActive = 0;
+
         public bool WorkersActive
         {
             get
@@ -208,11 +209,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_InstanceTypeName] = instanceType.Name;
                 }
 
-                // If deploying to a non windows solution stack then use Amazon.ElasticBeanstalk.Tools to handle deployment. Both propKey_IsLinuxSolutionStack and propKey_UseEbToolsToDeploy are used
-                // for now with the same value but in the future when we use EbTools for Windows .NET Core deployment they can differ.
                 HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack] = !Amazon.ElasticBeanstalk.Tools.EBUtilities.IsSolutionStackWindows(_pageUI.SolutionStack);
-                HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] = !Amazon.ElasticBeanstalk.Tools.EBUtilities.IsSolutionStackWindows(_pageUI.SolutionStack);
-
 
                 string keypairName;
                 bool createNew;
@@ -401,30 +398,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         }
 
         /// <summary>
-        /// Indicates if the current configuration would deploy a standard asp.net project
-        /// (.NET Framework)
-        /// </summary>
-        bool IsStandardWebProject()
-        {
-            var projectType =
-                HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string;
-            return projectType == null ||
-                   !projectType.Equals(DeploymentWizardProperties.NetCoreWebProject,
-                       StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Indicates if the current configuration would deploy a .NET Core project
-        /// </summary>
-        bool IsNetCoreWebProject()
-        {
-            var projectType =
-                HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string;
-            return projectType != null && projectType.Equals(DeploymentWizardProperties.NetCoreWebProject,
-                StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
         /// Returns the SolutionStacks that are relevant to the current Beanstalk settings
         /// </summary>
         public IEnumerable<string> GetSolutionStacks()
@@ -437,10 +410,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 stacks = stacks.Where(stack => !SolutionStackUtils.SolutionStackIsLegacy(stack));
             }
 
-            if (IsStandardWebProject())
+            if (Project.IsStandardWebProject(HostingWizard))
             {
                 stacks = stacks.Where(SolutionStackUtils.SolutionStackSupportsDotNetFramework);
-            } else if (IsNetCoreWebProject())
+            } else if (Project.IsNetCoreWebProject(HostingWizard))
             {
                 stacks = stacks.Where(SolutionStackUtils.SolutionStackSupportsDotNetCore);
             }

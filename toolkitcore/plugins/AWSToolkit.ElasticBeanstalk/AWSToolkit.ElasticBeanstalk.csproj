@@ -195,6 +195,7 @@
     <Compile Include="WizardPages\PageControllers\ConfigureRollingDeploymentsController.cs" />
     <Compile Include="WizardPages\PageControllers\CoreCLRApplicationOptionsPageController.cs" />
     <Compile Include="WizardPages\PageControllers\PermissionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\Project.cs" />
     <Compile Include="WizardPages\PageControllers\PseudoReviewPageController.cs" />
     <Compile Include="WizardPages\PageControllers\StartPageController.cs" />
     <Compile Include="WizardPages\PageControllers\VpcOptionsPageController.cs" />
