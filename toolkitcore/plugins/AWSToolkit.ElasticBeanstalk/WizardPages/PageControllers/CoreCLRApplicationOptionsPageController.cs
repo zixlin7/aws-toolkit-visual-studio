@@ -61,6 +61,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion))
                     RedeployingAppVersion = (bool)HostingWizard[DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion];
 
+                _pageUI.BuildSelfContainedBundle = IsNet6Selected(_pageUI.TargetFramework);
+
                 if (!RedeployingAppVersion)
                 {
                     var buildConfigurations = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectBuildConfigurations] as IDictionary<string, string>;
@@ -82,6 +84,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             return _pageUI;
         }
 
+        private bool IsNet6Selected(string targetFramework) => targetFramework == "net6.0";
 
         string _lastSeenAccount;
         string _lastSeenRegion;

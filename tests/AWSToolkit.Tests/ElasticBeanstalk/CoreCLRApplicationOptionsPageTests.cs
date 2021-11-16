@@ -19,13 +19,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
         private void ShouldHaveSelfContainedVisibility(Visibility expectedVisibility)
         {
-            // arrange.
-            var controller = new CoreCLRApplicationOptionsPageController() { HostingWizard = Wizard };
-
-            // act.
-            var page = new CoreCLRApplicationOptionsPage() { PageController = controller };
-
-            // assert.
+            var page = CreatePage();
             Assert.Equal(expectedVisibility, page.SelfContainedVisibility);
         }
 
@@ -34,6 +28,16 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
         {
             SetProjectTypeTo(DeploymentWizardProperties.StandardWebProject);
             ShouldHaveSelfContainedVisibility(Visibility.Collapsed);
+        }
+
+        private CoreCLRApplicationOptionsPage CreatePage()
+        {
+            return new CoreCLRApplicationOptionsPage() { PageController = CreateController() };
+        }
+
+        private CoreCLRApplicationOptionsPageController CreateController()
+        {
+            return new CoreCLRApplicationOptionsPageController() { HostingWizard = Wizard };
         }
     }
 }
