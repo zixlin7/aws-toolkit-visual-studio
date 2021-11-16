@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
@@ -55,11 +56,11 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
         }
 
         [StaTheory]
-        [InlineData("net6.0", true)]
-        [InlineData("net5", false)]
-        [InlineData("netframework4.7", false)]
-        [InlineData("netcore3.1", false)]
-        [InlineData("netcore2.1", false)]
+        [InlineData(Frameworks.Net60, true)]
+        [InlineData(Frameworks.Net50, false)]
+        [InlineData(Frameworks.NetCoreApp31, false)]
+        [InlineData(Frameworks.NetCoreApp21, false)]
+        [InlineData(Frameworks.NetFramework47, false)]
         public void ShouldDefaultSelfContained(string runtime, bool expectedDefault)
         {
             // arrange.

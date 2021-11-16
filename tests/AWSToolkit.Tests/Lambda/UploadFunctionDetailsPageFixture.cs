@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-using Amazon.AWSToolkit.Lambda.ViewModel;
+using Amazon.AWSToolkit;
 
 namespace AWSToolkit.Tests.Lambda
 {

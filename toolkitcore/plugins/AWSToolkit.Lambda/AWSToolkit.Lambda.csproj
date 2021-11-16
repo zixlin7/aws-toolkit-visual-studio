@@ -76,7 +76,6 @@
     <Compile Include="LambdaActivator.cs" />
     <Compile Include="LambdaTester\Project.cs" />
     <Compile Include="Model\EventSourceWrapper.cs" />
-    <Compile Include="Model\Frameworks.cs" />
     <Compile Include="Model\KeyAndAliasWrapper.cs" />
     <Compile Include="Model\LambdaArchitecture.cs" />
     <Compile Include="Model\LogStreamWrapper.cs" />
