@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AWSToolkit.Tests.ElasticBeanstalk
 {
-    public class CoreCLRApplicationOptionsPageControllerTests : BeanstalkWizardControllerTests
+    public class CoreCLRApplicationOptionsPageControllerTests : BeanstalkWizardTests
     {
         public class TestableCoreCLRApplicationOptionsPageController : CoreCLRApplicationOptionsPageController
         {

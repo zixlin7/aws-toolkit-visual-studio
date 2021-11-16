@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AWSToolkit.Tests.ElasticBeanstalk
 {
-    public class AWSOptionsPageControllerTests : BeanstalkWizardControllerTests
+    public class AWSOptionsPageControllerTests : BeanstalkWizardTests
     {
         public class TestableAWSOptionsPageController : AWSOptionsPageController
         {

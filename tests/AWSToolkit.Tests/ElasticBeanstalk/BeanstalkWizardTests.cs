@@ -4,7 +4,7 @@ using Amazon.AWSToolkit.Tests.Common.Wizard;
 
 namespace AWSToolkit.Tests.ElasticBeanstalk
 {
-    public abstract class BeanstalkWizardControllerTests
+    public abstract class BeanstalkWizardTests
     {
         protected IAWSWizard Wizard = new InMemoryAWSWizard();
 

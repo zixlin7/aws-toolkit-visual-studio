@@ -18,7 +18,7 @@ using Xunit;
 
 namespace AWSToolkit.Tests.ElasticBeanstalk
 {
-    public class StartPageControllerTests : BeanstalkWizardControllerTests
+    public class StartPageControllerTests : BeanstalkWizardTests
     {
         public class TestableStartPageController : StartPageController
         {
