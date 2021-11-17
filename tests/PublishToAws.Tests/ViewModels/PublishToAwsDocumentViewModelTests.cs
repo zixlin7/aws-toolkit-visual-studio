@@ -820,6 +820,49 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
+        public async Task RefreshConfigurationSettingValues()
+        {
+            await SetupPublishView();
+            _sut.ConfigurationDetails = _sampleConfigurationDetails;
+
+            Assert.False(_sut.ConfigurationDetails.First().HasValueMappings());
+
+            var output = ApplyResourcesToConfigDetails(_sampleConfigurationDetails);
+            _deployToolController.Setup(mock =>
+                mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), _sampleConfigurationDetails, It.IsAny<CancellationToken>())).ReturnsAsync(output);
+
+            await _sut.RefreshConfigurationSettingValues(_cancelToken);
+
+            _deployToolController.Verify(mock => mock.UpdateConfigSettingValuesAsync(_sampleSessionId, _sampleConfigurationDetails,  _cancelToken), Times.Once);
+            Assert.True(_sut.ConfigurationDetails.First().ValueMappings.ContainsKey("abc"));
+        }
+
+        private List<ConfigurationDetail> ApplyResourcesToConfigDetails(ObservableCollection<ConfigurationDetail> sampleConfigurationDetails)
+        {
+            sampleConfigurationDetails.ToList().ForEach(x => x.ValueMappings = new Dictionary<string, string>() {{"abc", "def"}});
+            return sampleConfigurationDetails.ToList();
+        }
+
+        [Fact]
+        public async Task RefreshConfigurationSettingValues_NoSession()
+        {
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValues(_cancelToken));
+        }
+
+        [Fact]
+        public async Task RefreshConfigurationSettingValues_ThrowsException()
+        {
+            await SetupPublishView();
+
+            _deployToolController.Setup(mock =>
+                    mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), It.IsAny<List<ConfigurationDetail>>(),It.IsAny<CancellationToken>()))
+                .Throws(new DeployToolException("simulated service error"));
+
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValues(_cancelToken));
+            Assert.Empty(_sut.ConfigurationDetails);
+        }
+
+        [Fact]
         public async Task SetTargetConfiguration()
         {
             await SetupPublishView();

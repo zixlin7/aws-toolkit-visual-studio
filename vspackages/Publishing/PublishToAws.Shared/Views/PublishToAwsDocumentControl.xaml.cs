@@ -445,6 +445,8 @@ namespace Amazon.AWSToolkit.Publish.Views
                 {
                     await TaskScheduler.Default;
                     await _viewModel.RefreshTargetConfigurations(tokenSource.Token).ConfigureAwait(false);
+                    await TaskScheduler.Default;
+                    await _viewModel.RefreshConfigurationSettingValues(tokenSource.Token).ConfigureAwait(false);
                 }
             }
             catch (PublishException e)

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 using Amazon.AWSToolkit.Publish.Models;
@@ -11,6 +12,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
     public class ConfigurationDetailTests
     {
         private readonly ConfigurationDetail _sut = new ConfigurationDetail();
+
+        public static IEnumerable<object[]> NoValueMappingData = new List<object[]>
+        {
+            new object[] { null },
+            new object[] { new Dictionary<string, string>() },
+        };
 
         [Fact]
         public void HasErrors()
@@ -113,6 +120,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
                 .Build();
 
             Assert.False(parent.IsLeaf());
+        }
+
+        [Fact]
+        public void HasValueMappings()
+        {
+            _sut.ValueMappings = new Dictionary<string, string>()
+            {
+                {"key1", "key2"}
+            };
+            Assert.True(_sut.HasValueMappings());
+        }
+
+        [Theory]
+        [MemberData(nameof(NoValueMappingData))]
+        public void HasNoValueMappings(Dictionary<string, string> valueMapping)
+        {
+            _sut.ValueMappings = valueMapping;
+            Assert.False(_sut.HasValueMappings());
         }
 
         [Fact]

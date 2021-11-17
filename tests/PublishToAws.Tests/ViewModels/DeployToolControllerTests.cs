@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,11 +28,20 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         private readonly string _recipeId = "recipeId1";
         private readonly string _projectPath = "projectPath1";
         private readonly CancellationToken _cancelToken = new CancellationToken();
+        private readonly string _sampleConfigId = "sampleConfigId";
         private readonly List<OptionSettingItemSummary> _optionSettingItemSummaries;
+        private readonly GetConfigSettingResourcesOutput _sampleResourcesOutput;
 
         public DeployToolControllerTests()
         {
             _deployToolController = new DeployToolController(_restClient.Object);
+            _sampleResourcesOutput = new GetConfigSettingResourcesOutput()
+            {
+                Resources = new List<TypeHintResourceSummary>()
+                {
+                    new TypeHintResourceSummary() { SystemName = "abc", DisplayName = "def" }
+                }
+            };
             _optionSettingItemSummaries = new List<OptionSettingItemSummary>()
             {
                 CreateVisibleCoreOptionItemSummary
@@ -344,6 +354,94 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Empty(response);
         }
 
+        public static IEnumerable<object[]> EmptyGetConfigSettingResourcesOutput = new List<object[]>
+        {
+            new object[] { new GetConfigSettingResourcesOutput() },
+            new object[] { new GetConfigSettingResourcesOutput() {Resources = null} }
+        };
+
+        [Theory]
+        [MemberData(nameof(EmptyGetConfigSettingResourcesOutput))]
+        public async Task GetConfigSettingValues_EmptyReturn(GetConfigSettingResourcesOutput output)
+        {
+            StubGetConfigSettingValues(_sampleConfigId, output);
+
+            var configResources =
+                await _deployToolController.GetConfigSettingValuesAsync(_sessionId, _sampleConfigId, _cancelToken);
+
+            Assert.False(configResources.Any());
+            VerifyGetConfigSettingValuesCall( _sampleConfigId);
+        }
+
+        [Fact]
+        public async Task GetConfigSettingValues_NotFoundExceptionIsHandled()
+        {
+            StubGetConfigSettingValuesWithException(404);
+
+            var configResources =
+                await _deployToolController.GetConfigSettingValuesAsync(_sessionId, _sampleConfigId, _cancelToken);
+
+            Assert.False(configResources.Any());
+            VerifyGetConfigSettingValuesCall(_sampleConfigId);
+        }
+
+        [Fact]
+        public async Task GetConfigSettingValues_Exception()
+        {
+            StubGetConfigSettingValuesWithException(500);
+
+            await Assert.ThrowsAsync<ApiException>(async () =>
+            {
+                await _deployToolController.GetConfigSettingValuesAsync(_sessionId, _sampleConfigId,
+                        _cancelToken);
+            });
+
+            VerifyGetConfigSettingValuesCall(_sampleConfigId);
+        }
+
+
+        [Fact]
+        public async Task GetConfigSettingValues()
+        {
+            StubGetConfigSettingValues(_sampleConfigId, _sampleResourcesOutput);
+           
+            var configResources =
+                await _deployToolController.GetConfigSettingValuesAsync(_sessionId, _sampleConfigId, _cancelToken);
+
+            Assert.True(configResources.ContainsKey("abc"));
+            VerifyGetConfigSettingValuesCall( _sampleConfigId);
+        }
+
+        [Fact]
+        public async Task RetrieveConfigSettingResources_LeafConfigurationDetail()
+        {
+            var configurationDetails = SetupResourcesForConfigDetail(_optionSettingItemSummaries[0].ToConfigurationDetail());
+
+            Assert.False(configurationDetails.First().HasValueMappings());
+
+            var configResources =
+                await _deployToolController.UpdateConfigSettingValuesAsync(_sessionId, configurationDetails, _cancelToken);
+
+            AssertValueMappingContainsKey(configResources.First());
+            VerifyGetConfigSettingValuesCall(_optionSettingItemSummaries[0].Id);
+        }
+
+        [Fact]
+        public async Task RetrieveConfigSettingResources_ParentConfigurationDetail()
+        {
+            var configurationDetails = SetupResourcesForConfigDetail(_optionSettingItemSummaries[1].ToConfigurationDetail());
+
+            var configResources =
+                await _deployToolController.UpdateConfigSettingValuesAsync(_sessionId, configurationDetails, _cancelToken);
+
+            configResources.First().Children.ToList()
+                .ForEach(x =>
+                {
+                    AssertValueMappingContainsKey(x);
+                    VerifyGetConfigSettingValuesCall(x.GetLeafId());
+                });
+        }
+
         [Fact]
         public async Task ApplyConfigSettingsForConfigurationDetails()
         {
@@ -454,6 +552,46 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 mock => mock.ApplyConfigSettingsAsync(_sessionId, It.IsAny<ApplyConfigSettingsInput>(), _cancelToken),
                 Times.Exactly(times));
         }
+
+        private static void AssertValueMappingContainsKey(ConfigurationDetail detail)
+        {
+            Assert.True(detail.ValueMappings.ContainsKey("abc"));
+        }
+
+        private List<ConfigurationDetail> SetupResourcesForConfigDetail(ConfigurationDetail configDetail)
+        {
+            var configurationDetails = new List<ConfigurationDetail> { configDetail };
+            if (configDetail.IsLeaf())
+            {
+                StubGetConfigSettingValues(configDetail.GetLeafId(), _sampleResourcesOutput);
+            }
+            else
+            {
+                configurationDetails.First().Children.ToList()
+                    .ForEach(x => StubGetConfigSettingValues(x.GetLeafId(), _sampleResourcesOutput));
+            }
+
+            return configurationDetails;
+        }
+
+        private void VerifyGetConfigSettingValuesCall(string configId)
+        {
+            _restClient.Verify(mock => mock.GetConfigSettingResourcesAsync(_sessionId, configId, _cancelToken),
+                Times.Once);
+        }
+
+        private void StubGetConfigSettingValuesWithException(int errorCode)
+        {
+            _restClient.Setup(mock => mock.GetConfigSettingResourcesAsync(_sessionId, _sampleConfigId, _cancelToken))
+                .ThrowsAsync(new ApiException("error", errorCode, "error message", null, null));
+        }
+
+        private void StubGetConfigSettingValues(string configId, GetConfigSettingResourcesOutput output)
+        {
+            _restClient.Setup(mock => mock.GetConfigSettingResourcesAsync(_sessionId, configId, _cancelToken))
+                .ReturnsAsync(output);
+        }
+
 
         private void SetupApplyConfigSettings(ApplyConfigSettingsOutput settingsOutput)
         {

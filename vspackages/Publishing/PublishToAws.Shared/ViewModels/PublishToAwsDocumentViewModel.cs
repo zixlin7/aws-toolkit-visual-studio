@@ -780,6 +780,27 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
+        /// Loads possible values associated with the configuration details for the selected target
+        /// <see cref="ConfigurationDetails"/> is re-populated with updated configuration details
+        /// Configuration details must be initially retrieved prior to making this call.
+        /// </summary>
+        public async Task RefreshConfigurationSettingValues(CancellationToken cancellationToken)
+        {
+            try
+            {
+                ThrowIfSessionIsNotCreated();
+                var configSettings = await DeployToolController.UpdateConfigSettingValuesAsync(SessionId, ConfigurationDetails.ToList(), cancellationToken);
+
+                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+                ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(configSettings);
+            }
+            catch (Exception ex)
+            {
+                throw new PublishException("Unable to update configuration detail values", ex);
+            }
+        }
+
+        /// <summary>
         /// Sets a value for the given configuration setting of the selected target.
         /// A selected target needs to be defined prior to making this call.
         /// The function returns a string representing the error in setting a value (if any).

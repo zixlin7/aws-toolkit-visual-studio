@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Amazon.AWSToolkit.Publish.Models;
 
 using AWS.Deploy.ServerMode.Client;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.Publish.ViewModels
 {
@@ -33,6 +33,13 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         Task<IList<ConfigurationDetail>> GetConfigSettings(string sessionId, CancellationToken cancellationToken);
 
+
+        Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId, IList<ConfigurationDetail> configDetails,
+            CancellationToken token);
+
+        Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,
+            CancellationToken cancellationToken);
+
         Task<ApplyConfigSettingsOutput> ApplyConfigSettings(string sessionId, ConfigurationDetail configurationDetail, CancellationToken cancellationToken);
 
         Task<ApplyConfigSettingsOutput> ApplyConfigSettings(string sessionId,
@@ -48,7 +55,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
     public class DeployToolController : IDeployToolController
     {
         private readonly IRestAPIClient _client;
-        private readonly ConcurrentDictionary<string, RecipeSummary> _recipeSummaries = new ConcurrentDictionary<string, RecipeSummary>();
 
         public DeployToolController(IRestAPIClient client)
         {
@@ -168,9 +174,62 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return configSettings;
         }
 
+        public async Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId,
+            IList<ConfigurationDetail> configDetails,
+            CancellationToken token)
+        {
+            var settings = await Task.WhenAll(configDetails.Select(async setting =>
+                    await UpdateConfigSettingValuesAsync(sessionId, setting, token).ConfigureAwait(false)))
+                .ConfigureAwait(false);
+            return settings.ToList();
+        }
+
+        private async Task<ConfigurationDetail> UpdateConfigSettingValuesAsync(string sessionId,
+            ConfigurationDetail detail, CancellationToken token)
+        {
+            if (!detail.IsLeaf())
+            {
+                var children = await UpdateConfigSettingValuesAsync(sessionId, detail.Children, token)
+                    .ConfigureAwait(false);
+                detail.Children.Clear();
+                children.ToList().ForEach(detail.Children.Add);
+            }
+            else if (!detail.HasValueMappings())
+            {
+                detail.ValueMappings = await GetConfigSettingValuesAsync(sessionId, detail.GetLeafId(),
+                    token).ConfigureAwait(false);
+            }
+
+            return detail;
+        }
+
+        public async Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var response = await _client
+                    .GetConfigSettingResourcesAsync(sessionId, configId, cancellationToken)
+                    .ConfigureAwait(false);
+                return response.Resources == null
+                    ? new Dictionary<string, string>()
+                    : response.Resources.ToList().ToDictionary(resource => resource.SystemName,
+                        resource => resource.DisplayName);
+            }
+            catch (ApiException ex)
+            {
+                if (ex.StatusCode != 404)
+                {
+                    throw;
+                }
+            }
+
+            return new Dictionary<string, string>();
+        }
+
         public async Task<ApplyConfigSettingsOutput> ApplyConfigSettings(string sessionId, ConfigurationDetail configurationDetail, CancellationToken cancellationToken)
         {
-           return await ApplyConfigSettings(sessionId, new List<ConfigurationDetail> {configurationDetail},
+            return await ApplyConfigSettings(sessionId, new List<ConfigurationDetail> {configurationDetail},
                cancellationToken);
         }
 
@@ -253,7 +312,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             // Recurse all child data
             if (optionSettingItem.Type.Equals("Object"))
             {
-                optionSettingItem.ChildOptionSettings?
+               optionSettingItem.ChildOptionSettings?
                     .Select(child => child.ToConfigurationDetail(detail))
                     .ToList()
                     .ForEach(detail.Children.Add);
@@ -264,7 +323,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private static object GetValue(OptionSettingItemSummary optionSettingItem, ConfigurationDetail detail)
         {
-            if (detail.ValueMappings?.Any() ?? false)
+            if (detail.HasValueMappings())
             {
                return Convert.ToString(optionSettingItem.Value, CultureInfo.InvariantCulture);
             }
