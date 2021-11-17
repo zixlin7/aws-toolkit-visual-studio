@@ -5,6 +5,10 @@
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Because multiple projects are sharing the same folder, ensure each builds to a separate location -->
+    <BaseIntermediateOutputPath>obj-v15\</BaseIntermediateOutputPath>
+  </PropertyGroup>
   <Import Project="$(BuildRoot)\buildtools\Package.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>

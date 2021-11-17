@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Added support for CloudFormation Template projects into the Visual Studio 2022 Toolkit."
+}

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5dcdb793-d7f9-4b59-a543-90e518769310</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Amazon.AWSToolkit.CloudFormation.TemplateWizards</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractTemplateWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NewTemplateWizardImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProjectWizardImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WizardPages\PageControllers\ProjectTypeController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WizardPages\PageUI\ProjectTypePage.xaml.cs">
+      <DependentUpon>ProjectTypePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)WizardPages\WizardPropertyNameConstants.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)WizardPages\PageUI\ProjectTypePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+</Project>

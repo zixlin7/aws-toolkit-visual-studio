@@ -186,7 +186,7 @@
   </ItemGroup>
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\AwsSdks.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\CloudFormationProjectBundling.xml" />
-  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ItemTemplates.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ItemTemplates.v15.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Licenses.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Plugins.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectReferences.xml" />

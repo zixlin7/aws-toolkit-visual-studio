@@ -14,15 +14,15 @@
   </PropertyGroup>
 
   <!-- Related to CloudFormation projects -->
-  <!-- <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationProjectTemplate\CloudFormationProjectTemplate.csproj">
-      <Project>{EB2C31E6-3ED8-4F0E-A726-194DA87C8F95}</Project>
-      <Name>CloudFormationProjectTemplate</Name>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationProjectTemplate\CloudFormationProjectTemplate.v17.csproj">
+      <Project>{006AC827-4FD7-437E-9C48-47DF8EA8A723}</Project>
+      <Name>CloudFormationProjectTemplate.v17</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-  </ItemGroup> -->
+  </ItemGroup>
 
   <!-- Related to NodeJs based Lambda function projects -->
   <ItemGroup>
