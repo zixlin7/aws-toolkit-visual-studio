@@ -115,6 +115,8 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
             public void Execute()
             {
+                Result result = Result.Failed;
+                int numberOfFailedKeys = 0;
                 try
                 {
                     var request = new DeleteObjectsRequest()
@@ -129,23 +131,26 @@ namespace Amazon.AWSToolkit.S3.Jobs
                     }
 
                     var response = this._job._controller.S3Client.DeleteObjects(request);
-                
 
                     lock (this._job)
                     {
                         this._job._numberOfDeletedKeys += response.DeletedObjects.Count;
+                        numberOfFailedKeys = response.DeleteErrors.Count;
 
                         foreach (var deletedObjects in response.DeletedObjects)
                         {
                             this._job._keysToSelectedChildItems[deletedObjects.Key] = null;
-                            this._job._controller.RecordDeleteObjectMetric(Result.Succeeded);
                         }
                     }
+                    result = Result.Succeeded;
                 }
                 catch (Exception e)
                 {
-                    this._job._controller.RecordDeleteObjectMetric(Result.Failed);
                     Logger.Error(e);
+                }
+                finally
+                {
+                    this._job._controller.RecordDeleteObjectMetric(this._job._numberOfDeletedKeys, numberOfFailedKeys, result);
                 }
             }
         }

@@ -2,7 +2,6 @@
 using System.Linq;
 
 using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.Telemetry
 {
@@ -58,6 +57,22 @@ namespace Amazon.AWSToolkit.Telemetry
                 telemetryLogger.Logger.Error("Error recording telemetry event", e);
                 System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
             }
+        }
+    }
+
+    /// Called when user exits the Publish to AWS workflow
+    public sealed class PublishEnd : BaseTelemetryEvent
+    {
+
+        /// Whether or not the user published an application
+        public bool Published;
+
+        /// The duration of the operation in milliseconds
+        public double Duration;
+
+        public PublishEnd()
+        {
+            this.Passive = false;
         }
     }
 }

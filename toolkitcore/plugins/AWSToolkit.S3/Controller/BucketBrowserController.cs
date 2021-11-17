@@ -482,7 +482,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public void RecordDeleteObjectMetric(Result result)
+        public void RecordDeleteObjectMetric(int successCount, int failedCount, Result result)
         {
             try
             {
@@ -491,6 +491,8 @@ namespace Amazon.AWSToolkit.S3.Controller
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
                     Result = result,
+                    SuccessCount = successCount,
+                    FailedCount = failedCount
                 });
             }
             catch (Exception e)

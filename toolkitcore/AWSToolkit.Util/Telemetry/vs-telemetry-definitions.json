@@ -69,14 +69,6 @@
             "metadata": [ { "type": "result" } ]
         },
         {
-            "name": "publish_end",
-            "description": "Called when user exits the Publish to AWS workflow",
-            "metadata": [
-                { "type": "published" },
-                { "type": "duration" }
-            ]
-        },
-        {
             "name": "publish_deploy",
             "description": "Called when user publishes the project",
             "metadata": [
@@ -103,8 +95,8 @@
             "name": "publish_optOut",
             "description": "Called when user opts out of Publish to AWS experience",
             "metadata": [
-                {"type": "result" }
-            ] 
+                { "type": "result" }
+            ]
         }
     ]
 }
