@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
+using Amazon.AWSToolkit.Tests.Publishing.Util;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -50,6 +51,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     name : "name1",
                     description :"description1",
                     type : "String",
+                    typeHint:"dummyTypeHint",
                     value : "value1"
                 ),
                 CreateVisibleCoreOptionItemSummary
@@ -67,6 +69,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                             name: "name21",
                             description: "child one",
                             type: "String",
+                            typeHint:"dummyTypeHint",
                             value: "value21"
                         ),
                         CreateVisibleCoreOptionItemSummary
@@ -75,6 +78,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                             name: "name22",
                             description: "child two",
                             type: "String",
+                            typeHint:"dummyTypeHint",
                             value: "value22"
                         )
                     }
@@ -442,6 +446,30 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 });
         }
 
+        public static IEnumerable<object[]> TypeHintUnsupportedConfigs = new List<object[]>
+        {
+            new object[] { ConfigurationDetailBuilder.Create().Build() },
+            new object[] { ConfigurationDetailBuilder.Create().WithType(typeof(string)).Build() },
+            new object[] { ConfigurationDetailBuilder.Create().WithType(typeof(int)).WithTypeHint("dummy").Build() }
+        };
+
+        [Theory]
+        [MemberData(nameof(TypeHintUnsupportedConfigs))]
+        public async Task RetrieveConfigSettingResources_NoTypeHint(ConfigurationDetail detail)
+        {
+            var configurationDetails = SetupResourcesForConfigDetail(detail);
+
+            var configResources =
+                await _deployToolController.UpdateConfigSettingValuesAsync(_sessionId, configurationDetails, _cancelToken);
+
+            var updatedSetting = configResources.First();
+            Assert.False(updatedSetting.ValueMappings.ContainsKey("abc"));
+            _restClient.Verify(
+                mock => mock.GetConfigSettingResourcesAsync(_sessionId, updatedSetting.GetLeafId(), _cancelToken),
+                Times.Never);
+
+        }
+
         [Fact]
         public async Task ApplyConfigSettingsForConfigurationDetails()
         {
@@ -601,7 +629,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         private OptionSettingItemSummary CreateVisibleCoreOptionItemSummary(string id, string name, string description,
-            string type, string value, List<OptionSettingItemSummary> children = null)
+            string type, string value, string typeHint = null, List<OptionSettingItemSummary> children = null)
         {
             return new OptionSettingItemSummary()
             {
@@ -610,6 +638,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 Description = description,
                 Type = type,
                 Value = value,
+                TypeHint = typeHint,
                 ChildOptionSettings = children,
                 Visible = true,
                 Advanced = false,

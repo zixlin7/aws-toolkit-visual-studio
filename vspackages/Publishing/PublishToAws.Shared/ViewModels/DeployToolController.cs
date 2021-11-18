@@ -194,13 +194,18 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 detail.Children.Clear();
                 children.ToList().ForEach(detail.Children.Add);
             }
-            else if (!detail.HasValueMappings())
+            else if (IsTypeHintSupported(detail) && !detail.HasValueMappings())
             {
                 detail.ValueMappings = await GetConfigSettingValuesAsync(sessionId, detail.GetLeafId(),
                     token).ConfigureAwait(false);
             }
 
             return detail;
+        }
+
+        private bool IsTypeHintSupported(ConfigurationDetail detail)
+        {
+            return detail.Type == typeof(string) && !string.IsNullOrEmpty(detail.TypeHint);
         }
 
         public async Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,
