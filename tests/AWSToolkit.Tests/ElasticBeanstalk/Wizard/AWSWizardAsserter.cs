@@ -42,5 +42,10 @@ namespace AWSToolkit.Tests.ElasticBeanstalk.Wizard
         {
             Assert.False(UsingEbTools(wizard));
         }
+
+        public static void AssertDoesNotContainEbToolsProperty(this IAWSWizard wizard)
+        {
+            Assert.False(wizard.IsPropertySet(BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy));
+        }
     }
 }

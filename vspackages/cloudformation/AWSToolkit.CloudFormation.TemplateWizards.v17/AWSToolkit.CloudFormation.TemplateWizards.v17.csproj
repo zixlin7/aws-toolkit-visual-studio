@@ -1,50 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
   </PropertyGroup>
   <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0588D27B-7D87-4B33-9120-4C0A9E7D6665}</ProjectGuid>
+    <ProjectGuid>{EF567336-499A-47C6-989E-B992B01DBDC9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Amazon.AWSToolkit.CloudFormation.TemplateWizards</RootNamespace>
-    <AssemblyName>AWSToolkit.CloudFormation.TemplateWizards</AssemblyName>
+    <AssemblyName>AWSToolkit.CloudFormation.TemplateWizards.v17</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(BuildConstants);DEBUG;TRACE;VS2022</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
+    <DefineConstants>$(BuildConstants);TRACE;VS2022</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.TemplateWizardInterface, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\thirdparty\VisualStudio\PublicAssemblies\Microsoft.VisualStudio.TemplateWizardInterface.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -58,35 +47,25 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
-      <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
-      <Name>AWSToolkit.CloudFormation.Parser</Name>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
+      <Name>AWSToolkit.Util</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
+      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
-      <Name>AWSToolkit.Util</Name>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
+      <Project>{4cee1a45-e01e-4bcc-8145-5c593adf28bc}</Project>
+      <Name>AWSToolkit.CloudFormation.Parser</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.5.17</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.7.0.73</Version>
-    </PackageReference>
-    <PackageReference Include="log4net">
-      <Version>2.0.13</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>15.0.1</Version>
-      <ExcludeAssets>runtime</ExcludeAssets>
+    <PackageReference Include="Microsoft.VisualStudio.TemplateWizardInterface">
+      <Version>17.0.31902.203</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="..\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems" Label="Shared" />

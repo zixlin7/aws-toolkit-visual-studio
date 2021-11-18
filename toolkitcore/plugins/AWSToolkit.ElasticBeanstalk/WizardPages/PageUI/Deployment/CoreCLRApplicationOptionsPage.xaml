@@ -111,7 +111,7 @@
                 Grid.ColumnSpan="3"
                 Margin="8,6,8,4"
                 IsChecked="{Binding BuildSelfContainedBundle}"
-                Visibility="{Binding LinuxVisiblity}"
+                Visibility="{Binding SelfContainedVisibility}"
                 ToolTip="Build a self contained deployment bundle including the .NET runtime the project is targeting. This allows newer versions of .NET to be used in Elastic Beanstalk then is preinstalled in the Beanstalk environment."
                 Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                 Build _self contained deployment bundle

@@ -228,20 +228,11 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
 }
 ";
 
-        private static void SetupAWSDeploymentManifest(string publishLocation, string iisPath)
+        private static void SetupAWSDeploymentManifest(string publishLocation, string iisPathString)
         {
-            string iisWebSite, iisAppPath;
-            int pos = iisPath.IndexOf("/");
-            if (pos == -1)
-            {
-                iisWebSite = "Default Web Site";
-                iisAppPath = "/" + iisPath;
-            }
-            else
-            {
-                iisWebSite = iisPath.Substring(0, pos);
-                iisAppPath = iisPath.Substring(pos);
-            }
+            var iisPath = new IisPath(iisPathString);
+            var iisWebSite = iisPath.WebSite;
+            var iisAppPath = iisPath.AppPath;
 
             var pathToManifest = Path.Combine(publishLocation, "aws-windows-deployment-manifest.json");
             string manifest;

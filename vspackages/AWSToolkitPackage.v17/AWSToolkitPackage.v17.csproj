@@ -119,7 +119,7 @@
   </ItemGroup>
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\AwsSdks.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\CloudFormationProjectBundling.xml" />
-  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ItemTemplates.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ItemTemplates.v17.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Licenses.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Plugins.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectReferences.xml" />
@@ -296,6 +296,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.TemplateWizards.v17\AWSToolkit.CloudFormation.TemplateWizards.v17.csproj">
+      <Project>{EF567336-499A-47C6-989E-B992B01DBDC9}</Project>
+      <Name>AWSToolkit.CloudFormation.TemplateWizards.v17</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\vspackages\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj">
       <Project>{260eb803-0c5d-4000-b920-4e8af84820ca}</Project>
       <Name>AwsToolkit.VsSdk.Common.v17</Name>
@@ -406,10 +412,10 @@
       <Version>3.7.1.16</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.17</Version>
+      <Version>1.0.27</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.17</Version>
+      <Version>1.0.27</Version>
     </PackageReference>
     <!-- Community.VisualStudio.Toolkit - This package is versioned based on the major version of 
       Visual Studio that it supports.

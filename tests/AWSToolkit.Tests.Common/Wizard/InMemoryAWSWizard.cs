@@ -39,10 +39,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Wizard
             throw new NotImplementedException();
         }
 
-        public object GetProperty(string key)
-        {
-            throw new NotImplementedException();
-        }
+        public object GetProperty(string key) => CollectedProperties[key];
 
         public T GetProperty<T>(string key)
         {

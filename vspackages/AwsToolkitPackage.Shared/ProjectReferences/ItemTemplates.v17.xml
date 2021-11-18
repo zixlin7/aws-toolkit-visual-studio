@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- 
-  Visual Studio Item Templates that are Common to AWSToolkitPackage.xxx Projects
+  Visual Studio Item Templates that are referenced by the VS 2022 Toolkit in AWSToolkitPackage.v17.csproj
 
   These are the things that integrate into Visual Studio's "Add New X" system.
 
@@ -15,9 +15,9 @@
 
   <!-- Add CloudFormation Template Item -->
   <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationTemplate\CloudFormationTemplate.csproj">
-      <Project>{877BECE0-1933-4BA8-8D68-78140A541B67}</Project>
-      <Name>CloudFormationTemplate</Name>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationTemplate\CloudFormationTemplate.v17.csproj">
+      <Project>{FBF6EF8F-0A23-446D-A2F9-A425A9D715CE}</Project>
+      <Name>CloudFormationTemplate.v17</Name>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>

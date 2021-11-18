@@ -186,7 +186,7 @@
   </ItemGroup>
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\AwsSdks.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\CloudFormationProjectBundling.xml" />
-  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ItemTemplates.xml" />
+  <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ItemTemplates.v15.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Licenses.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Plugins.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\ProjectReferences.xml" />
@@ -485,10 +485,10 @@
       <Version>3.7.1.16</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.17</Version>
+      <Version>1.0.27</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.17</Version>
+      <Version>1.0.27</Version>
     </PackageReference>
     <!-- Community.VisualStudio.Toolkit - This package is versioned based on the major version of 
       Visual Studio that it supports.

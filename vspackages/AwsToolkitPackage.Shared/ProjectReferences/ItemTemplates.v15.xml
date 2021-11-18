@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Visual Studio Item Templates that are referenced by the VS 2017/2019 Toolkit in AWSToolkitPackage.csproj
+
+  These are the things that integrate into Visual Studio's "Add New X" system.
+
+  If you have the solution open in Visual Studio and make changes to this file, you will need to close the 
+  solution and re-open it in order to pick up your changes.
+-->
+<Project ToolsVersion="15.0" DefaultTargets="Build"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+
+  <!-- Add CloudFormation Template Item -->
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\CloudFormationTemplate\CloudFormationTemplate.csproj">
+      <Project>{877BECE0-1933-4BA8-8D68-78140A541B67}</Project>
+      <Name>CloudFormationTemplate</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

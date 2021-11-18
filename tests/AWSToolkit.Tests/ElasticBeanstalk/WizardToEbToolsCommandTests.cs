@@ -81,7 +81,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
         }
 
         [Fact]
-        public void ShouldSetSelfContainedOnWindowsDeploy()
+        public void SetPropertiesForNetCoreWindowsDeploy()
         {
             // arrange.
             var properties = LoadProperties("windows-self-contained.json");
@@ -93,6 +93,8 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             // assert.
             Assert.True(cliCommand.DeployEnvironmentOptions.SelfContained);
+            Assert.Equal("Default Web Site", cliCommand.DeployEnvironmentOptions.IISWebSite);
+            Assert.Equal("/Test", cliCommand.DeployEnvironmentOptions.UrlPath);
         }
 
         private DeployEnvironmentCommand CreateEmptyDeployEnvironmentCommand()

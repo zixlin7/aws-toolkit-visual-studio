@@ -256,5 +256,10 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             return !Children.Any();
         }
+
+        public bool HasValueMappings()
+        {
+            return ValueMappings?.Any() ?? false;
+        }
     }
 }

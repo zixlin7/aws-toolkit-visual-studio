@@ -260,6 +260,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 vpcOnly = ec2PluginService.IsVpcOnly(_pageUI.SelectedAccount, _pageUI.SelectedRegion);
             HostingWizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_VpcOnlyMode, vpcOnly);
 
+            SetDeploymentToolOnWizard();
+
             if (IsRedeploy())
             {
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, true);
@@ -282,7 +284,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 // If redeploying to a non windows solution stack then use Amazon.ElasticBeanstalk.Tools to handle deployment. Both propKey_IsLinuxSolutionStack and propKey_UseEbToolsToDeploy are used
                 // for now with the same value but in the future when we use EbTools for Windows .NET Core deployment they can differ.
                 HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack] = !selectedDeployment.IsSelectedEnvironmentWindowsSolutionStack;
-                HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] = !selectedDeployment.IsSelectedEnvironmentWindowsSolutionStack;
 
                 // if a build configuration was recorded on last deployment for the environment, make it the default for the redeployment
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_PreviousDeployments))
@@ -299,9 +300,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             }
             else
             {
-                HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] = null;
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, false);
-                foreach (var t in _templatesByRegion[_pageUI.SelectedRegionId])
+                foreach (var t in GetTemplatesForSelectedRegion())
                 {
                     if (t.ServiceOwner.Equals(DeploymentServiceIdentifiers.BeanstalkServiceName, StringComparison.Ordinal))
                     {
@@ -335,6 +335,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         protected virtual bool IsRedeploy() => _pageUI.RedeploySelected;
 
         protected virtual DeployedApplicationModel GetSelectedDeployment() => _pageUI.SelectedDeployment;
+
+        protected virtual List<DeploymentTemplateWrapperBase> GetTemplatesForSelectedRegion()
+        {
+            return _templatesByRegion[_pageUI.SelectedRegionId];
+        }
+
+        private void SetDeploymentToolOnWizard()
+        {
+            HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] =
+                Project.IsNetCoreWebProject(HostingWizard);
+        }
 
         private void OnPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {

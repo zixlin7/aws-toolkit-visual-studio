@@ -7,18 +7,18 @@
   </PropertyGroup>
   <PropertyGroup>
     <!-- Because multiple projects are sharing the same folder, ensure each builds to a separate location -->
-    <BaseIntermediateOutputPath>obj-v15\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>obj-v17\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <Import Project="$(BuildRoot)\buildtools\Package.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{EB2C31E6-3ED8-4F0E-A726-194DA87C8F95}</ProjectGuid>
+    <ProjectGuid>{006AC827-4FD7-437E-9C48-47DF8EA8A723}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CloudFormationProjectTemplate</RootNamespace>
-    <AssemblyName>CloudFormationProjectTemplate</AssemblyName>
+    <AssemblyName>CloudFormationProjectTemplate.v17</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
@@ -55,7 +55,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="CloudFormationProjectTemplate.vstemplate" />
+    <VSTemplate Include="CloudFormationProjectTemplate.v17.vstemplate" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />

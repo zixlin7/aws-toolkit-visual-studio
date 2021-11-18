@@ -56,10 +56,12 @@
     <Compile Include="Exceptions\LambdaToolkitException.cs" />
     <Compile Include="Exceptions\NodeNotFoundException.cs" />
     <Compile Include="Exceptions\ToolkitException.cs" />
+    <Compile Include="Frameworks.cs" />
     <Compile Include="HostedFileContentLoader.cs" />
     <Compile Include="HostedFilesSettings.cs" />
     <Compile Include="HostManagerClientRequest.cs" />
     <Compile Include="IAMUtilities.cs" />
+    <Compile Include="IISPath.cs" />
     <Compile Include="MobileAnalytics\AMAConstants.cs" />
     <Compile Include="MobileAnalytics\AMAServiceCallHandler.cs" />
     <Compile Include="MobileAnalytics\AnalyticsCognitoAWSCredentials.cs" />
@@ -377,10 +379,10 @@
       <Version>3.7.5.17</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.17</Version>
+      <Version>1.0.27</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.17</Version>
+      <Version>1.0.27</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.7.0.73</Version>

@@ -36,6 +36,10 @@
         <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MsbuildServerlessTemplate.v17" d:TargetPath="|MsbuildServerlessTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
         <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="MsbuildServerlessWithTestsTemplate.v17" d:TargetPath="|MsbuildServerlessWithTestsTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
 
+        <!-- CloudFormation Project and Item Templates -->
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="CloudFormationProjectTemplate.v17" d:TargetPath="|CloudFormationProjectTemplate.v17;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="CloudFormationTemplate.v17" d:TargetPath="|CloudFormationTemplate.v17;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+
         <!-- Cloudformation Editor -->
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="CloudFormation.EditorExtensions.v17" Path="|CloudFormation.EditorExtensions.v17|" />
 

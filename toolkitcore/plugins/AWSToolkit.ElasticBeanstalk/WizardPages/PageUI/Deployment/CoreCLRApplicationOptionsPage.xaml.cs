@@ -5,13 +5,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.ElasticBeanstalk.Model;
 using System.Diagnostics;
+
+using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -84,6 +84,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         public Visibility WindowsVisiblity { get; set; } = Visibility.Visible;
 
         public Visibility LinuxVisiblity { get; set; } = Visibility.Collapsed;
+
+        public Visibility SelfContainedVisibility =>
+            Project.IsNetCoreWebProject(PageController.HostingWizard)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
         public string TargetFramework
         {

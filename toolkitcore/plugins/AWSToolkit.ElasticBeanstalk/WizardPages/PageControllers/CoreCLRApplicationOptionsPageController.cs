@@ -61,6 +61,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion))
                     RedeployingAppVersion = (bool)HostingWizard[DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion];
 
+                _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework);
+
                 if (!RedeployingAppVersion)
                 {
                     var buildConfigurations = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectBuildConfigurations] as IDictionary<string, string>;
@@ -82,6 +84,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             return _pageUI;
         }
 
+        private bool SelfContainedDefaultFor(string targetFramework) => targetFramework.MatchesFramework(Frameworks.Net60);
 
         string _lastSeenAccount;
         string _lastSeenRegion;

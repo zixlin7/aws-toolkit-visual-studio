@@ -1,4 +1,7 @@
-﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
+﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
@@ -7,7 +10,6 @@ using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using Amazon.AWSToolkit.Tests.Common;
 using Amazon.AWSToolkit.Tests.Common.Account;
 using Amazon.AWSToolkit.Tests.Common.Context;
-using Amazon.AWSToolkit.Tests.Common.Wizard;
 using Amazon.ElasticBeanstalk.Model;
 
 using AWSToolkit.Tests.ElasticBeanstalk.Wizard;
@@ -16,7 +18,7 @@ using Xunit;
 
 namespace AWSToolkit.Tests.ElasticBeanstalk
 {
-    public class StartPageControllerTests
+    public class StartPageControllerTests : BeanstalkWizardTests
     {
         public class TestableStartPageController : StartPageController
         {
@@ -34,6 +36,8 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             public DeployedApplicationModel SelectedApplication { get; set; }
 
             protected override DeployedApplicationModel GetSelectedDeployment() => SelectedApplication;
+
+            protected override List<DeploymentTemplateWrapperBase> GetTemplatesForSelectedRegion() => new List<DeploymentTemplateWrapperBase>();
         }
 
         static StartPageControllerTests()
@@ -42,39 +46,72 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
         }
 
         private readonly ToolkitContext _toolkitContext = new ToolkitContextFixture().ToolkitContext;
-        private readonly IAWSWizard _wizard = new InMemoryAWSWizard();
-        private readonly StartPage _startPage;
+
+        private readonly TestableStartPageController _startPageController;
 
         public StartPageControllerTests()
         {
-            _startPage = CreateStartPage();
+            var startPage = CreateStartPage();
+            _startPageController = CreateStartPageController(startPage);
         }
 
         private StartPage CreateStartPage()
         {
-            return new StartPage(_toolkitContext, _wizard)
+            return new StartPage(_toolkitContext, Wizard)
             {
                 SelectedAccount = AccountFixture.CreateSharedCredentialAccount(),
             };
         }
 
+        private TestableStartPageController CreateStartPageController(StartPage startPage)
+        {
+            return new TestableStartPageController(_toolkitContext, startPage)
+            {
+                HostingWizard = Wizard,
+            };
+        }
+
         [StaFact]
-        public void ShouldUseNetCoreDeploymentForLinux()
+        public void ShouldUseNetCoreDeployment()
         {
             // arrange.
-            var startPageController = new TestableStartPageController(_toolkitContext, _startPage)
-            {
-                HostingWizard = _wizard,
-                RedeploySelected = true,
-                SelectedApplication = CreateDeployedApplication(CreateLinuxEnvironmentDescription())
-            };
+            SetProjectTypeTo(DeploymentWizardProperties.NetCoreWebProject);
 
             // act.
-            TransferStateFromPageToWizard(startPageController);
+            TransferStateFromPageToWizard(_startPageController);
 
             // assert.
-            _wizard.AssertPlatformIsLinux();
-            _wizard.AssertUsingEbTools();
+            Wizard.AssertUsingEbTools();
+        }
+
+        [StaFact]
+        public void ShouldUseStandardDeployment()
+        {
+            // arrange.
+            SetProjectTypeTo(DeploymentWizardProperties.StandardWebProject);
+
+            // act.
+            TransferStateFromPageToWizard(_startPageController);
+
+            // assert.
+            Wizard.AssertNotUsingEbTools();
+        }
+
+        [StaFact]
+        public void ShouldUseNetCoreDeploymentForLinuxRedeployment()
+        {
+            // arrange.
+            SetProjectTypeTo(DeploymentWizardProperties.NetCoreWebProject);
+
+            _startPageController.RedeploySelected = true;
+            _startPageController.SelectedApplication = CreateDeployedApplication(CreateLinuxEnvironmentDescription());
+
+            // act.
+            TransferStateFromPageToWizard(_startPageController);
+
+            // assert.
+            Wizard.AssertPlatformIsLinux();
+            Wizard.AssertUsingEbTools();
         }
 
         private DeployedApplicationModel CreateDeployedApplication(EnvironmentDescription environment)
@@ -94,28 +131,21 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             };
         }
 
-        private void TransferStateFromPageToWizard(IAWSWizardPageController controller)
-        {
-            controller.PageDeactivating(AWSWizardConstants.NavigationReason.finishPressed);
-        }
-
         [StaFact]
-        public void ShouldUseStandardDeploymentForWindows()
+        public void ShouldUseNetCoreDeploymentForNetCoreWindowsRedeployment()
         {
             // arrange.
-            var startPageController = new TestableStartPageController(_toolkitContext, _startPage)
-            {
-                HostingWizard = _wizard,
-                RedeploySelected = true,
-                SelectedApplication = CreateDeployedApplication(CreateWindowsEnvironmentDescription())
-            };
+            SetProjectTypeTo(DeploymentWizardProperties.NetCoreWebProject);
+
+            _startPageController.RedeploySelected = true;
+            _startPageController.SelectedApplication = CreateDeployedApplication(CreateWindowsEnvironmentDescription());
 
             // act.
-            TransferStateFromPageToWizard(startPageController);
+            TransferStateFromPageToWizard(_startPageController);
 
             // assert.
-            _wizard.AssertPlatformIsWindows();
-            _wizard.AssertNotUsingEbTools();
+            Wizard.AssertPlatformIsWindows();
+            Wizard.AssertUsingEbTools();
         }
 
         private EnvironmentDescription CreateWindowsEnvironmentDescription()
@@ -124,6 +154,23 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             {
                 SolutionStackName = "64bit Windows Server"
             };
+        }
+
+        [StaFact]
+        public void ShouldUseStandardDeploymentForStandardWindowsRedeployment()
+        {
+            // arrange.
+            SetProjectTypeTo(DeploymentWizardProperties.StandardWebProject);
+
+            _startPageController.RedeploySelected = true;
+            _startPageController.SelectedApplication = CreateDeployedApplication(CreateWindowsEnvironmentDescription());
+
+            // act.
+            TransferStateFromPageToWizard(_startPageController);
+
+            // assert.
+            Wizard.AssertPlatformIsWindows();
+            Wizard.AssertNotUsingEbTools();
         }
     }
 }
