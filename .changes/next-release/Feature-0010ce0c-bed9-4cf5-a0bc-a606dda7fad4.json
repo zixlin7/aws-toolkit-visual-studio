@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Add option in the Publish to Beanstalk workflow to build self-contained deployment bundles, when working with .NET Core/.NET 5+ applications and Windows images. This enables .NET 6 projects to be published to Windows servers using the Publish to Beanstalk feature."
-}

@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Make Publish to Beanstalk experience default to using self contained deployment bundles for .NET 6 projects. This setting is necessary for Beanstalk images that do not contain the .NET 6 runtime."
-}
