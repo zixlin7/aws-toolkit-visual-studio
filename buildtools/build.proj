@@ -406,7 +406,13 @@
     <!-- only care about packaging updated endpoints and flags for release builds -->
     <Target Name="get-latest-endpoint-data">
         <Message Text="Fetching latest endpoints manifest files..." />
-        <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateEndpoints.ps1 -configuration $(Configuration) -s3BucketName $(HostedFilesBucket) -s3BucketRegion $(HostedFilesBucketRegion) -hostedfilesFolder $(HostedFilesFolder)" />
+        <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateEndpoints.ps1 -configuration $(Configuration) -hostedfilesFolder $(HostedFilesFolder)" />
+    </Target>
+    
+     <!-- Fetch old endpoints file -->
+    <Target Name="get-old-endpoint-data">
+        <Message Text="Fetching old endpoints manifest files..." />
+        <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateOldEndpoints.ps1 -configuration $(Configuration) -s3BucketName $(HostedFilesBucket) -s3BucketRegion $(HostedFilesBucketRegion) -hostedfilesFolder $(HostedFilesFolder)" />
     </Target>
     
     <!-- Output the current VSIX file's contents to a text file -->
@@ -457,8 +463,6 @@
 	<Target Name="compare-hostedfiles-bjs" DependsOnTargets="build-tools">
 
         <ItemGroup>
-            <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" />
-            <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.json" />
             <FileException Include="$(HostedFilesFolder)\endpoints.json" />
             <FileException Include="$(HostedFilesFolder)\.editorconfig" />
             <FileException Include="$(HostedFilesFolder)\flags\**\*.png" />
@@ -509,12 +513,20 @@
     </Target>
 
     <Target Name="upload-hostedfiles" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
+            <!-- Endpoint files are maintained by a separate pipeline for IAD -->
+          <ItemGroup>
+            <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" />
+            <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.json" />
+            <FileException Include="$(HostedFilesFolder)\endpoints.json" />
+            <FileException Include="$(HostedFilesFolder)\.editorconfig" />
+        </ItemGroup>
 
         <UploadHostedFilesTask
 				RegionValue="$(HostedFilesBucketRegion)"
 				Bucket="$(HostedFilesBucket)"
 				S3Path=""
-				KeyExceptions="ServiceEndPoints.xml;ServiceEndPoints.json;endpoints.json;.editorconfig"
+                FileExceptions="@(FileException)"
+                KeyExceptions="@(FileException)"
 				LocalPath="$(HostedFilesFolder)">
 			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeys" />
 		</UploadHostedFilesTask>
@@ -527,15 +539,22 @@
 		/>
     </Target>
 
-    <Target Name="upload-hostedfiles-bjs" DependsOnTargets="build-tools;get-latest-endpoint-data" Condition="$(PushHostedFiles)">
+    <Target Name="upload-hostedfiles-bjs" DependsOnTargets="build-tools;get-old-endpoint-data" Condition="$(PushHostedFiles)">
+
+        <!-- We only want to update/maintain old ServiceEndpoints file for BJS -->
+        <ItemGroup>
+            <FileException Include="$(HostedFilesFolder)\endpoints.json" />
+            <FileException Include="$(HostedFilesFolder)\.editorconfig" />
+        </ItemGroup>
 
 		<!-- we don't seem to do invalidation on bjs, but gather the keys anyway -->
         <UploadHostedFilesTask
 				Bucket="$(BJSHostedFilesBucket)"
 				S3Path=""
-				KeyExceptions="ServiceEndPoints.xml;ServiceEndPoints.json;endpoints.json;.editorconfig"
 				LocalPath="$(HostedFilesFolder)"
 				CredentialSet="$(BJSCredentials)"
+                FileExceptions="@(FileException)"
+                KeyExceptions="@(FileException)"
 				RegionValue="cn-north-1">
 			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeysBJS" />
 		</UploadHostedFilesTask>

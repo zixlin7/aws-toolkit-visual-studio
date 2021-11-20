@@ -1,8 +1,10 @@
-# This script downloads service endpoints files used by the Toolkit
+# This script downloads service endpoints files used by the old versions of Toolkit
 # The endpoints files are bundled as resources within the Toolkit at build time
 param (
-    [string]$endpointsJsonFileName = "endpoints.json",
+    [string]$endpointsXmlFileName = "ServiceEndPoints.xml",
     [Parameter(Mandatory=$true)][string]$configuration,
+    [Parameter(Mandatory=$true)][string]$s3BucketName,
+    [Parameter(Mandatory=$true)][string]$s3BucketRegion,
     [Parameter(Mandatory=$true)][string]$hostedfilesFolder
 )
 
@@ -29,7 +31,7 @@ function Get-Endpoints-File {
     }
 }
 
-# Retrieve the new JSON based endpoints file (endpoints.json)
-$endpointsJsonFullPath = "$hostedfilesFolder\$endpointsJsonFileName"
-$endpointsJsonUrl = "https://idetoolkits.amazonwebservices.com/$endpointsJsonFileName"
-Get-Endpoints-File -configuration $configuration -outputPath $endpointsJsonFullPath -url $endpointsJsonUrl
+# Retrieve the old XML based endpoints file (ServiceEndPoints.xml)
+$endpointsXmlFullPath = "$hostedfilesFolder\$endpointsXmlFileName"
+$endpointsXmlUrl = "http://$s3BucketName.s3.$s3BucketRegion.amazonaws.com/$endpointsXmlFileName"
+Get-Endpoints-File -configuration $configuration -outputPath $endpointsXmlFullPath -url $endpointsXmlUrl
