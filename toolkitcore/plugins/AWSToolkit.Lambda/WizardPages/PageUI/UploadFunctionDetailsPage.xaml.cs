@@ -1,26 +1,27 @@
-﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.Lambda.Controller;
-using Amazon.AWSToolkit.Lambda.Model;
-using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.AWSToolkit.Lambda.ViewModel;
-using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.Tasks;
-using Amazon.ECR;
-using Amazon.Lambda;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Lambda.Controller;
+using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.AWSToolkit.Lambda.ViewModel;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Util;
 using Amazon.Common.DotNetCli.Tools;
-using Amazon.Runtime;
+using Amazon.ECR;
+using Amazon.Lambda;
+
+using log4net;
+
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
@@ -362,10 +363,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     return;
                 }
 
-                using (var lambdaClient = CreateServiceClient<AmazonLambdaClient>())
-                {
-                    ViewModel.UpdateFunctionsList(lambdaClient).LogExceptionAndForget();
-                }
+                ViewModel.UpdateFunctionsList().LogExceptionAndForget();
             }
             catch (Exception e)
             {
@@ -382,7 +380,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     return;
                 }
 
-                using (var ecrClient = CreateServiceClient<AmazonECRClient>())
+                using (var ecrClient = ViewModel.CreateServiceClient<AmazonECRClient>())
                 {
                     // Reset ImageRepo to be re-selected or re-entered
                     _shellProvider.ExecuteOnUIThread(() => { ViewModel.ImageRepo = string.Empty; });
@@ -404,7 +402,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     return;
                 }
 
-                using (var ecrClient = CreateServiceClient<AmazonECRClient>())
+                using (var ecrClient = ViewModel.CreateServiceClient<AmazonECRClient>())
                 {
                     // Reset ImageTag to be re-selected or re-entered
                     _shellProvider.ExecuteOnUIThread(() => { ViewModel.ImageTag = "latest"; });
@@ -633,12 +631,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 return false;
             }
             return true;
-        }
-
-        private TServiceClient CreateServiceClient<TServiceClient>() where TServiceClient : class, IAmazonService
-        {
-            return ViewModel.Connection.Account 
-                .CreateServiceClient<TServiceClient>(ViewModel.Connection.Region);
         }
 
         /// <summary>

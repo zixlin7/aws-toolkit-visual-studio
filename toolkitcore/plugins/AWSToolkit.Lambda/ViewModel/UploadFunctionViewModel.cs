@@ -1,15 +1,4 @@
-﻿using Amazon.AWSToolkit.Commands;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonValidators;
-using Amazon.AWSToolkit.Lambda.Model;
-using Amazon.AWSToolkit.Shared;
-using Amazon.ECR;
-using Amazon.ECR.Model;
-using Amazon.Lambda;
-using Amazon.Lambda.Model;
-using log4net;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -17,8 +6,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+
+using Amazon.AWSToolkit.Commands;
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.CommonValidators;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.AWSToolkit.Shared;
+using Amazon.ECR;
+using Amazon.ECR.Model;
+using Amazon.Lambda;
+using Amazon.Lambda.Model;
+using Amazon.Runtime;
+
+using log4net;
+
+using Microsoft.Win32;
+
 using Environment = System.Environment;
 
 namespace Amazon.AWSToolkit.Lambda.ViewModel
@@ -501,6 +506,17 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// <summary>
         /// Queries the given Lambda client for Functions, updates list of available functions
         /// </summary>
+        public async Task UpdateFunctionsList()
+        {
+            using (var lambdaClient = CreateServiceClient<AmazonLambdaClient>())
+            {
+                await UpdateFunctionsList(lambdaClient).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Queries the given Lambda client for Functions, updates list of available functions
+        /// </summary>
         public async Task UpdateFunctionsList(IAmazonLambda lambda)
         {
             UiThreadLoadingFunctions = true;
@@ -546,6 +562,12 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                     NotifyPropertyChanged(nameof(FunctionName));
                 }
             }
+        }
+
+        public TServiceClient CreateServiceClient<TServiceClient>() where TServiceClient : class, IAmazonService
+        {
+            return Connection.Account
+                .CreateServiceClient<TServiceClient>(Connection.Region);
         }
 
         /// <summary>
