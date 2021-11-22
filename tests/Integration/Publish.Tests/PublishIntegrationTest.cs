@@ -65,6 +65,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publishing
 
         public async Task DisposeAsync()
         {
+            await CloudFormationStacks.DeleteStack(StackName);
         }
 
         protected async Task SetDeploymentTargetToBeanstalk()

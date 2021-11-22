@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BeanstalkPublishIntegrationTest.cs" />
+    <Compile Include="CloudFormationStacks.cs" />
     <Compile Include="PublishIntegrationTest.cs" />
     <Compile Include="TestProjects.cs" />
     <Compile Include="UniqueStackName.cs" />
