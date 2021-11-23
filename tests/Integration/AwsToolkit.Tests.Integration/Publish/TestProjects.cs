@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Amazon.AWSToolkit.Tests.Integration.Publishing
+namespace Amazon.AWSToolkit.Tests.Integration.Publish
 {
     public class TestProjects
     {

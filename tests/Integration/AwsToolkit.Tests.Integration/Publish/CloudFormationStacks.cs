@@ -3,7 +3,7 @@
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 
-namespace Amazon.AWSToolkit.Tests.Integration.Publishing
+namespace Amazon.AWSToolkit.Tests.Integration.Publish
 {
     public class CloudFormationStacks
     {

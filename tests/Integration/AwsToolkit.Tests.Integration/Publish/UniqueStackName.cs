@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Amazon.AWSToolkit.Tests.Integration.Publishing
+namespace Amazon.AWSToolkit.Tests.Integration.Publish
 {
     public class UniqueStackName
     {

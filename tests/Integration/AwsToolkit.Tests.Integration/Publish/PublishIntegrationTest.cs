@@ -15,7 +15,7 @@ using AWS.Deploy.ServerMode.Client;
 
 using Xunit;
 
-namespace Amazon.AWSToolkit.Tests.Integration.Publishing
+namespace Amazon.AWSToolkit.Tests.Integration.Publish
 {
     public abstract class PublishIntegrationTest : IAsyncLifetime
     {

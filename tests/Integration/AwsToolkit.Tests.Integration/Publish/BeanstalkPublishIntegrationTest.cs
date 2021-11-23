@@ -2,7 +2,7 @@
 
 using Xunit;
 
-namespace Amazon.AWSToolkit.Tests.Integration.Publishing
+namespace Amazon.AWSToolkit.Tests.Integration.Publish
 {
     public class BeanstalkPublishIntegrationTest : PublishIntegrationTest
     {
@@ -12,8 +12,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publishing
             StackName = UniqueStackName.CreateWith("BeanstalkTest");
         }
 
-        //Commented as temporary solution to avoid integration test being run with unit test suite
-        //[Fact]
+        [Fact]
         public async void ShouldPublish()
         {
             // act
