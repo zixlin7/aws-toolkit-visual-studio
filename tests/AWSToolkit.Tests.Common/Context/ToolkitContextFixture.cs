@@ -15,11 +15,13 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
     {
         public ToolkitContext ToolkitContext { get; }
 
+        public TelemetryFixture TelemetryFixture { get; } = new TelemetryFixture();
+
         public Mock<ICredentialManager> CredentialManager { get; } = new Mock<ICredentialManager>();
         public Mock<ICredentialSettingsManager> CredentialSettingsManager { get; } = new Mock<ICredentialSettingsManager>();
         public Mock<IRegionProvider> RegionProvider { get; } = new Mock<IRegionProvider>();
         public Mock<IAwsServiceClientManager> ServiceClientManager { get; } = new Mock<IAwsServiceClientManager>();
-        public Mock<ITelemetryLogger> TelemetryLogger { get; } = new Mock<ITelemetryLogger>();
+        public Mock<ITelemetryLogger> TelemetryLogger => TelemetryFixture.TelemetryLogger;
         public Mock<IAWSToolkitShellProvider> ToolkitHost { get; } = new Mock<IAWSToolkitShellProvider>();
 
         public ToolkitContextFixture()

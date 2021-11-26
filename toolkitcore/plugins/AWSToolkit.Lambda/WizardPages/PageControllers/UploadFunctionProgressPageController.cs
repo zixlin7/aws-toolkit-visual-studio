@@ -348,7 +348,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 if (DetermineDeploymentType(state.SourcePath) == DeploymentType.NETCore)
                     worker = new UploadNETCoreWorker(this, lambdaClient, ecrClient, _toolkitContext.TelemetryLogger);
                 else
-                    worker = new UploadGenericWorker(this, lambdaClient, ecrClient, _toolkitContext.TelemetryLogger);
+                    worker = new UploadGenericWorker(this, lambdaClient, ecrClient, _toolkitContext);
 
                 ThreadPool.QueueUserWorkItem(x =>
                 {

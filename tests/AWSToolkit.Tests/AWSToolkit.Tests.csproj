@@ -128,7 +128,7 @@
     <Compile Include="Lambda\PackageTypeToVisibilityConverterTest.cs" />
     <Compile Include="Lambda\ProjectTests.cs" />
     <Compile Include="Lambda\RuntimeOptionTests.cs" />
-    <Compile Include="Lambda\TelemetryFixture.cs" />
+    <Compile Include="Lambda\LambdaAssert.cs" />
     <Compile Include="Lambda\UploadFunctionDetailsPageFixture.cs" />
     <Compile Include="Lambda\UploadFunctionDetailsPageTests.cs" />
     <Compile Include="Lambda\UploadFunctionViewModelTests.cs" />
