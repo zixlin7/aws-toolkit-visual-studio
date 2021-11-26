@@ -88,6 +88,10 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         }
 
+        public void ExecuteOnUIThread(Func<Task> asyncFunc)
+        {
+        }
+
         public T ExecuteOnUIThread<T>(Func<Task<T>> asyncFunc)
         {
             return default(T);

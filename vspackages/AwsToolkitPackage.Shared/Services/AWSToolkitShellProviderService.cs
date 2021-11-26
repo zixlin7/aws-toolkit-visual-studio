@@ -346,6 +346,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             return t;
         }
 
+        public void ExecuteOnUIThread(Func<System.Threading.Tasks.Task> asyncFunc)
+        {
+            async Task TaskFunc()
+            {
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                await asyncFunc();
+            }
+
+            this._hostPackage.JoinableTaskFactory.Run(TaskFunc);
+        }
+
         public T ExecuteOnUIThread<T>(Func<System.Threading.Tasks.Task<T>> asyncFunc)
         {
             async Task<T> TaskFunc()

@@ -163,6 +163,8 @@ namespace Amazon.AWSToolkit.Shared
         /// <param name="action"></param>
         void ExecuteOnUIThread(Action action);
 
+        void ExecuteOnUIThread(Func<Task> asyncFunc);
+
         T ExecuteOnUIThread<T>(Func<Task<T>> asyncFunc);
 
         /// <summary>

@@ -269,6 +269,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 try
                 {
+                    FunctionUploader.WaitForUpdatableState(LambdaClient, uploadState.Request.FunctionName);
+
                     var uploadCodeRequest = new UpdateFunctionCodeRequest
                     {
                         FunctionName = uploadState.Request.FunctionName,
@@ -317,6 +319,5 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
             return false;
         }
-
     }
 }

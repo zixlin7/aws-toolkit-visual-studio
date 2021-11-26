@@ -51,8 +51,12 @@ namespace AWSToolkit.Tests.Lambda
         private readonly UploadGenericWorker _sut;
         private readonly UploadFunctionController.UploadFunctionState _uploadFunctionState;
 
+        private GetFunctionConfigurationResponse _getExistingConfigurationResponse;
+
         public UploadGenericWorkerTests()
         {
+            SetupGetExistingConfiguration();
+
             _sut = new UploadGenericWorker(_uploadHelpers.Object, _lambda.Object, null,
                 _toolkitContextFixture.ToolkitContext);
 
@@ -61,6 +65,7 @@ namespace AWSToolkit.Tests.Lambda
                 Request = new CreateFunctionRequest()
                 {
                     Runtime = Runtime.Nodejs12X,
+                    FunctionName = "sample-function",
                 },
 
                 Region = new ToolkitRegion()
@@ -77,6 +82,12 @@ namespace AWSToolkit.Tests.Lambda
                 .Select(file => Path.Combine(_testLocation.InputFolder, file))
                 .ToList()
                 .ForEach(PlaceholderFile.Create);
+        }
+
+        private void SetupGetExistingConfiguration()
+        {
+            _uploadHelpers.Setup(mock => mock.GetExistingConfiguration(It.IsAny<IAmazonLambda>(), It.IsAny<string>()))
+                .Returns(() => _getExistingConfigurationResponse);
         }
 
         [Fact]
@@ -181,6 +192,23 @@ namespace AWSToolkit.Tests.Lambda
             AssertSuccessfulDeployMetric();
         }
 
+        [Fact]
+        public void UpdateFunctionFromZipFile()
+        {
+            _getExistingConfigurationResponse = new GetFunctionConfigurationResponse()
+            {
+                FunctionName = _uploadFunctionState.Request.FunctionName
+            };
+
+            _uploadFunctionState.SourcePath = Path.Combine(_testLocation.InputFolder, "sample.zip");
+
+            _sut.UploadFunction(_uploadFunctionState);
+
+            _uploadHelpers.Verify(mock => mock.WaitForUpdatableState(It.IsAny<IAmazonLambda>(), It.IsAny<string>()), Times.Once);
+            _lambda.Verify(mock => mock.UpdateFunctionCode(It.IsAny<UpdateFunctionCodeRequest>()), Times.Once);
+            AssertSuccessfulDeployMetric(false);
+        }
+
         public void Dispose()
         {
             _testLocation.Dispose();
@@ -203,7 +231,7 @@ namespace AWSToolkit.Tests.Lambda
                 .Select(path => path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar));
         }
 
-        private void AssertSuccessfulDeployMetric()
+        private void AssertSuccessfulDeployMetric(bool isNewResource = true)
         {
             _toolkitContextFixture.TelemetryFixture.AssertTelemetryRecordCalls(1);
             LambdaAssert.MetricIsLambdaDeploy(_toolkitContextFixture.TelemetryFixture.LoggedMetrics.Single(),
@@ -213,7 +241,7 @@ namespace AWSToolkit.Tests.Lambda
                     RegionId = _uploadFunctionState.Region.Id,
                     Runtime = _uploadFunctionState.Request.Runtime,
                     TargetFramework = "",
-                    NewResource = true,
+                    NewResource = isNewResource,
                 });
         }
     }
