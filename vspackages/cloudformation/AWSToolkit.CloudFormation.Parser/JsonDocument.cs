@@ -22,8 +22,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
         JsonToken _previous = new JsonToken();
         int _previousPosition;
 
-        List<ErrorToken> _errorTokens = new List<ErrorToken>();
-
 
         public JsonDocument(string document)
         {
@@ -40,8 +38,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
         }
 
         public JsonToken CurrentToken => this._current;
-
-        public List<ErrorToken> ErrorTokens => this._errorTokens;
 
         public string KeyChainString
         {

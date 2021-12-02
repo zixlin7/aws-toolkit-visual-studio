@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.CloudFormation.Parser;
+﻿using System.Linq;
+
+using Amazon.AWSToolkit.CloudFormation.Parser;
 
 using Xunit;
 
@@ -6,6 +8,74 @@ namespace AWSToolkit.Tests.CommonUI
 {
     public class TemplateParserTests
     {
+
+        [Fact]
+        public void ItShouldHandleBlankString()
+        {
+            // arrange.
+            var parser = new TemplateParser();
+
+            // act.
+            var result = parser.Parse("");
+
+            // assert.
+            Assert.NotNull(result);
+            Assert.Empty(result.HighlightedTemplateTokens);
+            Assert.Empty(result.IntellisenseTokens);
+            Assert.Equal(-1, result.IntellisenseStartingPosition);
+            Assert.Equal(-1, result.IntellisenseEndingPosition);
+        }
+
+        [Fact]
+        public void ItShouldHandleEmptyObject()
+        {
+            // arrange.
+            var parser = new TemplateParser();
+
+            // act.
+            var result = parser.Parse("{}");
+
+            // assert.
+            Assert.NotNull(result);
+            Assert.Empty(result.HighlightedTemplateTokens);
+            Assert.Empty(result.IntellisenseTokens);
+            Assert.Equal(-1, result.IntellisenseStartingPosition);
+            Assert.Equal(-1, result.IntellisenseEndingPosition);
+        }
+
+        [Fact]
+        public void ItShouldHandleObjectWithField()
+        {
+            // arrange.
+            var parser = new TemplateParser();
+
+            // act.
+            var result = parser.Parse(@"{\""Description\"": \""AwsCloudFormation\""}", 1);
+
+            // assert.
+            Assert.NotNull(result);
+            Assert.Empty(result.HighlightedTemplateTokens);
+            Assert.Equal(10, result.IntellisenseTokens.Count());
+            Assert.Equal(-1, result.IntellisenseStartingPosition);
+            Assert.Equal(-1, result.IntellisenseEndingPosition);
+        }
+
+
+        [Fact]
+        public void ItShouldRevealIntellisenseTokens()
+        {
+            // arrange.
+            var parser = new TemplateParser();
+
+            // act.
+            var result = parser.Parse(@"{\""Description\"": \""AwsCloudFormation\""}", 1);
+
+            // assert.
+            Assert.Equal(@"""AWSTemplateFormatVersion"" : """"", result.IntellisenseTokens.First().Code);
+            Assert.Contains("The template format version is an optional", result.IntellisenseTokens.First().Description);
+            Assert.Equal("AWSTemplateFormatVersion", result.IntellisenseTokens.First().DisplayName);
+            Assert.Equal(IntellisenseTokenType.ObjectKey, result.IntellisenseTokens.First().Type);
+        }
 
         [Fact]
         public void HappyPath()
@@ -83,5 +153,6 @@ namespace AWSToolkit.Tests.CommonUI
 
             Assert.Equal(expected, actual.Text);
         }
+
     }
 }

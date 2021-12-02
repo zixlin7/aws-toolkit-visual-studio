@@ -90,12 +90,26 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             if (this._schema == null)
                 return null;
 
+            TryToParseObject();
+
+            PostParse();
+
+            return new ParserResults(this._highlightedTemplateTokens, this._intellisenseToken, this._intellisenseStartingPostion, this._intellisenseEndingPostion);
+        }
+
+        private void TryToParseObject()
+        {
             try
             {
                 ParseObject(this._schema.RootSchemaObject);
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+            }
+        }
 
+        private void PostParse()
+        {
             try
             {
                 // Validate the references tokens to make sure they are point to valid references.
@@ -118,9 +132,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 // Add any reference intellisense items
                 AddReferencesToIntellisense();
             }
-            catch (Exception) { }
-
-            return new ParserResults(this._rootTemplateToken, this._highlightedTemplateTokens, this._intellisenseToken, this._intellisenseStartingPostion, this._intellisenseEndingPostion, new List<ErrorToken>());
+            catch (Exception)
+            {
+            }
         }
 
         // Gets all the defined resources in the document
@@ -303,22 +317,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             if (this._refTokensToPostValidate.Count == 0)
                 return;
 
-            // Build a list of all possible reference so we can inform the user
-            // if the bad reference is because it is unknown or just the wrong type.
-            HashSet<string> allPossibleResources = new HashSet<string>();
-            foreach (var list in this._referencesByType.Values)
-            {
-                foreach (var reference in list)
-                    allPossibleResources.Add(reference);
-            }
+            var allPossibleResources = GetAllPossibleResources();
 
             foreach (var token in this._refTokensToPostValidate)
             {
                 bool useGlobalList = false;
-                TemplateToken keyToken = null;
-                // The first parent is to the "Ref" key so we need to go they key of intrinsic function
-                if(token.ParentToken != null && token.ParentToken.ParentToken != null)
-                    keyToken = token.ParentToken.ParentToken;
+                var keyToken = GetGrandparent(token);
 
                 string schemaType = null;
                 List<string> schemaTypeReferences;
@@ -328,8 +332,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                     schemaTypeReferences = FindParameterReferences();
 
                     var resourceReferenceType = keyToken.Schema.ResourceRefType;
-                    if (keyToken.Schema.SchemaType == SchemaType.Json || keyToken.Schema.SchemaType == SchemaType.Policy ||
-                        keyToken.Schema.ArraySchemaType == SchemaType.Json || keyToken.Schema.ArraySchemaType == SchemaType.Policy)
+                    if (IsSupportedSchemaType(keyToken.Schema))
                     {
                         foreach (var kvp in this._referencesByType)
                         {
@@ -381,6 +384,33 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 // Check to see if there are any intellisense tokens that should be generated for this reference value
                 PostIntellisenseRefTokens(schemaType, useGlobalList, schemaTypeReferences, resourceReferences, allPossibleResources, token);
             }
+        }
+
+        private HashSet<string> GetAllPossibleResources()
+        {
+            HashSet<string> allPossibleResources = new HashSet<string>();
+            foreach (var list in this._referencesByType.Values)
+            {
+                foreach (var reference in list)
+                    allPossibleResources.Add(reference);
+            }
+
+            return allPossibleResources;
+        }
+
+        private TemplateToken GetGrandparent(TemplateToken token)
+        {
+            TemplateToken keyToken = null;
+            // The first parent is to the "Ref" key so we need to go they key of intrinsic function
+            if (token.ParentToken != null && token.ParentToken.ParentToken != null)
+                keyToken = token.ParentToken.ParentToken;
+            return keyToken;
+        }
+
+        private bool IsSupportedSchemaType(SchemaObject schema)
+        {
+            return schema.SchemaType == SchemaType.Json || schema.SchemaType == SchemaType.Policy ||
+                   schema.ArraySchemaType == SchemaType.Json || schema.ArraySchemaType == SchemaType.Policy;
         }
 
         void PostIntellisenseRefTokens(string schemaType, bool useGlobalList, List<string> schemaTypeReference, List<string> resourceReference, HashSet<string> allPossibleResources, TemplateToken refToken)
