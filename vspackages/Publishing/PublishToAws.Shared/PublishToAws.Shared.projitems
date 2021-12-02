@@ -42,6 +42,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Install\VerifyDeployCli.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PropertyTemplateSelector.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\CliServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CliServerFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICliServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\OptionSettingItemSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DocumentLoadingIndicator.cs" />

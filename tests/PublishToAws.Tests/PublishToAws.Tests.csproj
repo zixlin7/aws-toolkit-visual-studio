@@ -70,14 +70,15 @@
     <Compile Include="Install\InstallOptionsTests.cs" />
     <Compile Include="Install\ProcessExitHandlerTests.cs" />
     <Compile Include="Models\ConfigurationDetailExtensionMethodsTests.cs" />
+    <Compile Include="Models\ConfigurationDetailFactoryTests.cs" />
     <Compile Include="Models\DisplayedResourceSummaryExtensionMethodTests.cs" />
     <Compile Include="Models\PublishDialogStepProcessorTests.cs" />
     <Compile Include="Models\PublishResourceTemplateSelectorTests.cs" />
     <Compile Include="Models\TargetSystemCapabilityTests.cs" />
     <Compile Include="PublishDocumentViewModelChangeHandlerTests.cs" />
+    <Compile Include="Util\OptionSettingItemSummaryBuilder.cs" />
     <Compile Include="Util\ConfigurationDetailBuilder.cs" />
     <Compile Include="Models\ConfigurationDetailTests.cs" />
-    <Compile Include="Models\DeployToolControllerExtensionsTests.cs" />
     <Compile Include="Models\PropertyTemplateSelectorTests.cs" />
     <Compile Include="Package\CliServerTests.cs" />
     <Compile Include="Package\InitializePublishToAwsPackageTests.cs" />

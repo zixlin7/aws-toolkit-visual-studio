@@ -32,6 +32,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         private readonly string _sampleConfigId = "sampleConfigId";
         private readonly List<OptionSettingItemSummary> _optionSettingItemSummaries;
         private readonly GetConfigSettingResourcesOutput _sampleResourcesOutput;
+        private readonly ConfigurationDetailFactory _configurationDetailFactory = new ConfigurationDetailFactory();
 
         public DeployToolControllerTests()
         {
@@ -419,7 +420,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RetrieveConfigSettingResources_LeafConfigurationDetail()
         {
-            var configurationDetails = SetupResourcesForConfigDetail(_optionSettingItemSummaries[0].ToConfigurationDetail());
+            var configurationDetails = SetupResourcesForConfigDetail(_configurationDetailFactory.CreateFrom(_optionSettingItemSummaries[0]));
 
             Assert.False(configurationDetails.First().HasValueMappings());
 
@@ -433,7 +434,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RetrieveConfigSettingResources_ParentConfigurationDetail()
         {
-            var configurationDetails = SetupResourcesForConfigDetail(_optionSettingItemSummaries[1].ToConfigurationDetail());
+            var configurationDetails = SetupResourcesForConfigDetail(_configurationDetailFactory.CreateFrom(_optionSettingItemSummaries[1]));
 
             var configResources =
                 await _deployToolController.UpdateConfigSettingValuesAsync(_sessionId, configurationDetails, _cancelToken);
@@ -474,11 +475,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task ApplyConfigSettingsForConfigurationDetails()
         {
             // arrange.
-            var configurationDetails = new List<ConfigurationDetail>
-            {
-                _optionSettingItemSummaries[0].ToConfigurationDetail(),
-                _optionSettingItemSummaries[1].ToConfigurationDetail()
-            };
+            var configurationDetails = _optionSettingItemSummaries.Take(2)
+                .Select(_configurationDetailFactory.CreateFrom)
+                .ToList();
 
             ApplyConfigSettingsInput actualInput = null;
 
@@ -508,7 +507,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task ApplyConfigSettingsForConfigurationDetail()
         {
-            var configurationDetail = _optionSettingItemSummaries[0].ToConfigurationDetail();
+            var configurationDetail = _configurationDetailFactory.CreateFrom(_optionSettingItemSummaries[0]);
             SetupApplyConfigSettings(new ApplyConfigSettingsOutput());
 
             var response = await _deployToolController.ApplyConfigSettings(_sessionId, configurationDetail, _cancelToken);
@@ -520,7 +519,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task ApplyConfigSettingsForConfigurationDetail_InvalidSessionId()
         {
-            var configurationDetail = _optionSettingItemSummaries[0].ToConfigurationDetail();
+            var configurationDetail = _configurationDetailFactory.CreateFrom(_optionSettingItemSummaries[0]);
             await Assert.ThrowsAsync<InvalidSessionIdException>(async () =>
             {
                 await _deployToolController.ApplyConfigSettings("", configurationDetail, _cancelToken);
@@ -532,7 +531,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task ApplyConfigSettingsForConfigurationDetail_FailedUpdate()
         {
-            var configurationDetail = _optionSettingItemSummaries[0].ToConfigurationDetail();
+            var configurationDetail = _configurationDetailFactory.CreateFrom(_optionSettingItemSummaries[0]);
             var setOptionSettingsOutput = new ApplyConfigSettingsOutput {
                 FailedConfigUpdates = new Dictionary<string, string>()
                 {

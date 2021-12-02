@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Publish.Models;
 
 using AWS.Deploy.ServerMode.Client;
-
-using log4net;
 
 namespace Amazon.AWSToolkit.Publish.ViewModels
 {
@@ -164,11 +161,10 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             var response = await _client.GetConfigSettingsAsync(sessionId, cancellationToken)
                     .ConfigureAwait(false);
 
+            var detailFactory = new ConfigurationDetailFactory();
             if (response?.OptionSettings?.Any() ?? false)
             {
-                configSettings.AddRange(response.OptionSettings
-                    .Select(setting => setting.ToConfigurationDetail())
-                );
+                configSettings.AddRange(response.OptionSettings.Select(detailFactory.CreateFrom));
             }
 
             return configSettings;
@@ -288,86 +284,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
 
             return new SetDeploymentTargetInput { NewDeploymentName = stackName, NewDeploymentRecipeId = recipeId };
-        }
-    }
-
-    public static class DeployToolControllerExtensions
-    {
-        public static ConfigurationDetail ToConfigurationDetail(this OptionSettingItemSummary optionSettingItem, ConfigurationDetail parentDetail = null)
-        {
-            var detail = new ConfigurationDetail {
-                Id = optionSettingItem.Id,
-                Name = optionSettingItem.Name,
-                Description = optionSettingItem.Description,
-                Type = GetOptionSettingItemType(optionSettingItem.Type),
-                TypeHint = optionSettingItem.TypeHint,
-                DefaultValue = optionSettingItem.Value,
-                // TODO : use category once API provides it. (View is already set to render it)
-                Category = string.Empty,
-                Advanced = optionSettingItem.Advanced,
-                ReadOnly = optionSettingItem.ReadOnly,
-                Visible = optionSettingItem.Visible,
-                SummaryDisplayable = optionSettingItem.SummaryDisplayable,
-                Parent = parentDetail,
-            };
-
-            detail.ValueMappings = GetValueMappings(optionSettingItem);
-            detail.Value = GetValue(optionSettingItem, detail);
-
-            // Recurse all child data
-            if (optionSettingItem.Type.Equals("Object"))
-            {
-               optionSettingItem.ChildOptionSettings?
-                    .Select(child => child.ToConfigurationDetail(detail))
-                    .ToList()
-                    .ForEach(detail.Children.Add);
-            }
-
-            return detail;
-        }
-
-        private static object GetValue(OptionSettingItemSummary optionSettingItem, ConfigurationDetail detail)
-        {
-            if (detail.HasValueMappings())
-            {
-               return Convert.ToString(optionSettingItem.Value, CultureInfo.InvariantCulture);
-            }
-            return optionSettingItem.Value;
-        }
-
-        private static IDictionary<string, string> GetValueMappings(OptionSettingItemSummary optionSettingItem)
-        {
-
-            if (optionSettingItem?.ValueMapping?.Any() ?? false)
-            {
-                return optionSettingItem.ValueMapping;
-            }
-
-            if (optionSettingItem?.AllowedValues?.Any() ?? false)
-            {
-                return optionSettingItem.AllowedValues.ToDictionary(x => x, x => x);
-            }
-
-            return new Dictionary<string, string>();
-        }
-
-        private static Type GetOptionSettingItemType(string type)
-        {
-            switch (type)
-            {
-                case "String":
-                    return typeof(string);
-                case "Int":
-                    return typeof(int);
-                case "Double":
-                    return typeof(double);
-                case "Bool":
-                    return typeof(bool);
-                case "Object":
-                    return typeof(object);
-                default:
-                    throw new UnsupportedOptionSettingItemTypeException($"The Type '{type}' is not supported.");
-            }
         }
     }
 }
