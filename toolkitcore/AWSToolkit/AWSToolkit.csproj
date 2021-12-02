@@ -107,6 +107,7 @@
     <Compile Include="CommonUI\Components\GroupedAccountComparer.cs" />
     <Compile Include="CommonUI\Converters\InverseVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\NullableInverseBooleanConverter.cs" />
+    <Compile Include="CommonUI\IDialogFactory.cs" />
     <Compile Include="CommonUI\Images\AwsImageResourcePath.cs" />
     <Compile Include="CommonUI\Images\ImageSourceFactory.cs" />
     <Compile Include="CommonUI\Notifications\Progress\IProgressDialog.cs" />

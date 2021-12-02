@@ -159,6 +159,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         internal AWSToolkitShellProviderService ToolkitShellProviderService { get; private set; }
         internal AWSLegacyDeploymentPersistenceService LegacyDeploymentPersistenceService { get; private set; }
 
+        internal ToolkitContext ToolkitContext => _toolkitContext;
+
         private IAWSCloudFormation _cloudformationPlugin;
         private IAWSElasticBeanstalk _beanstalkPlugin;
         private IAWSCodeCommit _codeCommitPlugin;
