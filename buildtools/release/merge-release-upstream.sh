@@ -28,3 +28,9 @@ if ! [ -z $CONFLICT ]; then
 fi
 
 git push origin
+
+if [ $? -ne 0 ]; then
+    echo "[Release] Failed to push to branch. Opening a PR."
+    BRANCH_NAME="release/manual-merge/${NEXT_VERSION}"
+    create_merge_pr $BRANCH_NAME
+fi
