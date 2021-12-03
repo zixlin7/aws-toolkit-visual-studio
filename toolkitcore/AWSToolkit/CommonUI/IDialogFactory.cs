@@ -1,10 +1,12 @@
-﻿namespace Amazon.AWSToolkit.CommonUI
+﻿using Amazon.AWSToolkit.CommonUI.Dialogs;
+
+namespace Amazon.AWSToolkit.CommonUI
 {
     /// <summary>
     /// Toolkit dialog producer
     /// </summary>
     public interface IDialogFactory
     {
-        // todo : Add dialog creation methods
+        IIamRoleSelectionDialog CreateIamRoleSelectionDialog();
     }
 }

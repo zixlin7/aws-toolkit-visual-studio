@@ -64,6 +64,7 @@
     <Compile Include="CommonUI\CloudFormationTemplateWrapperTests.cs" />
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
+    <Compile Include="CommonUI\IamRoleSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
     <Compile Include="CommonUI\InverseVisibilityConverterTests.cs" />
     <Compile Include="CommonUI\NullableInverseBooleanConverterTests.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageTests.cs" />
     <Compile Include="ElasticBeanstalk\StartPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\Wizard\AWSWizardAsserter.cs" />
+    <Compile Include="Iam\IamEntityRepositoryTests.cs" />
     <Compile Include="Lambda\LambdaStateWaiterTests.cs" />
     <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />
     <Compile Include="Publish\Banner\PublishBannerPropertyChangedHandlerTests.cs" />
@@ -208,6 +210,14 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
       <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
       <Name>AWSToolkit.ElasticBeanstalk</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj">
+      <Project>{49C00D37-5980-495F-80C6-43C5192C4A87}</Project>
+      <Name>AWSToolkit.IdentityManagement.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement\AWSToolkit.IdentityManagement.csproj">
+      <Project>{CFBD26F3-E44E-41EB-89B1-2E84391A0686}</Project>
+      <Name>AWSToolkit.IdentityManagement</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>

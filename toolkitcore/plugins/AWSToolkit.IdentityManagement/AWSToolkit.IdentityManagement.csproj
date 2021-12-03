@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IamEntityRepository.cs" />
     <Compile Include="Controller\CreateGroupController.cs" />
     <Compile Include="Controller\CreateRoleController.cs" />
     <Compile Include="Controller\CreateUserController.cs" />

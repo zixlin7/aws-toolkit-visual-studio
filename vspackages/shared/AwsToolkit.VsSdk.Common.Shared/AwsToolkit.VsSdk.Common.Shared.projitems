@@ -10,6 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\DialogWindowHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\IamRoleSelectionDialog.xaml.cs">
+      <DependentUpon>IamRoleSelectionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\IamRoleSelectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\OkCancelDialogWindowHost.xaml.cs">
       <DependentUpon>OkCancelDialogWindowHost.xaml</DependentUpon>
     </Compile>
@@ -25,6 +29,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)VSWebProjectInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\IamRoleSelectionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\OkCancelDialogWindowHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -33,5 +41,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)CommonUI\Models\" />
   </ItemGroup>
 </Project>

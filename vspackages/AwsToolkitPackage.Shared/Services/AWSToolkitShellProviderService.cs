@@ -570,7 +570,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public IDialogFactory GetDialogFactory()
         {
-            return new DialogFactory(_hostPackage.ToolkitContext);
+            return new DialogFactory(_hostPackage.ToolkitContext, _hostPackage.JoinableTaskFactory);
         }
 
         #endregion

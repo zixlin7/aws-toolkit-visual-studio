@@ -69,6 +69,10 @@
       <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
       <Name>AWSToolkit.Util</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj">
+      <Project>{49C00D37-5980-495F-80C6-43C5192C4A87}</Project>
+      <Name>AWSToolkit.IdentityManagement.Interface</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net">
