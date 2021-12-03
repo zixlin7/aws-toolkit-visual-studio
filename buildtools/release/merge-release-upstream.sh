@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if ! "$IS_PROD";
+then
+    exit 0;
+fi
+
 git clone $REPO_URL $REPO_DIR; cd $REPO_DIR
 git merge $COMMIT_HASH --no-ff -m "Merge v${NEXT_VERSION} from $RELEASE_BRANCH"
 
@@ -7,16 +12,19 @@ if [ $? -ne 0 ]; then
     CONFLICT=true; git merge --abort; git checkout $COMMIT_HASH
 fi
 
-if "$IS_PROD"; then
-    echo "[Release] Pipeline is in production. Pushing commit to GitHub."
+echo "[Release] Pipeline is in production. Pushing commit to GitHub."
 
-    if ! [ -z $CONFLICT ]; then
-        echo "[Release] Merge conlict detected. Opening a PR."
-        BRANCH_NAME="release/merge-conflict/${NEXT_VERSION}"
-        git checkout -b $BRANCH_NAME
-        git push --follow-tags -u origin $BRANCH_NAME
-        gh pr create --base $DEVELOPMENT_BRANCH --title "Merge $RELEASE_BRANCH changes into $DEVELOPMENT_BRANCH (${NEXT_VERSION})" --body "$MERGE_PR_BODY"
-    else
-        git push origin
-    fi
+create_merge_pr() {
+    git checkout -b $1
+    git push --follow-tags -u origin $1
+    gh pr create --base $DEVELOPMENT_BRANCH --title "Merge $RELEASE_BRANCH changes into $DEVELOPMENT_BRANCH (${NEXT_VERSION})" --body "$MERGE_PR_BODY"
+}
+
+if ! [ -z $CONFLICT ]; then
+    echo "[Release] Merge conlict detected. Opening a PR."
+    BRANCH_NAME="release/merge-conflict/${NEXT_VERSION}"
+    create_merge_pr $BRANCH_NAME
+    exit 0;
 fi
+
+git push origin
