@@ -88,8 +88,9 @@ namespace Amazon.AWSToolkit.Publish.Views
             };
             viewModel.LoadPublishSettings();
 
+            var configurationDetailFactory = new ConfigurationDetailFactory(viewModel, _publishContext.ToolkitShellProvider.GetDialogFactory());
             var client = cliServer.GetRestClient(viewModel.GetCredentials);
-            viewModel.DeployToolController = new DeployToolController(client);
+            viewModel.DeployToolController = new DeployToolController(client, configurationDetailFactory);
             viewModel.DeploymentClient = cliServer.GetDeploymentClient();
 
             var publishCommand = new PublishCommand(viewModel, _publishContext.ToolkitShellProvider);

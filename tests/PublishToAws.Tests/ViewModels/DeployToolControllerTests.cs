@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
@@ -22,6 +23,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
     public class DeployToolControllerTests
     {
         private readonly Mock<IRestAPIClient> _restClient = new Mock<IRestAPIClient>();
+        private readonly Mock<IPublishToAwsProperties> _publishProperties = new Mock<IPublishToAwsProperties>();
+        private readonly Mock<IDialogFactory> _dialogFactory = new Mock<IDialogFactory>();
         private readonly IDeployToolController _deployToolController;
         private readonly string _sessionId = "sessionId1";
         private readonly string _applicationName = "application-name";
@@ -32,11 +35,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         private readonly string _sampleConfigId = "sampleConfigId";
         private readonly List<OptionSettingItemSummary> _optionSettingItemSummaries;
         private readonly GetConfigSettingResourcesOutput _sampleResourcesOutput;
-        private readonly ConfigurationDetailFactory _configurationDetailFactory = new ConfigurationDetailFactory();
+        private readonly ConfigurationDetailFactory _configurationDetailFactory;
 
         public DeployToolControllerTests()
         {
-            _deployToolController = new DeployToolController(_restClient.Object);
+            _configurationDetailFactory = new ConfigurationDetailFactory(_publishProperties.Object, _dialogFactory.Object);
+            _deployToolController = new DeployToolController(_restClient.Object, _configurationDetailFactory);
             _sampleResourcesOutput = new GetConfigSettingResourcesOutput()
             {
                 Resources = new List<TypeHintResourceSummary>()

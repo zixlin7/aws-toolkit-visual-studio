@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Util;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
 
 using AWS.Deploy.ServerMode.Client;
+
+using Moq;
 
 using Xunit;
 
@@ -24,7 +27,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             {"Object", typeof(object)},
         };
 
-        private readonly ConfigurationDetailFactory _sut = new ConfigurationDetailFactory();
+        private readonly Mock<IPublishToAwsProperties> _publishProperties = new Mock<IPublishToAwsProperties>();
+        private readonly Mock<IDialogFactory> _dialogFactory = new Mock<IDialogFactory>();
+        private readonly ConfigurationDetailFactory _sut;
+
+        public ConfigurationDetailFactoryTests()
+        {
+            _sut = new ConfigurationDetailFactory(_publishProperties.Object, _dialogFactory.Object);
+        }
 
         [Fact]
         public void CreateFrom()

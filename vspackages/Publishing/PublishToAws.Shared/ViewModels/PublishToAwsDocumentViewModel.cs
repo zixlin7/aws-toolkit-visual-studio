@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
     /// This ViewModel contains the functionality and data that
     /// backs the "Publish to AWS" document tab (<see cref="Views.PublishApplicationView"/>)
     /// </summary>
-    public class PublishToAwsDocumentViewModel : BaseModel
+    public class PublishToAwsDocumentViewModel : BaseModel, IPublishToAwsProperties
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(PublishToAwsDocumentViewModel));
         private const string DeploymentStatusMessage = "Deployment Status: ";

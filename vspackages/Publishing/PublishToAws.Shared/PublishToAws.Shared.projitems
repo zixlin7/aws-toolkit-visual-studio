@@ -45,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\IPublishToAwsProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PropertyTemplateSelector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishApplicationContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishContext.cs" />

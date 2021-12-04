@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish.Util;
 
 using AWS.Deploy.ServerMode.Client;
@@ -11,6 +12,15 @@ namespace Amazon.AWSToolkit.Publish.Models
 {
     public class ConfigurationDetailFactory
     {
+        private readonly IPublishToAwsProperties _publishToAwsProperties;
+        private readonly IDialogFactory _dialogFactory;
+
+        public ConfigurationDetailFactory(IPublishToAwsProperties publishToAwsProperties, IDialogFactory dialogFactory)
+        {
+            _publishToAwsProperties = publishToAwsProperties;
+            _dialogFactory = dialogFactory;
+        }
+
         public ConfigurationDetail CreateFrom(OptionSettingItemSummary itemSummary)
         {
             var configurationDetail = Instantiate();

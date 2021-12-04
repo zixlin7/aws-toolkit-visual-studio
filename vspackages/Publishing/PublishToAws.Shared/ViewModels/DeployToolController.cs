@@ -52,10 +52,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
     public class DeployToolController : IDeployToolController
     {
         private readonly IRestAPIClient _client;
+        private readonly ConfigurationDetailFactory _configurationDetailFactory;
 
-        public DeployToolController(IRestAPIClient client)
+        public DeployToolController(IRestAPIClient client, ConfigurationDetailFactory configurationDetailFactory)
         {
             _client = client;
+            _configurationDetailFactory = configurationDetailFactory;
         }
 
         public async Task<SessionDetails> StartSessionAsync(string region, string projectPath, CancellationToken cancellationToken)
@@ -161,10 +163,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             var response = await _client.GetConfigSettingsAsync(sessionId, cancellationToken)
                     .ConfigureAwait(false);
 
-            var detailFactory = new ConfigurationDetailFactory();
             if (response?.OptionSettings?.Any() ?? false)
             {
-                configSettings.AddRange(response.OptionSettings.Select(detailFactory.CreateFrom));
+                configSettings.AddRange(response.OptionSettings.Select(_configurationDetailFactory.CreateFrom));
             }
 
             return configSettings;

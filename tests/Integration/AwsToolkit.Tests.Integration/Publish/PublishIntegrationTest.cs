@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.Install;
+using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.ViewModels;
@@ -20,6 +21,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
     public abstract class PublishIntegrationTest : IAsyncLifetime
     {
         protected IDeployToolController DeployToolController;
+        protected ConfigurationDetailFactory ConfigurationDetailFactory;
         protected string SessionId;
 
         protected string StackName;
@@ -27,6 +29,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
         public async Task InitializeAsync()
         {
+            ConfigurationDetailFactory = new ConfigurationDetailFactory(null, null);
             DeployToolController = await CreateDeployToolController();
             await CreateSessionAndSetId();
         }
@@ -34,7 +37,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
         protected async Task<DeployToolController> CreateDeployToolController()
         {
             var restClient = await CreateRestClient();
-            return new DeployToolController(restClient);
+            return new DeployToolController(restClient, ConfigurationDetailFactory);
         }
 
         protected async Task<IRestAPIClient> CreateRestClient()
