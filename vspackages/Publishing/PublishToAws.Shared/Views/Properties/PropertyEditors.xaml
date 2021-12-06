@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
                     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit">
+                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit" 
+                    xmlns:properties="clr-namespace:Amazon.AWSToolkit.Publish.Views.Properties">
     <!-- 
         This file defines the "editors" used for each data type used by Publish configuration details. 
         Everything is tied together by PropertyTemplateSelector, which is used in the Configuration View to 
@@ -84,6 +85,10 @@
             Content="{Binding Name}" />
     </DataTemplate>
 
+    <DataTemplate x:Key="IamRoleEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:IamRolePropertyControl />
+    </DataTemplate>
+
     <models:PropertyTemplateSelector 
         x:Key="PropertyTemplateSelector" 
         BlankEditor="{StaticResource BlankEditor}"
@@ -91,6 +96,7 @@
         NumericEditor="{StaticResource NumericEditor}"
         BooleanEditor="{StaticResource BooleanEditor}"
         EnumEditor="{StaticResource EnumEditor}"
+        IamRoleEditor="{StaticResource IamRoleEditor}"
         />
 
 </ResourceDictionary>

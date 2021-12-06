@@ -31,7 +31,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         Task<IList<ConfigurationDetail>> GetConfigSettings(string sessionId, CancellationToken cancellationToken);
 
 
-        Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId, IList<ConfigurationDetail> configDetails,
+        Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId, IEnumerable<ConfigurationDetail> configDetails,
             CancellationToken token);
 
         Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,
@@ -172,7 +172,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         public async Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId,
-            IList<ConfigurationDetail> configDetails,
+            IEnumerable<ConfigurationDetail> configDetails,
             CancellationToken token)
         {
             var settings = await Task.WhenAll(configDetails.Select(async setting =>
@@ -188,8 +188,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 var children = await UpdateConfigSettingValuesAsync(sessionId, detail.Children, token)
                     .ConfigureAwait(false);
-                detail.Children.Clear();
-                children.ToList().ForEach(detail.Children.Add);
+                detail.ClearChildren();
+                children.ToList().ForEach(detail.AddChild);
             }
             else if (IsTypeHintSupported(detail) && !detail.HasValueMappings())
             {

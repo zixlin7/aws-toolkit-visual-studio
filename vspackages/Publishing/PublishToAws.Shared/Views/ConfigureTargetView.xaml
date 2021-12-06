@@ -19,6 +19,7 @@
             </ResourceDictionary.MergedDictionaries>
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <publishconverters:ConfigurationDetailsToVisibilityConverter x:Key="ConfigurationDetailsToVisibilityConverter" />
+            <publishconverters:ConfigurationDetailChildrenConverter x:Key="ConfigurationDetailChildrenConverter" />
 
             <Style x:Key="NoEditableSettingsStyle" TargetType="TextBlock">
                 <Style.Triggers>
@@ -129,7 +130,7 @@
                         Grid.Row="3" Grid.Column="0"
                         Grid.IsSharedSizeScope="True"
                         Margin="0 0 0 0"
-                        ItemsSource="{Binding Children}"
+                        ItemsSource="{Binding ., Converter={StaticResource ConfigurationDetailChildrenConverter}}"
                         ItemTemplate="{DynamicResource ConfigDetailDataTemplate}"
                         ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}" />
                 </Grid>

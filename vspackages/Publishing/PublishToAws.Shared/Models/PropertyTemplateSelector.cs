@@ -37,6 +37,11 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// </summary>
         public DataTemplate EnumEditor { get; set; }
 
+        /// <summary>
+        /// Represents the editor control for IAM Role properties
+        /// </summary>
+        public DataTemplate IamRoleEditor { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (!(item is ConfigurationDetail configurationDetail))
@@ -46,6 +51,11 @@ namespace Amazon.AWSToolkit.Publish.Models
 
             if (configurationDetail.Type == typeof(object))
             {
+                if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.IamRole)
+                {
+                    return IamRoleEditor;
+                }
+
                 // TODO : Add custom editors here based on configurationDetail.TypeHint
 
                 // Show nothing -- the child details will be rendered by default

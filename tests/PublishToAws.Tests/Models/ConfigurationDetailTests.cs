@@ -188,5 +188,20 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
 
             Assert.Equal(8, details.Count);
         }
+
+        [Fact]
+        public void AddChild()
+        {
+            _sut.AddChild(ConfigurationDetailBuilder.Create().WithSampleData().Build());
+            Assert.Equal(1, _sut.Children.Count);
+        }
+
+        [Fact]
+        public void ClearChildren()
+        {
+            _sut.AddChild(ConfigurationDetailBuilder.Create().WithSampleData().Build());
+            _sut.ClearChildren();
+            Assert.Empty(_sut.Children);
+        }
     }
 }

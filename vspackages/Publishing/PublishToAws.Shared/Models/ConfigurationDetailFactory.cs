@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Input;
 
+using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish.Util;
 
@@ -23,7 +25,7 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         public ConfigurationDetail CreateFrom(OptionSettingItemSummary itemSummary)
         {
-            var configurationDetail = Instantiate();
+            var configurationDetail = InstantiateFor(itemSummary);
 
             configurationDetail.Id = itemSummary.Id;
             configurationDetail.Name = itemSummary.Name;
@@ -53,14 +55,22 @@ namespace Amazon.AWSToolkit.Publish.Models
                         return child;
                     })
                     .ToList()
-                    .ForEach(configurationDetail.Children.Add);
+                    .ForEach(configurationDetail.AddChild);
             }
 
             return configurationDetail;
         }
 
-        private ConfigurationDetail Instantiate()
+        private ConfigurationDetail InstantiateFor(OptionSettingItemSummary itemSummary)
         {
+            if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.IamRole)
+            {
+                var detail = new IamRoleConfigurationDetail();
+                detail.SelectRoleArn = SelectRoleArnCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
+
+                return detail;
+            }
+
             return new ConfigurationDetail();
         }
 

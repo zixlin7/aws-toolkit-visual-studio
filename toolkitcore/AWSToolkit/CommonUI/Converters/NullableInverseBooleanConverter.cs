@@ -9,7 +9,7 @@ namespace Amazon.AWSToolkit.CommonUI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (targetType != typeof(bool?))
+            if (!typeof(bool?).IsAssignableFrom(targetType))
             {
                 throw new InvalidOperationException("The target must be a nullable boolean");
             }

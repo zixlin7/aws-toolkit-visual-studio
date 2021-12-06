@@ -94,7 +94,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
             {
                 var child = childBuilder.Build();
                 child.Parent = _detail;
-                _detail.Children.Add(child);
+                _detail.AddChild(child);
             }
 
             return _detail;

@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetViewCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\ConfigurationDetailChildrenConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ConfigurationDetailsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishResourcesToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishTargetsToVisibilityConverter.cs" />
@@ -45,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\IamRoleConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IPublishToAwsProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PropertyTemplateSelector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishApplicationContext.cs" />
@@ -54,6 +56,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishResource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishResourceTemplateSelector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\RepublishTarget.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SelectRoleArnCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SessionDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ShowPublishDialogStep.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SummaryGenerator.cs" />
@@ -84,6 +87,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\NewTargetDetailsView.xaml.cs">
       <DependentUpon>NewTargetDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\IamRolePropertyControl.xaml.cs">
+      <DependentUpon>IamRolePropertyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishApplicationView.xaml.cs">
       <DependentUpon>PublishApplicationView.xaml</DependentUpon>
@@ -133,6 +139,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\PropertyEditors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\IamRolePropertyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

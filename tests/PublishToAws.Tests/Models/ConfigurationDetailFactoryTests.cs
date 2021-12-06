@@ -190,5 +190,30 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
                 Assert.Equal(expectedProperties.AllowedValues.ToDictionary(x => x, x => x), valueMappings);
             }
         }
+
+        [Fact]
+        public void CreateFrom_IamRoleTypeHint()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithType("Object")
+                .WithTypeHint(ConfigurationDetail.TypeHints.IamRole)
+                .WithChild(OptionSettingItemSummaryBuilder.Create()
+                    .WithId("CreateNew")
+                    .WithType("Bool")
+                    .WithValue(true))
+                .WithChild(OptionSettingItemSummaryBuilder.Create()
+                    .WithId("RoleArn")
+                    .WithType("String")
+                    .WithValue("some-arn"))
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            var roleDetail = Assert.IsType<IamRoleConfigurationDetail>(configurationDetail);
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+            Assert.NotNull(roleDetail.SelectRoleArn);
+            Assert.Equal("some-arn", roleDetail.RoleArnDetail.Value);
+            Assert.True(roleDetail.CreateNewRole);
+        }
     }
 }

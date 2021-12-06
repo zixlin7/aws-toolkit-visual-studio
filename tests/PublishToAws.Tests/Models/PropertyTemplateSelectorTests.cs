@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Tests.Publishing.Util;
 
 using Xunit;
 
@@ -16,6 +17,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             BooleanEditor = new DataTemplate(),
             NumericEditor = new DataTemplate(),
             TextEditor = new DataTemplate(),
+            EnumEditor = new DataTemplate(),
+            IamRoleEditor = new DataTemplate(),
         };
 
         [Fact]
@@ -105,6 +108,17 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             };
 
             Assert.Equal(_sut.TextEditor, _sut.SelectTemplate(detail, null));
+        }
+
+        [Fact]
+        public void SelectTemplate_IamRoleHintType()
+        {
+            var detail = ConfigurationDetailBuilder.Create()
+                .WithType(typeof(object))
+                .WithTypeHint(ConfigurationDetail.TypeHints.IamRole)
+                .Build();
+
+            Assert.Equal(_sut.IamRoleEditor, _sut.SelectTemplate(detail, null));
         }
     }
 }

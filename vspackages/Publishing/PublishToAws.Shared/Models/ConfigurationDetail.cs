@@ -15,6 +15,10 @@ namespace Amazon.AWSToolkit.Publish.Models
     /// </summary>
     public class ConfigurationDetail : BaseModel, INotifyDataErrorInfo
     {
+        public static class TypeHints
+        {
+            public const string IamRole = "IAMRole";
+        }
 
         private string _id;
         private string _name;
@@ -196,7 +200,17 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// Configuration details that belong to this instance.
         /// Child details may also contain children, with no depth limit.
         /// </summary>
-        public IList<ConfigurationDetail> Children => _children;
+        public IReadOnlyList<ConfigurationDetail> Children => _children;
+
+        public virtual void ClearChildren()
+        {
+            _children.Clear();
+        }
+
+        public virtual void AddChild(ConfigurationDetail child)
+        {
+            _children.Add(child);
+        }
 
         public IEnumerable GetErrors(string propertyName)
         {
