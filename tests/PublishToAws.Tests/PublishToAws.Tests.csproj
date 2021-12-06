@@ -63,7 +63,6 @@
     <Compile Include="Commands\StackViewerCommandTests.cs" />
     <Compile Include="Commands\StartOverCommandTests.cs" />
     <Compile Include="Commands\TargetCommandTests.cs" />
-    <Compile Include="Converters\ConfigurationDetailChildrenConverterTests.cs" />
     <Compile Include="Converters\ConfigurationDetailsToVisibilityConverterTests.cs" />
     <Compile Include="Converters\PublishResourcesToVisibilityConverterTests.cs" />
     <Compile Include="Converters\TargetsToVisibilityConverterTests.cs" />

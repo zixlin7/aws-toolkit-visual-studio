@@ -20,7 +20,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetViewCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\ConfigurationDetailChildrenConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ConfigurationDetailsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishResourcesToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishTargetsToVisibilityConverter.cs" />

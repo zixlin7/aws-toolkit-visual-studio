@@ -13,9 +13,9 @@ namespace Amazon.AWSToolkit.Publish.Models
     public class PropertyTemplateSelector : DataTemplateSelector
     {
         /// <summary>
-        /// The editor control that renders nothing in the space where an editor would otherwise be
+        /// The editor control that renders nothing in the space where an editor would otherwise be, then renders any children it has
         /// </summary>
-        public DataTemplate BlankEditor { get; set; }
+        public DataTemplate ParentEditor { get; set; }
 
         /// <summary>
         /// Represents the editor control for a numeric value
@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                 // TODO : Add custom editors here based on configurationDetail.TypeHint
 
                 // Show nothing -- the child details will be rendered by default
-                return BlankEditor;
+                return ParentEditor;
             }
 
             if (configurationDetail.ValueMappings?.Any() ?? false)

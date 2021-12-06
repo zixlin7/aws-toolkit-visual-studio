@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Amazon.AWSToolkit.Publish.Views"
-             xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:publishconverters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
@@ -19,7 +17,6 @@
             </ResourceDictionary.MergedDictionaries>
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <publishconverters:ConfigurationDetailsToVisibilityConverter x:Key="ConfigurationDetailsToVisibilityConverter" />
-            <publishconverters:ConfigurationDetailChildrenConverter x:Key="ConfigurationDetailChildrenConverter" />
 
             <Style x:Key="NoEditableSettingsStyle" TargetType="TextBlock">
                 <Style.Triggers>
@@ -58,88 +55,6 @@
                     <ItemsPresenter />
                 </StackPanel>
             </ControlTemplate>
-
-            <DataTemplate x:Key="ConfigDetailDataTemplate" DataType="{x:Type models:ConfigurationDetail}">
-                <!-- UI for a Configuration Detail and its children -->
-                <Grid
-                    Margin="0 12 0 6">
-                    <Grid.Style>
-                        <Style TargetType="{x:Type Grid}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsChecked, ElementName=ConfigCheckbox}" Value="False">
-                                    <Setter Property="Visibility" Value="{Binding Advanced, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Visible}" Value="false">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ReadOnly}" Value="true">
-                                    <Setter Property="IsEnabled" Value="False" />
-                                </DataTrigger>                                
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <Grid.RowDefinitions>
-                        <!-- Detail Name -->
-                        <RowDefinition Height="Auto" />
-                        <!-- Description -->
-                        <RowDefinition Height="Auto" />
-                        <!-- Value/Control -->
-                        <RowDefinition Height="Auto" />
-                        <!-- Child Details -->
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock 
-                        Grid.Row="0" Grid.Column="0" 
-                        VerticalAlignment="Center"
-                        FontWeight="Bold"
-                        Text="{Binding FullDisplayName}" />
-
-                    <TextBlock
-                        Grid.Row="1" 
-                        Grid.Column="0"
-                        Margin="0 6 10 3" 
-                        TextWrapping="WrapWithOverflow"
-                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
-                        Text="{Binding Description}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Style.Triggers>
-                                    <!-- If there is no Description, don't take up the vertical space with a blank -->
-                                    <DataTrigger Binding="{Binding Description}" Value="">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Description}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <ContentControl 
-                        Grid.Row="2" Grid.Column="0"
-                        Margin="0 6 10 3" 
-                        HorizontalContentAlignment="Stretch"
-                        Content="{Binding .}" ContentTemplateSelector="{DynamicResource PropertyTemplateSelector}" />
-
-                    <ItemsControl
-                        Grid.Row="3" Grid.Column="0"
-                        Grid.IsSharedSizeScope="True"
-                        Margin="0 0 0 0"
-                        ItemsSource="{Binding ., Converter={StaticResource ConfigurationDetailChildrenConverter}}"
-                        ItemTemplate="{DynamicResource ConfigDetailDataTemplate}"
-                        ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}" />
-                </Grid>
-            </DataTemplate>
-
-            <Style x:Key="ConfigDetailItemStyle">
-                <!-- This line below gives the property the full width of the parent control to work with -->
-                <Setter Property="Control.HorizontalContentAlignment" Value="Stretch" />
-            </Style>
 
         </ResourceDictionary>
     </UserControl.Resources>

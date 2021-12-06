@@ -13,7 +13,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
     {
         private readonly PropertyTemplateSelector _sut = new PropertyTemplateSelector()
         {
-            BlankEditor = new DataTemplate(),
+            ParentEditor = new DataTemplate(),
             BooleanEditor = new DataTemplate(),
             NumericEditor = new DataTemplate(),
             TextEditor = new DataTemplate(),
@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         {
             var detail = new ConfigurationDetail() {Type = typeof(object)};
 
-            Assert.Equal(_sut.BlankEditor, _sut.SelectTemplate(detail, null));
+            Assert.Equal(_sut.ParentEditor, _sut.SelectTemplate(detail, null));
         }
 
         [Theory]
