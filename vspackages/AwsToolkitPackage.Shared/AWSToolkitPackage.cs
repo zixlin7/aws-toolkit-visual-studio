@@ -630,15 +630,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     {
                         // Event listener uses IAWSLambda, requires plugins to be loaded first
                         InitializeLambdaTesterEventListener();
-                        ToolkitFactory.Instance?.TelemetryLogger.RecordSessionStart(new SessionStart());
-
-                        var startupMs = (DateTime.Now - _startInitializeOn).TotalMilliseconds;
-
-                        ToolkitFactory.Instance?.TelemetryLogger.RecordToolkitInit(new ToolkitInit()
-                        {
-                            Duration = startupMs
-                        });
-
+                        RecordToolkitInitializedMetrics();
                         _toolkitInitialized = true;
                         ShowFirstRun();
                     });
@@ -649,6 +641,19 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        private void RecordToolkitInitializedMetrics()
+        {
+            ToolkitFactory.Instance?.TelemetryLogger.RecordSessionStart(new SessionStart());
+
+            var startupMs = (DateTime.Now - _startInitializeOn).TotalMilliseconds;
+
+            ToolkitFactory.Instance?.TelemetryLogger.RecordToolkitInit(new ToolkitInit()
+            {
+                Result = Result.Succeeded,
+                Duration = startupMs
+            });
         }
 
         private void AwsConnectionManager_ConnectionStateChanged(object sender, ConnectionStateChangeArgs e)
