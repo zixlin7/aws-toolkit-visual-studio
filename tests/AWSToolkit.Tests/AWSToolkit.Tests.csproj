@@ -64,6 +64,7 @@
     <Compile Include="CommonUI\CloudFormationTemplateWrapperTests.cs" />
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
+    <Compile Include="CommonUI\VpcSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\IamRoleSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
     <Compile Include="CommonUI\InverseVisibilityConverterTests.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Credentials\Utils\CredentialTypeExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertyMappingTests.cs" />
+    <Compile Include="Ec2\VpcEntityTests.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsDeployTestFixture.cs" />
@@ -194,6 +196,10 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
       <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
       <Name>AWSToolkit.EC2.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2\AWSToolkit.EC2.csproj">
+      <Project>{BD907681-AFE8-4008-97CD-11B138FDDCA7}</Project>
+      <Name>AWSToolkit.EC2</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
       <Project>{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}</Project>

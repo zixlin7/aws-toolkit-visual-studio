@@ -12,6 +12,8 @@ namespace Amazon.AWSToolkit.EC2
     {
         public override string PluginName => "EC2";
 
+        private IVpcRepository _vpcRepository;
+
         public override void RegisterMetaNodes()
         {
             var rootEC2Node = registerEC2MetaNodes();
@@ -40,7 +42,19 @@ namespace Amazon.AWSToolkit.EC2
         public override object QueryPluginService(Type serviceType)
         {
             if (serviceType == typeof(IAWSEC2))
+            {
                 return this as IAWSEC2;
+            }
+
+            if (serviceType == typeof(IVpcRepository))
+            {
+                if (_vpcRepository == null)
+                {
+                    _vpcRepository = new VpcRepository(ToolkitContext);
+                } 
+
+                return _vpcRepository;
+            }
 
             return null;
         }

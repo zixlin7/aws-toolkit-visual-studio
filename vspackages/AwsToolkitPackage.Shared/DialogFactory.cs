@@ -23,5 +23,10 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             return new IamRoleSelectionDialog(_toolkitContext, _joinableTaskFactory);
         }
+
+        public IVpcSelectionDialog CreateVpcSelectionDialog()
+        {
+            return new VpcSelectionDialog(_toolkitContext, _joinableTaskFactory);
+        }
     }
 }

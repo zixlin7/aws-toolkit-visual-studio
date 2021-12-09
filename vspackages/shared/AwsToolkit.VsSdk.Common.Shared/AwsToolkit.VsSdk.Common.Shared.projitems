@@ -13,12 +13,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\IamRoleSelectionDialog.xaml.cs">
       <DependentUpon>IamRoleSelectionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\VpcSelectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\IamRoleSelectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\OkCancelDialogWindowHost.xaml.cs">
       <DependentUpon>OkCancelDialogWindowHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\OkDialogWindowHost.xaml.cs">
       <DependentUpon>OkDialogWindowHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\VpcSelectionDialog.xaml.cs">
+      <DependentUpon>VpcSelectionDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
@@ -41,8 +45,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)CommonUI\Models\" />
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\VpcSelectionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

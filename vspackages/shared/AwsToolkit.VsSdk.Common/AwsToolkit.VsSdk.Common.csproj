@@ -69,6 +69,10 @@
       <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
       <Name>AWSToolkit.Util</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
+      <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
+      <Name>AWSToolkit.EC2.Interface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj">
       <Project>{49C00D37-5980-495F-80C6-43C5192C4A87}</Project>
       <Name>AWSToolkit.IdentityManagement.Interface</Name>
