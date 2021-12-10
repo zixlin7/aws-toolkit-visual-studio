@@ -38,7 +38,7 @@
     -->
     <VsixDisplayName Condition="'$(Configuration)' == 'Release'">AWS Toolkit for Visual Studio 2017 and 2019</VsixDisplayName>
     <VsixDisplayName Condition="'$(Configuration)' == 'Debug'">AWSToolkitDev</VsixDisplayName>
-    <VsixDisplayName2022 Condition="'$(Configuration)' == 'Release'">AWS Toolkit for Visual Studio 2022 (Preview)</VsixDisplayName2022>
+    <VsixDisplayName2022 Condition="'$(Configuration)' == 'Release'">AWS Toolkit for Visual Studio 2022</VsixDisplayName2022>
     <VsixDisplayName2022 Condition="'$(Configuration)' == 'Debug'">AWSToolkitDev 2022</VsixDisplayName2022>
   </PropertyGroup>
 
