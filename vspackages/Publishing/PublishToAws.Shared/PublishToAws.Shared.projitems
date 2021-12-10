@@ -43,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IamRoleConfigurationDetail.cs" />
@@ -194,8 +195,5 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Models\Configuration\" />
   </ItemGroup>
 </Project>

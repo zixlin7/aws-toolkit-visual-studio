@@ -4,6 +4,12 @@ namespace Amazon.AWSToolkit.Publish.Models
 {
     public class IamRoleConfigurationDetail : ConfigurationDetail
     {
+        public static class ChildDetailIds
+        {
+            public const string CreateNew = "CreateNew";
+            public const string RoleArn = "RoleArn";
+        }
+
         private ConfigurationDetail _createNewRole;
         private ConfigurationDetail _roleArn;
 
@@ -34,25 +40,34 @@ namespace Amazon.AWSToolkit.Publish.Models
             }
         }
 
-        public override void ClearChildren()
+        protected override void RemoveChild(ConfigurationDetail child)
         {
-            RoleArnDetail = null;
-            _createNewRole = null;
-            base.ClearChildren();
+            switch (child.Id)
+            {
+                case ChildDetailIds.RoleArn:
+                    RoleArnDetail = null;
+                    break;
+                case ChildDetailIds.CreateNew:
+                    _createNewRole = null;
+                    break;
+            }
+
+            base.RemoveChild(child);
         }
 
         public override void AddChild(ConfigurationDetail child)
         {
             base.AddChild(child);
 
-            if (child.Id == "RoleArn")
+            switch (child.Id)
             {
-                RoleArnDetail = child;
-            }
-            else if (child.Id == "CreateNew")
-            {
-                _createNewRole = child;
-                NotifyPropertyChanged(nameof(CreateNewRole));
+                case ChildDetailIds.RoleArn:
+                    RoleArnDetail = child;
+                    break;
+                case ChildDetailIds.CreateNew:
+                    _createNewRole = child;
+                    NotifyPropertyChanged(nameof(CreateNewRole));
+                    break;
             }
         }
     }

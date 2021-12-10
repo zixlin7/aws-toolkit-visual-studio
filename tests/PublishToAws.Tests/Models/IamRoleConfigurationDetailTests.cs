@@ -14,11 +14,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         public IamRoleConfigurationDetailTests()
         {
             _sampleRoleArnDetail = ConfigurationDetailBuilder.Create()
-                .WithId("RoleArn")
+                .WithId(IamRoleConfigurationDetail.ChildDetailIds.RoleArn)
                 .Build();
 
             _sampleCreateNewDetail = ConfigurationDetailBuilder.Create()
-                .WithId("CreateNew")
+                .WithId(IamRoleConfigurationDetail.ChildDetailIds.CreateNew)
                 .WithValue(true)
                 .Build();
 
@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         }
 
         [Fact]
-        public void ClearChildren()
+        public void RemoveChild()
         {
             _sut.AddChild(_sampleRoleArnDetail);
 
