@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -468,14 +469,12 @@ namespace Amazon.AWSToolkit.Publish.Views
                 using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
                 {
                     await TaskScheduler.Default;
-                    var validationError = await _viewModel
-                        .SetTargetConfiguration(configurationDetail, tokenSource.Token)
+                    var validationResult = await _viewModel.SetTargetConfigurationAsync(configurationDetail, tokenSource.Token)
                         .ConfigureAwait(false);
 
-                    if (!string.IsNullOrEmpty(validationError))
+                    if (validationResult.HasErrors())
                     {
-                        // Retain the current config detail values, and show the error message in the view
-                        configurationDetail.ValidationMessage = validationError;
+                        configurationDetail.ApplyValidationErrors(validationResult);
                     }
                     else
                     {

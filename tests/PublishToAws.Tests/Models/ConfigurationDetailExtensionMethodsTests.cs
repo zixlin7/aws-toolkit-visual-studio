@@ -2,6 +2,7 @@
 using System.Linq;
 
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
 
 using Xunit;
@@ -163,6 +164,36 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.Contains("config1:",result);
             Assert.Contains("child1: val1", result);
             Assert.DoesNotContain("child2:", result);
+        }
+
+        [Fact]
+        public void ApplyValidationErrors()
+        {
+            var detail = ConfigurationDetailBuilder.Create()
+                .WithId("parent")
+                .WithChild(ConfigurationDetailBuilder.Create().WithId("child1")
+                    .WithChild(ConfigurationDetailBuilder.Create().WithId("grandchild1")))
+                .WithChild(ConfigurationDetailBuilder.Create().WithId("child2"))
+                .WithChild(ConfigurationDetailBuilder.Create().WithId("child3"))
+                .Build();
+
+            var validationResult = new ValidationResult();
+            validationResult.AddError("parent", "parent error");
+            validationResult.AddError("parent.child2", "child 2 error");
+            validationResult.AddError("parent.child1.grandchild1", "grandchild error");
+
+            detail.ApplyValidationErrors(validationResult);
+
+            Assert.Equal(validationResult.GetError("parent"), detail.ValidationMessage);
+            Assert.Equal(validationResult.GetError("parent.child2"), GetChildById(detail, "child2").ValidationMessage);
+            Assert.Equal(validationResult.GetError("parent.child1.grandchild1"), GetChildById(detail, "grandchild1").ValidationMessage);
+            Assert.Null(GetChildById(detail, "child1").ValidationMessage);
+            Assert.Null(GetChildById(detail, "child3").ValidationMessage);
+        }
+
+        private ConfigurationDetail GetChildById(ConfigurationDetail detail, string id)
+        {
+            return detail.GetSelfAndDescendants().Single(d => d.Id == id);
         }
 
         private string CreatePublishExpected()

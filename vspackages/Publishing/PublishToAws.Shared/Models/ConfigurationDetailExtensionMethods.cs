@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 
 namespace Amazon.AWSToolkit.Publish.Models
 {
@@ -36,6 +36,14 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             var generator = new SummaryGenerator(isRepublish);
             return generator.GenerateSummary(details, 0);
+        }
+
+        public static void ApplyValidationErrors(this ConfigurationDetail detail, ValidationResult validationResult)
+        {
+            detail.GetSelfAndDescendants()
+                .Where(d => validationResult.HasError(d.GetLeafId()))
+                .ToList()
+                .ForEach(d => d.ValidationMessage = validationResult.GetError(d.GetLeafId()));
         }
     }
 }

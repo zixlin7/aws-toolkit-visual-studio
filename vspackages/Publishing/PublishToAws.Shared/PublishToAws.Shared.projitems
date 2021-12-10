@@ -60,6 +60,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ShowPublishDialogStep.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SummaryGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\TargetSystemCapability.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\ValidationResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NuGet\NoVersionFoundException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NuGet\NuGetRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Package\InitializePublishToAwsPackage.cs" />
@@ -193,5 +194,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Models\Configuration\" />
   </ItemGroup>
 </Project>

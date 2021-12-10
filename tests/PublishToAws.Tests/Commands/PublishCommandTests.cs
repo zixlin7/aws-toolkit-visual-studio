@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
@@ -34,7 +35,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public async Task ExecuteCommand()
         {
             SetupInitialPublish();
-            ApplyConfigSettingsReturns(new ApplyConfigSettingsOutput());
+            SetupApplyConfigSettingsAsync(new ValidationResult());
 
             await _sut.ExecuteAsync(null);
 
@@ -45,11 +46,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         [StaFact]
         public async Task ExecuteCommand_ValidationFails()
         {
-            var settingsOutput = new ApplyConfigSettingsOutput()
-            {
-                FailedConfigUpdates = new Dictionary<string, string> { { "id", "error" } }
-            };
-            ApplyConfigSettingsReturns(settingsOutput);
+            var validationResult = new ValidationResult();
+            validationResult.AddError("id", "error");
+            SetupApplyConfigSettingsAsync(validationResult);
 
             await _sut.ExecuteAsync(null);
 
@@ -62,7 +61,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public async Task ExecuteCommand_PublishFails()
         {
             SetupStartDeploymentToThrow();
-            ApplyConfigSettingsReturns(new ApplyConfigSettingsOutput());
+            SetupApplyConfigSettingsAsync(new ValidationResult());
 
             await _sut.ExecuteAsync(null);
 
@@ -82,10 +81,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             Assert.False(_sut.CanExecute(null));
         }
 
-        private void ApplyConfigSettingsReturns(ApplyConfigSettingsOutput settingsOutput)
+        private void SetupApplyConfigSettingsAsync(ValidationResult validationResult)
         {
-            _commandFixture.DeployToolController.Setup(mock => mock.ApplyConfigSettings(It.IsAny<string>(),
-                It.IsAny<IList<ConfigurationDetail>>(), It.IsAny<CancellationToken>())).ReturnsAsync(settingsOutput);
+            _commandFixture.DeployToolController.Setup(mock => mock.ApplyConfigSettingsAsync(It.IsAny<string>(),
+                It.IsAny<IList<ConfigurationDetail>>(), It.IsAny<CancellationToken>())).ReturnsAsync(validationResult);
         }
 
         private void SetupStartDeploymentToThrow()

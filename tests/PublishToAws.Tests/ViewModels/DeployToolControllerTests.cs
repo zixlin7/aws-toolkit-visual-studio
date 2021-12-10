@@ -501,11 +501,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             };
 
             // act.
-            var response = await _deployToolController.ApplyConfigSettings(_sessionId, configurationDetails, _cancelToken);
+            var validation = await _deployToolController.ApplyConfigSettingsAsync(_sessionId, configurationDetails, _cancelToken);
 
             // assert.
             Assert.Equal(expectedConfiguration, actualInput.UpdatedSettings);
-            Assert.Null(response.FailedConfigUpdates);
+            Assert.False(validation.HasErrors());
         }
 
         [Fact]
@@ -514,10 +514,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             var configurationDetail = _configurationDetailFactory.CreateFrom(_optionSettingItemSummaries[0]);
             SetupApplyConfigSettings(new ApplyConfigSettingsOutput());
 
-            var response = await _deployToolController.ApplyConfigSettings(_sessionId, configurationDetail, _cancelToken);
+            var validation = await _deployToolController.ApplyConfigSettingsAsync(_sessionId, configurationDetail, _cancelToken);
 
             AssertApplyConfigSettingsCalled(1);
-            Assert.Null(response.FailedConfigUpdates);
+            Assert.False(validation.HasErrors());
         }
 
         [Fact]
@@ -526,7 +526,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             var configurationDetail = _configurationDetailFactory.CreateFrom(_optionSettingItemSummaries[0]);
             await Assert.ThrowsAsync<InvalidSessionIdException>(async () =>
             {
-                await _deployToolController.ApplyConfigSettings("", configurationDetail, _cancelToken);
+                await _deployToolController.ApplyConfigSettingsAsync("", configurationDetail, _cancelToken);
             });
 
             AssertApplyConfigSettingsCalled(0);
@@ -545,13 +545,13 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             SetupApplyConfigSettings(setOptionSettingsOutput);
 
-            var response = await _deployToolController.ApplyConfigSettings(_sessionId, configurationDetail, _cancelToken);
+            var validation = await _deployToolController.ApplyConfigSettingsAsync(_sessionId, configurationDetail, _cancelToken);
 
             AssertApplyConfigSettingsCalled(1);
-            Assert.NotNull(response.FailedConfigUpdates);
-            Assert.Single(response.FailedConfigUpdates);
-            Assert.True(response.FailedConfigUpdates.ContainsKey(configurationDetail.Id));
-            Assert.Equal("unexpected error", response.FailedConfigUpdates[configurationDetail.Id]);
+            Assert.True(validation.HasErrors());
+            Assert.Single(validation.GetErrantDetailIds());
+            Assert.True(validation.HasError(configurationDetail.Id));
+            Assert.Equal("unexpected error", validation.GetError(configurationDetail.Id));
         }
 
         [Fact]

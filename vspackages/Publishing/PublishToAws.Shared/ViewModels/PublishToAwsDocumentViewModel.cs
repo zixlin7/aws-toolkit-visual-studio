@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -805,28 +806,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// A selected target needs to be defined prior to making this call.
         /// The function returns a string representing the error in setting a value (if any).
         /// </summary>
-        public async Task<string> SetTargetConfiguration(ConfigurationDetail configurationDetail, CancellationToken cancellationToken)
+        public async Task<ValidationResult> SetTargetConfigurationAsync(ConfigurationDetail configurationDetail, CancellationToken cancellationToken)
         {
-            try
-            {
-                ThrowIfSessionIsNotCreated();
+            ThrowIfSessionIsNotCreated();
 
-                var response =
-                    await DeployToolController.ApplyConfigSettings(SessionId, configurationDetail,
-                        cancellationToken);
-
-                var configurationId = configurationDetail.GetLeafId();
-                if (response.FailedConfigUpdates == null || !response.FailedConfigUpdates.ContainsKey(configurationId))
-                {
-                    return string.Empty;
-                }
-                return response.FailedConfigUpdates[configurationId];
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Failed to set/update configuration detail of type {configurationDetail.Name}.", e);
-                return e.Message;
-            }
+            return await DeployToolController.ApplyConfigSettingsAsync(SessionId, configurationDetail, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         public async Task ClearPublishedResources(CancellationToken cancellationToken)
@@ -869,9 +854,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                var validationErrorDictionary = await SetTargetConfigurations(CancellationToken.None).ConfigureAwait(false);
+                var validation = await SetTargetConfigurationsAsync(CancellationToken.None).ConfigureAwait(false);
 
-                if (validationErrorDictionary == null || !validationErrorDictionary.Any())
+                if (!validation.HasErrors())
                 {
                     return true;
                 }
@@ -881,15 +866,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 var missingConfigErrors = new Dictionary<string, string>();
 
-                foreach (var leafIdToError in validationErrorDictionary)
+                foreach (var leafId in validation.GetErrantDetailIds())
                 {
-                    if (detailsByLeafId.TryGetValue(leafIdToError.Key, out var detail))
+                    if (detailsByLeafId.TryGetValue(leafId, out var detail))
                     {
-                        detail.ValidationMessage = leafIdToError.Value;
+                        detail.ValidationMessage = validation.GetError(leafId);
                     }
                     else
                     {
-                        missingConfigErrors.Add(leafIdToError.Key, leafIdToError.Value);
+                        missingConfigErrors.Add(leafId, validation.GetError(leafId));
                     }
                 }
 
@@ -1086,14 +1071,13 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// A selected target needs to be defined prior to making this call.
         /// The function returns a dictionary of configIds and corresponding string representing the error in setting a value for that configId (if any).
         /// </summary>
-        private async Task<IDictionary<string, string>> SetTargetConfigurations(CancellationToken cancellationToken)
+        private async Task<ValidationResult> SetTargetConfigurationsAsync(CancellationToken cancellationToken)
         {
             try
             {
                 ThrowIfSessionIsNotCreated();
 
-                var response = await DeployToolController.ApplyConfigSettings(SessionId, ConfigurationDetails, cancellationToken);
-                return response?.FailedConfigUpdates;
+                return await DeployToolController.ApplyConfigSettingsAsync(SessionId, ConfigurationDetails, cancellationToken);
             }
             catch (Exception e)
             {
