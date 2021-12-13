@@ -120,5 +120,16 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
 
             Assert.Equal(_sut.IamRoleEditor, _sut.SelectTemplate(detail, null));
         }
+
+        [Fact]
+        public void SelectTemplate_VpcHintType()
+        {
+            var detail = ConfigurationDetailBuilder.Create()
+                .WithType(typeof(object))
+                .WithTypeHint(ConfigurationDetail.TypeHints.Vpc)
+                .Build();
+
+            Assert.Equal(_sut.VpcEditor, _sut.SelectTemplate(detail, null));
+        }
     }
 }

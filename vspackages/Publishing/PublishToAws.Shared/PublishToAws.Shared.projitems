@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ReenableOldPublishCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectVpcCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StackViewerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
@@ -46,6 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IamRoleConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IPublishToAwsProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PropertyTemplateSelector.cs" />
@@ -91,6 +93,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\IamRolePropertyControl.xaml.cs">
       <DependentUpon>IamRolePropertyControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\VpcPropertyControl.xaml.cs">
+      <DependentUpon>VpcPropertyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishApplicationView.xaml.cs">
       <DependentUpon>PublishApplicationView.xaml</DependentUpon>
@@ -146,6 +151,10 @@
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\IamRolePropertyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\VpcPropertyControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishApplicationView.xaml">
       <SubType>Designer</SubType>

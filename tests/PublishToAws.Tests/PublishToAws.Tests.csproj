@@ -72,6 +72,7 @@
     <Compile Include="Models\ConfigurationDetailExtensionMethodsTests.cs" />
     <Compile Include="Models\ConfigurationDetailFactoryTests.cs" />
     <Compile Include="Models\DisplayedResourceSummaryExtensionMethodTests.cs" />
+    <Compile Include="Models\VpcConfigurationDetailTests.cs" />
     <Compile Include="Models\IamRoleConfigurationDetailTests.cs" />
     <Compile Include="Models\PublishDialogStepProcessorTests.cs" />
     <Compile Include="Models\PublishResourceTemplateSelectorTests.cs" />

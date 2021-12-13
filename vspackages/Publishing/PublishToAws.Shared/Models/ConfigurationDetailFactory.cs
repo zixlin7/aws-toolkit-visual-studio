@@ -6,6 +6,7 @@ using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Util;
 
 using AWS.Deploy.ServerMode.Client;
@@ -67,6 +68,14 @@ namespace Amazon.AWSToolkit.Publish.Models
             {
                 var detail = new IamRoleConfigurationDetail();
                 detail.SelectRoleArn = SelectRoleArnCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
+
+                return detail;
+            }
+
+            if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.Vpc)
+            {
+                var detail = new VpcConfigurationDetail();
+                detail.SelectVpc = SelectVpcCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
 
                 return detail;
             }

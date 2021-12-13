@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.Publish.Views.Properties.VpcPropertyControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit" 
+             xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit" 
+             themes:ToolkitThemes.UseToolkitTheme="True"
+             mc:Ignorable="d"
+             d:DesignHeight="150" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source=".\PropertyEditors.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:EqualityBooleanConverter x:Key="EqualityBooleanConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel
+        Orientation="Vertical"
+        HorizontalAlignment="Stretch"
+        >
+        <RadioButton 
+            IsChecked="{Binding VpcOption, Converter={StaticResource EqualityBooleanConverter}, ConverterParameter={x:Static models:VpcOption.Default}}"
+            Content="Default VPC" />
+        <RadioButton 
+            Margin="0 9 0 0"
+            IsChecked="{Binding VpcOption, Converter={StaticResource EqualityBooleanConverter}, ConverterParameter={x:Static models:VpcOption.New}}"
+            Content="New VPC" />
+        <RadioButton 
+            Margin="0 9 0 0"
+            IsChecked="{Binding VpcOption, Converter={StaticResource EqualityBooleanConverter}, ConverterParameter={x:Static models:VpcOption.Existing}}"
+            Content="Existing VPC" />
+        <DockPanel 
+            Margin="18 9 0 0"
+            LastChildFill="True">
+            <Button
+                DockPanel.Dock="Right"
+                Margin="6 0 0 0"
+                Content="Browse" 
+                ToolTip="Select a VPC from a list"
+                Command="{Binding SelectVpc}"
+                />
+            <ContentControl 
+                IsEnabled="{Binding VpcOption, Converter={StaticResource EqualityBooleanConverter}, ConverterParameter={x:Static models:VpcOption.Existing}}"
+                Content="{Binding VpcIdDetail}"
+                ContentTemplate="{StaticResource TextEditor}"
+                />
+        </DockPanel>
+    </StackPanel>
+</UserControl>

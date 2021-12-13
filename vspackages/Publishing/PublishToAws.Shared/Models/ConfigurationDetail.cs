@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -14,11 +15,13 @@ namespace Amazon.AWSToolkit.Publish.Models
     /// This is the model that translates from the CLI server's API to what is shown in the UI
     /// (see <see cref="ConfigurationDetailPropertyDescriptor"/> for the UI related property descriptors).
     /// </summary>
+    [DebuggerDisplay("{Id} | {Value}")]
     public class ConfigurationDetail : BaseModel, INotifyDataErrorInfo
     {
         public static class TypeHints
         {
             public const string IamRole = "IAMRole";
+            public const string Vpc = "Vpc";
         }
 
         private bool _suspendDetailChangeEvents = false;

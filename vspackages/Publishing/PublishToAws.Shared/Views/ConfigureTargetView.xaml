@@ -90,7 +90,7 @@
             VerticalScrollBarVisibility="Auto">
             <ItemsControl
                 Grid.IsSharedSizeScope="True"
-                Margin="0 9 0 0"
+                Margin="0 9 0 50"
                 ItemsSource="{Binding ConfigurationDetails}"
                 ItemTemplate="{DynamicResource ConfigDetailDataTemplate}"
                 ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}"

@@ -18,7 +18,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
 {
     public class ConfigurationDetailFactoryTests
     {
-        static private Dictionary<string, Type> TypeMappings = new Dictionary<string, Type>()
+        private static readonly Dictionary<string, Type> TypeMappings = new Dictionary<string, Type>()
         {
             {"String", typeof(string)},
             {"Int", typeof(int)},
@@ -214,6 +214,35 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.NotNull(roleDetail.SelectRoleArn);
             Assert.Equal("some-arn", roleDetail.RoleArnDetail.Value);
             Assert.True(roleDetail.CreateNewRole);
+        }
+
+        [Fact]
+        public void CreateFrom_VpcTypeHint()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithType("Object")
+                .WithTypeHint(ConfigurationDetail.TypeHints.Vpc)
+                .WithChild(OptionSettingItemSummaryBuilder.Create()
+                    .WithId(VpcConfigurationDetail.ChildDetailIds.CreateNew)
+                    .WithType("Bool")
+                    .WithValue(false))
+                .WithChild(OptionSettingItemSummaryBuilder.Create()
+                    .WithId(VpcConfigurationDetail.ChildDetailIds.IsDefault)
+                    .WithType("Bool")
+                    .WithValue(false))
+                .WithChild(OptionSettingItemSummaryBuilder.Create()
+                    .WithId(VpcConfigurationDetail.ChildDetailIds.VpcId)
+                    .WithType("String")
+                    .WithValue("vpc-1234abcd"))
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            var vpcDetail = Assert.IsType<VpcConfigurationDetail>(configurationDetail);
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+            Assert.NotNull(vpcDetail.VpcIdDetail);
+            Assert.Equal("vpc-1234abcd", vpcDetail.VpcIdDetail.Value);
+            Assert.Equal(VpcOption.Existing, vpcDetail.VpcOption);
         }
     }
 }

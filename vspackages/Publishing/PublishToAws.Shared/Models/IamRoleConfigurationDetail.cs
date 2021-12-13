@@ -1,7 +1,9 @@
-﻿using System.Windows.Input;
+﻿using System.Diagnostics;
+using System.Windows.Input;
 
 namespace Amazon.AWSToolkit.Publish.Models
 {
+    [DebuggerDisplay("Role: {Id} | Create: {CreateNewRole}")]
     public class IamRoleConfigurationDetail : ConfigurationDetail
     {
         public static class ChildDetailIds

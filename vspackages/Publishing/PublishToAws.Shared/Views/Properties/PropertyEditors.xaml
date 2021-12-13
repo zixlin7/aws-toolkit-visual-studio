@@ -172,6 +172,10 @@
         <properties:IamRolePropertyControl />
     </DataTemplate>
 
+    <DataTemplate x:Key="VpcEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:VpcPropertyControl />
+    </DataTemplate>
+
     <models:PropertyTemplateSelector 
         x:Key="PropertyTemplateSelector" 
         ParentEditor="{StaticResource ParentEditor}"
@@ -180,6 +184,7 @@
         BooleanEditor="{StaticResource BooleanEditor}"
         EnumEditor="{StaticResource EnumEditor}"
         IamRoleEditor="{StaticResource IamRoleEditor}"
+        VpcEditor="{StaticResource VpcEditor}"
         />
 
 </ResourceDictionary>

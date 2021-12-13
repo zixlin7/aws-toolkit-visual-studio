@@ -42,6 +42,8 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// </summary>
         public DataTemplate IamRoleEditor { get; set; }
 
+        public DataTemplate VpcEditor { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (!(item is ConfigurationDetail configurationDetail))
@@ -54,6 +56,11 @@ namespace Amazon.AWSToolkit.Publish.Models
                 if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.IamRole)
                 {
                     return IamRoleEditor;
+                }
+
+                if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.Vpc)
+                {
+                    return VpcEditor;
                 }
 
                 // TODO : Add custom editors here based on configurationDetail.TypeHint
