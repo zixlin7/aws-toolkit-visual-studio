@@ -270,6 +270,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Repositories\InstanceTypeRepository.cs" />
     <Compile Include="Utils\CommonImageFilters.cs" />
     <Compile Include="Utils\PlatformPicker.cs" />
     <Compile Include="Validators\InstanceNameValidator.cs" />
@@ -916,5 +917,6 @@
       <Version>2.0.13</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
