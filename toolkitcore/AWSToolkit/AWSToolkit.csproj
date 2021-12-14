@@ -203,6 +203,7 @@
     <Compile Include="Themes\IToolkitThemeProvider.cs" />
     <Compile Include="Themes\ToolkitThemeResourceKeys.cs" />
     <Compile Include="Themes\ToolkitThemes.cs" />
+    <Compile Include="Urls\GitHubUrls.cs" />
     <Compile Include="Util\MruList.cs" />
     <Compile Include="Credentials\Utils\ProfileHolder.cs" />
     <Compile Include="Credentials\Core\SDKCredentialIdentifier.cs" />

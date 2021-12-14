@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Input;
 
-using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish.Commands;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Util;
 
 using AWS.Deploy.ServerMode.Client;
@@ -98,7 +98,14 @@ namespace Amazon.AWSToolkit.Publish.Models
                 case "Object":
                     return typeof(object);
                 default:
-                    throw new UnsupportedOptionSettingItemTypeException($"The Type '{itemSummaryType}' is not supported.");
+                    if (Debugger.IsAttached)
+                    {
+                        Debug.Assert(false,
+                            "Unsupported CLI item summary type",
+                            $"The Type '{itemSummaryType}' is not supported. The toolkit will not be able to edit this, and will show a UI indicating the field is not supported.");
+                    }
+
+                    return typeof(UnsupportedType);
             }
         }
 

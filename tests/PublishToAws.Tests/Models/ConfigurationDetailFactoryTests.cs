@@ -5,6 +5,7 @@ using System.Linq;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Util;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
 
@@ -25,6 +26,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             {"Double", typeof(double)},
             {"Bool", typeof(bool)},
             {"Object", typeof(object)},
+            {"SomeFutureType", typeof(UnsupportedType)}
         };
 
         private readonly Mock<IPublishToAwsProperties> _publishProperties = new Mock<IPublishToAwsProperties>();
@@ -50,6 +52,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         [InlineData("Double", 1234.56)]
         [InlineData("Bool", true)]
         [InlineData("Object", "object-value")]
+        [InlineData("SomeFutureType", null)]
         public void CreateFrom_WithType(string settingType, object value)
         {
             var itemSummary = OptionSettingItemSummaryBuilder.Create()

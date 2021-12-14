@@ -4,7 +4,8 @@
                     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
                     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit" 
                     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
-                    xmlns:properties="clr-namespace:Amazon.AWSToolkit.Publish.Views.Properties">
+                    xmlns:properties="clr-namespace:Amazon.AWSToolkit.Publish.Views.Properties"
+                    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls;assembly=AWSToolkit">
     <!-- 
         This file defines the "editors" used for each data type used by Publish configuration details. 
         Everything is tied together by PropertyTemplateSelector, which is used in the Configuration View to 
@@ -168,6 +169,36 @@
             Content="{Binding Name}" />
     </DataTemplate>
 
+    <DataTemplate x:Key="UnsupportedTypeEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <StackPanel
+            Orientation="Vertical"
+            HorizontalAlignment="Stretch"
+            >
+            <TextBlock>
+                <Run Text="This version of the Toolkit is unable to show or modify this property -" />
+                <Run Text="Id: " FontWeight="Bold" />
+                <Run Text="{Binding Id}" />
+            </TextBlock>
+            <TextBlock>
+                <commonUi:BrowserHyperLink 
+                    NavigateUri="{x:Static models:PublishUrls.PublishToAwsIssuesUri}"
+                    ToolTip="{x:Static models:PublishUrls.PublishToAwsIssuesUrl}">
+                    <Run Text="Request support" />
+                </commonUi:BrowserHyperLink>
+                <Run Text="for this property on GitHub" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="Check" />
+                <commonUi:BrowserHyperLink 
+                    NavigateUri="{x:Static urls:GitHubUrls.ReleaseNotesUri}"
+                    ToolTip="{x:Static urls:GitHubUrls.ReleaseNotesUrl}">
+                    <Run Text="release notes" />
+                </commonUi:BrowserHyperLink>
+                <Run Text="to see if a newer Toolkit version supports it" />
+            </TextBlock>
+        </StackPanel>
+    </DataTemplate>
+
     <DataTemplate x:Key="IamRoleEditor" DataType="{x:Type models:ConfigurationDetail}">
         <properties:IamRolePropertyControl />
     </DataTemplate>
@@ -182,6 +213,7 @@
         TextEditor="{StaticResource TextEditor}"
         NumericEditor="{StaticResource NumericEditor}"
         BooleanEditor="{StaticResource BooleanEditor}"
+        UnsupportedTypeEditor="{StaticResource UnsupportedTypeEditor}"
         EnumEditor="{StaticResource EnumEditor}"
         IamRoleEditor="{StaticResource IamRoleEditor}"
         VpcEditor="{StaticResource VpcEditor}"

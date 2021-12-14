@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 
+using Amazon.AWSToolkit.Publish.Models.Configuration;
+
 namespace Amazon.AWSToolkit.Publish.Models
 {
     /// <summary>
@@ -33,6 +35,11 @@ namespace Amazon.AWSToolkit.Publish.Models
         public DataTemplate BooleanEditor { get; set; }
 
         /// <summary>
+        /// Represents a UI for properties the Toolkit doesn't know how to handle
+        /// </summary>
+        public DataTemplate UnsupportedTypeEditor { get; set; }
+
+        /// <summary>
         /// Represents the editor control for an enum value
         /// </summary>
         public DataTemplate EnumEditor { get; set; }
@@ -49,6 +56,11 @@ namespace Amazon.AWSToolkit.Publish.Models
             if (!(item is ConfigurationDetail configurationDetail))
             {
                 return null;
+            }
+
+            if (configurationDetail.Type == typeof(UnsupportedType))
+            {
+                return UnsupportedTypeEditor;
             }
 
             if (configurationDetail.Type == typeof(object))

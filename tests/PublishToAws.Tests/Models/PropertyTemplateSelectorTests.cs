@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
 
 using Xunit;
@@ -17,6 +18,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             BooleanEditor = new DataTemplate(),
             NumericEditor = new DataTemplate(),
             TextEditor = new DataTemplate(),
+            UnsupportedTypeEditor = new DataTemplate(),
             EnumEditor = new DataTemplate(),
             IamRoleEditor = new DataTemplate(),
         };
@@ -73,6 +75,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             var detail = new ConfigurationDetail() {Type = typeof(float)};
 
             Assert.Null(_sut.SelectTemplate(detail, null));
+        }
+
+        [Fact]
+        public void SelectTemplate_UnsupportedDetail()
+        {
+            var detail = new ConfigurationDetail() {Type = typeof(UnsupportedType)};
+
+            Assert.Equal(_sut.UnsupportedTypeEditor, _sut.SelectTemplate(detail, null));
         }
 
         [Theory]
