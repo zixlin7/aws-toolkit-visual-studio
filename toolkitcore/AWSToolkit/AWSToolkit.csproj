@@ -105,6 +105,7 @@
       <DependentUpon>CredentialsSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\Components\GroupedAccountComparer.cs" />
+    <Compile Include="CommonUI\Converters\ConcatenateCollectionConverter.cs" />
     <Compile Include="CommonUI\Converters\EqualityBooleanConverter.cs" />
     <Compile Include="CommonUI\Converters\InverseVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\NullableInverseBooleanConverter.cs" />

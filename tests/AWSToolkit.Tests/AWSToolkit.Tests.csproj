@@ -63,6 +63,7 @@
     <Compile Include="CommonUI\BaseModelTests.cs" />
     <Compile Include="CommonUI\CloudFormationTemplateWrapperTests.cs" />
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
+    <Compile Include="CommonUI\ConcatenateCollectionConverterTests.cs" />
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
     <Compile Include="CommonUI\VpcSelectionViewModelTests.cs" />
