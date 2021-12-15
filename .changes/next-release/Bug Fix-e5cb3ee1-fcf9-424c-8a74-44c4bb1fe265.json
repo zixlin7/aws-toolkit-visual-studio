@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "If the new \"Publish to AWS\" experience has a problem starting up, it attempts to enable the older publishing experience."
+}

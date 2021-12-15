@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.PluginServices.Publishing;
@@ -7,6 +8,7 @@ using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.Views;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 
@@ -53,14 +55,14 @@ namespace Amazon.AWSToolkit.Publish.Package
             }
             catch (Exception e)
             {
+                bool enableOldExperienceChanged = await UpdateEnableOldExperience();
                 Logger.Error("Failed to open the Publish document", e);
 
                 _publishContext.ToolkitShellProvider.OutputToHostConsole(
                     $"Unable to open the Publish to AWS dialog: {e.Message}",
                     true);
-                _publishContext.ToolkitShellProvider.ShowMessage("Unable to Publish to AWS",
-                    string.Format("There was a problem trying to open the Publish dialog:{0}{0}{1}",
-                        Environment.NewLine, e.Message));
+
+                ShowStartupError(e.Message, enableOldExperienceChanged);
             }
         }
 
@@ -129,6 +131,55 @@ namespace Amazon.AWSToolkit.Publish.Package
                 progressDialog?.Hide();
                 progressDialog?.Dispose();
             }
+        }
+
+        private async Task<bool> UpdateEnableOldExperience()
+        {
+            try
+            {
+                var settings = await _publishContext.PublishSettingsRepository.GetAsync();
+                if (settings.ShowOldPublishExperience)
+                {
+                    return false;
+                }
+
+                settings.ShowOldPublishExperience = true;
+                _publishContext.PublishSettingsRepository.Save(settings);
+                RecordOptOut();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Unable to enable old publish experience", e);
+                return false;
+            }
+        }
+
+        private void RecordOptOut()
+        {
+            _publishContext.ToolkitContext.TelemetryLogger.RecordPublishOptOut(new PublishOptOut()
+            {
+                AwsAccount = _publishContext.ToolkitContext.ConnectionManager.ActiveAccountId,
+                AwsRegion = _publishContext.ToolkitContext.ConnectionManager.ActiveRegion?.Id,
+                Result = Result.Succeeded,
+            });
+        }
+
+        private void ShowStartupError(string errorMessage, bool enableOldExperienceChanged)
+        {
+            var messageBuilder = new StringBuilder();
+            messageBuilder.AppendLine("There was a problem trying to open the Publish dialog.");
+            if (enableOldExperienceChanged)
+            {
+                messageBuilder.AppendLine("The previous AWS Publishing experience has been enabled.");
+            }
+
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine(errorMessage);
+
+            _publishContext.ToolkitShellProvider.ShowMessage("Unable to Publish to AWS",
+                messageBuilder.ToString());
         }
     }
 }

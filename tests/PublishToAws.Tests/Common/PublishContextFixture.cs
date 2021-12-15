@@ -30,6 +30,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Common
 
         public Mock<IPublishSettingsRepository> PublishSettingsRepository { get; } =
             new Mock<IPublishSettingsRepository>();
+
+        public PublishSettings PublishSettings = PublishSettings.CreateDefault();
+
         public CancellationTokenSource PackageCancellationTokenSource { get; } = new CancellationTokenSource();
 
         public PublishContextFixture() : base()
@@ -43,7 +46,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Common
             PublishPackage.SetupGet(mock => mock.DisposalToken).Returns(() => PackageCancellationTokenSource.Token);
             StubPublishPackageGetServiceAsync(typeof(SCliServer), CliServer.Object);
 
-            PublishSettingsRepository.Setup(mock => mock.GetAsync()).ReturnsAsync(PublishSettings.CreateDefault());
+            PublishSettingsRepository.Setup(mock => mock.GetAsync()).ReturnsAsync(PublishSettings);
 
             SetupShellProviderProgressDialog(new FakeProgressDialog());
             StubExecuteOnUIThread();

@@ -59,8 +59,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
 
         private async Task AssertShowDocumentFailsAsync()
         {
+            _publishContextFixture.PublishSettings.ShowOldPublishExperience = false;
             var args = new ShowPublishToAwsDocumentArgs();
             await _sut.ShowPublishToAwsDocument(args);
+
+            Assert.True(_publishContextFixture.PublishSettings.ShowOldPublishExperience);
 
             _publishContextFixture.ToolkitShellProvider.Verify(
                 mock => mock.ShowMessage("Unable to Publish to AWS", It.IsAny<string>()), Times.Once);
