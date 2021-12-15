@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "The Toolkit now shows a message if Credentials are not valid when trying to open the new \"Publish to AWS\" experience."
+}
