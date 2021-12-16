@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Updated the charts in the Beanstalk Environment's Monitoring panel. This addresses the \"DataVisualization.Charting\" error that could happen when trying to view Environments."
+}

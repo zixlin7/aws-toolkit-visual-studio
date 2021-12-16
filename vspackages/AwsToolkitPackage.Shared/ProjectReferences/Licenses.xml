@@ -27,6 +27,11 @@
       <Link>License.JsonChecker.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.LiveCharts.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.LiveCharts.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>License.log4net.txt</Link>

@@ -180,6 +180,7 @@
     </Compile>
     <Compile Include="Feedback\FeedbackPanelViewModel.cs" />
     <Compile Include="Feedback\SendFeedbackCommand.cs" />
+    <Compile Include="Models\TimestampedValue.cs" />
     <Compile Include="Navigator\NavigatorAccountConnectionStatus.cs" />
     <Compile Include="Navigator\ContextCommandExecutor.cs" />
     <Compile Include="Navigator\NavigatorCommand.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Publish\Banner\PublishBannerViewModel.cs" />
     <Compile Include="Publish\Banner\PublishBannerViewModelFactory.cs" />
     <Compile Include="Publish\Banner\SwitchToNewExperienceCommandFactory.cs" />
+    <Compile Include="SimpleWorkers\CloudWatchMetrics.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeBrushKeys.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeFontKeys.cs" />
     <Compile Include="Themes\IToolkitThemeBrushKeys.cs" />

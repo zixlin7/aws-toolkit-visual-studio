@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
-using Amazon.AWSToolkit.SimpleWorkers;
+
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AWSToolkit.ElasticBeanstalk.ViewModels;
+using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.CloudWatch.Model;
 
 using log4net;
@@ -11,7 +13,7 @@ using log4net;
 namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 {
     /// <summary>
-    /// Interaction logic for MonitorGraphs.xaml
+    /// Renders Beanstalk Environment CloudWatch Metrics charts
     /// </summary>
     public partial class MonitorGraphs
     {
@@ -19,12 +21,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
         EnvironmentStatusController _controller;
 
+        private readonly MonitorGraphsViewModel _monitorGraphs;
+
         public MonitorGraphs()
         {
+            _monitorGraphs = new MonitorGraphsViewModel();
+
             InitializeComponent();
             this._ctlPeriodPicker.ItemsSource = CloudWatchDataFetcher.MonitorPeriod.Periods;
             this._ctlPeriodPicker.SelectedItem = CloudWatchDataFetcher.MonitorPeriod.Periods.ToArray()[0];
 
+            DataContext = _monitorGraphs;
         }
 
         public void Initialize(EnvironmentStatusController controller)
@@ -69,11 +76,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
                     autoDimensions.Add(new Dimension() { Name = "AutoScalingGroupName", Value = item.Name });
                 }
 
-                this._controller.LoadCloudWatchData(this._ctlLatencyCountSeries, "AWS/ELB", "Latency", "Average", "Seconds", lbDimensions, period.HoursInPast);
-                this._controller.LoadCloudWatchData(this._ctlRequestCountSeries, "AWS/ELB", "RequestCount", "Sum", "Count", lbDimensions, period.HoursInPast);
-                this._controller.LoadCloudWatchData(this._ctlCPUUtilizationSeries, "AWS/EC2", "CPUUtilization", "Average", "Percent", autoDimensions, period.HoursInPast);
-                this._controller.LoadCloudWatchData(this._ctlNetworkInSeries, "AWS/EC2", "NetworkIn", "Maximum", "Bytes", autoDimensions, period.HoursInPast);
-                this._controller.LoadCloudWatchData(this._ctlNetworkOutSeries, "AWS/EC2", "NetworkOut", "Maximum", "Bytes", autoDimensions, period.HoursInPast);
+                this._controller.LoadCloudWatchData(_monitorGraphs.Latency, "AWS/ELB", "Latency", CloudWatchMetrics.Aggregate.Average, "Seconds", lbDimensions, period.HoursInPast);
+                this._controller.LoadCloudWatchData(_monitorGraphs.Requests, "AWS/ELB", "RequestCount", CloudWatchMetrics.Aggregate.Sum, "Count", lbDimensions, period.HoursInPast);
+                this._controller.LoadCloudWatchData(_monitorGraphs.CpuUsage, "AWS/EC2", "CPUUtilization", CloudWatchMetrics.Aggregate.Average, "Percent", autoDimensions, period.HoursInPast);
+                this._controller.LoadCloudWatchData(_monitorGraphs.NetworkIn, "AWS/EC2", "NetworkIn", CloudWatchMetrics.Aggregate.Maximum, "Bytes", autoDimensions, period.HoursInPast);
+                this._controller.LoadCloudWatchData(_monitorGraphs.NetworkOut, "AWS/EC2", "NetworkOut", CloudWatchMetrics.Aggregate.Maximum, "Bytes", autoDimensions, period.HoursInPast);
             }
             catch (Exception e)
             {
@@ -84,11 +91,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
         void resetGraphs()
         {
-            this._ctlLatencyCountSeries.ItemsSource = null;
-            this._ctlRequestCountSeries.ItemsSource = null;
-            this._ctlCPUUtilizationSeries.ItemsSource = null;
-            this._ctlNetworkInSeries.ItemsSource = null;
-            this._ctlNetworkOutSeries.ItemsSource = null;
+            _monitorGraphs.Latency.Values?.Clear();
+            _monitorGraphs.Requests.Values?.Clear();
+            _monitorGraphs.CpuUsage.Values?.Clear();
+            _monitorGraphs.NetworkIn.Values?.Clear();
+            _monitorGraphs.NetworkOut.Values?.Clear();
         }
     }
 }

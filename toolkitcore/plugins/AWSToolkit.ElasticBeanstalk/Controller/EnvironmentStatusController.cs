@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Windows.Controls.DataVisualization.Charting;
+using System.Threading.Tasks;
+
 using Amazon.AutoScaling;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.View;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.ElasticBeanstalk.ViewModels;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.EC2;
 using Amazon.ElasticBeanstalk;
@@ -20,6 +21,7 @@ using Amazon.CloudWatch.Model;
 using Amazon.ElasticLoadBalancing;
 using log4net;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Tasks;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
@@ -33,6 +35,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         Amazon.ElasticLoadBalancing.IAmazonElasticLoadBalancing _elbClient;
         Amazon.EC2.IAmazonEC2 _ec2Client;
         IAmazonCloudWatch _cwClient;
+        private CloudWatchMetrics _cloudWatchMetrics;
         IAmazonElasticBeanstalk _beanstalkClient;
         EnvironmentViewModel _environmentModel;
 
@@ -53,6 +56,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             this._cwClient =
                 this._environmentModel.AccountViewModel.CreateServiceClient<AmazonCloudWatchClient>(region);
+            _cloudWatchMetrics = new CloudWatchMetrics(_cwClient);
 
             this._asClient =
                 this._environmentModel.AccountViewModel.CreateServiceClient<AmazonAutoScalingClient>(region);
@@ -536,10 +540,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             return response.EnvironmentResources;
         }
 
-        internal void LoadCloudWatchData(LineSeries series, string metricNamespace, string metricName, string stats, string units, List<Dimension> dimensions, int hoursToView)
+        internal void LoadCloudWatchData(MonitorGraphViewModel viewModel, string metricNamespace, string metricName, CloudWatchMetrics.Aggregate statsAggregate, string units, List<Dimension> dimensions, int hoursToView)
         {
-            var df = new CloudWatchDataFetcher(this._cwClient, series, metricNamespace, metricName, stats, units, dimensions, hoursToView);
-            ThreadPool.QueueUserWorkItem(df.Execute);
+            Task.Run(async () => { await LoadCloudWatchDataAsync(viewModel, metricNamespace, metricName, statsAggregate, units, dimensions, hoursToView); }).LogExceptionAndForget();
+        }
+
+        private async Task LoadCloudWatchDataAsync(MonitorGraphViewModel viewModel, string metricNamespace, string metricName,
+            CloudWatchMetrics.Aggregate statsAggregate, string units, List<Dimension> dimensions, int hoursToView)
+        {
+            var values = await _cloudWatchMetrics.LoadMetricsAsync(
+                metricName, metricNamespace, dimensions, statsAggregate, units, hoursToView);
+
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+            {
+                viewModel.ApplyMetrics(values);
+            });
         }
 
         public void RequestEnvironmentLogs()

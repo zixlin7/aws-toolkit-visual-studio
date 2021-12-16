@@ -4,8 +4,6 @@
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:components="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit" 
-    xmlns:charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
-    xmlns:datavis="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
     Height="300" Width="800">
 
     <commonui:BaseAWSControl.Resources>
