@@ -1,4 +1,5 @@
 ﻿using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.ViewModels.Charts;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.ViewModels
 {

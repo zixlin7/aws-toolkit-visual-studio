@@ -8,7 +8,7 @@ using Amazon.AWSToolkit.Models;
 using LiveCharts;
 using LiveCharts.Defaults;
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.ViewModels
+namespace Amazon.AWSToolkit.ViewModels.Charts
 {
     public class MonitorGraphViewModel : BaseModel
     {

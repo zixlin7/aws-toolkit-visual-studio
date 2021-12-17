@@ -155,13 +155,9 @@
     <Compile Include="View\Components\LoadBalancerSettings.xaml.cs">
       <DependentUpon>LoadBalancerSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Components\MonitorGraph.xaml.cs">
-      <DependentUpon>MonitorGraph.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Components\MonitorGraphs.xaml.cs">
       <DependentUpon>MonitorGraphs.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\MonitorGraphViewModel.cs" />
     <Compile Include="ViewModels\MonitorGraphsViewModel.cs" />
     <Compile Include="View\Components\NotificationSettings.xaml.cs">
       <DependentUpon>NotificationSettings.xaml</DependentUpon>
@@ -337,10 +333,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\LoadBalancerSettings.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Components\MonitorGraph.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

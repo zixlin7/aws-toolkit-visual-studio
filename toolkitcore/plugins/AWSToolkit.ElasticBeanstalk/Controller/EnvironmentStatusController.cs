@@ -22,6 +22,7 @@ using Amazon.ElasticLoadBalancing;
 using log4net;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AWSToolkit.ViewModels.Charts;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {

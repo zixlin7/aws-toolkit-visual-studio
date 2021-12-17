@@ -51,7 +51,7 @@ namespace Amazon.AWSToolkit.SimpleWorkers
         public async Task<IList<TimestampedValue<double>>> LoadMetricsAsync(
             string metricName,
             string metricNamespace,
-            List<Dimension> dimensions,
+            ICollection<Dimension> dimensions,
             Aggregate statsAggregate,
             StandardUnit units,
             int hours)
@@ -60,7 +60,7 @@ namespace Amazon.AWSToolkit.SimpleWorkers
             {
                 MetricName = metricName,
                 Namespace = metricNamespace,
-                Dimensions = dimensions,
+                Dimensions = dimensions.ToList(),
                 Statistics = new List<string>() { statsAggregate.ToString() },
                 Unit = units,
                 Period = DeterminePeriod(hours),
