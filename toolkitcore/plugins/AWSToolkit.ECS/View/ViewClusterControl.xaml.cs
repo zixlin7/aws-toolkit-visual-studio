@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.ECS.View
 
         public override void OnEditorOpened(bool success)
         {
-            ToolkitFactory.Instance.TelemetryLogger.RecordEcsOpenCluster(new EcsOpenCluster()
+            this._controller.ToolkitContext.TelemetryLogger.RecordEcsOpenCluster(new EcsOpenCluster()
             {
                 Result = success ? Result.Succeeded : Result.Failed,
             });
@@ -57,7 +57,7 @@ namespace Amazon.AWSToolkit.ECS.View
             catch (Exception e)
             {
                 LOGGER.Error("Error refreshing", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing cluster: " + e.Message);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Error refreshing cluster: " + e.Message);
             }
         }
 
@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.ECS.View
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing cluster: " + e.Message);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Error refreshing cluster: " + e.Message);
             }
         }
 
@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.ECS.View
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error saving service: " + e.Message);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Error saving service: " + e.Message);
                 return false;
             }
         }
@@ -94,7 +94,7 @@ namespace Amazon.AWSToolkit.ECS.View
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error deleting service: " + e.Message);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Error deleting service: " + e.Message);
             }
         }
 

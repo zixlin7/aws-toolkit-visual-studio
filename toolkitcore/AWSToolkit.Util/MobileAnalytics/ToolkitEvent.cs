@@ -25,13 +25,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaNETCoreNewProjectType,
         LambdaNETCoreNewProjectLanguage,
 
-        LambdaFunctionTargetFramework,
-        LambdaFunctionMemorySize,
-
-        LambdaFunctionDeploymentSuccess,
-        LambdaFunctionDeploymentError,
-        LambdaFunctionDeploymentErrorDetail,
-
         LambdaFunctionIAMRoleCleanup,
 
         LambdaFunctionUsesAspNetCore,
@@ -54,28 +47,15 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         FirstExperienceImport,
         FirstExperienceLinkClick,
 
-        ECSPublishContainerWizardStart,
-        ECSPublishContainerWizardFinish,
-        ECSPublishContainerDockerBase,
-
-        ECSConfiguredELB,
-        ECSDeleteService,
-
         XRayEnabled,
         BeanstalkEnhancedHealth
     };
 
     public enum MetricKeys
     {
-        NumberOfServicesUsed,
-        TimeSpentInView,
         PageIndex,
         GroupIndex,
         DeploymentBundleSize,
-        LambdaDeploymentBundleSize,
-
-        ErrorInitializingAwsViewModel,
-        ErrorLoadingProfiles,
     };
 
     public class ToolkitEvent

@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             {
                 var msg = "Error fetching services for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
         }
     }
