@@ -239,7 +239,6 @@
     <Compile Include="CommonUI\Browser.xaml.cs">
       <DependentUpon>Browser.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CommonUI\Charts\CloudWatchDataFetcher.cs" />
     <Compile Include="CommonUI\CheckedTree\CheckedTreeControl.xaml.cs">
       <DependentUpon>CheckedTreeControl.xaml</DependentUpon>
     </Compile>
@@ -418,6 +417,7 @@
     <Compile Include="Util\RolePolicyFilter.cs" />
     <Compile Include="Util\ServiceSpecificCredentialStore.cs" />
     <Compile Include="VersionInfo\VersionManager.cs" />
+    <Compile Include="ViewModels\Charts\GraphPeriodViewModel.cs" />
     <Compile Include="ViewModels\Charts\MonitorGraphViewModel.cs" />
     <Compile Include="ViewModels\Charts\ResourceGraphTitles.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

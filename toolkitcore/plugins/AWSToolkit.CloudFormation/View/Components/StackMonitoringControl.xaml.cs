@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 
 using Amazon.AWSToolkit.CloudFormation.Controllers;
 using Amazon.AWSToolkit.CloudFormation.ViewModels;
@@ -23,26 +22,42 @@ namespace Amazon.AWSToolkit.CloudFormation.View.Components
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(StackMonitoringControl));
 
         ViewStackController _controller;
+        private StackMonitoringViewModel _viewModel;
 
         public StackMonitoringControl()
         {
+            _viewModel = new StackMonitoringViewModel();
+
             InitializeComponent();
-            this._ctlPeriodPicker.ItemsSource = CloudWatchDataFetcher.MonitorPeriod.Periods;
-            this._ctlPeriodPicker.SelectedItem = CloudWatchDataFetcher.MonitorPeriod.Periods.ToArray()[0];
+
+            DataContext = _viewModel;
+            _viewModel.GraphPeriod.PropertyChanged += GraphPeriod_PropertyChanged;
+            DataContextChanged += StackMonitoringControl_DataContextChanged;
+        }
+
+        private void GraphPeriod_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            LoadCloudWatchData();
+        }
+
+        private void StackMonitoringControl_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+        {
+            if (_viewModel?.GraphPeriod != null)
+            {
+                _viewModel.GraphPeriod.PropertyChanged -= GraphPeriod_PropertyChanged;
+            }
+
+            _viewModel = e.NewValue as StackMonitoringViewModel;
+
+            if (_viewModel?.GraphPeriod != null)
+            {
+                _viewModel.GraphPeriod.PropertyChanged += GraphPeriod_PropertyChanged;
+            }
         }
 
         public void Initialize(ViewStackController controller)
         {
             this._controller = controller;
-        }
-
-        private void onPeriodChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Don't load data an initial selection of combo box
-            if (e.RemovedItems.Count == 0)
-                return;
-
-            LoadCloudWatchData();
         }
 
         public void LoadCloudWatchData()
@@ -51,11 +66,12 @@ namespace Amazon.AWSToolkit.CloudFormation.View.Components
             {
                 IAWSToolkitShellProvider toolkitShell = ToolkitFactory.Instance.ShellProvider;
 
-                var period = this._ctlPeriodPicker.SelectedItem as CloudWatchDataFetcher.MonitorPeriod;
-                if (period == null)
+                if (_viewModel.GraphPeriod.SelectedPeriod == null)
+                {
                     return;
+                }
 
-                this._ctlMainPanel.Children.Clear();
+                _viewModel?.Charts.Clear();
                 var resources = this._controller.GetStackResources();
                 if (resources == null)
                     return;
@@ -66,16 +82,8 @@ namespace Amazon.AWSToolkit.CloudFormation.View.Components
                     .Where(vm => vm != null)
                     .ToList();
 
-                vms.ForEach(vm =>
-                {
-                    var chart = new ResourceCharts.ResourceCharts()
-                    {
-                        DataContext = vm,
-                    };
-                    _ctlMainPanel.Children.Add(chart);
-                });
-
-                LoadCharts(vms, period.HoursInPast);
+                vms.ForEach(vm => _viewModel?.Charts.Add(vm));
+                LoadCharts(vms, _viewModel.GraphPeriod.SelectedPeriod.Hours);
             }
             catch (Exception e)
             {

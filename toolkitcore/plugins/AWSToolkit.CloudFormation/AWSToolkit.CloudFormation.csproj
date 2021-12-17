@@ -97,6 +97,7 @@
       <DependentUpon>DeploymentNotificationPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\LambdaResourceChartsViewModel.cs" />
+    <Compile Include="ViewModels\DesignSampleStackMonitoringViewModel.cs" />
     <Compile Include="View\Components\ResourceCharts\ResourceCharts.xaml.cs">
       <DependentUpon>ResourceCharts.xaml</DependentUpon>
     </Compile>
@@ -121,6 +122,7 @@
     <Compile Include="View\Components\StackMonitoringControl.xaml.cs">
       <DependentUpon>StackMonitoringControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\StackMonitoringViewModel.cs" />
     <Compile Include="View\Components\StackResourceDetailHostControl.xaml.cs">
       <DependentUpon>StackResourceDetailHostControl.xaml</DependentUpon>
     </Compile>
