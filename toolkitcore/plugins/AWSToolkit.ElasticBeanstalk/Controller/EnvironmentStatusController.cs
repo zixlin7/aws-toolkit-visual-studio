@@ -5,24 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.AutoScaling;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.View;
-using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit.ElasticBeanstalk.ViewModels;
+using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SimpleWorkers;
+using Amazon.AWSToolkit.Tasks;
+using Amazon.AWSToolkit.ViewModels.Charts;
+using Amazon.CloudWatch;
+using Amazon.CloudWatch.Model;
 using Amazon.EC2;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-using Amazon.CloudWatch;
-using Amazon.CloudWatch.Model;
 using Amazon.ElasticLoadBalancing;
+
 using log4net;
-using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.AWSToolkit.Tasks;
-using Amazon.AWSToolkit.ViewModels.Charts;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
@@ -549,13 +549,27 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         private async Task LoadCloudWatchDataAsync(MonitorGraphViewModel viewModel, string metricNamespace, string metricName,
             CloudWatchMetrics.Aggregate statsAggregate, string units, List<Dimension> dimensions, int hoursToView)
         {
-            var values = await _cloudWatchMetrics.LoadMetricsAsync(
-                metricName, metricNamespace, dimensions, statsAggregate, units, hoursToView);
-
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+            try
             {
-                viewModel.ApplyMetrics(values);
-            });
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.Loading = true);
+
+                var values = await _cloudWatchMetrics.LoadMetricsAsync(
+                    metricName, metricNamespace, dimensions, statsAggregate, units, hoursToView);
+
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                {
+                    viewModel.ApplyMetrics(values);
+                });
+            }
+            catch (Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.ErrorMessage = e.Message);
+                throw;
+            }
+            finally
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.Loading = false);
+            }
         }
 
         public void RequestEnvironmentLogs()

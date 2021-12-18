@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
@@ -51,10 +52,24 @@ namespace Amazon.AWSToolkit.CloudFormation.ViewModels
             ICollection<Dimension> dimensions, CloudWatchMetrics.Aggregate statsAggregate, StandardUnit units,
             int hours, CloudWatchMetrics metrics, MonitorGraphViewModel viewModel)
         {
-            var data = await metrics.LoadMetricsAsync(
-                metricName, metricNamespace, dimensions, statsAggregate, units, hours);
+            try
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.Loading = true);
 
-            ToolkitShell.ExecuteOnUIThread(() => viewModel.ApplyMetrics(data));
+                var data = await metrics.LoadMetricsAsync(
+                    metricName, metricNamespace, dimensions, statsAggregate, units, hours);
+
+                ToolkitShell.ExecuteOnUIThread(() => viewModel.ApplyMetrics(data));
+            }
+            catch (Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.ErrorMessage = e.Message);
+                throw;
+            }
+            finally
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.Loading = false);
+            }
         }
     }
 }

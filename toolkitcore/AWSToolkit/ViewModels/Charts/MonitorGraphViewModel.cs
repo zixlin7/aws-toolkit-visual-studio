@@ -31,6 +31,28 @@ namespace Amazon.AWSToolkit.ViewModels.Charts
             set => SetProperty(ref _title, value);
         }
 
+        private bool _loading = false;
+
+        public bool Loading
+        {
+            get => _loading;
+            set => SetProperty(ref _loading, value);
+        }
+
+        public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+        private string _errorMessage;
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                SetProperty(ref _errorMessage, value);
+                NotifyPropertyChanged(nameof(HasError));
+            }
+        }
+
         private ChartValues<DateTimePoint> _values;
 
         public ChartValues<DateTimePoint> Values
