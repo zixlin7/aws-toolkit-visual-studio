@@ -5,6 +5,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.ViewModels
 {
     public class MonitorGraphsViewModel : BaseModel
     {
+        private readonly GraphPeriodViewModel _graphPeriods = new GraphPeriodViewModel();
+
+        public GraphPeriodViewModel GraphPeriod => _graphPeriods;
+
         private MonitorGraphViewModel _latency = new MonitorGraphViewModel()
         {
             Title = "Latency (Seconds)",

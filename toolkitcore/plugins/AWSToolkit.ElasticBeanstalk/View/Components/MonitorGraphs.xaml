@@ -22,8 +22,10 @@
     <DockPanel>
         <DockPanel DockPanel.Dock="Top">
             <TextBlock DockPanel.Dock="Left" Style="{DynamicResource awsTextBlockBaseStyle}">Below are graphs for resources in this environment.</TextBlock>
-            <ComboBox Width="100" HorizontalAlignment="Right" DockPanel.Dock="Right" Name="_ctlPeriodPicker" 
-                      DisplayMemberPath="DisplayName"  SelectionChanged="onPeriodChanged"
+            <ComboBox Width="100" HorizontalAlignment="Right" DockPanel.Dock="Right"
+                      ItemsSource="{Binding GraphPeriod.Periods}"
+                      SelectedItem="{Binding GraphPeriod.SelectedPeriod}"
+                      DisplayMemberPath="DisplayName"
                       Style="{DynamicResource awsComboBoxStyle}"/>
             <TextBlock Margin="5,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Right" DockPanel.Dock="Right"  Style="{DynamicResource awsTextBlockBaseStyle}">Time Range:</TextBlock>
         </DockPanel>

@@ -396,7 +396,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="ProxyUtilities.cs" />
-    <Compile Include="SimpleWorkers\CloudWatchDataFetcher.cs" />
     <Compile Include="SimpleWorkers\QueryAMIInstancesWorker.cs" />
     <Compile Include="SimpleWorkers\QueryAvailabilityZonesWorker.cs" />
     <Compile Include="SimpleWorkers\QueryCloudFormationSamplesWorker.cs" />
