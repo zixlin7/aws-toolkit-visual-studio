@@ -6,7 +6,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Util;
 using Amazon.AwsToolkit.VsSdk.Common;
 using ThirdParty.Json.LitJson;
@@ -83,11 +82,6 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
 
                     if (File.Exists(_outputPackage))
                     {
-                        ToolkitEvent sizeEvent = new ToolkitEvent();
-                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize,
-                            new FileInfo(this._outputPackage).Length);
-                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
-
                         ProcessorResult = ResultCodes.Succeeded;
 
                         TaskInfo.Logger.OutputMessage("..deployment package created successfully...");
@@ -101,23 +95,11 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                     }
                 }
 
-                if (success && ProcessorResult == ResultCodes.Succeeded)
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.WebApplicationBuildSuccess, ANALYTICS_VALUE);
-                    evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
-                else
+                if (!success || ProcessorResult != ResultCodes.Succeeded)
                 {
                     var msg = "Error executing the dotnet publish command, stopping deployment";
                     LOGGER.ErrorFormat(msg);
                     taskInfo.Logger.OutputMessage(msg);
-
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.WebApplicationBuildError, ANALYTICS_VALUE);
-                    evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
             }
             catch (Exception exc)
@@ -125,11 +107,6 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                 var msg = string.Format("...caught exception during deployment package creation - {0}", exc.Message);
                 LOGGER.ErrorFormat(msg);
                 TaskInfo.Logger.OutputMessage(msg);
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.WebApplicationBuildError, ANALYTICS_VALUE);
-                evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             finally
             {

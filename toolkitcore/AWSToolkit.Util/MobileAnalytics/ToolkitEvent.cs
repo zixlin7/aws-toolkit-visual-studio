@@ -12,9 +12,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ViewName,
         ReadableTimestamp,
         NavigationReason,
-        DeploymentNetCoreTargetFramework,
-        WebApplicationBuildSuccess,
-        WebApplicationBuildError,
 
         FileFetcherUrlSuccess,
         FileFetcherUrlFailure,
@@ -55,7 +52,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
     {
         PageIndex,
         GroupIndex,
-        DeploymentBundleSize,
     };
 
     public class ToolkitEvent

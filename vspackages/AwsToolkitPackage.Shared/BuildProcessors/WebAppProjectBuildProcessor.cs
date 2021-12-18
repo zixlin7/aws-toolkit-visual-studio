@@ -5,7 +5,6 @@ using System.Linq;
 
 using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.MobileAnalytics;
 
 using EnvDTE80;
 
@@ -194,10 +193,6 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                     }
                     else if (File.Exists(_outputPackage))
                     {
-                        ToolkitEvent sizeEvent = new ToolkitEvent();
-                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
-                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
-
                         ProcessorResult = ResultCodes.Succeeded;
                     }
 
@@ -230,19 +225,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
             }
             finally
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                if (ProcessorResult == ResultCodes.Succeeded)
-                {
-                    evnt.AddProperty(AttributeKeys.WebApplicationBuildSuccess, ANALYTICS_VALUE);
-                }
-                else
-                {
-                    evnt.AddProperty(AttributeKeys.WebApplicationBuildError, $"{ANALYTICS_VALUE}:{ProcessorResult}");
-                }
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 EndStatusBarBuildFeedback();
-
                 TaskInfo.CompletionSignalEvent.Set();
                 TaskInfo = null;
             }
