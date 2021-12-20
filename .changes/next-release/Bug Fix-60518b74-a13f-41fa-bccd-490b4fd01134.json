@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fix \"An update is in progress for resource\" failure when publishing NodeJs Lambda functions"
-}

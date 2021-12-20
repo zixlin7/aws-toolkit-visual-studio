@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Improved the \"Publish to AWS\" experience for configuring VPCs and IAM Roles. Existing resources can be selected from a dialog."
-}

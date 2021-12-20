@@ -1,0 +1,42 @@
+{
+  "Date": "2021-12-20",
+  "Version": "1.24.0.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Fix issue in the Lambda publish dialog that would prevent it from showing the list of Lambda functions in an account."
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Fix \"An update is in progress for resource\" failure when publishing NodeJs Lambda functions"
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "If the new \"Publish to AWS\" experience has a problem starting up, it attempts to enable the older publishing experience."
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "The Toolkit now shows a message if Credentials are not valid when trying to open the new \"Publish to AWS\" experience."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added .NET 6 Lambda container images to the Lambda project blueprints for Visual Studio 2022"
+    },
+    {
+      "Type": "Feature",
+      "Description": "The AWS Toolkit for Visual Studio 2022 is now out of Preview."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Add support for configuring Lambda Test Tool for .NET 6 projects"
+    },
+    {
+      "Type": "Feature",
+      "Description": "Updated the charts in the Monitoring panel of Beanstalk Environments and CloudFormation stacks. This addresses the \"DataVisualization.Charting\" error that could happen when trying to view Environments."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Improved the \"Publish to AWS\" experience for configuring VPCs and IAM Roles. Existing resources can be selected from a dialog."
+    }
+  ]
+}
