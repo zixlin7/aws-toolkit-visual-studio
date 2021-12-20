@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Added .NET 6 Lambda container images to the Lambda project blueprints for Visual Studio 2022"
+}
