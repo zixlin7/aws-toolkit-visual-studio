@@ -3,8 +3,6 @@
 param (
     [string]$endpointsJsonFileName = "endpoints.json",
     [Parameter(Mandatory=$true)][string]$configuration,
-    [Parameter(Mandatory=$true)][string]$s3BucketName,
-    [Parameter(Mandatory=$true)][string]$s3BucketRegion,
     [Parameter(Mandatory=$true)][string]$hostedfilesFolder
 )
 

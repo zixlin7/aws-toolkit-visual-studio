@@ -29,8 +29,8 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
-      <Name>ASP.NET Core 5 (Container Image)</Name>
-      <Description>Serverless ASP.NET Core 5 Web API packaged as a container image.</Description>
+      <Name>ASP.NET Core 6 (Container Image)</Name>
+      <Description>Serverless ASP.NET Core 6 Web API packaged as a container image.</Description>
       <SortOrder>165</SortOrder>
       <File>AspNetCoreWebAPI-Image.zip</File>
       <Tags>
@@ -44,7 +44,7 @@
     </Blueprint>
     <Blueprint>
       <Name>ASP.NET Core Web API (Container Image)</Name>
-      <Description>Serverless ASP.NET Core 5 Web API packaged as a container image.</Description>
+      <Description>Serverless ASP.NET Core 6 Web API packaged as a container image.</Description>
       <SortOrder>150</SortOrder>
       <File>AspNetCoreWebAPI-Image-FSharp.zip</File>
       <Tags>
@@ -205,8 +205,8 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
-      <Name>.NET 5 (Container Image)</Name>
-      <Description>A .NET 5 Lambda function packaged as a container image.</Description>
+      <Name>.NET 6 (Container Image)</Name>
+      <Description>A .NET 6 Lambda function packaged as a container image.</Description>
       <SortOrder>101</SortOrder>
       <File>EmptyFunction-Image.zip</File>
       <Tags>
@@ -218,8 +218,8 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
-      <Name>.NET 5 (Container Image)</Name>
-      <Description>A .NET 5 Lambda function packaged as a container image.</Description>
+      <Name>.NET 6 (Container Image)</Name>
+      <Description>A .NET 6 Lambda function packaged as a container image.</Description>
       <SortOrder>101</SortOrder>
       <File>EmptyFunction-Image-FSharp.zip</File>
       <Tags>
@@ -257,8 +257,8 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
-      <Name>.NET 5 (Container Image) Serverless Application</Name>
-      <Description>.NET 5 Lambda function packaged as a container image and deploy through AWS CloudFormation.</Description>
+      <Name>.NET 6 (Container Image) Serverless Application</Name>
+      <Description>.NET 6 Lambda function packaged as a container image and deploy through AWS CloudFormation.</Description>
       <SortOrder>125</SortOrder>
       <File>EmptyServerless-Image.zip</File>
       <Tags>
@@ -270,8 +270,8 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
-      <Name>.NET 5 (Container Image) Serverless Application</Name>
-      <Description>.NET 5 Lambda function packaged as a container image and deploy through AWS CloudFormation.</Description>
+      <Name>.NET 6 (Container Image) Serverless Application</Name>
+      <Description>.NET 6 Lambda function packaged as a container image and deploy through AWS CloudFormation.</Description>
       <SortOrder>125</SortOrder>
       <File>EmptyServerless-Image-FSharp.zip</File>
       <Tags>

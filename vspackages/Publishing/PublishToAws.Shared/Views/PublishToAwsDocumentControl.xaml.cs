@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -13,6 +13,7 @@ using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Tasks;
@@ -88,8 +89,9 @@ namespace Amazon.AWSToolkit.Publish.Views
             };
             viewModel.LoadPublishSettings();
 
+            var configurationDetailFactory = new ConfigurationDetailFactory(viewModel, _publishContext.ToolkitShellProvider.GetDialogFactory());
             var client = cliServer.GetRestClient(viewModel.GetCredentials);
-            viewModel.DeployToolController = new DeployToolController(client);
+            viewModel.DeployToolController = new DeployToolController(client, configurationDetailFactory);
             viewModel.DeploymentClient = cliServer.GetDeploymentClient();
 
             var publishCommand = new PublishCommand(viewModel, _publishContext.ToolkitShellProvider);
@@ -316,9 +318,11 @@ namespace Amazon.AWSToolkit.Publish.Views
             {
                 if (_viewModel.ConfigurationDetails != null)
                 {
-                    foreach (var config in _viewModel.ConfigurationDetails.GetDetailAndDescendants())
+                    foreach (var config in _viewModel.ConfigurationDetails)
                     {
-                        config.PropertyChanged += Config_PropertyChanged;
+                        // Prevent double-registrations
+                        config.DetailChanged -= Config_DetailChanged;
+                        config.DetailChanged += Config_DetailChanged;
                     }
                 }
             }
@@ -359,13 +363,19 @@ namespace Amazon.AWSToolkit.Publish.Views
         {
             if (_viewModel.ConfigurationDetails != null)
             {
-                foreach (var config in _viewModel.ConfigurationDetails.GetDetailAndDescendants())
+                foreach (var config in _viewModel.ConfigurationDetails)
                 {
-                    config.PropertyChanged -= Config_PropertyChanged;
+                    config.DetailChanged -= Config_DetailChanged;
                 }
 
                 _viewModel.ConfigurationDetails = null;
             }
+        }
+
+        private void Config_DetailChanged(object sender, DetailChangedEventArgs e)
+        {
+            SetTargetConfiguration(e.Detail).LogExceptionAndForget();
+            _viewModel.IsDefaultConfig = false;
         }
 
         private void CancelSummaryUpdatesInProgress()
@@ -468,14 +478,12 @@ namespace Amazon.AWSToolkit.Publish.Views
                 using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
                 {
                     await TaskScheduler.Default;
-                    var validationError = await _viewModel
-                        .SetTargetConfiguration(configurationDetail, tokenSource.Token)
+                    var validationResult = await _viewModel.SetTargetConfigurationAsync(configurationDetail, tokenSource.Token)
                         .ConfigureAwait(false);
 
-                    if (!string.IsNullOrEmpty(validationError))
+                    if (validationResult.HasErrors())
                     {
-                        // Retain the current config detail values, and show the error message in the view
-                        configurationDetail.ValidationMessage = validationError;
+                        configurationDetail.ApplyValidationErrors(validationResult);
                     }
                     else
                     {
@@ -486,15 +494,6 @@ namespace Amazon.AWSToolkit.Publish.Views
             catch (Exception e)
             {
                 Logger.Error($"Error setting configuration of type {configurationDetail.Name}", e);
-            }
-        }
-
-        private void Config_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ConfigurationDetail.Value))
-            {
-                SetTargetConfiguration(sender as ConfigurationDetail).LogExceptionAndForget();
-                _viewModel.IsDefaultConfig = false;
             }
         }
 

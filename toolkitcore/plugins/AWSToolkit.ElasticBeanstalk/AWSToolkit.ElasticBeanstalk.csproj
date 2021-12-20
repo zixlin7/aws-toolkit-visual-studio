@@ -45,11 +45,6 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>4.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>4.5</RequiredTargetFramework>
@@ -163,6 +158,7 @@
     <Compile Include="View\Components\MonitorGraphs.xaml.cs">
       <DependentUpon>MonitorGraphs.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\MonitorGraphsViewModel.cs" />
     <Compile Include="View\Components\NotificationSettings.xaml.cs">
       <DependentUpon>NotificationSettings.xaml</DependentUpon>
     </Compile>
@@ -494,9 +490,13 @@
     <PackageReference Include="AWSSDK.S3">
       <Version>3.7.3.6</Version>
     </PackageReference>
+    <PackageReference Include="LiveCharts.Wpf">
+      <Version>0.9.7</Version>
+    </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.13</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,13 +1,16 @@
-﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
+﻿using System;
 
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.IdentityManagement.Controller;
 using Amazon.AWSToolkit.IdentityManagement.Nodes;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.IdentityManagement
 {
     public class IdentityManagementActivator : AbstractPluginActivator
     {
+        private IIamEntityRepository _iamEntities;
+
         public override string PluginName => "IdentityManagement";
 
         public override void RegisterMetaNodes()
@@ -64,6 +67,21 @@ namespace Amazon.AWSToolkit.IdentityManagement
             rootNode.IAMRoleRootViewMetaNode.IAMRoleViewMetaNode.OnDelete =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteRoleController>().Execute);
 
+        }
+
+        public override object QueryPluginService(Type serviceType)
+        {
+            if (serviceType == typeof(IIamEntityRepository))
+            {
+                if (_iamEntities == null)
+                {
+                    _iamEntities = new IamEntityRepository(ToolkitContext);
+                }
+
+                return _iamEntities;
+            }
+
+            return null;
         }
     }
 }

@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 
+using Amazon.AWSToolkit.Publish.Models.Configuration;
+
 namespace Amazon.AWSToolkit.Publish.Models
 {
     /// <summary>
@@ -13,9 +15,9 @@ namespace Amazon.AWSToolkit.Publish.Models
     public class PropertyTemplateSelector : DataTemplateSelector
     {
         /// <summary>
-        /// The editor control that renders nothing in the space where an editor would otherwise be
+        /// The editor control that renders nothing in the space where an editor would otherwise be, then renders any children it has
         /// </summary>
-        public DataTemplate BlankEditor { get; set; }
+        public DataTemplate ParentEditor { get; set; }
 
         /// <summary>
         /// Represents the editor control for a numeric value
@@ -33,9 +35,21 @@ namespace Amazon.AWSToolkit.Publish.Models
         public DataTemplate BooleanEditor { get; set; }
 
         /// <summary>
+        /// Represents a UI for properties the Toolkit doesn't know how to handle
+        /// </summary>
+        public DataTemplate UnsupportedTypeEditor { get; set; }
+
+        /// <summary>
         /// Represents the editor control for an enum value
         /// </summary>
         public DataTemplate EnumEditor { get; set; }
+
+        /// <summary>
+        /// Represents the editor control for IAM Role properties
+        /// </summary>
+        public DataTemplate IamRoleEditor { get; set; }
+
+        public DataTemplate VpcEditor { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -44,12 +58,27 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return null;
             }
 
+            if (configurationDetail.Type == typeof(UnsupportedType))
+            {
+                return UnsupportedTypeEditor;
+            }
+
             if (configurationDetail.Type == typeof(object))
             {
+                if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.IamRole)
+                {
+                    return IamRoleEditor;
+                }
+
+                if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.Vpc)
+                {
+                    return VpcEditor;
+                }
+
                 // TODO : Add custom editors here based on configurationDetail.TypeHint
 
                 // Show nothing -- the child details will be rendered by default
-                return BlankEditor;
+                return ParentEditor;
             }
 
             if (configurationDetail.ValueMappings?.Any() ?? false)

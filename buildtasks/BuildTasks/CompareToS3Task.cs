@@ -316,7 +316,7 @@ namespace BuildTasks
             var filesOnly = filePaths.Except(keyPaths, StringComparer.Ordinal).ToList();
             var common = keyPaths.Intersect(filePaths).ToList();
 
-            if (keys.Count != files.Count)
+            if (keysOnly.Count != 0 || filesOnly.Count != 0)
             {
                 Task.Log.LogMessage("Difference in number of keys ({0}) and files ({1})", keys.Count, files.Count);
                 Task.Log.LogMessage("Unique S3 keys: " + string.Join(", ", keysOnly));

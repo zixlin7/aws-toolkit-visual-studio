@@ -270,6 +270,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Repositories\InstanceTypeRepository.cs" />
     <Compile Include="Utils\CommonImageFilters.cs" />
     <Compile Include="Utils\PlatformPicker.cs" />
     <Compile Include="Validators\InstanceNameValidator.cs" />
@@ -453,6 +454,7 @@
     <Compile Include="View\ViewVPCsControl.xaml.cs">
       <DependentUpon>ViewVPCsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VpcRepository.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -915,5 +917,6 @@
       <Version>2.0.13</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -11,7 +11,7 @@
         <Icon>Resources\Package.ico</Icon>
         <PreviewImage>Resources\aws.png</PreviewImage>
         <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CodeArtifact;CodeCommit;DynamoDB;EC2;ECR;ECS;IAM;Lambda;S3;Serverless;SNS;SQS</Tags>
-        <Preview>true</Preview>
+        <Preview>false</Preview>
     </Metadata>
     <Installation AllUsers="true">
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">

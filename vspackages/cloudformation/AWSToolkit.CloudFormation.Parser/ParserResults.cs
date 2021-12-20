@@ -4,18 +4,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
 {
     public class ParserResults
     {
-        public ParserResults(TemplateToken rootTemplateToken,
-            IEnumerable<TemplateToken> highlightedTemplateTokens,
+        public ParserResults(IEnumerable<TemplateToken> highlightedTemplateTokens,
             IEnumerable<IntellisenseToken> intellisenseTokens,
-            int intellisenseStartingPosition, int intellisenseEndingPosition,
-            IEnumerable<ErrorToken> errorTokens)
+            int intellisenseStartingPosition, int intellisenseEndingPosition)
         {
-            this.RootTemplateToken = rootTemplateToken;
             this._highlightedTemplateTokens = highlightedTemplateTokens;
             this._intellisenseTokens = intellisenseTokens;
             this.IntellisenseStartingPosition = intellisenseStartingPosition;
             this.IntellisenseEndingPosition = intellisenseEndingPosition;
-            this._errorTokens = errorTokens;
         }
 
         IEnumerable<TemplateToken> _highlightedTemplateTokens;
@@ -23,14 +19,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
 
         IEnumerable<IntellisenseToken> _intellisenseTokens;
         public IEnumerable<IntellisenseToken> IntellisenseTokens => this._intellisenseTokens;
-
-        public TemplateToken RootTemplateToken
-        {
-            get;
-        }
-
-        IEnumerable<ErrorToken> _errorTokens;
-        public IEnumerable<ErrorToken> ErrorTokens => this._errorTokens;
 
         public int IntellisenseStartingPosition
         {

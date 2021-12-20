@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Regions;
@@ -58,8 +59,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 }
             };
 
-        private readonly ApplyConfigSettingsOutput _sampleSetOptionSettingOutput =
-            new ApplyConfigSettingsOutput();
+        private readonly ValidationResult _sampleValidationResult =
+            new ValidationResult();
 
         private readonly GetDeploymentDetailsOutput _deploymentDetails;
 
@@ -867,23 +868,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await SetupPublishView();
             _deployToolController.Setup(mock =>
-                mock.ApplyConfigSettings(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
-                    It.IsAny<CancellationToken>())).ReturnsAsync(_sampleSetOptionSettingOutput);
+                mock.ApplyConfigSettingsAsync(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
+                    It.IsAny<CancellationToken>())).ReturnsAsync(_sampleValidationResult);
 
-            var response = await _sut.SetTargetConfiguration(_sampleConfigurationDetails[0], _cancelToken);
+            var validation = await _sut.SetTargetConfigurationAsync(_sampleConfigurationDetails[0], _cancelToken);
 
             _deployToolController.Verify(
-                mock => mock.ApplyConfigSettings(_sampleSessionId, _sampleConfigurationDetails[0],
+                mock => mock.ApplyConfigSettingsAsync(_sampleSessionId, _sampleConfigurationDetails[0],
                     _cancelToken), Times.Once);
-            Assert.Empty(response);
+            Assert.False(validation.HasErrors());
         }
 
         [Fact]
         public async Task SetTargetConfiguration_NoSession()
         {
-            var response = await _sut.SetTargetConfiguration(_sampleConfigurationDetails[0], _cancelToken);
-
-            Assert.True(!string.IsNullOrWhiteSpace(response));
+            await Assert.ThrowsAsync<Exception>(async () =>
+            {
+                await _sut.SetTargetConfigurationAsync(_sampleConfigurationDetails[0], _cancelToken);
+            });
         }
 
         [Fact]
@@ -891,14 +893,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await SetupPublishView();
             _deployToolController.Setup(mock =>
-                    mock.ApplyConfigSettings(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
+                    mock.ApplyConfigSettingsAsync(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
                         It.IsAny<CancellationToken>()))
                 .Throws(new Exception("simulated service error"));
 
-            var response = await _sut.SetTargetConfiguration(_sampleConfigurationDetails[0], _cancelToken);
-
-            Assert.True(!string.IsNullOrWhiteSpace(response));
-            Assert.Equal("simulated service error", response);
+            await Assert.ThrowsAsync<Exception>(async () =>
+            {
+                await _sut.SetTargetConfigurationAsync(_sampleConfigurationDetails[0], _cancelToken);
+            });
         }
 
         [Fact]
@@ -911,21 +913,20 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 Id = "id", Name = "Name", Parent = new ConfigurationDetail {Id = "parentid", Name = "Parent Name"}
             };
 
-            var failedSetOptionSettingOutput = new ApplyConfigSettingsOutput
-            {
-                FailedConfigUpdates = new Dictionary<string, string>() {{"parentid.id", "sample failure message"}}
-            };
-            _deployToolController.Setup(mock =>
-                mock.ApplyConfigSettings(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
-                    It.IsAny<CancellationToken>())).ReturnsAsync(failedSetOptionSettingOutput);
+            var failedValidation = new ValidationResult();
+            failedValidation.AddError("parentid.id", "sample failure message");
 
-            var response = await _sut.SetTargetConfiguration(configDetail, _cancelToken);
+            _deployToolController.Setup(mock =>
+                mock.ApplyConfigSettingsAsync(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
+                    It.IsAny<CancellationToken>())).ReturnsAsync(failedValidation);
+
+            var validation = await _sut.SetTargetConfigurationAsync(configDetail, _cancelToken);
 
             _deployToolController.Verify(
-                mock => mock.ApplyConfigSettings(_sampleSessionId, configDetail, _cancelToken),
+                mock => mock.ApplyConfigSettingsAsync(_sampleSessionId, configDetail, _cancelToken),
                 Times.Once);
 
-            Assert.Equal("sample failure message", response);
+            Assert.Equal("sample failure message", validation.GetError(validation.GetErrantDetailIds().First()));
         }
 
         [Fact]
@@ -1065,7 +1066,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task ValidateTargetConfigurationsAsync()
         {
-            await SetupForSetTargetConfigurations(_sampleSetOptionSettingOutput);
+            await SetupForSetTargetConfigurations(_sampleValidationResult);
 
             var response = await _sut.ValidateTargetConfigurationsAsync();
 
@@ -1082,7 +1083,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task ValidateTargetConfigurationsAsync_WhenExceptionThrown()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock => mock.ApplyConfigSettings(It.IsAny<string>(),
+            _deployToolController.Setup(mock => mock.ApplyConfigSettingsAsync(It.IsAny<string>(),
                 It.IsAny<IList<ConfigurationDetail>>(), It.IsAny<CancellationToken>())).Throws(new Exception("error"));
 
             await Assert.ThrowsAsync<Exception>(async () => await _sut.ValidateTargetConfigurationsAsync());
@@ -1093,11 +1094,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             var problemDetail = _sampleConfigurationDetails[0];
 
-            var settingsOutput = new ApplyConfigSettingsOutput()
-            {
-                FailedConfigUpdates = new Dictionary<string, string> { { problemDetail.GetLeafId(), "error" } }
-            };
-            await SetupForSetTargetConfigurations(settingsOutput);
+            var validationResult = new ValidationResult();
+            validationResult.AddError(problemDetail.GetLeafId(), "error");
+            await SetupForSetTargetConfigurations(validationResult);
 
             var response = await _sut.ValidateTargetConfigurationsAsync();
 
@@ -1121,11 +1120,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             var problemChild = detail.Children.First();
 
-            var settingsOutput = new ApplyConfigSettingsOutput()
-            {
-                FailedConfigUpdates = new Dictionary<string, string> { { problemChild.GetLeafId(), "child-error" } }
-            };
-            await SetupForSetTargetConfigurations(settingsOutput);
+            var validationResult = new ValidationResult();
+            validationResult.AddError(problemChild.GetLeafId(), "child-error");
+            await SetupForSetTargetConfigurations(validationResult);
 
             var response = await _sut.ValidateTargetConfigurationsAsync();
 
@@ -1133,12 +1130,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Equal("child-error", problemChild.ValidationMessage);
         }
 
-        private async Task SetupForSetTargetConfigurations(ApplyConfigSettingsOutput settingsOutput)
+        private async Task SetupForSetTargetConfigurations(ValidationResult validationResult)
         {
             await SetupPublishView();
             _sut.ConfigurationDetails = _sampleConfigurationDetails;
-            _deployToolController.Setup(mock => mock.ApplyConfigSettings(It.IsAny<string>(),
-                It.IsAny<IList<ConfigurationDetail>>(), It.IsAny<CancellationToken>())).ReturnsAsync(settingsOutput);
+            _deployToolController.Setup(mock => mock.ApplyConfigSettingsAsync(It.IsAny<string>(),
+                It.IsAny<IList<ConfigurationDetail>>(), It.IsAny<CancellationToken>())).ReturnsAsync(validationResult);
         }
 
         private static ObservableCollection<ConfigurationDetail> CreateSampleConfigurationDetails(int amount,

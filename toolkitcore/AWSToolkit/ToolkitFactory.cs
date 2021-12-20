@@ -16,6 +16,8 @@ using Amazon.AWSToolkit.PluginServices.Activators;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+
 using log4net;
 
 namespace Amazon.AWSToolkit
@@ -111,10 +113,10 @@ namespace Amazon.AWSToolkit
                         )
                     );
 
-                    // We might not have initialized enough to send telemetry, but we should try.
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(MetricKeys.ErrorInitializingAwsViewModel, 1);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    toolkitContext.TelemetryLogger.RecordToolkitInit(new ToolkitInit()
+                    {
+                        Result = Result.Failed
+                    });
                 }
 
                 LOGGER.Info("ToolkitFactory initialized");

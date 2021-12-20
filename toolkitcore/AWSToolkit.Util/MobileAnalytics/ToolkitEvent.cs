@@ -12,9 +12,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ViewName,
         ReadableTimestamp,
         NavigationReason,
-        DeploymentNetCoreTargetFramework,
-        WebApplicationBuildSuccess,
-        WebApplicationBuildError,
 
         FileFetcherUrlSuccess,
         FileFetcherUrlFailure,
@@ -24,13 +21,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaNETCoreNewProject,
         LambdaNETCoreNewProjectType,
         LambdaNETCoreNewProjectLanguage,
-
-        LambdaFunctionTargetFramework,
-        LambdaFunctionMemorySize,
-
-        LambdaFunctionDeploymentSuccess,
-        LambdaFunctionDeploymentError,
-        LambdaFunctionDeploymentErrorDetail,
 
         LambdaFunctionIAMRoleCleanup,
 
@@ -54,28 +44,14 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         FirstExperienceImport,
         FirstExperienceLinkClick,
 
-        ECSPublishContainerWizardStart,
-        ECSPublishContainerWizardFinish,
-        ECSPublishContainerDockerBase,
-
-        ECSConfiguredELB,
-        ECSDeleteService,
-
         XRayEnabled,
         BeanstalkEnhancedHealth
     };
 
     public enum MetricKeys
     {
-        NumberOfServicesUsed,
-        TimeSpentInView,
         PageIndex,
         GroupIndex,
-        DeploymentBundleSize,
-        LambdaDeploymentBundleSize,
-
-        ErrorInitializingAwsViewModel,
-        ErrorLoadingProfiles,
     };
 
     public class ToolkitEvent

@@ -1,14 +1,34 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
 
 using Xunit;
 
 namespace Amazon.AWSToolkit.Tests.Publishing.Models
 {
+    public class TestConfigurationDetail : ConfigurationDetail
+    {
+        public new void SuspendDetailChangeEvents()
+        {
+            base.SuspendDetailChangeEvents();
+        }
+
+        public new void SuspendDetailChangeEvents(Action action)
+        {
+            base.SuspendDetailChangeEvents(action);
+        }
+
+        public new void ResumeDetailChangeEvents()
+        {
+            base.ResumeDetailChangeEvents();
+        }
+    }
+
     public class ConfigurationDetailTests
     {
         private readonly ConfigurationDetail _sut = new ConfigurationDetail();
@@ -187,6 +207,105 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             var details = detail.GetSelfAndDescendants().ToList();
 
             Assert.Equal(8, details.Count);
+        }
+
+        [Fact]
+        public void AddChild()
+        {
+            _sut.AddChild(ConfigurationDetailBuilder.Create().WithSampleData().Build());
+            Assert.Equal(1, _sut.Children.Count);
+        }
+
+        [Fact]
+        public void ClearChildren()
+        {
+            _sut.AddChild(ConfigurationDetailBuilder.Create().WithSampleData().Build());
+            _sut.ClearChildren();
+            Assert.Empty(_sut.Children);
+        }
+
+        [Fact]
+        public void SetValueInvokesDetailChanged()
+        {
+            var raisedEvent = AssertSetValueRaisesDetailChanged(_sut, _sut);
+            
+            Assert.Equal(_sut, raisedEvent.Sender);
+            Assert.Equal(_sut, raisedEvent.Arguments.Detail);
+        }
+
+        [Fact]
+        public void SetChildValueInvokesDetailChanged()
+        {
+            var childDetail = ConfigurationDetailBuilder.Create().WithSampleData().Build();
+            _sut.AddChild(childDetail);
+
+            var raisedEvent = AssertSetValueRaisesDetailChanged(_sut, childDetail);
+
+            Assert.Equal(_sut, raisedEvent.Sender);
+            Assert.Equal(childDetail, raisedEvent.Arguments.Detail);
+        }
+
+        private Assert.RaisedEvent<DetailChangedEventArgs> AssertSetValueRaisesDetailChanged(ConfigurationDetail root, ConfigurationDetail detailToUpdate)
+        {
+            return Assert.Raises<DetailChangedEventArgs>(
+                handler => root.DetailChanged += handler,
+                handler => root.DetailChanged -= handler,
+                () => detailToUpdate.Value = "some-value"
+            );
+        }
+
+        [Fact]
+        public void RemovedChildDoesNotInvokeDetailChanged()
+        {
+            var childDetail = ConfigurationDetailBuilder.Create().WithSampleData().Build();
+            _sut.AddChild(childDetail);
+            _sut.ClearChildren();
+
+            AssertSetValueDoesNotRaiseDetailChanged(_sut, childDetail);
+        }
+
+        private void AssertSetValueDoesNotRaiseDetailChanged(ConfigurationDetail root, ConfigurationDetail detailToUpdate)
+        {
+            bool eventInvoked = false;
+            root.DetailChanged += (sender, args) => eventInvoked = true;
+
+            detailToUpdate.Value = "some-value";
+            Assert.False(eventInvoked);
+        }
+
+        [Fact]
+        public void SuspendDetailChangeEvents()
+        {
+            var sut = new TestConfigurationDetail();
+            sut.SuspendDetailChangeEvents();
+
+            AssertSetValueDoesNotRaiseDetailChanged(sut, sut);
+        }
+
+        [Fact]
+        public void SuspendDetailChangeEvents_Action()
+        {
+            var sut = new TestConfigurationDetail();
+
+            bool eventInvoked = false;
+            sut.DetailChanged += (sender, args) => eventInvoked = true;
+
+            sut.SuspendDetailChangeEvents(() =>
+            {
+                sut.Value = "some-value";
+            });
+
+            Assert.False(eventInvoked);
+        }
+
+        [Fact]
+        public void ResumeDetailChangeEvents()
+        {
+            var sut = new TestConfigurationDetail();
+            sut.SuspendDetailChangeEvents();
+            sut.ResumeDetailChangeEvents();
+
+            AssertSetValueRaisesDetailChanged(sut, sut);
         }
     }
 }

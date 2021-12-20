@@ -68,6 +68,12 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
+            if (ToolkitFactory.Instance == null)
+            {
+                _timer.Start();
+                return;
+            }
+
             ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
             {
                 ThreadHelper.ThrowIfNotOnUIThread();

@@ -2,10 +2,6 @@ This edition of the toolkit is for Visual Studio 2022. There is a separate [AWS 
 
 For issues or questions about this extension please open a GitHub issue at https://github.com/aws/aws-toolkit-visual-studio.
 
-## Preview Edition
-
-This version of the AWS Toolkit for Visual Studio 2022 is in preview. Not all of the Toolkit functionality is available - see https://github.com/aws/aws-toolkit-visual-studio/issues/167 for details.
-
 ## Overview
 
 The AWS Toolkit provides Visual Studio project templates that you can use as starting points for AWS console and web applications. As your application runs, you can use the AWS Explorer to view the AWS resources used by the application. For example, if your application creates buckets in Amazon S3, you can use AWS Explorer to view those buckets and their contents. If you need to provision AWS resources for your application, you can create them manually using the AWS Explorer or use the CloudFormation templates included with the AWS Toolkit to provision web application environments hosted on Amazon EC2.

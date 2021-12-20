@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.ECS.View;
@@ -26,10 +28,17 @@ namespace Amazon.AWSToolkit.ECS.Controller
         IAmazonEC2 _ec2Client;
         string _clusterArn;
 
+        public ToolkitContext ToolkitContext;
+
+        public ViewClusterController(ToolkitContext toolkitContext)
+        {
+            this.ToolkitContext = toolkitContext;
+        }
+
         protected override void DisplayView()
         {
             this._control = new ViewClusterControl(this);
-            ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
+            ToolkitContext.ToolkitHost.OpenInEditor(this._control);
         }
 
         public void LoadModel()
@@ -51,13 +60,13 @@ namespace Amazon.AWSToolkit.ECS.Controller
             {
                 var msg = "Failed to query details for cluster with ARN " + clusterViewModel.Cluster.ClusterArn;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError(msg, "Resource Query Failure");
+                ToolkitContext.ToolkitHost.ShowError(msg, "Resource Query Failure");
             }
         }
         
         public void DeleteService(ServiceWrapper service)
         {
-             var controller = new DeleteServiceConfirmationController(this.ECSClient, this._elbClient, this._ec2Client, this.Model, service);
+            var controller = new DeleteServiceConfirmationController(this.ECSClient, this._elbClient, this._ec2Client, this.Model, service, ToolkitContext);
             if(controller.Execute())
             {
                 this.Refresh();
@@ -118,7 +127,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             {
                 var msg = "Error fetching services for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
 
             try
@@ -129,7 +138,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             {
                 var msg = "Error fetching tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
 
             try
@@ -140,7 +149,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             {
                 var msg = "Error fetching scheduled tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
 
         }
@@ -249,7 +258,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         private void UpdateServicesWithLoadBalancerInfo()
         {
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action)(() =>
+            ToolkitContext.ToolkitHost.BeginExecuteOnUIThread((System.Action)(() =>
             {
 
                 foreach (var service in this.Model.Services)
@@ -391,7 +400,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     Cluster = this._clusterArn,
                     Task = task.NativeTask.TaskArn
                 });
-                ToolkitFactory.Instance.ShellProvider.UpdateStatus("Stopped task " + task.NativeTask.TaskArn);
+                ToolkitContext.ToolkitHost.UpdateStatus("Stopped task " + task.NativeTask.TaskArn);
             }
         }
 
@@ -421,13 +430,13 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 }
 
                 this._cweClient.RemoveTargets(removeTargetsRequest);
-                ToolkitFactory.Instance.ShellProvider.UpdateStatus("Removing targets from rule " + task.NativeRule.Name);
+                ToolkitContext.ToolkitHost.UpdateStatus("Removing targets from rule " + task.NativeRule.Name);
 
                 this._cweClient.DeleteRule(new Amazon.CloudWatchEvents.Model.DeleteRuleRequest
                 {
                     Name = task.NativeRule.Name
                 });
-                ToolkitFactory.Instance.ShellProvider.UpdateStatus("Deleted rule " + task.NativeRule.Name);
+                ToolkitContext.ToolkitHost.UpdateStatus("Deleted rule " + task.NativeRule.Name);
             }
         }
     }

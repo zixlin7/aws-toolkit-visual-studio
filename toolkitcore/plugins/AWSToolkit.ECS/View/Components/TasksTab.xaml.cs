@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             {
                 var msg = "Error fetching tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
 
         private void Stop_Click(object sender, RoutedEventArgs evnt)
         {
-            if (!ToolkitFactory.Instance.ShellProvider.Confirm("Stop Task(s)", "Are you want to stop the selected task(s)?"))
+            if (!this._controller.ToolkitContext.ToolkitHost.Confirm("Stop Task(s)", "Are you want to stop the selected task(s)?"))
                 return;
 
             try
@@ -67,13 +67,13 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             {
                 var msg = "Error stopping tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
         }
 
         private void StopAll_Click(object sender, RoutedEventArgs evnt)
         {
-            if (!ToolkitFactory.Instance.ShellProvider.Confirm("Stop All Tasks", "Are you want to stop all tasks?"))
+            if (!this._controller.ToolkitContext.ToolkitHost.Confirm("Stop All Tasks", "Are you want to stop all tasks?"))
                 return;
 
             try
@@ -85,7 +85,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             {
                 var msg = "Error stopping tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
         }
 

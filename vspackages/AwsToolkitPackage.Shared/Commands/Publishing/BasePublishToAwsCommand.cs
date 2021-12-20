@@ -100,12 +100,25 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
         {
             bool success = false;
             string accountId = ToolkitContext.ConnectionManager.ActiveAccountId;
-            string regionId = ToolkitContext.ConnectionManager.ActiveRegion.Id;
+            string regionId = ToolkitContext.ConnectionManager.ActiveRegion?.Id;
 
             try
             {
                 // Working with EnvDTE.Project should be done on UI Thread
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                // Until users can manage their connection in the Publish experience,
+                // prevent entry if credentials are not already set up, in order
+                // to reduce confusion caused by entering into a blank form.
+                if (!ToolkitContext.ConnectionManager.IsValidConnectionSettings())
+                {
+                    ToolkitContext.ToolkitHost.ShowError(
+                        "Unable to start Publish to AWS",
+                        "AWS Credentials are required to publish your project to AWS.\n\nSelect a valid credentials - region pair in the AWS Explorer before starting the Publish to AWS experience.");
+
+                    success = false;
+                    return;
+                }
 
                 var project = GetSelectedProject();
 

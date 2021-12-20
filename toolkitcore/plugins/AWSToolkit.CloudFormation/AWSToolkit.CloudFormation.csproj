@@ -52,11 +52,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>4.5</RequiredTargetFramework>
     </Reference>
@@ -91,30 +86,23 @@
     <Compile Include="Model\ViewDeploymentLogModel.cs" />
     <Compile Include="Model\ViewStackModel.cs" />
     <Compile Include="Util\CloudFormationUtil.cs" />
+    <Compile Include="ViewModels\ApplicationLoadBalancerResourceChartsViewModel.cs" />
+    <Compile Include="ViewModels\DesignSampleResourceChartsViewModel.cs" />
+    <Compile Include="ViewModels\RdsInstanceResourceChartsViewModel.cs" />
+    <Compile Include="ViewModels\Ec2InstanceResourceChartsViewModel.cs" />
+    <Compile Include="ViewModels\AutoScalingResourceChartsViewModel.cs" />
+    <Compile Include="ViewModels\LoadBalancerResourceChartsViewModel.cs" />
+    <Compile Include="ViewModels\ResourceChartsViewModel.cs" />
     <Compile Include="View\Components\DeploymentNotificationPanel.xaml.cs">
       <DependentUpon>DeploymentNotificationPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Components\ResourceCharts\APIGatewayCharts.xaml.cs">
-      <DependentUpon>APIGatewayCharts.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Components\ResourceCharts\LambdaCharts.xaml.cs">
-      <DependentUpon>LambdaCharts.xaml</DependentUpon>
+    <Compile Include="ViewModels\LambdaResourceChartsViewModel.cs" />
+    <Compile Include="ViewModels\DesignSampleStackMonitoringViewModel.cs" />
+    <Compile Include="View\Components\ResourceCharts\ResourceCharts.xaml.cs">
+      <DependentUpon>ResourceCharts.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Components\StackConfigSavedControl.xaml.cs">
       <DependentUpon>StackConfigSavedControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Components\ResourceCharts\AutoScalingCharts.xaml.cs">
-      <DependentUpon>AutoScalingCharts.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Components\ResourceCharts\BaseResourceCharts.cs" />
-    <Compile Include="View\Components\ResourceCharts\InstanceCharts.xaml.cs">
-      <DependentUpon>InstanceCharts.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Components\ResourceCharts\LoadBalancerCharts.xaml.cs">
-      <DependentUpon>LoadBalancerCharts.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Components\ResourceCharts\RDSInstanceCharts.xaml.cs">
-      <DependentUpon>RDSInstanceCharts.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Components\ResourceDetails\AutoScalingGroupDetails.xaml.cs">
       <DependentUpon>AutoScalingGroupDetails.xaml</DependentUpon>
@@ -134,6 +122,7 @@
     <Compile Include="View\Components\StackMonitoringControl.xaml.cs">
       <DependentUpon>StackMonitoringControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\StackMonitoringViewModel.cs" />
     <Compile Include="View\Components\StackResourceDetailHostControl.xaml.cs">
       <DependentUpon>StackResourceDetailHostControl.xaml</DependentUpon>
     </Compile>
@@ -242,33 +231,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Components\ResourceCharts\APIGatewayCharts.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Components\ResourceCharts\LambdaCharts.xaml">
+    <Page Include="View\Components\ResourceCharts\ResourceCharts.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\StackConfigSavedControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Components\ResourceCharts\AutoScalingCharts.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Components\ResourceCharts\InstanceCharts.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Components\ResourceCharts\LoadBalancerCharts.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Components\ResourceCharts\RDSInstanceCharts.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\ResourceDetails\AutoScalingGroupDetails.xaml">
       <SubType>Designer</SubType>
@@ -410,5 +379,6 @@
       <Version>2.0.13</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

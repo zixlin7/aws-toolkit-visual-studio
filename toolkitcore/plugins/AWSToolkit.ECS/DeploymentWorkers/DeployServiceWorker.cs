@@ -2,7 +2,6 @@
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.Util;
 using Amazon.AWSToolkit.ECS.WizardPages;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.CloudWatchLogs;
 using Amazon.EC2;
 using Amazon.EC2.Model;
@@ -378,10 +377,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 changeTracker.Success = false;
                 changeTracker.ErrorMessage = e.Message;
             }
-
-            ToolkitEvent evnt = new ToolkitEvent();
-            evnt.AddProperty(AttributeKeys.ECSConfiguredELB, changeTracker.Success.ToString());
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
             return changeTracker;
         }

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
@@ -163,6 +164,8 @@ namespace Amazon.AWSToolkit.Shared
         /// <param name="action"></param>
         void ExecuteOnUIThread(Action action);
 
+        void ExecuteOnUIThread(Func<Task> asyncFunc);
+
         T ExecuteOnUIThread<T>(Func<Task<T>> asyncFunc);
 
         /// <summary>
@@ -249,6 +252,11 @@ namespace Amazon.AWSToolkit.Shared
         /// Caller is responsible for disposing.
         /// </summary>
         Task<IProgressDialog> CreateProgressDialog();
+
+        /// <summary>
+        /// Get the factory responsible for creating Toolkit dialogs
+        /// </summary>
+        IDialogFactory GetDialogFactory();
     }
 
     /// <summary>

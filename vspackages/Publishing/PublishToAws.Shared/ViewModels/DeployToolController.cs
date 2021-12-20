@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 
 using AWS.Deploy.ServerMode.Client;
-
-using log4net;
 
 namespace Amazon.AWSToolkit.Publish.ViewModels
 {
@@ -34,15 +32,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         Task<IList<ConfigurationDetail>> GetConfigSettings(string sessionId, CancellationToken cancellationToken);
 
 
-        Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId, IList<ConfigurationDetail> configDetails,
+        Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId, IEnumerable<ConfigurationDetail> configDetails,
             CancellationToken token);
 
         Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,
             CancellationToken cancellationToken);
 
-        Task<ApplyConfigSettingsOutput> ApplyConfigSettings(string sessionId, ConfigurationDetail configurationDetail, CancellationToken cancellationToken);
+        Task<ValidationResult> ApplyConfigSettingsAsync(string sessionId, ConfigurationDetail configurationDetail, CancellationToken cancellationToken);
 
-        Task<ApplyConfigSettingsOutput> ApplyConfigSettings(string sessionId,
+        Task<ValidationResult> ApplyConfigSettingsAsync(string sessionId,
             IList<ConfigurationDetail> configurationDetails, CancellationToken cancellationToken);
 
         Task SetDeploymentTarget(string sessionId, string stackName, string recipeId, bool isRepublish, CancellationToken cancellationToken);
@@ -55,10 +53,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
     public class DeployToolController : IDeployToolController
     {
         private readonly IRestAPIClient _client;
+        private readonly ConfigurationDetailFactory _configurationDetailFactory;
 
-        public DeployToolController(IRestAPIClient client)
+        public DeployToolController(IRestAPIClient client, ConfigurationDetailFactory configurationDetailFactory)
         {
             _client = client;
+            _configurationDetailFactory = configurationDetailFactory;
         }
 
         public async Task<SessionDetails> StartSessionAsync(string region, string projectPath, CancellationToken cancellationToken)
@@ -166,16 +166,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             if (response?.OptionSettings?.Any() ?? false)
             {
-                configSettings.AddRange(response.OptionSettings
-                    .Select(setting => setting.ToConfigurationDetail())
-                );
+                configSettings.AddRange(response.OptionSettings.Select(_configurationDetailFactory.CreateFrom));
             }
 
             return configSettings;
         }
 
         public async Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId,
-            IList<ConfigurationDetail> configDetails,
+            IEnumerable<ConfigurationDetail> configDetails,
             CancellationToken token)
         {
             var settings = await Task.WhenAll(configDetails.Select(async setting =>
@@ -191,16 +189,21 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 var children = await UpdateConfigSettingValuesAsync(sessionId, detail.Children, token)
                     .ConfigureAwait(false);
-                detail.Children.Clear();
-                children.ToList().ForEach(detail.Children.Add);
+                detail.ClearChildren();
+                children.ToList().ForEach(detail.AddChild);
             }
-            else if (!detail.HasValueMappings())
+            else if (IsTypeHintSupported(detail) && !detail.HasValueMappings())
             {
                 detail.ValueMappings = await GetConfigSettingValuesAsync(sessionId, detail.GetLeafId(),
                     token).ConfigureAwait(false);
             }
 
             return detail;
+        }
+
+        private bool IsTypeHintSupported(ConfigurationDetail detail)
+        {
+            return detail.Type == typeof(string) && !string.IsNullOrEmpty(detail.TypeHint);
         }
 
         public async Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,
@@ -227,13 +230,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return new Dictionary<string, string>();
         }
 
-        public async Task<ApplyConfigSettingsOutput> ApplyConfigSettings(string sessionId, ConfigurationDetail configurationDetail, CancellationToken cancellationToken)
+        public async Task<ValidationResult> ApplyConfigSettingsAsync(string sessionId, ConfigurationDetail configurationDetail, CancellationToken cancellationToken)
         {
-            return await ApplyConfigSettings(sessionId, new List<ConfigurationDetail> {configurationDetail},
-               cancellationToken);
+            return await ApplyConfigSettingsAsync(sessionId, new List<ConfigurationDetail> { configurationDetail }, cancellationToken);
         }
 
-        public async Task<ApplyConfigSettingsOutput> ApplyConfigSettings(string sessionId, IList<ConfigurationDetail> configurationDetails, CancellationToken cancellationToken)
+        public async Task<ValidationResult> ApplyConfigSettingsAsync(string sessionId, IList<ConfigurationDetail> configurationDetails, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(sessionId))
             {
@@ -250,7 +252,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             var response = await _client.ApplyConfigSettingsAsync(sessionId, input, cancellationToken)
                 .ConfigureAwait(false);
 
-            return response;
+            var validation = new ValidationResult();
+
+            if (response.FailedConfigUpdates != null)
+            {
+                foreach (var detailIdToError in response.FailedConfigUpdates)
+                {
+                    validation.AddError(detailIdToError.Key, detailIdToError.Value);
+                }
+            }
+
+            return validation;
         }
 
         public async Task SetDeploymentTarget(string sessionId, string stackName, string recipeId, bool isRepublish, CancellationToken cancellationToken)
@@ -283,86 +295,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
 
             return new SetDeploymentTargetInput { NewDeploymentName = stackName, NewDeploymentRecipeId = recipeId };
-        }
-    }
-
-    public static class DeployToolControllerExtensions
-    {
-        public static ConfigurationDetail ToConfigurationDetail(this OptionSettingItemSummary optionSettingItem, ConfigurationDetail parentDetail = null)
-        {
-            var detail = new ConfigurationDetail {
-                Id = optionSettingItem.Id,
-                Name = optionSettingItem.Name,
-                Description = optionSettingItem.Description,
-                Type = GetOptionSettingItemType(optionSettingItem.Type),
-                TypeHint = optionSettingItem.TypeHint,
-                DefaultValue = optionSettingItem.Value,
-                // TODO : use category once API provides it. (View is already set to render it)
-                Category = string.Empty,
-                Advanced = optionSettingItem.Advanced,
-                ReadOnly = optionSettingItem.ReadOnly,
-                Visible = optionSettingItem.Visible,
-                SummaryDisplayable = optionSettingItem.SummaryDisplayable,
-                Parent = parentDetail,
-            };
-
-            detail.ValueMappings = GetValueMappings(optionSettingItem);
-            detail.Value = GetValue(optionSettingItem, detail);
-
-            // Recurse all child data
-            if (optionSettingItem.Type.Equals("Object"))
-            {
-               optionSettingItem.ChildOptionSettings?
-                    .Select(child => child.ToConfigurationDetail(detail))
-                    .ToList()
-                    .ForEach(detail.Children.Add);
-            }
-
-            return detail;
-        }
-
-        private static object GetValue(OptionSettingItemSummary optionSettingItem, ConfigurationDetail detail)
-        {
-            if (detail.HasValueMappings())
-            {
-               return Convert.ToString(optionSettingItem.Value, CultureInfo.InvariantCulture);
-            }
-            return optionSettingItem.Value;
-        }
-
-        private static IDictionary<string, string> GetValueMappings(OptionSettingItemSummary optionSettingItem)
-        {
-
-            if (optionSettingItem?.ValueMapping?.Any() ?? false)
-            {
-                return optionSettingItem.ValueMapping;
-            }
-
-            if (optionSettingItem?.AllowedValues?.Any() ?? false)
-            {
-                return optionSettingItem.AllowedValues.ToDictionary(x => x, x => x);
-            }
-
-            return new Dictionary<string, string>();
-        }
-
-        private static Type GetOptionSettingItemType(string type)
-        {
-            switch (type)
-            {
-                case "String":
-                    return typeof(string);
-                case "Int":
-                    return typeof(int);
-                case "Double":
-                    return typeof(double);
-                case "Bool":
-                    return typeof(bool);
-                case "Object":
-                    return typeof(object);
-                default:
-                    throw new UnsupportedOptionSettingItemTypeException($"The Type '{type}' is not supported.");
-            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
@@ -86,6 +87,10 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public void ExecuteOnUIThread(Action action)
         {
 
+        }
+
+        public void ExecuteOnUIThread(Func<Task> asyncFunc)
+        {
         }
 
         public T ExecuteOnUIThread<T>(Func<Task<T>> asyncFunc)
@@ -176,6 +181,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public Task<IProgressDialog> CreateProgressDialog()
         {
             return null;
+        }
+
+        public IDialogFactory GetDialogFactory()
+        {
+            throw new NotImplementedException();
         }
     }
 }

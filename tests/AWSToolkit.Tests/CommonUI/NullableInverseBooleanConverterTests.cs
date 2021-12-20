@@ -17,12 +17,15 @@ namespace AWSToolkit.Tests.CommonUI
         public void Convert(object value, bool? expectedValue)
         {
             Assert.Equal(expectedValue, _sut.Convert(value, typeof(bool?), null, null));
+            Assert.Equal(expectedValue, _sut.Convert(value, typeof(bool), null, null));
+            Assert.Equal(expectedValue, _sut.Convert(value, typeof(Boolean), null, null));
+            Assert.Equal(expectedValue, _sut.Convert(value, typeof(Boolean?), null, null));
         }
 
         [Fact]
         public void ConvertThrowException()
         {
-            Assert.Throws<InvalidOperationException>(() => _sut.Convert(true, typeof(bool), null, null));
+            Assert.Throws<InvalidOperationException>(() => _sut.Convert(true, typeof(int), null, null));
         }
 
 

@@ -3,6 +3,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.EC2.Controller;
+using Amazon.AWSToolkit.EC2.Repositories;
 using Amazon.AWSToolkit.Regions;
 using Amazon.EC2;
 
@@ -11,6 +12,9 @@ namespace Amazon.AWSToolkit.EC2
     public class EC2Activator : AbstractPluginActivator, IAWSEC2
     {
         public override string PluginName => "EC2";
+
+        private IVpcRepository _vpcRepository;
+        private IInstanceTypeRepository _instanceTypeRepository;
 
         public override void RegisterMetaNodes()
         {
@@ -40,7 +44,29 @@ namespace Amazon.AWSToolkit.EC2
         public override object QueryPluginService(Type serviceType)
         {
             if (serviceType == typeof(IAWSEC2))
+            {
                 return this as IAWSEC2;
+            }
+
+            if (serviceType == typeof(IVpcRepository))
+            {
+                if (_vpcRepository == null)
+                {
+                    _vpcRepository = new VpcRepository(ToolkitContext);
+                } 
+
+                return _vpcRepository;
+            }
+
+            if (serviceType == typeof(IInstanceTypeRepository))
+            {
+                if (_instanceTypeRepository == null)
+                {
+                    _instanceTypeRepository = new InstanceTypeRepository(ToolkitContext);
+                } 
+
+                return _instanceTypeRepository;
+            }
 
             return null;
         }

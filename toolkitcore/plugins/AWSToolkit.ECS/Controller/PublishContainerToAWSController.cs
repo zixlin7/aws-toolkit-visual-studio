@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Amazon.AWSToolkit.Navigator;
 using log4net;
@@ -9,7 +10,7 @@ using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.ECS.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
-using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
@@ -183,17 +184,10 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         private void DisplayPublishWizard(Dictionary<string, object> seedProperties)
         {
-            ToolkitEvent evntStart = new ToolkitEvent();
-            evntStart.AddProperty(AttributeKeys.ECSPublishContainerWizardStart, true.ToString());
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evntStart);
+            Stopwatch duration = new Stopwatch();
+            duration.Start();
 
             var baseDockerImage = DetermineImageBase(seedProperties);
-            if(!string.IsNullOrEmpty(baseDockerImage))
-            {
-                ToolkitEvent evntDockerBase = new ToolkitEvent();
-                evntDockerBase.AddProperty(AttributeKeys.ECSPublishContainerDockerBase, baseDockerImage);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evntDockerBase);
-            }
 
             var navigator = ToolkitFactory.Instance.Navigator;
             LoadPreviousSettings(seedProperties);
@@ -224,9 +218,8 @@ namespace Amazon.AWSToolkit.ECS.Controller
             var success = wizard.IsPropertySet(PublishContainerToAWSWizardProperties.WizardResult) && (bool)wizard[PublishContainerToAWSWizardProperties.WizardResult];
             _results = new ActionResults().WithSuccess(success);
 
-            ToolkitEvent evntFinish = new ToolkitEvent();
-            evntFinish.AddProperty(AttributeKeys.ECSPublishContainerWizardFinish, success.ToString());
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evntFinish);
+            duration.Stop();
+            RecordEcsPublishWizardMetric(success, duration.Elapsed.TotalMilliseconds);
         }
 
         private string DetermineImageBase(Dictionary<string, object> seedProperties)
@@ -262,6 +255,15 @@ namespace Amazon.AWSToolkit.ECS.Controller
             {
                 return null;
             }
+        }
+
+        private void RecordEcsPublishWizardMetric(bool result, double duration)
+        {
+            _toolkitContext.TelemetryLogger.RecordEcsPublishWizard(new EcsPublishWizard()
+            {
+                Result = result ? Result.Succeeded : Result.Failed,
+                Duration = duration
+            });
         }
     }
 }

@@ -10,6 +10,7 @@ using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Solutions;
@@ -346,6 +347,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             return t;
         }
 
+        public void ExecuteOnUIThread(Func<System.Threading.Tasks.Task> asyncFunc)
+        {
+            async Task TaskFunc()
+            {
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                await asyncFunc();
+            }
+
+            this._hostPackage.JoinableTaskFactory.Run(TaskFunc);
+        }
+
         public T ExecuteOnUIThread<T>(Func<System.Threading.Tasks.Task<T>> asyncFunc)
         {
             async Task<T> TaskFunc()
@@ -554,6 +566,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     typeof(SVsThreadedWaitDialogFactory)) as IVsThreadedWaitDialogFactory;
             var dialog = new ProgressDialog(dialogFactory);
             return dialog;
+        }
+
+        public IDialogFactory GetDialogFactory()
+        {
+            return new DialogFactory(_hostPackage.ToolkitContext, _hostPackage.JoinableTaskFactory);
         }
 
         #endregion

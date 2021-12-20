@@ -2,7 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
                     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit">
+                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit" 
+                    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+                    xmlns:properties="clr-namespace:Amazon.AWSToolkit.Publish.Views.Properties"
+                    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls;assembly=AWSToolkit">
     <!-- 
         This file defines the "editors" used for each data type used by Publish configuration details. 
         Everything is tied together by PropertyTemplateSelector, which is used in the Configuration View to 
@@ -10,6 +13,13 @@
     -->
 
     <commonUi:VsImages x:Key="VsImages" />
+    <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+
+    <Style x:Key="ConfigDetailItemStyle">
+        <!-- This line below gives the property the full width of the parent control to work with -->
+        <Setter Property="Control.HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
 
     <!-- ValidationErrorTemplate decorates a control, showing a validation message on the screen -->
     <ControlTemplate x:Key="ValidationErrorTemplate">
@@ -51,8 +61,83 @@
         </Grid>
     </ControlTemplate>
 
-    <DataTemplate x:Key="BlankEditor" DataType="{x:Type models:ConfigurationDetail}">
-        <!-- Show nothing -->
+    <DataTemplate x:Key="ConfigDetailDataTemplate" DataType="{x:Type models:ConfigurationDetail}">
+        <!-- UI for a Configuration Detail and its children -->
+        <Grid Margin="0 12 0 6">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsChecked, ElementName=ConfigCheckbox}" Value="False">
+                            <Setter Property="Visibility" Value="{Binding Advanced, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Visible}" Value="false">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ReadOnly}" Value="true">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid.RowDefinitions>
+                <!-- Detail Name -->
+                <RowDefinition Height="Auto" />
+                <!-- Description -->
+                <RowDefinition Height="Auto" />
+                <!-- Value/Control -->
+                <RowDefinition Height="Auto" />
+                <!-- Child Details -->
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock 
+                Grid.Row="0" Grid.Column="0" 
+                VerticalAlignment="Center"
+                FontWeight="Bold"
+                Text="{Binding FullDisplayName}" />
+
+            <TextBlock
+                Grid.Row="1" 
+                Grid.Column="0"
+                Margin="0 6 10 3" 
+                TextWrapping="WrapWithOverflow"
+                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                Text="{Binding Description}">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Style.Triggers>
+                            <!-- If there is no Description, don't take up the vertical space with a blank -->
+                            <DataTrigger Binding="{Binding Description}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Description}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <ContentControl 
+                Grid.Row="2" Grid.Column="0"
+                Margin="0 6 10 3" 
+                HorizontalContentAlignment="Stretch"
+                Content="{Binding .}" ContentTemplateSelector="{DynamicResource PropertyTemplateSelector}" />
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ParentEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <!-- Don't show any value field. Recursively render children. -->
+        <ItemsControl
+            Grid.Row="3" Grid.Column="0"
+            Grid.IsSharedSizeScope="True"
+            Margin="0 0 0 0"
+            ItemsSource="{Binding Children}"
+            ItemTemplate="{DynamicResource ConfigDetailDataTemplate}"
+            ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}" />
     </DataTemplate>
 
     <DataTemplate x:Key="EnumEditor" DataType="{x:Type models:ConfigurationDetail}">
@@ -63,7 +148,7 @@
             SelectedValuePath="Key"
             ItemsSource="{Binding ValueMappings}"
             SelectedValue="{Binding Value, ValidatesOnDataErrors=True}"
-        />
+            />
     </DataTemplate>
     <DataTemplate x:Key="TextEditor" DataType="{x:Type models:ConfigurationDetail}">
         <TextBox 
@@ -84,13 +169,54 @@
             Content="{Binding Name}" />
     </DataTemplate>
 
+    <DataTemplate x:Key="UnsupportedTypeEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <StackPanel
+            Orientation="Vertical"
+            HorizontalAlignment="Stretch"
+            >
+            <TextBlock>
+                <Run Text="This version of the Toolkit is unable to show or modify this property -" />
+                <Run Text="Id: " FontWeight="Bold" />
+                <Run Text="{Binding Id}" />
+            </TextBlock>
+            <TextBlock>
+                <commonUi:BrowserHyperLink 
+                    NavigateUri="{x:Static models:PublishUrls.PublishToAwsIssuesUri}"
+                    ToolTip="{x:Static models:PublishUrls.PublishToAwsIssuesUrl}">
+                    <Run Text="Request support" />
+                </commonUi:BrowserHyperLink>
+                <Run Text="for this property on GitHub" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="Check" />
+                <commonUi:BrowserHyperLink 
+                    NavigateUri="{x:Static urls:GitHubUrls.ReleaseNotesUri}"
+                    ToolTip="{x:Static urls:GitHubUrls.ReleaseNotesUrl}">
+                    <Run Text="release notes" />
+                </commonUi:BrowserHyperLink>
+                <Run Text="to see if a newer Toolkit version supports it" />
+            </TextBlock>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="IamRoleEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:IamRolePropertyControl />
+    </DataTemplate>
+
+    <DataTemplate x:Key="VpcEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:VpcPropertyControl />
+    </DataTemplate>
+
     <models:PropertyTemplateSelector 
         x:Key="PropertyTemplateSelector" 
-        BlankEditor="{StaticResource BlankEditor}"
+        ParentEditor="{StaticResource ParentEditor}"
         TextEditor="{StaticResource TextEditor}"
         NumericEditor="{StaticResource NumericEditor}"
         BooleanEditor="{StaticResource BooleanEditor}"
+        UnsupportedTypeEditor="{StaticResource UnsupportedTypeEditor}"
         EnumEditor="{StaticResource EnumEditor}"
+        IamRoleEditor="{StaticResource IamRoleEditor}"
+        VpcEditor="{StaticResource VpcEditor}"
         />
 
 </ResourceDictionary>

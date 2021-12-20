@@ -1,31 +1,35 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Windows.Controls;
+
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CloudFormation.Nodes;
+using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
 using Amazon.AWSToolkit.Lambda.Nodes;
+using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
+using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Regions;
+using Amazon.CloudFormation;
+using Amazon.ECR;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.S3;
-using Amazon.CloudFormation;
+
 using log4net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Windows.Controls;
-using Amazon.AWSToolkit.CloudFormation.Nodes;
+
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
-using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using System.IO;
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Regions;
-using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 {
@@ -348,7 +352,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 if (DetermineDeploymentType(state.SourcePath) == DeploymentType.NETCore)
                     worker = new UploadNETCoreWorker(this, lambdaClient, ecrClient, _toolkitContext.TelemetryLogger);
                 else
-                    worker = new UploadGenericWorker(this, lambdaClient, ecrClient, _toolkitContext.TelemetryLogger);
+                    worker = new UploadGenericWorker(this, lambdaClient, ecrClient, _toolkitContext);
 
                 ThreadPool.QueueUserWorkItem(x =>
                 {
@@ -600,6 +604,20 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 .Select(t => t.Trim())
                 .Where(t => !string.IsNullOrWhiteSpace(t))
                 .ToList();
+        }
+
+        void ILambdaFunctionUploadHelpers.WaitForUpdatableState(IAmazonLambda lambdaClient, string functionName)
+        {
+            var uploader = this as ILambdaFunctionUploadHelpers;
+            uploader.AppendUploadStatus("Waiting for function state to be updatable...");
+
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(async () =>
+            {
+                var waiter = new LambdaStateWaiter(lambdaClient);
+                await waiter.WaitForUpdatableStateAsync(functionName);
+            });
+
+            uploader.AppendUploadStatus("... Function can now be updated");
         }
     }
 }

@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 
 namespace Amazon.AWSToolkit.Publish.Models
 {
@@ -13,9 +15,16 @@ namespace Amazon.AWSToolkit.Publish.Models
     /// This is the model that translates from the CLI server's API to what is shown in the UI
     /// (see <see cref="ConfigurationDetailPropertyDescriptor"/> for the UI related property descriptors).
     /// </summary>
+    [DebuggerDisplay("{Id} | {Value}")]
     public class ConfigurationDetail : BaseModel, INotifyDataErrorInfo
     {
+        public static class TypeHints
+        {
+            public const string IamRole = "IAMRole";
+            public const string Vpc = "Vpc";
+        }
 
+        private bool _suspendDetailChangeEvents = false;
         private string _id;
         private string _name;
         private string _description;
@@ -33,7 +42,23 @@ namespace Amazon.AWSToolkit.Publish.Models
         private readonly List<ConfigurationDetail> _children = new List<ConfigurationDetail>();
         private IDictionary<string, string> _valueMappings = new Dictionary<string, string>();
 
+        public event EventHandler<DetailChangedEventArgs> DetailChanged;
+
+        public ConfigurationDetail()
+        {
+            PropertyChanged += ConfigurationDetail_PropertyChanged;
+        }
+
+        private void ConfigurationDetail_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Value))
+            {
+                OnDetailPropertyChanged(sender, e);
+            }
+        }
+
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
         public bool HasErrors => !string.IsNullOrWhiteSpace(ValidationMessage);
 
         /// <summary>
@@ -196,7 +221,76 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// Configuration details that belong to this instance.
         /// Child details may also contain children, with no depth limit.
         /// </summary>
-        public IList<ConfigurationDetail> Children => _children;
+        public IReadOnlyList<ConfigurationDetail> Children => _children;
+
+        public void ClearChildren()
+        {
+            _children.ToList().ForEach(RemoveChild);
+            _children.Clear();
+        }
+
+        protected virtual void RemoveChild(ConfigurationDetail child)
+        {
+            UnListenToChild(child);
+            _children.Remove(child);
+        }
+
+        private void UnListenToChild(ConfigurationDetail child)
+        {
+            child.PropertyChanged -= OnDetailPropertyChanged;
+        }
+
+        public virtual void AddChild(ConfigurationDetail child)
+        {
+            _children.Add(child);
+            ListenToChild(child);
+        }
+
+        private void ListenToChild(ConfigurationDetail child)
+        {
+            child.PropertyChanged += OnDetailPropertyChanged;
+        }
+
+        private void OnDetailPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (_suspendDetailChangeEvents)
+            {
+                return;
+            }
+
+            if (e.PropertyName != nameof(Value))
+            {
+                return;
+            }
+
+            if (!(sender is ConfigurationDetail detail))
+            {
+                return;
+            }
+
+            RaiseConfigurationDetailChanged(detail);
+        }
+
+        protected void RaiseConfigurationDetailChanged(ConfigurationDetail detail)
+        {
+            DetailChanged?.Invoke(this, new DetailChangedEventArgs(detail));
+        }
+
+        protected void SuspendDetailChangeEvents() => _suspendDetailChangeEvents = true;
+        protected void ResumeDetailChangeEvents() => _suspendDetailChangeEvents = false;
+
+        protected void SuspendDetailChangeEvents(Action action)
+        {
+            try
+            {
+                SuspendDetailChangeEvents();
+                action();
+            }
+            finally
+            {
+                ResumeDetailChangeEvents();
+            }
+        }
 
         public IEnumerable GetErrors(string propertyName)
         {

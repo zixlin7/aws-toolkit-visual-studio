@@ -19,5 +19,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         void AppendUploadStatus(string message, params object[] tokens);
 
         GetFunctionConfigurationResponse GetExistingConfiguration(IAmazonLambda lambdaClient, string functionName);
+
+        void WaitForUpdatableState(IAmazonLambda lambdaClient, string functionName);
     }
 }

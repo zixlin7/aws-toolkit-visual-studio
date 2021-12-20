@@ -44,6 +44,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
             return this;
         }
 
+        public ConfigurationDetailBuilder WithTypeHint(string typeHint)
+        {
+            _detail.TypeHint = typeHint;
+            return this;
+        }
+
         public ConfigurationDetailBuilder WithSampleError()
         {
             _detail.ValidationMessage = $"Error: {Guid.NewGuid()}";
@@ -88,7 +94,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
             {
                 var child = childBuilder.Build();
                 child.Parent = _detail;
-                _detail.Children.Add(child);
+                _detail.AddChild(child);
             }
 
             return _detail;

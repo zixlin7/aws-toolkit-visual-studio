@@ -67,9 +67,12 @@
     <Compile Include="EC2ServiceMeta.cs" />
     <Compile Include="IAWSEC2.cs" />
     <Compile Include="InstanceType.cs" />
+    <Compile Include="IVpcRepository.cs" />
+    <Compile Include="Model\InstanceTypeModel.cs" />
     <Compile Include="Model\IpPermissionWrapper.cs" />
     <Compile Include="Model\ITagSupport.cs" />
     <Compile Include="Model\IWrapper.cs" />
+    <Compile Include="Model\VpcEntity.cs" />
     <Compile Include="Model\VpcAndSubnetWrapper.cs" />
     <Compile Include="NetworkProtocol.cs" />
     <Compile Include="Nodes\IEC2InstancesViewModel.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="Model\SecurityGroupWrapper.cs" />
     <Compile Include="Model\SubnetWrapper.cs" />
     <Compile Include="Model\VPCWrapper.cs" />
+    <Compile Include="Repositories\IInstanceTypeRepository.cs" />
     <Compile Include="Workers\QueryVpcsAndSubnetsWorker.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -100,5 +104,6 @@
       <Version>2.0.13</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

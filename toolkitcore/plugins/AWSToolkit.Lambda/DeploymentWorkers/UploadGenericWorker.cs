@@ -4,20 +4,22 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 using Amazon.ECR;
+using Amazon.IdentityManagement.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
+using Amazon.Runtime;
 
 using log4net;
+
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
-using Amazon.IdentityManagement.Model;
-using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
@@ -37,15 +39,15 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             new Regex(@"^[_]sampleEvent\.json$", RegexOptions.IgnoreCase),
         };
 
-        private readonly ITelemetryLogger _telemetryLogger;
+        private readonly ToolkitContext _toolkitContext;
 
         public UploadGenericWorker(ILambdaFunctionUploadHelpers functionUploader,
             IAmazonLambda lambdaClient,
             IAmazonECR ecrClient,
-            ITelemetryLogger telemetryLogger)
+            ToolkitContext toolkitContext)
             : base(functionUploader, lambdaClient, ecrClient)
         {
-            _telemetryLogger = telemetryLogger;
+            _toolkitContext = toolkitContext;
         }
 
         public override void UploadFunction(UploadFunctionState uploadState)
@@ -144,7 +146,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     }
                 }
 
-                _telemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
+                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
 
                 this.FunctionUploader.AppendUploadStatus("Upload complete.");
 
@@ -157,7 +159,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 this.FunctionUploader.AppendUploadStatus(e.Message);
                 this.FunctionUploader.AppendUploadStatus("Upload stopped.");
 
-                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
+                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
             }
             catch (Exception e)
@@ -175,7 +177,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 LOGGER.Error("Error uploading Lambda function.", e);
 
-                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
+                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
             }
             finally
@@ -267,6 +269,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 try
                 {
+                    FunctionUploader.WaitForUpdatableState(LambdaClient, uploadState.Request.FunctionName);
+
                     var uploadCodeRequest = new UpdateFunctionCodeRequest
                     {
                         FunctionName = uploadState.Request.FunctionName,
@@ -315,6 +319,5 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
             return false;
         }
-
     }
 }

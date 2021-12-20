@@ -10,3 +10,5 @@ using Microsoft.VisualStudio.Shell;
 // Have this assembly write to the .pkgdef that it will reside at the root of the VSIX, so
 // Visual Studio knows where to load it from.
 [assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\Community.VisualStudio.Toolkit.dll")]
+[assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\LiveCharts.dll")]
+[assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\LiveCharts.Wpf.dll")]

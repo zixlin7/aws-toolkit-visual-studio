@@ -1,6 +1,5 @@
 ﻿using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.View;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ECS;
@@ -11,6 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
+using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+
 using LoadBalancer = Amazon.ElasticLoadBalancingV2.Model.LoadBalancer;
 using TargetGroup = Amazon.ElasticLoadBalancingV2.Model.TargetGroup;
 
@@ -22,7 +25,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
         IAmazonElasticLoadBalancingV2 _elbClient;
         IAmazonEC2 _ec2Client;
         private ViewClusterModel _viewClusterModel;
-
+        private readonly ToolkitContext _toolkitContext;
         public string ClusterArn { get; set; }
         public ServiceWrapper Service { get; set; }
         public LoadBalancer LoadBalancer { get; set; }
@@ -30,17 +33,15 @@ namespace Amazon.AWSToolkit.ECS.Controller
         public TargetGroup TargetGroup { get; set; }
         public Rule Rule { get; set; }
 
-
-
         public DeleteServiceConfirmationController(IAmazonECS ecsClient, IAmazonElasticLoadBalancingV2 elbClient, IAmazonEC2 ec2Client,
-            ViewClusterModel viewClusterModel, ServiceWrapper service)
+            ViewClusterModel viewClusterModel, ServiceWrapper service, ToolkitContext toolkitContext)
         {
             this._ecsClient = ecsClient;
             this._elbClient = elbClient;
             this._ec2Client = ec2Client;
-
             this._viewClusterModel = viewClusterModel;
             this.Service = service;
+            this._toolkitContext = toolkitContext;
         }
 
         DeleteServiceConfirmation _control;
@@ -49,20 +50,22 @@ namespace Amazon.AWSToolkit.ECS.Controller
             DetermineELBResources();
 
             this._control = new DeleteServiceConfirmation(this);
-            if (ToolkitFactory.Instance.ShellProvider.ShowModal(this._control, System.Windows.MessageBoxButton.OKCancel))
+            if (_toolkitContext.ToolkitHost.ShowModal(this._control, System.Windows.MessageBoxButton.OKCancel))
             {
-                ToolkitEvent evntSuccess = new ToolkitEvent();
-                evntSuccess.AddProperty(AttributeKeys.ECSDeleteService, "true");
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evntSuccess);
-
+                RecordEcsDeleteServiceMetric(Result.Succeeded);
                 return true;
             }
 
-            ToolkitEvent evnt = new ToolkitEvent();
-            evnt.AddProperty(AttributeKeys.ECSDeleteService, "false");
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
+            RecordEcsDeleteServiceMetric(Result.Failed);
             return false;
+        }
+
+        private void RecordEcsDeleteServiceMetric(Result result)
+        {
+            _toolkitContext.TelemetryLogger.RecordEcsDeleteService(new EcsDeleteService()
+            {
+                Result = result
+            });
         }
 
         public void DeleteService()

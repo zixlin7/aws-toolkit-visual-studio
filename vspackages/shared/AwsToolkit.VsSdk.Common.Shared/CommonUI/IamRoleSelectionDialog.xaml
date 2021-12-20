@@ -1,0 +1,83 @@
+﻿<platformUi:DialogWindow
+    x:Class="AwsToolkit.VsSdk.Common.CommonUI.IamRoleSelectionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Select an IAM Role"
+    xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    Width="600"
+    Height="400"
+    WindowStartupLocation="CenterOwner">
+
+    <Grid Name="_ctlMainGrid" Margin="12">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="9" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="9" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0" Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Filter:"
+                />
+
+            <TextBox
+                Grid.Row="0" Grid.Column="2"
+                Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=200}"
+                />
+
+            <ListBox
+                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                ItemsSource="{Binding RoleArns}"
+                SelectedItem="{Binding RoleArn}"
+                />
+        </Grid>
+
+        <StackPanel
+            Grid.Row="2"
+            Grid.Column="0"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom">
+            <Button
+                d:Width="75"
+                d:Height="23"
+                Content="OK"
+                Command="{Binding OkCommand}"
+                />
+            <Button
+                Margin="6 0 0 0"
+                d:Width="75"
+                d:Height="23"
+                IsCancel="True"
+                Content="Cancel"
+                />
+        </StackPanel>
+    </Grid>
+</platformUi:DialogWindow>

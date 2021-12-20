@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             {
                 var msg = "Error fetching scheduled tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
         }
 
@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
 
         private void Delete_Click(object sender, RoutedEventArgs evnt)
         {
-            if (!ToolkitFactory.Instance.ShellProvider.Confirm("Delete Scheduled Task", "Are you want to delete the selected scheduled tasks?"))
+            if (!this._controller.ToolkitContext.ToolkitHost.Confirm("Delete Scheduled Task", "Are you want to delete the selected scheduled tasks?"))
                 return;
 
             try
@@ -65,7 +65,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             {
                 var msg = "Error stopping tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
             }
         }
 
