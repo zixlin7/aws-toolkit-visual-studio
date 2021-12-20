@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fix issue in the Lambda publish dialog that would prevent it from showing the list of Lambda functions in an account."
-}
