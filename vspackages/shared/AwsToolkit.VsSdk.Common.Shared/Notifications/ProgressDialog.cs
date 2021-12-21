@@ -94,7 +94,7 @@ namespace AwsToolkit.VsSdk.Common.Notifications
                 Heading2,
                 null,
                 null,
-                true,
+                CanCancel,
                 secondsDelay,
                 true,
                 TotalSteps,
