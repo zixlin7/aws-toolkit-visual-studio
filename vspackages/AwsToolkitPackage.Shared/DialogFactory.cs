@@ -28,5 +28,10 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             return new VpcSelectionDialog(_toolkitContext, _joinableTaskFactory);
         }
+
+        public IInstanceTypeSelectionDialog CreateInstanceTypeSelectionDialog()
+        {
+            return new InstanceTypeSelectionDialog(_toolkitContext, _joinableTaskFactory);
+        }
     }
 }

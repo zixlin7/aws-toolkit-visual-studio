@@ -66,6 +66,7 @@
     <Compile Include="CommonUI\ConcatenateCollectionConverterTests.cs" />
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
+    <Compile Include="CommonUI\InstanceTypeSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\VpcSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\IamRoleSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />

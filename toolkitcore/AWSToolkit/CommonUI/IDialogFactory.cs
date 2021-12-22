@@ -9,5 +9,6 @@ namespace Amazon.AWSToolkit.CommonUI
     {
         IIamRoleSelectionDialog CreateIamRoleSelectionDialog();
         IVpcSelectionDialog CreateVpcSelectionDialog();
+        IInstanceTypeSelectionDialog CreateInstanceTypeSelectionDialog();
     }
 }
