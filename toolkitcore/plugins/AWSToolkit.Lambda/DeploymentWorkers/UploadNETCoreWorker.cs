@@ -16,6 +16,8 @@ using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Common.DotNetCli.Tools;
+using Amazon.IdentityManagement;
+using Amazon.S3;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
@@ -24,11 +26,15 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         ILog LOGGER = LogManager.GetLogger(typeof(UploadNETCoreWorker));
 
         private readonly ITelemetryLogger _telemetryLogger;
+        private readonly IAmazonIdentityManagementService _iamClient;
+        private readonly IAmazonS3 _s3Client;
 
         public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler, IAmazonLambda lambdaClient, IAmazonECR ecrClient,
-            ITelemetryLogger telemetryLogger)
+            IAmazonIdentityManagementService iamClient, IAmazonS3 s3Client, ITelemetryLogger telemetryLogger)
             : base(functionHandler, lambdaClient, ecrClient)
         {
+            _iamClient = iamClient;
+            _s3Client = s3Client;
             _telemetryLogger = telemetryLogger;
         }
 
@@ -49,6 +55,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.DisableInteractive = true;
                 command.LambdaClient = this.LambdaClient;
                 command.ECRClient = this.ECRClient;
+                command.IAMClient = _iamClient;
+                command.S3Client = _s3Client;
                 command.PersistConfigFile = uploadState.SaveSettings;
                 command.Profile = uploadState.Account.Identifier.ProfileName;
                 command.Credentials = uploadState.Credentials;

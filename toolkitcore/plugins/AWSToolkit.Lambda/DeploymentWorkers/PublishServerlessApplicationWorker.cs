@@ -12,6 +12,8 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using Amazon.AWSToolkit.Regions;
+using Amazon.IdentityManagement;
+using Amazon.Lambda;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
@@ -28,8 +30,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         IAmazonCloudFormation CloudFormationClient { get; }
         IAmazonS3 S3Client { get; }
         IAmazonECR ECRClient { get; }
+        private IAmazonIdentityManagementService IamClient { get; }
+        private IAmazonLambda LambdaClient { get; }
 
         public PublishServerlessApplicationWorker(ILambdaFunctionUploadHelpers helpers, IAmazonS3 s3Client, IAmazonCloudFormation cloudFormationClient, IAmazonECR ecrClient,
+            IAmazonIdentityManagementService iamClient, IAmazonLambda lambdaClient,
             PublishServerlessApplicationWorkerSettings settings,
             ITelemetryLogger telemetryLogger)
         {
@@ -37,6 +42,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             this.S3Client = s3Client;
             this.CloudFormationClient = cloudFormationClient;
             this.ECRClient = ecrClient;
+            this.IamClient = iamClient;
+            this.LambdaClient = lambdaClient;
             this.Settings = settings;
             this._telemetryLogger = telemetryLogger;
         }
@@ -49,9 +56,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             {
                 var command = new DeployServerlessCommand(logger, Settings.SourcePath, new string[0]);
                 command.DisableInteractive = true;
-                command.S3Client = this.S3Client;
-                command.CloudFormationClient = this.CloudFormationClient;
-                command.ECRClient = this.ECRClient;
+                command.S3Client = S3Client;
+                command.CloudFormationClient = CloudFormationClient;
+                command.ECRClient = ECRClient;
+                command.IAMClient = IamClient;
+                command.LambdaClient = LambdaClient;
                 command.WaitForStackToComplete = false;
                 command.Profile = Settings.Account.Identifier.ProfileName;
                 command.Credentials = Settings.Credentials;

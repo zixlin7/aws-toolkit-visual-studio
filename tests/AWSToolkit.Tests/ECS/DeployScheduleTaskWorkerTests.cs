@@ -21,6 +21,7 @@ namespace AWSToolkit.Tests.ECS
                 _fixture.EcsClient.Object,
                 _fixture.IamClient.Object,
                 _fixture.CloudWatchLogsClient.Object,
+                _fixture.Ec2Client.Object,
                 _fixture.ToolkitContextFixture.ToolkitContext);
         }
 

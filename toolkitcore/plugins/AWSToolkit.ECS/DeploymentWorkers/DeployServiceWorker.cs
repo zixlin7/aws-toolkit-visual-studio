@@ -779,9 +779,11 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     Region = state.Region.Id,
 
                     DisableInteractive = true,
-                    ECRClient = this._ecrClient,
-                    ECSClient = this._ecsClient,
-                    CWLClient = this._cwlClient,
+                    ECRClient = _ecrClient,
+                    ECSClient = _ecsClient,
+                    CWLClient = _cwlClient,
+                    IAMClient = _iamClient,
+                    EC2Client = _ec2Client,
 
                     PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
                     TaskDefinitionProperties = ConvertToTaskDefinitionProperties(state.HostingWizard),
