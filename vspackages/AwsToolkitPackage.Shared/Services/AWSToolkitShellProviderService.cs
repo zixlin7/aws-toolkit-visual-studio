@@ -10,7 +10,6 @@ using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
-using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Solutions;
@@ -172,7 +171,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         public bool ShowInModalDialogWindow(IAWSToolkitControl hostedControl, MessageBoxButton buttons)
         {
             var dialogWindow = DialogWindowHost.CreateDialogHost(buttons, hostedControl, this);
-
             QueueOpenViewMetric(hostedControl.MetricId);
             return dialogWindow.ShowModal() ?? false;
         }
