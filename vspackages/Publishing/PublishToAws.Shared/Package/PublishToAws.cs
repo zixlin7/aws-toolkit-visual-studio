@@ -55,7 +55,7 @@ namespace Amazon.AWSToolkit.Publish.Package
             }
             catch (Exception e)
             {
-                bool enableOldExperienceChanged = await UpdateEnableOldExperience();
+                bool enableOldExperienceChanged = await UpdateEnableOldExperienceAsync();
                 Logger.Error("Failed to open the Publish document", e);
 
                 _publishContext.ToolkitShellProvider.OutputToHostConsole(
@@ -133,7 +133,7 @@ namespace Amazon.AWSToolkit.Publish.Package
             }
         }
 
-        private async Task<bool> UpdateEnableOldExperience()
+        private async Task<bool> UpdateEnableOldExperienceAsync()
         {
             try
             {

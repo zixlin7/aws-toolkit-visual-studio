@@ -90,7 +90,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             viewModel.LoadPublishSettings();
 
             var configurationDetailFactory = new ConfigurationDetailFactory(viewModel, _publishContext.ToolkitShellProvider.GetDialogFactory());
-            var client = cliServer.GetRestClient(viewModel.GetCredentials);
+            var client = cliServer.GetRestClient(viewModel.GetCredentialsAsync);
             viewModel.DeployToolController = new DeployToolController(client, configurationDetailFactory);
             viewModel.DeploymentClient = cliServer.GetDeploymentClient();
 
@@ -154,7 +154,7 @@ namespace Amazon.AWSToolkit.Publish.Views
 
             JoinableTaskFactory.Run(async () =>
             {
-                await TeardownDeploymentSession().ConfigureAwait(false);
+                await TeardownDeploymentSessionAsync().ConfigureAwait(false);
             });
 
             return true;
@@ -179,19 +179,19 @@ namespace Amazon.AWSToolkit.Publish.Views
                         return;
                     }
 
-                    JoinableTaskFactory.RunAsync(InitializePublishDocument).Task.LogExceptionAndForget();
+                    JoinableTaskFactory.RunAsync(InitializePublishDocumentAsync).Task.LogExceptionAndForget();
                 }
             });
         }
 
-        private async Task InitializePublishDocument()
+        private async Task InitializePublishDocumentAsync()
         {
             try
             {
                 using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
                 {
                     await TaskScheduler.Default;
-                    await EnsureDeploymentSessionId().ConfigureAwait(false);
+                    await EnsureDeploymentSessionIdAsync().ConfigureAwait(false);
                     await LoadPublishTargetsAsync().ConfigureAwait(false);
                 }
             }
@@ -209,7 +209,7 @@ namespace Amazon.AWSToolkit.Publish.Views
         /// This is the first thing that needs to happen after establishing any valid credentials,
         /// because all other publish API calls are based on the resulting SessionId.
         /// </summary>
-        private async Task EnsureDeploymentSessionId()
+        private async Task EnsureDeploymentSessionIdAsync()
         {
             try
             {
@@ -243,8 +243,8 @@ namespace Amazon.AWSToolkit.Publish.Views
             using (var tokenSource = CreateCancellationTokenSource())
             {
                 await TaskScheduler.Default;
-                await _viewModel.StartDeploymentSession(tokenSource.Token).ConfigureAwait(false);
-                await _viewModel.JoinDeploymentSession().ConfigureAwait(false);
+                await _viewModel.StartDeploymentSessionAsync(tokenSource.Token).ConfigureAwait(false);
+                await _viewModel.JoinDeploymentSessionAsync().ConfigureAwait(false);
             }
         }
 
@@ -256,7 +256,7 @@ namespace Amazon.AWSToolkit.Publish.Views
                 {
                     await TaskScheduler.Default;
                     // query appropriate recommendations
-                    await _viewModel.InitializePublishTargets(tokenSource.Token);
+                    await _viewModel.InitializePublishTargetsAsync(tokenSource.Token);
                     _viewModel.SetPublishTargetsLoaded(true);
                 }
             }
@@ -270,7 +270,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
         }
 
-        private async Task TeardownDeploymentSession()
+        private async Task TeardownDeploymentSessionAsync()
         {
             try
             {
@@ -278,7 +278,7 @@ namespace Amazon.AWSToolkit.Publish.Views
                 {
                     await TaskScheduler.Default;
 
-                    await _viewModel.StopDeploymentSession(tokenSource.Token)
+                    await _viewModel.StopDeploymentSessionAsync(tokenSource.Token)
                         .ConfigureAwait(false);
                 }
             }
@@ -339,7 +339,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             {
                 if (_viewModel.ProgressStatus != ProgressStatus.Loading)
                 {
-                    ReloadPublishedResources().LogExceptionAndForget();
+                    ReloadPublishedResourcesAsync().LogExceptionAndForget();
                 }
             }
         }
@@ -349,14 +349,14 @@ namespace Amazon.AWSToolkit.Publish.Views
             ResetConfigDetails();
             if (_viewModelChangeHandler.ShouldRefreshTarget(_viewModel))
             {
-                ReloadTargetConfigurations().LogExceptionAndForget();
+                ReloadTargetConfigurationsAsync().LogExceptionAndForget();
             }
         }
 
         private void UpdateRequiredPublishProperties()
         {
             CancelRequiredPublishUpdatesInProgress();
-            _viewModel.UpdateRequiredPublishProperties(_requiredPublishPropertiesTokenSource.Token).LogExceptionAndForget();
+            _viewModel.UpdateRequiredPublishPropertiesAsync(_requiredPublishPropertiesTokenSource.Token).LogExceptionAndForget();
         }
 
         private void ResetConfigDetails()
@@ -374,7 +374,7 @@ namespace Amazon.AWSToolkit.Publish.Views
 
         private void Config_DetailChanged(object sender, DetailChangedEventArgs e)
         {
-            SetTargetConfiguration(e.Detail).LogExceptionAndForget();
+            SetTargetConfigurationAsync(e.Detail).LogExceptionAndForget();
             _viewModel.IsDefaultConfig = false;
         }
 
@@ -392,17 +392,17 @@ namespace Amazon.AWSToolkit.Publish.Views
             _requiredPublishPropertiesTokenSource = new CancellationTokenSource();
         }
 
-        private async Task ReloadTargetConfigurations()
+        private async Task ReloadTargetConfigurationsAsync()
         {
             try
             {
                 using (var tokenSource = CreateCancellationTokenSource())
                 {
                     await TaskScheduler.Default;
-                    await _viewModel.SetDeploymentTarget(tokenSource.Token).ConfigureAwait(false);
+                    await _viewModel.SetDeploymentTargetAsync(tokenSource.Token).ConfigureAwait(false);
 
-                    var loadTargetConfigurationTask = LoadTargetConfigurations();
-                    var reloadSystemCapabilitiesTask = ReloadSystemCapabilities();
+                    var loadTargetConfigurationTask = LoadTargetConfigurationsAsync();
+                    var reloadSystemCapabilitiesTask = ReloadSystemCapabilitiesAsync();
                     await Task.WhenAll(loadTargetConfigurationTask, reloadSystemCapabilitiesTask).ConfigureAwait(false);
                 }
                 _viewModel.IsDefaultConfig = true;
@@ -413,14 +413,14 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
         }
 
-        private async Task ReloadSystemCapabilities()
+        private async Task ReloadSystemCapabilitiesAsync()
         {
             try
             {
                 using (var tokenSource = CreateCancellationTokenSource())
                 {
                     await TaskScheduler.Default;
-                    await _viewModel.RefreshSystemCapabilities(tokenSource.Token).ConfigureAwait(false);
+                    await _viewModel.RefreshSystemCapabilitiesAsync(tokenSource.Token).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -429,14 +429,14 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
         }
 
-        private async Task ReloadPublishedResources()
+        private async Task ReloadPublishedResourcesAsync()
         {
             try
             {
                 using (var tokenSource = CreateCancellationTokenSource())
                 {
                     await TaskScheduler.Default;
-                    await _viewModel.RefreshPublishedResources(tokenSource.Token).ConfigureAwait(false);
+                    await _viewModel.RefreshPublishedResourcesAsync(tokenSource.Token).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -446,7 +446,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
         }
 
-        private async Task LoadTargetConfigurations()
+        private async Task LoadTargetConfigurationsAsync()
         {
             try
             {
@@ -454,9 +454,9 @@ namespace Amazon.AWSToolkit.Publish.Views
                 using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
                 {
                     await TaskScheduler.Default;
-                    await _viewModel.RefreshTargetConfigurations(tokenSource.Token).ConfigureAwait(false);
+                    await _viewModel.RefreshTargetConfigurationsAsync(tokenSource.Token).ConfigureAwait(false);
                     await TaskScheduler.Default;
-                    await _viewModel.RefreshConfigurationSettingValues(tokenSource.Token).ConfigureAwait(false);
+                    await _viewModel.RefreshConfigurationSettingValuesAsync(tokenSource.Token).ConfigureAwait(false);
                 }
             }
             catch (PublishException e)
@@ -470,7 +470,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
         }
 
-        private async Task SetTargetConfiguration(ConfigurationDetail configurationDetail)
+        private async Task SetTargetConfigurationAsync(ConfigurationDetail configurationDetail)
         {
             try
             {
@@ -487,7 +487,7 @@ namespace Amazon.AWSToolkit.Publish.Views
                     }
                     else
                     {
-                        await LoadTargetConfigurations();
+                        await LoadTargetConfigurationsAsync();
                     }
                 }
             }

@@ -563,20 +563,20 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <summary>
         /// Resolves <see cref="AWSCredentials"/> to be used with Deploying.
         /// </summary>
-        public Task<AWSCredentials> GetCredentials()
+        public Task<AWSCredentials> GetCredentialsAsync()
         {
             return Task.FromResult(_publishContext.ConnectionManager.ActiveCredentials);
         }
 
         public async Task RestartDeploymentSessionAsync(CancellationToken cancellationToken)
         {
-            await StopDeploymentSession(cancellationToken).ConfigureAwait(false);
-            await StartDeploymentSession(cancellationToken).ConfigureAwait(false);
+            await StopDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
+            await StartDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
 
             await Task.WhenAll(
-                JoinDeploymentSession(),
-                SetRepublishTargets(new ObservableCollection<RepublishTarget>(), cancellationToken),
-                SetRecommendations(new ObservableCollection<PublishRecommendation>(), cancellationToken)
+                JoinDeploymentSessionAsync(),
+                SetRepublishTargetsAsync(new ObservableCollection<RepublishTarget>(), cancellationToken),
+                SetRecommendationsAsync(new ObservableCollection<PublishRecommendation>(), cancellationToken)
             ).ConfigureAwait(false);
         }
 
@@ -585,7 +585,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <see cref="SessionId"/> is assigned the resulting Session Id.
         /// </summary>
         /// <returns>True on success (or session already defined), False on error</returns>
-        public async Task StartDeploymentSession(CancellationToken cancellationToken)
+        public async Task StartDeploymentSessionAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -615,7 +615,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <see cref="SessionId"/> is cleared.
         /// </summary>
         /// <returns>True on success, False on error</returns>
-        public async Task StopDeploymentSession(CancellationToken cancellationToken)
+        public async Task StopDeploymentSessionAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -647,7 +647,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         ///
         /// </summary>
         /// <returns>True on success, False on error</returns>
-        public async Task RefreshRecommendations(CancellationToken cancellationToken)
+        public async Task RefreshRecommendationsAsync(CancellationToken cancellationToken)
         {
             var recommendations = new ObservableCollection<PublishRecommendation>();
 
@@ -665,7 +665,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await SetRecommendations(recommendations, cancellationToken);
+                await SetRecommendationsAsync(recommendations, cancellationToken);
 
                 var message = $"Publish targets found for {ProjectName}: {recommendations.Count}";
                 Logger.Debug(message);
@@ -678,7 +678,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <see cref="RepublishTargets"/> is populated with any loaded targets
         /// </summary>
         /// <returns>True on success, False on error</returns>
-        public async Task RefreshExistingTargets(CancellationToken cancellationToken)
+        public async Task RefreshExistingTargetsAsync(CancellationToken cancellationToken)
         {
             var targets = new ObservableCollection<RepublishTarget>();
 
@@ -697,7 +697,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await SetRepublishTargets(targets, cancellationToken);
+                await SetRepublishTargetsAsync(targets, cancellationToken);
 
                 var message = $"Republish targets found for {ProjectName}: {targets.Count}";
                 Logger.Debug(message);
@@ -705,7 +705,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
         }
 
-        public async Task RefreshSystemCapabilities(CancellationToken cancellationToken)
+        public async Task RefreshSystemCapabilitiesAsync(CancellationToken cancellationToken)
         {
             var capabilities = new ObservableCollection<TargetSystemCapability>();
             var recipeId = string.Empty;
@@ -725,7 +725,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await SetSystemCapabilities(capabilities, cancellationToken);
+                await SetSystemCapabilitiesAsync(capabilities, cancellationToken);
                 UpdateMissingCapabilities(recipeId, capabilities);
                 if (capabilities.Any())
                 {
@@ -745,7 +745,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Connects deployment client to the session such that it can listen to logs of the deployment session
         /// </summary>
         /// <returns></returns>
-        public async Task JoinDeploymentSession()
+        public async Task JoinDeploymentSessionAsync()
         {
             ThrowIfSessionIsNotCreated();
 
@@ -755,11 +755,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Loads the list of configuration settings for the selected target <see cref="Recommendation"/> <see cref="Republish Target"/>
+        /// Loads the list of configuration settings for the selected target <see cref="Recommendation"/> <see cref="RepublishTarget"/>
         /// <see cref="ConfigurationDetails"/> is populated with any loaded configuration details
         /// A selected target needs to be defined prior to making this call.
         /// </summary>
-        public async Task RefreshTargetConfigurations(CancellationToken cancellationToken)
+        public async Task RefreshTargetConfigurationsAsync(CancellationToken cancellationToken)
         {
             IList<ConfigurationDetail> configSettings = new List<ConfigurationDetail>();
 
@@ -767,7 +767,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 ThrowIfSessionIsNotCreated();
 
-                configSettings = await DeployToolController.GetConfigSettings(SessionId, cancellationToken);
+                configSettings = await DeployToolController.GetConfigSettingsAsync(SessionId, cancellationToken);
             }
             catch (Exception e)
             {
@@ -785,7 +785,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <see cref="ConfigurationDetails"/> is re-populated with updated configuration details
         /// Configuration details must be initially retrieved prior to making this call.
         /// </summary>
-        public async Task RefreshConfigurationSettingValues(CancellationToken cancellationToken)
+        public async Task RefreshConfigurationSettingValuesAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -814,9 +814,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 .ConfigureAwait(false);
         }
 
-        public async Task ClearPublishedResources(CancellationToken cancellationToken)
+        public async Task ClearPublishedResourcesAsync(CancellationToken cancellationToken)
         {
-            await SetPublishResources(string.Empty, Enumerable.Empty<PublishResource>().ToList(), cancellationToken)
+            await SetPublishResourcesAsync(string.Empty, Enumerable.Empty<PublishResource>().ToList(), cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -825,7 +825,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <see cref="PublishResources"/> is populated with any published resources
         /// </summary>
         /// <param name="cancellationToken"></param>
-        public async Task RefreshPublishedResources(CancellationToken cancellationToken)
+        public async Task RefreshPublishedResourcesAsync(CancellationToken cancellationToken)
         {
             IList<PublishResource> resource = new List<PublishResource>();
             var stackId = string.Empty;
@@ -833,7 +833,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 ThrowIfSessionIsNotCreated();
 
-                var details = await DeployToolController.GetDeploymentDetails(SessionId, cancellationToken);
+                var details = await DeployToolController.GetDeploymentDetailsAsync(SessionId, cancellationToken);
 
                 stackId = details?.StackId;
                 var resourceSummaries = details?.DisplayedResources;
@@ -846,7 +846,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await SetPublishResources(stackId, resource, cancellationToken);
+                await SetPublishResourcesAsync(stackId, resource, cancellationToken);
             }
         }
 
@@ -940,13 +940,13 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <summary>
         /// Set the selected recommendation for a given Session Id.
         /// </summary>
-        public async Task SetDeploymentTarget(CancellationToken cancellationToken)
+        public async Task SetDeploymentTargetAsync(CancellationToken cancellationToken)
         {
             try
             {
                 ThrowIfSessionIsNotCreated();
 
-                await DeployToolController.SetDeploymentTarget(SessionId, StackName, GetPublishRecipeId(), IsRepublish, cancellationToken);
+                await DeployToolController.SetDeploymentTargetAsync(SessionId, StackName, GetPublishRecipeId(), IsRepublish, cancellationToken);
             }
             catch (Exception e)
             {
@@ -959,7 +959,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Publishes this project.
         /// State is expected to be valid prior to calling this function.
         /// </summary>
-        public async Task PublishApplication()
+        public async Task PublishApplicationAsync()
         {
             PublishDuration.Start();
             var finalStatusMessage = new StringBuilder();
@@ -973,7 +973,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 await DeployToolController.StartDeploymentAsync(SessionId).ConfigureAwait(false);
 
                 // wait for the deployment to finish
-                var deployStatusOutput = await WaitForDeployment(SessionId).ConfigureAwait(false);
+                var deployStatusOutput = await WaitForDeploymentAsync(SessionId).ConfigureAwait(false);
                 _publishContext.ToolkitShellProvider.UpdateStatus($"{DeploymentStatusMessage}{deployStatusOutput.Status}");
 
                 if (deployStatusOutput.Status != DeploymentStatus.Success)
@@ -1004,7 +1004,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await ReportFinalStatus(progressStatus, finalStatusMessage.ToString());
+                await ReportFinalStatusAsync(progressStatus, finalStatusMessage.ToString());
                 PublishDuration.Stop();
                 SetIsPublishing(false);
                 SetIsFailureBannerEnabled(progressStatus == ProgressStatus.Fail);
@@ -1046,7 +1046,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Updates properties required for publishing user's application based on current target view
         /// i.e. publish/republish
         /// </summary>
-        public async Task UpdateRequiredPublishProperties(CancellationToken cancellationToken)
+        public async Task UpdateRequiredPublishPropertiesAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -1090,13 +1090,13 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Keep polling for deployment status and wait for it to finish until timeout
         /// </summary>
         /// <param name="sessionId"></param>
-        private async Task<GetDeploymentStatusOutput> WaitForDeployment(string sessionId)
+        private async Task<GetDeploymentStatusOutput> WaitForDeploymentAsync(string sessionId)
         {
-            await WaitUntil(async () =>
+            await WaitUntilAsync(async () =>
             {
                 var status = (await DeployToolController.GetDeploymentStatusAsync(sessionId))?.Status;
                 var progressStatus = $"{DeploymentStatusMessage}{status}";
-                await SetProgressStatus(ProgressStatus.Loading);
+                await SetProgressStatusAsync(ProgressStatus.Loading);
                 _publishContext.ToolkitShellProvider.UpdateStatus(progressStatus);
                 return status != null && status != DeploymentStatus.Executing;
             }, TimeSpan.FromSeconds(1));
@@ -1109,7 +1109,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// </summary>
         /// <param name="predicate">Termination condition for breaking the wait loop</param>
         /// <param name="frequency">Interval between the two executions of the task</param>
-        private async Task WaitUntil(Func<Task<bool>> predicate, TimeSpan frequency)
+        private async Task WaitUntilAsync(Func<Task<bool>> predicate, TimeSpan frequency)
         {
             var waitTask = Task.Run(async () =>
             {
@@ -1137,7 +1137,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Sets the Recommendations list and either re-selects the
         /// same Recommendation (by RecipeId) or a most recommended target.
         /// </summary>
-        private async Task SetRecommendations(ObservableCollection<PublishRecommendation> recommendations,
+        private async Task SetRecommendationsAsync(ObservableCollection<PublishRecommendation> recommendations,
             CancellationToken cancellationToken)
         {
             try
@@ -1161,7 +1161,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Sets the RepublishTargets list and either re-selects the
         /// same target (by Stack name) or the first target.
         /// </summary>
-        private async Task SetRepublishTargets(ObservableCollection<RepublishTarget> targets,
+        private async Task SetRepublishTargetsAsync(ObservableCollection<RepublishTarget> targets,
             CancellationToken cancellationToken)
         {
             try
@@ -1184,7 +1184,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
         }
 
-        private async Task SetPublishResources(string stackId,
+        private async Task SetPublishResourcesAsync(string stackId,
             IList<PublishResource> resource, CancellationToken cancellationToken)
         {
             try
@@ -1200,19 +1200,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
         }
 
-        public async Task SetIsRepublish(Boolean value, CancellationToken cancelToken)
+        public async Task SetIsRepublishAsync(bool value, CancellationToken cancelToken)
         {
-            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
+            try
             {
+                await JoinableTaskFactory.SwitchToMainThreadAsync(cancelToken);
                 IsRepublish = value;
-            });
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error setting is republish", e);
+            }
         }
 
-        public async Task InitializePublishTargets(CancellationToken cancelToken)
+        public async Task InitializePublishTargetsAsync(CancellationToken cancelToken)
         {
             var republishTargets = await DeployToolController.GetRepublishTargetsAsync(SessionId, ProjectPath, cancelToken);
-            await SetIsRepublish(republishTargets.Any(), cancelToken);
-            await Task.WhenAll(RefreshExistingTargets(cancelToken), RefreshRecommendations(cancelToken)).ConfigureAwait(false);
+            await SetIsRepublishAsync(republishTargets.Any(), cancelToken);
+            await Task.WhenAll(RefreshExistingTargetsAsync(cancelToken), RefreshRecommendationsAsync(cancelToken)).ConfigureAwait(false);
         }
 
         private void UpdateRepublishCollectionView()
@@ -1223,7 +1228,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 new PropertyGroupDescription(nameof(RepublishTarget.Category)));
         }
 
-        private async Task SetSystemCapabilities(ObservableCollection<TargetSystemCapability> capabilities,
+        private async Task SetSystemCapabilitiesAsync(ObservableCollection<TargetSystemCapability> capabilities,
             CancellationToken cancellationToken)
         {
             try
@@ -1240,7 +1245,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <summary>
         /// Sets the Deployment Progress Status
         /// </summary>
-        private async Task SetProgressStatus(ProgressStatus status)
+        private async Task SetProgressStatusAsync(ProgressStatus status)
         {
             try
             {
@@ -1258,11 +1263,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// </summary>
         /// <param name="status">final deployment status </param>
         /// <param name="statusMessage">final deployment status message</param>
-        private async Task ReportFinalStatus(ProgressStatus status, string statusMessage)
+        private async Task ReportFinalStatusAsync(ProgressStatus status, string statusMessage)
         {
             try
             {
-                await SetProgressStatus(status);
+                await SetProgressStatusAsync(status);
                 UpdateDeploymentProgress(statusMessage);
                 _publishContext.ToolkitShellProvider.OutputToHostConsole(statusMessage,
                     true);

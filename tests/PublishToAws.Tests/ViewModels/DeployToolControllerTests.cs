@@ -170,7 +170,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _restClient.Setup(mock =>
                     mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<SetDeploymentTargetInput>(), It.IsAny<CancellationToken>()));
 
-            await _deployToolController.SetDeploymentTarget(_sessionId, _stackName, _recipeId, isRepublish, _cancelToken);
+            await _deployToolController.SetDeploymentTargetAsync(_sessionId, _stackName, _recipeId, isRepublish, _cancelToken);
 
             _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny< SetDeploymentTargetInput>(), _cancelToken), Times.Once);
         }
@@ -182,7 +182,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<InvalidSessionIdException>(async () =>
             {
-                await _deployToolController.SetDeploymentTarget("", _stackName, _recipeId, isRepublish,  _cancelToken);
+                await _deployToolController.SetDeploymentTargetAsync("", _stackName, _recipeId, isRepublish,  _cancelToken);
             });
 
             _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken), Times.Never);
@@ -198,7 +198,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<InvalidParameterException>(async () =>
             {
-                await _deployToolController.SetDeploymentTarget(_sessionId, stackName, recipeId, isRepublish, _cancelToken);
+                await _deployToolController.SetDeploymentTargetAsync(_sessionId, stackName, recipeId, isRepublish, _cancelToken);
             });
 
             _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken), Times.Never);
@@ -220,7 +220,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _restClient.Setup(mock => mock.GetDeploymentDetailsAsync(_sessionId, _cancelToken))
                 .ReturnsAsync(new GetDeploymentDetailsOutput());
 
-            var response = await _deployToolController.GetDeploymentDetails(_sessionId, _cancelToken);
+            var response = await _deployToolController.GetDeploymentDetailsAsync(_sessionId, _cancelToken);
 
             _restClient.Verify(mock => mock.GetDeploymentDetailsAsync(_sessionId, _cancelToken), Times.Once);
             Assert.NotNull(response);
@@ -311,7 +311,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _restClient.Setup(mock =>
                     mock.GetConfigSettingsAsync(_sessionId, _cancelToken)).ReturnsAsync(getOptionSettingsOutput);
 
-            var response = await _deployToolController.GetConfigSettings(_sessionId, _cancelToken);
+            var response = await _deployToolController.GetConfigSettingsAsync(_sessionId, _cancelToken);
 
             _restClient.Verify(mock => mock.GetConfigSettingsAsync(_sessionId, _cancelToken), Times.Once);
 
@@ -342,7 +342,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<InvalidSessionIdException>(async () =>
             {
-                await _deployToolController.GetConfigSettings("", _cancelToken);
+                await _deployToolController.GetConfigSettingsAsync("", _cancelToken);
             });
 
             _restClient.Verify(mock => mock.GetConfigSettingsAsync(_sessionId, _cancelToken), Times.Never);
@@ -356,7 +356,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _restClient.Setup(mock =>
                     mock.GetConfigSettingsAsync(_sessionId, _cancelToken)).ReturnsAsync(getOptionSettingsOutput);
 
-            var response = await _deployToolController.GetConfigSettings(_sessionId, _cancelToken);
+            var response = await _deployToolController.GetConfigSettingsAsync(_sessionId, _cancelToken);
 
             _restClient.Verify(mock => mock.GetConfigSettingsAsync(_sessionId, _cancelToken), Times.Once);
 

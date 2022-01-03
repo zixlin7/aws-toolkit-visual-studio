@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         Task<GetDeploymentStatusOutput> GetDeploymentStatusAsync(string sessionId);
 
-        Task<IList<ConfigurationDetail>> GetConfigSettings(string sessionId, CancellationToken cancellationToken);
+        Task<IList<ConfigurationDetail>> GetConfigSettingsAsync(string sessionId, CancellationToken cancellationToken);
 
 
         Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId, IEnumerable<ConfigurationDetail> configDetails,
@@ -43,9 +43,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         Task<ValidationResult> ApplyConfigSettingsAsync(string sessionId,
             IList<ConfigurationDetail> configurationDetails, CancellationToken cancellationToken);
 
-        Task SetDeploymentTarget(string sessionId, string stackName, string recipeId, bool isRepublish, CancellationToken cancellationToken);
+        Task SetDeploymentTargetAsync(string sessionId, string stackName, string recipeId, bool isRepublish, CancellationToken cancellationToken);
 
-        Task<GetDeploymentDetailsOutput> GetDeploymentDetails(string sessionId, CancellationToken cancellationToken);
+        Task<GetDeploymentDetailsOutput> GetDeploymentDetailsAsync(string sessionId, CancellationToken cancellationToken);
 
         Task<HealthStatusOutput> HealthAsync();
     }
@@ -147,12 +147,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
            return await _client.GetDeploymentStatusAsync(sessionId);
         }
 
-        public async Task<GetDeploymentDetailsOutput> GetDeploymentDetails(string sessionId, CancellationToken cancellationToken)
+        public async Task<GetDeploymentDetailsOutput> GetDeploymentDetailsAsync(string sessionId, CancellationToken cancellationToken)
         {
             return await _client.GetDeploymentDetailsAsync(sessionId, cancellationToken);
         }
 
-        public async Task<IList<ConfigurationDetail>> GetConfigSettings(string sessionId, CancellationToken cancellationToken)
+        public async Task<IList<ConfigurationDetail>> GetConfigSettingsAsync(string sessionId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(sessionId))
             {
@@ -265,7 +265,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return validation;
         }
 
-        public async Task SetDeploymentTarget(string sessionId, string stackName, string recipeId, bool isRepublish, CancellationToken cancellationToken)
+        public async Task SetDeploymentTargetAsync(string sessionId, string stackName, string recipeId, bool isRepublish, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(sessionId))
                 throw new InvalidSessionIdException($"The Session Id '{sessionId}' is invalid.");

@@ -143,7 +143,7 @@ namespace Amazon.AWSToolkit.Publish.Package
                     ToolkitShellProvider = initializer.ShellProvider,
                     InstallOptions = installOptions,
                     PublishSettingsRepository = new FilePublishSettingsRepository(),
-                    InitializeCliTask = InitializeDeployCliInBackground(installOptions)
+                    InitializeCliTask = InitializeDeployCliInBackgroundAsync(installOptions)
                 };
 
                 // You only initialize once
@@ -155,7 +155,7 @@ namespace Amazon.AWSToolkit.Publish.Package
             }
         }
 
-        private Task InitializeDeployCliInBackground(InstallOptions installOptions)
+        private Task InitializeDeployCliInBackgroundAsync(InstallOptions installOptions)
         {
             return new DeployCli(installOptions).InitializeAsync(DisposalToken);
         }

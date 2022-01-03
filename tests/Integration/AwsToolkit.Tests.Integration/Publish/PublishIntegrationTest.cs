@@ -73,7 +73,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
         protected async Task SetDeploymentTargetToBeanstalk()
         {
-            await DeployToolController.SetDeploymentTarget(SessionId, StackName,
+            await DeployToolController.SetDeploymentTargetAsync(SessionId, StackName,
                 "AspNetAppElasticBeanstalkLinux", false, CancellationToken.None);
         }
 
