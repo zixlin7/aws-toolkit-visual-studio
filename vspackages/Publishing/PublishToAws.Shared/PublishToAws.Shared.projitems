@@ -84,6 +84,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProgressStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishToAwsDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishViewStage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnsupportedSettingTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ConfigureTargetView.xaml.cs">
       <DependentUpon>ConfigureTargetView.xaml</DependentUpon>
     </Compile>

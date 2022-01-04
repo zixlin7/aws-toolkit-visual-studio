@@ -30,6 +30,7 @@ namespace Amazon.AWSToolkit.Publish.Models
 
             configurationDetail.Id = itemSummary.Id;
             configurationDetail.Name = itemSummary.Name;
+            configurationDetail.OriginalType = itemSummary.Type;
             configurationDetail.Description = itemSummary.Description;
             configurationDetail.Type = GetConfigurationDetailType(itemSummary.Type);
             configurationDetail.TypeHint = itemSummary.TypeHint;

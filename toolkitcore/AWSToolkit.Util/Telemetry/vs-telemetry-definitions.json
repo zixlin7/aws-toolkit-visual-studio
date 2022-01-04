@@ -39,6 +39,11 @@
             "name": "recipeId",
             "type": "string",
             "description": "The recipe used for the deployment"
+        },
+        {
+            "name": "publishSettingType",
+            "type": "string",
+            "description": "The type of a particular configuration setting/detail"
         }
     ],
     "metrics": [
@@ -96,6 +101,14 @@
             "description": "Called when user opts out of Publish to AWS experience",
             "metadata": [
                 { "type": "result" }
+            ]
+        },
+        {
+            "name": "publish_unsupportedSetting",
+            "description": "Called when user exits the publish workflow to record unsupported setting types",
+            "metadata": [
+                { "type": "recipeId" },
+                { "type": "publishSettingType" }
             ]
         }
     ]

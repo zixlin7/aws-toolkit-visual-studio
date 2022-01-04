@@ -95,6 +95,7 @@
     <Compile Include="ViewModels\MissingCapabilitiesTests.cs" />
     <Compile Include="ViewModels\PublishToAwsDocumentViewModelTests.cs" />
     <Compile Include="Fixtures\SamplePublishData.cs" />
+    <Compile Include="ViewModels\UnsupportedSettingTypesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Moq">

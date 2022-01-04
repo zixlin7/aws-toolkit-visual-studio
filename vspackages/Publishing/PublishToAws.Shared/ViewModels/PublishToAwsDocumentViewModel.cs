@@ -128,6 +128,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public readonly MissingCapabilities MissingCapabilities =
             new MissingCapabilities();
 
+        public readonly UnsupportedSettingTypes UnsupportedSettingTypes =
+            new UnsupportedSettingTypes();
 
         public PublishToAwsDocumentViewModel(PublishApplicationContext publishContext)
         {
@@ -762,10 +764,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public async Task RefreshTargetConfigurationsAsync(CancellationToken cancellationToken)
         {
             IList<ConfigurationDetail> configSettings = new List<ConfigurationDetail>();
+            var recipeId = string.Empty;
 
             try
             {
                 ThrowIfSessionIsNotCreated();
+                recipeId = GetPublishRecipeId();
 
                 configSettings = await DeployToolController.GetConfigSettingsAsync(SessionId, cancellationToken);
             }
@@ -776,8 +780,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             finally
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+                UpdateUnsupportedSetting(recipeId, configSettings);
                 ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(configSettings);
             }
+        }
+
+        private void UpdateUnsupportedSetting(string recipeId, IList<ConfigurationDetail> configurationDetails)
+        {
+            UnsupportedSettingTypes.Update(recipeId, configurationDetails);
         }
 
         /// <summary>
@@ -1361,6 +1371,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 Duration = WorkflowDuration.Elapsed.TotalMilliseconds,
                 Published = published
             }, capabilityMetrics);
+        }
+
+        public void RecordPublishUnsupportedSettingMetric()
+        {
+            UnsupportedSettingTypes.RecordMetric(_publishContext);
         }
 
         private Dictionary<string, object> CreateCapabilityMetrics()

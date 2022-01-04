@@ -800,6 +800,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Single(_sut.ConfigurationDetails);
         }
 
+
         [Fact]
         public async Task RefreshTargetConfigurations_NoSession()
         {
@@ -817,6 +818,21 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(_cancelToken));
             Assert.Empty(_sut.ConfigurationDetails);
+        }
+
+        [Fact]
+        public async Task RefreshTargetConfigurations_UpdatesUnsupportedSettingTypes()
+        {
+            await SetupPublishView();
+            Assert.False(_sut.UnsupportedSettingTypes.RecipeToUnsupportedSetting.Any());
+
+            var configDetails = CreateSampleConfigurationDetails(2, d => d.Type = typeof(UnsupportedType));
+            _deployToolController.Setup(mock =>
+                mock.GetConfigSettingsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(configDetails);
+
+            await _sut.RefreshTargetConfigurationsAsync(_cancelToken);
+
+            Assert.True(_sut.UnsupportedSettingTypes.RecipeToUnsupportedSetting.Any());
         }
 
         [Fact]

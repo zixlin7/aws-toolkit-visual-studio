@@ -44,6 +44,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
             return this;
         }
 
+        public ConfigurationDetailBuilder WithOriginalType(string type)
+        {
+            _detail.OriginalType = type;
+            return this;
+        }
+
         public ConfigurationDetailBuilder WithTypeHint(string typeHint)
         {
             _detail.TypeHint = typeHint;

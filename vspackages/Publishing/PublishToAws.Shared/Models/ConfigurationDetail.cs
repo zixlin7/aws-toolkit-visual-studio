@@ -29,6 +29,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         private string _name;
         private string _description;
         private Type _type;
+        private string _originalType;
         private string _typeHint;
         private object _value;
         private object _defaultValue;
@@ -77,6 +78,16 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             get => _name;
             set => SetProperty(ref _name, value);
+        }
+
+        /// <summary>
+        /// The configuration detail's <see cref="OptionSettingItemSummary"/> original type
+        /// (the unaltered version, different from <see cref="Type"/>)
+        /// </summary>
+        public string OriginalType
+        {
+            get => _originalType;
+            set => SetProperty(ref _originalType, value);
         }
 
         /// <summary>

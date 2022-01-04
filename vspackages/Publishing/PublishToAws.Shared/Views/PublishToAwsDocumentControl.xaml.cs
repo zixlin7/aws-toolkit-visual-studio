@@ -140,6 +140,7 @@ namespace Amazon.AWSToolkit.Publish.Views
 
             var isPublished = _viewModel.ViewStage == PublishViewStage.Publish;
             _viewModel.RecordPublishEndMetric(isPublished);
+            _viewModel.RecordPublishUnsupportedSettingMetric();
 
             Logger.Debug($"Disposed Publish dialog: {_viewModel.ProjectName}");
         }
