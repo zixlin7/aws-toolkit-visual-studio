@@ -123,7 +123,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 }
             }
 
-            catch (ToolsException e)
+            catch (ToolsException)
             {
                 _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");

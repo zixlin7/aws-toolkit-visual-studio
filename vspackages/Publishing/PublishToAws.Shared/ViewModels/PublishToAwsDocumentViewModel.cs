@@ -994,7 +994,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                     result = Result.Succeeded;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 finalStatusMessage.Append($"{ProjectName} failed to publish to AWS.");
                 progressStatus = ProgressStatus.Fail;

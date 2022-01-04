@@ -96,7 +96,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     }
                 }
             }
-            catch (ToolsException e)
+            catch (ToolsException)
             {
                 _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.Id);
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
