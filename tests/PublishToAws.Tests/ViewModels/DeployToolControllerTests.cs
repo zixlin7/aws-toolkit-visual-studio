@@ -17,7 +17,6 @@ using Moq;
 
 using Xunit;
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods
 namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 {
     public class DeployToolControllerTests
@@ -649,4 +648,3 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
     }
 }
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
