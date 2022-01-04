@@ -180,9 +180,6 @@
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CodeCommit\vsdefault.gitignore.txt">
       <Link>HostedFiles\CodeCommit\vsdefault.gitignore.txt</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\ap-northeast-1.png">
-      <Link>HostedFiles\flags\ap-northeast-1.png</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\JSONSchemas\catalog.json">
       <Link>HostedFiles\JSONSchemas\catalog.json</Link>
     </EmbeddedResource>
@@ -254,95 +251,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CloudFormationTemplates\TemplatesManifest.xml">
       <Link>HostedFiles\CloudFormationTemplates\TemplatesManifest.xml</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\ap-northeast-2.png">
-      <Link>HostedFiles\flags\ap-northeast-2.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\ap-south-1.png">
-      <Link>HostedFiles\flags\ap-south-1.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\ap-southeast-1.png">
-      <Link>HostedFiles\flags\ap-southeast-1.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\ap-southeast-2.png">
-      <Link>HostedFiles\flags\ap-southeast-2.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\asia_pacific.png">
-      <Link>HostedFiles\flags\asia_pacific.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\australia.png">
-      <Link>HostedFiles\flags\australia.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\aws.png">
-      <Link>HostedFiles\flags\aws.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\brazil.png">
-      <Link>HostedFiles\flags\brazil.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\ca.png">
-      <Link>HostedFiles\flags\ca.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\canada.png">
-      <Link>HostedFiles\flags\canada.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\china.png">
-      <Link>HostedFiles\flags\china.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\cn.png">
-      <Link>HostedFiles\flags\cn.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\eu-central-1.png">
-      <Link>HostedFiles\flags\eu-central-1.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\eu-west-1.png">
-      <Link>HostedFiles\flags\eu-west-1.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\eu-west-2.png">
-      <Link>HostedFiles\flags\eu-west-2.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\eu-west-3.png">
-      <Link>HostedFiles\flags\eu-west-3.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\eu.png">
-      <Link>HostedFiles\flags\eu.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\europe.png">
-      <Link>HostedFiles\flags\europe.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\flag_india.png">
-      <Link>HostedFiles\flags\flag_india.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\france.png">
-      <Link>HostedFiles\flags\france.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\germany.png">
-      <Link>HostedFiles\flags\germany.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\ireland.png">
-      <Link>HostedFiles\flags\ireland.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\japan.png">
-      <Link>HostedFiles\flags\japan.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\local.png">
-      <Link>HostedFiles\flags\local.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\sa-east-1.png">
-      <Link>HostedFiles\flags\sa-east-1.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\south_korea.png">
-      <Link>HostedFiles\flags\south_korea.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\uk.png">
-      <Link>HostedFiles\flags\uk.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\us.png">
-      <Link>HostedFiles\flags\us.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\flags\usa.png">
-      <Link>HostedFiles\flags\usa.png</Link>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

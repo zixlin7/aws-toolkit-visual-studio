@@ -76,13 +76,15 @@ It is critical that we are mindful that past and present versions of the Toolkit
 
 ### Deprecated Hosted Files
 
-The following files are no longer referenced by the Toolkit, but were used in previous Toolkit releases. Care must be taken to not remove the following files from the repo:
+The following files are no longer referenced by the Toolkit, but were used in previous Toolkit releases. Care must be taken to not remove the following files from the repo, because older versions of the Toolkit that are still in use try to download these files and may crash if these files are not found.
 
 - AccountTypes.xml
   - The changes to support MFA and SSO credentials in 2021 eliminated the use of this file. The Toolkit now uses Partition/Region details from the Credentials profile, previously users had to indicate if their account was based in the China or GovCloud partitions.
 - ServiceEndPoints.xml
   - This file is published into the hosting location through internal pipelines. It is being listed here for completeness, but this file should not exist in the repo.
   - The changes to support MFA and SSO credentials in 2021 migrated the Toolkit towards endpoints.json as the successor to this file.
+- hostedfiles\\flags\\*.png
+  - Older versions of the Toolkit used to show a flag next to each region in region selection UIs. The code to show flags was removed in 2019. While unused, flag images were still embedded into the DLL, and this was removed in 2022.
 
 ## Reporting Bugs/Feature Requests
 
