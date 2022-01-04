@@ -400,7 +400,7 @@
       <Version>3.7.3.6</Version>
     </PackageReference>
     <PackageReference Include="log4net">
-      <Version>2.0.13</Version>
+      <Version>2.0.14</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
