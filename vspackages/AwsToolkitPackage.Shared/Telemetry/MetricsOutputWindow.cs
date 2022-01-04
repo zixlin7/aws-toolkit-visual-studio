@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
             _outputWindowManager = outputWindowManager;
         }
 
-        public async Task CreatePane()
+        public async Task CreatePaneAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

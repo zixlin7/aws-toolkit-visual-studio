@@ -2059,6 +2059,7 @@ namespace Microsoft.VisualStudio.Project
         /// Do the build by invoking msbuild
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "vsopts")]
+        [SuppressMessage("Style", "VSTHRD200:Avoid \"Async\" suffix in names of methods")]
         internal virtual void BuildAsync(uint vsopts, string config, IVsOutputWindowPane output, string target, Action<MSBuildResult, string> uiThreadCallback)
         {
             this.BuildPrelude(output);

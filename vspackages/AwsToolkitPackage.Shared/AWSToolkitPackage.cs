@@ -563,7 +563,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _publishSettingsRepository = new FilePublishSettingsRepository();
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
 
-                _metricsOutputWindow = await CreateMetricsOutputWindow();
+                _metricsOutputWindow = await CreateMetricsOutputWindowAsync();
                 _telemetryManager = CreateTelemetryManager();
 
                 _regionProvider = new RegionProvider();
@@ -665,7 +665,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        private async Task<MetricsOutputWindow> CreateMetricsOutputWindow()
+        private async Task<MetricsOutputWindow> CreateMetricsOutputWindowAsync()
         {
             try
             {
@@ -678,7 +678,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 if (ToolkitSettings.Instance.ShowMetricsOutputWindow)
                 {
-                    await outputWindow.CreatePane();
+                    await outputWindow.CreatePaneAsync();
                 }
 
                 return outputWindow;

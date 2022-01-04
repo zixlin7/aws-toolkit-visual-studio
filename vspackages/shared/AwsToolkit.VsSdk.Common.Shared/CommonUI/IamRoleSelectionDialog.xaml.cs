@@ -64,13 +64,13 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             _joinableTaskFactory.Run(async () =>
             {
-                await LoadRoles();
+                await LoadRolesAsync();
             });
 
             return ShowModal() ?? false;
         }
 
-        private async Task LoadRoles()
+        private async Task LoadRolesAsync()
         {
             await _joinableTaskFactory.SwitchToMainThreadAsync();
             using (var progressDialog = await _toolkitContext.ToolkitHost.CreateProgressDialog())
