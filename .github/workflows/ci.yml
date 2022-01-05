@@ -2,9 +2,9 @@
 
 on:
     push:
-        branches: [master, release/stable]
+        branches: [main, release/stable]
     pull_request:
-        branches: [master, feature/*, release/*]
+        branches: [main, feature/*, release/*]
 
 jobs:
     build:

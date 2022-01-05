@@ -102,7 +102,7 @@ reported the issue. Please try to include as much information as you can. Detail
 
 Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
 
-1. You are working against the latest source on the _master_ branch.
+1. You are working against the latest source on the _main_ branch.
 1. You check existing open, and recently merged, pull requests to make sure someone else hasn't addressed the problem already.
 1. You open an issue to discuss any significant work - we would hate for your time to be wasted.
 
@@ -135,7 +135,7 @@ If you discover a potential security issue in this project we ask that you notif
 
 ## Licensing
 
-See the [LICENSE](https://github.com/aws/aws-toolkit-visual-studio-staging/blob/master/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+See the [LICENSE](https://github.com/aws/aws-toolkit-visual-studio-staging/blob/main/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](https://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
 

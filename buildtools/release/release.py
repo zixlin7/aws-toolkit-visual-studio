@@ -791,7 +791,7 @@ def load_config(repo: git.Repo, config_path: str) -> ReleaseConfig:
 
 if __name__ == '__main__':
     WORKING_DIR = os.path.dirname(os.path.relpath(__file__))
-    DEFAULT_DEVELOPMENT_BRANCH = 'master'
+    DEFAULT_DEVELOPMENT_BRANCH = 'main'
     DEFAULT_RELEASE_BRANCH = 'release/stable'
     DEFAULT_REMOTE = 'origin'
 
