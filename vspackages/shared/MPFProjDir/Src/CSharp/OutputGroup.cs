@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.Project
     /// <summary>
     /// Allows projects to group outputs according to usage.
     /// </summary>
-    [CLSCompliant(false), ComVisible(true)]
+    [ComVisible(true)]
     public class OutputGroup : IVsOutputGroup2
     {
         #region fields

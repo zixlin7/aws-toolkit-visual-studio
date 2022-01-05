@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -32,8 +32,7 @@ namespace Microsoft.VisualStudio.Project
 	/// <summary>
 	/// Contain a number of functions that handle token replacement
 	/// </summary>
-	[CLSCompliant(false)]
-	public class TokenProcessor
+    public class TokenProcessor
 	{
 		#region fields
 		// Internal fields

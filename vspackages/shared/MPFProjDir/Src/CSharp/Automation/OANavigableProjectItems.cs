@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.Project.Automation
 	/// This can navigate a collection object only (partial implementation of ProjectItems interface)
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	[ComVisible(true), CLSCompliant(false)]
+	[ComVisible(true)]
 	public class OANavigableProjectItems : EnvDTE.ProjectItems
 	{
 		#region fields

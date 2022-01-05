@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.Project
 	/// An object that deals with user interaction via a GUI in the form a hierarchy: a parent node with zero or more child nodes, each of which
 	/// can itself be a hierarchy.  
 	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"), CLSCompliant(false), ComVisible(true)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"), ComVisible(true)]
 	public abstract class HierarchyNode :
 		IVsUIHierarchy,
 		IVsPersistHierarchyItem2,

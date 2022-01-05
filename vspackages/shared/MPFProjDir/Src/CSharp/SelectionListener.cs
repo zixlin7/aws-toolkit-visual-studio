@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -17,7 +17,6 @@ using ShellConstants = Microsoft.VisualStudio.Shell.Interop.Constants;
 namespace Microsoft.VisualStudio.Project
 {
 
-	[CLSCompliant(false)]
 	public abstract class SelectionListener : IVsSelectionEvents, IDisposable
 	{
 		#region fields

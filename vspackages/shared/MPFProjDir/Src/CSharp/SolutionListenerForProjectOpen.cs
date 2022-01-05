@@ -20,7 +20,6 @@ using IServiceProvider = System.IServiceProvider;
 namespace Microsoft.VisualStudio.Project
 {
 
-	[CLSCompliant(false)]
 	public class SolutionListenerForProjectOpen : SolutionListener
 	{
 		public SolutionListenerForProjectOpen(IServiceProvider serviceProvider)

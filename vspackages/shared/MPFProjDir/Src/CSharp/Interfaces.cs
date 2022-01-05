@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -31,8 +31,7 @@ namespace Microsoft.VisualStudio.Project
 	/// </summary>
 	/// <remarks>Normally this should be an internal interface but since it shouldbe available for the aggregator it must be made public.</remarks>
 	[ComVisible(true)]
-	[CLSCompliant(false)]
-	public interface IBuildDependencyOnProjectContainer
+    public interface IBuildDependencyOnProjectContainer
 	{
 		/// <summary>
 		/// Defines whether the nested projects should be build with the parent project.
@@ -56,8 +55,7 @@ namespace Microsoft.VisualStudio.Project
 	/// </summary>
 	/// <remarks>Normally this should be an internal interface but since it shouldbe available for the aggregator it must be made public.</remarks>
 	[ComVisible(true)]
-	[CLSCompliant(false)]
-	public interface IBuildDependencyUpdate
+    public interface IBuildDependencyUpdate
 	{
 		/// <summary>
 		/// Defines a container for storing BuildDependencies

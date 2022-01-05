@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -21,8 +21,7 @@ namespace Microsoft.VisualStudio.Project
 	/// Defines abstract package.
 	/// </summary>
 	[ComVisible(true)]
-	[CLSCompliant(false)]
-	public abstract class ProjectAsyncPackage : Microsoft.VisualStudio.Shell.AsyncPackage, IProjectPackage
+    public abstract class ProjectAsyncPackage : Microsoft.VisualStudio.Shell.AsyncPackage, IProjectPackage
     {
 		#region fields
 		/// <summary>

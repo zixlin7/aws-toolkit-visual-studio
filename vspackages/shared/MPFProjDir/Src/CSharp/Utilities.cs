@@ -1,4 +1,4 @@
-/***************************************************************************
+ï»¿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -41,7 +41,6 @@ namespace Microsoft.VisualStudio.Project
         /// of MSBuild
         /// </summary>
         /// <returns></returns>
-        [CLSCompliant(false)]
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ms")]
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "msbuild")]
         public static string GetMsBuildPath(IServiceProvider serviceProvider)
@@ -137,7 +136,6 @@ namespace Microsoft.VisualStudio.Project
         /// </summary>
         /// <param name="guids">An array of Guids.</param>
         /// <returns>A semicolon delimited string, or null</returns>
-        [CLSCompliant(false)]
         public static string CreateSemicolonDelimitedListOfStringFromGuids(Guid[] guids)
         {
             if(guids == null || guids.Length == 0)
@@ -163,7 +161,6 @@ namespace Microsoft.VisualStudio.Project
         /// </summary>
         /// <param name="guidList">Semi-colon separated list of Guids</param>
         /// <returns>Array of Guids</returns>
-        [CLSCompliant(false)]
         public static Guid[] GuidsArrayFromSemicolonDelimitedStringOfGuids(string guidList)
         {
             if(guidList == null)
@@ -249,7 +246,6 @@ namespace Microsoft.VisualStudio.Project
         /// </summary>
         /// <param name="guids"></param>
         /// <returns>A CALPOLESTR that was created from the the list of strings.</returns>
-        [CLSCompliant(false)]
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "CALPOLESTR")]
         public static CALPOLESTR CreateCALPOLESTR(IList<string> strings)
         {
@@ -285,7 +281,6 @@ namespace Microsoft.VisualStudio.Project
         /// </summary>
         /// <param name="guids"></param>
         /// <returns>A CADWORD created from the list of tagVsSccFilesFlags.</returns>
-        [CLSCompliant(false)]
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "CADWORD")]
         public static CADWORD CreateCADWORD(IList<tagVsSccFilesFlags> flags)
         {
@@ -591,7 +586,6 @@ namespace Microsoft.VisualStudio.Project
         /// <param name="typeToConvert">The type to convert</param>
         /// <param name="culture">The culture to use to read the localized strings</param>
         /// <returns></returns>
-        [CLSCompliant(false)]
         public static object ConvertToType<T>(T value, Type typeToConvert, CultureInfo culture)
             where T : struct
         {
@@ -615,7 +609,6 @@ namespace Microsoft.VisualStudio.Project
         /// <param name="value"></param>
         /// <param name="culture">The culture to use to read the localized strings</param>
         /// <returns></returns>
-        [CLSCompliant(false)]
         public static Nullable<T> ConvertFromType<T>(string value, CultureInfo culture)
             where T : struct
         {
@@ -654,7 +647,6 @@ namespace Microsoft.VisualStudio.Project
         /// <typeparam name="T">The enum type</typeparam>
         /// <param name="enumValue">The value of teh enum.</param>
         /// <returns></returns>
-        [CLSCompliant(false)]
         public static string SetStringValueFromConvertedEnum<T>(T enumValue, CultureInfo culture)
             where T : struct
         {
@@ -813,7 +805,7 @@ namespace Microsoft.VisualStudio.Project
             {
                 extension = Path.GetExtension(filePart);
             }
-            // We catch the ArgumentException because we want this method to return true if the filename is not valid. FilePart could be for example #¤&%"¤&"% and that would throw ArgumentException on GetExtension
+            // We catch the ArgumentException because we want this method to return true if the filename is not valid. FilePart could be for example #Â¤&%"Â¤&"% and that would throw ArgumentException on GetExtension
             catch(ArgumentException)
             {
                 return true;

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -20,8 +20,7 @@ namespace Microsoft.VisualStudio.Project
 	/// <summary>
 	/// Defines an abstract class implementing IVsUpdateSolutionEvents interfaces.
 	/// </summary>
-	[CLSCompliant(false)]
-	public abstract class UpdateSolutionEventsListener : IVsUpdateSolutionEvents3, IVsUpdateSolutionEvents2, IDisposable
+    public abstract class UpdateSolutionEventsListener : IVsUpdateSolutionEvents3, IVsUpdateSolutionEvents2, IDisposable
 	{
 		#region fields
 		/// <summary>

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.Project.Automation
 	/// Represents the automation object equivalent to a ReferenceNode object
 	/// </summary>
 	[SuppressMessage("Microsoft.Interoperability", "CA1405:ComVisibleTypeBaseTypesShouldBeComVisible")]
-	[ComVisible(true), CLSCompliant(false)]
+	[ComVisible(true)]
 	public class OAReferenceItem : OAProjectItem<ReferenceNode>
 	{
 		#region ctors

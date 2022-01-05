@@ -23,7 +23,7 @@ using MSBuild = Microsoft.Build.Evaluation;
 
 namespace Microsoft.VisualStudio.Project
 {
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public abstract class ProjectContainerNode : ProjectNode,
 		IVsParentProject,
 		IBuildDependencyOnProjectContainer
@@ -88,8 +88,7 @@ namespace Microsoft.VisualStudio.Project
 		/// <param name="ppHierarchyNested">Pointer to the interface whose identifier was passed in iidHierarchyNested.</param>
 		/// <param name="pItemId">Pointer to an item identifier of the root node of the nested hierarchy.</param>
 		/// <returns>If the method succeeds, it returns S_OK. If it fails, it returns an error code. If ITEMID is not a nested hierarchy, this method returns E_FAIL.</returns>
-		[CLSCompliant(false)]
-		public override int GetNestedHierarchy(UInt32 itemId, ref Guid iidHierarchyNested, out IntPtr ppHierarchyNested, out uint pItemId)
+        public override int GetNestedHierarchy(UInt32 itemId, ref Guid iidHierarchyNested, out IntPtr ppHierarchyNested, out uint pItemId)
 		{
 			pItemId = VSConstants.VSITEMID_ROOT;
 			ppHierarchyNested = IntPtr.Zero;

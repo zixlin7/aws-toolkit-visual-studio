@@ -21,7 +21,6 @@ using ShellConstants = Microsoft.VisualStudio.Shell.Interop.Constants;
 namespace Microsoft.VisualStudio.Project
 {
 
-	[CLSCompliant(false)]
 	public abstract class SolutionListener : IVsSolutionEvents3, IVsSolutionEvents4, IDisposable
 	{
 

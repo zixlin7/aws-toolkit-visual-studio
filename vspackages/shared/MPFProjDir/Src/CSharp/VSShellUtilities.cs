@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -18,8 +18,7 @@ namespace Microsoft.VisualStudio.Project
 	/// <summary>
 	///This class provides some useful static shell based methods. 
 	/// </summary>
-	[CLSCompliant(false)]
-	public static class UIHierarchyUtilities
+    public static class UIHierarchyUtilities
 	{
 		/// <summary>
 		/// Get reference to IVsUIHierarchyWindow interface from guid persistence slot.

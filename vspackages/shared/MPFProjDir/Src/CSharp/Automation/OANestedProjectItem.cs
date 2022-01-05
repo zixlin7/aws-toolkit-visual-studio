@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.Project.Automation
 {
 	[SuppressMessage("Microsoft.Interoperability", "CA1405:ComVisibleTypeBaseTypesShouldBeComVisible")]
-	[ComVisible(true), CLSCompliant(false)]
+	[ComVisible(true)]
 	public class OANestedProjectItem : OAProjectItem<NestedProjectNode>
 	{
 		#region fields

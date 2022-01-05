@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.Project.Automation
 	/// Represents a language-specific project item
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "OAVS")]
-	[ComVisible(true), CLSCompliant(false)]
+	[ComVisible(true)]
 	public class OAVSProjectItem : VSProjectItem
 	{
 		#region fields

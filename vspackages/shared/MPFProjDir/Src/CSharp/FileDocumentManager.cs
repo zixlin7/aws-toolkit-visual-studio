@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -20,8 +20,7 @@ namespace Microsoft.VisualStudio.Project
 	/// <summary>
 	/// This class handles opening, saving of file items in the hierarchy.
 	/// </summary>
-	[CLSCompliant(false)]
-	public class FileDocumentManager : DocumentManager
+    public class FileDocumentManager : DocumentManager
 	{
 		#region ctors
 

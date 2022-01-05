@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -20,8 +20,7 @@ namespace Microsoft.VisualStudio.Project
 	/// This class is used to enable launching the project properties
 	/// editor from the Properties Browser.
 	/// </summary>
-	[CLSCompliant(false)]
-	public class PropertiesEditorLauncher : ComponentEditor
+    public class PropertiesEditorLauncher : ComponentEditor
 	{
 		private ServiceProvider serviceProvider;
 

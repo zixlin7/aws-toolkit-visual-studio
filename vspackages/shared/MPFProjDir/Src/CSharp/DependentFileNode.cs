@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -22,8 +22,7 @@ namespace Microsoft.VisualStudio.Project
 	/// <summary>
 	/// Defines the logic for all dependent file nodes (solution explorer icon, commands etc.)
 	/// </summary>
-	[CLSCompliant(false)]
-	[ComVisible(true)]
+    [ComVisible(true)]
 	public class DependentFileNode : FileNode
 	{
 		#region fields

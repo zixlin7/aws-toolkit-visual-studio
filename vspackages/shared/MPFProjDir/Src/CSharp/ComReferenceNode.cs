@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -25,7 +25,6 @@ namespace Microsoft.VisualStudio.Project
     /// <summary>
     /// This type of node is used for references to COM components.
     /// </summary>
-    [CLSCompliant(false)]
     [ComVisible(true)]
     public class ComReferenceNode : ReferenceNode
     {

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -26,7 +26,7 @@ using MSBuildConstruction = Microsoft.Build.Construction;
 
 namespace Microsoft.VisualStudio.Project
 {
-    [CLSCompliant(false), ComVisible(true)]
+    [ComVisible(true)]
     public class ProjectConfig :
         IVsCfg,
         IVsProjectCfg,
@@ -777,7 +777,6 @@ namespace Microsoft.VisualStudio.Project
     // NOTE: advises on out of proc build execution to maximize
     // future cross-platform targeting capabilities of the VS tools.
 
-    [CLSCompliant(false)]
     [ComVisible(true)]
     [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Buildable")]
     public class BuildableProjectConfig : IVsBuildableProjectCfg

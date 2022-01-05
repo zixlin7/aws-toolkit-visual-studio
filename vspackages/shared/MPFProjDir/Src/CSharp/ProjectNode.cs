@@ -42,7 +42,6 @@ namespace Microsoft.VisualStudio.Project
     /// <summary>
     /// Manages the persistent state of the project (References, options, files, etc.) and deals with user interaction via a GUI in the form a hierarchy.
     /// </summary>
-    [CLSCompliant(false)]
     [ComVisible(true)]
     public abstract partial class ProjectNode : HierarchyNode,
         IVsGetCfgProvider,

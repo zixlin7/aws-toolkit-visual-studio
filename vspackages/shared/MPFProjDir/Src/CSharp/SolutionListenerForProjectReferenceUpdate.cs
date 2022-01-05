@@ -22,8 +22,7 @@ using IServiceProvider = System.IServiceProvider;
 
 namespace Microsoft.VisualStudio.Project
 {
-	[CLSCompliant(false)]
-	public class SolutionListenerForProjectReferenceUpdate : SolutionListener
+    public class SolutionListenerForProjectReferenceUpdate : SolutionListener
 	{
 
 		#region ctor

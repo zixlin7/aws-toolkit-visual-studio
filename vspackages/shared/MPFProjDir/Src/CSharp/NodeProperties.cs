@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.Project
 	/// To create your own localizable node properties, subclass this and add public properties
 	/// decorated with your own localized display name, category and description attributes.
 	/// </summary>
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class NodeProperties : LocalizableProperties,
 		ISpecifyPropertyPages,
 		IVsGetCfgProvider,
@@ -293,7 +293,7 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 	}
 
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class FileNodeProperties : NodeProperties
 	{
 		#region properties
@@ -351,7 +351,7 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 	}
 
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class DependentFileNodeProperties : NodeProperties
 	{
 		#region properties
@@ -400,7 +400,7 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 	}
 
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class SingleFileGeneratorNodeProperties : FileNodeProperties
 	{
 		#region fields
@@ -473,7 +473,7 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 	}
 
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class ProjectNodeProperties : NodeProperties
 	{
 		#region properties
@@ -571,7 +571,7 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 	}
 
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class FolderNodeProperties : NodeProperties
 	{
 		#region properties
@@ -634,7 +634,7 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 	}
 
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class ReferenceNodeProperties : NodeProperties
 	{
 		#region properties
