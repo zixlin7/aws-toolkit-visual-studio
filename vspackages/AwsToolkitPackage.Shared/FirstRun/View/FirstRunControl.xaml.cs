@@ -14,7 +14,6 @@ using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using log4net;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Settings;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 {
@@ -73,10 +72,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 
         public override void OnEditorOpened(bool success)
         {
-            ToolkitFactory.Instance.TelemetryLogger.RecordAwsHelpQuickstart(new AwsHelpQuickstart()
-            {
-                Result = success ? Result.Succeeded : Result.Failed,
-            });
+            _controller.RecordAwsHelpQuickstartMetric(success);
         }
 
         private void OnClickSaveAndClose(object sender, RoutedEventArgs e)

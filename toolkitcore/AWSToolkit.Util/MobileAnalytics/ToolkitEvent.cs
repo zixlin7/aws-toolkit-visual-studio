@@ -39,7 +39,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         CodeCommitConnectStatus,
         CodeCommitSetupCredentials,
 
-        FirstExperienceDisplayStatus,
         FirstExperienceSaveCredentialsStatus,
         FirstExperienceImport,
         FirstExperienceLinkClick,
