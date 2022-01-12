@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -348,6 +349,7 @@ namespace Amazon.AWSToolkit.Publish.Views
         private void UpdateConfiguration()
         {
             ResetConfigDetails();
+            ResetSystemCapabilities();
             if (_viewModelChangeHandler.ShouldRefreshTarget(_viewModel))
             {
                 ReloadTargetConfigurationsAsync().LogExceptionAndForget();
@@ -371,6 +373,11 @@ namespace Amazon.AWSToolkit.Publish.Views
 
                 _viewModel.ConfigurationDetails = null;
             }
+        }
+
+        private void ResetSystemCapabilities()
+        {
+            _viewModel.SystemCapabilities = new ObservableCollection<TargetSystemCapability>();
         }
 
         private void Config_DetailChanged(object sender, DetailChangedEventArgs e)

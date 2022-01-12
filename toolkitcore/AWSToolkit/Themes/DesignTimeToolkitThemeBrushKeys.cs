@@ -12,6 +12,7 @@ namespace Amazon.AWSToolkit.Themes
         private static readonly object FallbackTextBrushKey = SystemColors.ControlTextBrushKey;
         private static readonly object FallbackInfoBrushKey = SystemColors.InfoBrushKey;
 
+        public object ErrorBorder => FallbackTextBrushKey;
         public object HintText => FallbackTextBrushKey;
         public object ToolTipBorder => FallbackTextBrushKey;
         public object ToolTipBackground => FallbackInfoBrushKey;
