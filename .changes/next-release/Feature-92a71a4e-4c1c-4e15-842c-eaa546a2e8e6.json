@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Improved the \"Publish to AWS\" experience for configuring EC2 Instance Types by adding a selection dialog."
+}

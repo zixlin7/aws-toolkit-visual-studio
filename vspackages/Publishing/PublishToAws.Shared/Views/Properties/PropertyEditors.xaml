@@ -207,6 +207,10 @@
         <properties:VpcPropertyControl />
     </DataTemplate>
 
+    <DataTemplate x:Key="Ec2InstanceTypeEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:Ec2InstanceTypeControl />
+    </DataTemplate>
+
     <models:PropertyTemplateSelector 
         x:Key="PropertyTemplateSelector" 
         ParentEditor="{StaticResource ParentEditor}"
@@ -217,6 +221,7 @@
         EnumEditor="{StaticResource EnumEditor}"
         IamRoleEditor="{StaticResource IamRoleEditor}"
         VpcEditor="{StaticResource VpcEditor}"
+        Ec2InstanceTypeEditor="{StaticResource Ec2InstanceTypeEditor}"
         />
 
 </ResourceDictionary>

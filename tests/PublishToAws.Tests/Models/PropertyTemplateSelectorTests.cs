@@ -21,6 +21,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             UnsupportedTypeEditor = new DataTemplate(),
             EnumEditor = new DataTemplate(),
             IamRoleEditor = new DataTemplate(),
+            VpcEditor = new DataTemplate(),
+            Ec2InstanceTypeEditor = new DataTemplate(),
         };
 
         [Fact]
@@ -140,6 +142,17 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
                 .Build();
 
             Assert.Equal(_sut.VpcEditor, _sut.SelectTemplate(detail, null));
+        }
+
+        [Fact]
+        public void SelectTemplate_InstanceTypeHintType()
+        {
+            var detail = ConfigurationDetailBuilder.Create()
+                .WithType(typeof(string))
+                .WithTypeHint(ConfigurationDetail.TypeHints.InstanceType)
+                .Build();
+
+            Assert.Equal(_sut.Ec2InstanceTypeEditor, _sut.SelectTemplate(detail, null));
         }
     }
 }

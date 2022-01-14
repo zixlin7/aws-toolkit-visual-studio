@@ -247,5 +247,21 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.Equal("vpc-1234abcd", vpcDetail.VpcIdDetail.Value);
             Assert.Equal(VpcOption.Existing, vpcDetail.VpcOption);
         }
+
+        [Fact]
+        public void CreateFrom_InstanceTypeTypeHint()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithType("String")
+                .WithTypeHint(ConfigurationDetail.TypeHints.InstanceType)
+                .WithValue("t3.micro")
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            var instanceTypeDetail = Assert.IsType<Ec2InstanceConfigurationDetail>(configurationDetail);
+            Assert.Equal(itemSummary.Value, instanceTypeDetail.InstanceTypeId);
+            Assert.NotNull(instanceTypeDetail.SelectInstanceType);
+        }
     }
 }

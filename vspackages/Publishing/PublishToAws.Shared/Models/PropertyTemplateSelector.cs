@@ -51,6 +51,8 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         public DataTemplate VpcEditor { get; set; }
 
+        public DataTemplate Ec2InstanceTypeEditor { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (!(item is ConfigurationDetail configurationDetail))
@@ -88,6 +90,11 @@ namespace Amazon.AWSToolkit.Publish.Models
 
             if (configurationDetail.Type == typeof(string))
             {
+                if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.InstanceType)
+                {
+                    return Ec2InstanceTypeEditor;
+                }
+
                 return TextEditor;
             }
 

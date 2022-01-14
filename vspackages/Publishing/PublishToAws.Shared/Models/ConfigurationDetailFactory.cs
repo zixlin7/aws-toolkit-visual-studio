@@ -81,6 +81,15 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return detail;
             }
 
+            if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.InstanceType)
+            {
+                var detail = new Ec2InstanceConfigurationDetail();
+                detail.SelectInstanceType =
+                    SelectEc2InstanceTypeCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
+
+                return detail;
+            }
+
             return new ConfigurationDetail();
         }
 
