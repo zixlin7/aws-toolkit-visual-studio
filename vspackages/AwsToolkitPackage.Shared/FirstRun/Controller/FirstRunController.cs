@@ -136,6 +136,18 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
             });
         }
 
+        public void RecordAwsModifyCredentialsMetric(bool success, CredentialModification modification)
+        {
+            ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
+            {
+                AwsAccount = GetAccountId(),
+                AwsRegion = MetadataValue.NotApplicable,
+                Result = success ? Result.Succeeded : Result.Failed,
+                CredentialModification = modification,
+                Source = _control.UniqueId
+            });
+        }
+
         private string GetAccountId()
         {
             if (string.IsNullOrWhiteSpace(_toolkitContext.ConnectionManager?.ActiveAccountId))

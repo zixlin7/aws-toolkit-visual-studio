@@ -12,8 +12,8 @@ using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using log4net;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 {
@@ -86,18 +86,13 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
                 {
                     Model.Save();
                 }
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.FirstExperienceSaveCredentialsStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                _controller.RecordAwsModifyCredentialsMetric(true, CredentialModification.Add);
             }
             catch (Exception ex)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.FirstExperienceSaveCredentialsStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 autoExit = false;
                 LOGGER.Error("Error during save of credentials", ex);
+                _controller.RecordAwsModifyCredentialsMetric(false, CredentialModification.Add);
             }
 
             if (autoExit)
@@ -125,12 +120,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
                 var csvFilename = ShowFileOpenDialog("Import AWS Credentials from Csv File");
                 if (csvFilename != null)
                 {
-                    if (Model.AwsCredentialsFromCsv(csvFilename))
-                    {
-                        var evnt = new ToolkitEvent();
-                        evnt.AddProperty(AttributeKeys.FirstExperienceImport, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                    }
+                    Model.AwsCredentialsFromCsv(csvFilename);
                 }
             }
             catch(Exception ex)
@@ -161,11 +151,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
         {
             try
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.FirstExperienceLinkClick, uri.ToString());
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
-
                 _controller.OpenInBrowser(uri.ToString());
             }
             catch (Exception ex)

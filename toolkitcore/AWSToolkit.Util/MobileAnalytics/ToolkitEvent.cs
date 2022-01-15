@@ -39,10 +39,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         CodeCommitConnectStatus,
         CodeCommitSetupCredentials,
 
-        FirstExperienceSaveCredentialsStatus,
-        FirstExperienceImport,
-        FirstExperienceLinkClick,
-
         XRayEnabled,
         BeanstalkEnhancedHealth
     };
