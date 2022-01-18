@@ -9,9 +9,8 @@ using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit.Model;
 using log4net;
 using LibGit2Sharp;
-
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.CodeCommit.Services
 {
@@ -49,15 +48,11 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
                 Repository.Clone(repositoryUrl, localFolder, cloneOptions);
 
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                HostActivator.RecordCodeCommitCloneRepoMetric(Result.Succeeded);
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                HostActivator.RecordCodeCommitCloneRepoMetric(Result.Failed);
 
                 LOGGER.Error("Clone failed using libgit2sharp", e);
 
@@ -91,10 +86,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
+                HostActivator.RecordCodeCommitCreateRepoMetric(Result.Failed);
                 LOGGER.Error(e);
                 throw;
             }
@@ -113,10 +105,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 }
                 catch (Exception e)
                 {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
+                    HostActivator.RecordCodeCommitCreateRepoMetric(Result.Failed);
                     LOGGER.Error("Exception cloning new repository", e);
                     throw new Exception("Error when attempting to clone the new repository", e);
                 }
@@ -166,9 +155,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 }
             }
 
-            ToolkitEvent successEvent = new ToolkitEvent();
-            successEvent.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(successEvent);
+            HostActivator.RecordCodeCommitCreateRepoMetric(Result.Succeeded);
         }
     }
 }

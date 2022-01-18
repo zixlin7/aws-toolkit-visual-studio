@@ -37,7 +37,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         CodeCommitCloneStatus,
         CodeCommitCreateStatus,
         CodeCommitConnectStatus,
-        CodeCommitSetupCredentials,
 
         XRayEnabled,
     };
