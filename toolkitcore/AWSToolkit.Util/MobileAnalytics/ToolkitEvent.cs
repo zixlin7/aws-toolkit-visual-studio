@@ -40,7 +40,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         CodeCommitSetupCredentials,
 
         XRayEnabled,
-        BeanstalkEnhancedHealth
     };
 
     public enum MetricKeys
