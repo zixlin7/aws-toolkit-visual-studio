@@ -316,6 +316,7 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         private void RaiseErrorsChanged(string propertyName)
         {
+            NotifyPropertyChanged(nameof(HasErrors));
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
 

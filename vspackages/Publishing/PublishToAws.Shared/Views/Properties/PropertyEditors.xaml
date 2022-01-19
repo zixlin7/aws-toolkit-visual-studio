@@ -13,6 +13,7 @@
     -->
 
     <commonUi:VsImages x:Key="VsImages" />
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
 
     <Style x:Key="ConfigDetailItemStyle">
@@ -196,6 +197,12 @@
                 </commonUi:BrowserHyperLink>
                 <Run Text="to see if a newer Toolkit version supports it" />
             </TextBlock>
+            <TextBlock 
+                TextWrapping="Wrap"
+                Visibility="{Binding HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+                Text="{Binding ValidationMessage}"
+                />
         </StackPanel>
     </DataTemplate>
 
