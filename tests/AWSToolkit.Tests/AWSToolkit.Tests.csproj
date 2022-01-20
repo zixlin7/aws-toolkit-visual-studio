@@ -124,6 +124,8 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Iam\IamEntityRepositoryTests.cs" />
     <Compile Include="Lambda\LambdaStateWaiterTests.cs" />
+    <Compile Include="Models\KeyValueConversionTests.cs" />
+    <Compile Include="Models\KeyValueTests.cs" />
     <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />
     <Compile Include="Publish\Banner\PublishBannerPropertyChangedHandlerTests.cs" />
     <Compile Include="Publish\Banner\SwitchToNewExperienceCommandTests.cs" />
@@ -148,6 +150,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Publish\PublishToAwsExtensionMethodsTests.cs" />
     <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
+    <Compile Include="ViewModels\KeyValuesViewModelTests.cs" />
     <Compile Include="VsSdk.Common\IVsMonitorSelectionExtensionMethodsTests.cs" />
   </ItemGroup>
   <ItemGroup>

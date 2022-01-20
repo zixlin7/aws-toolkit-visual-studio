@@ -99,6 +99,16 @@
     </Compile>
     <Compile Include="CommonUI\CommandHandler.cs" />
     <Compile Include="CommonUI\Components\AccountViewModelGroup.cs" />
+    <Compile Include="CommonUI\Components\KeyValues\BatchAssignmentsEditor.xaml.cs">
+      <DependentUpon>BatchAssignmentsEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Components\KeyValues\DesignSampleKeyValuesViewModel.cs" />
+    <Compile Include="CommonUI\Components\KeyValues\KeyValuesEditor.xaml.cs">
+      <DependentUpon>KeyValuesEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Components\KeyValues\KeyValuesView.xaml.cs">
+      <DependentUpon>KeyValuesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CommonUI\Converters\AccountViewModelGroupConverter.cs" />
     <Compile Include="CommonUI\Components\CredentialsSelector.xaml.cs">
       <DependentUpon>CredentialsSelector.xaml</DependentUpon>
@@ -180,6 +190,8 @@
     </Compile>
     <Compile Include="Feedback\FeedbackPanelViewModel.cs" />
     <Compile Include="Feedback\SendFeedbackCommand.cs" />
+    <Compile Include="Models\KeyValue.cs" />
+    <Compile Include="Models\KeyValueConversion.cs" />
     <Compile Include="Models\TimestampedValue.cs" />
     <Compile Include="Navigator\NavigatorAccountConnectionStatus.cs" />
     <Compile Include="Navigator\ContextCommandExecutor.cs" />
@@ -420,6 +432,7 @@
     <Compile Include="ViewModels\Charts\GraphPeriodViewModel.cs" />
     <Compile Include="ViewModels\Charts\MonitorGraphViewModel.cs" />
     <Compile Include="ViewModels\Charts\ResourceGraphTitles.cs" />
+    <Compile Include="ViewModels\KeyValuesViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -474,6 +487,22 @@
     <Page Include="CommonUI\Components\CredentialsSelector.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Components\KeyValues\BatchAssignmentsEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\Components\KeyValues\KeyValuesEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\Components\KeyValues\KeyValuesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\Components\KeyValues\KeyValueTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CommonUI\Components\RegisteredProfilesPicker.xaml">
       <SubType>Designer</SubType>
