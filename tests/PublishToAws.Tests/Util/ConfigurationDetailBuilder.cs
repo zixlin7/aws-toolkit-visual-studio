@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 
 namespace Amazon.AWSToolkit.Tests.Publishing.Util
 {
@@ -38,7 +39,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
             return this;
         }
 
-        public ConfigurationDetailBuilder WithType(Type type)
+        public ConfigurationDetailBuilder WithType(DetailType type)
         {
             _detail.Type = type;
             return this;

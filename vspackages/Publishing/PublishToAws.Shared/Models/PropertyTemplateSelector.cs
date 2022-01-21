@@ -60,12 +60,12 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return null;
             }
 
-            if (configurationDetail.Type == typeof(UnsupportedType))
+            if (configurationDetail.Type == DetailType.Unsupported)
             {
                 return UnsupportedTypeEditor;
             }
 
-            if (configurationDetail.Type == typeof(object))
+            if (configurationDetail.Type == DetailType.Blob)
             {
                 if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.IamRole)
                 {
@@ -88,7 +88,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return EnumEditor;
             }
 
-            if (configurationDetail.Type == typeof(string))
+            if (configurationDetail.Type == DetailType.String)
             {
                 if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.InstanceType)
                 {
@@ -98,12 +98,12 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return TextEditor;
             }
 
-            if (configurationDetail.Type == typeof(int) || configurationDetail.Type == typeof(double))
+            if (configurationDetail.Type == DetailType.Integer || configurationDetail.Type == DetailType.Double)
             {
                 return NumericEditor;
             }
 
-            if (configurationDetail.Type == typeof(bool))
+            if (configurationDetail.Type == DetailType.Boolean)
             {
                 return BooleanEditor;
             }

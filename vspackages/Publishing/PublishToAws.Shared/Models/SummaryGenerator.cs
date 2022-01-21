@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Amazon.AWSToolkit.Publish.Models.Configuration;
+
 namespace Amazon.AWSToolkit.Publish.Models
 {
     class SummaryGenerator
@@ -73,7 +75,7 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         private  string AsSummary(ConfigurationDetail detail)
         {
-            if (detail.Type == typeof(bool) && detail.Value.Equals(true))
+            if (detail.Type == DetailType.Boolean && detail.Value.Equals(true))
             {
                 return detail.Name;
             }

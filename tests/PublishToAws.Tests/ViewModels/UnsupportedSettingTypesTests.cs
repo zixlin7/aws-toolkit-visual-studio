@@ -33,11 +33,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Theory]
-        [InlineData(typeof(string))]
-        [InlineData(typeof(int))]
-        [InlineData(typeof(bool))]
-        [InlineData(typeof(double))]
-        public void Update_NoUnsupportedSettingType(Type settingType)
+        [InlineData(DetailType.String)]
+        [InlineData(DetailType.Integer)]
+        [InlineData(DetailType.Boolean)]
+        [InlineData(DetailType.Double)]
+        public void Update_NoUnsupportedSettingType(DetailType settingType)
         {
             var sampleConfigDetails = CreateSampleConfigDetails(settingType, settingType.ToString());
 
@@ -53,7 +53,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [InlineData("     ")]
         public void Update_InvalidRecipe(string recipeId)
         {
-            var sampleConfigDetails = CreateSampleConfigDetails(typeof(UnsupportedType), SampleUnsupportedOriginalType);
+            var sampleConfigDetails = CreateSampleConfigDetails(DetailType.Unsupported, SampleUnsupportedOriginalType);
 
             _unsupportedSettingTypes.Update(recipeId, sampleConfigDetails);
 
@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public void Update_WhenEmpty()
         {
-            var sampleConfigDetails = CreateSampleConfigDetails(typeof(UnsupportedType), SampleUnsupportedOriginalType);
+            var sampleConfigDetails = CreateSampleConfigDetails(DetailType.Unsupported, SampleUnsupportedOriginalType);
 
             _unsupportedSettingTypes.Update(SampleRecipeId, sampleConfigDetails);
 
@@ -83,10 +83,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public void Update_WhenNotEmpty()
         {
-            var configDetails1 = CreateSampleConfigDetails(typeof(UnsupportedType), SampleUnsupportedOriginalType);
+            var configDetails1 = CreateSampleConfigDetails(DetailType.Unsupported, SampleUnsupportedOriginalType);
             _unsupportedSettingTypes.Update(SampleRecipeId, configDetails1);
 
-            var configDetails2 = CreateSampleConfigDetails(typeof(UnsupportedType), "unsupported2");
+            var configDetails2 = CreateSampleConfigDetails(DetailType.Unsupported, "unsupported2");
             _unsupportedSettingTypes.Update(SampleRecipeId, configDetails2);
 
             var settingTypes = _unsupportedSettingTypes.RecipeToUnsupportedSetting[SampleRecipeId];
@@ -109,11 +109,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         private void SetupUnsupportedSettingTypes(string optionSettingType)
         {
-            var configDetails1 = CreateSampleConfigDetails(typeof(UnsupportedType), optionSettingType);
+            var configDetails1 = CreateSampleConfigDetails(DetailType.Unsupported, optionSettingType);
             _unsupportedSettingTypes.Update(SampleRecipeId, configDetails1);
         }
 
-        private List<ConfigurationDetail> CreateSampleConfigDetails(Type settingType, string originalType)
+        private List<ConfigurationDetail> CreateSampleConfigDetails(DetailType settingType, string originalType)
         {
             var configDetail = ConfigurationDetailBuilder.Create().WithType(settingType)
                 .WithOriginalType(originalType).Build();

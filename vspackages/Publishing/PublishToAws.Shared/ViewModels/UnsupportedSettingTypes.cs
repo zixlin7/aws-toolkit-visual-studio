@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <param name="configDetails"></param>
         public void Update(string recipeId, IList<ConfigurationDetail> configDetails)
         {
-            var unsupportedSettingTypes = configDetails?.Where(x => x.Type == typeof(UnsupportedType))
+            var unsupportedSettingTypes = configDetails?.Where(x => x.Type == DetailType.Unsupported)
                 .Select(x => x.OriginalType).ToHashSet();
             Update(recipeId, unsupportedSettingTypes);
         }

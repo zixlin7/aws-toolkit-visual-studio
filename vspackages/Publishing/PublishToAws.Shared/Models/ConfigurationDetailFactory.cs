@@ -93,20 +93,20 @@ namespace Amazon.AWSToolkit.Publish.Models
             return new ConfigurationDetail();
         }
 
-        private static Type GetConfigurationDetailType(string itemSummaryType)
+        private static DetailType GetConfigurationDetailType(string itemSummaryType)
         {
             switch (itemSummaryType)
             {
                 case "String":
-                    return typeof(string);
+                    return DetailType.String;
                 case "Int":
-                    return typeof(int);
+                    return DetailType.Integer;
                 case "Double":
-                    return typeof(double);
+                    return DetailType.Double;
                 case "Bool":
-                    return typeof(bool);
+                    return DetailType.Boolean;
                 case "Object":
-                    return typeof(object);
+                    return DetailType.Blob;
                 default:
                     if (Debugger.IsAttached)
                     {
@@ -115,7 +115,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                             $"The Type '{itemSummaryType}' is not supported. The toolkit will not be able to edit this, and will show a UI indicating the field is not supported.");
                     }
 
-                    return typeof(UnsupportedType);
+                    return DetailType.Unsupported;
             }
         }
 

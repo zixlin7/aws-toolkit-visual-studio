@@ -203,7 +203,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private bool IsTypeHintSupported(ConfigurationDetail detail)
         {
-            return detail.Type == typeof(string) && !string.IsNullOrEmpty(detail.TypeHint);
+            return detail.Type == DetailType.String && !string.IsNullOrEmpty(detail.TypeHint);
         }
 
         public async Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,

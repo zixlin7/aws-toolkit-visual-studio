@@ -19,14 +19,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
 {
     public class ConfigurationDetailFactoryTests
     {
-        private static readonly Dictionary<string, Type> TypeMappings = new Dictionary<string, Type>()
+        private static readonly Dictionary<string, DetailType> TypeMappings = new Dictionary<string, DetailType>()
         {
-            {"String", typeof(string)},
-            {"Int", typeof(int)},
-            {"Double", typeof(double)},
-            {"Bool", typeof(bool)},
-            {"Object", typeof(object)},
-            {"SomeFutureType", typeof(UnsupportedType)}
+            {"String", DetailType.String},
+            {"Int", DetailType.Integer},
+            {"Double", DetailType.Double},
+            {"Bool", DetailType.Boolean},
+            {"Object", DetailType.Blob},
+            {"SomeFutureType", DetailType.Unsupported}
         };
 
         private readonly Mock<IPublishToAwsProperties> _publishProperties = new Mock<IPublishToAwsProperties>();

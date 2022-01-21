@@ -568,7 +568,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _sut.ConfigurationDetails.Add(new ConfigurationDetail()
             {
                 Name = "Use Vpc",
-                Type = typeof(bool),
+                Type = DetailType.Boolean,
                 Value = true,
                 Visible = true,
             });
@@ -585,7 +585,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _sut.ConfigurationDetails.Add(new ConfigurationDetail()
             {
                 Name = "Use Vpc",
-                Type = typeof(bool),
+                Type = DetailType.Boolean,
                 Value = false,
                 Visible = true,
             });
@@ -826,7 +826,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
             Assert.False(_sut.UnsupportedSettingTypes.RecipeToUnsupportedSetting.Any());
 
-            var configDetails = CreateSampleConfigurationDetails(2, d => d.Type = typeof(UnsupportedType));
+            var configDetails = CreateSampleConfigurationDetails(2, d => d.Type = DetailType.Unsupported);
             _deployToolController.Setup(mock =>
                 mock.GetConfigSettingsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(configDetails);
 
@@ -1124,7 +1124,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             var detail = ConfigurationDetailBuilder.Create()
                 .WithId("parent")
-                .WithType(typeof(object))
+                .WithType(DetailType.Blob)
                 .WithChild(ConfigurationDetailBuilder.Create()
                     .WithSampleData()
                     .WithId("problem-child")
@@ -1174,7 +1174,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     SummaryDisplayable = true,
                     DefaultValue = "test",
                     Value = "test",
-                    Type = typeof(string)
+                    Type = DetailType.String
                 };
 
                 detailAdjustor?.Invoke(detail);
@@ -1248,7 +1248,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     .IsVisible()
                     .IsSummaryDisplayable()
                     .WithName("use vpc")
-                    .WithType(typeof(object))
+                    .WithType(DetailType.Blob)
                     .WithChild(ConfigurationDetailBuilder.Create()
                         .WithName("not-visible-or-advanced #novpc")
                     )
@@ -1276,7 +1276,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 // This node and its children should be excluded (not visible)
                 ConfigurationDetailBuilder.Create()
                     .WithSampleData()
-                    .WithType(typeof(object))
+                    .WithType(DetailType.Blob)
                     .WithName("use holograms")
                     .WithChild(ConfigurationDetailBuilder.Create()
                         .WithName("holograms: not-visible-or-advanced")

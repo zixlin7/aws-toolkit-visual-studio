@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         private string _id;
         private string _name;
         private string _description;
-        private Type _type;
+        private DetailType _type;
         private string _originalType;
         private string _typeHint;
         private object _value;
@@ -113,7 +113,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// <summary>
         /// The configuration field's type, as interpreted by the Toolkit (and how the UI displays it).
         /// </summary>
-        public Type Type
+        public DetailType Type
         {
             get => _type;
             set => SetProperty(ref _type, value);

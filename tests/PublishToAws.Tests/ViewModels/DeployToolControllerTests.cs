@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
@@ -453,8 +454,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public static IEnumerable<object[]> TypeHintUnsupportedConfigs = new List<object[]>
         {
             new object[] { ConfigurationDetailBuilder.Create().Build() },
-            new object[] { ConfigurationDetailBuilder.Create().WithType(typeof(string)).Build() },
-            new object[] { ConfigurationDetailBuilder.Create().WithType(typeof(int)).WithTypeHint("dummy").Build() }
+            new object[] { ConfigurationDetailBuilder.Create().WithType(DetailType.String).Build() },
+            new object[] { ConfigurationDetailBuilder.Create().WithType(DetailType.Integer).WithTypeHint("dummy").Build() }
         };
 
         [Theory]

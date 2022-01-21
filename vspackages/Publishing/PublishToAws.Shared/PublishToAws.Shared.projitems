@@ -46,7 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailChangedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\UnsupportedType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishUrls.cs" />
