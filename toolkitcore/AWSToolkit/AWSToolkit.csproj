@@ -115,10 +115,12 @@
     </Compile>
     <Compile Include="CommonUI\Components\GroupedAccountComparer.cs" />
     <Compile Include="CommonUI\Converters\ConcatenateCollectionConverter.cs" />
+    <Compile Include="CommonUI\Converters\ConverterPipeline.cs" />
     <Compile Include="CommonUI\Converters\EqualityBooleanConverter.cs" />
     <Compile Include="CommonUI\Converters\InverseVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\NullableInverseBooleanConverter.cs" />
     <Compile Include="CommonUI\Dialogs\IIamRoleSelectionDialog.cs" />
+    <Compile Include="CommonUI\Dialogs\IKeyValueEditorDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IInstanceTypeSelectionDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IVpcSelectionDialog.cs" />
     <Compile Include="CommonUI\IDialogFactory.cs" />

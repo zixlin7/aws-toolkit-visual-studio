@@ -29,7 +29,7 @@
             var key = text.Substring(0, splitPos);
             var value = splitPos >= text.Length ? string.Empty : text.Substring(splitPos + 1);
 
-            return new KeyValue() { Key = key, Value = value };
+            return new KeyValue(key, value);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace AWSToolkit.Tests.Models
         [InlineData("sampleKey", "", "sampleKey=")]
         public void ToAssignmentString(string key, string value, string expectedString)
         {
-            var keyValue = new KeyValue() { Key = key, Value = value };
+            var keyValue = new KeyValue(key, value);
             Assert.Equal(expectedString, KeyValueConversion.ToAssignmentString(keyValue));
         }
 
@@ -21,7 +21,7 @@ namespace AWSToolkit.Tests.Models
         [InlineData("sampleKey", "sampleKey", "")]
         public void FromAssignmentString(string assignmentString, string expectedKey, string expectedValue)
         {
-            var expectedKeyValue = new KeyValue() { Key = expectedKey, Value = expectedValue };
+            var expectedKeyValue = new KeyValue(expectedKey, expectedValue);
             var keyValue = KeyValueConversion.FromAssignmentString(assignmentString);
             Assert.Equal(expectedKeyValue, keyValue);
         }

@@ -33,5 +33,10 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             return new InstanceTypeSelectionDialog(_toolkitContext, _joinableTaskFactory);
         }
+
+        public IKeyValueEditorDialog CreateKeyValueEditorDialog()
+        {
+            return new KeyValueEditorDialog(_toolkitContext);
+        }
     }
 }

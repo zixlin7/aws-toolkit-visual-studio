@@ -38,6 +38,16 @@ namespace Amazon.AWSToolkit.Models
             }
         }
 
+        public KeyValue() : this(string.Empty, string.Empty)
+        {
+        }
+
+        public KeyValue(string key, string value)
+        {
+            Key = key;
+            Value = value;
+        }
+
         #region IEquatable
 
         public bool Equals(KeyValue other)

@@ -84,7 +84,7 @@ namespace AWSToolkit.Tests.ViewModels
 
         private void AddKeyValue(string key, string value)
         {
-            _sut.KeyValues.Add(new KeyValue() { Key = key, Value = value });
+            _sut.KeyValues.Add(new KeyValue(key, value));
         }
     }
 }

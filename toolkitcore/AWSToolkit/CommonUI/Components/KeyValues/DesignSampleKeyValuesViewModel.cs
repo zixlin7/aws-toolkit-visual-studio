@@ -17,7 +17,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components.KeyValues
 
         private void Add(string key, string value)
         {
-            KeyValues.Add(new KeyValue() { Key = key, Value = value });
+            KeyValues.Add(new KeyValue(key, value));
         }
     }
 }
