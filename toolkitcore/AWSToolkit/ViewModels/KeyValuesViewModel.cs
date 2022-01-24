@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.ViewModels
 {
     public class KeyValuesViewModel : BaseModel, INotifyDataErrorInfo
     {
-        private ObservableCollection<KeyValue> _keyValues;
+        private ObservableCollection<KeyValue> _collection;
         private string _batchAssignments = string.Empty;
 
         public string BatchAssignments
@@ -26,21 +26,21 @@ namespace Amazon.AWSToolkit.ViewModels
 
                 _batchAssignments = value;
                 NotifyPropertyChanged(nameof(BatchAssignments));
-                KeyValues = new ObservableCollection<KeyValue>(ParseKeyValues(value));
+                Collection = new ObservableCollection<KeyValue>(ParseKeyValues(value));
             }
         }
 
-        public ObservableCollection<KeyValue> KeyValues
+        public ObservableCollection<KeyValue> Collection
         {
-            get => _keyValues;
+            get => _collection;
             set
             {
                 if (!IsKeyValuesEquivalent(value))
                 {
-                    UnListenForChanges(_keyValues);
-                    _keyValues = value;
-                    ListenForChanges(_keyValues);
-                    NotifyPropertyChanged(nameof(KeyValues));
+                    UnListenForChanges(_collection);
+                    _collection = value;
+                    ListenForChanges(_collection);
+                    NotifyPropertyChanged(nameof(Collection));
                     UpdateBatchAssignmentsText();
                     IdentifyDuplicateKeys();
                 }
@@ -54,14 +54,14 @@ namespace Amazon.AWSToolkit.ViewModels
         {
             AddKeyValue = CreateAddCommand();
             RemoveKeyValue = CreateRemoveCommand();
-            KeyValues = new ObservableCollection<KeyValue>();
+            Collection = new ObservableCollection<KeyValue>();
         }
 
         private ICommand CreateAddCommand()
         {
             var command = new RelayCommand((param) =>
             {
-                _keyValues.Add(new KeyValue());
+                _collection.Add(new KeyValue());
             });
 
             return command;
@@ -73,7 +73,7 @@ namespace Amazon.AWSToolkit.ViewModels
             {
                 if (param is KeyValue kv)
                 {
-                    _keyValues.Remove(kv);
+                    _collection.Remove(kv);
                 }
             });
 
@@ -82,23 +82,23 @@ namespace Amazon.AWSToolkit.ViewModels
 
         private bool IsKeyValuesEquivalent(ObservableCollection<KeyValue> value)
         {
-            if (_keyValues == value)
+            if (_collection == value)
             {
                 return true;
             }
 
-            if (_keyValues == null || value == null)
+            if (_collection == null || value == null)
             {
                 return false;
             }
 
-            if (_keyValues.Count != value.Count)
+            if (_collection.Count != value.Count)
             {
                 return false;
             }
 
-            return Enumerable.Range(0, _keyValues.Count)
-                .All(index => _keyValues[index].Equals(value[index]));
+            return Enumerable.Range(0, _collection.Count)
+                .All(index => _collection[index].Equals(value[index]));
         }
 
         private void UnListenForChanges(ObservableCollection<KeyValue> keyValues)
@@ -165,12 +165,12 @@ namespace Amazon.AWSToolkit.ViewModels
         private void UpdateBatchAssignmentsText()
         {
             BatchAssignments = string.Join(Environment.NewLine,
-                KeyValues.Select(KeyValueConversion.ToAssignmentString)) + Environment.NewLine;
+                Collection.Select(KeyValueConversion.ToAssignmentString)) + Environment.NewLine;
         }
 
         private void IdentifyDuplicateKeys()
         {
-            foreach (var keyGroup in KeyValues.GroupBy(keyValue => keyValue.Key))
+            foreach (var keyGroup in Collection.GroupBy(keyValue => keyValue.Key))
             {
                 bool isDuplicate = keyGroup.Count() > 1;
                 keyGroup
@@ -191,14 +191,14 @@ namespace Amazon.AWSToolkit.ViewModels
 
         #region INotifyDataErrorInfo
 
-        public bool HasErrors => KeyValues?.Any(kv => kv.HasErrors) ?? false;
+        public bool HasErrors => Collection?.Any(kv => kv.HasErrors) ?? false;
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
         public IEnumerable GetErrors(string propertyName)
         {
             var errors = new List<object>();
 
-            foreach (var keyValue in KeyValues)
+            foreach (var keyValue in Collection)
             {
                 errors.AddRange(keyValue.GetErrors(null).OfType<object>());
             }

@@ -48,7 +48,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
             if (result)
             {
-                KeyValues = Clone(_viewModel.KeyValues.KeyValues);
+                KeyValues = Clone(_viewModel.KeyValues.Collection);
             }
 
             return result;

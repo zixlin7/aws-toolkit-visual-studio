@@ -30,7 +30,7 @@ namespace AWSToolkit.Tests.ViewModels
         [Fact]
         public void KeyChangeUpdatesBatchAssignments()
         {
-            _sut.KeyValues.First().Key = "key";
+            _sut.Collection.First().Key = "key";
             Assert.Equal(
                 "key=sample-value" + Environment.NewLine,
                 _sut.BatchAssignments);
@@ -39,33 +39,33 @@ namespace AWSToolkit.Tests.ViewModels
         [Fact]
         public void ValueChangeUpdatesBatchAssignments()
         {
-            _sut.KeyValues.First().Value = "value";
+            _sut.Collection.First().Value = "value";
             Assert.Equal(
                 "sample-key=value" + Environment.NewLine,
                 _sut.BatchAssignments);
         }
 
         [Fact]
-        public void BatchAssignmentsUpdateKeyValues()
+        public void BatchAssignmentsUpdateCollection()
         {
             _sut.BatchAssignments = "hello=world" + Environment.NewLine + "bees=5";
-            Assert.Equal(2, _sut.KeyValues.Count);
-            Assert.Contains(_sut.KeyValues, keyValue => keyValue.Key == "hello" && keyValue.Value == "world");
-            Assert.Contains(_sut.KeyValues, keyValue => keyValue.Key == "bees" && keyValue.Value == "5");
+            Assert.Equal(2, _sut.Collection.Count);
+            Assert.Contains(_sut.Collection, keyValue => keyValue.Key == "hello" && keyValue.Value == "world");
+            Assert.Contains(_sut.Collection, keyValue => keyValue.Key == "bees" && keyValue.Value == "5");
         }
 
         [Fact]
         public void AddKeyValueCommand()
         {
             _sut.AddKeyValue.Execute(null);
-            Assert.Equal(2, _sut.KeyValues.Count);
+            Assert.Equal(2, _sut.Collection.Count);
         }
 
         [Fact]
         public void RemoveKeyValueCommand()
         {
-            _sut.RemoveKeyValue.Execute(_sut.KeyValues.First());
-            Assert.Empty(_sut.KeyValues);
+            _sut.RemoveKeyValue.Execute(_sut.Collection.First());
+            Assert.Empty(_sut.Collection);
         }
 
         [Fact]
@@ -75,8 +75,8 @@ namespace AWSToolkit.Tests.ViewModels
             AddKeyValue("hi", "hello");
             AddKeyValue("hello", "world");
 
-            Assert.True(_sut.KeyValues.Where(x => x.Key == "hi").All(x => x.IsDuplicateKey));
-            Assert.True(_sut.KeyValues.Where(x => x.Key != "hi").All(x => !x.IsDuplicateKey));
+            Assert.True(_sut.Collection.Where(x => x.Key == "hi").All(x => x.IsDuplicateKey));
+            Assert.True(_sut.Collection.Where(x => x.Key != "hi").All(x => !x.IsDuplicateKey));
             var errors = _sut.GetErrors(null).OfType<string>().ToList();
             Assert.Single(errors);
             Assert.Contains(errors, error => error.Contains("hi"));
@@ -84,7 +84,7 @@ namespace AWSToolkit.Tests.ViewModels
 
         private void AddKeyValue(string key, string value)
         {
-            _sut.KeyValues.Add(new KeyValue(key, value));
+            _sut.Collection.Add(new KeyValue(key, value));
         }
     }
 }

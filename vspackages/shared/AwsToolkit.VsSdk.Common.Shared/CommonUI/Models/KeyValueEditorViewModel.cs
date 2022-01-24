@@ -55,7 +55,7 @@ namespace CommonUI.Models
 
         public void SetKeyValues(ICollection<KeyValue> keyValues)
         {
-            KeyValues.KeyValues = new ObservableCollection<KeyValue>(keyValues);
+            KeyValues.Collection = new ObservableCollection<KeyValue>(keyValues);
         }
     }
 }

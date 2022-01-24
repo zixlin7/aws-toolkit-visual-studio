@@ -73,7 +73,7 @@
             HorizontalScrollBarVisibility="Disabled"
             HorizontalContentAlignment="Stretch"
             >
-            <ItemsControl ItemsSource="{Binding KeyValues}" />
+            <ItemsControl ItemsSource="{Binding Collection}" />
         </ScrollViewer>
     </Grid>
 </UserControl>
