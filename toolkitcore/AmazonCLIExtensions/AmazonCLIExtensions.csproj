@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Amazon.Lambda.Tools\Resources\build-lambda-zip.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

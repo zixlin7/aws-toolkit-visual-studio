@@ -49,8 +49,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-	  <None Include="CloudFormationTemplate.ico" />
-	  <None Include="CloudFormation.template" />
+    <None Include="CloudFormationTemplate.ico" />
+    <None Include="cloudformation.template" />
   </ItemGroup>
   <ItemGroup>
     <VSTemplate Include="CloudFormationTemplate.v17.vstemplate" />
