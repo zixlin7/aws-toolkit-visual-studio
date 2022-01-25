@@ -155,16 +155,6 @@
       <Version>4.5.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\AWSToolkit.CodeCommitTeamExplorer.Shared\Resources\CodeCommit16x16.png">
-      <Link>Resources\CodeCommit16x16.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="..\AWSToolkit.CodeCommitTeamExplorer.Shared\Resources\CodeCommit32x32.png">
-      <Link>Resources\CodeCommit32x32.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
   <Import Project="..\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

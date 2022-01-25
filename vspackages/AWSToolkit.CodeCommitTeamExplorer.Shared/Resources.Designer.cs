@@ -61,26 +61,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CodeCommit16x16 {
-            get {
-                object obj = ResourceManager.GetObject("CodeCommit16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CodeCommit32x32 {
-            get {
-                object obj = ResourceManager.GetObject("CodeCommit32x32", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to AWS CodeCommit is a fully-managed source control service that makes it easy for companies to host secure and highly scalable private Git repositories..
         /// </summary>
         internal static string CodeCommitInvitationBlurbText {
