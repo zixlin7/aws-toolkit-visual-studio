@@ -63,6 +63,7 @@ using Amazon.AWSToolkit.VisualStudio.Telemetry;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
 using Amazon.AWSToolkit.VisualStudio.Utilities.VsAppId;
 using Amazon.AWSToolkit.CodeArtifact.Controller;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -77,6 +78,10 @@ using Amazon.AWSToolkit.VisualStudio.Commands.Toolkit;
 using Amazon.AWSToolkit.VisualStudio.Images;
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
 using Amazon.AwsToolkit.VsSdk.Common;
+
+using AwsToolkit.VsSdk.Common.CommonUI.Converters;
+
+using Microsoft.VisualStudio.PlatformUI;
 
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
@@ -575,6 +580,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 // Enable UIs to access VS-provided images
                 await InitializeImageProviderAsync();
+                await InitializeVsImageAsync();
 
                 _toolkitCredentialInitializer = new ToolkitCredentialInitializer(_telemetryManager.TelemetryLogger, _regionProvider, ToolkitShellProviderService);
                 _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged += AwsConnectionManager_ConnectionStateChanged;
@@ -735,6 +741,23 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception e)
             {
                 Logger.Error("Failed to set up Image provider - portions of the Toolkit may not have icons", e);
+            }
+        }
+
+        /// <summary>
+        /// Initialize the toolkit control that
+        /// renders the images served by Visual Studio
+        /// </summary>
+        private async Task InitializeVsImageAsync()
+        {
+            try
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                VsImage.Initialize(new ImageThemeConverter(), new BrushToColorConverter());
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to set up VS image control - portions of the Toolkit may not have icons", e);
             }
         }
 

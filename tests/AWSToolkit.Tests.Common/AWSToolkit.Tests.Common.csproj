@@ -56,7 +56,9 @@
     <Compile Include="Account\AccountFixture.cs" />
     <Compile Include="Context\ConnectionManagerFixture.cs" />
     <Compile Include="Context\FakeCredentialIdentifier.cs" />
+    <Compile Include="Context\FakeMultiValueConverter.cs" />
     <Compile Include="Context\FakeProgressDialog.cs" />
+    <Compile Include="Context\FakeValueConverter.cs" />
     <Compile Include="Context\NoOpToolkitShellProvider.cs" />
     <Compile Include="Context\ProjectFixture.cs" />
     <Compile Include="Context\TelemetryFixture.cs" />

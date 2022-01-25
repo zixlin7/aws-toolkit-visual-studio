@@ -126,6 +126,9 @@
     <Compile Include="CommonUI\IDialogFactory.cs" />
     <Compile Include="CommonUI\Images\AwsImageResourcePath.cs" />
     <Compile Include="CommonUI\Images\ImageSourceFactory.cs" />
+    <Compile Include="CommonUI\Images\VsImage.xaml.cs">
+      <DependentUpon>VsImage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CommonUI\Notifications\Progress\IProgressDialog.cs" />
     <Compile Include="CommonUI\ToolkitImages.cs" />
     <Compile Include="CommonUI\VsImages.cs" />
@@ -511,6 +514,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CommonUI\DeploymentWizard\PageUI\DeploymentReviewPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Images\VsImage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

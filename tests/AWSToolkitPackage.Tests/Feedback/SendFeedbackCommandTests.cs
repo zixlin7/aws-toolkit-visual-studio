@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Feedback;
@@ -22,6 +23,7 @@ namespace AWSToolkitPackage.Tests.Feedback
         public SendFeedbackCommandTests()
         {
             _sut = new SendFeedbackCommand(_toolkitContextFixture.ToolkitContext);
+            VsImage.Initialize(new FakeMultiValueConverter(), new FakeValueConverter());
         }
 
         [StaFact]
