@@ -94,25 +94,33 @@
                 />
         </Grid>
 
-        <ScrollViewer
+        <Border
             Grid.Row="1"
             Margin="0 6 0 0"
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Disabled"
-            HorizontalContentAlignment="Stretch"
+            BorderThickness="1"
+            BorderBrush="{StaticResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
             >
-            <ItemsControl Padding="1"
-                ItemsSource="{Binding Collection}"
-                />
-        </ScrollViewer>
+            <ScrollViewer
+                VerticalScrollBarVisibility="Auto"
+                HorizontalScrollBarVisibility="Disabled"
+                HorizontalContentAlignment="Stretch"
+                >
+                <ItemsControl 
+                    Padding="1"
+                    Margin="0 0 9 0"
+                    ItemsSource="{Binding Collection, ValidatesOnNotifyDataErrors=False}"
+                    />
+            </ScrollViewer>
+        </Border>
 
         <StackPanel 
             Grid.Row="2"
             Orientation="Horizontal"
+            Margin="0 9 0 0"
             HorizontalAlignment="Right"
             >
             <Button 
-                Content="Add Entry"
+                Content="_Add Entry"
                 Command="{Binding AddKeyValue, ValidatesOnNotifyDataErrors=False}"
                 />
         </StackPanel>
