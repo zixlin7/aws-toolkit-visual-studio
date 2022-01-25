@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ReenableOldPublishCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\EditKeyValuesCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEc2InstanceTypeCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectVpcCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StackViewerCommandFactory.cs" />
@@ -47,6 +48,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValueConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValuesConversion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishUrls.cs" />
@@ -102,6 +105,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\IamRolePropertyControl.xaml.cs">
       <DependentUpon>IamRolePropertyControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\KeyValuesTypeControl.xaml.cs">
+      <DependentUpon>KeyValuesTypeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\VpcPropertyControl.xaml.cs">
       <DependentUpon>VpcPropertyControl.xaml</DependentUpon>
     </Compile>
@@ -153,6 +159,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\Ec2InstanceTypeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\KeyValuesTypeControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

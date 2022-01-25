@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
+using Amazon.AWSToolkit.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 
 namespace Amazon.AWSToolkit.Publish.Models
@@ -53,6 +54,8 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         public DataTemplate Ec2InstanceTypeEditor { get; set; }
 
+        public DataTemplate KeyValuesTypeEditor { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (!(item is ConfigurationDetail configurationDetail))
@@ -63,6 +66,11 @@ namespace Amazon.AWSToolkit.Publish.Models
             if (configurationDetail.Type == DetailType.Unsupported)
             {
                 return UnsupportedTypeEditor;
+            }
+
+            if (configurationDetail.Type == DetailType.KeyValue)
+            {
+                return KeyValuesTypeEditor;
             }
 
             if (configurationDetail.Type == DetailType.Blob)

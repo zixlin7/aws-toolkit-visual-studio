@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Models;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Util;
@@ -15,6 +16,16 @@ namespace Amazon.AWSToolkit.Publish.Models
 {
     public class ConfigurationDetailFactory
     {
+        private static class ItemSummaryTypes
+        {
+            public const string String = "String";
+            public const string Int = "Int";
+            public const string Double = "Double";
+            public const string Bool = "Bool";
+            public const string KeyValue = "KeyValue";
+            public const string Object = "Object";
+        }
+
         private readonly IPublishToAwsProperties _publishToAwsProperties;
         private readonly IDialogFactory _dialogFactory;
 
@@ -90,6 +101,17 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return detail;
             }
 
+            if (itemSummary.Type == ItemSummaryTypes.KeyValue)
+            {
+                var detail = new KeyValueConfigurationDetail();
+                detail.EditCommand = EditKeyValuesCommandFactory.Create(
+                    detail,
+                    $"Edit {itemSummary.Name}",
+                    _dialogFactory);
+
+                return detail;
+            }
+
             return new ConfigurationDetail();
         }
 
@@ -97,15 +119,17 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             switch (itemSummaryType)
             {
-                case "String":
+                case ItemSummaryTypes.String:
                     return DetailType.String;
-                case "Int":
+                case ItemSummaryTypes.Int:
                     return DetailType.Integer;
-                case "Double":
+                case ItemSummaryTypes.Double:
                     return DetailType.Double;
-                case "Bool":
+                case ItemSummaryTypes.Bool:
                     return DetailType.Boolean;
-                case "Object":
+                case ItemSummaryTypes.KeyValue:
+                    return DetailType.KeyValue;
+                case ItemSummaryTypes.Object:
                     return DetailType.Blob;
                 default:
                     if (Debugger.IsAttached)

@@ -74,6 +74,8 @@
     <Compile Include="Models\ConfigurationDetailFactoryTests.cs" />
     <Compile Include="Models\DisplayedResourceSummaryExtensionMethodTests.cs" />
     <Compile Include="Models\Ec2InstanceConfigurationDetailTests.cs" />
+    <Compile Include="Models\KeyValueConfigurationDetailTests.cs" />
+    <Compile Include="Models\KeyValuesConversionTests.cs" />
     <Compile Include="Models\VpcConfigurationDetailTests.cs" />
     <Compile Include="Models\IamRoleConfigurationDetailTests.cs" />
     <Compile Include="Models\PublishDialogStepProcessorTests.cs" />
@@ -101,6 +103,9 @@
   <ItemGroup>
     <PackageReference Include="Moq">
       <Version>4.12.0</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>9.0.1</Version>
     </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.4.1</Version>

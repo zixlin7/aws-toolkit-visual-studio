@@ -7,6 +7,7 @@
         Double,
         Boolean,
         Blob,
+        KeyValue,
         Unsupported,
     }
 }
