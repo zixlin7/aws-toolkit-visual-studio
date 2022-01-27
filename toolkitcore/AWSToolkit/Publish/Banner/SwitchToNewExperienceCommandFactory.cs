@@ -27,9 +27,11 @@ namespace Amazon.AWSToolkit.Publish.Banner
 
             var args = new ShowPublishToAwsDocumentArgs()
             {
+                Requester = $"legacyWizard-{publishBanner.Origin}",
                 ProjectName = selectedProject.Name,
                 ProjectPath = selectedProject.Path,
                 CredentialId = connectionManager.ActiveCredentialIdentifier,
+                AccountId = connectionManager.ActiveAccountId,
                 Region = connectionManager.ActiveRegion
             };
 

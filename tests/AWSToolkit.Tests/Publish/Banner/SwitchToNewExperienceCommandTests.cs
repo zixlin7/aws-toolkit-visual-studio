@@ -69,11 +69,14 @@ namespace AWSToolkit.Tests.Publish.Banner
         public async Task ShouldOpenNewPublishExperience()
         {
             // arrange.
+            _publishBanner.Origin = "foo";
             var expectedArgs = new ShowPublishToAwsDocumentArgs
             {
+                Requester = "legacyWizard-foo",
                 ProjectName = _project.Name,
                 ProjectPath = _project.Path,
                 CredentialId = _connectionManager.ActiveCredentialIdentifier,
+                AccountId = _connectionManager.ActiveAccountId,
                 Region = _connectionManager.ActiveRegion
             };
 

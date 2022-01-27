@@ -3,6 +3,7 @@
 using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.Package;
 using Amazon.AWSToolkit.Publish.Services;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 
 using Moq;
@@ -64,6 +65,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
 
             _publishContextFixture.ToolkitShellProvider.Verify(
                 mock => mock.ShowMessage("Unable to Publish to AWS", It.IsAny<string>()), Times.Once);
+
+            var metrics = Assert.Single(_publishContextFixture.TelemetryFixture.LoggedMetrics);
+            Assert.Contains(metrics.Data,
+                d => d.MetricName == "publish_start" && d.Metadata["result"] == Result.Failed.ToString());
         }
     }
 }

@@ -71,7 +71,10 @@
         {
             "name": "publish_start",
             "description": "Called when user starts the Publish to AWS workflow",
-            "metadata": [ { "type": "result" } ]
+            "metadata": [ 
+                { "type": "result" }, 
+                { "type": "source", "required": false } 
+            ]
         },
         {
             "name": "publish_deploy",
@@ -87,21 +90,6 @@
                 { "type": "recipeId" },
                 { "type": "errorCode", "required": false }
             ] 
-        },
-        {
-            "name": "publish_optIn",
-            "description": "Called when user opts into Publish to AWS experience",
-            "metadata": [
-                { "type": "result" },
-                { "type": "serviceType" }
-            ]
-        },
-        {
-            "name": "publish_optOut",
-            "description": "Called when user opts out of Publish to AWS experience",
-            "metadata": [
-                { "type": "result" }
-            ]
         },
         {
             "name": "publish_unsupportedSetting",

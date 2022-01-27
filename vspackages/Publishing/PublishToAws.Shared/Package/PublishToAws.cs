@@ -7,7 +7,10 @@ using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.Views;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 
@@ -51,9 +54,12 @@ namespace Amazon.AWSToolkit.Publish.Package
                     "Starting up...", false));
 
                 await ShowPublishToAwsDocumentAsync(steps).ConfigureAwait(false);
+                RecordPublishStartMetric(args.AccountId, args.Region, args.Requester, Result.Succeeded);
             }
             catch (Exception e)
             {
+                RecordPublishStartMetric(args.AccountId, args.Region, args.Requester, Result.Failed);
+
                 Logger.Error("Failed to open the Publish document", e);
 
                 _publishContext.ToolkitShellProvider.OutputToHostConsole(
@@ -140,6 +146,17 @@ namespace Amazon.AWSToolkit.Publish.Package
 
             _publishContext.ToolkitShellProvider.ShowMessage("Unable to Publish to AWS",
                 messageBuilder.ToString());
+        }
+
+        private void RecordPublishStartMetric(string accountId, ToolkitRegion region, string operationOrigin, Result result)
+        {
+            _publishContext.ToolkitContext.TelemetryLogger.RecordPublishStart(new PublishStart()
+            {
+                AwsAccount = accountId,
+                AwsRegion = region?.Id ?? MetadataValue.NotSet,
+                Source = operationOrigin,
+                Result = result,
+            });
         }
     }
 }
