@@ -1,6 +1,5 @@
 ﻿using System.Windows.Input;
 
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.PluginServices.Publishing;
@@ -42,17 +41,6 @@ namespace Amazon.AWSToolkit.Publish.Banner
             ToolkitContext = toolkitContext;
             SettingsRepository = settingsRepository;
             SelectedProject = toolkitContext.ToolkitHost.GetSelectedProject();
-        }
-
-        public void RecordPublishOptInMetric(Result result)
-        {
-            this.ToolkitContext.TelemetryLogger.RecordPublishOptIn(new PublishOptIn()
-            {
-                AwsAccount = ToolkitContext.ConnectionManager.ActiveAccountId,
-                AwsRegion = ToolkitContext.ConnectionManager.ActiveRegion?.Id,
-                ServiceType = Origin,
-                Result = result
-            });
         }
 
         private bool IsProjectPublishable()

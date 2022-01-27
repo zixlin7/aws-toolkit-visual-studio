@@ -74,7 +74,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private bool _publishTargetsLoaded;
         private bool _isOptionsBannerEnabled;
         private bool _isFailureBannerEnabled;
-        private bool _isOldPublishExperienceEnabled;
         private bool _isRepublish;
         private bool _isDefaultConfig = true;
         private ICredentialIdentifier _credentialsId;
@@ -92,7 +91,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private ICommand _closeFailureBannerCommand;
         private ICommand _learnMoreCommand;
         private ICommand _feedbackCommand;
-        private ICommand _reenableOldPublishCommand;
         private ICommand _stackViewerCommand;
         private ICommand _copyToClipboardCommand;
         private ProgressStatus _progressStatus;
@@ -191,15 +189,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _isFailureBannerEnabled;
             set => SetProperty(ref _isFailureBannerEnabled, value);
-        }
-
-        /// <summary>
-        /// Indicates whether or not the old publish experience related menu items are visible in the UI
-        /// </summary>
-        public bool IsOldPublishExperienceEnabled
-        {
-            get => _isOldPublishExperienceEnabled;
-            set => SetProperty(ref _isOldPublishExperienceEnabled, value);
         }
 
         /// <summary>
@@ -400,15 +389,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Command that shows the feedback panel for the Publish experience
         /// </summary>
         public ICommand FeedbackCommand => _feedbackCommand ?? (_feedbackCommand = CreateFeedbackCommand());
-
-        /// <summary>
-        /// Command that re-enable the previous publish experiences such as `Publish to AWS Container` and `Publish to Beanstalk`
-        /// </summary>
-        public ICommand ReenableOldPublishCommand
-        {
-            get => _reenableOldPublishCommand;
-            set => SetProperty(ref _reenableOldPublishCommand, value);
-        }
 
         /// <summary>
         /// Command that copies to clipboard the published resources details
@@ -1314,12 +1294,10 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         protected async Task LoadOptionsButtonSettingsAsync()
         {
             var showPublishBanner = true;
-            var showOldExperience = true;
             try
             {
                 var publishSettings = await _publishContext.PublishSettingsRepository.GetAsync();
                 showPublishBanner = publishSettings.ShowPublishBanner;
-                showOldExperience = publishSettings.ShowOldPublishExperience;
             }
             catch (Exception e)
             {
@@ -1327,7 +1305,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await SetOptionsButtonPropertiesAsync(showPublishBanner, showOldExperience);
+                await SetOptionsButtonPropertiesAsync(showPublishBanner);
             }
         }
 
@@ -1336,13 +1314,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Sets the options button related properties 
         /// </summary>
         /// <param name="result"></param>
-        /// <param name="showOldExperience"></param>
         /// <returns></returns>
-        private async Task SetOptionsButtonPropertiesAsync(bool result, bool showOldExperience)
+        private async Task SetOptionsButtonPropertiesAsync(bool result)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync();
             IsOptionsBannerEnabled = result;
-            IsOldPublishExperienceEnabled = showOldExperience;
         }
 
         private ICommand CreateFeedbackCommand()
@@ -1420,16 +1396,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
 
             this._publishContext.TelemetryLogger.RecordPublishDeploy(payload);
-        }
-
-        public void RecordOptOutMetric(Result result)
-        {
-            this._publishContext.TelemetryLogger.RecordPublishOptOut(new PublishOptOut()
-            {
-                AwsAccount = _publishContext.ConnectionManager.ActiveAccountId,
-                AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id,
-                Result = result
-            });
         }
     }
 }

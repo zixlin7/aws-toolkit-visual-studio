@@ -59,7 +59,6 @@
     <Compile Include="Commands\CopyToClipboardCommandTests.cs" />
     <Compile Include="Commands\PersistPublishSettingsCommandTests.cs" />
     <Compile Include="Commands\PublishCommandTests.cs" />
-    <Compile Include="Commands\ReenableOldPublishCommandTests.cs" />
     <Compile Include="Commands\StackViewerCommandTests.cs" />
     <Compile Include="Commands\StartOverCommandTests.cs" />
     <Compile Include="Commands\TargetCommandTests.cs" />

@@ -56,7 +56,6 @@ namespace AWSToolkitPackage.Tests.Publishing
     {
         public class SetupState
         {
-            public bool OptedInToPublishToAws;
             public FrameworkName TargetedFramework;
             public bool ExpectedMenuVisibility;
         }
@@ -73,7 +72,6 @@ namespace AWSToolkitPackage.Tests.Publishing
             {
                 new SetupState
                 {
-                    OptedInToPublishToAws = true,
                     TargetedFramework = SampleDotNetCoreTarget,
                     ExpectedMenuVisibility = true,
                 }
@@ -82,25 +80,6 @@ namespace AWSToolkitPackage.Tests.Publishing
             {
                 new SetupState
                 {
-                    OptedInToPublishToAws = true,
-                    TargetedFramework = SampleDotNetFrameworkTarget,
-                    ExpectedMenuVisibility = false,
-                }
-            },
-            new object[]
-            {
-                new SetupState
-                {
-                    OptedInToPublishToAws = false,
-                    TargetedFramework = SampleDotNetCoreTarget,
-                    ExpectedMenuVisibility = false,
-                }
-            },
-            new object[]
-            {
-                new SetupState
-                {
-                    OptedInToPublishToAws = false,
                     TargetedFramework = SampleDotNetFrameworkTarget,
                     ExpectedMenuVisibility = false,
                 }
@@ -123,7 +102,6 @@ namespace AWSToolkitPackage.Tests.Publishing
 
         public PublishToAwsCommandTests()
         {
-            _publishSettings.ShowPublishMenu = true;
             _publishSettingsRepository.Save(_publishSettings);
 
             _sampleProject = new Mock<Project>();
@@ -149,7 +127,6 @@ namespace AWSToolkitPackage.Tests.Publishing
         [MemberData(nameof(SetupStates))]
         public void BeforeQueryStatus_SolutionExplorerSelectsProject(SetupState setupState)
         {
-            _publishSettings.ShowPublishMenu = setupState.OptedInToPublishToAws;
             _solutionExplorer.SetCurrentSelection(_sampleProject.Object);
             _solutionExplorer.SetProjectTargetFramework(setupState.TargetedFramework);
 
@@ -217,7 +194,6 @@ namespace AWSToolkitPackage.Tests.Publishing
         [MemberData(nameof(SetupStates))]
         public void BeforeQueryStatus_SolutionExplorerSelectsProjectItemWithinProject(SetupState setupState)
         {
-            _publishSettings.ShowPublishMenu = setupState.OptedInToPublishToAws;
             var projectItem = new Mock<ProjectItem>();
             projectItem.SetupGet(m => m.ContainingProject).Returns(_sampleProject.Object);
 

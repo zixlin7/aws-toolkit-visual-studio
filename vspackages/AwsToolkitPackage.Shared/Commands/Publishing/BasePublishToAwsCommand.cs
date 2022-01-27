@@ -221,11 +221,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
                 return false;
             }
 
-            if (!IsUserOptedInToPublishExperience())
-            {
-                return false;
-            }
-
             if (IsLambdaProject(project))
             {
                 return false;
@@ -240,19 +235,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
             // TODO : Add any additional criteria for projects to not show the menu item
 
             return true;
-        }
-
-        /// <summary>
-        /// Indicates if the user has opted in at least once to the Publish to AWS experience.
-        /// Once opted in, the menu will remain visible if they opt back to the older publish experiences.
-        /// </summary>
-        private bool IsUserOptedInToPublishExperience()
-        {
-            return ToolkitShellProvider.ExecuteOnUIThread(async () =>
-            {
-                var publishSettings = await PublishSettingsRepository.GetAsync();
-                return publishSettings.ShowPublishMenu;
-            });
         }
 
         private bool IsLambdaProject(Project project)

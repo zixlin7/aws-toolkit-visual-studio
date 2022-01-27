@@ -15,7 +15,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PersistBannerVisibilityCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Commands\ReenableOldPublishCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\EditKeyValuesCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEc2InstanceTypeCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectVpcCommandFactory.cs" />
@@ -135,9 +134,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishToAwsDocumentControl.xaml.cs">
       <DependentUpon>PublishToAwsDocumentControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\ReenableOldPublishDialog.xaml.cs">
-      <DependentUpon>ReenableOldPublishDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\SelectTargetView.xaml.cs">
       <DependentUpon>SelectTargetView.xaml</DependentUpon>
     </Compile>
@@ -207,10 +203,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishToAwsDocumentControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Views\ReenableOldPublishDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

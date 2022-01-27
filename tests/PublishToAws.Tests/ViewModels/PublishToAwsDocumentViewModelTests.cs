@@ -161,7 +161,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
             Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-            Assert.True(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
         [Fact]
@@ -172,7 +171,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
            await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
            Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-           Assert.True(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
         [Fact]
@@ -184,19 +182,17 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
            await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
 
             Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-            Assert.True(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
         [Fact]
         public async Task HasOptionsButtonPropertiesDisabled()
         {
             _publishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
-                .ReturnsAsync(new PublishSettings() {ShowPublishBanner = false, ShowOldPublishExperience = false});
+                .ReturnsAsync(new PublishSettings() {ShowPublishBanner = false});
 
             await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
 
             Assert.False(_exposedTestViewModel.IsOptionsBannerEnabled);
-            Assert.False(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
         [Fact]

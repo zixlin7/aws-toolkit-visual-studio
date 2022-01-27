@@ -1090,25 +1090,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         return;
                     }
 
-                    if (_toolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience())
-                    {
-                        var project = _toolkitContext.ToolkitHost.GetSelectedProject();
-                        if (project != null && project.IsNetFramework())
-                        {
-                            // Always allow .NET Framework projects (unless new Publish experience adds support for .NET Framework projects)
-                            publishMenuCommand.Visible = true;
-                        }
-                        else
-                        {
-                            // Not .NET Framework... show the command, unless user has opted in to the new publish experience
-                            publishMenuCommand.Visible = IsOldPublishExperienceEnabled();
-                        }
-                    }
-                    else
-                    {
-                        publishMenuCommand.Visible = isWebProjectType;
-                    }
-                   
+                    publishMenuCommand.Visible = true;
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
             }
@@ -1259,9 +1241,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 if (AWSECSPlugin != null)
                 {
-                    publishMenuCommand.Visible = _toolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience()
-                                                ? VSUtility.IsNETCoreDockerProject && IsOldPublishExperienceEnabled()
-                                                : VSUtility.IsNETCoreDockerProject;
+                    publishMenuCommand.Visible = VSUtility.IsNETCoreDockerProject;
 
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
@@ -2039,23 +2019,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 }
 
                 return false;
-            });
-        }
-
-        internal bool IsOldPublishExperienceEnabled()
-        {
-            return this.JoinableTaskFactory.Run(async () =>
-            {
-                try
-                {
-                    var publishSettings = await _publishSettingsRepository.GetAsync();
-                    return publishSettings.ShowOldPublishExperience;
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Error retrieving publish settings", e);
-                    return true;
-                }
             });
         }
 

@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
-using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -115,7 +112,6 @@ namespace Amazon.AWSToolkit.Publish.Views
             viewModel.StartOverCommand = startOverCommand;
             viewModel.PersistOptionsSettingsCommand = optionsCommand;
             viewModel.CloseFailureBannerCommand = closeFailureBannerCommand;
-            viewModel.ReenableOldPublishCommand = CreateReenableOldPublishCommand(viewModel);
             viewModel.StackViewerCommand = stackViewerCommand;
             viewModel.CopyToClipboardCommand = copyToClipboardCommand;
 
@@ -513,13 +509,6 @@ namespace Amazon.AWSToolkit.Publish.Views
         private bool AffectsPublishProperties(string propertyName)
         {
             return PublishToAwsDocumentViewModel.PublishAffectingProperties.Contains(propertyName);
-        }
-
-        private ICommand CreateReenableOldPublishCommand(PublishToAwsDocumentViewModel viewModel)
-        {
-            return new ShowExceptionAndForgetCommand(
-                ReenableOldPublishCommandFactory.Create(viewModel),
-                _publishContext.ToolkitShellProvider);
         }
     }
 }
