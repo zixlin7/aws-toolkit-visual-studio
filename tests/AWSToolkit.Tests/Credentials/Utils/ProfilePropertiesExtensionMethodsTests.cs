@@ -17,56 +17,56 @@ namespace AWSToolkit.Tests.Credentials.Utils
         public void GetCredentialType_AssumeRoleMfa()
         {
             Assert.Equal(CredentialType.AssumeMfaRoleProfile,
-                CredentialProfileTestHelper.MFAProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.Mfa.Valid.MfaReference.AsProfileProperties().GetCredentialType());
         }
 
         [Fact]
         public void GetCredentialType_AssumeRoleExternalMfa()
         {
             Assert.Equal(CredentialType.AssumeMfaRoleProfile,
-                CredentialProfileTestHelper.MFAExternalSessionProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.Mfa.Valid.ExternalSession.AsProfileProperties().GetCredentialType());
         }
 
         [Fact]
         public void GetCredentialType_AssumeRole()
         {
             Assert.Equal(CredentialType.AssumeRoleProfile,
-                CredentialProfileTestHelper.AssumeRoleProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.AssumeRole.ValidProfile.AsProfileProperties().GetCredentialType());
         }
 
         [Fact]
         public void GetCredentialType_SessionToken()
         {
             Assert.Equal(CredentialType.StaticSessionProfile,
-                CredentialProfileTestHelper.SessionProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.Basic.Valid.Token.AsProfileProperties().GetCredentialType());
         }
 
         [Fact]
         public void GetCredentialType_Static()
         {
             Assert.Equal(CredentialType.StaticProfile,
-                CredentialProfileTestHelper.BasicProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.AsProfileProperties().GetCredentialType());
         }
 
         [Fact]
         public void GetCredentialType_CredentialProcess()
         {
             Assert.Equal(CredentialType.CredentialProcessProfile,
-                CredentialProfileTestHelper.CredentialProcessProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.CredentialProcess.ValidProfile.AsProfileProperties().GetCredentialType());
         }
 
         [Fact]
         public void GetCredentialType_Saml()
         {
             Assert.Equal(CredentialType.AssumeSamlRoleProfile,
-                CredentialProfileTestHelper.SamlCredentialProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.Saml.ValidProfile.AsProfileProperties().GetCredentialType());
         }
 
         [Fact]
         public void GetCredentialType_Sso()
         {
             Assert.Equal(CredentialType.SsoProfile,
-                CredentialProfileTestHelper.SSOProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.Sso.ValidProfile.AsProfileProperties().GetCredentialType());
 
             var profileProperties = new ProfileProperties {SsoAccountId = "sso-account"};
             Assert.Equal(CredentialType.SsoProfile, profileProperties.GetCredentialType());

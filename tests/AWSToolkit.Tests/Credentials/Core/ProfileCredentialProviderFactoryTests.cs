@@ -56,15 +56,15 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void RaiseCredentialEventWithChanges()
         {
             var newProfiles = new Profiles();
-            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.CredentialProcessProfileName,
-                CredentialProfileTestHelper.CredentialProcessProfile);
-            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.BasicProfileName,
-                CredentialProfileTestHelper.BasicProfile);
+            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.CredentialProcess.ValidProfile.Name,
+                CredentialProfileTestHelper.CredentialProcess.ValidProfile);
+            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name,
+                CredentialProfileTestHelper.Basic.Valid.AccessAndSecret);
             var oldProfiles = new Dictionary<string, CredentialProfile>
             {
-                [CredentialProfileTestHelper.SessionProfileName] = CredentialProfileTestHelper.SessionProfile,
-                [CredentialProfileTestHelper.BasicProfileName] = new CredentialProfile(
-                    CredentialProfileTestHelper.BasicProfileName,
+                [CredentialProfileTestHelper.Basic.Valid.Token.Name] = CredentialProfileTestHelper.Basic.Valid.Token,
+                [CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name] = new CredentialProfile(
+                    CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name,
                     new CredentialProfileOptions {AccessKey = "sdk_access_key", SecretKey = "sdk_secret_key"})
             };
 
@@ -82,10 +82,10 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void EnsureUniqueKeyAssigned()
         {
             var profiles = new Profiles();
-            profiles.ValidProfiles.Add(CredentialProfileTestHelper.BasicProfileName,
-                CredentialProfileTestHelper.BasicProfile);
-            profiles.ValidProfiles.Add(CredentialProfileTestHelper.CredentialProcessProfileName,
-                CredentialProfileTestHelper.CredentialProcessProfile);
+            profiles.ValidProfiles.Add(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name,
+                CredentialProfileTestHelper.Basic.Valid.AccessAndSecret);
+            profiles.ValidProfiles.Add(CredentialProfileTestHelper.CredentialProcess.ValidProfile.Name,
+                CredentialProfileTestHelper.CredentialProcess.ValidProfile);
             var exposedFactory = new TestProfileCredentialProviderFactory(_writer.Object);
             exposedFactory.ExposedEnsureUniqueKeyAssigned(profiles);
            _writer.Verify(x => x.EnsureUniqueKeyAssigned(It.IsAny<CredentialProfile>()), Times.Exactly(2));
@@ -124,13 +124,19 @@ namespace AWSToolkit.Tests.Credentials.Core
             Assert.Null(_exposedTestFactory.ExposeCreateCredentialProfile("name", null));
         }
 
+        public static IEnumerable<object[]> GetNonLoginBasedProfileNames()
+        {
+            yield return new object[] { CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name };
+            yield return new object[] { CredentialProfileTestHelper.Basic.Valid.Token.Name };
+            yield return new object[] { CredentialProfileTestHelper.Saml.ValidProfile.Name };
+            yield return new object[] { CredentialProfileTestHelper.AssumeRole.ValidProfile.Name };
+            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.MissingAccessKey.Name };
+            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.MissingSecretKey.Name };
+            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name };
+        }
+
         [Theory]
-        [InlineData(CredentialProfileTestHelper.BasicProfileName)]
-        [InlineData(CredentialProfileTestHelper.SessionProfileName)]
-        [InlineData(CredentialProfileTestHelper.SamlProfileName)]
-        [InlineData(CredentialProfileTestHelper.AssumeRoleProfileName)]
-        [InlineData(CredentialProfileTestHelper.InvalidBasicProfileName)]
-        [InlineData(CredentialProfileTestHelper.InvalidSessionProfileName)]
+        [MemberData(nameof(GetNonLoginBasedProfileNames))]
         public void LoginIsNotRequired(string identifierName)
         {
             var identifier = new SharedCredentialIdentifier(identifierName);
@@ -140,16 +146,16 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void LoginIsRequired()
         {
-            var identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.MFAProfileName);
+            var identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.Mfa.Valid.MfaReference.Name);
             Assert.True(_factory.IsLoginRequired(identifier));
 
-            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.MFAExternalSessionProfileName);
+            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.Mfa.Valid.ExternalSession.Name);
             Assert.True(_factory.IsLoginRequired(identifier));
 
-            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.SSOProfileName);
+            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.Sso.ValidProfile.Name);
             Assert.True(_factory.IsLoginRequired(identifier));
 
-            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.CredentialProcessProfileName);
+            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.CredentialProcess.ValidProfile.Name);
             Assert.True(_factory.IsLoginRequired(identifier));
         }
 
@@ -182,19 +188,19 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void VerifyGetProfileCall_ThrowsException()
         {
-            _reader.Setup(x => x.GetCredentialProfile(CredentialProfileTestHelper.BasicProfileName)).Returns((CredentialProfile)null);
-            var identifier = new SharedCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
+            _reader.Setup(x => x.GetCredentialProfile(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name)).Returns((CredentialProfile)null);
+            var identifier = new SharedCredentialIdentifier(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name);
             Assert.Throws<ArgumentException>(() => _factory.GetProfileProperties(identifier));
-            _reader.Verify(x => x.GetCredentialProfile(CredentialProfileTestHelper.BasicProfileName), Times.Once);
+            _reader.Verify(x => x.GetCredentialProfile(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name), Times.Once);
         }
 
         [Fact]
         public void VerifyGetProfileCall_ReturnsResult()
         {
-            _reader.Setup(x => x.GetCredentialProfile(CredentialProfileTestHelper.BasicProfileName)).Returns(CredentialProfileTestHelper.BasicProfile);
-            var identifier = new SharedCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
+            _reader.Setup(x => x.GetCredentialProfile(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name)).Returns(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret);
+            var identifier = new SharedCredentialIdentifier(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name);
             Assert.NotNull(_factory.GetProfileProperties(identifier));
-            _reader.Verify(x => x.GetCredentialProfile(CredentialProfileTestHelper.BasicProfileName), Times.Once);
+            _reader.Verify(x => x.GetCredentialProfile(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name), Times.Once);
         }
 
         [Fact]
@@ -214,14 +220,20 @@ namespace AWSToolkit.Tests.Credentials.Core
 
         private void SetupProfiles()
         {
-            _profiles[CredentialProfileTestHelper.BasicProfileName] = CredentialProfileTestHelper.BasicProfile;
-            _profiles[CredentialProfileTestHelper.SessionProfileName] = CredentialProfileTestHelper.SessionProfile;
-            _profiles[CredentialProfileTestHelper.SamlProfileName] = CredentialProfileTestHelper.SamlCredentialProfile;
-            _profiles[CredentialProfileTestHelper.MFAProfileName] = CredentialProfileTestHelper.MFAProfile;
-            _profiles[CredentialProfileTestHelper.MFAExternalSessionProfileName] = CredentialProfileTestHelper.MFAExternalSessionProfile;
-            _profiles[CredentialProfileTestHelper.SSOProfileName] = CredentialProfileTestHelper.SSOProfile;
-            _profiles[CredentialProfileTestHelper.AssumeRoleProfileName] = CredentialProfileTestHelper.AssumeRoleProfile;
-            _profiles[CredentialProfileTestHelper.CredentialProcessProfileName] = CredentialProfileTestHelper.CredentialProcessProfile;
+            foreach (var credentialProfile in new CredentialProfile[]
+                     {
+                         CredentialProfileTestHelper.Basic.Valid.AccessAndSecret,
+                         CredentialProfileTestHelper.Basic.Valid.Token,
+                         CredentialProfileTestHelper.Saml.ValidProfile,
+                         CredentialProfileTestHelper.Mfa.Valid.MfaReference,
+                         CredentialProfileTestHelper.Mfa.Valid.ExternalSession,
+                         CredentialProfileTestHelper.Sso.ValidProfile,
+                         CredentialProfileTestHelper.AssumeRole.ValidProfile,
+                         CredentialProfileTestHelper.CredentialProcess.ValidProfile,
+                     })
+            {
+                _profiles[credentialProfile.Name] = credentialProfile;
+            }
         }
 
         public void Dispose()
