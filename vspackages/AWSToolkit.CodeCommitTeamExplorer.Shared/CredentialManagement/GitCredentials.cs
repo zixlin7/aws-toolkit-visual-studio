@@ -321,7 +321,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
             if (string.IsNullOrEmpty(Target))
             {
-                throw new InvalidOperationException("Target must be specified to check existance of a credential.");
+                throw new InvalidOperationException("Target must be specified to check existence of a credential.");
             }
 
             using (var existing = new GitCredentials { Target = Target })

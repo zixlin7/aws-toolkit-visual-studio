@@ -10,7 +10,6 @@ using Amazon.CodeCommit.Model;
 using log4net;
 using LibGit2Sharp;
 using Amazon.AWSToolkit.CodeCommit.Interface;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.CodeCommit.Services
 {
@@ -47,13 +46,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 }
 
                 Repository.Clone(repositoryUrl, localFolder, cloneOptions);
-
-                HostActivator.RecordCodeCommitCloneRepoMetric(Result.Succeeded);
             }
             catch (Exception e)
             {
-                HostActivator.RecordCodeCommitCloneRepoMetric(Result.Failed);
-
                 LOGGER.Error("Clone failed using libgit2sharp", e);
 
                 var msg = string.Format("Failed to clone repository {0}. Error message: {1}.",
@@ -86,7 +81,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
             }
             catch (Exception e)
             {
-                HostActivator.RecordCodeCommitCreateRepoMetric(Result.Failed);
                 LOGGER.Error(e);
                 throw;
             }
@@ -105,7 +99,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 }
                 catch (Exception e)
                 {
-                    HostActivator.RecordCodeCommitCreateRepoMetric(Result.Failed);
                     LOGGER.Error("Exception cloning new repository", e);
                     throw new Exception("Error when attempting to clone the new repository", e);
                 }
@@ -154,8 +147,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                     HostActivator.Push(newRepositoryInfo.LocalFolder, svcCredentials);
                 }
             }
-
-            HostActivator.RecordCodeCommitCreateRepoMetric(Result.Succeeded);
         }
     }
 }

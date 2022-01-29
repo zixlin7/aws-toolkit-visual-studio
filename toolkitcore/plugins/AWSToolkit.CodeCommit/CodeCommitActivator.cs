@@ -23,8 +23,6 @@ using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using LibGit2Sharp;
 using Amazon.AWSToolkit.Regions;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
@@ -122,8 +120,6 @@ namespace Amazon.AWSToolkit.CodeCommit
             var registerCredentialsController = new RegisterServiceCredentialsController(account);
 
             var results = !registerCredentialsController.Execute().Success ? null : registerCredentialsController.Credentials;
-
-            RecordCodeCommitSetCredentialsMetric();
 
             return results;
         }
@@ -405,9 +401,9 @@ namespace Amazon.AWSToolkit.CodeCommit
                     ServiceName = codeCommitServiceName,
                     UserName = getUserResponse.User.UserName
                 };
-                var listCredentialsReponse = iamClient.ListServiceSpecificCredentials(listCredentialsRequest);
+                var listCredentialsResponse = iamClient.ListServiceSpecificCredentials(listCredentialsRequest);
                 var credentialsExist =
-                    listCredentialsReponse.ServiceSpecificCredentials.Any(ssc => ssc.Status == StatusType.Active);
+                    listCredentialsResponse.ServiceSpecificCredentials.Any(ssc => ssc.Status == StatusType.Active);
                 if (credentialsExist)
                 {
                     LOGGER.InfoFormat(
@@ -418,7 +414,7 @@ namespace Amazon.AWSToolkit.CodeCommit
 
                 // IAM limits users to two sets of credentials - inactive credentials count against this limit, so 
                 // if we already have two inactive sets, give up
-                if (listCredentialsReponse.ServiceSpecificCredentials.Count == maxServiceSpecificCredentials)
+                if (listCredentialsResponse.ServiceSpecificCredentials.Count == maxServiceSpecificCredentials)
                 {
                     LOGGER.InfoFormat(
                         "User profile {0} already has the maximum amount of service-specific credentials for CodeCommit; user will have to activate and import credentials",
@@ -653,55 +649,6 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
 
             return _fallbackRegion;
-        }
-
-        private void RecordCodeCommitSetCredentialsMetric()
-        {
-            ToolkitContext.TelemetryLogger.RecordCodecommitSetCredentials(new CodecommitSetCredentials()
-            {
-                AwsAccount = GetAccountId(),
-                AwsRegion = GetRegionId()
-            });
-        }
-
-        public void RecordCodeCommitCloneRepoMetric(Result result)
-        {
-            ToolkitContext.TelemetryLogger.RecordCodecommitCloneRepo(new CodecommitCloneRepo()
-            {
-                AwsAccount = GetAccountId(),
-                AwsRegion = GetRegionId(),
-                Result = result
-            });
-        }
-
-        public void RecordCodeCommitCreateRepoMetric(Result result)
-        {
-            ToolkitContext.TelemetryLogger.RecordCodecommitCreateRepo(new CodecommitCreateRepo()
-            {
-                AwsAccount = GetAccountId(),
-                AwsRegion = GetRegionId(),
-                Result = result
-            });
-        }
-
-        private string GetAccountId()
-        {
-            if (string.IsNullOrWhiteSpace(ToolkitContext.ConnectionManager?.ActiveAccountId))
-            {
-                return MetadataValue.NotSet;
-            }
-
-            return ToolkitContext.ConnectionManager.ActiveAccountId;
-        }
-
-        private string GetRegionId()
-        {
-            if (string.IsNullOrWhiteSpace(ToolkitContext.ConnectionManager?.ActiveRegion?.Id))
-            {
-                return MetadataValue.NotSet;
-            }
-
-            return ToolkitContext.ConnectionManager.ActiveRegion.Id;
         }
     }
 }

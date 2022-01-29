@@ -33,11 +33,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaEventSourceSetupError,
 
         VisualStudioIdentifier,
-
-        CodeCommitCloneStatus,
-        CodeCommitCreateStatus,
-        CodeCommitConnectStatus,
-
         XRayEnabled,
     };
 

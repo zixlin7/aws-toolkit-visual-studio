@@ -8,10 +8,11 @@ using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
-using log4net;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
+using log4net;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
-using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 {
@@ -21,9 +22,10 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 
         public static async Task CloneAsync(ServiceSpecificCredentials credentials,
                                      string repositoryUrl,
-                                     string destinationFolder)
+                                     string destinationFolder,
+                                     string operation)
         {
-            var recurseSubmodules = true;
+            var success = false;
             GitCredentials gitCredentials = null;
 
             try
@@ -40,7 +42,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                 TeamExplorerConnection.ActiveConnection.RegisterCredentials(gitCredentials);
 
                 // note that in 2017, this service is also directly obtainable from HostPackage.GetVSShellService
-                var gitExt = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IGitActionsExt>(); ;
+                var gitExt = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IGitActionsExt>();
                 var progress = new Progress<Microsoft.VisualStudio.Shell.ServiceProgressData>();
 
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
@@ -53,23 +55,16 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                     };
                     await gitExt.CloneAsync(repositoryUrl,
                                             destinationFolder,
-                                            recurseSubmodules,
+                                            true,
                                             default(CancellationToken),
                                             progress).ConfigureAwait(false);
                 });
 
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                success = true;
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 LOGGER.Error("Clone using Team Explorer failed with exception", e);
-
                 var msg = string.Format("Failed to clone repository {0}. Error message: {1}.",
                                         repositoryUrl,
                                         e.Message);
@@ -82,6 +77,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                     gitCredentials.Dispose();
                 }
 
+                if (operation == "clone")
+                {
+                    RecordCodeCommitCloneRepoMetric(success, operation);
+                }
+                
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
                     await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -94,6 +94,8 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                                       bool autoCloneNewRepository,
                                       AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback)
         {
+            var success = false;
+            var phase = "create";
             try
             {
                 // delegate the repo creation to the CodeCommit plugin, then we'll take over for the
@@ -111,7 +113,8 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                     = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore
                         .CodeCommitServiceName);
 
-                await CloneAsync(svcCredentials, repository.RepositoryUrl, newRepositoryInfo.LocalFolder);
+                phase = "clone";
+                await CloneAsync(svcCredentials, repository.RepositoryUrl, newRepositoryInfo.LocalFolder, "create");
 
                 repository.LocalFolder = newRepositoryInfo.LocalFolder;
 
@@ -140,6 +143,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                         break;
                 }
 
+                phase = "initialCommit";
                 // if content needs to be populated, make the callback
                 if (contentPopulationCallback != null)
                 {
@@ -158,30 +162,78 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                     codeCommitPlugin.StageAndCommit(repository.LocalFolder, initialCommitContent, "Initial commit", svcCredentials.Username);
                     codeCommitPlugin.Push(repository.LocalFolder, svcCredentials);
                 }
-
-                ToolkitEvent successEvent = new ToolkitEvent();
-                successEvent.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(successEvent);
+                success = true;
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 LOGGER.Error("Failed to create repository", e);
-
                 var msg = string.Format("Error creating repository {0}: {1}.", newRepositoryInfo.Name, e.Message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Repository Creation Failed", msg);
             }
             finally
             {
+                RecordCodeCommitCreateRepoMetric(success, phase);
+
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
                     await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     TeamExplorerConnection.ActiveConnection.RefreshRepositories();
                 });
             }
+        }
+
+        public static void RecordCodeCommitCreateRepoMetric(bool success, string reason)
+        {
+            var payload = new CodecommitCreateRepo
+            {
+                AwsAccount = GetAccountId(),
+                AwsRegion = GetRegionId(),
+                Result = success ? Result.Succeeded : Result.Failed
+            };
+
+            if (!success)
+            {
+                payload.Reason = reason;
+            }
+
+            ToolkitFactory.Instance.TelemetryLogger.RecordCodecommitCreateRepo(payload);
+        }
+
+        public static void RecordCodeCommitCloneRepoMetric(bool success, string reason)
+        {
+            var payload = new CodecommitCloneRepo
+            {
+                AwsAccount = GetAccountId(),
+                AwsRegion = GetRegionId(),
+                Result = success ? Result.Succeeded : Result.Failed
+            };
+
+            if (!success)
+            {
+                payload.Reason = reason;
+            }
+
+            ToolkitFactory.Instance.TelemetryLogger.RecordCodecommitCloneRepo(payload);
+        }
+
+        public static void RecordCodeCommitSetCredentialsMetric(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordCodecommitSetCredentials(new CodecommitSetCredentials
+            {
+                AwsAccount = GetAccountId(),
+                AwsRegion = GetRegionId(),
+                Result = success ? Result.Succeeded : Result.Failed
+            });
+        }
+
+        private static string GetAccountId()
+        {
+            return TeamExplorerConnection.ActiveConnection?.AccountId ?? MetadataValue.NotSet;
+        }
+
+        private static string GetRegionId()
+        {
+            return TeamExplorerConnection.ActiveConnection?.Account.Region?.Id ?? MetadataValue.NotSet;
         }
     }
 }

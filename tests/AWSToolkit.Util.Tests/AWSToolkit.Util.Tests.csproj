@@ -122,10 +122,10 @@
       <Version>3.7.3.13</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.32</Version>
+      <Version>1.0.34</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.32</Version>
+      <Version>1.0.34</Version>
     </PackageReference>
     <PackageReference Include="Castle.Core">
       <Version>4.2.1</Version>
