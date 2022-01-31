@@ -12,26 +12,15 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ViewName,
         ReadableTimestamp,
         NavigationReason,
-
         FileFetcherUrlSuccess,
         FileFetcherUrlFailure,
-
-        CloudFormationNewProject,
-        LambdaNodeJsNewProject,
-        LambdaNETCoreNewProject,
-        LambdaNETCoreNewProjectType,
-        LambdaNETCoreNewProjectLanguage,
-
         LambdaFunctionIAMRoleCleanup,
-
         LambdaFunctionUsesAspNetCore,
         LambdaFunctionUsesRazorPages,
         LambdaFunctionUsesXRay,
         LambdaDeployedFunctionLanguage,
-
         LambdaEventSourceSetupSuccess,
         LambdaEventSourceSetupError,
-
         VisualStudioIdentifier,
         XRayEnabled,
     };
