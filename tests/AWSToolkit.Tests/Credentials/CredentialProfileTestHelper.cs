@@ -1,4 +1,5 @@
 ﻿using Amazon.Runtime.CredentialManagement;
+using Amazon.Runtime.CredentialManagement.Internal;
 
 namespace AWSToolkit.Tests.Credentials
 {
@@ -127,7 +128,16 @@ namespace AWSToolkit.Tests.Credentials
 
         public static class AssumeRole
         {
-            public static readonly CredentialProfile ValidProfile = CreateSampleProfile("assume_role_profile");
+            public static class Valid
+            {
+                public static readonly CredentialProfile SourceProfile = CreateSampleProfile("assume_role_source_profile");
+                public static readonly CredentialProfile CredentialSource = new CredentialProfile("assume_role_credential_source",
+                    new CredentialProfileOptions
+                    {
+                        RoleArn = "role-arn",
+                        CredentialSource = CredentialSourceType.Ec2InstanceMetadata.ToString(),
+                    });
+            }
 
             public static class Invalid
             {
@@ -137,6 +147,34 @@ namespace AWSToolkit.Tests.Credentials
                         new CredentialProfileOptions { RoleArn = "role-arn", SourceProfile = string.Empty });
                     public static readonly CredentialProfile BadReference = new CredentialProfile("assume_role_bad_source",
                         new CredentialProfileOptions { RoleArn = "role-arn", SourceProfile = "some-fake-profile" });
+
+                    public static readonly CredentialProfile AndCredentialSource = new CredentialProfile(
+                        "assume_role_both_sources",
+                        new CredentialProfileOptions
+                        {
+                            RoleArn = "role-arn",
+                            SourceProfile = "some-fake-profile",
+                            CredentialSource = CredentialSourceType.Ec2InstanceMetadata.ToString()
+                        });
+                }
+
+                public static class CredentialSource
+                {
+                    public static readonly CredentialProfile InvalidValue = new CredentialProfile(
+                        "assume_role_invalid_source",
+                        new CredentialProfileOptions
+                        {
+                            RoleArn = "role-arn",
+                            CredentialSource = "non-enum-value"
+                        });
+
+                    public static readonly CredentialProfile Unsupported = new CredentialProfile(
+                        "assume_role_environment",
+                        new CredentialProfileOptions
+                        {
+                            RoleArn = "role-arn",
+                            CredentialSource = CredentialSourceType.Environment.ToString()
+                        });
                 }
 
                 /// <summary>

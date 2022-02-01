@@ -28,10 +28,17 @@ namespace AWSToolkit.Tests.Credentials.Utils
         }
 
         [Fact]
-        public void GetCredentialType_AssumeRole()
+        public void GetCredentialType_AssumeRole_SourceProfile()
         {
             Assert.Equal(CredentialType.AssumeRoleProfile,
-                CredentialProfileTestHelper.AssumeRole.ValidProfile.AsProfileProperties().GetCredentialType());
+                CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile.AsProfileProperties().GetCredentialType());
+        }
+
+        [Fact]
+        public void GetCredentialType_AssumeRole_CredentialSource()
+        {
+            Assert.Equal(CredentialType.AssumeEc2InstanceRoleProfile,
+                CredentialProfileTestHelper.AssumeRole.Valid.CredentialSource.AsProfileProperties().GetCredentialType());
         }
 
         [Fact]

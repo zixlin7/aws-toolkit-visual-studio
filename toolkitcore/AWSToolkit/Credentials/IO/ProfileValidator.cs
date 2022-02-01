@@ -1,9 +1,11 @@
-﻿using Amazon.Runtime.CredentialManagement;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.AWSToolkit.Credentials.Utils;
 using System.Text;
+
+using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.Runtime.CredentialManagement;
+using Amazon.Runtime.CredentialManagement.Internal;
 
 namespace Amazon.AWSToolkit.Credentials.IO
 {
@@ -12,6 +14,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
     /// </summary>
     public class ProfileValidator
     {
+        static readonly string[] AssumeRoleDependentProperties = { ProfilePropertyConstants.CredentialSource, ProfilePropertyConstants.SourceProfile };
         private readonly ICredentialFileReader _fileReader;
 
         public ProfileValidator(ICredentialFileReader fileReader)
@@ -162,7 +165,61 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 return $"Profile {profileName} is missing required property {ProfilePropertyConstants.RoleArn}";
             }
 
+            var validation = ValidateAssumeRoleReferencingProperties(profileOptions, profileName);
+
+            if (!string.IsNullOrWhiteSpace(validation))
+            {
+                return validation;
+            }
+
             return ValidateAssumeRoleChain(profileOptions, profileName);
+        }
+
+        private string ValidateAssumeRoleReferencingProperties(CredentialProfileOptions profileOptions, string profileName)
+        {
+            if (!string.IsNullOrWhiteSpace(profileOptions.SourceProfile) && !string.IsNullOrWhiteSpace(profileOptions.CredentialSource))
+            {
+                return
+                    $"Assume Role Profile {profileName} can only have one of the following properties: {string.Join(", ", AssumeRoleDependentProperties)}";
+            }
+
+            if (string.IsNullOrWhiteSpace(profileOptions.SourceProfile) && string.IsNullOrWhiteSpace(profileOptions.CredentialSource))
+            {
+                return
+                    $"Assume Role Profile {profileName} is missing one of the following properties: {string.Join(", ", AssumeRoleDependentProperties)}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(profileOptions.CredentialSource))
+            {
+                return ValidateAssumeRoleCredentialSource(profileOptions, profileName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(profileOptions.SourceProfile))
+            {
+                if (_fileReader.GetCredentialProfileOptions(profileOptions.SourceProfile) == null)
+                {
+                    return
+                        $"Assume Role Profile {profileName} references missing profile {profileOptions.SourceProfile}";
+                }
+            }
+
+            return null;
+        }
+
+        private static string ValidateAssumeRoleCredentialSource(
+            CredentialProfileOptions profileOptions, string currentProfileName)
+        {
+            if (!Enum.TryParse(profileOptions.CredentialSource, true, out CredentialSourceType credentialSourceType))
+            {
+                return $"Assume Role Profile {currentProfileName} does not have a valid value for {ProfilePropertyConstants.CredentialSource}.";
+            }
+
+            if (credentialSourceType != CredentialSourceType.Ec2InstanceMetadata)
+            {
+                return $"Assume Role Profile {currentProfileName} property {ProfilePropertyConstants.CredentialSource} only supports {CredentialSourceType.Ec2InstanceMetadata}.";
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -171,6 +228,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
         private string ValidateAssumeRoleChain(CredentialProfileOptions profileOptions, string profileName)
         {
             var traversedProfileNames = new List<string>();
+            string PrintCycleChain() => string.Join(" -> ", traversedProfileNames);
 
             var currentProfile = profileOptions;
             var currentProfileName = profileName;
@@ -181,19 +239,24 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 {
                     // Cycle detected
                     traversedProfileNames.Add(currentProfileName);
-                    var cycle = string.Join(" -> ", traversedProfileNames);
-                    return $"Cycle detected in profile references for Assume Role Profile {profileName}: {cycle}";
+                    return $"Cycle detected in profile references for Assume Role Profile {profileName}: {PrintCycleChain()}";
                 }
 
                 traversedProfileNames.Add(currentProfileName);
 
-                if (string.IsNullOrWhiteSpace(profileOptions.SourceProfile))
+                var currentProfileReferencingValidation = ValidateAssumeRoleReferencingProperties(currentProfile, currentProfileName);
+                if (!string.IsNullOrWhiteSpace(currentProfileReferencingValidation))
                 {
                     return
-                        $"Assume Role Profile {currentProfileName} is missing required property {ProfilePropertyConstants.SourceProfile}";
+                        $"Assume Role Profile {profileName} references {currentProfileName} ({PrintCycleChain()}), which fails validation: {currentProfileReferencingValidation}";
                 }
 
                 var referencedProfileName = currentProfile.SourceProfile;
+                if (string.IsNullOrWhiteSpace(referencedProfileName))
+                {
+                    return null;
+                }
+
                 var referencedProfile = _fileReader.GetCredentialProfileOptions(referencedProfileName);
 
                 if (referencedProfile == null)

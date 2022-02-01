@@ -10,6 +10,7 @@
         StaticSessionProfile,
         CredentialProcessProfile,
         AssumeRoleProfile,
+        AssumeEc2InstanceRoleProfile,
         AssumeMfaRoleProfile,
         AssumeSamlRoleProfile,
         SsoProfile,

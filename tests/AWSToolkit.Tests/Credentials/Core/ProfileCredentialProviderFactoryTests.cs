@@ -129,7 +129,8 @@ namespace AWSToolkit.Tests.Credentials.Core
             yield return new object[] { CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name };
             yield return new object[] { CredentialProfileTestHelper.Basic.Valid.Token.Name };
             yield return new object[] { CredentialProfileTestHelper.Saml.ValidProfile.Name };
-            yield return new object[] { CredentialProfileTestHelper.AssumeRole.ValidProfile.Name };
+            yield return new object[] { CredentialProfileTestHelper.AssumeRole.Valid.CredentialSource.Name };
+            yield return new object[] { CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile.Name };
             yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.MissingAccessKey.Name };
             yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.MissingSecretKey.Name };
             yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name };
@@ -228,7 +229,8 @@ namespace AWSToolkit.Tests.Credentials.Core
                          CredentialProfileTestHelper.Mfa.Valid.MfaReference,
                          CredentialProfileTestHelper.Mfa.Valid.ExternalSession,
                          CredentialProfileTestHelper.Sso.ValidProfile,
-                         CredentialProfileTestHelper.AssumeRole.ValidProfile,
+                         CredentialProfileTestHelper.AssumeRole.Valid.CredentialSource,
+                         CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile,
                          CredentialProfileTestHelper.CredentialProcess.ValidProfile,
                      })
             {
