@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.Install;
 using Amazon.AWSToolkit.Publish.Models;
@@ -143,7 +144,7 @@ namespace Amazon.AWSToolkit.Publish.Package
                     ToolkitShellProvider = initializer.ShellProvider,
                     InstallOptions = installOptions,
                     PublishSettingsRepository = new FilePublishSettingsRepository(),
-                    InitializeCliTask = InitializeDeployCliInBackgroundAsync(installOptions)
+                    InitializeCliTask = InitializeDeployCliInBackgroundAsync(installOptions, initializer.ToolkitContext)
                 };
 
                 // You only initialize once
@@ -155,9 +156,9 @@ namespace Amazon.AWSToolkit.Publish.Package
             }
         }
 
-        private Task InitializeDeployCliInBackgroundAsync(InstallOptions installOptions)
+        private Task InitializeDeployCliInBackgroundAsync(InstallOptions installOptions, ToolkitContext toolkitContext)
         {
-            return new DeployCli(installOptions).InitializeAsync(DisposalToken);
+            return new DeployCli(installOptions, toolkitContext).InitializeAsync(DisposalToken);
         }
 
         protected override void Dispose(bool disposing)

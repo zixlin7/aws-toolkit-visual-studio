@@ -44,6 +44,18 @@
             "name": "publishSettingType",
             "type": "string",
             "description": "The type of a particular configuration setting/detail"
+        },
+        {
+            "name": "publishInstallCliMode",
+            "type": "string",
+            "allowedValues": ["install", "upgrade", "noop"],
+            "description": "The operation that occurred when an attempt was made to download the CLI"
+        },
+        {
+            "name": "publishSetupStage",
+            "type": "string",
+            "allowedValues": ["install", "validate", "initialize", "show", "all"],
+            "description": "Represents a phase of the publish experience startup sequence"
         }
     ],
     "metrics": [
@@ -88,6 +100,18 @@
                 { "type": "defaultConfiguration" },
                 { "type": "recommendedTarget", "required": false },
                 { "type": "recipeId" },
+                { "type": "errorCode", "required": false }
+            ] 
+        },
+        {
+            "name": "publish_setup",
+            "description": "Starting the Publish to AWS experience",
+            "unit": "Milliseconds",            
+            "metadata": [
+                { "type": "result" },
+                { "type": "duration" },
+                { "type": "publishSetupStage" },
+                { "type": "publishInstallCliMode", "required": false },
                 { "type": "errorCode", "required": false }
             ] 
         },

@@ -269,6 +269,61 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         }
         
         /// Records Telemetry Event:
+        /// Starting the Publish to AWS experience
+        public static void RecordPublishSetup(this ITelemetryLogger telemetryLogger, PublishSetup payload)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "publish_setup";
+                datum.Unit = Unit.Milliseconds;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("duration", payload.Duration);
+
+                datum.AddMetadata("publishSetupStage", payload.PublishSetupStage);
+
+                if (payload.PublishInstallCliMode.HasValue)
+                {
+                    datum.AddMetadata("publishInstallCliMode", payload.PublishInstallCliMode.Value);
+                }
+
+                datum.AddMetadata("errorCode", payload.ErrorCode);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+        
+        /// Records Telemetry Event:
         /// Called when user exits the publish workflow to record unsupported setting types
         public static void RecordPublishUnsupportedSetting(this ITelemetryLogger telemetryLogger, PublishUnsupportedSetting payload)
         {
@@ -407,6 +462,66 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         }
     }
     
+    /// Metric field type
+    /// The operation that occurred when an attempt was made to download the CLI
+    public struct PublishInstallCliMode
+    {
+        
+        private string _value;
+        
+        /// install
+        public static readonly PublishInstallCliMode Install = new PublishInstallCliMode("install");
+        
+        /// upgrade
+        public static readonly PublishInstallCliMode Upgrade = new PublishInstallCliMode("upgrade");
+        
+        /// noop
+        public static readonly PublishInstallCliMode Noop = new PublishInstallCliMode("noop");
+        
+        public PublishInstallCliMode(string value)
+        {
+            this._value = value;
+        }
+        
+        public override string ToString()
+        {
+            return this._value;
+        }
+    }
+    
+    /// Metric field type
+    /// Represents a phase of the publish experience startup sequence
+    public struct PublishSetupStage
+    {
+        
+        private string _value;
+        
+        /// install
+        public static readonly PublishSetupStage Install = new PublishSetupStage("install");
+        
+        /// validate
+        public static readonly PublishSetupStage Validate = new PublishSetupStage("validate");
+        
+        /// initialize
+        public static readonly PublishSetupStage Initialize = new PublishSetupStage("initialize");
+        
+        /// show
+        public static readonly PublishSetupStage Show = new PublishSetupStage("show");
+        
+        /// all
+        public static readonly PublishSetupStage All = new PublishSetupStage("all");
+        
+        public PublishSetupStage(string value)
+        {
+            this._value = value;
+        }
+        
+        public override string ToString()
+        {
+            return this._value;
+        }
+    }
+    
     /// Called when deploying a Serverless Application Project
     public sealed class ServerlessapplicationDeploy : BaseTelemetryEvent
     {
@@ -500,6 +615,31 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public string ErrorCode;
         
         public PublishDeploy()
+        {
+            this.Passive = false;
+        }
+    }
+    
+    /// Starting the Publish to AWS experience
+    public sealed class PublishSetup : BaseTelemetryEvent
+    {
+        
+        /// The result of the operation
+        public Result Result;
+        
+        /// The duration of the operation in milliseconds
+        public double Duration;
+        
+        /// Represents a phase of the publish experience startup sequence
+        public PublishSetupStage PublishSetupStage;
+        
+        /// Optional - The operation that occurred when an attempt was made to download the CLI
+        public PublishInstallCliMode? PublishInstallCliMode;
+        
+        /// Optional - The error code associated with an operation
+        public string ErrorCode;
+        
+        public PublishSetup()
         {
             this.Passive = false;
         }

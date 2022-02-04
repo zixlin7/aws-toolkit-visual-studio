@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.Views;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
@@ -25,6 +26,13 @@ namespace Amazon.AWSToolkit.Publish.Package
     /// </summary>
     public class PublishToAws : IPublishToAws, SPublishToAws
     {
+        internal enum ShowDialogResult
+        {
+            Success,
+            Fail,
+            Cancel,
+        }
+
         static readonly ILog Logger = LogManager.GetLogger(typeof(PublishToAws));
 
         private readonly PublishContext _publishContext;
@@ -47,14 +55,14 @@ namespace Amazon.AWSToolkit.Publish.Package
                 ICliServer cliServer = null;
                 steps.Add(new ShowPublishDialogStep(async () =>
                 {
-                    cliServer = await InitializeDeployToolAsync();
+                    cliServer = await InitializeAsync(args);
                 }, "Initializing Deploy Tool...", true));
 
-                steps.Add(new ShowPublishDialogStep(async () => await CreateAndShowDocumentAsync(args, cliServer),
+                steps.Add(new ShowPublishDialogStep(async () => await ShowDocumentTabAsync(args, cliServer),
                     "Starting up...", false));
 
-                await ShowPublishToAwsDocumentAsync(steps).ConfigureAwait(false);
-                RecordPublishStartMetric(args.AccountId, args.Region, args.Requester, Result.Succeeded);
+                var result = await ShowPublishToAwsDocumentAsync(args, steps).ConfigureAwait(false);
+                RecordPublishStartMetric(args.AccountId, args.Region, args.Requester, AsResult(result));
             }
             catch (Exception e)
             {
@@ -80,6 +88,25 @@ namespace Amazon.AWSToolkit.Publish.Package
             await _publishContext.InitializeCliTask;
         }
 
+        private async Task<ICliServer> InitializeAsync(ShowPublishToAwsDocumentArgs showPublishToAwsDocumentArgs)
+        {
+            ICliServer cliServer = null;
+
+            async Task Initialize()
+            {
+                cliServer = await InitializeDeployToolAsync();
+            }
+
+            void Record(ITelemetryLogger telemetryLogger, long milliseconds)
+            {
+                var result = cliServer == null ? Result.Failed : Result.Succeeded;
+                RecordInitialized(telemetryLogger, result, showPublishToAwsDocumentArgs, milliseconds);
+            }
+
+            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecord(Initialize, Record);
+            return cliServer;
+        }
+
         private async Task<ICliServer> InitializeDeployToolAsync()
         {
             try
@@ -93,6 +120,25 @@ namespace Amazon.AWSToolkit.Publish.Package
             {
                 throw new Exception($"Unable to start deploy tooling: {e.Message}", e);
             }
+        }
+
+        private async Task ShowDocumentTabAsync(ShowPublishToAwsDocumentArgs args, ICliServer cliServer)
+        {
+            bool success = false;
+
+            async Task Show()
+            {
+                await CreateAndShowDocumentAsync(args, cliServer);
+                success = true;
+            }
+
+            void Record(ITelemetryLogger telemetryLogger, long milliseconds)
+            {
+                var result = success ? Result.Succeeded : Result.Failed;
+                RecordShow(telemetryLogger, result, args, milliseconds);
+            }
+
+            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecord(Show, Record);
         }
 
         private async Task CreateAndShowDocumentAsync(ShowPublishToAwsDocumentArgs args, ICliServer cliServer)
@@ -112,7 +158,26 @@ namespace Amazon.AWSToolkit.Publish.Package
             }
         }
 
-        private async Task ShowPublishToAwsDocumentAsync(List<ShowPublishDialogStep> steps)
+        private async Task<ShowDialogResult> ShowPublishToAwsDocumentAsync(ShowPublishToAwsDocumentArgs args,
+            List<ShowPublishDialogStep> steps)
+        {
+            ShowDialogResult showResult = ShowDialogResult.Fail;
+
+            async Task Show()
+            {
+                showResult = await ShowPublishToAwsDocumentAsync(steps);
+            }
+
+            void Record(ITelemetryLogger telemetryLogger, long milliseconds)
+            {
+                RecordFullPublishSetup(telemetryLogger, AsResult(showResult), args, milliseconds);
+            }
+
+            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecord(Show, Record);
+            return showResult;
+        }
+
+        private async Task<ShowDialogResult> ShowPublishToAwsDocumentAsync(List<ShowPublishDialogStep> steps)
         {
             var progressDialog = await _publishContext.ToolkitShellProvider.CreateProgressDialog();
             try
@@ -122,6 +187,7 @@ namespace Amazon.AWSToolkit.Publish.Package
                 progressDialog.Show(1);
 
                 await _showDocumentStepProcessor.ProcessStepsAsync(progressDialog, steps);
+                return ShowDialogResult.Success;
             }
             catch (OperationCanceledException)
             {
@@ -129,6 +195,8 @@ namespace Amazon.AWSToolkit.Publish.Package
                 _publishContext.ToolkitShellProvider.OutputToHostConsole(
                     $"Launching the Publish to AWS dialog has been cancelled",
                     true);
+
+                return ShowDialogResult.Cancel;
             }
             finally
             {
@@ -157,6 +225,59 @@ namespace Amazon.AWSToolkit.Publish.Package
                 Source = operationOrigin,
                 Result = result,
             });
+        }
+
+        private void RecordInitialized(ITelemetryLogger telemetryLogger, Result result,
+            ShowPublishToAwsDocumentArgs showPublishToAwsDocumentArgs, long milliseconds)
+        {
+            telemetryLogger.RecordPublishSetup(new PublishSetup()
+            {
+                PublishSetupStage = PublishSetupStage.Initialize,
+                Result = result,
+                Value = milliseconds,
+                Duration = milliseconds,
+                AwsAccount = showPublishToAwsDocumentArgs.AccountId,
+                AwsRegion = showPublishToAwsDocumentArgs.Region?.Id ?? MetadataValue.NotSet,
+            });
+        }
+
+        private void RecordShow(ITelemetryLogger telemetryLogger, Result result, ShowPublishToAwsDocumentArgs args, long milliseconds)
+        {
+            telemetryLogger.RecordPublishSetup(new PublishSetup()
+            {
+                PublishSetupStage = PublishSetupStage.Show,
+                Result = result,
+                Value = milliseconds,
+                Duration = milliseconds,
+                AwsAccount = args.AccountId,
+                AwsRegion = args.Region?.Id ?? MetadataValue.NotSet,
+            });
+        }
+
+        private void RecordFullPublishSetup(ITelemetryLogger telemetryLogger, Result result, ShowPublishToAwsDocumentArgs args, long milliseconds)
+        {
+            telemetryLogger.RecordPublishSetup(new PublishSetup()
+            {
+                PublishSetupStage = PublishSetupStage.All,
+                Result = result,
+                Value = milliseconds,
+                Duration = milliseconds,
+                AwsAccount = args.AccountId,
+                AwsRegion = args.Region?.Id ?? MetadataValue.NotSet,
+            });
+        }
+
+        private static Result AsResult(ShowDialogResult showResult)
+        {
+            switch (showResult)
+            {
+                case ShowDialogResult.Success:
+                    return Result.Succeeded;
+                case ShowDialogResult.Cancel:
+                    return Result.Cancelled;
+                default:
+                    return Result.Failed;
+            }
         }
     }
 }

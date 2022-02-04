@@ -3,6 +3,7 @@
     public enum InstallResult
     {
         Installed,
+        Updated,
         Skipped
     }
 }

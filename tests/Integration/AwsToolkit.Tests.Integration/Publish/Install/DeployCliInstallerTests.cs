@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish.Install
 
             // assert.
             Assert.True(IsDeployCLIInstalled());
-            Assert.Equal(InstallResult.Installed, result);
+            Assert.Equal(InstallResult.Updated, result);
         }
 
         private Task<InstallResult> InstallOlderVersionOfCliAsync()

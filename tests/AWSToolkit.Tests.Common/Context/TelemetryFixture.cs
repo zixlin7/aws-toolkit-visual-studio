@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 
@@ -20,6 +21,13 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public void AssertTelemetryRecordCalls(int count)
         {
             TelemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Exactly(count));
+        }
+
+        public IList<Metrics> GetMetricsByMetricName(string metricName)
+        {
+            return LoggedMetrics
+                .Where(metrics => metrics.Data.Any(datum => datum.MetricName == metricName))
+                .ToList();
         }
     }
 }
