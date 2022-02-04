@@ -286,7 +286,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         var output = await GetServiceAsync(typeof (SVsOutputWindow)) as IVsOutputWindow;
                         if (output != null && output.CreatePane(ref _guidAwsOutputWindowPane,
                             "Amazon Web Services",
-                            Convert.ToInt32(forceVisible),
+                            Convert.ToInt32(true),
                             Convert.ToInt32(true)) == VSConstants.S_OK)
                             output.GetPane(ref _guidAwsOutputWindowPane, out _awsOutputWindowPane);
                     }
@@ -560,6 +560,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 });
 
+                var productEnvironment = CreateProductEnvironment();
+                OutputProductDetails(productEnvironment);
+
                 var hostInfo = DteVersion.AsHostInfo(dteVersion);
                 ThemeUtil.Initialize(dteVersion);
                 ToolkitThemes.Initialize(new ToolkitThemeProvider());
@@ -567,7 +570,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
 
                 _metricsOutputWindow = await CreateMetricsOutputWindowAsync();
-                _telemetryManager = CreateTelemetryManager();
+                _telemetryManager = CreateTelemetryManager(productEnvironment);
 
                 _regionProvider = new RegionProvider();
                 _regionProvider.Initialize();
@@ -665,6 +668,18 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
+        private void OutputProductDetails(ProductEnvironment productEnvironment)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("AWS Toolkit for Visual Studio");
+            builder.AppendLine($"Toolkit Version: {productEnvironment.AwsProductVersion}");
+            builder.AppendLine(
+                $"Visual Studio: {productEnvironment.ParentProduct}, Version: {productEnvironment.ParentProductVersion}");
+            builder.AppendLine();
+
+            OutputToConsole(builder.ToString(), false);
+        }
+
         private async Task<MetricsOutputWindow> CreateMetricsOutputWindowAsync()
         {
             try
@@ -690,9 +705,8 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        private TelemetryManager CreateTelemetryManager()
+        private TelemetryManager CreateTelemetryManager(ProductEnvironment productEnvironment)
         {
-            var productEnvironment = CreateProductEnvironment();
             var telemetryManager = new TelemetryManager(productEnvironment, _metricsOutputWindow);
 
             // Get telemetry started in a background thread (don't block on obtaining credentials)

@@ -209,7 +209,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 {
                     //report no of profiles found with this dialog
                     LOGGER.Info(baseMessage);
-                    ToolkitShell.OutputToHostConsole(baseMessage, true);
+                    ToolkitShell.OutputToHostConsole(baseMessage, false);
                 }
             }
             else
@@ -224,9 +224,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 LOGGER.Info(baseMessage);
                 LOGGER.Error($"The following credentials could not be loaded: {Environment.NewLine}{errorLogMessage}");
 
-                ToolkitShell.OutputToHostConsole(baseMessage, true);
+                ToolkitShell.OutputToHostConsole(baseMessage, false);
                 ToolkitShell.OutputToHostConsole(
-                    $"The following credentials could not be loaded: {outputErrorMessage}. Check the Toolkit logs for more details.", true);
+                    $"The following credentials could not be loaded: {outputErrorMessage}. Check the Toolkit logs for more details.", false);
             }
         }
 

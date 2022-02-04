@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "The Toolkit Output channel no longer takes focus when credentials profiles are reloaded"
+}
