@@ -21,7 +21,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaDeployedFunctionLanguage,
         LambdaEventSourceSetupSuccess,
         LambdaEventSourceSetupError,
-        VisualStudioIdentifier,
         XRayEnabled,
     };
 

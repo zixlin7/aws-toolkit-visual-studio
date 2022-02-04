@@ -497,7 +497,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 var additionalPluginFolders = string.Empty;
 
                 string dteVersion = null;
-                string dteEdition = null;
 
                 NavigatorControl navigator = null;
                 await this.JoinableTaskFactory.RunAsync(async delegate
@@ -521,7 +520,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     var dte = (DTE2)await GetServiceAsync(typeof(EnvDTE.DTE));
                     Assumes.Present(dte);
                     dteVersion = dte.Version;
-                    dteEdition = dte.Edition;
 
                     RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
                     RegisterEditorFactory(new TemplateEditorFactory(this));
@@ -584,10 +582,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 _toolkitCredentialInitializer = new ToolkitCredentialInitializer(_telemetryManager.TelemetryLogger, _regionProvider, ToolkitShellProviderService);
                 _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged += AwsConnectionManager_ConnectionStateChanged;
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dteVersion, dteEdition));
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                 var serviceClientManager = new AwsServiceClientManager(
                     _toolkitCredentialInitializer.CredentialManager,
