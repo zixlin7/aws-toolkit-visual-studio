@@ -303,8 +303,10 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             else
             {
                 config.CacheBehaviors = new CacheBehaviors() { Quantity = 0 };
+#pragma warning disable CS0618 // Type or member is obsolete (MinTTL, ForwardedValues)
                 config.DefaultCacheBehavior = new DefaultCacheBehavior() { MinTTL = 0, ForwardedValues = new ForwardedValues() { QueryString = false } };
                 config.DefaultCacheBehavior.ForwardedValues.Cookies = new CookiePreference() { Forward = "none" };
+#pragma warning restore CS0618 // Type or member is obsolete
                 config.DefaultCacheBehavior.TargetOriginId = config.Origins.Items[0].Id;
                 config.CustomErrorResponses = new CustomErrorResponses() { Quantity = 0 };
             }

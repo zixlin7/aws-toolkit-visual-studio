@@ -252,7 +252,9 @@ namespace Amazon.AWSToolkit.S3.Controller
                 {
                     var rule = entry.ConvertToRule();
 
+#pragma warning disable CS0618 // Type or member is obsolete (Transition)
                     if (rule.Expiration == null && rule.Transition == null)
+#pragma warning restore CS0618 // Type or member is obsolete
                         continue;
 
                     if (string.IsNullOrEmpty(rule.Id))
@@ -353,12 +355,14 @@ namespace Amazon.AWSToolkit.S3.Controller
 
             var locationResponse = this._s3Client.GetBucketLocation(new GetBucketLocationRequest() { BucketName = this._model.BucketName });
 
+#pragma warning disable CS0618 // Type or member is obsolete
             if (locationResponse.Location == S3Region.US.ToString())
                 this._model.RegionSystemName = "us-east-1";
             else if (locationResponse.Location == S3Region.EU.ToString())
                 this._model.RegionSystemName = "eu-west-1";
             else
                 this._model.RegionSystemName = locationResponse.Location;
+#pragma warning restore CS0618 // Type or member is obsolete
             var region = _toolkitContext.RegionProvider.GetRegion(this._model.RegionSystemName);
             if (region != null)
             {

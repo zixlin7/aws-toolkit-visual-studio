@@ -134,7 +134,9 @@ namespace Amazon.AWSToolkit.SNS.Controller
         void addSQSPermission(Policy policy)
         {
             Statement statement = new Statement(Statement.StatementEffect.Allow);
+#pragma warning disable CS0618 // Type or member is obsolete (SQSActionIdentifiers)
             statement.Actions.Add(SQSActionIdentifiers.SendMessage);
+#pragma warning restore CS0618 // Type or member is obsolete
             statement.Resources.Add(new Resource(this._model.Endpoint));
             statement.Conditions.Add(ConditionFactory.NewSourceArnCondition(this._model.TopicArn));
             statement.Principals.Add(new Principal("*"));

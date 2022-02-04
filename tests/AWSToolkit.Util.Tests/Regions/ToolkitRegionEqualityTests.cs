@@ -13,8 +13,10 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         [Fact]
         public void Reflexive()
         {
+#pragma warning disable CS1718 // Comparison made to same variable
             Assert.True(_x == _x);
             Assert.True(Equals(_x, _x));
+#pragma warning restore CS1718 // Comparison made to same variable
             Assert.True(_x.Equals(_x));
             Assert.Equal(_x, _x);
         }

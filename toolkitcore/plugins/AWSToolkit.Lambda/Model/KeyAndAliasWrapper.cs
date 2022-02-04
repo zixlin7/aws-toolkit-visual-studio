@@ -9,10 +9,12 @@ namespace Amazon.AWSToolkit.Lambda.Model
 
         private const string AliasPrefix = "alias/";
 
+#pragma warning disable KeyManagementService1002 // Property value does not match required pattern
         public static readonly KeyAndAliasWrapper LambdaDefaultKMSKey
             = new KeyAndAliasWrapper(new KeyListEntry(),   // use empty id/arn fields as they'll appear in UI otherwise
                                      new AliasListEntry { AliasName = "(default) aws/lambda" },
                                      ServiceKeysCategoryName);
+#pragma warning restore KeyManagementService1002 // Property value does not match required pattern
 
         public KeyListEntry Key { get; }
 

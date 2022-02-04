@@ -44,7 +44,7 @@ namespace AWSToolkit.Tests.PluginActivator
         {
             Assert.NotNull(activators);
             Assert.True(activators.Count > 0, "No activators were found");
-            Assert.True(activators.Any(activator => activator.PluginName == SamplePluginActivator.SamplePluginName));
+            Assert.Contains(activators, activator => activator.PluginName == SamplePluginActivator.SamplePluginName);
         }
     }
 
