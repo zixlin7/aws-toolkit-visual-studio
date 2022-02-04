@@ -11,6 +11,8 @@ using Amazon.S3;
 using log4net;
 using System;
 using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.IdentityManagement;
 using Amazon.Lambda;
@@ -78,7 +80,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 {
                     _telemetryLogger.RecordServerlessApplicationDeploy(
                         Result.Succeeded,
-                        Settings.Region.Id
+                        Settings.AccountId,
+                        Settings.Region?.Id
                     );
 
                     this.Helpers.PublishServerlessAsyncCompleteSuccess(this.Settings);
@@ -98,20 +101,34 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             }
             catch (ToolsException)
             {
-                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.Id);
+                _telemetryLogger.RecordServerlessApplicationDeploy(
+                    Result.Failed,
+                    Settings.AccountId,
+                    Settings.Region?.Id);
+
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
             catch (ToolkitException e)
             {
                 logger.WriteLine(e.Message);
-                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.Id);
+
+                _telemetryLogger.RecordServerlessApplicationDeploy(
+                    Result.Failed,
+                    Settings.AccountId,
+                    Settings.Region?.Id);
+
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
             catch (Exception e)
             {
                 logger.WriteLine(e.Message);
                 LOGGER.Error("Error publishing AWS Serverless application.", e);
-                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.Id);
+
+                _telemetryLogger.RecordServerlessApplicationDeploy(
+                    Result.Failed,
+                    Settings.AccountId,
+                    Settings.Region?.Id);
+
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
         }
@@ -120,9 +137,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
     public class PublishServerlessApplicationWorkerSettings
     {
         public AccountViewModel Account { get; set; }
+        public string AccountId { get; set; }
         public AWSCredentials Credentials { get; set; }
         public ToolkitRegion Region { get; set; }
-
         public string SourcePath { get; set; }
         public string Configuration { get; set; }
         public string Framework { get; set; }

@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.Lambda.Controller;
 using System.IO;
 using System.Linq;
 
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Util;
@@ -46,6 +47,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             try
             {
                 var architectureList = uploadState.GetRequestArchitectures();
+                deploymentProperties.AccountId = uploadState.AccountId;
                 deploymentProperties.RegionId = uploadState.Region?.Id;
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
@@ -106,6 +108,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 if (command.ExecuteAsync().Result)
                 {
+                    deploymentProperties.Language = this.FunctionUploader.GetFunctionLanguage();
+                    deploymentProperties.XRayEnabled = this.FunctionUploader.XRayEnabled();
+
                     _telemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
 
                     this.FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);

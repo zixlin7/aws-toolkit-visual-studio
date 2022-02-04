@@ -14,14 +14,20 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Threading.Tasks;
-
 using Amazon.IdentityManagement.Model;
 using Amazon.AWSToolkit.Lambda.Model;
 using System.Net;
+
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Lambda.View;
-using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Regions;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Runtime;
 using Amazon.Common.DotNetCli.Tools;
+
+using LambdaTelemetryUtils = Amazon.AWSToolkit.Lambda.Util.LambdaTelemetryUtils;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 {
@@ -33,6 +39,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionAdvancedPage));
 
         private IAWSWizardPageController PageController { get; set; }
+        private readonly ITelemetryLogger _telemetryLogger;
 
         public UploadFunctionAdvancedPage()
         {
@@ -45,10 +52,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             _ctlTimeoutRange.Text = string.Format("({0} - {1})", LambdaUtilities.MIN_TIMEOUT, LambdaUtilities.MAX_TIMEOUT);
         }
 
-        public UploadFunctionAdvancedPage(IAWSWizardPageController pageController)
+        public UploadFunctionAdvancedPage(IAWSWizardPageController pageController, ITelemetryLogger telemetryLogger)
             : this()
         {
             PageController = pageController;
+            _telemetryLogger = telemetryLogger;
             var hostWizard = pageController.HostingWizard;
 
             var memorySizes = LambdaUtilities.GetValidMemorySizes();
@@ -157,9 +165,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         private void AttemptTrustedPolicyCleanup(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            string metricEventState = null;
+            AccountViewModel account = null;
+            ToolkitRegion region = null;
             Role selectedRole = null;
+            string metricEventState = null;
             string stepName = "start";
+
             try
             {
                 selectedRole = this.IAMPicker.SelectedRole;
@@ -182,8 +193,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 }
                 stepName = "userConfirmed";
 
-                var account = PageController.HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
-                var region = PageController.HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
+                account = PageController.HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+                region = PageController.HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
                 if (account == null || region == null)
                 {
@@ -230,9 +241,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             {
                 if (!string.IsNullOrEmpty(metricEventState))
                 {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionIAMRoleCleanup, metricEventState);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    LambdaTelemetryUtils.RecordLambdaIamRoleCleanup(
+                        _telemetryLogger,
+                        string.Equals(metricEventState, "Success") ? Result.Succeeded : Result.Failed,
+                        metricEventState,
+                        account?.GetAccountId(region),
+                        region?.Id);
                 }
             }
         }

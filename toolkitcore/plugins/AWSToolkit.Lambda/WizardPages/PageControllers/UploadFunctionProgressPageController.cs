@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
@@ -164,6 +165,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             settings.Account = account;
             settings.Credentials = credentials;
             settings.Region = region;
+            settings.AccountId = account?.GetAccountId(region);
             settings.SourcePath = HostingWizard[UploadFunctionWizardProperties.SourcePath] as string;
             settings.Configuration = HostingWizard[UploadFunctionWizardProperties.Configuration] as string;
             settings.Framework = HostingWizard[UploadFunctionWizardProperties.Framework] as string;
@@ -209,7 +211,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
                 var account = HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
                 var region = HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
-
+                var accountId = account?.GetAccountId(region);
                 var runtime = HostingWizard[UploadFunctionWizardProperties.Runtime] as string;
                 var functionName = HostingWizard[UploadFunctionWizardProperties.FunctionName] as string;
                 var description = HostingWizard[UploadFunctionWizardProperties.Description] as string;
@@ -321,6 +323,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 var state = new UploadFunctionState
                 {
                     Account = account,
+                    AccountId = accountId,
                     Credentials = credentials,
                     Region = region,
                     SourcePath = sourcePath,
@@ -511,54 +514,42 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         private void PostDeploymentAnalysis(bool persist)
         {
-            if (HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] is string)
+            if (!(HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] is string projectFile))
+                return;
+
+            if (persist)
             {
-                var projectFile = HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] as string;
-
-                int razorPages = Directory.GetFiles(Path.GetDirectoryName(projectFile), "*.cshtml", SearchOption.AllDirectories).Length;
-                if (razorPages > 0)
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesRazorPages, razorPages.ToString());
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
-
-                var projectContent = File.ReadAllText(projectFile);
-                if(projectContent.Contains("Microsoft.AspNetCore"))
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesAspNetCore, "true");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
-                if (projectContent.Contains("AWSXRayRecorder"))
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesXRay, "true");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
-
-                var projectExtension = Path.GetExtension(projectFile);
-                if (string.Equals(projectExtension, ".csproj", StringComparison.OrdinalIgnoreCase))
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaDeployedFunctionLanguage, "C#");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
-                else if (string.Equals(projectExtension, ".fsproj", StringComparison.OrdinalIgnoreCase))
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaDeployedFunctionLanguage, "F#");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
-
-
-                if (persist)
-                {
-                    Utility.AddDotnetCliToolReference(projectFile, "Amazon.Lambda.Tools");
-                }
+                Utility.AddDotnetCliToolReference(projectFile, "Amazon.Lambda.Tools");
             }
         }
 
+        bool ILambdaFunctionUploadHelpers.XRayEnabled()
+        {
+            if (!(HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] is string projectFile))
+                return false;
+
+            var projectContent = File.ReadAllText(projectFile);
+            return projectContent.Contains("AWSXRayRecorder");
+        }
+
+        string ILambdaFunctionUploadHelpers.GetFunctionLanguage()
+        {
+            if (!(HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] is string projectFile))
+                return null;
+
+            var projectExtension = Path.GetExtension(projectFile);
+
+            if (string.Equals(projectExtension, ".csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                return "C#";
+            }
+            else if (string.Equals(projectExtension, ".fsproj", StringComparison.OrdinalIgnoreCase))
+            {
+                return "F#";
+            }
+
+            return null;
+        }
 
         void ILambdaFunctionUploadHelpers.UploadFunctionAsyncCompleteError(string message)
         {

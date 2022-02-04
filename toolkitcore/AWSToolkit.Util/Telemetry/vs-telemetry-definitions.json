@@ -98,6 +98,22 @@
                 { "type": "recipeId" },
                 { "type": "publishSettingType" }
             ]
+        },
+        {
+            "name": "lambda_iamRoleCleanup",
+            "description": "Called when cleaning up IAM Role trusted policy",
+            "metadata": [
+                { "type": "result" },
+                { "type": "reason" }
+            ]
+        },
+        {
+            "name": "lambda_addEvent",
+            "description": "Called when adding an event to a lambda function",
+            "metadata": [
+                { "type": "result" },
+                { "type": "variant" }
+            ] 
         }
     ]
 }

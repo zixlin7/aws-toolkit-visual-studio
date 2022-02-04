@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
@@ -74,6 +75,8 @@ namespace AWSToolkit.Tests.Lambda
                     DisplayName = "US East",
                     Id = "us-east-1",
                 },
+
+                AccountId = "0123456789"
             };
 
             // Create a sample project and files to use in tests
@@ -238,6 +241,7 @@ namespace AWSToolkit.Tests.Lambda
                 Result.Succeeded,
                 new LambdaTelemetryUtils.RecordLambdaDeployProperties()
                 {
+                    AccountId = _uploadFunctionState.AccountId,
                     RegionId = _uploadFunctionState.Region.Id,
                     Runtime = _uploadFunctionState.Request.Runtime,
                     TargetFramework = "",

@@ -21,5 +21,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         GetFunctionConfigurationResponse GetExistingConfiguration(IAmazonLambda lambdaClient, string functionName);
 
         void WaitForUpdatableState(IAmazonLambda lambdaClient, string functionName);
+
+        bool XRayEnabled();
+
+        string GetFunctionLanguage();
     }
 }

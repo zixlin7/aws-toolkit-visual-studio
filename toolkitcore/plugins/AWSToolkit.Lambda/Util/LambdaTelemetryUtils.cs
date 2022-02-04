@@ -1,69 +1,72 @@
 ﻿using log4net;
-using System;
-using System.Diagnostics;
-
-using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Lambda;
-
-using LambdaDeploy = Amazon.AWSToolkit.Telemetry.LambdaDeploy;
 
 namespace Amazon.AWSToolkit.Lambda.Util
 {
     public static class LambdaTelemetryUtils
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(LambdaTelemetryUtils));
-
         public class RecordLambdaDeployProperties
         {
             public bool NewResource { get; set; } = true;
             public Amazon.Lambda.Runtime Runtime { get; set; }
+            public string AccountId { get; set; }
             public string RegionId { get; set; }
             public string TargetFramework { get; set; }
             public PackageType LambdaPackageType { get; set; }
             public Architecture LambdaArchitecture { get; set; }
+            public string Language { get; set; }
+            public bool XRayEnabled { get; set; }
         }
 
         public static void RecordLambdaDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, RecordLambdaDeployProperties lambdaDeploymentProperties)
         {
-            try
+            telemetryLogger.RecordLambdaDeploy(new LambdaDeploy()
             {
-                telemetryLogger.RecordLambdaDeploy(new LambdaDeploy()
-                {
-                    LambdaPackageType = new LambdaPackageType(lambdaDeploymentProperties.LambdaPackageType?.Value ?? "unknown"),
-                    InitialDeploy = lambdaDeploymentProperties.NewResource,
-                    Result = deployResult,
-                    AwsRegion = lambdaDeploymentProperties.RegionId ?? "unknown",
-                    Runtime = new AwsToolkit.Telemetry.Events.Generated.Runtime(
-                        lambdaDeploymentProperties.Runtime?.Value ?? "unknown"),
-                    Platform = lambdaDeploymentProperties.TargetFramework,
-                    LambdaArchitecture =
-                        new LambdaArchitecture(lambdaDeploymentProperties.LambdaArchitecture?.Value ?? "unknown")
-                });
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to record metric", e);
-                Debug.Assert(false, $"Failure recording metric: {e.Message}");
-            }
+                AwsAccount = lambdaDeploymentProperties.AccountId ?? MetadataValue.Invalid,
+                AwsRegion = lambdaDeploymentProperties.RegionId ?? MetadataValue.NotSet,
+                Result = deployResult,
+                LambdaPackageType = new LambdaPackageType(lambdaDeploymentProperties.LambdaPackageType?.Value ?? MetadataValue.NotSet),
+                InitialDeploy = lambdaDeploymentProperties.NewResource,
+                Runtime = new AwsToolkit.Telemetry.Events.Generated.Runtime(lambdaDeploymentProperties.Runtime?.Value ?? MetadataValue.NotSet),
+                Platform = lambdaDeploymentProperties.TargetFramework,
+                LambdaArchitecture = new LambdaArchitecture(lambdaDeploymentProperties.LambdaArchitecture?.Value ?? MetadataValue.NotSet),
+                Language = lambdaDeploymentProperties.Language,
+                XrayEnabled = lambdaDeploymentProperties.XRayEnabled
+            });
         }
 
-        public static void RecordServerlessApplicationDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, string regionId)
+        public static void RecordServerlessApplicationDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, string accountId, string regionId)
         {
-            try
+            telemetryLogger.RecordServerlessapplicationDeploy(new ServerlessapplicationDeploy()
             {
-                telemetryLogger.RecordServerlessapplicationDeploy(new ServerlessapplicationDeploy()
-                {
-                    Result = deployResult,
-                    AwsRegion = regionId,
-                });
-            }
-            catch (Exception e)
+                AwsAccount = accountId ?? MetadataValue.Invalid,
+                AwsRegion = regionId ?? MetadataValue.NotSet,
+                Result = deployResult
+            });
+        }
+
+        public static void RecordLambdaIamRoleCleanup(this ITelemetryLogger telemetryLogger, Result result, string reason, string accountId, string regionId)
+        {
+            telemetryLogger.RecordLambdaIamRoleCleanup(new LambdaIamRoleCleanup()
             {
-                Logger.Error("Failed to record metric", e);
-                Debug.Assert(false, $"Failure recording metric: {e.Message}");
-            }
+                AwsAccount = accountId ?? MetadataValue.Invalid,
+                AwsRegion = regionId ?? MetadataValue.NotSet,
+                Result = result,
+                Reason = reason
+            });
+        }
+
+        public static void RecordLambdaAddEvent(this ITelemetryLogger telemetryLogger, Result result, string variant, string accountId, string regionId)
+        {
+            telemetryLogger.RecordLambdaAddEvent(new LambdaAddEvent()
+            {
+                AwsAccount = accountId ?? MetadataValue.Invalid,
+                AwsRegion = regionId ?? MetadataValue.NotSet,
+                Result = result,
+                Variant = variant
+            });
         }
     }
 }

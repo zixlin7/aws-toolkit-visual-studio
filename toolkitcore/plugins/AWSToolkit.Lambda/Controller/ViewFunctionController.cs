@@ -26,7 +26,6 @@ using Amazon.KeyManagementService.Model;
 using Amazon.KeyManagementService;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Regions;
 using Amazon.ECR;
 
@@ -702,13 +701,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             }
 
             UpdateConfiguration(this._lambdaClient, request);
-
-            if (this._model.IsEnabledActiveTracing)
-            {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.XRayEnabled, "Lambda");
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-            }
         }
 
         public void UpdateConfiguration(IAmazonLambda lambdaClient, UpdateFunctionConfigurationRequest request)

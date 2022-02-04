@@ -7,21 +7,12 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 {
     public enum AttributeKeys
     {
-        OpenViewFullIdentifier,
         ServiceName,
         ViewName,
         ReadableTimestamp,
         NavigationReason,
         FileFetcherUrlSuccess,
         FileFetcherUrlFailure,
-        LambdaFunctionIAMRoleCleanup,
-        LambdaFunctionUsesAspNetCore,
-        LambdaFunctionUsesRazorPages,
-        LambdaFunctionUsesXRay,
-        LambdaDeployedFunctionLanguage,
-        LambdaEventSourceSetupSuccess,
-        LambdaEventSourceSetupError,
-        XRayEnabled,
     };
 
     public enum MetricKeys

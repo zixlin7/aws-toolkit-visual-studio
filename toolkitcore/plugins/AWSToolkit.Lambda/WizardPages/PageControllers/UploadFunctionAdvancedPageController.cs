@@ -6,6 +6,7 @@ using System.Windows.Controls;
 
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2.Workers;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using Amazon.EC2;
@@ -26,9 +27,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
     public class UploadFunctionAdvancedPageController : IAWSWizardPageController
     {
         ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPageController));
+
+        private readonly ToolkitContext _toolkitContext;
+
         private readonly object _syncLock = new object();
 
         private int _backgroundWorkersActive = 0;
+
         private int BackgroundWorkerCount
         {
             get
@@ -56,6 +61,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         public string PageTitle => "Advanced Function Details";
 
         public string ShortPageTitle => null;
+
+        public UploadFunctionAdvancedPageController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public bool AllowShortCircuit()
         {
@@ -85,7 +95,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new UploadFunctionAdvancedPage(this);
+                _pageUI = new UploadFunctionAdvancedPage(this, _toolkitContext.TelemetryLogger);
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
