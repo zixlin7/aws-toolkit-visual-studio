@@ -104,9 +104,8 @@ namespace Amazon.AWSToolkit.Shared
         /// 
         /// </summary>
         /// <param name="window"></param>
-        /// <param name="metricId"></param>
         /// <returns></returns>
-        bool ShowModal(Window window, string metricId);
+        bool ShowModal(Window window);
 
         /// <summary>
         /// 

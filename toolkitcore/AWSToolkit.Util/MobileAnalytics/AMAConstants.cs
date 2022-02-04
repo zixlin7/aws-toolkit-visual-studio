@@ -42,7 +42,6 @@
 
         public static class EventTypes
         {
-            public const string WizardTrackingEvent = "WizardTrackingEvent";
             public const string VisualStudioToolkitEvent = "VisualStudioToolkitEvent";
         }
 

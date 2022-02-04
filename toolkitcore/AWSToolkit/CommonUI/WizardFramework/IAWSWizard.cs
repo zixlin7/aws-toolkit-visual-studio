@@ -15,6 +15,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         /// Returns the unique ID assigned to the wizard by the original requestor, 
         /// to be used to identify the wizard by 3rd parties wishing to contribute
         /// </summary>
+        /// TODO : WizardID is no longer used by the Toolkit, with the removal of the old metrics system. Phase this field out.
         string WizardID { get; }
 
         /// <summary>

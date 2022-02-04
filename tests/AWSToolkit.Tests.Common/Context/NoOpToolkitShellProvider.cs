@@ -158,7 +158,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             return false;
         }
 
-        public bool ShowModal(Window window, string metricId)
+        public bool ShowModal(Window window)
         {
             return false;
         }
@@ -173,7 +173,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             return false;
         }
 
-        public bool ShowModal(System.Windows.Window window, string metricId)
+        public bool ShowModal(System.Windows.Window window)
         {
             return false;
         }

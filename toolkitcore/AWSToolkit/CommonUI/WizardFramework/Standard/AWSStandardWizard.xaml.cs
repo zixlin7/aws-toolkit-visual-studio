@@ -309,9 +309,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
                 _awsBaseWizardImpl.TransitionPage(AWSWizardConstants.NavigationReason.movingForward, _pageContainerPanel.Children);
                 Cursor = Cursors.Arrow;
 
-                var wizard = this as IAWSWizard;
-                var wizardID = (wizard == null) ? null : wizard.WizardID;
-                ret = ToolkitFactory.Instance.ShellProvider.ShowModal(this, wizardID);
+                ret = ToolkitFactory.Instance.ShellProvider.ShowModal(this);
             }
             catch (Exception exc)
             {
