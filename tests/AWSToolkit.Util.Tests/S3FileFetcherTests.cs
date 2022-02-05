@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+
 using Xunit;
 using Moq;
 
@@ -12,6 +15,12 @@ namespace Amazon.AWSToolkit.Util.Tests
         private const string DummyContentFromCacheLocation = "Dummy content found in cache location";
         private const string EndpointsFilename = "endpoints.json"; // use real name so we detect accidental cache hits from probing
 
+        private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
+
+        public S3FileFetcherTests()
+        {
+            S3FileFetcher.Initialize(_telemetryLogger.Object);
+        }
         /// <summary>
         /// Tests that if a user-configured location is set for hosted files, the endpoints 
         /// content is located there and returned.

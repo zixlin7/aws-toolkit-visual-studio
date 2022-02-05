@@ -571,8 +571,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 _metricsOutputWindow = await CreateMetricsOutputWindowAsync();
                 _telemetryManager = CreateTelemetryManager(productEnvironment);
-
-                _regionProvider = new RegionProvider();
+                S3FileFetcher.Initialize(_telemetryManager?.TelemetryLogger);
+                _regionProvider = new RegionProvider(_telemetryManager?.TelemetryLogger);
                 _regionProvider.Initialize();
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment

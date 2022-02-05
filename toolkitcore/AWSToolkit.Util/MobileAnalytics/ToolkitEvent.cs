@@ -11,8 +11,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ViewName,
         ReadableTimestamp,
         NavigationReason,
-        FileFetcherUrlSuccess,
-        FileFetcherUrlFailure,
     };
 
     public enum MetricKeys

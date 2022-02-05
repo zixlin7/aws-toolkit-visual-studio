@@ -6,8 +6,9 @@ using Microsoft.Win32;
 
 using log4net;
 
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Runtime.Internal.Settings;
 
 namespace Amazon.AWSToolkit
@@ -169,25 +170,24 @@ namespace Amazon.AWSToolkit
 
         private readonly IS3FileFetcherContentResolver _contentResolver;
 
-        private readonly ISimpleMobileAnalytics _simpleMobileAnalytics;
-
         // ReSharper disable once InconsistentNaming
         private static readonly S3FileFetcher _Instance = new S3FileFetcher();
+        private static ITelemetryLogger _telemetryLogger;
 
         public S3FileFetcher()
         {
             _contentResolver = new DefaultS3FileFetcherContentResolver(_logger);
-            _simpleMobileAnalytics = SimpleMobileAnalytics.Instance;
         }
 
-        public S3FileFetcher(IS3FileFetcherContentResolver testResolver) : this(testResolver, SimpleMobileAnalytics.Instance)
-        {
-        }
-
-        public S3FileFetcher(IS3FileFetcherContentResolver testResolver, ISimpleMobileAnalytics simpleMobileAnalytics)
+        public S3FileFetcher(IS3FileFetcherContentResolver testResolver)
         {
             _contentResolver = testResolver;
-            _simpleMobileAnalytics = simpleMobileAnalytics;
+
+        }
+
+        public static void Initialize(ITelemetryLogger telemetryLogger)
+        {
+            _telemetryLogger = telemetryLogger;
         }
 
         public static S3FileFetcher Instance => _Instance;
@@ -447,27 +447,25 @@ namespace Amazon.AWSToolkit
         {
             Stream fileStream = null;
             cacheLocal = false;
+            var metric = new ToolkitGetExternalResource();
+            metric.Result = Result.Failed;
 
             try
             {
+                metric.Url = targetUrl;
+                metric.Reason = resolvedContentLocation.ToString();
+
                 _logger.InfoFormat("Probing for hosted file at url '{0}'", targetUrl);
 
                 var httpRequest = _contentResolver.ConstructWebRequest(targetUrl);
                 var response = httpRequest.GetResponse() as HttpWebResponse;
                 fileStream = response.GetResponseStream();
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.FileFetcherUrlSuccess, targetUrl);
-                _simpleMobileAnalytics.QueueEventToBeRecorded(evnt);
+                metric.Result = Result.Succeeded;
             }
             catch (Exception e)
             {
                 var logMsg = string.Format("Failed to load hosted file {0}", targetUrl);
                 _logger.Error(logMsg, e);
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.FileFetcherUrlFailure, targetUrl);
-                _simpleMobileAnalytics.QueueEventToBeRecorded(evnt);
             }
             finally
             {
@@ -476,6 +474,7 @@ namespace Amazon.AWSToolkit
                     cacheLocal = true;
                     ResolvedContentLocation = resolvedContentLocation;
                 }
+                _telemetryLogger?.RecordToolkitGetExternalResource(metric);
             }
 
             return fileStream;
