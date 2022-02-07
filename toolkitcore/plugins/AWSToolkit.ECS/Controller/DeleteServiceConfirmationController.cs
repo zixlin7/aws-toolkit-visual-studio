@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading;
 
 using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using LoadBalancer = Amazon.ElasticLoadBalancingV2.Model.LoadBalancer;
@@ -64,6 +65,8 @@ namespace Amazon.AWSToolkit.ECS.Controller
         {
             _toolkitContext.TelemetryLogger.RecordEcsDeleteService(new EcsDeleteService()
             {
+                AwsAccount = _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = _toolkitContext.ConnectionManager?.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result
             });
         }

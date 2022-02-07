@@ -345,19 +345,15 @@ namespace Amazon.AWSToolkit.Navigator
         {
             _toolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
             {
-                AwsAccount = GetAccountId(),
-                AwsRegion = MetadataValue.NotApplicable,
+                AwsAccount = SelectedAccountId ?? MetadataValue.NotSet,
+                AwsRegion = SelectedRegionId ?? MetadataValue.NotSet,
                 Result = success ? Result.Succeeded : Result.Failed,
                 CredentialModification = modification,
                 Source = "AwsExplorer"
             });
         }
 
-        private string GetAccountId()
-        {
-            return _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
-        }
-
+        public string SelectedAccountId => _navigatorViewModel.Account?.GetAccountId(SelectedRegion);
         public string SelectedRegionId => _navigatorViewModel.Region?.Id;
         public ToolkitRegion SelectedRegion => _navigatorViewModel.Region;
 
