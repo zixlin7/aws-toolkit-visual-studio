@@ -1343,7 +1343,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             Dictionary<string, object> capabilityMetrics = CreateCapabilityMetrics();
             this._publishContext.TelemetryLogger.RecordPublishEnd(new PublishEnd()
             {
-                AwsAccount = _publishContext.ConnectionManager.ActiveAccountId,
+                AwsAccount = _publishContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
                 AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Duration = WorkflowDuration.Elapsed.TotalMilliseconds,
                 Published = published
@@ -1377,7 +1377,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             var payload = new PublishDeploy()
             {
-                AwsAccount = _publishContext.ConnectionManager.ActiveAccountId,
+                AwsAccount = _publishContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
                 AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result,
                 Duration = PublishDuration.Elapsed.TotalMilliseconds,
