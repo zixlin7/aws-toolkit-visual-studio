@@ -22,6 +22,7 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.Runtime;
 
 using AWS.Deploy.ServerMode.Client;
@@ -1343,7 +1344,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             this._publishContext.TelemetryLogger.RecordPublishEnd(new PublishEnd()
             {
                 AwsAccount = _publishContext.ConnectionManager.ActiveAccountId,
-                AwsRegion = _publishContext.ConnectionManager.ActiveRegion.Id,
+                AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Duration = WorkflowDuration.Elapsed.TotalMilliseconds,
                 Published = published
             }, capabilityMetrics);
@@ -1377,7 +1378,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             var payload = new PublishDeploy()
             {
                 AwsAccount = _publishContext.ConnectionManager.ActiveAccountId,
-                AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id,
+                AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result,
                 Duration = PublishDuration.Elapsed.TotalMilliseconds,
                 InitialPublish = !IsRepublish,
