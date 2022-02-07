@@ -355,12 +355,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         private string GetAccountId()
         {
-            if (string.IsNullOrWhiteSpace(_toolkitContext.ConnectionManager?.ActiveAccountId))
-            {
-                return MetadataValue.NotSet;
-            }
-
-            return _toolkitContext.ConnectionManager.ActiveAccountId;
+            return _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
         }
 
         public string SelectedRegionId => _navigatorViewModel.Region?.Id;

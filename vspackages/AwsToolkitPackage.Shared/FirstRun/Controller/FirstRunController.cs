@@ -150,12 +150,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 
         private string GetAccountId()
         {
-            if (string.IsNullOrWhiteSpace(_toolkitContext.ConnectionManager?.ActiveAccountId))
-            {
-                return MetadataValue.NotSet;
-            }
-
-            return _toolkitContext.ConnectionManager.ActiveAccountId;
+            return _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
         }
     }
 }
