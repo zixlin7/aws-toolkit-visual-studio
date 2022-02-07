@@ -65,8 +65,8 @@ namespace Amazon.AWSToolkit.ECS.Controller
         {
             _toolkitContext.TelemetryLogger.RecordEcsDeleteService(new EcsDeleteService()
             {
-                AwsAccount = _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
-                AwsRegion = _toolkitContext.ConnectionManager?.ActiveRegion?.Id ?? MetadataValue.NotSet,
+                AwsAccount = _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = _toolkitContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result
             });
         }

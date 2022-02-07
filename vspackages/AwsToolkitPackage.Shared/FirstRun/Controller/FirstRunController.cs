@@ -130,7 +130,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         {
             ToolkitContext.TelemetryLogger.RecordAwsHelpQuickstart(new AwsHelpQuickstart()
             {
-                AwsAccount = GetAccountId(),
+                AwsAccount = _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
                 AwsRegion = MetadataValue.NotApplicable,
                 Result = success ? Result.Succeeded : Result.Failed
             });
@@ -140,17 +140,12 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         {
             ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
             {
-                AwsAccount = GetAccountId(),
+                AwsAccount = _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
                 AwsRegion = MetadataValue.NotApplicable,
                 Result = success ? Result.Succeeded : Result.Failed,
                 CredentialModification = modification,
                 Source = _control.UniqueId
             });
-        }
-
-        private string GetAccountId()
-        {
-            return _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
         }
     }
 }

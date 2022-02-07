@@ -239,8 +239,8 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
         {
             ToolkitFactory.Instance.TelemetryLogger.RecordLambdaCreateProject(new LambdaCreateProject
             {
-                AwsAccount = ToolkitFactory.Instance.AwsConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
-                AwsRegion = ToolkitFactory.Instance.AwsConnectionManager?.ActiveRegion?.Id ?? MetadataValue.NotSet,
+                AwsAccount = ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = ToolkitFactory.Instance.AwsConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result,
                 Language = ProjectLanguage,
                 Variant = this.ProjectType,
