@@ -24,7 +24,7 @@ namespace Amazon.AWSToolkit.EC2
 
         EC2RootViewMetaNode registerEC2MetaNodes()
         {
-            var rootMetaNode = new EC2RootViewMetaNode();
+            var rootMetaNode = new EC2RootViewMetaNode(ToolkitContext);
 
             rootMetaNode.Children.Add(new EC2AMIsViewMetaNode());
             rootMetaNode.Children.Add(new EC2InstancesViewMetaNode());
@@ -102,7 +102,7 @@ namespace Amazon.AWSToolkit.EC2
             instancesNode.OnLaunch =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<LaunchController>().Execute);
             instancesNode.OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewInstancesController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewInstancesController(ToolkitContext)).Execute);
 
             rootNode.FindChild<EC2VolumesViewMetaNode>().OnView =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewVolumesController>().Execute);

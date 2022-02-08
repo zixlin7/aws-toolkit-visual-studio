@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.Images;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -11,12 +12,18 @@ namespace Amazon.AWSToolkit.EC2.Nodes
     public class EC2RootViewMetaNode : ServiceRootViewMetaNode
     {
         private static readonly string EC2ServiceName = new AmazonEC2Config().RegionEndpointServiceName;
+        private readonly ToolkitContext _toolkitContext;
+
+        public EC2RootViewMetaNode(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public override string SdkEndpointServiceName => EC2ServiceName;
 
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new EC2RootViewModel(account, region);
+            return new EC2RootViewModel(_toolkitContext, account, region);
         }
 
         public ActionHandlerWrapper.ActionHandler OnLaunch

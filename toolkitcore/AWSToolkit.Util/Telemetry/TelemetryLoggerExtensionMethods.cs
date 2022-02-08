@@ -8,6 +8,19 @@ namespace Amazon.AWSToolkit.Telemetry
 {
     public static class TelemetryLoggerExtensionMethods
     {
+        public static void InvokeAndRecord (this ITelemetryLogger telemetryLogger, Action work,
+            Action<ITelemetryLogger> recordMetric)
+        {
+            try
+            {
+                work();
+            }
+            finally
+            {
+                recordMetric(telemetryLogger);
+            }
+        }
+      
         public static async Task TimeAndRecord(this ITelemetryLogger telemetryLogger, Func<Task> work,
             Action<ITelemetryLogger, long> recordMetric)
         {
