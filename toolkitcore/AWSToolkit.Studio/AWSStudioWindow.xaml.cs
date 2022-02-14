@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.Studio
