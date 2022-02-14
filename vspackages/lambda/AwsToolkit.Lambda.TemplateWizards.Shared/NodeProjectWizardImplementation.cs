@@ -225,8 +225,8 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
         {
             ToolkitFactory.Instance.TelemetryLogger.RecordLambdaCreateProject(new LambdaCreateProject
             {
-                AwsAccount = ToolkitFactory.Instance.AwsConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
-                AwsRegion = ToolkitFactory.Instance.AwsConnectionManager?.ActiveRegion?.Id ?? MetadataValue.NotSet,
+                AwsAccount = ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = ToolkitFactory.Instance.AwsConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result,
                 TemplateName = blueprintName,
                 Language = "NodeJS"

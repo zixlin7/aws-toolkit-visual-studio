@@ -267,12 +267,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
         private string GetAccountId()
         {
-            if (string.IsNullOrWhiteSpace(_toolkitContext.ConnectionManager?.ActiveAccountId))
-            {
-                return MetadataValue.NotSet;
-            }
-
-            return _toolkitContext.ConnectionManager.ActiveAccountId;
+            return _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet;
         }
 
         void CopyApplicationOptionProperties()

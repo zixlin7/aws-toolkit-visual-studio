@@ -345,7 +345,7 @@ namespace Amazon.AWSToolkit.Navigator
         {
             _toolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
             {
-                AwsAccount = GetAccountId(),
+                AwsAccount = SelectedAccountId ?? MetadataValue.NotSet,
                 AwsRegion = MetadataValue.NotApplicable,
                 Result = success ? Result.Succeeded : Result.Failed,
                 CredentialModification = modification,
@@ -353,16 +353,7 @@ namespace Amazon.AWSToolkit.Navigator
             });
         }
 
-        private string GetAccountId()
-        {
-            if (string.IsNullOrWhiteSpace(_toolkitContext.ConnectionManager?.ActiveAccountId))
-            {
-                return MetadataValue.NotSet;
-            }
-
-            return _toolkitContext.ConnectionManager.ActiveAccountId;
-        }
-
+        public string SelectedAccountId => _toolkitContext.ConnectionManager?.ActiveAccountId;
         public string SelectedRegionId => _navigatorViewModel.Region?.Id;
         public ToolkitRegion SelectedRegion => _navigatorViewModel.Region;
 

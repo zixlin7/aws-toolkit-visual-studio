@@ -75,8 +75,8 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards
         {
             ToolkitFactory.Instance.TelemetryLogger.RecordCloudformationCreateProject(new CloudformationCreateProject
             {
-                AwsAccount = ToolkitFactory.Instance.AwsConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
-                AwsRegion = ToolkitFactory.Instance.AwsConnectionManager?.ActiveRegion?.Id ?? MetadataValue.NotSet,
+                AwsAccount = ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = ToolkitFactory.Instance.AwsConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result,
                 TemplateName = blueprintName
             });
