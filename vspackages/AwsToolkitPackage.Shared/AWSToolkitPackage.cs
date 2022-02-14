@@ -35,7 +35,6 @@ using Amazon.AWSToolkit.VisualStudio.BuildProcessors;
 using Amazon.AWSToolkit.VisualStudio.DeploymentProcessors;
 using Amazon.AWSToolkit.VisualStudio.Loggers;
 using Amazon.AWSToolkit.VisualStudio.Services;
-using Amazon.AWSToolkit.MobileAnalytics;
 
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
@@ -209,7 +208,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         private LambdaTesterEventListener _lambdaTesterEventListener;
 
-        internal SimpleMobileAnalytics AnalyticsRecorder { get; }
 
         /// <summary>
         /// UI dispatcher
@@ -261,8 +259,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 LOGGER.Warn("Failed to register for broadcast messages, theme change will not be detected", e);
             }
-
-            AnalyticsRecorder = SimpleMobileAnalytics.Instance;
         }
 
         public ILog Logger => LOGGER;
@@ -2453,7 +2449,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryInfoBarManager?.Dispose();
             _metricsOutputWindow?.Dispose();
 
-            SimpleMobileAnalytics.Instance.StopMainSession();
             return Microsoft.VisualStudio.VSConstants.S_OK;
         }
 

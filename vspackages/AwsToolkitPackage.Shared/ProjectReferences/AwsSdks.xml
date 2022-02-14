@@ -144,12 +144,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.MobileAnalytics.dll">
-      <Link>AWSSDK.MobileAnalytics.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
     <Content Include="$(OutputRoot)\AWSSDK.RDS.dll">
       <Link>AWSSDK.RDS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

@@ -14,7 +14,6 @@ namespace Amazon.AWSToolkit.Settings
         private const int TelemetryNoticeNeverShown = 0;
 
         private readonly SettingsPersistenceBase _settingsPersistence;
-        private readonly MobileAnalyticsSettings _mobileAnalytics;
         private readonly DynamoDbSettings _dynamoDbSettings;
 
         private static class SettingNames
@@ -56,13 +55,7 @@ namespace Amazon.AWSToolkit.Settings
         protected ToolkitSettings(SettingsPersistenceBase settingsPersistence)
         {
             _settingsPersistence = settingsPersistence;
-            _mobileAnalytics = new MobileAnalyticsSettings(_settingsPersistence);
             _dynamoDbSettings = new DynamoDbSettings(_settingsPersistence);
-        }
-
-        public MobileAnalyticsSettings MobileAnalytics
-        {
-            get { return _mobileAnalytics; }
         }
 
         public DynamoDbSettings DynamoDb

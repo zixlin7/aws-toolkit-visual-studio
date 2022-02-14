@@ -62,15 +62,8 @@
     <Compile Include="HostManagerClientRequest.cs" />
     <Compile Include="IAMUtilities.cs" />
     <Compile Include="IISPath.cs" />
-    <Compile Include="MobileAnalytics\AMAConstants.cs" />
-    <Compile Include="MobileAnalytics\AMAServiceCallHandler.cs" />
-    <Compile Include="MobileAnalytics\AnalyticsCognitoAWSCredentials.cs" />
-    <Compile Include="MobileAnalytics\ClientContext.cs" />
-    <Compile Include="MobileAnalytics\ClientContextConfig.cs" />
     <Compile Include="Publish\PublishableProjectSpecification.cs" />
     <Compile Include="Publish\PublishSetting\DeployServerSettings.cs" />
-    <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
-    <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
     <Compile Include="Publish\PublishSetting\FilePublishSettingsRepository.cs" />
     <Compile Include="Publish\PublishSetting\IPublishSettingsRepository.cs" />
     <Compile Include="Publish\PublishSetting\PortRange.cs" />
@@ -104,7 +97,6 @@
     <Compile Include="Settings\AppDataToolkitSettingsRepository.cs" />
     <Compile Include="Settings\DynamoDbSettings.cs" />
     <Compile Include="Settings\IToolkitSettingsWatcher.cs" />
-    <Compile Include="Settings\MobileAnalyticsSettings.cs" />
     <Compile Include="Settings\SettingsPersistenceBase.cs" />
     <Compile Include="Settings\SettingsPersistence.cs" />
     <Compile Include="Settings\ToolkitSettings.cs" />
@@ -299,9 +291,6 @@
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
       <Version>3.7.2.53</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.7.0.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
       <Version>3.7.3.6</Version>

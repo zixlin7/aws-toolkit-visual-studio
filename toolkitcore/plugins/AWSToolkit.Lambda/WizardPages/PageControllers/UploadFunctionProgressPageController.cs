@@ -17,7 +17,6 @@ using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
 using Amazon.AWSToolkit.Lambda.Nodes;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Regions;
 using Amazon.CloudFormation;
