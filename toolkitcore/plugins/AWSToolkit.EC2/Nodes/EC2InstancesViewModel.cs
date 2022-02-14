@@ -6,16 +6,20 @@ using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using log4net;
 using Amazon.AWSToolkit.CommonUI.Images;
+using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class EC2InstancesViewModel : FeatureViewModel, IEC2InstancesViewModel
     {
         readonly static ILog LOGGER = LogManager.GetLogger(typeof(EC2InstancesViewModel));
+        private readonly ToolkitContext _toolkitContext;
 
-        public EC2InstancesViewModel(EC2InstancesViewMetaNode metaNode, EC2RootViewModel viewModel)
+        public EC2InstancesViewModel(ToolkitContext toolkitContext, EC2InstancesViewMetaNode metaNode,
+            EC2RootViewModel viewModel)
             : base(metaNode, viewModel, "Instances")
         {
+            _toolkitContext = toolkitContext;
         }
 
         protected override string IconName => AwsImageResourcePath.Ec2Instances.Path;
@@ -42,7 +46,7 @@ namespace Amazon.AWSToolkit.EC2.Nodes
                 var instance = getRunningInstance(instanceId);
                 if (instance.IsWindowsPlatform)
                 {
-                    var controller = new OpenRemoteDesktopController();
+                    var controller = new OpenRemoteDesktopController(_toolkitContext);
                     controller.Execute(this, instance);
                 }
                 else

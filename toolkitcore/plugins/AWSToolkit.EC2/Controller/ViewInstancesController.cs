@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.EC2.Model;
@@ -14,7 +16,13 @@ namespace Amazon.AWSToolkit.EC2.Controller
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewInstancesController));
 
+        private readonly ToolkitContext _toolkitContext;
         ViewInstancesControl _control;
+
+        public ViewInstancesController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         protected override void DisplayView()
         {
@@ -291,7 +299,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void OpenRemoteDesktop(RunningInstanceWrapper instance)
         {
-            var controller = new OpenRemoteDesktopController();
+            var controller = new OpenRemoteDesktopController(_toolkitContext);
             controller.Execute(this.FeatureViewModel, instance);
         }
 

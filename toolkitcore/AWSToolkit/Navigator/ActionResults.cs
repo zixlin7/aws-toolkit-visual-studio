@@ -6,10 +6,18 @@ namespace Amazon.AWSToolkit.Navigator
     {
         Dictionary<string, object> _parameters = new Dictionary<string,object>();
 
+        public bool Cancelled { get; set; } = false;
+
         public bool Success
         {
             get;
             set;
+        }
+
+        public ActionResults WithCancelled (bool cancelled)
+        {
+            Cancelled = cancelled;
+            return this;
         }
 
         public ActionResults WithSuccess(bool success)

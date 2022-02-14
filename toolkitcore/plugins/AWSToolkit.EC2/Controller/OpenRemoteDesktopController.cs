@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.EC2.ConnectionUtils;
-
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 
@@ -17,7 +22,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 {
     public class OpenRemoteDesktopController
     {
-        const string _mapDrivesSettingName = "MapDrives";
+        private readonly ToolkitContext _toolkitContext;
 
         ActionResults _results;
         IAmazonEC2 _ec2Client;
@@ -26,11 +31,34 @@ namespace Amazon.AWSToolkit.EC2.Controller
         FeatureViewModel _featureViewModel;
         bool _usingStoredPrivateKey;
 
+        public OpenRemoteDesktopController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public ActionResults Execute(FeatureViewModel featureViewModel, RunningInstanceWrapper instance)
+        {
+            ActionResults actionResults = null;
+
+            void Invoke()
+            {
+                actionResults = OpenConnection(featureViewModel, instance);
+            }
+
+            void Record(ITelemetryLogger telemetryLogger)
+            {
+                RecordRemoteConnection(telemetryLogger, AsMetricResult(actionResults));
+            }
+
+            _toolkitContext.TelemetryLogger.InvokeAndRecord(Invoke, Record);
+            return actionResults;
+        }
+
+        private ActionResults OpenConnection(FeatureViewModel featureViewModel, RunningInstanceWrapper instance)
         {
             if (!instance.HasPublicAddress)
             {
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Instance IP Address", EC2Constants.NO_PUBLIC_IP_CONFIRM_CONNECT_PRIVATE_IP))
+                if (!_toolkitContext.ToolkitHost.Confirm("Instance IP Address", EC2Constants.NO_PUBLIC_IP_CONFIRM_CONNECT_PRIVATE_IP))
                 {
                     return new ActionResults().WithSuccess(false);
                 }
@@ -50,16 +78,15 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 this._usingStoredPrivateKey = true;
             }
 
-            bool useKeyPair;
-            string password;
-            loadLastSelectedValues(out useKeyPair, out password);
+            loadLastSelectedValues(out var useKeyPair, out var password);
 
-            ToolkitFactory.Instance.ShellProvider.ShowModal(new OpenRemoteDesktopControl(this, useKeyPair, password));
+            var dlgResult = _toolkitContext.ToolkitHost.ShowModal(new OpenRemoteDesktopControl(this, useKeyPair, password));
 
-            if(_results == null)
-                return new ActionResults().WithSuccess(false);
+            var actionResult = _results != null;
 
-            return new ActionResults().WithSuccess(true);
+            return new ActionResults()
+                .WithCancelled(!dlgResult)
+                .WithSuccess(actionResult);
         }
 
         public string InstanceId => this._instance.InstanceId;
@@ -110,7 +137,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
                     var control = new AskToOpenPort(msg, externalIpAddress);
 
-                    if (!isOpen && ToolkitFactory.Instance.ShellProvider.ShowModal(control, MessageBoxButton.OKCancel))
+                    if (!isOpen && _toolkitContext.ToolkitHost.ShowModal(control, MessageBoxButton.OKCancel))
                     {
                         var request = new AuthorizeSecurityGroupIngressRequest() { GroupId = this._instance.NativeInstance.SecurityGroups[0].GroupId };
 
@@ -129,7 +156,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 }
                 else
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShowError(
+                    _toolkitContext.ToolkitHost.ShowError(
                         string.Format("Port {0} is restricted in all security groups associated with this instance.  " +
                         "To connect to this instance allow access to port {0} in one of the associated security groups.", NetworkProtocol.RDP.DefaultPort.Value));
                     return false;
@@ -181,6 +208,35 @@ namespace Amazon.AWSToolkit.EC2.Controller
             this._model.MapDrives = Convert.ToBoolean(os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceMapDrives, true.ToString()));
             this._model.SaveCredentials = Convert.ToBoolean(os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceSaveCredentials, true.ToString()));
             this._model.EnteredUsername = os[ToolkitSettingsConstants.EC2InstanceUserName];
+        }
+
+        private static Result AsMetricResult(ActionResults actionResults)
+        {
+            if (actionResults == null)
+            {
+                return Result.Failed;
+            }
+
+            if (actionResults.Success)
+            {
+                return Result.Succeeded;
+            }
+
+            return actionResults.Cancelled ? Result.Cancelled : Result.Failed;
+        }
+        
+        private void RecordRemoteConnection(ITelemetryLogger telemetryLogger, Result result)
+        {
+            var accountId = _featureViewModel.AccountViewModel.GetAccountId(_featureViewModel?.Region) ??
+                            MetadataValue.Invalid;
+
+            telemetryLogger.RecordEc2ConnectToInstance(new Ec2ConnectToInstance()
+            {
+                Result = result,
+                Ec2ConnectionType = Ec2ConnectionType.RemoteDesktop,
+                AwsAccount = accountId,
+                AwsRegion = _featureViewModel?.Region?.Id ?? MetadataValue.NotSet,
+            });
         }
     }
 }

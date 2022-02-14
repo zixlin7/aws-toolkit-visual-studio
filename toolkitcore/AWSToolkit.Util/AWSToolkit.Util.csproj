@@ -116,13 +116,13 @@
     <Compile Include="Telemetry\IMetricsOutputWindow.cs" />
     <Compile Include="Telemetry\Internal\ITelemetryClient.cs" />
     <Compile Include="Telemetry\Internal\ITelemetryPublisher.cs" />
-    <Compile Include="Telemetry\TelemetryLoggerExtensionMethods.cs" />
     <Compile Include="Telemetry\ModelExtensionMethods.cs" />
     <Compile Include="Telemetry\Model\MetadataKeys.cs" />
     <Compile Include="Telemetry\Internal\PostMetricsRequest.cs" />
     <Compile Include="Telemetry\Model\ProductEnvironment.cs" />
     <Compile Include="Telemetry\Internal\TelemetryClient.cs" />
     <Compile Include="Telemetry\Internal\TelemetryPublisher.cs" />
+    <Compile Include="Telemetry\TelemetryLoggerExtensionMethods.cs" />
     <Compile Include="Telemetry\TelemetryService.cs" />
     <Compile Include="Telemetry\ToolkitTelemetryEvents.generated.cs" />
     <Compile Include="Telemetry\ToolkitTelemetryEventsSupplemental.cs" />
@@ -286,10 +286,10 @@
       <Version>3.7.5.17</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.38</Version>
+      <Version>1.0.39</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.38</Version>
+      <Version>1.0.39</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.7.0.73</Version>
