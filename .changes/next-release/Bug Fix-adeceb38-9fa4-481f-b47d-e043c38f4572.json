@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix issue with icons not correctly handling the dark theme in Visual Studio 2022."
+}
