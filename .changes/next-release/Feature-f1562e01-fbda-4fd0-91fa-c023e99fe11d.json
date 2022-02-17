@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Added support for credential profiles that use `role_arn` and `credential_source`, where `credential_source = Ec2InstanceMetadata`. This makes it easier to use the Toolkit from within a Windows EC2 instance, since it isn't necessary to place account secrets in the credentials file on the instance."
-}
