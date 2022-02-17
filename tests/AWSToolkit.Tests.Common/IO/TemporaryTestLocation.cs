@@ -22,9 +22,11 @@ namespace Amazon.AWSToolkit.Tests.Common.IO
 
         public void Dispose()
         {
-            if (Directory.Exists(TestFolder))
+            // Make the path a UNC path to prevent deletes from failing on filepaths longer than 260 chars
+            var path = @"\\?\" + TestFolder;
+            if (Directory.Exists(path))
             {
-                Directory.Delete(TestFolder, true);
+                Directory.Delete(path, true);
             }
         }
     }

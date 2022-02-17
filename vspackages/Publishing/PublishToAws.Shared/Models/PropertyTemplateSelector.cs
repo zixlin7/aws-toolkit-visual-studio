@@ -91,18 +91,23 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return ParentEditor;
             }
 
-            if (configurationDetail.ValueMappings?.Any() ?? false)
-            {
-                return EnumEditor;
-            }
-
+            // Give extended string-based editors precedence over EnumEditor
             if (configurationDetail.Type == DetailType.String)
             {
                 if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.InstanceType)
                 {
                     return Ec2InstanceTypeEditor;
                 }
+            }
 
+            if (configurationDetail.ValueMappings?.Any() ?? false)
+            {
+                return EnumEditor;
+            }
+
+            // EnumEditor gets precedence over any other string based field/editor
+            if (configurationDetail.Type == DetailType.String)
+            {
                 return TextEditor;
             }
 

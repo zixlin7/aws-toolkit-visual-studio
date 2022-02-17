@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -742,14 +743,38 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
-        public async Task SetDeploymentTarget()
+        public async Task SetDeploymentTarget_NewPublish()
         {
             _deployToolController.Setup(mock =>
-                    mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<PublishRecommendation>(),
+                    It.IsAny<string>(), It.IsAny<CancellationToken>()));
 
             await SetupPublishView();
 
-            _deployToolController.Verify(mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.StackName, _sut.Recommendation.RecipeId, _sut.IsRepublish, _cancelToken), Times.Once);
+            _deployToolController.Verify(NewPublishToSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
+        }
+
+        private Expression<Func<IDeployToolController, Task>> NewPublishToSetDeploymentTargetAsyncWithCurrentState()
+        {
+            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.Recommendation,
+                _sut.StackName, _cancelToken);
+        }
+
+        [Fact]
+        public async Task SetDeploymentTarget_Republish()
+        {
+            _deployToolController.Setup(mock =>
+                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<RepublishTarget>(),
+                    It.IsAny<CancellationToken>()));
+
+            await SetupRepublishView();
+
+            _deployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
+        }
+
+        private Expression<Func<IDeployToolController, Task>> RepublishSetDeploymentTargetAsyncWithCurrentState()
+        {
+            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.RepublishTarget, _cancelToken);
         }
 
         [Fact]
@@ -766,8 +791,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             await _sut.SetDeploymentTargetAsync(_cancelToken);
 
-            _deployToolController.Verify(mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.StackName, null, false,
-                _cancelToken), Times.Once);
+            _deployToolController.Verify(NewPublishToSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
         [Fact]
@@ -778,8 +802,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             await _sut.SetDeploymentTargetAsync(_cancelToken);
 
-            _deployToolController.Verify(mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.StackName, null, true,
-                _cancelToken), Times.Once);
+            _deployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
         [Fact]

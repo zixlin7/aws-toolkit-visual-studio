@@ -30,6 +30,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         private readonly string _applicationName = "application-name";
         private readonly string _stackName = "stackName1";
         private readonly string _recipeId = "recipeId1";
+        private readonly PublishRecommendation _newPublishTarget;
+        private readonly RepublishTarget _republishTarget = new RepublishTarget(new ExistingDeploymentSummary()
+        {
+            ExistingDeploymentId = "some-deployment",
+        });
         private readonly string _projectPath = "projectPath1";
         private readonly CancellationToken _cancelToken = new CancellationToken();
         private readonly string _sampleConfigId = "sampleConfigId";
@@ -39,6 +44,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         public DeployToolControllerTests()
         {
+            _newPublishTarget = new PublishRecommendation(new RecommendationSummary() { RecipeId = _recipeId });
+
             _configurationDetailFactory = new ConfigurationDetailFactory(_publishProperties.Object, _dialogFactory.Object);
             _deployToolController = new DeployToolController(_restClient.Object, _configurationDetailFactory);
             _sampleResourcesOutput = new GetConfigSettingResourcesOutput()
@@ -162,43 +169,100 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await Assert.ThrowsAsync<DeployToolException>(async() => await StartSessionAsync());
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task SetDeploymentTarget(bool isRepublish)
+        [Fact]
+        public async Task SetDeploymentTarget_NewPublish()
         {
             _restClient.Setup(mock =>
-                    mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<SetDeploymentTargetInput>(), It.IsAny<CancellationToken>()));
+                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<SetDeploymentTargetInput>(),
+                    It.IsAny<CancellationToken>()));
 
-            await _deployToolController.SetDeploymentTargetAsync(_sessionId, _stackName, _recipeId, isRepublish, _cancelToken);
+            await _deployToolController.SetDeploymentTargetAsync(_sessionId, _newPublishTarget, _stackName, _cancelToken);
 
-            _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny< SetDeploymentTargetInput>(), _cancelToken), Times.Once);
+            _restClient.Verify(
+                mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken),
+                Times.Once);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task SetDeploymentTarget_InvalidSessionId(bool isRepublish)
+        [Fact]
+        public async Task SetDeploymentTarget_Republish()
+        {
+            _restClient.Setup(mock =>
+                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<SetDeploymentTargetInput>(),
+                    It.IsAny<CancellationToken>()));
+
+            await _deployToolController.SetDeploymentTargetAsync(_sessionId, _republishTarget, _cancelToken);
+
+            _restClient.Verify(
+                mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task SetDeploymentTarget_InvalidSessionId_NewPublish()
         {
             await Assert.ThrowsAsync<InvalidSessionIdException>(async () =>
             {
-                await _deployToolController.SetDeploymentTargetAsync("", _stackName, _recipeId, isRepublish,  _cancelToken);
+                await _deployToolController.SetDeploymentTargetAsync("", _newPublishTarget, _stackName, _cancelToken);
             });
 
             _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken), Times.Never);
         }
 
-        [Theory]
-        [InlineData("", "", true)]
-        [InlineData("", "recipeId1", true)]
-        [InlineData(null, "recipeId1", true)]
-        [InlineData("", "recipeId1", false)]
-        [InlineData("stackName1", "", false)]
-        public async Task SetDeploymentTarget_InvalidParameter(string stackName, string recipeId, bool isRepublish)
+        [Fact]
+        public async Task SetDeploymentTarget_InvalidSessionId_RePublish()
         {
+            await Assert.ThrowsAsync<InvalidSessionIdException>(async () =>
+            {
+                await _deployToolController.SetDeploymentTargetAsync("", _republishTarget, _cancelToken);
+            });
+
+            _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken), Times.Never);
+        }
+
+        [Fact]
+        public async Task SetDeploymentTarget_NewPublish_InvalidParameter()
+        {
+            await Assert.ThrowsAsync<InvalidSessionIdException>(async () =>
+            {
+                await _deployToolController.SetDeploymentTargetAsync(null, _newPublishTarget, _stackName, _cancelToken);
+            });
+
             await Assert.ThrowsAsync<InvalidParameterException>(async () =>
             {
-                await _deployToolController.SetDeploymentTargetAsync(_sessionId, stackName, recipeId, isRepublish, _cancelToken);
+                await _deployToolController.SetDeploymentTargetAsync(_sessionId, _newPublishTarget, null, _cancelToken);
+            });
+
+            await Assert.ThrowsAsync<InvalidParameterException>(async () =>
+            {
+                await _deployToolController.SetDeploymentTargetAsync(_sessionId, null, _stackName, _cancelToken);
+            });
+
+            var publishTarget = new PublishRecommendation(new RecommendationSummary() { RecipeId = null });
+            await Assert.ThrowsAsync<InvalidParameterException>(async () =>
+            {
+                await _deployToolController.SetDeploymentTargetAsync(_sessionId, publishTarget, _stackName, _cancelToken);
+            });
+
+            _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken), Times.Never);
+        }
+
+        [Fact]
+        public async Task SetDeploymentTarget_RePublish_InvalidParameter()
+        {
+            await Assert.ThrowsAsync<InvalidSessionIdException>(async () =>
+            {
+                await _deployToolController.SetDeploymentTargetAsync(null, _republishTarget, _cancelToken);
+            });
+
+            await Assert.ThrowsAsync<InvalidParameterException>(async () =>
+            {
+                await _deployToolController.SetDeploymentTargetAsync(_sessionId, null, _cancelToken);
+            });
+
+            var publishTarget = new RepublishTarget(new ExistingDeploymentSummary(){ExistingDeploymentId = null});
+            await Assert.ThrowsAsync<InvalidParameterException>(async () =>
+            {
+                await _deployToolController.SetDeploymentTargetAsync(_sessionId, publishTarget, _cancelToken);
             });
 
             _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken), Times.Never);

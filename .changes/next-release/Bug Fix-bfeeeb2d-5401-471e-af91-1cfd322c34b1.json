@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed bug where the \"Publish to AWS\" experience would not work for users with a space in their Windows profile path"
+}

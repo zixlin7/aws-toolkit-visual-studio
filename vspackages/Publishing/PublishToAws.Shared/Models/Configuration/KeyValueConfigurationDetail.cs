@@ -10,7 +10,7 @@ using Amazon.AWSToolkit.ViewModels;
 
 namespace Amazon.AWSToolkit.Publish.Models.Configuration
 {
-    [DebuggerDisplay("Key Values")]
+    [DebuggerDisplay("{Id} (Key Values)")]
     public class KeyValueConfigurationDetail : ConfigurationDetail
     {
         private ICommand _editCommand;
@@ -41,7 +41,12 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
         {
             try
             {
-                string json = Value as string ?? string.Empty;
+                if (!(Value is string json))
+                {
+                    // TODO : Newsonsoft objects are coming back from the client - work with devex to make this always json
+                    json = Value?.ToString() ?? string.Empty;
+                }
+
                 var keyValues = KeyValuesConversion.FromJson(json);
 
                 KeyValues.Collection = new ObservableCollection<KeyValue>(keyValues);

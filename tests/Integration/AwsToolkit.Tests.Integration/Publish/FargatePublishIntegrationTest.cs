@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
-
-using Amazon.AWSToolkit.Models;
-using Amazon.AWSToolkit.Publish.Models.Configuration;
+﻿using System.Threading;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -10,19 +6,19 @@ using Xunit;
 
 namespace Amazon.AWSToolkit.Tests.Integration.Publish
 {
-    public class BeanstalkPublishIntegrationTest : PublishIntegrationTest
+    public class FargatePublishIntegrationTest : PublishIntegrationTest
     {
-        public BeanstalkPublishIntegrationTest(DeployCliInstallationFixture cliInstallFixture) : base(cliInstallFixture)
+        public FargatePublishIntegrationTest(DeployCliInstallationFixture cliInstallFixture) : base(cliInstallFixture)
         {
             ProjectPath = TestProjects.GetASPNet5();
-            StackName = UniqueStackName.CreateWith("BeanstalkTest");
+            StackName = UniqueStackName.CreateWith("FargateTest");
         }
 
         [Fact]
         public async void ShouldPublish()
         {
             // act
-            await SetDeploymentTargetToBeanstalk();
+            await SetDeploymentTargetToFargate();
 
             await DeployToolController.StartDeploymentAsync(SessionId);
 
@@ -38,15 +34,9 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
         {
             // act
             DeleteStackOnCleanup = false;
-            await SetDeploymentTargetToBeanstalk();
+            await SetDeploymentTargetToFargate();
 
             var settings = await DeployToolController.GetConfigSettingsAsync(SessionId, CancellationToken.None);
-
-            // Environment Variables were known to fail some CLI versions
-            var envVars = Assert.IsType<KeyValueConfigurationDetail>(
-                settings.Single(s => s.Id == "ElasticBeanstalkEnvironmentVariables"));
-
-            envVars.KeyValues.Collection.Add(new KeyValue("PATH", "/app"));
 
             var validation = await DeployToolController.ApplyConfigSettingsAsync(SessionId, settings, CancellationToken.None);
 

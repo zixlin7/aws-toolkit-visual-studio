@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "The \"Publish to AWS\" experience is now capable of publishing applications to existing Beanstalk environments"
+}

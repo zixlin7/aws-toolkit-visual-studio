@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Beanstalk environment variables can now be configured in the \"Publish to AWS\" experience"
+}

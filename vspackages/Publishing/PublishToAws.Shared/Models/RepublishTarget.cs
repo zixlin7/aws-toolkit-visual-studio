@@ -25,6 +25,8 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         public string ShortDescription { get; }
 
+        public string ExistingDeploymentId { get; }
+
         public ImageSource ServiceIcon => RecipeServiceImageResolver.GetServiceImage(Service);
 
         /// <summary>
@@ -44,6 +46,7 @@ namespace Amazon.AWSToolkit.Publish.Models
             RecipeName = deploymentStack?.RecipeName;
             Description = deploymentStack?.Description;
             ShortDescription = deploymentStack?.ShortDescription;
+            ExistingDeploymentId = deploymentStack?.ExistingDeploymentId;
         }
 
         public string GetCategory()

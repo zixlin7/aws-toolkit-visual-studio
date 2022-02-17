@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Added more validation checks to ECS Fargate and App Runner based targets in the Publish to AWS experience"
+}

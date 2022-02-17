@@ -937,7 +937,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 ThrowIfSessionIsNotCreated();
 
-                await DeployToolController.SetDeploymentTargetAsync(SessionId, StackName, GetPublishRecipeId(), IsRepublish, cancellationToken);
+                if (IsRepublish)
+                {
+                    await DeployToolController.SetDeploymentTargetAsync(SessionId, RepublishTarget, cancellationToken);
+                }
+                else
+                {
+                    await DeployToolController.SetDeploymentTargetAsync(SessionId, Recommendation, StackName, cancellationToken);
+                }
             }
             catch (Exception e)
             {
