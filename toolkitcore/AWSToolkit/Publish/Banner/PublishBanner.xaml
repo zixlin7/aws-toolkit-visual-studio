@@ -39,9 +39,9 @@
             <StackPanel Grid.Column="0">
                 <Label 
                     Style="{DynamicResource awsLabelBoldStyle}" 
-                    Content="A new AWS Publishing experience is available" />
+                    Content="NEW: Preview the re-imagined AWS Publishing experience" />
 
-                <Label Content="You can return to this experience at any time" />
+                <Label Content="We've streamlined the steps for publishing your applications to AWS.&#10;Try it out and let us know what you think!" />
             </StackPanel>
 
             <Button 
@@ -51,7 +51,7 @@
 
             <Button 
                 Grid.Column="2" 
-                Content="Switch to new experience"
+                Content="Try new experience"
                 Command="{Binding SwitchToNewExperienceCommand}"/>
 
         </Grid>

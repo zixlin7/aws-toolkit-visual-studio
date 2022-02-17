@@ -19,6 +19,8 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                     return TelemetryCredentialType.CredentialProcessProfile;
                 case CredentialType.AssumeRoleProfile:
                     return TelemetryCredentialType.AssumeRoleProfile;
+                case CredentialType.AssumeEc2InstanceRoleProfile:
+                    return TelemetryCredentialType.Ec2Metadata;
                 case CredentialType.AssumeMfaRoleProfile:
                     return TelemetryCredentialType.AssumeMfaRoleProfile;
                 case CredentialType.AssumeSamlRoleProfile:

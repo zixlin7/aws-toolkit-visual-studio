@@ -1,0 +1,120 @@
+﻿<platformUi:DialogWindow
+    x:Class="AwsToolkit.VsSdk.Common.CommonUI.InstanceTypeSelectionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Select an Instance Type"
+    xmlns:local="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI"
+    xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    Width="800"
+    Height="400"
+    WindowStartupLocation="CenterOwner">
+
+    <platformUi:DialogWindow.Resources>
+        <ResourceDictionary>
+            <converters:ConcatenateCollectionConverter x:Key="ConcatenateCollectionConverter" />
+        </ResourceDictionary>
+    </platformUi:DialogWindow.Resources>
+
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="9" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="9" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0" Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Filter:"
+                />
+
+            <TextBox
+                Grid.Row="0" Grid.Column="2"
+                Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=200}"
+                ToolTip="Use spaces to AND-join multiple filters together. Example: 'arm micro'"
+                />
+
+            <ListView
+                Style="{x:Null}"
+                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                ItemsSource="{Binding InstanceTypes}"
+                SelectedItem="{Binding InstanceType}"
+                SelectionChanged="ListView_OnSelectionChanged"
+                MouseDoubleClick="ListView_OnMouseDoubleClick"
+                >
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Instance Type" Width="150" DisplayMemberBinding="{Binding Id}" />
+                        <GridViewColumn Header="Architecture" Width="120" DisplayMemberBinding="{Binding Architectures, Converter={StaticResource ConcatenateCollectionConverter}, ConverterParameter=', '}" />
+                        <GridViewColumn Header="VCPUs" Width="100" DisplayMemberBinding="{Binding VirtualCpus}" />
+                        <GridViewColumn Header="Memory (Mib)" Width="120" DisplayMemberBinding="{Binding MemoryMib}" />
+                        <GridViewColumn Header="Storage (Gb)" Width="100" DisplayMemberBinding="{Binding StorageGb}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0">
+                <commonUi:BrowserHyperLink
+                    NavigateUri="{x:Static local:InstanceTypeSelectionDialog.InstanceTypesUri}"
+                    ToolTip="{x:Static local:InstanceTypeSelectionDialog.InstanceTypesUrl}">
+                    <Run Text="Learn about EC2 Instance Types" />
+                </commonUi:BrowserHyperLink>
+            </TextBlock>
+            <StackPanel
+                Grid.Row="0" Grid.Column="1"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <Button
+                    d:Width="75"
+                    d:Height="23"
+                    Content="OK"
+                    Command="{Binding OkCommand}"
+                    />
+                <Button
+                    Margin="6 0 0 0"
+                    d:Width="75"
+                    d:Height="23"
+                    IsCancel="True"
+                    Content="Cancel"
+                    />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</platformUi:DialogWindow>

@@ -50,7 +50,7 @@
   </PropertyGroup>
   <ItemGroup>
 	  <None Include="CloudFormationTemplate.ico" />
-	  <None Include="CloudFormation.template" />
+	  <None Include="cloudformation.template" />
   </ItemGroup>
   <ItemGroup>
     <VSTemplate Include="CloudFormationTemplate.vstemplate" />

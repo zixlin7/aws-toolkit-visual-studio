@@ -12,20 +12,11 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
 
         public bool ShowPublishBanner { get; set; } = true;
 
-        public bool ShowOldPublishExperience { get; set; } = true;
-
-        /// <summary>
-        /// Whether or not the new (2021) Publish menu item(s) can be shown
-        /// </summary>
-        public bool ShowPublishMenu { get; set; } = false;
-
         public static PublishSettings CreateDefault()
         {
             return new PublishSettings()
             {
                 ShowPublishBanner = true,
-                ShowOldPublishExperience = true,
-                ShowPublishMenu = false,
                 DeployServer = DeployServerSettings.CreateDefault()
             };
         }
@@ -43,8 +34,6 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
             {
                 var hashCode = (DeployServer != null ? DeployServer.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ ShowPublishBanner.GetHashCode();
-                hashCode = (hashCode * 397) ^ ShowOldPublishExperience.GetHashCode();
-                hashCode = (hashCode * 397) ^ ShowPublishMenu.GetHashCode();
                 return hashCode;
             }
         }
@@ -54,8 +43,7 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            return Equals(DeployServer, other.DeployServer) && ShowPublishBanner == other.ShowPublishBanner && ShowOldPublishExperience == other.ShowOldPublishExperience
-                && ShowPublishMenu == other.ShowPublishMenu;
+            return Equals(DeployServer, other.DeployServer) && ShowPublishBanner == other.ShowPublishBanner;
         }
 
         public override bool Equals(object obj)

@@ -185,7 +185,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
                     await _timeProvider.Delay((1 + _backoffLevel) * DEFAULT_LOOP_MS, _shutdownTokenSource.Token);
                 }
             }
-            catch (TaskCanceledException e)
+            catch (TaskCanceledException)
             {
                 // Do nothing - we expect shut down to cancel _shutdownTokenSource
             }

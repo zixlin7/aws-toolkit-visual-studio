@@ -46,10 +46,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="$(MSBuildThisFileDirectory)Resources\CodeCommit16x16.png" />
-    <Resource Include="$(MSBuildThisFileDirectory)Resources\CodeCommit32x32.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources.resx">
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

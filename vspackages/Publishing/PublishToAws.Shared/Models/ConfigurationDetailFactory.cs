@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Models;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Util;
@@ -15,6 +16,16 @@ namespace Amazon.AWSToolkit.Publish.Models
 {
     public class ConfigurationDetailFactory
     {
+        private static class ItemSummaryTypes
+        {
+            public const string String = "String";
+            public const string Int = "Int";
+            public const string Double = "Double";
+            public const string Bool = "Bool";
+            public const string KeyValue = "KeyValue";
+            public const string Object = "Object";
+        }
+
         private readonly IPublishToAwsProperties _publishToAwsProperties;
         private readonly IDialogFactory _dialogFactory;
 
@@ -30,6 +41,7 @@ namespace Amazon.AWSToolkit.Publish.Models
 
             configurationDetail.Id = itemSummary.Id;
             configurationDetail.Name = itemSummary.Name;
+            configurationDetail.OriginalType = itemSummary.Type;
             configurationDetail.Description = itemSummary.Description;
             configurationDetail.Type = GetConfigurationDetailType(itemSummary.Type);
             configurationDetail.TypeHint = itemSummary.TypeHint;
@@ -80,23 +92,45 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return detail;
             }
 
+            if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.InstanceType)
+            {
+                var detail = new Ec2InstanceConfigurationDetail();
+                detail.SelectInstanceType =
+                    SelectEc2InstanceTypeCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
+
+                return detail;
+            }
+
+            if (itemSummary.Type == ItemSummaryTypes.KeyValue)
+            {
+                var detail = new KeyValueConfigurationDetail();
+                detail.EditCommand = EditKeyValuesCommandFactory.Create(
+                    detail,
+                    $"Edit {itemSummary.Name}",
+                    _dialogFactory);
+
+                return detail;
+            }
+
             return new ConfigurationDetail();
         }
 
-        private static Type GetConfigurationDetailType(string itemSummaryType)
+        private static DetailType GetConfigurationDetailType(string itemSummaryType)
         {
             switch (itemSummaryType)
             {
-                case "String":
-                    return typeof(string);
-                case "Int":
-                    return typeof(int);
-                case "Double":
-                    return typeof(double);
-                case "Bool":
-                    return typeof(bool);
-                case "Object":
-                    return typeof(object);
+                case ItemSummaryTypes.String:
+                    return DetailType.String;
+                case ItemSummaryTypes.Int:
+                    return DetailType.Integer;
+                case ItemSummaryTypes.Double:
+                    return DetailType.Double;
+                case ItemSummaryTypes.Bool:
+                    return DetailType.Boolean;
+                case ItemSummaryTypes.KeyValue:
+                    return DetailType.KeyValue;
+                case ItemSummaryTypes.Object:
+                    return DetailType.Blob;
                 default:
                     if (Debugger.IsAttached)
                     {
@@ -105,7 +139,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                             $"The Type '{itemSummaryType}' is not supported. The toolkit will not be able to edit this, and will show a UI indicating the field is not supported.");
                     }
 
-                    return typeof(UnsupportedType);
+                    return DetailType.Unsupported;
             }
         }
 

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -21,8 +21,7 @@ namespace Microsoft.VisualStudio.Project
 	/// <summary>
 	/// Creates projects within the solution
 	/// </summary>
-	[CLSCompliant(false)]
-	public abstract class ProjectFactory : Microsoft.VisualStudio.Shell.Flavor.FlavoredProjectFactoryBase
+    public abstract class ProjectFactory : Microsoft.VisualStudio.Shell.Flavor.FlavoredProjectFactoryBase
 	{
 		#region fields
 		private Microsoft.VisualStudio.Shell.Package package;

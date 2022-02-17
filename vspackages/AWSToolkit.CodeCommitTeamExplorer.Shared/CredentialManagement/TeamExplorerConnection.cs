@@ -117,6 +117,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         public bool IsAccountValid => AwsConnectionState is ConnectionState.ValidConnection;
         public bool IsValidatingAccount => AwsConnectionState is ConnectionState.ValidatingConnection;
         public string AccountValidationMessage => AwsConnectionState?.Message ?? string.Empty;
+        public string AccountId => _teamExplorerAwsConnectionManager?.ActiveAccountId;
 
         public void RefreshRepositories()
         {

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.Project.Automation
 	/// Contains ProjectItem objects
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	[ComVisible(true), CLSCompliant(false)]
+	[ComVisible(true)]
 	public class OAProjectItems : OANavigableProjectItems
 	{
 		#region ctor

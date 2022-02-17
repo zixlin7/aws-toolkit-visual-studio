@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.Install;
-using Amazon.AWSToolkit.Publish.NuGet;
 using Amazon.AWSToolkit.Tests.Common.IO;
-using Amazon.AWSToolkit.Tests.Common.TestExtensions;
 
 using Xunit;
 
@@ -13,33 +13,34 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish.Install
 {
     public class VerifyDeployCliTests : IDisposable
     {
+        public static readonly IEnumerable<object[]> TestLocationSubfolders = DeployCliFixture.SampleInstallationSubfolders;
+
         private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation();
-        private readonly InstallOptions _options;
+        private readonly DeployCliFixture _deployCliFixture = new DeployCliFixture();
 
-        public VerifyDeployCliTests()
+        [Theory]
+        [MemberData(nameof(TestLocationSubfolders))]
+        public async Task ShouldVerifyCli_Succeeds(string testLocationSubfolder)
         {
-            _options = new InstallOptions(_testLocation.TestFolder, "0.*");
-        }
-
-        [Vs2019OrLaterFact]
-        public async Task ShouldVerifyCli_Succeeds()
-        {
-            await InstallCliAsync();
+            await _deployCliFixture.InstallCurrentVersionFromNuGetAsync(GetInstallFolder(testLocationSubfolder));
 
             var exception = await Record.ExceptionAsync(async () =>
             {
-                await new VerifyDeployCli(_options).ExecuteAsync(CancellationToken.None);
+                await new VerifyDeployCli(_deployCliFixture.InstallOptions).ExecuteAsync(CancellationToken.None);
             });
 
             Assert.Null(exception);
         }
 
-        [Vs2019OrLaterFact]
-        public async Task ShouldVerifyCli_Fails()
+        [Theory]
+        [MemberData(nameof(TestLocationSubfolders))]
+        public async Task ShouldVerifyCli_Fails(string testLocationSubfolder)
         {
+            var installOptions = new InstallOptions(GetInstallFolder(testLocationSubfolder), "0.*");
+
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await new VerifyDeployCli(_options).ExecuteAsync(CancellationToken.None);
+                await new VerifyDeployCli(installOptions).ExecuteAsync(CancellationToken.None);
             });
         }
 
@@ -48,10 +49,9 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish.Install
             _testLocation.Dispose();
         }
 
-        private Task<InstallResult> InstallCliAsync()
+        private string GetInstallFolder(string testLocationSubfolder)
         {
-            var installer = new DeployCliInstaller(_options, new NuGetRepository());
-            return installer.InstallAsync(CancellationToken.None);
+            return Path.Combine(_testLocation.TestFolder, testLocationSubfolder);
         }
     }
 }

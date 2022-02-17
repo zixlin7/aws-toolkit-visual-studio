@@ -373,7 +373,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void UpdateExistingResources()
         {
             this._ctlServiceIAMRole.Items.Clear();
+#pragma warning disable IdentityManagementService1002 // Property value does not match required pattern
             this._ctlServiceIAMRole.Items.Add(new Role {RoleName = CREATE_NEW_TEXT });
+#pragma warning restore IdentityManagementService1002 // Property value does not match required pattern
             this._ctlServiceIAMRole.SelectedIndex = 0;
 
             this._ctlLoadBalancer.Items.Clear();

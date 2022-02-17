@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -20,7 +20,6 @@ namespace Microsoft.VisualStudio.Project
 		Guid referencedProjectGuid = Guid.Empty;
 		ProjectNode projectMgr = null;
 
-		[CLSCompliant(false)]
 		public BuildDependency(ProjectNode projectMgr, Guid projectReference)
 		{
 			this.referencedProjectGuid = projectReference;
@@ -47,7 +46,6 @@ namespace Microsoft.VisualStudio.Project
 			return VSConstants.S_OK;
 		}
 
-		[CLSCompliant(false)]
 		public int get_HelpContext(out uint helpContext)
 		{
 			helpContext = 0;

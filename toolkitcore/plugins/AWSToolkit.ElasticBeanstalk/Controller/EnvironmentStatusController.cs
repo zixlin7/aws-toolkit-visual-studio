@@ -9,7 +9,6 @@ using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.View;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SimpleWorkers;
@@ -214,12 +213,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                 }
 
                 var xraySetting = settings.FirstOrDefault(x => string.Equals(x.OptionName, "XRayEnabled", StringComparison.Ordinal));
-                if(xraySetting != null && string.Equals(xraySetting.Value, "true", StringComparison.OrdinalIgnoreCase))
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.XRayEnabled, "Beanstalk");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
 
                 this._beanstalkClient.UpdateEnvironment(new UpdateEnvironmentRequest()
                 {

@@ -10,8 +10,8 @@ using Amazon.AWSToolkit.ElasticBeanstalk.View.Components;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 using AWSDeployment;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
@@ -138,9 +138,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     if (Deployment.EnableXRayDaemon.GetValueOrDefault())
                     {
                         deployMetric.XrayEnabled = true;
-                        ToolkitEvent evnt = new ToolkitEvent();
-                        evnt.AddProperty(AttributeKeys.XRayEnabled, "Beanstalk");
-                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                     }
                 }
 
@@ -153,9 +150,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     if (Deployment.EnableEnhancedHealth.GetValueOrDefault())
                     {
                         deployMetric.EnhancedHealthEnabled = true;
-                        ToolkitEvent evnt = new ToolkitEvent();
-                        evnt.AddProperty(AttributeKeys.BeanstalkEnhancedHealth, "true");
-                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                     }
                 }
 
@@ -235,16 +229,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             {
                 string errMsg = string.Format("Error publishing application: {0}", e.Message);
                 Observer.Error(errMsg);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Publish Error", errMsg);
+                _toolkitContext.ToolkitHost.ShowError("Publish Error", errMsg);
             }
             finally
             {
                 try
                 {
                     deployMetric.Result = success ? Result.Succeeded : Result.Failed;
+                    deployMetric.AwsAccount = GetAccountId();
                     _toolkitContext.TelemetryLogger.RecordBeanstalkDeploy(deployMetric);
 
-                    ToolkitFactory.Instance.ShellProvider.UpdateStatus(string.Empty);
+                    _toolkitContext.ToolkitHost.UpdateStatus(string.Empty);
                     if (success)
                     {
                         Observer.Status("Publish to AWS Elastic Beanstalk environment '{0}' completed successfully",
@@ -270,6 +265,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
         }
 
+        private string GetAccountId()
+        {
+            return _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet;
+        }
 
         void CopyApplicationOptionProperties()
         {

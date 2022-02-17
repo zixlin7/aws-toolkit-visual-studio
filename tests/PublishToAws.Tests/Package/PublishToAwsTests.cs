@@ -1,8 +1,11 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.Package;
-using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 
 using Moq;
@@ -16,7 +19,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
     public class PublishToAwsTests
     {
         private readonly PublishContextFixture _publishContextFixture = new PublishContextFixture();
-        private readonly Mock<ICliServer> _cliServer = new Mock<ICliServer>();
 
         private readonly PublishToAws _sut;
 
@@ -39,6 +41,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
             _publishContextFixture.StubCliServerStartAsyncToThrow();
 
             await AssertShowDocumentFailsAsync();
+
+            var publishSetup = Assert.Single(GetPublishSetupMetrics(PublishSetupStage.Initialize));
+            AssertFailedResult(publishSetup);
         }
 
         [StaFact]
@@ -47,6 +52,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
             _publishContextFixture.StubCliServerGetRestClientToThrow();
 
             await AssertShowDocumentFailsAsync();
+
+            var publishSetup = Assert.Single(GetPublishSetupMetrics(PublishSetupStage.Show));
+            AssertFailedResult(publishSetup);
         }
 
         [StaFact]
@@ -55,18 +63,36 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
             _publishContextFixture.StubCliServerGetDeploymentClientToThrow();
 
             await AssertShowDocumentFailsAsync();
+
+            var publishSetup = Assert.Single(GetPublishSetupMetrics(PublishSetupStage.Show));
+            AssertFailedResult(publishSetup);
         }
 
         private async Task AssertShowDocumentFailsAsync()
         {
-            _publishContextFixture.PublishSettings.ShowOldPublishExperience = false;
             var args = new ShowPublishToAwsDocumentArgs();
             await _sut.ShowPublishToAwsDocument(args);
 
-            Assert.True(_publishContextFixture.PublishSettings.ShowOldPublishExperience);
-
             _publishContextFixture.ToolkitShellProvider.Verify(
                 mock => mock.ShowMessage("Unable to Publish to AWS", It.IsAny<string>()), Times.Once);
+
+            var publishStart = Assert.Single(_publishContextFixture.TelemetryFixture.GetMetricsByMetricName("publish_start"));
+            AssertFailedResult(publishStart);
+
+            var publishSetup = Assert.Single(GetPublishSetupMetrics(PublishSetupStage.All));
+            AssertFailedResult(publishSetup);
+        }
+
+        private static void AssertFailedResult(Metrics publishStart)
+        {
+            Assert.Contains(publishStart.Data, d => d.Metadata["result"] == Result.Failed.ToString());
+        }
+
+        private IList<Metrics> GetPublishSetupMetrics(PublishSetupStage publishSetupStage)
+        {
+            return _publishContextFixture.TelemetryFixture.GetMetricsByMetricName("publish_setup")
+                .Where(metrics => metrics.Data.Any(datum => datum.Metadata["publishSetupStage"] == publishSetupStage.ToString()))
+                .ToList();
         }
     }
 }

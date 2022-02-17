@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Context;
+using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -23,6 +24,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         private readonly IAmazonCloudWatchLogs _cwlClient;
         private readonly IAmazonECR _ecrClient;
         private readonly IAmazonECS _ecsClient;
+        private readonly IAmazonEC2 _ec2Client;
 
         public DeployScheduleTaskWorker(IDockerDeploymentHelper helper,
             IAmazonCloudWatchEvents cweClient,
@@ -30,6 +32,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             IAmazonECS ecsClient,
             IAmazonIdentityManagementService iamClient,
             IAmazonCloudWatchLogs cwlClient,
+            IAmazonEC2 ec2Client,
             ToolkitContext toolkitContext)
             : base(helper, iamClient, toolkitContext)
         {
@@ -38,6 +41,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             this._ecsClient = ecsClient;
             this._iamClient = iamClient;
             this._cwlClient = cwlClient;
+            this._ec2Client = ec2Client;
         }
 
         public void Execute(EcsDeployState state)
@@ -130,10 +134,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 Region = state.Region.Id,
 
                 DisableInteractive = true,
-                CWEClient = this._cweClient,
-                ECRClient = this._ecrClient,
-                ECSClient = this._ecsClient,
-                CWLClient = this._cwlClient,
+                CWEClient = _cweClient,
+                ECRClient = _ecrClient,
+                ECSClient = _ecsClient,
+                CWLClient = _cwlClient,
+                IAMClient = _iamClient,
+                EC2Client = _ec2Client,
 
                 PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
                 TaskDefinitionProperties = ConvertToTaskDefinitionProperties(state.HostingWizard),

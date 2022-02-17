@@ -7,6 +7,7 @@
     /// </summary>
     public interface IToolkitThemeBrushKeys
     {
+        object ErrorBorder { get; }
         /// <summary>
         /// Brush used for Hint Text in a UI (Foreground color)
         /// </summary>

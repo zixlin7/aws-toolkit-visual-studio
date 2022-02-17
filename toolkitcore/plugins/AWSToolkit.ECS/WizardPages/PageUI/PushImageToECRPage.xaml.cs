@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             PageController = pageController;
 
             PublishBanner = PublishBannerViewModelFactory.Create(toolkitContext);
-            PublishBanner.Origin = ECRServiceName;
+            PublishBanner.Origin = "containers";
             new PublishBannerPropertyChangedHandler(PublishBanner, PageController.HostingWizard);
 
             InitializeComponent();

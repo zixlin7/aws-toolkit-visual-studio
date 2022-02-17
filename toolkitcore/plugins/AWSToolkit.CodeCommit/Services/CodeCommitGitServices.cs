@@ -9,8 +9,6 @@ using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit.Model;
 using log4net;
 using LibGit2Sharp;
-
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 
 namespace Amazon.AWSToolkit.CodeCommit.Services
@@ -48,17 +46,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 }
 
                 Repository.Clone(repositoryUrl, localFolder, cloneOptions);
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 LOGGER.Error("Clone failed using libgit2sharp", e);
 
                 var msg = string.Format("Failed to clone repository {0}. Error message: {1}.",
@@ -91,10 +81,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 LOGGER.Error(e);
                 throw;
             }
@@ -113,10 +99,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 }
                 catch (Exception e)
                 {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                     LOGGER.Error("Exception cloning new repository", e);
                     throw new Exception("Error when attempting to clone the new repository", e);
                 }
@@ -165,10 +147,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                     HostActivator.Push(newRepositoryInfo.LocalFolder, svcCredentials);
                 }
             }
-
-            ToolkitEvent successEvent = new ToolkitEvent();
-            successEvent.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(successEvent);
         }
     }
 }

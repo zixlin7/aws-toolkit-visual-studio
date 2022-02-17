@@ -21,6 +21,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             UnsupportedTypeEditor = new DataTemplate(),
             EnumEditor = new DataTemplate(),
             IamRoleEditor = new DataTemplate(),
+            VpcEditor = new DataTemplate(),
+            Ec2InstanceTypeEditor = new DataTemplate(),
         };
 
         [Fact]
@@ -38,7 +40,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         [Fact]
         public void SelectTemplate_StringDetail()
         {
-            var detail = new ConfigurationDetail() {Type = typeof(string)};
+            var detail = new ConfigurationDetail() {Type = DetailType.String};
 
             Assert.Equal(_sut.TextEditor, _sut.SelectTemplate(detail, null));
         }
@@ -46,15 +48,15 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         [Fact]
         public void SelectTemplate_ObjectDetail()
         {
-            var detail = new ConfigurationDetail() {Type = typeof(object)};
+            var detail = new ConfigurationDetail() {Type = DetailType.Blob};
 
             Assert.Equal(_sut.ParentEditor, _sut.SelectTemplate(detail, null));
         }
 
         [Theory]
-        [InlineData(typeof(int))]
-        [InlineData(typeof(double))]
-        public void SelectTemplate_NumericDetail(Type numericType)
+        [InlineData(DetailType.Integer)]
+        [InlineData(DetailType.Double)]
+        public void SelectTemplate_NumericDetail(DetailType numericType)
         {
             var detail = new ConfigurationDetail() {Type = numericType};
 
@@ -64,33 +66,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         [Fact]
         public void SelectTemplate_BoolDetail()
         {
-            var detail = new ConfigurationDetail() {Type = typeof(bool)};
+            var detail = new ConfigurationDetail() {Type = DetailType.Boolean};
 
             Assert.Equal(_sut.BooleanEditor, _sut.SelectTemplate(detail, null));
         }
 
         [Fact]
-        public void SelectTemplate_UnknownDetail()
-        {
-            var detail = new ConfigurationDetail() {Type = typeof(float)};
-
-            Assert.Null(_sut.SelectTemplate(detail, null));
-        }
-
-        [Fact]
         public void SelectTemplate_UnsupportedDetail()
         {
-            var detail = new ConfigurationDetail() {Type = typeof(UnsupportedType)};
+            var detail = new ConfigurationDetail() {Type = DetailType.Unsupported};
 
             Assert.Equal(_sut.UnsupportedTypeEditor, _sut.SelectTemplate(detail, null));
         }
 
         [Theory]
-        [InlineData(typeof(string))]
-        [InlineData(typeof(int))]
-        [InlineData(typeof(bool))]
-        [InlineData(typeof(float))]
-        public void SelectTemplate_EnumDetail(Type type)
+        [InlineData(DetailType.String)]
+        [InlineData(DetailType.Integer)]
+        [InlineData(DetailType.Boolean)]
+        public void SelectTemplate_EnumDetail(DetailType type)
         {
             var detail = new ConfigurationDetail()
             {
@@ -113,7 +106,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         {
             var detail = new ConfigurationDetail()
             {
-                Type = typeof(string),
+                Type = DetailType.String,
                 ValueMappings = dict
             };
 
@@ -124,7 +117,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         public void SelectTemplate_IamRoleHintType()
         {
             var detail = ConfigurationDetailBuilder.Create()
-                .WithType(typeof(object))
+                .WithType(DetailType.Blob)
                 .WithTypeHint(ConfigurationDetail.TypeHints.IamRole)
                 .Build();
 
@@ -135,11 +128,22 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         public void SelectTemplate_VpcHintType()
         {
             var detail = ConfigurationDetailBuilder.Create()
-                .WithType(typeof(object))
+                .WithType(DetailType.Blob)
                 .WithTypeHint(ConfigurationDetail.TypeHints.Vpc)
                 .Build();
 
             Assert.Equal(_sut.VpcEditor, _sut.SelectTemplate(detail, null));
+        }
+
+        [Fact]
+        public void SelectTemplate_InstanceTypeHintType()
+        {
+            var detail = ConfigurationDetailBuilder.Create()
+                .WithType(DetailType.String)
+                .WithTypeHint(ConfigurationDetail.TypeHints.InstanceType)
+                .Build();
+
+            Assert.Equal(_sut.Ec2InstanceTypeEditor, _sut.SelectTemplate(detail, null));
         }
     }
 }

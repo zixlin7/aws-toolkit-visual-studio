@@ -3,10 +3,11 @@ using System.ComponentModel;
 using System.Windows;
 
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.View;
 using log4net;
@@ -69,23 +70,15 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
                 this._control = new FirstRunControl(this);
                 _shellProvider.OpenInEditor(this._control);
                 _control.Unloaded += FirstRunControlUnloaded;
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.FirstExperienceDisplayStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.FirstExperienceDisplayStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 LOGGER.Error("First run controller caught exception loading control", e);
             }
 
             return new ActionResults().WithSuccess(true);
         }
+
 
         private void FirstRunControlUnloaded(object sender, RoutedEventArgs e)
         {
@@ -131,6 +124,28 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
                     Model.CollectAnalytics = _toolkitSettings.TelemetryEnabled;
                 });
             }
+        }
+
+        public void RecordAwsHelpQuickstartMetric(bool success)
+        {
+            ToolkitContext.TelemetryLogger.RecordAwsHelpQuickstart(new AwsHelpQuickstart()
+            {
+                AwsAccount = _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = MetadataValue.NotApplicable,
+                Result = success ? Result.Succeeded : Result.Failed
+            });
+        }
+
+        public void RecordAwsModifyCredentialsMetric(bool success, CredentialModification modification)
+        {
+            ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
+            {
+                AwsAccount = _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = MetadataValue.NotApplicable,
+                Result = success ? Result.Succeeded : Result.Failed,
+                CredentialModification = modification,
+                Source = _control.UniqueId
+            });
         }
     }
 }

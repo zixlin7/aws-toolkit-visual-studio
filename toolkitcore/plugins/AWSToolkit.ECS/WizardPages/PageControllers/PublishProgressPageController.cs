@@ -148,12 +148,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             {
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region);
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region);
+                var ec2Client = state.Account.CreateServiceClient<AmazonEC2Client>(state.Region);
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region);
                 var cweClient = state.Account.CreateServiceClient<AmazonCloudWatchEventsClient>(state.Region);
                 var cwlClient = state.Account.CreateServiceClient<AmazonCloudWatchLogsClient>(state.Region);
 
                 var worker = new DeployScheduleTaskWorker(this, cweClient, ecrClient, ecsClient, iamClient, cwlClient,
-                    _toolkitContext);
+                    ec2Client, _toolkitContext);
                 threadPoolWorker = x => worker.Execute(state);
             }
             else if(mode == Constants.DeployMode.RunTask)
@@ -163,8 +164,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region);
                 var cweClient = state.Account.CreateServiceClient<AmazonCloudWatchEventsClient>(state.Region);
                 var cwlClient = state.Account.CreateServiceClient<AmazonCloudWatchLogsClient>(state.Region);
+                var ec2Client = state.Account.CreateServiceClient<AmazonEC2Client>(state.Region);
 
-                var worker = new DeployTaskWorker(this, ecrClient, ecsClient, iamClient, cwlClient, _toolkitContext);
+                var worker = new DeployTaskWorker(this, ecrClient, ecsClient, iamClient, cwlClient, ec2Client,
+                    _toolkitContext);
                 threadPoolWorker = x => worker.Execute(state);
             }
 

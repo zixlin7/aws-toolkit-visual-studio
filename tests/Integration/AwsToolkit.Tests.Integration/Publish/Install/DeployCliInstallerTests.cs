@@ -1,12 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.Install;
-using Amazon.AWSToolkit.Publish.NuGet;
 using Amazon.AWSToolkit.Tests.Common.IO;
-using Amazon.AWSToolkit.Tests.Common.TestExtensions;
 
 using Xunit;
 
@@ -14,73 +12,66 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish.Install
 {
     public class DeployCliInstallerTests : IDisposable
     {
+        public static readonly IEnumerable<object[]> TestLocationSubfolders = DeployCliFixture.SampleInstallationSubfolders;
 
         private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation();
+        private readonly DeployCliFixture _deployCliFixture = new DeployCliFixture();
 
         public void Dispose()
         {
             _testLocation.Dispose();
         }
 
-        [Vs2019OrLaterFact]
-        public async Task ShouldInstallCli()
-        {
-            // act.
-            var result = await InstallWithVersionRangeAsync("0.*");
-
-            // assert.
-            Assert.True(IsDeployCLIInstalled());
-            Assert.Equal(InstallResult.Installed, result);
-        }
-
-        private Task<InstallResult> InstallWithVersionRangeAsync(string versionRange)
-        {
-            var options = new InstallOptions(_testLocation.TestFolder, versionRange);
-            var installer = CreateInstaller(options);
-            return installer.InstallAsync(CancellationToken.None);
-        }
-
-        private DeployCliInstaller CreateInstaller(InstallOptions options)
-        {
-            return new DeployCliInstaller(options, new NuGetRepository());
-        }
-
-        private bool IsDeployCLIInstalled()
-        {
-            return File.Exists($@"{_testLocation.TestFolder}\dotnet-aws.exe");
-        }
-
-        [Vs2019OrLaterFact]
-        public async Task ShouldUpdateExistingCli()
+        [Theory]
+        [MemberData(nameof(TestLocationSubfolders))]
+        public async Task ShouldInstallCli(string testLocationSubfolder)
         {
             // arrange
-            await InstallOlderVersionOfCliAsync();
+            var installFolder = GetInstallFolder(testLocationSubfolder);
 
             // act.
-            var result = await InstallWithVersionRangeAsync("0.*");
+            var result = await _deployCliFixture.InstallFromNuGetAsync(installFolder, "0.*");
 
             // assert.
-            Assert.True(IsDeployCLIInstalled());
+            Assert.True(_deployCliFixture.IsDeployCLIInstalled());
             Assert.Equal(InstallResult.Installed, result);
         }
 
-        private Task<InstallResult> InstallOlderVersionOfCliAsync()
+        [Theory]
+        [MemberData(nameof(TestLocationSubfolders))]
+        public async Task ShouldUpdateExistingCli(string testLocationSubfolder)
         {
-            return InstallWithVersionRangeAsync("0.10.6");
-        }
-
-        [Vs2019OrLaterFact]
-        public async Task ShouldSkipUpdatingCli()
-        {
-            // arrange.
-            await InstallOlderVersionOfCliAsync();
+            // arrange
+            var installFolder = GetInstallFolder(testLocationSubfolder);
+            await _deployCliFixture.InstallOlderVersionFromNuGetAsync(installFolder);
 
             // act.
-            var result = await InstallOlderVersionOfCliAsync();
+            var result = await _deployCliFixture.InstallFromNuGetAsync(installFolder, "0.*");
 
             // assert.
-            Assert.True(IsDeployCLIInstalled());
+            Assert.True(_deployCliFixture.IsDeployCLIInstalled());
+            Assert.Equal(InstallResult.Updated, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestLocationSubfolders))]
+        public async Task ShouldSkipUpdatingCli(string testLocationSubfolder)
+        {
+            // arrange.
+            var installFolder = GetInstallFolder(testLocationSubfolder);
+            await _deployCliFixture.InstallOlderVersionFromNuGetAsync(installFolder);
+
+            // act.
+            var result = await _deployCliFixture.InstallOlderVersionFromNuGetAsync(installFolder);
+
+            // assert.
+            Assert.True(_deployCliFixture.IsDeployCLIInstalled());
             Assert.Equal(InstallResult.Skipped, result);
+        }
+
+        private string GetInstallFolder(string testLocationSubfolder)
+        {
+            return Path.Combine(_testLocation.TestFolder, testLocationSubfolder);
         }
     }
 }

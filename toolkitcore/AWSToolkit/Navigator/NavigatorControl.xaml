@@ -7,6 +7,7 @@
     xmlns:localnode="clr-namespace:Amazon.AWSToolkit.Navigator.Node"
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
     xmlns:navigator="clr-namespace:Amazon.AWSToolkit.Navigator"
+    xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images"
     AutomationProperties.AutomationId="AWSExplorer"
     >
 
@@ -26,7 +27,7 @@
                     </Style.Triggers>
                 </Style>
 
-                <Style x:Key="EditButtonEnabled" TargetType="{x:Type Image}">
+                <Style x:Key="EditButtonEnabled" TargetType="{x:Type images:VsImage}">
                     <Style.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.5" />
@@ -101,7 +102,7 @@
                 Command="{Binding AddAccountCommand}"
                 ToolTip="Add AWS Credentials Profile"
                 AutomationProperties.AutomationId="AddProfileButton">
-                <Image
+                <images:VsImage 
                     Width="16"
                     Height="16"
                     Source="{Binding Source={StaticResource VsImages}, Path=AddUser}" />
@@ -114,7 +115,7 @@
                 Command="{Binding EditAccountCommand}"
                 ToolTip="Edit AWS Credentials Profile"
                 AutomationProperties.AutomationId="EditProfileButton">
-                <Image
+                <images:VsImage
                     Width="16"
                     Height="16"
                     Source="{Binding Source={StaticResource VsImages}, Path=Edit}"
@@ -129,7 +130,7 @@
                 DockPanel.Dock="Right"
                 ToolTip="Delete AWS Credentials Profile"
                 AutomationProperties.AutomationId="DeleteProfileButton">
-                <Image
+                <images:VsImage
                     Width="16"
                     Height="16"
                     Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" />
@@ -175,7 +176,7 @@
                 Click="onNavigatorRefreshClick"
                 ToolTip="Refresh"
                 AutomationProperties.AutomationId="RefreshButton">
-                <Image
+                <images:VsImage
                     Width="16"
                     Height="16"
                     Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />

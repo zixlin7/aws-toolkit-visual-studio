@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.Project.Automation
 	/// <summary>
 	/// This object defines a so called null object that is returned as instead of null. This is because callers in VSCore usually crash if a null propery is returned for them.
 	/// </summary>
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class OANullProperty : EnvDTE.Property
 	{
 		#region fields

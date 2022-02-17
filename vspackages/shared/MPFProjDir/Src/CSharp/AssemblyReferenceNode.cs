@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -22,8 +22,7 @@ using MSBuildExecution = Microsoft.Build.Execution;
 
 namespace Microsoft.VisualStudio.Project
 {
-	[CLSCompliant(false)]
-	[ComVisible(true)]
+    [ComVisible(true)]
 	public class AssemblyReferenceNode : ReferenceNode
 	{
 		#region fieds

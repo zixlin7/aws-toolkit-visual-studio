@@ -1,0 +1,110 @@
+﻿<platformUi:DialogWindow
+    x:Class="AwsToolkit.VsSdk.Common.CommonUI.KeyValueEditorDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="{Binding Title, FallbackValue=Edit Key-Value pairs}"
+    xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    xmlns:keyValues="clr-namespace:Amazon.AWSToolkit.CommonUI.Components.KeyValues;assembly=AWSToolkit"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+    xmlns:models="clr-namespace:CommonUI.Models"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    Width="700"
+    Height="400"
+    WindowStartupLocation="CenterOwner">
+
+    <platformUi:DialogWindow.Resources>
+        <ResourceDictionary>
+            <converters:ConverterPipeline x:Key="VisibleIfMatching">
+                <converters:EqualityBooleanConverter />
+                <BooleanToVisibilityConverter />
+            </converters:ConverterPipeline>
+        </ResourceDictionary>
+    </platformUi:DialogWindow.Resources>
+
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <DockPanel
+                Grid.Row="0" Grid.Column="0"
+                Visibility="{Binding EditorMode, Converter={StaticResource VisibleIfMatching}, ConverterParameter={x:Static models:KeyValueEditorMode.ListEditor}}"
+                >
+                <keyValues:KeyValuesEditor DataContext="{Binding KeyValues, ValidatesOnNotifyDataErrors=False}" />
+            </DockPanel>
+
+            <DockPanel
+                Grid.Row="0" Grid.Column="0"
+                Visibility="{Binding EditorMode, Converter={StaticResource VisibleIfMatching}, ConverterParameter={x:Static models:KeyValueEditorMode.TextEditor}}"
+                >
+                <keyValues:BatchAssignmentsEditor DataContext="{Binding KeyValues, ValidatesOnNotifyDataErrors=False}" />
+            </DockPanel>
+
+        </Grid>
+
+        <DockPanel Grid.Row="2" Grid.Column="0">
+            <StackPanel
+                DockPanel.Dock="Left"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <Button
+                    d:Width="75"
+                    d:Height="23"
+                    Content="Switch to _Text Editor"
+                    Visibility="{Binding EditorMode, Converter={StaticResource VisibleIfMatching}, ConverterParameter={x:Static models:KeyValueEditorMode.ListEditor}}"
+                    Command="{Binding UseTextMode}"
+                    />
+                <Button
+                    d:Width="75"
+                    d:Height="23"
+                    Content="Switch to _List Editor"
+                    Visibility="{Binding EditorMode, Converter={StaticResource VisibleIfMatching}, ConverterParameter={x:Static models:KeyValueEditorMode.TextEditor}}"
+                    Command="{Binding UseListMode}"
+                    />
+            </StackPanel>
+
+            <StackPanel
+                DockPanel.Dock="Right"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <Button
+                    d:Width="75"
+                    d:Height="23"
+                    Content="OK"
+                    Command="{Binding OkCommand}"
+                    />
+                <Button
+                    Margin="6 0 0 0"
+                    d:Width="75"
+                    d:Height="23"
+                    IsCancel="True"
+                    Content="Cancel"
+                    />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</platformUi:DialogWindow>

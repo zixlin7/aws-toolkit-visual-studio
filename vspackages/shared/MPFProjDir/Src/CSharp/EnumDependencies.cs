@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -15,8 +15,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Project
 {
-	[CLSCompliant(false)]
-	public class EnumDependencies : IVsEnumDependencies
+    public class EnumDependencies : IVsEnumDependencies
 	{
 		private List<IVsDependency> dependencyList = new List<IVsDependency>();
 

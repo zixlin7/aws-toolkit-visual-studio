@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.Project
 	/// <summary>
 	/// Implements the configuration dependent properties interface
 	/// </summary>
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	[ClassInterface(ClassInterfaceType.None)]
 	public class ProjectConfigProperties : IProjectConfigProperties
 	{

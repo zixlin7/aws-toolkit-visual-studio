@@ -193,6 +193,8 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("result", payload.Result);
 
+                datum.AddMetadata("source", payload.Source);
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -267,8 +269,8 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         }
         
         /// Records Telemetry Event:
-        /// Called when user opts into Publish to AWS experience
-        public static void RecordPublishOptIn(this ITelemetryLogger telemetryLogger, PublishOptIn payload)
+        /// Starting the Publish to AWS experience
+        public static void RecordPublishSetup(this ITelemetryLogger telemetryLogger, PublishSetup payload)
         {
             try
             {
@@ -284,8 +286,8 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 metrics.Data = new List<MetricDatum>();
 
                 var datum = new MetricDatum();
-                datum.MetricName = "publish_optIn";
-                datum.Unit = Unit.None;
+                datum.MetricName = "publish_setup";
+                datum.Unit = Unit.Milliseconds;
                 datum.Passive = payload.Passive;
                 if (payload.Value.HasValue)
                 {
@@ -300,7 +302,16 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("result", payload.Result);
 
-                datum.AddMetadata("serviceType", payload.ServiceType);
+                datum.AddMetadata("duration", payload.Duration);
+
+                datum.AddMetadata("publishSetupStage", payload.PublishSetupStage);
+
+                if (payload.PublishInstallCliMode.HasValue)
+                {
+                    datum.AddMetadata("publishInstallCliMode", payload.PublishInstallCliMode.Value);
+                }
+
+                datum.AddMetadata("errorCode", payload.ErrorCode);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -313,8 +324,8 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         }
         
         /// Records Telemetry Event:
-        /// Called when user opts out of Publish to AWS experience
-        public static void RecordPublishOptOut(this ITelemetryLogger telemetryLogger, PublishOptOut payload)
+        /// Called when user exits the publish workflow to record unsupported setting types
+        public static void RecordPublishUnsupportedSetting(this ITelemetryLogger telemetryLogger, PublishUnsupportedSetting payload)
         {
             try
             {
@@ -330,7 +341,53 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 metrics.Data = new List<MetricDatum>();
 
                 var datum = new MetricDatum();
-                datum.MetricName = "publish_optOut";
+                datum.MetricName = "publish_unsupportedSetting";
+                datum.Unit = Unit.None;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+
+                datum.AddMetadata("recipeId", payload.RecipeId);
+
+                datum.AddMetadata("publishSettingType", payload.PublishSettingType);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+        
+        /// Records Telemetry Event:
+        /// Called when cleaning up IAM Role trusted policy
+        public static void RecordLambdaIamRoleCleanup(this ITelemetryLogger telemetryLogger, LambdaIamRoleCleanup payload)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "lambda_iamRoleCleanup";
                 datum.Unit = Unit.None;
                 datum.Passive = payload.Passive;
                 if (payload.Value.HasValue)
@@ -346,6 +403,8 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("result", payload.Result);
 
+                datum.AddMetadata("reason", payload.Reason);
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -354,6 +413,112 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 telemetryLogger.Logger.Error("Error recording telemetry event", e);
                 System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
             }
+        }
+        
+        /// Records Telemetry Event:
+        /// Called when adding an event to a lambda function
+        public static void RecordLambdaAddEvent(this ITelemetryLogger telemetryLogger, LambdaAddEvent payload)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "lambda_addEvent";
+                datum.Unit = Unit.None;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("variant", payload.Variant);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+    }
+    
+    /// Metric field type
+    /// The operation that occurred when an attempt was made to download the CLI
+    public struct PublishInstallCliMode
+    {
+        
+        private string _value;
+        
+        /// install
+        public static readonly PublishInstallCliMode Install = new PublishInstallCliMode("install");
+        
+        /// upgrade
+        public static readonly PublishInstallCliMode Upgrade = new PublishInstallCliMode("upgrade");
+        
+        /// noop
+        public static readonly PublishInstallCliMode Noop = new PublishInstallCliMode("noop");
+        
+        public PublishInstallCliMode(string value)
+        {
+            this._value = value;
+        }
+        
+        public override string ToString()
+        {
+            return this._value;
+        }
+    }
+    
+    /// Metric field type
+    /// Represents a phase of the publish experience startup sequence
+    public struct PublishSetupStage
+    {
+        
+        private string _value;
+        
+        /// install
+        public static readonly PublishSetupStage Install = new PublishSetupStage("install");
+        
+        /// validate
+        public static readonly PublishSetupStage Validate = new PublishSetupStage("validate");
+        
+        /// initialize
+        public static readonly PublishSetupStage Initialize = new PublishSetupStage("initialize");
+        
+        /// show
+        public static readonly PublishSetupStage Show = new PublishSetupStage("show");
+        
+        /// all
+        public static readonly PublishSetupStage All = new PublishSetupStage("all");
+        
+        public PublishSetupStage(string value)
+        {
+            this._value = value;
+        }
+        
+        public override string ToString()
+        {
+            return this._value;
         }
     }
     
@@ -409,6 +574,9 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         /// The result of the operation
         public Result Result;
         
+        /// Optional - The source of the operation
+        public string Source;
+        
         public PublishStart()
         {
             this.Passive = false;
@@ -452,30 +620,74 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         }
     }
     
-    /// Called when user opts into Publish to AWS experience
-    public sealed class PublishOptIn : BaseTelemetryEvent
+    /// Starting the Publish to AWS experience
+    public sealed class PublishSetup : BaseTelemetryEvent
     {
         
         /// The result of the operation
         public Result Result;
         
-        /// The name of the AWS service acted on. These values come from the AWS SDK. To find them in the JAVA SDK search for SERVICE_NAME in each service client, or look for serviceId in metadata in the service2.json
-        public string ServiceType;
+        /// The duration of the operation in milliseconds
+        public double Duration;
         
-        public PublishOptIn()
+        /// Represents a phase of the publish experience startup sequence
+        public PublishSetupStage PublishSetupStage;
+        
+        /// Optional - The operation that occurred when an attempt was made to download the CLI
+        public PublishInstallCliMode? PublishInstallCliMode;
+        
+        /// Optional - The error code associated with an operation
+        public string ErrorCode;
+        
+        public PublishSetup()
         {
             this.Passive = false;
         }
     }
     
-    /// Called when user opts out of Publish to AWS experience
-    public sealed class PublishOptOut : BaseTelemetryEvent
+    /// Called when user exits the publish workflow to record unsupported setting types
+    public sealed class PublishUnsupportedSetting : BaseTelemetryEvent
+    {
+        
+        /// The recipe used for the deployment
+        public string RecipeId;
+        
+        /// The type of a particular configuration setting/detail
+        public string PublishSettingType;
+        
+        public PublishUnsupportedSetting()
+        {
+            this.Passive = false;
+        }
+    }
+    
+    /// Called when cleaning up IAM Role trusted policy
+    public sealed class LambdaIamRoleCleanup : BaseTelemetryEvent
     {
         
         /// The result of the operation
         public Result Result;
         
-        public PublishOptOut()
+        /// The reason for a metric or exception depending on context
+        public string Reason;
+        
+        public LambdaIamRoleCleanup()
+        {
+            this.Passive = false;
+        }
+    }
+    
+    /// Called when adding an event to a lambda function
+    public sealed class LambdaAddEvent : BaseTelemetryEvent
+    {
+        
+        /// The result of the operation
+        public Result Result;
+        
+        /// A generic variant metadata
+        public string Variant;
+        
+        public LambdaAddEvent()
         {
             this.Passive = false;
         }

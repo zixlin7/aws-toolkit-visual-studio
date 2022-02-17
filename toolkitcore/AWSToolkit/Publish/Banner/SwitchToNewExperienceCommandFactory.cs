@@ -1,9 +1,5 @@
-﻿using System;
-
-using Amazon.AWSToolkit.Commands;
+﻿using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.PluginServices.Publishing;
-using Amazon.AWSToolkit.Publish.PublishSetting;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using Task = System.Threading.Tasks.Task;
 
@@ -20,18 +16,8 @@ namespace Amazon.AWSToolkit.Publish.Banner
 
         private static async Task SwitchToNewExperience(PublishBannerViewModel publishBanner, IPublishToAws publishToAws)
         {
-            Result result = Result.Failed;
-            try
-            {
-                await HideOldPublishExperience(publishBanner.SettingsRepository);
-                await OpenNewExperience(publishBanner, publishToAws);
-                publishBanner.CloseCurrentPublishExperience = true;
-                result = Result.Succeeded;
-            }
-            finally
-            {
-                publishBanner.RecordPublishOptInMetric(result);
-            }
+            await OpenNewExperience(publishBanner, publishToAws);
+            publishBanner.CloseCurrentPublishExperience = true;
         }
 
         private static async Task OpenNewExperience(PublishBannerViewModel publishBanner, IPublishToAws publishToAws) 
@@ -41,21 +27,15 @@ namespace Amazon.AWSToolkit.Publish.Banner
 
             var args = new ShowPublishToAwsDocumentArgs()
             {
+                Requester = $"legacyWizard-{publishBanner.Origin}",
                 ProjectName = selectedProject.Name,
                 ProjectPath = selectedProject.Path,
                 CredentialId = connectionManager.ActiveCredentialIdentifier,
+                AccountId = connectionManager.ActiveAccountId,
                 Region = connectionManager.ActiveRegion
             };
 
             await publishToAws.ShowPublishToAwsDocument(args);
-        }
-
-        private static async Task HideOldPublishExperience(IPublishSettingsRepository settingsRepository)
-        {
-            var settings = await settingsRepository.GetAsync();
-            settings.ShowOldPublishExperience = false;
-            settings.ShowPublishMenu = true;
-            settingsRepository.Save(settings);
         }
     }
 }

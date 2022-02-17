@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.Studio
@@ -159,10 +158,6 @@ namespace Amazon.AWSToolkit.Studio
 
         public bool ShowModal(Window window, string metricId)
         {
-            ToolkitEvent toolkitEvent = new ToolkitEvent();
-            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(toolkitEvent);
-
             window.Owner = this;
             return window.ShowDialog().GetValueOrDefault();
         }

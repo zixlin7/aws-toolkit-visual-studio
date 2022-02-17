@@ -4,26 +4,24 @@ using System.Linq;
 using System.Threading;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
-
 using Amazon.DynamoDBv2;
 using Amazon.IdentityManagement;
 using Amazon.Kinesis;
 using Amazon.S3;
 using Amazon.S3.Model;
-
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
-
 using Amazon.SQS;
 using Amazon.SQS.Model;
-
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchEvents.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Lambda.View;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using AddPermissionRequest = Amazon.Lambda.Model.AddPermissionRequest;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
@@ -52,7 +50,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         string _role;
         ToolkitRegion _region;
         AccountViewModel _account;
-        private ToolkitContext _toolkitContext;
+        private readonly ToolkitContext _toolkitContext;
 
         public AddEventSourceController(ToolkitContext toolkitContext)
         {
@@ -90,28 +88,29 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         {
             try
             {
-                if (this._control.EventSourceType == AddEventSourceControl.SourceType.S3)
+                switch (this._control.EventSourceType)
                 {
-                    success = SaveS3EventConfiguration();
-                }
-                else if (this._control.EventSourceType == AddEventSourceControl.SourceType.SNS)
-                {
-                    success = SaveSNSSubscription();
-                }
-                else if (this._control.EventSourceType == AddEventSourceControl.SourceType.CloudWatchEventsSchedule)
-                {
-                    success = SaveCloudWatchEventsSchedule();
-                }
-                else
-                {
-                    success = SaveEventSource();
+                    case AddEventSourceControl.SourceType.S3:
+                        success = SaveS3EventConfiguration();
+                        break;
+                    case AddEventSourceControl.SourceType.SNS:
+                        success = SaveSNSSubscription();
+                        break;
+                    case AddEventSourceControl.SourceType.CloudWatchEventsSchedule:
+                        success = SaveCloudWatchEventsSchedule();
+                        break;
+                    default:
+                        success = SaveEventSource();
+                        break;
                 }
             }
             finally
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(success ? AttributeKeys.LambdaEventSourceSetupSuccess : AttributeKeys.LambdaEventSourceSetupError, this._control.EventSourceType.ToString());
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                _toolkitContext.TelemetryLogger.RecordLambdaAddEvent(
+                    success ? Result.Succeeded : Result.Failed,
+                    this._control.EventSourceType.ToString(),
+                    this._account?.GetAccountId(this._region),
+                    this._region?.Id);
             }
         }
 

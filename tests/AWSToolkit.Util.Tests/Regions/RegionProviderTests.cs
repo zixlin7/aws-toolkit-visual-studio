@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.ResourceFetchers;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Util.Tests.Resources;
 using Moq;
 using Xunit;
@@ -15,6 +16,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         private const string FakeRegionId = "us-moon-1";
         private static readonly string LocalRegionId = $"{RegionProvider.LocalRegionIdPrefix}region";
         private readonly Mock<IResourceFetcher> _sampleEndpointsFetcher = new Mock<IResourceFetcher>();
+        private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
         private readonly RegionProvider _sut;
 
         public RegionProviderTests()

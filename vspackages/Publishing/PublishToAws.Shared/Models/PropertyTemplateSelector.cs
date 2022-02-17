@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
+using Amazon.AWSToolkit.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 
 namespace Amazon.AWSToolkit.Publish.Models
@@ -51,6 +52,10 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         public DataTemplate VpcEditor { get; set; }
 
+        public DataTemplate Ec2InstanceTypeEditor { get; set; }
+
+        public DataTemplate KeyValuesTypeEditor { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (!(item is ConfigurationDetail configurationDetail))
@@ -58,12 +63,17 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return null;
             }
 
-            if (configurationDetail.Type == typeof(UnsupportedType))
+            if (configurationDetail.Type == DetailType.Unsupported)
             {
                 return UnsupportedTypeEditor;
             }
 
-            if (configurationDetail.Type == typeof(object))
+            if (configurationDetail.Type == DetailType.KeyValue)
+            {
+                return KeyValuesTypeEditor;
+            }
+
+            if (configurationDetail.Type == DetailType.Blob)
             {
                 if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.IamRole)
                 {
@@ -81,22 +91,32 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return ParentEditor;
             }
 
+            // Give extended string-based editors precedence over EnumEditor
+            if (configurationDetail.Type == DetailType.String)
+            {
+                if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.InstanceType)
+                {
+                    return Ec2InstanceTypeEditor;
+                }
+            }
+
             if (configurationDetail.ValueMappings?.Any() ?? false)
             {
                 return EnumEditor;
             }
 
-            if (configurationDetail.Type == typeof(string))
+            // EnumEditor gets precedence over any other string based field/editor
+            if (configurationDetail.Type == DetailType.String)
             {
                 return TextEditor;
             }
 
-            if (configurationDetail.Type == typeof(int) || configurationDetail.Type == typeof(double))
+            if (configurationDetail.Type == DetailType.Integer || configurationDetail.Type == DetailType.Double)
             {
                 return NumericEditor;
             }
 
-            if (configurationDetail.Type == typeof(bool))
+            if (configurationDetail.Type == DetailType.Boolean)
             {
                 return BooleanEditor;
             }

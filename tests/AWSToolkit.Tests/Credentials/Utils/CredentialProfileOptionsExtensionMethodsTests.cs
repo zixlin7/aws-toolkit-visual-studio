@@ -1,5 +1,5 @@
 ﻿using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.Runtime.CredentialManagement;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.Utils
@@ -9,13 +9,13 @@ namespace AWSToolkit.Tests.Credentials.Utils
         [Fact]
         public void ContainsSsoProperties()
         {
-            Assert.False(CredentialProfileTestHelper.BasicProfile.Options.ContainsSsoProperties());
+            Assert.False(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Options.ContainsSsoProperties());
 
-            Assert.True(CredentialProfileTestHelper.SSOProfile.Options.ContainsSsoProperties());
-            Assert.True(CredentialProfileTestHelper.InvalidSSOProfileOnlyAccount.Options.ContainsSsoProperties());
-            Assert.True(CredentialProfileTestHelper.InvalidSSOProfileOnlyRegion.Options.ContainsSsoProperties());
-            Assert.True(CredentialProfileTestHelper.InvalidSSOProfileOnlyRole.Options.ContainsSsoProperties());
-            Assert.True(CredentialProfileTestHelper.InvalidSSOProfileOnlyUrl.Options.ContainsSsoProperties());
+            Assert.True(CredentialProfileTestHelper.Sso.ValidProfile.Options.ContainsSsoProperties());
+            Assert.True(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasAccount.Options.ContainsSsoProperties());
+            Assert.True(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRegion.Options.ContainsSsoProperties());
+            Assert.True(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRole.Options.ContainsSsoProperties());
+            Assert.True(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasUrl.Options.ContainsSsoProperties());
         }
     }
 }

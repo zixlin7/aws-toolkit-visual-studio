@@ -44,12 +44,12 @@ namespace Amazon.AWSToolkit.Publish.Commands
                     await PublishDocumentViewModel.RestartDeploymentSessionAsync(cancellationToken)
                         .ConfigureAwait(false);
 
-                    await PublishDocumentViewModel.InitializePublishTargets(cancellationToken).ConfigureAwait(false);
+                    await PublishDocumentViewModel.InitializePublishTargetsAsync(cancellationToken).ConfigureAwait(false);
 
                     // If user chose a new publish target and the publish failed, re-choose that setting
                     if (PublishDocumentViewModel.ProgressStatus == ProgressStatus.Fail)
                     {
-                        await PublishDocumentViewModel.SetIsRepublish(initialIsRepublishValue, cancellationToken).ConfigureAwait(false);
+                        await PublishDocumentViewModel.SetIsRepublishAsync(initialIsRepublishValue, cancellationToken).ConfigureAwait(false);
                     }
 
                     await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();

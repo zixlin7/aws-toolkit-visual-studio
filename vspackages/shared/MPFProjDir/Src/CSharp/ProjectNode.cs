@@ -42,7 +42,6 @@ namespace Microsoft.VisualStudio.Project
     /// <summary>
     /// Manages the persistent state of the project (References, options, files, etc.) and deals with user interaction via a GUI in the form a hierarchy.
     /// </summary>
-    [CLSCompliant(false)]
     [ComVisible(true)]
     public abstract partial class ProjectNode : HierarchyNode,
         IVsGetCfgProvider,
@@ -2059,6 +2058,7 @@ namespace Microsoft.VisualStudio.Project
         /// Do the build by invoking msbuild
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "vsopts")]
+        [SuppressMessage("Style", "VSTHRD200:Avoid \"Async\" suffix in names of methods")]
         internal virtual void BuildAsync(uint vsopts, string config, IVsOutputWindowPane output, string target, Action<MSBuildResult, string> uiThreadCallback)
         {
             this.BuildPrelude(output);

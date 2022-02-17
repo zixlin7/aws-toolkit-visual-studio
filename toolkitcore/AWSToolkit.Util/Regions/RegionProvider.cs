@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.Regions.Manifest;
 using Amazon.AWSToolkit.ResourceFetchers;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.Runtime;
 using log4net;
 
@@ -57,9 +58,11 @@ namespace Amazon.AWSToolkit.Regions
         /// </summary>
         private readonly Dictionary<string, string> _localServiceUrls = new Dictionary<string, string>();
 
-        public RegionProvider() : this(CreateLocalEndpointsFetcher(), CreateRemoteEndpointsFetcher())
+        public RegionProvider(ITelemetryLogger telemetryLogger)
+            : this(CreateLocalEndpointsFetcher(), CreateRemoteEndpointsFetcher(telemetryLogger))
         {
         }
+
 
         public RegionProvider(IResourceFetcher localEndpointsFetcher, IResourceFetcher remoteEndpointsFetcher)
         {
@@ -221,7 +224,7 @@ namespace Amazon.AWSToolkit.Regions
         /// Creates a resource fetcher that loads from the usual hosted files convention.
         /// Typically accesses online urls.
         /// </summary>
-        private static IResourceFetcher CreateRemoteEndpointsFetcher()
+        private static IResourceFetcher CreateRemoteEndpointsFetcher(ITelemetryLogger telemetryLogger)
         {
             var options = new HostedFilesResourceFetcher.Options()
             {
@@ -229,6 +232,7 @@ namespace Amazon.AWSToolkit.Regions
                 DownloadIfNewer = true,
                 CloudFrontBaseUrl = EndpointsBaseUrl,
                 ResourceValidator = IsValidStream,
+                TelemetryLogger = telemetryLogger
             };
 
             return new HostedFilesResourceFetcher(options);

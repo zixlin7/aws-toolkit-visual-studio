@@ -76,13 +76,15 @@ It is critical that we are mindful that past and present versions of the Toolkit
 
 ### Deprecated Hosted Files
 
-The following files are no longer referenced by the Toolkit, but were used in previous Toolkit releases. Care must be taken to not remove the following files from the repo:
+The following files are no longer referenced by the Toolkit, but were used in previous Toolkit releases. Care must be taken to not remove the following files from the repo, because older versions of the Toolkit that are still in use try to download these files and may crash if these files are not found.
 
 - AccountTypes.xml
   - The changes to support MFA and SSO credentials in 2021 eliminated the use of this file. The Toolkit now uses Partition/Region details from the Credentials profile, previously users had to indicate if their account was based in the China or GovCloud partitions.
 - ServiceEndPoints.xml
   - This file is published into the hosting location through internal pipelines. It is being listed here for completeness, but this file should not exist in the repo.
   - The changes to support MFA and SSO credentials in 2021 migrated the Toolkit towards endpoints.json as the successor to this file.
+- hostedfiles\\flags\\*.png
+  - Older versions of the Toolkit used to show a flag next to each region in region selection UIs. The code to show flags was removed in 2019. While unused, flag images were still embedded into the DLL, and this was removed in 2022.
 
 ## Reporting Bugs/Feature Requests
 
@@ -100,7 +102,7 @@ reported the issue. Please try to include as much information as you can. Detail
 
 Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
 
-1. You are working against the latest source on the _master_ branch.
+1. You are working against the latest source on the _main_ branch.
 1. You check existing open, and recently merged, pull requests to make sure someone else hasn't addressed the problem already.
 1. You open an issue to discuss any significant work - we would hate for your time to be wasted.
 
@@ -133,7 +135,7 @@ If you discover a potential security issue in this project we ask that you notif
 
 ## Licensing
 
-See the [LICENSE](https://github.com/aws/aws-toolkit-visual-studio-staging/blob/master/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+See the [LICENSE](https://github.com/aws/aws-toolkit-visual-studio-staging/blob/main/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](https://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
 

@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.Publish.Install
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var process =
-                DotnetProcess.CreateHeadless($"nuget verify {_options.ToolPath}\\**\\aws.deploy.cli.*.nupkg --all");
+                DotnetProcess.CreateHeadless($"nuget verify \"{_options.ToolPath}\\**\\aws.deploy.cli.*.nupkg\" --all");
             process.Start();
 
             var data = await RetrieveProcessDataAsync(process);

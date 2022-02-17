@@ -7,6 +7,7 @@ using System.Threading;
 
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Navigator;
@@ -59,6 +60,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             try
             {
                 var architectureList = uploadState.GetRequestArchitectures();
+                deploymentProperties.AccountId = uploadState.AccountId;
                 deploymentProperties.RegionId = uploadState.Region?.Id;
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
@@ -146,12 +148,14 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     }
                 }
 
-                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
 
                 this.FunctionUploader.AppendUploadStatus("Upload complete.");
-
                 this.Results = new ActionResults { Success = true, ShouldRefresh = true, FocalName = uploadState.Request.FunctionName };
 
+                deploymentProperties.Language = this.FunctionUploader.GetFunctionLanguage();
+                deploymentProperties.XRayEnabled = this.FunctionUploader.XRayEnabled();
+
+                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
             }
             catch (ToolkitException e)

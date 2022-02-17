@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.IO;
 using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.Runtime.CredentialManagement;
+
 using Moq;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.Core
 {
     public class CredentialSettingsManagerTests
     {
+        private static readonly string SampleProfileName = CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name;
+        private static readonly string SampleAlternateProfileName = CredentialProfileTestHelper.Basic.Valid.Token.Name;
 
         private readonly Dictionary<string, ICredentialProviderFactory> _processorFactoryMapping = new Dictionary<string, ICredentialProviderFactory>();
         private readonly Mock<ICredentialProfileProcessor> _sdkProcessor = new Mock<ICredentialProfileProcessor>();
@@ -32,14 +35,14 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void EmptyFactories_ThrowsError()
         {
             var settingsManager = new CredentialSettingsManager();
-            var identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
+            var identifier = new SDKCredentialIdentifier(SampleProfileName);
             Assert.Throws<ArgumentException>(() => settingsManager.CreateProfile(identifier, new ProfileProperties()));
         }
 
         [Fact]
         public void DeleteProfileTest()
         {
-            var identifier = new SharedCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
+            var identifier = new SharedCredentialIdentifier(SampleProfileName);
             _credentialSettingsManager.DeleteProfile(identifier);
             _sharedProcessor.Verify(x => x.DeleteProfile(identifier), Times.Once);
         }
@@ -47,7 +50,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void CreateProfileTest()
         {
-            var identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
+            var identifier = new SDKCredentialIdentifier(SampleProfileName);
             var properties = new ProfileProperties();
             _credentialSettingsManager.CreateProfile(identifier, properties);
             _sdkProcessor.Verify(x => x.CreateProfile(identifier, properties), Times.Once);
@@ -56,8 +59,8 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void RenameProfileTest()
         {
-            var oldIdentifier = new SharedCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
-            var newIdentifier = new SharedCredentialIdentifier(CredentialProfileTestHelper.SessionProfileName);
+            var oldIdentifier = new SharedCredentialIdentifier(SampleProfileName);
+            var newIdentifier = new SharedCredentialIdentifier(SampleAlternateProfileName);
             _credentialSettingsManager.RenameProfile(oldIdentifier, newIdentifier);
             _sharedProcessor.Verify(x => x.RenameProfile(oldIdentifier, newIdentifier), Times.Once);
         }
@@ -65,15 +68,15 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void RenameProfile_ThrowsError()
         {
-            var oldIdentifier = new SharedCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
-            var newIdentifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.SessionProfileName);
+            var oldIdentifier = new SharedCredentialIdentifier(SampleProfileName);
+            var newIdentifier = new SDKCredentialIdentifier(SampleAlternateProfileName);
             Assert.Throws<NotSupportedException>(() => _credentialSettingsManager.RenameProfile(oldIdentifier, newIdentifier));
         }
 
         [Fact]
         public void UpdateProfileTest()
         {
-            var identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
+            var identifier = new SDKCredentialIdentifier(SampleProfileName);
             var properties = new ProfileProperties();
             _credentialSettingsManager.UpdateProfile(identifier, properties);
             _sdkProcessor.Verify(x => x.UpdateProfile(identifier, properties), Times.Once);
@@ -82,7 +85,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void GetProfilePropertiesTest()
         {
-            var identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.BasicProfileName);
+            var identifier = new SDKCredentialIdentifier(SampleProfileName);
             _credentialSettingsManager.GetProfileProperties(identifier);
             _sdkProcessor.Verify(x => x.GetProfileProperties(identifier), Times.Once);
         }

@@ -19,14 +19,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
 {
     public class ConfigurationDetailFactoryTests
     {
-        private static readonly Dictionary<string, Type> TypeMappings = new Dictionary<string, Type>()
+        private static readonly Dictionary<string, DetailType> TypeMappings = new Dictionary<string, DetailType>()
         {
-            {"String", typeof(string)},
-            {"Int", typeof(int)},
-            {"Double", typeof(double)},
-            {"Bool", typeof(bool)},
-            {"Object", typeof(object)},
-            {"SomeFutureType", typeof(UnsupportedType)}
+            {"String", DetailType.String},
+            {"Int", DetailType.Integer},
+            {"Double", DetailType.Double},
+            {"Bool", DetailType.Boolean},
+            {"Object", DetailType.Blob},
+            {"SomeFutureType", DetailType.Unsupported}
         };
 
         private readonly Mock<IPublishToAwsProperties> _publishProperties = new Mock<IPublishToAwsProperties>();
@@ -246,6 +246,22 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.NotNull(vpcDetail.VpcIdDetail);
             Assert.Equal("vpc-1234abcd", vpcDetail.VpcIdDetail.Value);
             Assert.Equal(VpcOption.Existing, vpcDetail.VpcOption);
+        }
+
+        [Fact]
+        public void CreateFrom_InstanceTypeTypeHint()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithType("String")
+                .WithTypeHint(ConfigurationDetail.TypeHints.InstanceType)
+                .WithValue("t3.micro")
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            var instanceTypeDetail = Assert.IsType<Ec2InstanceConfigurationDetail>(configurationDetail);
+            Assert.Equal(itemSummary.Value, instanceTypeDetail.InstanceTypeId);
+            Assert.NotNull(instanceTypeDetail.SelectInstanceType);
         }
     }
 }

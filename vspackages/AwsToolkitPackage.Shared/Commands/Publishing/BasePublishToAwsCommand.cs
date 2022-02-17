@@ -27,6 +27,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
     /// </summary>
     public abstract class BasePublishToAwsCommand<T> : BaseCommand<T> where T : BasePublishToAwsCommand<T>
     {
+        private const string PublishRequester = "ideMenu";
         static readonly ILog Logger = LogManager.GetLogger(typeof(BasePublishToAwsCommand<T>));
 
         protected readonly ToolkitContext ToolkitContext;
@@ -98,7 +99,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
         /// </summary>
         protected override async Task ExecuteAsync(object sender, OleMenuCmdEventArgs args)
         {
-            bool success = false;
             string accountId = ToolkitContext.ConnectionManager.ActiveAccountId;
             string regionId = ToolkitContext.ConnectionManager.ActiveRegion?.Id;
 
@@ -116,7 +116,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
                         "Unable to start Publish to AWS",
                         "AWS Credentials are required to publish your project to AWS.\n\nSelect a valid credentials - region pair in the AWS Explorer before starting the Publish to AWS experience.");
 
-                    success = false;
                     return;
                 }
 
@@ -129,17 +128,20 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
 
                 var publishArgs = new ShowPublishToAwsDocumentArgs()
                 {
+                    Requester = PublishRequester,
                     ProjectName = project.Name,
                     ProjectPath = project.FileName,
                     CredentialId = ToolkitContext.ConnectionManager.ActiveCredentialIdentifier,
+                    AccountId = ToolkitContext.ConnectionManager.ActiveAccountId,
                     Region = ToolkitContext.ConnectionManager.ActiveRegion,
                 };
 
                 await PublishToAws.ShowPublishToAwsDocument(publishArgs);
-                success = true;
             }
             catch (Exception e)
             {
+                RecordPublishStartMetric(accountId, regionId, Result.Failed);
+
                 Logger.Error("Failed to start the Publish workflow", e);
 
                 ToolkitShellProvider.OutputToHostConsole($"Unable to start the Publish to AWS process: {e.Message}",
@@ -147,11 +149,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
                 ToolkitShellProvider.ShowMessage("Unable to Publish to AWS",
                     string.Format("There was a problem trying to start the Publish process:{0}{0}{1}",
                         Environment.NewLine, e.Message));
-                success = false;
-            }
-            finally
-            {
-                RecordPublishStartMetric(accountId, regionId, success ? Result.Succeeded : Result.Failed);
             }
         }
 
@@ -221,11 +218,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
                 return false;
             }
 
-            if (!IsUserOptedInToPublishExperience())
-            {
-                return false;
-            }
-
             if (IsLambdaProject(project))
             {
                 return false;
@@ -240,19 +232,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
             // TODO : Add any additional criteria for projects to not show the menu item
 
             return true;
-        }
-
-        /// <summary>
-        /// Indicates if the user has opted in at least once to the Publish to AWS experience.
-        /// Once opted in, the menu will remain visible if they opt back to the older publish experiences.
-        /// </summary>
-        private bool IsUserOptedInToPublishExperience()
-        {
-            return ToolkitShellProvider.ExecuteOnUIThread(async () =>
-            {
-                var publishSettings = await PublishSettingsRepository.GetAsync();
-                return publishSettings.ShowPublishMenu;
-            });
         }
 
         private bool IsLambdaProject(Project project)
@@ -296,6 +275,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
         {
             ToolkitContext.TelemetryLogger.RecordPublishStart(new PublishStart()
             {
+                Source = PublishRequester,
                 AwsAccount = accountId,
                 AwsRegion = regionId,
                 Result = result,

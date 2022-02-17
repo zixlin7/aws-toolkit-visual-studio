@@ -7,9 +7,10 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.SimpleWorkers;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Lambda;
 
 using EnvDTE;
@@ -30,8 +31,6 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
         public void BeforeOpeningFile(ProjectItem projectItem)
         {
         }
-
-
 
         public void ProjectFinishedGenerating(Project project)
         {
@@ -113,6 +112,8 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
             Dictionary<string, string> replacementsDictionary,
             WizardRunKind runKind, object[] customParams)
         {
+            var result = Result.Failed;
+            string blueprintName = null;
 
             if (!this.IsNodeJSPluginIsInstalled(automationObject))
             {
@@ -123,12 +124,14 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 
             try
             {
-                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.View.NewAWSLambdaProject", new Dictionary<string, object>());
+                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard(
+                    "Amazon.AWSToolkit.Lambda.View.NewAWSLambdaProject", new Dictionary<string, object>());
                 wizard.Title = "New AWS Lambda Node.js Project";
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
                 {
-                    new NodeProjectTypeController("Select Project Source", "Choose the source for the Lambda function created with the new project.")
+                    new NodeProjectTypeController("Select Project Source",
+                        "Choose the source for the Lambda function created with the new project.")
                 };
 
                 wizard.RegisterPageControllers(defaultPages, 0);
@@ -137,24 +140,23 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
                     throw new WizardCancelledException();
                 }
 
-                var creationMode = (NodeProjectTypeController.CreationMode)wizard.CollectedProperties[NodeWizardPropertyNameConstants.propKey_CreationMode];
+                var creationMode =
+                    (NodeProjectTypeController.CreationMode) wizard.CollectedProperties[
+                        NodeWizardPropertyNameConstants.propKey_CreationMode];
 
-                ToolkitEvent evnt = new ToolkitEvent();
                 if (creationMode == NodeProjectTypeController.CreationMode.FromSample)
                 {
-                    var sample = wizard.CollectedProperties[NodeWizardPropertyNameConstants.propKey_SampleFunction] as QueryLambdaFunctionSamplesWorker.SampleSummary;
-                    if (sample != null)
+                    if (wizard.CollectedProperties[NodeWizardPropertyNameConstants.propKey_SampleFunction]
+                        is QueryLambdaFunctionSamplesWorker.SampleSummary sample)
                     {
-                        evnt.AddProperty(AttributeKeys.LambdaNodeJsNewProject,
-                            string.Format("{0}/{1}", creationMode.ToString(),
-                                sample.File));
+                        blueprintName = $"{creationMode}/{sample.File}";
                     }
                 }
                 else
                 {
-                    evnt.AddProperty(AttributeKeys.LambdaNodeJsNewProject, creationMode.ToString());
+                    blueprintName = creationMode.ToString();
                 }
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
 
                 switch (creationMode)
                 {
@@ -169,16 +171,23 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
                         break;
                 }
 
+                result = Result.Succeeded;
             }
             catch (WizardCancelledException)
             {
+                result = Result.Cancelled;
                 throw;
             }
             catch (Exception ex)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError(ex.ToString());
             }
+            finally
+            {
+                RecordLambdaCreateProjectMetric(result, blueprintName);
+            }
         }
+
 
         private void CreateBasicProjectStartup(Dictionary<string, string> replacementsDictionary, IAWSWizard wizard)
         {
@@ -189,7 +198,6 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
                 ProjectCreatorUtilities.CreateFromStream(replacementsDictionary, stream, null);
             }
         }
-
 
         private void CreateFromExistingFunction(Dictionary<string, string> replacementsDictionary, IAWSWizard wizard)
         {
@@ -211,6 +219,18 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
             {
                 ProjectCreatorUtilities.CreateFromStream(replacementsDictionary, stream, null);
             }
+        }
+
+        private static void RecordLambdaCreateProjectMetric(Result result, string blueprintName)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordLambdaCreateProject(new LambdaCreateProject
+            {
+                AwsAccount = ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = ToolkitFactory.Instance.AwsConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
+                Result = result,
+                TemplateName = blueprintName,
+                Language = "NodeJS"
+            });
         }
     }
 }

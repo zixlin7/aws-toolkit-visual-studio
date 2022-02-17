@@ -66,25 +66,17 @@ namespace AWSToolkit.Tests.Publish.Banner
         }
 
         [Fact]
-        public async Task ShouldEnableMenuItem()
-        {
-            // act.
-            await _switchToNewExperienceCommand.ExecuteAsync(null);
-
-            // assert.
-            var actualSettings = await _settingsRepository.GetAsync();
-            Assert.True(actualSettings.ShowPublishMenu);
-        }
-
-        [Fact]
         public async Task ShouldOpenNewPublishExperience()
         {
             // arrange.
+            _publishBanner.Origin = "foo";
             var expectedArgs = new ShowPublishToAwsDocumentArgs
             {
+                Requester = "legacyWizard-foo",
                 ProjectName = _project.Name,
                 ProjectPath = _project.Path,
                 CredentialId = _connectionManager.ActiveCredentialIdentifier,
+                AccountId = _connectionManager.ActiveAccountId,
                 Region = _connectionManager.ActiveRegion
             };
 
@@ -93,28 +85,6 @@ namespace AWSToolkit.Tests.Publish.Banner
 
             // assert.
             Assert.Equal(expectedArgs, _spyPublishToAws.Args);
-        }
-
-        [Fact]
-        public async Task ShouldPersistVisibilitySettingsForPublishMenuItems()
-        {
-            // arrange.
-            var existingSettings = PublishSettings.CreateDefault();
-            existingSettings.ShowOldPublishExperience = true;
-
-            _settingsRepository.Save(existingSettings);
-
-            var expectedSettings = PublishSettings.CreateDefault();
-            expectedSettings.ShowOldPublishExperience = false;
-            expectedSettings.ShowPublishMenu = true;
-
-            // act.
-            await _switchToNewExperienceCommand.ExecuteAsync(null);
-
-            var actualSettings = await _settingsRepository.GetAsync();
-
-            // assert.
-            Assert.Equal(expectedSettings, actualSettings);
         }
     }
 }

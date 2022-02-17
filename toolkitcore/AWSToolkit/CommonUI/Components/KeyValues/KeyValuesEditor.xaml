@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.CommonUI.Components.KeyValues.KeyValuesEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:keyValues="clr-namespace:Amazon.AWSToolkit.CommonUI.Components.KeyValues"
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+             xmlns:models="clr-namespace:Amazon.AWSToolkit.Models"
+             themes:ToolkitThemes.UseToolkitTheme="True"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=keyValues:DesignSampleKeyValuesViewModel, IsDesignTimeCreatable=True}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="KeyValueTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="RemoveEntryButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"  >
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
+            </Style>
+            <DataTemplate DataType="{x:Type models:KeyValue}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition SharedSizeGroup="Spacer" Width="6" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition SharedSizeGroup="Spacer" Width="6" />
+                        <ColumnDefinition SharedSizeGroup="Actions" Width="Auto" MinWidth="16" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox 
+                        Grid.Column="0"
+                        Margin="0 0 0 6"
+                        Text="{Binding Key, ValidatesOnNotifyDataErrors=True}"
+                        Validation.ErrorTemplate="{StaticResource ErrorValidation}"
+                        GotFocus="TextBox_OnGotFocus"
+                        >
+                    </TextBox>
+                    <TextBox 
+                        Grid.Column="2"
+                        Margin="0 0 0 6"
+                        Text="{Binding Value}"
+                        GotFocus="TextBox_OnGotFocus"
+                        />
+                    <Button 
+                        Style="{StaticResource RemoveEntryButtonStyle}"
+                        Grid.Column="4"
+                        Margin="0 0 0 6"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        ToolTip="Remove Key-Value entry"
+                        Content="&#x2715;"
+                        Command="{Binding DataContext.RemoveKeyValue, RelativeSource={RelativeSource AncestorType=keyValues:KeyValuesEditor}, ValidatesOnNotifyDataErrors=False}"
+                        CommandParameter="{Binding ., ValidatesOnNotifyDataErrors=False}"
+                        />
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid IsSharedSizeScope="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition SharedSizeGroup="Spacer" />
+                <ColumnDefinition />
+                <ColumnDefinition SharedSizeGroup="Spacer" />
+                <ColumnDefinition SharedSizeGroup="Actions" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Row="0" Grid.Column="0"
+                Padding="1"
+                FontWeight="Bold"
+                Text="Key"
+                />
+
+            <TextBlock
+                Grid.Row="0" Grid.Column="2"
+                Padding="1"
+                FontWeight="Bold"
+                Text="Value"
+                />
+        </Grid>
+
+        <Border
+            Grid.Row="1"
+            Margin="0 6 0 0"
+            BorderThickness="1"
+            BorderBrush="{StaticResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+            >
+            <ScrollViewer
+                VerticalScrollBarVisibility="Auto"
+                HorizontalScrollBarVisibility="Disabled"
+                HorizontalContentAlignment="Stretch"
+                >
+                <ItemsControl 
+                    Padding="1"
+                    Margin="0 0 9 0"
+                    ItemsSource="{Binding Collection, ValidatesOnNotifyDataErrors=False}"
+                    />
+            </ScrollViewer>
+        </Border>
+
+        <StackPanel 
+            Grid.Row="2"
+            Orientation="Horizontal"
+            Margin="0 9 0 0"
+            HorizontalAlignment="Right"
+            >
+            <Button 
+                Content="_Add Entry"
+                Command="{Binding AddKeyValue, ValidatesOnNotifyDataErrors=False}"
+                />
+        </StackPanel>
+    </Grid>
+</UserControl>

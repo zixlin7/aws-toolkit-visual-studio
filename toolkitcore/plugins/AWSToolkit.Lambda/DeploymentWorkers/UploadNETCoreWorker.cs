@@ -10,12 +10,15 @@ using Amazon.AWSToolkit.Lambda.Controller;
 using System.IO;
 using System.Linq;
 
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Common.DotNetCli.Tools;
+using Amazon.IdentityManagement;
+using Amazon.S3;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
@@ -24,11 +27,15 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         ILog LOGGER = LogManager.GetLogger(typeof(UploadNETCoreWorker));
 
         private readonly ITelemetryLogger _telemetryLogger;
+        private readonly IAmazonIdentityManagementService _iamClient;
+        private readonly IAmazonS3 _s3Client;
 
         public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler, IAmazonLambda lambdaClient, IAmazonECR ecrClient,
-            ITelemetryLogger telemetryLogger)
+            IAmazonIdentityManagementService iamClient, IAmazonS3 s3Client, ITelemetryLogger telemetryLogger)
             : base(functionHandler, lambdaClient, ecrClient)
         {
+            _iamClient = iamClient;
+            _s3Client = s3Client;
             _telemetryLogger = telemetryLogger;
         }
 
@@ -40,6 +47,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             try
             {
                 var architectureList = uploadState.GetRequestArchitectures();
+                deploymentProperties.AccountId = uploadState.AccountId;
                 deploymentProperties.RegionId = uploadState.Region?.Id;
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
@@ -49,6 +57,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.DisableInteractive = true;
                 command.LambdaClient = this.LambdaClient;
                 command.ECRClient = this.ECRClient;
+                command.IAMClient = _iamClient;
+                command.S3Client = _s3Client;
                 command.PersistConfigFile = uploadState.SaveSettings;
                 command.Profile = uploadState.Account.Identifier.ProfileName;
                 command.Credentials = uploadState.Credentials;
@@ -98,6 +108,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 if (command.ExecuteAsync().Result)
                 {
+                    deploymentProperties.Language = this.FunctionUploader.GetFunctionLanguage();
+                    deploymentProperties.XRayEnabled = this.FunctionUploader.XRayEnabled();
+
                     _telemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
 
                     this.FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
@@ -115,7 +128,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 }
             }
 
-            catch (ToolsException e)
+            catch (ToolsException)
             {
                 _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");

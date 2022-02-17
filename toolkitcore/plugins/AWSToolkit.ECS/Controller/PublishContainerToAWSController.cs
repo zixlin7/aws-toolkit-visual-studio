@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.ECS.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -219,7 +220,11 @@ namespace Amazon.AWSToolkit.ECS.Controller
             _results = new ActionResults().WithSuccess(success);
 
             duration.Stop();
-            RecordEcsPublishWizardMetric(success, duration.Elapsed.TotalMilliseconds);
+            RecordEcsPublishWizardMetric(
+                navigator.SelectedAccountId,
+                navigator.SelectedRegionId,
+                success,
+                duration.Elapsed.TotalMilliseconds);
         }
 
         private string DetermineImageBase(Dictionary<string, object> seedProperties)
@@ -257,10 +262,12 @@ namespace Amazon.AWSToolkit.ECS.Controller
             }
         }
 
-        private void RecordEcsPublishWizardMetric(bool result, double duration)
+        private void RecordEcsPublishWizardMetric(string accountId, string regionId, bool result, double duration)
         {
             _toolkitContext.TelemetryLogger.RecordEcsPublishWizard(new EcsPublishWizard()
             {
+                AwsAccount = accountId ?? MetadataValue.NotSet,
+                AwsRegion = regionId ?? MetadataValue.NotSet,
                 Result = result ? Result.Succeeded : Result.Failed,
                 Duration = duration
             });

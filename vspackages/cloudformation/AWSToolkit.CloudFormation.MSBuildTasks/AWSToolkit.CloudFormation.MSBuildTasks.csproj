@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cloudformation.targets">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <!-- Additional dependency content for the tasks, which we handle in the package project 

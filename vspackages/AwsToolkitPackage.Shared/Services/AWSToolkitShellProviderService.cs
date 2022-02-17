@@ -10,8 +10,6 @@ using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
@@ -172,8 +170,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         public bool ShowInModalDialogWindow(IAWSToolkitControl hostedControl, MessageBoxButton buttons)
         {
             var dialogWindow = DialogWindowHost.CreateDialogHost(buttons, hostedControl, this);
-
-            QueueOpenViewMetric(hostedControl.MetricId);
             return dialogWindow.ShowModal() ?? false;
         }
 
@@ -185,21 +181,20 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         public bool ShowModal(IAWSToolkitControl hostedControl, MessageBoxButton buttons)
         {
             var host = DialogHostUtil.CreateDialogHost(buttons, hostedControl);
-            return ShowModal(host, hostedControl.MetricId);
+            return ShowModal(host);
         }
 
         public bool ShowModalFrameless(IAWSToolkitControl hostedControl)
         {
             var host = DialogHostUtil.CreateFramelessDialogHost(hostedControl);
-            return ShowModal(host, hostedControl.MetricId);
+            return ShowModal(host);
         }
 
-        public bool ShowModal(Window window, string metricId)
+        public bool ShowModal(Window window)
         {
             return this._hostPackage.JoinableTaskFactory.Run<bool>(async () =>
             {
                 await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
-                QueueOpenViewMetric(metricId);
 
                 var uiShell = (IVsUIShell)_hostPackage.GetVSShellService(typeof(SVsUIShell));
                 IntPtr parent;
@@ -231,13 +226,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     uiShell.EnableModeless(1);
                 }
             });
-        }
-
-        private void QueueOpenViewMetric(string metricId)
-        {
-            ToolkitEvent toolkitEvent = new ToolkitEvent();
-            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
-            _hostPackage.AnalyticsRecorder.QueueEventToBeRecorded(toolkitEvent);
         }
 
         public void ShowError(string message)

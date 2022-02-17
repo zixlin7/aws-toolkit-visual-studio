@@ -338,9 +338,22 @@ namespace Amazon.AWSToolkit.Navigator
         {
             RegisterAccountController command = new RegisterAccountController(_toolkitContext);
             ActionResults results = command.Execute();
+            RecordAwsModifyCredentialsMetric(results.Success, CredentialModification.Add);
         }
 
-        
+        private void RecordAwsModifyCredentialsMetric(bool success, CredentialModification modification)
+        {
+            _toolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
+            {
+                AwsAccount = SelectedAccountId ?? MetadataValue.NotSet,
+                AwsRegion = MetadataValue.NotApplicable,
+                Result = success ? Result.Succeeded : Result.Failed,
+                CredentialModification = modification,
+                Source = "AwsExplorer"
+            });
+        }
+
+        public string SelectedAccountId => _toolkitContext.ConnectionManager?.ActiveAccountId;
         public string SelectedRegionId => _navigatorViewModel.Region?.Id;
         public ToolkitRegion SelectedRegion => _navigatorViewModel.Region;
 
@@ -482,10 +495,12 @@ namespace Amazon.AWSToolkit.Navigator
             {
                 var command = new EditAccountController(_toolkitContext);
                 var results = command.Execute(viewModel);
+                RecordAwsModifyCredentialsMetric(results.Success, CredentialModification.Edit);
             }
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error", e.Message);
+                RecordAwsModifyCredentialsMetric(false, CredentialModification.Edit);
             }
         }
 
@@ -501,9 +516,10 @@ namespace Amazon.AWSToolkit.Navigator
                 return;
             }
 
-            var command =
-                new UnregisterAccountController(_toolkitContext.CredentialSettingsManager);
+            var command = new UnregisterAccountController(_toolkitContext.CredentialSettingsManager);
             var results = command.Execute(viewModel);
+            RecordAwsModifyCredentialsMetric(results.Success, CredentialModification.Delete);
+
             if (results.Success)
             {
                 var ide = _toolkitContext.CredentialManager.GetCredentialIdentifiers()

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -24,9 +24,8 @@ using VsCommands2K = Microsoft.VisualStudio.VSConstants.VSStd2KCmdID;
 
 namespace Microsoft.VisualStudio.Project
 {
-	[CLSCompliant(false)]
-	[ComVisible(true)]
-	public class FolderNode : HierarchyNode
+    [ComVisible(true)]
+    public class FolderNode : HierarchyNode
 	{
 		#region ctors
 		/// <summary>

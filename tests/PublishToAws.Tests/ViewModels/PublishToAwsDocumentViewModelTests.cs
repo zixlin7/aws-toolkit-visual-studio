@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,7 +26,6 @@ using Moq;
 
 using Xunit;
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods
 namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 {
     public class PublishToAwsDocumentViewModelTests
@@ -135,10 +135,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task ShouldInitializeAsRepublish()
         {
             //arrange
-            await _sut.StartDeploymentSession(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
             StubGetRepublishTargetsToReturn(_sampleRepublishTargets);
             //act
-            await _sut.InitializePublishTargets(_cancelToken);
+            await _sut.InitializePublishTargetsAsync(_cancelToken);
             //assert
             Assert.True(_sut.RepublishTargets.Any());
             Assert.True(_sut.IsRepublish);
@@ -148,10 +148,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task ShouldInitializeAsPublish()
         {
             //arrange
-            await _sut.StartDeploymentSession(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
             StubGetRepublishTargetsToReturn(Array.Empty<RepublishTarget>());
             //act
-            await _sut.InitializePublishTargets(_cancelToken);
+            await _sut.InitializePublishTargetsAsync(_cancelToken);
             //assert
             Assert.False(_sut.RepublishTargets.Any());
             Assert.False(_sut.IsRepublish);
@@ -162,7 +162,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
             Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-            Assert.True(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
         [Fact]
@@ -173,7 +172,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
            await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
            Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-           Assert.True(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
         [Fact]
@@ -185,19 +183,17 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
            await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
 
             Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-            Assert.True(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
         [Fact]
         public async Task HasOptionsButtonPropertiesDisabled()
         {
             _publishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
-                .ReturnsAsync(new PublishSettings() {ShowPublishBanner = false, ShowOldPublishExperience = false});
+                .ReturnsAsync(new PublishSettings() {ShowPublishBanner = false});
 
             await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
 
             Assert.False(_exposedTestViewModel.IsOptionsBannerEnabled);
-            Assert.False(_exposedTestViewModel.IsOldPublishExperienceEnabled);
         }
 
         [Fact]
@@ -214,7 +210,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
             StubGetDeploymentStatus(DeploymentResultSuccess);
 
-            await _sut.PublishApplication();
+            await _sut.PublishApplicationAsync();
 
             Assert.False(_sut.IsFailureBannerEnabled);
         }
@@ -225,7 +221,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
             StubGetDeploymentStatus(DeploymentResultFail);
 
-            await _sut.PublishApplication();
+            await _sut.PublishApplicationAsync();
 
             Assert.True(_sut.IsFailureBannerEnabled);
         }
@@ -266,7 +262,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
             StubGetDeploymentStatus(DeploymentResultFail);
 
-            await _sut.PublishApplication();
+            await _sut.PublishApplicationAsync();
 
             Assert.Equal(1, _spy.falseCount);
             Assert.Equal(2, _spy.trueCount);
@@ -326,7 +322,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             StubGetDeploymentStatus(DeploymentResultSuccess);
 
-            await _sut.PublishApplication();
+            await _sut.PublishApplicationAsync();
 
             Assert.Equal(_sampleApplicationName, _sut.StackName);
             Assert.Equal(ProgressStatus.Success, _sut.ProgressStatus);
@@ -341,7 +337,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             StubGetDeploymentStatus(DeploymentResultFail);
 
-            await _sut.PublishApplication();
+            await _sut.PublishApplicationAsync();
 
             Assert.Equal(ProgressStatus.Fail, _sut.ProgressStatus);
             Assert.Contains(DeploymentResultFail.Exception.Message, _sut.PublishProgress);
@@ -380,7 +376,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             StubGetDeploymentStatus(DeploymentResultSuccess);
 
-            await _sut.PublishApplication();
+            await _sut.PublishApplicationAsync();
 
             AssertPublishCallsAreCorrect();
         }
@@ -394,7 +390,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     mock.StartDeploymentAsync(It.IsAny<string>()))
                 .ThrowsAsync(new Exception("error"));
 
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.PublishApplication());
+            await Assert.ThrowsAsync<Exception>(async () => await _sut.PublishApplicationAsync());
 
             Assert.Equal(_sampleApplicationName, _sut.StackName);
             AssertStartDeploymentCalledTimes(1);
@@ -404,7 +400,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task StartDeploymentSession()
         {
-            await _sut.StartDeploymentSession(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
 
             Assert.Equal(_sampleSessionId, _sut.SessionId);
             Assert.Equal(_sampleApplicationName, _sut.PublishStackName);
@@ -416,7 +412,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Setup(mock => mock.StartSessionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("simulated service error"));
 
-            await Assert.ThrowsAsync<SessionException>(async () => await _sut.StartDeploymentSession(_cancelToken));
+            await Assert.ThrowsAsync<SessionException>(async () => await _sut.StartDeploymentSessionAsync(_cancelToken));
 
             Assert.Null(_sut.SessionId);
         }
@@ -424,8 +420,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task StopDeploymentSession()
         {
-            await _sut.StartDeploymentSession(_cancelToken);
-            await _sut.StopDeploymentSession(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await _sut.StopDeploymentSessionAsync(_cancelToken);
 
             Assert.Null(_sut.SessionId);
         }
@@ -435,7 +431,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             Assert.Null(_sut.SessionId);
 
-            await _sut.StopDeploymentSession(_cancelToken);
+            await _sut.StopDeploymentSessionAsync(_cancelToken);
 
             Assert.Null(_sut.SessionId);
         }
@@ -446,8 +442,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Setup(mock => mock.StopSessionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("simulated service error"));
 
-            await _sut.StartDeploymentSession(_cancelToken);
-            await Assert.ThrowsAsync<SessionException>(async () => await _sut.StopDeploymentSession(_cancelToken));
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await Assert.ThrowsAsync<SessionException>(async () => await _sut.StopDeploymentSessionAsync(_cancelToken));
 
             Assert.Null(_sut.SessionId);
         }
@@ -473,10 +469,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshRecommendations()
         {
             // arrange.
-            await _sut.StartDeploymentSession(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
 
             // act.
-            await _sut.RefreshRecommendations(_cancelToken);
+            await _sut.RefreshRecommendationsAsync(_cancelToken);
 
             // assert.
             Assert.Equal(_sampleRecommendations, _sut.Recommendations);
@@ -491,7 +487,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<PublishException>(async () =>
             {
-                await _sut.RefreshRecommendations(_cancelToken);
+                await _sut.RefreshRecommendationsAsync(_cancelToken);
             });
 
             Assert.Empty(_sut.Recommendations);
@@ -503,11 +499,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Setup(mock =>
                     mock.GetRecommendationsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new DeployToolException("simulated service error"));
-            await _sut.StartDeploymentSession(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
 
             await Assert.ThrowsAsync<PublishException>(async () =>
             {
-                await _sut.RefreshRecommendations(_cancelToken);
+                await _sut.RefreshRecommendationsAsync(_cancelToken);
             });
             Assert.Empty(_sut.Recommendations);
         }
@@ -516,10 +512,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshExistingTargets()
         {
             // arrange.
-            await _sut.StartDeploymentSession(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
 
             // act.
-            await _sut.RefreshExistingTargets(_cancelToken);
+            await _sut.RefreshExistingTargetsAsync(_cancelToken);
 
             // assert.
             Assert.Equal(_sampleRepublishTargets, _sut.RepublishTargets);
@@ -533,7 +529,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<PublishException>(async () =>
             {
-                await _sut.RefreshExistingTargets(_cancelToken);
+                await _sut.RefreshExistingTargetsAsync(_cancelToken);
             });
             Assert.Empty(_sut.RepublishTargets);
         }
@@ -544,11 +540,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Setup(mock =>
                     mock.GetRepublishTargetsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new DeployToolException("simulated service error"));
-            await _sut.StartDeploymentSession(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
 
             await Assert.ThrowsAsync<PublishException>(async () =>
             {
-                await _sut.RefreshExistingTargets(_cancelToken);
+                await _sut.RefreshExistingTargetsAsync(_cancelToken);
             });
             Assert.Empty(_sut.RepublishTargets);
         }
@@ -569,7 +565,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _sut.ConfigurationDetails.Add(new ConfigurationDetail()
             {
                 Name = "Use Vpc",
-                Type = typeof(bool),
+                Type = DetailType.Boolean,
                 Value = true,
                 Visible = true,
             });
@@ -586,7 +582,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _sut.ConfigurationDetails.Add(new ConfigurationDetail()
             {
                 Name = "Use Vpc",
-                Type = typeof(bool),
+                Type = DetailType.Boolean,
                 Value = false,
                 Visible = true,
             });
@@ -693,8 +689,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task JoinSession()
         {
-            await _sut.StartDeploymentSession(_cancelToken);
-            await _sut.JoinDeploymentSession();
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await _sut.JoinDeploymentSessionAsync();
 
             _deployClient.Verify(mock => mock.JoinSession(_sampleSessionId), Times.Once);
         }
@@ -704,7 +700,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<Exception>(async () =>
             {
-                await _sut.JoinDeploymentSession();
+                await _sut.JoinDeploymentSessionAsync();
             });
 
             _deployClient.Verify(mock => mock.JoinSession(_sampleSessionId), Times.Never);
@@ -713,7 +709,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task UpdateRequiredPublishProperties_WhenInitialPublish()
         {
-            await _sut.UpdateRequiredPublishProperties(_cancelToken);
+            await _sut.UpdateRequiredPublishPropertiesAsync(_cancelToken);
 
             Assert.True(string.IsNullOrEmpty(_sut.StackName));
             Assert.True(string.IsNullOrEmpty(_sut.TargetRecipe));
@@ -724,7 +720,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task UpdateRequiredPublishProperties_WhenInitialRepublish()
         {
             _sut.IsRepublish = true;
-            await _sut.UpdateRequiredPublishProperties(_cancelToken);
+            await _sut.UpdateRequiredPublishPropertiesAsync(_cancelToken);
 
             AssertRequiredPublishProperties("","", "");
         }
@@ -747,20 +743,44 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
-        public async Task SetDeploymentTarget()
+        public async Task SetDeploymentTarget_NewPublish()
         {
             _deployToolController.Setup(mock =>
-                    mock.SetDeploymentTarget(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<PublishRecommendation>(),
+                    It.IsAny<string>(), It.IsAny<CancellationToken>()));
 
             await SetupPublishView();
 
-            _deployToolController.Verify(mock => mock.SetDeploymentTarget(_sampleSessionId, _sut.StackName, _sut.Recommendation.RecipeId, _sut.IsRepublish, _cancelToken), Times.Once);
+            _deployToolController.Verify(NewPublishToSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
+        }
+
+        private Expression<Func<IDeployToolController, Task>> NewPublishToSetDeploymentTargetAsyncWithCurrentState()
+        {
+            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.Recommendation,
+                _sut.StackName, _cancelToken);
+        }
+
+        [Fact]
+        public async Task SetDeploymentTarget_Republish()
+        {
+            _deployToolController.Setup(mock =>
+                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<RepublishTarget>(),
+                    It.IsAny<CancellationToken>()));
+
+            await SetupRepublishView();
+
+            _deployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
+        }
+
+        private Expression<Func<IDeployToolController, Task>> RepublishSetDeploymentTargetAsyncWithCurrentState()
+        {
+            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.RepublishTarget, _cancelToken);
         }
 
         [Fact]
         public async Task SetDeploymentTarget_NoSession()
         {
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.SetDeploymentTarget(_cancelToken));
+            await Assert.ThrowsAsync<Exception>(async () => await _sut.SetDeploymentTargetAsync(_cancelToken));
         }
 
         [Fact]
@@ -769,10 +789,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
             _sut.Recommendation = null;
 
-            await _sut.SetDeploymentTarget(_cancelToken);
+            await _sut.SetDeploymentTargetAsync(_cancelToken);
 
-            _deployToolController.Verify(mock => mock.SetDeploymentTarget(_sampleSessionId, _sut.StackName, null, false,
-                _cancelToken), Times.Once);
+            _deployToolController.Verify(NewPublishToSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
         [Fact]
@@ -781,10 +800,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupRepublishView();
             _sut.RepublishTarget = null;
 
-            await _sut.SetDeploymentTarget(_cancelToken);
+            await _sut.SetDeploymentTargetAsync(_cancelToken);
 
-            _deployToolController.Verify(mock => mock.SetDeploymentTarget(_sampleSessionId, _sut.StackName, null, true,
-                _cancelToken), Times.Once);
+            _deployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
         [Fact]
@@ -793,18 +811,19 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
 
             _deployToolController.Setup(mock =>
-                    mock.GetConfigSettings(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleConfigurationDetails);
+                    mock.GetConfigSettingsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleConfigurationDetails);
 
-            await _sut.RefreshTargetConfigurations(_cancelToken);
+            await _sut.RefreshTargetConfigurationsAsync(_cancelToken);
 
-            _deployToolController.Verify(mock => mock.GetConfigSettings(_sampleSessionId, _cancelToken), Times.Once);
+            _deployToolController.Verify(mock => mock.GetConfigSettingsAsync(_sampleSessionId, _cancelToken), Times.Once);
             Assert.Single(_sut.ConfigurationDetails);
         }
+
 
         [Fact]
         public async Task RefreshTargetConfigurations_NoSession()
         {
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurations(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(_cancelToken));
         }
 
         [Fact]
@@ -813,11 +832,26 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
 
             _deployToolController.Setup(mock =>
-                    mock.GetConfigSettings(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    mock.GetConfigSettingsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new DeployToolException("simulated service error"));
 
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurations(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(_cancelToken));
             Assert.Empty(_sut.ConfigurationDetails);
+        }
+
+        [Fact]
+        public async Task RefreshTargetConfigurations_UpdatesUnsupportedSettingTypes()
+        {
+            await SetupPublishView();
+            Assert.False(_sut.UnsupportedSettingTypes.RecipeToUnsupportedSetting.Any());
+
+            var configDetails = CreateSampleConfigurationDetails(2, d => d.Type = DetailType.Unsupported);
+            _deployToolController.Setup(mock =>
+                mock.GetConfigSettingsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(configDetails);
+
+            await _sut.RefreshTargetConfigurationsAsync(_cancelToken);
+
+            Assert.True(_sut.UnsupportedSettingTypes.RecipeToUnsupportedSetting.Any());
         }
 
         [Fact]
@@ -832,7 +866,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Setup(mock =>
                 mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), _sampleConfigurationDetails, It.IsAny<CancellationToken>())).ReturnsAsync(output);
 
-            await _sut.RefreshConfigurationSettingValues(_cancelToken);
+            await _sut.RefreshConfigurationSettingValuesAsync(_cancelToken);
 
             _deployToolController.Verify(mock => mock.UpdateConfigSettingValuesAsync(_sampleSessionId, _sampleConfigurationDetails,  _cancelToken), Times.Once);
             Assert.True(_sut.ConfigurationDetails.First().ValueMappings.ContainsKey("abc"));
@@ -847,7 +881,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RefreshConfigurationSettingValues_NoSession()
         {
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValues(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValuesAsync(_cancelToken));
         }
 
         [Fact]
@@ -859,7 +893,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), It.IsAny<List<ConfigurationDetail>>(),It.IsAny<CancellationToken>()))
                 .Throws(new DeployToolException("simulated service error"));
 
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValues(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValuesAsync(_cancelToken));
             Assert.Empty(_sut.ConfigurationDetails);
         }
 
@@ -936,7 +970,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Setup(mock =>
                 mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
 
-            await _sut.RefreshSystemCapabilities(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
 
             _deployToolController.Verify(
                 mock => mock.GetCompatibilityAsync(_sampleSessionId, _cancelToken), Times.Once);
@@ -946,7 +980,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task SetSystemCapabilities_NoSession()
         {
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshSystemCapabilities(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshSystemCapabilitiesAsync(_cancelToken));
         }
 
         [Fact]
@@ -957,7 +991,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new DeployToolException("simulated service error"));
 
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshSystemCapabilities(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshSystemCapabilitiesAsync(_cancelToken));
         }
 
         [Fact]
@@ -978,7 +1012,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Setup(mock =>
                 mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(CreateSampleSystemCapabilities);
 
-            await _sut.RefreshSystemCapabilities(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
 
             Assert.Contains("Docker", _sut.MissingCapabilities.Missing);
             Assert.Empty(_sut.MissingCapabilities.Resolved);
@@ -1003,10 +1037,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Setup(mock =>
                 mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(CreateSampleSystemCapabilities);
 
-            await _sut.RefreshSystemCapabilities(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
             _deployToolController.Setup(mock =>
                 mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
-            await _sut.RefreshSystemCapabilities(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
 
             Assert.Contains("Docker", _sut.MissingCapabilities.Missing);
             Assert.Contains("Docker", _sut.MissingCapabilities.Resolved);
@@ -1019,7 +1053,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _sut.PublishResources =
                 new ObservableCollection<PublishResource>() { new PublishResource("", "", "", null) };
 
-            await _sut.ClearPublishedResources(_cancelToken);
+            await _sut.ClearPublishedResourcesAsync(_cancelToken);
 
             Assert.Empty(_sut.PublishedStackName);
             Assert.Empty(_sut.PublishResources);
@@ -1031,11 +1065,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
 
             _deployToolController.Setup(mock =>
-                mock.GetDeploymentDetails(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_deploymentDetails);
+                mock.GetDeploymentDetailsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_deploymentDetails);
 
-            await _sut.RefreshPublishedResources(_cancelToken);
+            await _sut.RefreshPublishedResourcesAsync(_cancelToken);
 
-            _deployToolController.Verify(mock => mock.GetDeploymentDetails(_sampleSessionId, _cancelToken), Times.Once);
+            _deployToolController.Verify(mock => mock.GetDeploymentDetailsAsync(_sampleSessionId, _cancelToken), Times.Once);
 
             Assert.Single(_sut.PublishResources);
             Assert.Equal("sampleStack", _sut.PublishedStackName);
@@ -1044,7 +1078,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RefreshPublishResources_NoSession()
         {
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.RefreshPublishedResources(_cancelToken));
+            await Assert.ThrowsAsync<Exception>(async () => await _sut.RefreshPublishedResourcesAsync(_cancelToken));
         }
 
         [Fact]
@@ -1054,10 +1088,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
 
             _deployToolController.Setup(mock =>
-                mock.GetDeploymentDetails(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                mock.GetDeploymentDetailsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("simulated service error"));
 
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.RefreshPublishedResources(_cancelToken));
+            await Assert.ThrowsAsync<Exception>(async () => await _sut.RefreshPublishedResourcesAsync(_cancelToken));
 
             Assert.Empty(_sut.PublishResources);
             Assert.True(string.IsNullOrWhiteSpace(_sut.PublishedStackName));
@@ -1109,7 +1143,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             var detail = ConfigurationDetailBuilder.Create()
                 .WithId("parent")
-                .WithType(typeof(object))
+                .WithType(DetailType.Blob)
                 .WithChild(ConfigurationDetailBuilder.Create()
                     .WithSampleData()
                     .WithId("problem-child")
@@ -1159,7 +1193,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     SummaryDisplayable = true,
                     DefaultValue = "test",
                     Value = "test",
-                    Type = typeof(string)
+                    Type = DetailType.String
                 };
 
                 detailAdjustor?.Invoke(detail);
@@ -1188,19 +1222,19 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         private async Task SetupPublishView()
         {
-            await _sut.StartDeploymentSession(_cancelToken);
-            await _sut.RefreshRecommendations(_cancelToken);
-            await _sut.UpdateRequiredPublishProperties(_cancelToken);
-            await _sut.SetDeploymentTarget(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await _sut.RefreshRecommendationsAsync(_cancelToken);
+            await _sut.UpdateRequiredPublishPropertiesAsync(_cancelToken);
+            await _sut.SetDeploymentTargetAsync(_cancelToken);
         }
 
         private async Task SetupRepublishView()
         {
             _sut.IsRepublish = true;
-            await _sut.StartDeploymentSession(_cancelToken);
-            await _sut.RefreshExistingTargets(_cancelToken);
-            await _sut.UpdateRequiredPublishProperties(_cancelToken);
-            await _sut.SetDeploymentTarget(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await _sut.RefreshExistingTargetsAsync(_cancelToken);
+            await _sut.UpdateRequiredPublishPropertiesAsync(_cancelToken);
+            await _sut.SetDeploymentTargetAsync(_cancelToken);
         }
 
         private void AssertRequiredPublishProperties(string stackName, string targetRecipe, string expectedRecommendationDescription)
@@ -1233,7 +1267,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     .IsVisible()
                     .IsSummaryDisplayable()
                     .WithName("use vpc")
-                    .WithType(typeof(object))
+                    .WithType(DetailType.Blob)
                     .WithChild(ConfigurationDetailBuilder.Create()
                         .WithName("not-visible-or-advanced #novpc")
                     )
@@ -1261,7 +1295,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 // This node and its children should be excluded (not visible)
                 ConfigurationDetailBuilder.Create()
                     .WithSampleData()
-                    .WithType(typeof(object))
+                    .WithType(DetailType.Blob)
                     .WithName("use holograms")
                     .WithChild(ConfigurationDetailBuilder.Create()
                         .WithName("holograms: not-visible-or-advanced")
@@ -1289,4 +1323,3 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
     }
 }
-#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods

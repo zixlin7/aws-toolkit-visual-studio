@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -22,8 +22,7 @@ namespace Microsoft.VisualStudio.Project
 		IVsHierarchy dependentHierarchy = null;
 
 		#region ctors
-		[CLSCompliant(false)]
-		public NestedProjectBuildDependency(IVsHierarchy dependentHierarchy)
+        public NestedProjectBuildDependency(IVsHierarchy dependentHierarchy)
 		{
 			this.dependentHierarchy = dependentHierarchy;
 		}
@@ -50,7 +49,6 @@ namespace Microsoft.VisualStudio.Project
 			return VSConstants.S_OK;
 		}
 
-		[CLSCompliant(false)]
 		public int get_HelpContext(out uint helpContext)
 		{
 			helpContext = 0;

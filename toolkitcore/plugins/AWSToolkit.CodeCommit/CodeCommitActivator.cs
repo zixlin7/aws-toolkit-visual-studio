@@ -22,7 +22,6 @@ using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using LibGit2Sharp;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CodeCommit
@@ -121,10 +120,6 @@ namespace Amazon.AWSToolkit.CodeCommit
             var registerCredentialsController = new RegisterServiceCredentialsController(account);
 
             var results = !registerCredentialsController.Execute().Success ? null : registerCredentialsController.Credentials;
-
-            ToolkitEvent evnt = new ToolkitEvent();
-            evnt.AddProperty(AttributeKeys.CodeCommitSetupCredentials, "UserPrompt-" + (results == null ? "Skipped" : "Entered"));
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
             return results;
         }
@@ -395,7 +390,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                                             + "\r\n"
                                             + $"Proceed to try and create an IAM user with credentials and associate with the {account.DisplayName} Toolkit profile?";
 
-                    if (!ToolkitFactory.Instance.ShellProvider.Confirm("Auto-create Git Credentials", confirmMsg, MessageBoxButton.YesNo))
+                    if (!ToolkitContext.ToolkitHost.Confirm("Auto-create Git Credentials", confirmMsg, MessageBoxButton.YesNo))
                         return null;
 
                     return CreateCodeCommitCredentialsForRoot(iamClient);
@@ -406,9 +401,9 @@ namespace Amazon.AWSToolkit.CodeCommit
                     ServiceName = codeCommitServiceName,
                     UserName = getUserResponse.User.UserName
                 };
-                var listCredentialsReponse = iamClient.ListServiceSpecificCredentials(listCredentialsRequest);
+                var listCredentialsResponse = iamClient.ListServiceSpecificCredentials(listCredentialsRequest);
                 var credentialsExist =
-                    listCredentialsReponse.ServiceSpecificCredentials.Any(ssc => ssc.Status == StatusType.Active);
+                    listCredentialsResponse.ServiceSpecificCredentials.Any(ssc => ssc.Status == StatusType.Active);
                 if (credentialsExist)
                 {
                     LOGGER.InfoFormat(
@@ -419,7 +414,7 @@ namespace Amazon.AWSToolkit.CodeCommit
 
                 // IAM limits users to two sets of credentials - inactive credentials count against this limit, so 
                 // if we already have two inactive sets, give up
-                if (listCredentialsReponse.ServiceSpecificCredentials.Count == maxServiceSpecificCredentials)
+                if (listCredentialsResponse.ServiceSpecificCredentials.Count == maxServiceSpecificCredentials)
                 {
                     LOGGER.InfoFormat(
                         "User profile {0} already has the maximum amount of service-specific credentials for CodeCommit; user will have to activate and import credentials",
@@ -435,7 +430,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                                    + "\r\n"
                                    + "Proceed to try and create credentials?";
 
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Auto-create Git Credentials", msg,
+                if (!ToolkitContext.ToolkitHost.Confirm("Auto-create Git Credentials", msg,
                     MessageBoxButton.YesNo))
                     return null;
 
@@ -453,10 +448,6 @@ namespace Amazon.AWSToolkit.CodeCommit
                 Thread.Sleep(3000);
             
                 PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential);
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitSetupCredentials, "CreateForIAMUser");
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                 return ServiceSpecificCredentials
                     .FromCredentials(createCredentialsResponse.ServiceSpecificCredential.ServiceUserName,
@@ -518,10 +509,6 @@ namespace Amazon.AWSToolkit.CodeCommit
                 "AWS CodeCommit credentials to enable Git access to your repository have also been created for you.";
 
             PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential, msg);
-
-            ToolkitEvent evnt = new ToolkitEvent();
-            evnt.AddProperty(AttributeKeys.CodeCommitSetupCredentials, "CreateForRoot");
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
             return ServiceSpecificCredentials
                 .FromCredentials(createCredentialsResponse.ServiceSpecificCredential.ServiceUserName,

@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         Task<GetDeploymentStatusOutput> GetDeploymentStatusAsync(string sessionId);
 
-        Task<IList<ConfigurationDetail>> GetConfigSettings(string sessionId, CancellationToken cancellationToken);
+        Task<IList<ConfigurationDetail>> GetConfigSettingsAsync(string sessionId, CancellationToken cancellationToken);
 
 
         Task<IList<ConfigurationDetail>> UpdateConfigSettingValuesAsync(string sessionId, IEnumerable<ConfigurationDetail> configDetails,
@@ -43,15 +43,28 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         Task<ValidationResult> ApplyConfigSettingsAsync(string sessionId,
             IList<ConfigurationDetail> configurationDetails, CancellationToken cancellationToken);
 
-        Task SetDeploymentTarget(string sessionId, string stackName, string recipeId, bool isRepublish, CancellationToken cancellationToken);
+        /// <summary>
+        /// Overload: New deployment
+        /// </summary>
+        Task SetDeploymentTargetAsync(string sessionId, PublishRecommendation newDeploymentTarget, string stackName, CancellationToken cancellationToken);
 
-        Task<GetDeploymentDetailsOutput> GetDeploymentDetails(string sessionId, CancellationToken cancellationToken);
+        /// <summary>
+        /// Overload: Redeployment
+        /// </summary>
+        Task SetDeploymentTargetAsync(string sessionId, RepublishTarget existingDeploymentTarget, CancellationToken cancellationToken);
+
+        Task<GetDeploymentDetailsOutput> GetDeploymentDetailsAsync(string sessionId, CancellationToken cancellationToken);
 
         Task<HealthStatusOutput> HealthAsync();
     }
 
     public class DeployToolController : IDeployToolController
     {
+        private static readonly string[] TypeHintLoadingExclusions = new string[]
+        {
+            ConfigurationDetail.TypeHints.InstanceType,
+        };
+
         private readonly IRestAPIClient _client;
         private readonly ConfigurationDetailFactory _configurationDetailFactory;
 
@@ -147,12 +160,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
            return await _client.GetDeploymentStatusAsync(sessionId);
         }
 
-        public async Task<GetDeploymentDetailsOutput> GetDeploymentDetails(string sessionId, CancellationToken cancellationToken)
+        public async Task<GetDeploymentDetailsOutput> GetDeploymentDetailsAsync(string sessionId, CancellationToken cancellationToken)
         {
             return await _client.GetDeploymentDetailsAsync(sessionId, cancellationToken);
         }
 
-        public async Task<IList<ConfigurationDetail>> GetConfigSettings(string sessionId, CancellationToken cancellationToken)
+        public async Task<IList<ConfigurationDetail>> GetConfigSettingsAsync(string sessionId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(sessionId))
             {
@@ -203,7 +216,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private bool IsTypeHintSupported(ConfigurationDetail detail)
         {
-            return detail.Type == typeof(string) && !string.IsNullOrEmpty(detail.TypeHint);
+            if (TypeHintLoadingExclusions.Contains(detail.TypeHint))
+            {
+                return false;
+            }
+
+            return detail.Type == DetailType.String && !string.IsNullOrEmpty(detail.TypeHint);
         }
 
         public async Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,
@@ -265,18 +283,51 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return validation;
         }
 
-        public async Task SetDeploymentTarget(string sessionId, string stackName, string recipeId, bool isRepublish, CancellationToken cancellationToken)
+        /// <summary>
+        /// New deployment
+        /// </summary>
+        public async Task SetDeploymentTargetAsync(string sessionId, PublishRecommendation newDeploymentTarget, string stackName, CancellationToken cancellationToken)
         {
+            var recipeId = newDeploymentTarget?.RecipeId;
+
             if (string.IsNullOrWhiteSpace(sessionId))
-                throw new InvalidSessionIdException($"The Session Id '{sessionId}' is invalid.");
+            {
+                throw new InvalidSessionIdException($"Invalid Session Id: '{sessionId}'");
+            }
 
             if (string.IsNullOrWhiteSpace(stackName))
-                throw new InvalidParameterException($"The Stack Name '{stackName}' is invalid.");
+            {
+                throw new InvalidParameterException($"Invalid stack name: '{stackName}'");
+            }
 
-            if (!isRepublish && string.IsNullOrWhiteSpace(recipeId))
-                throw new InvalidParameterException($"The Recipe Id '{recipeId}' is invalid.");
+            if (string.IsNullOrWhiteSpace(recipeId))
+            {
+                throw new InvalidParameterException($"Invalid recipe Id: '{recipeId}'");
+            }
 
-            var setTargetRequest = CreateSetDeploymentTargetInput(stackName, recipeId, isRepublish);
+            var setTargetRequest = new SetDeploymentTargetInput { NewDeploymentName = stackName, NewDeploymentRecipeId = recipeId };
+
+            await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Redeployment
+        /// </summary>
+        public async Task SetDeploymentTargetAsync(string sessionId, RepublishTarget existingDeploymentTarget, CancellationToken cancellationToken)
+        {
+            var existingDeploymentId = existingDeploymentTarget?.ExistingDeploymentId;
+
+            if (string.IsNullOrWhiteSpace(sessionId))
+            {
+                throw new InvalidSessionIdException($"Invalid Session Id: '{sessionId}'");
+            }
+
+            if (string.IsNullOrWhiteSpace(existingDeploymentId))
+            {
+                throw new InvalidParameterException($"Invalid existing deployment Id: '{existingDeploymentId}'");
+            }
+
+            var setTargetRequest = new SetDeploymentTargetInput { ExistingDeploymentId = existingDeploymentId };
 
             await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
         }
@@ -284,17 +335,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public Task<HealthStatusOutput> HealthAsync()
         {
             return _client.HealthAsync();
-        }
-
-        private SetDeploymentTargetInput CreateSetDeploymentTargetInput(string stackName, string recipeId,
-            bool isRepublish)
-        {
-            if (isRepublish)
-            {
-                return new SetDeploymentTargetInput { ExistingDeploymentName = stackName };
-            }
-
-            return new SetDeploymentTargetInput { NewDeploymentName = stackName, NewDeploymentRecipeId = recipeId };
         }
     }
 }

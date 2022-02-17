@@ -76,7 +76,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\DynamoDbSettingsTest.cs" />
     <Compile Include="Settings\HostedFilesSettingsTests.cs" />
-    <Compile Include="Settings\MobileAnalyticsSettingsTest.cs" />
     <Compile Include="Settings\SettingsPersistenceBaseTests.cs" />
     <Compile Include="Settings\ToolkitSettingsTests.cs" />
     <Compile Include="Solutions\ProjectFileTests.cs" />
@@ -122,16 +121,16 @@
       <Version>3.7.3.13</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.31</Version>
+      <Version>1.0.39</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.31</Version>
+      <Version>1.0.39</Version>
     </PackageReference>
     <PackageReference Include="Castle.Core">
       <Version>4.2.1</Version>
     </PackageReference>
     <PackageReference Include="log4net">
-      <Version>2.0.13</Version>
+      <Version>2.0.14</Version>
     </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.8.1</Version>

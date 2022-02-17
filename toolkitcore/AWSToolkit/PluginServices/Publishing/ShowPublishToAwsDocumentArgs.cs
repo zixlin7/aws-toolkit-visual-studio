@@ -23,15 +23,27 @@ namespace Amazon.AWSToolkit.PluginServices.Publishing
         public ICredentialIdentifier CredentialId { get; set; }
 
         /// <summary>
+        /// AccountId of initially selected Credentials to Publish with
+        /// </summary>
+        public string AccountId { get; set; }
+
+        /// <summary>
         /// Initially selected AWS Region to publish to
         /// </summary>
         public ToolkitRegion Region { get; set; }
+
+        /// <summary>
+        /// Where the request originated
+        /// </summary>
+        public string Requester { get; set; }
 
         public bool Equals(ShowPublishToAwsDocumentArgs other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return ProjectName == other.ProjectName && ProjectPath == other.ProjectPath && Equals(CredentialId, other.CredentialId) && Equals(Region, other.Region);
+            return ProjectName == other.ProjectName && ProjectPath == other.ProjectPath && Equals(CredentialId, other.CredentialId) && Equals(Region, other.Region)
+                   && Equals(Requester, other.Requester)
+                   && Equals(AccountId, other.AccountId);
         }
 
         public override bool Equals(object obj)
@@ -50,6 +62,8 @@ namespace Amazon.AWSToolkit.PluginServices.Publishing
                 hashCode = (hashCode * 397) ^ (ProjectPath != null ? ProjectPath.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (CredentialId != null ? CredentialId.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Region != null ? Region.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Requester != null ? Requester.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (AccountId != null ? AccountId.GetHashCode() : 0);
                 return hashCode;
             }
         }

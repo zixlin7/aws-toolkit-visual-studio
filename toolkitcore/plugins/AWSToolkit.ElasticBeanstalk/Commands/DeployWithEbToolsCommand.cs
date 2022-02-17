@@ -1,7 +1,6 @@
 ﻿using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.Notifications;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.ElasticBeanstalk.Tools.Commands;
 using System;
@@ -276,9 +275,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 if (command.DeployEnvironmentOptions.EnableXRay.GetValueOrDefault())
                 {
                     deployMetric.XrayEnabled = true;
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.XRayEnabled, "Beanstalk");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
             }
 
@@ -294,9 +290,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 if (enableEnhancedHealth)
                 {
                     deployMetric.EnhancedHealthEnabled = true;
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.BeanstalkEnhancedHealth, "true");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
             }
 

@@ -35,7 +35,6 @@ using Amazon.AWSToolkit.VisualStudio.BuildProcessors;
 using Amazon.AWSToolkit.VisualStudio.DeploymentProcessors;
 using Amazon.AWSToolkit.VisualStudio.Loggers;
 using Amazon.AWSToolkit.VisualStudio.Services;
-using Amazon.AWSToolkit.MobileAnalytics;
 
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
@@ -63,6 +62,7 @@ using Amazon.AWSToolkit.VisualStudio.Telemetry;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
 using Amazon.AWSToolkit.VisualStudio.Utilities.VsAppId;
 using Amazon.AWSToolkit.CodeArtifact.Controller;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -77,6 +77,10 @@ using Amazon.AWSToolkit.VisualStudio.Commands.Toolkit;
 using Amazon.AWSToolkit.VisualStudio.Images;
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
 using Amazon.AwsToolkit.VsSdk.Common;
+
+using AwsToolkit.VsSdk.Common.CommonUI.Converters;
+
+using Microsoft.VisualStudio.PlatformUI;
 
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
@@ -204,7 +208,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         private LambdaTesterEventListener _lambdaTesterEventListener;
 
-        internal SimpleMobileAnalytics AnalyticsRecorder { get; }
 
         /// <summary>
         /// UI dispatcher
@@ -256,8 +259,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 LOGGER.Warn("Failed to register for broadcast messages, theme change will not be detected", e);
             }
-
-            AnalyticsRecorder = SimpleMobileAnalytics.Instance;
         }
 
         public ILog Logger => LOGGER;
@@ -281,7 +282,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         var output = await GetServiceAsync(typeof (SVsOutputWindow)) as IVsOutputWindow;
                         if (output != null && output.CreatePane(ref _guidAwsOutputWindowPane,
                             "Amazon Web Services",
-                            Convert.ToInt32(forceVisible),
+                            Convert.ToInt32(true),
                             Convert.ToInt32(true)) == VSConstants.S_OK)
                             output.GetPane(ref _guidAwsOutputWindowPane, out _awsOutputWindowPane);
                     }
@@ -492,7 +493,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 var additionalPluginFolders = string.Empty;
 
                 string dteVersion = null;
-                string dteEdition = null;
 
                 NavigatorControl navigator = null;
                 await this.JoinableTaskFactory.RunAsync(async delegate
@@ -516,7 +516,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     var dte = (DTE2)await GetServiceAsync(typeof(EnvDTE.DTE));
                     Assumes.Present(dte);
                     dteVersion = dte.Version;
-                    dteEdition = dte.Edition;
 
                     RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
                     RegisterEditorFactory(new TemplateEditorFactory(this));
@@ -557,16 +556,19 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 });
 
+                var productEnvironment = CreateProductEnvironment();
+                OutputProductDetails(productEnvironment);
+
                 var hostInfo = DteVersion.AsHostInfo(dteVersion);
                 ThemeUtil.Initialize(dteVersion);
                 ToolkitThemes.Initialize(new ToolkitThemeProvider());
                 _publishSettingsRepository = new FilePublishSettingsRepository();
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
 
-                _metricsOutputWindow = await CreateMetricsOutputWindow();
-                _telemetryManager = CreateTelemetryManager();
-
-                _regionProvider = new RegionProvider();
+                _metricsOutputWindow = await CreateMetricsOutputWindowAsync();
+                _telemetryManager = CreateTelemetryManager(productEnvironment);
+                S3FileFetcher.Initialize(_telemetryManager?.TelemetryLogger);
+                _regionProvider = new RegionProvider(_telemetryManager?.TelemetryLogger);
                 _regionProvider.Initialize();
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
@@ -575,13 +577,10 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 // Enable UIs to access VS-provided images
                 await InitializeImageProviderAsync();
+                await InitializeVsImageAsync();
 
                 _toolkitCredentialInitializer = new ToolkitCredentialInitializer(_telemetryManager.TelemetryLogger, _regionProvider, ToolkitShellProviderService);
                 _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged += AwsConnectionManager_ConnectionStateChanged;
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dteVersion, dteEdition));
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                 var serviceClientManager = new AwsServiceClientManager(
                     _toolkitCredentialInitializer.CredentialManager,
@@ -665,7 +664,19 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        private async Task<MetricsOutputWindow> CreateMetricsOutputWindow()
+        private void OutputProductDetails(ProductEnvironment productEnvironment)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("AWS Toolkit for Visual Studio");
+            builder.AppendLine($"Toolkit Version: {productEnvironment.AwsProductVersion}");
+            builder.AppendLine(
+                $"Visual Studio: {productEnvironment.ParentProduct}, Version: {productEnvironment.ParentProductVersion}");
+            builder.AppendLine();
+
+            OutputToConsole(builder.ToString(), false);
+        }
+
+        private async Task<MetricsOutputWindow> CreateMetricsOutputWindowAsync()
         {
             try
             {
@@ -678,7 +689,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 if (ToolkitSettings.Instance.ShowMetricsOutputWindow)
                 {
-                    await outputWindow.CreatePane();
+                    await outputWindow.CreatePaneAsync();
                 }
 
                 return outputWindow;
@@ -690,9 +701,8 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        private TelemetryManager CreateTelemetryManager()
+        private TelemetryManager CreateTelemetryManager(ProductEnvironment productEnvironment)
         {
-            var productEnvironment = CreateProductEnvironment();
             var telemetryManager = new TelemetryManager(productEnvironment, _metricsOutputWindow);
 
             // Get telemetry started in a background thread (don't block on obtaining credentials)
@@ -735,6 +745,23 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception e)
             {
                 Logger.Error("Failed to set up Image provider - portions of the Toolkit may not have icons", e);
+            }
+        }
+
+        /// <summary>
+        /// Initialize the toolkit control that
+        /// renders the images served by Visual Studio
+        /// </summary>
+        private async Task InitializeVsImageAsync()
+        {
+            try
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                VsImage.Initialize(new ImageThemeConverter(), new BrushToColorConverter());
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to set up VS image control - portions of the Toolkit may not have icons", e);
             }
         }
 
@@ -1067,25 +1094,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         return;
                     }
 
-                    if (_toolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience())
-                    {
-                        var project = _toolkitContext.ToolkitHost.GetSelectedProject();
-                        if (project != null && project.IsNetFramework())
-                        {
-                            // Always allow .NET Framework projects (unless new Publish experience adds support for .NET Framework projects)
-                            publishMenuCommand.Visible = true;
-                        }
-                        else
-                        {
-                            // Not .NET Framework... show the command, unless user has opted in to the new publish experience
-                            publishMenuCommand.Visible = IsOldPublishExperienceEnabled();
-                        }
-                    }
-                    else
-                    {
-                        publishMenuCommand.Visible = isWebProjectType;
-                    }
-                   
+                    publishMenuCommand.Visible = true;
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
             }
@@ -1236,9 +1245,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 if (AWSECSPlugin != null)
                 {
-                    publishMenuCommand.Visible = _toolkitContext.ToolkitHostInfo.SupportsPublishToAwsExperience()
-                                                ? VSUtility.IsNETCoreDockerProject && IsOldPublishExperienceEnabled()
-                                                : VSUtility.IsNETCoreDockerProject;
+                    publishMenuCommand.Visible = VSUtility.IsNETCoreDockerProject;
 
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
@@ -2019,23 +2026,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             });
         }
 
-        internal bool IsOldPublishExperienceEnabled()
-        {
-            return this.JoinableTaskFactory.Run(async () =>
-            {
-                try
-                {
-                    var publishSettings = await _publishSettingsRepository.GetAsync();
-                    return publishSettings.ShowOldPublishExperience;
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Error retrieving publish settings", e);
-                    return true;
-                }
-            });
-        }
-
         /// <summary>
         /// This method loads a localized string based on the specified resource.
         /// </summary>
@@ -2459,7 +2449,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryInfoBarManager?.Dispose();
             _metricsOutputWindow?.Dispose();
 
-            SimpleMobileAnalytics.Instance.StopMainSession();
             return Microsoft.VisualStudio.VSConstants.S_OK;
         }
 

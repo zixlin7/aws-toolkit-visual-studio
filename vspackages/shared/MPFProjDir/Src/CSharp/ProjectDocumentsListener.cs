@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -18,8 +18,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.VisualStudio.Project
 {
-
-	[CLSCompliant(false)]
+    
 	public abstract class ProjectDocumentsListener : IVsTrackProjectDocumentsEvents2, IDisposable
 	{
 		#region fields

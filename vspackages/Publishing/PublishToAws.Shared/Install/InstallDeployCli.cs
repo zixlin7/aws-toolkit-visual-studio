@@ -18,7 +18,7 @@ namespace Amazon.AWSToolkit.Publish.Install
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            var process = DotnetProcess.CreateHeadless($"tool update --tool-path {_options.ToolPath} --version {_options.VersionRange} aws.deploy.cli");
+            var process = DotnetProcess.CreateHeadless($"tool update --tool-path \"{_options.ToolPath}\" --version {_options.VersionRange} aws.deploy.cli");
             process.Start();
             await process.WaitForExitAsync(cancellationToken);
         }

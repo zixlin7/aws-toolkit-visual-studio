@@ -334,11 +334,8 @@
     <PackageReference Include="AWSSDK.IdentityManagement">
       <Version>3.7.2.53</Version>
     </PackageReference>
-    <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.7.0.73</Version>
-    </PackageReference>
     <PackageReference Include="log4net">
-      <Version>2.0.13</Version>
+      <Version>2.0.14</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

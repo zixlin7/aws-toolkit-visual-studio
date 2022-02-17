@@ -1,4 +1,6 @@
-﻿namespace Amazon.AWSToolkit.Credentials.Utils
+﻿using Amazon.Runtime.CredentialManagement.Internal;
+
+namespace Amazon.AWSToolkit.Credentials.Utils
 {
     public static class ProfilePropertiesExtensionMethods
     {
@@ -28,6 +30,10 @@
                 if (!string.IsNullOrWhiteSpace(properties.MfaSerial))
                 {
                     return CredentialType.AssumeMfaRoleProfile;
+                }
+                else if (!string.IsNullOrWhiteSpace(properties.CredentialSource) && properties.CredentialSource == CredentialSourceType.Ec2InstanceMetadata.ToString())
+                {
+                    return CredentialType.AssumeEc2InstanceRoleProfile;
                 }
                 else
                 {

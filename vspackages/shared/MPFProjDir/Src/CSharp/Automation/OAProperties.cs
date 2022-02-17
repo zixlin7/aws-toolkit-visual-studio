@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.Project.Automation
 	/// Contains all of the properties of a given object that are contained in a generic collection of properties.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	[CLSCompliant(false), ComVisible(true)]
+	[ComVisible(true)]
 	public class OAProperties : EnvDTE.Properties
 	{
 		#region fields

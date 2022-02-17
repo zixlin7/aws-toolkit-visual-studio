@@ -18,14 +18,23 @@ using Xunit;
 
 namespace Amazon.AWSToolkit.Tests.Integration.Publish
 {
-    public abstract class PublishIntegrationTest : IAsyncLifetime
+    [Collection(InstalledCliTestCollection.Name)]
+    public abstract class PublishIntegrationTest : IAsyncLifetime, IClassFixture<DeployCliInstallationFixture>
     {
+        private readonly DeployCliInstallationFixture _cliInstallFixture;
+
         protected IDeployToolController DeployToolController;
         protected ConfigurationDetailFactory ConfigurationDetailFactory;
         protected string SessionId;
 
         protected string StackName;
+        protected bool DeleteStackOnCleanup = true;
         protected string ProjectPath;
+
+        protected PublishIntegrationTest(DeployCliInstallationFixture cliInstallFixture)
+        {
+            _cliInstallFixture = cliInstallFixture;
+        }
 
         public async Task InitializeAsync()
         {
@@ -49,8 +58,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
         protected Task<CliServer> CreateCliServer()
         {
-            var installOptions = InstallOptionsFactory.Create(new ToolkitHostInfo("defaultName", "2022"));
-            return CliServerFactory.CreateAsync(installOptions, new FilePublishSettingsRepository());
+            return CliServerFactory.CreateAsync(_cliInstallFixture.InstallOptions, new FilePublishSettingsRepository());
         }
 
         protected Task<AWSCredentials> GetCredentials()
@@ -68,13 +76,40 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
         public async Task DisposeAsync()
         {
-            await CloudFormationStacks.DeleteStack(StackName);
+            if (DeleteStackOnCleanup)
+            {
+                await CloudFormationStacks.DeleteStack(StackName);
+            }
         }
 
         protected async Task SetDeploymentTargetToBeanstalk()
         {
-            await DeployToolController.SetDeploymentTarget(SessionId, StackName,
-                "AspNetAppElasticBeanstalkLinux", false, CancellationToken.None);
+            var deploymentTarget = new PublishRecommendation(new RecommendationSummary()
+            {
+                RecipeId = "AspNetAppElasticBeanstalkLinux"
+            });
+
+            await DeployToolController.SetDeploymentTargetAsync(SessionId, deploymentTarget, StackName, CancellationToken.None);
+        }
+
+        protected async Task SetDeploymentTargetToAppRunner()
+        {
+            var deploymentTarget = new PublishRecommendation(new RecommendationSummary()
+            {
+                RecipeId = "AspNetAppAppRunner"
+            });
+
+            await DeployToolController.SetDeploymentTargetAsync(SessionId, deploymentTarget, StackName, CancellationToken.None);
+        }
+
+        protected async Task SetDeploymentTargetToFargate()
+        {
+            var deploymentTarget = new PublishRecommendation(new RecommendationSummary()
+            {
+                RecipeId = "AspNetAppEcsFargate"
+            });
+
+            await DeployToolController.SetDeploymentTargetAsync(SessionId, deploymentTarget, StackName, CancellationToken.None);
         }
 
         protected async Task<DeploymentStatus> WaitForDeployment()

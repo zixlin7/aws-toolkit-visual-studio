@@ -30,7 +30,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
         [Fact]
         public void AsProfileProperties_SessionToken()
         {
-            var profile = CredentialProfileTestHelper.SessionProfile;
+            var profile = CredentialProfileTestHelper.Basic.Valid.Token;
             var properties = profile.AsProfileProperties();
 
             Assert.NotNull(properties);
@@ -50,7 +50,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
         [Fact]
         public void AsProfileProperties_CredentialProcess()
         {
-            var profile = CredentialProfileTestHelper.CredentialProcessProfile;
+            var profile = CredentialProfileTestHelper.CredentialProcess.ValidProfile;
             var properties = profile.AsProfileProperties();
 
             Assert.NotNull(properties);
@@ -68,9 +68,49 @@ namespace AWSToolkit.Tests.Credentials.Utils
         }
 
         [Fact]
+        public void AsProfileProperties_AssumeRole_CredentialSource()
+        {
+            var profile = CredentialProfileTestHelper.AssumeRole.Valid.CredentialSource;
+            var properties = profile.AsProfileProperties();
+
+            Assert.NotNull(properties);
+            Assert.Empty(properties.AccessKey);
+            Assert.Empty(properties.SecretKey);
+            Assert.Empty(properties.Token);
+            Assert.Empty(properties.CredentialProcess);
+            Assert.Equal(profile.Options.RoleArn, properties.RoleArn);
+            Assert.Equal(profile.Options.CredentialSource, properties.CredentialSource);
+            Assert.Empty(properties.EndpointName);
+            Assert.Empty(properties.SsoAccountId);
+            Assert.Empty(properties.SsoRegion);
+            Assert.Empty(properties.SsoRoleName);
+            Assert.Empty(properties.SsoStartUrl);
+        }
+
+        [Fact]
+        public void AsProfileProperties_AssumeRole_SourceProfile()
+        {
+            var profile = CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile;
+            var properties = profile.AsProfileProperties();
+
+            Assert.NotNull(properties);
+            Assert.Empty(properties.AccessKey);
+            Assert.Empty(properties.SecretKey);
+            Assert.Empty(properties.Token);
+            Assert.Empty(properties.CredentialProcess);
+            Assert.Equal(profile.Options.RoleArn, properties.RoleArn);
+            Assert.Equal(profile.Options.SourceProfile, properties.SourceProfile);
+            Assert.Empty(properties.EndpointName);
+            Assert.Empty(properties.SsoAccountId);
+            Assert.Empty(properties.SsoRegion);
+            Assert.Empty(properties.SsoRoleName);
+            Assert.Empty(properties.SsoStartUrl);
+        }
+
+        [Fact]
         public void AsProfileProperties_Mfa()
         {
-            var profile = CredentialProfileTestHelper.MFAProfile;
+            var profile = CredentialProfileTestHelper.Mfa.Valid.MfaReference;
             var properties = profile.AsProfileProperties();
 
             Assert.NotNull(properties);
@@ -90,7 +130,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
         [Fact]
         public void AsProfileProperties_Sso()
         {
-            var profile = CredentialProfileTestHelper.SSOProfile;
+            var profile = CredentialProfileTestHelper.Sso.ValidProfile;
             var properties = profile.AsProfileProperties();
 
             Assert.NotNull(properties);
@@ -110,7 +150,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
         [Fact]
         public void AsProfileProperties_Saml()
         {
-            var profile = CredentialProfileTestHelper.SamlCredentialProfile;
+            var profile = CredentialProfileTestHelper.Saml.ValidProfile;
             var properties = profile.AsProfileProperties();
 
             Assert.NotNull(properties);

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -23,8 +23,7 @@ namespace Microsoft.VisualStudio.Project
 	/// <summary>
 	/// This abstract class handles opening, saving of items in the hierarchy.
 	/// </summary>
-	[CLSCompliant(false)]
-	public abstract class DocumentManager
+    public abstract class DocumentManager
 	{
 		#region fields
 		private HierarchyNode node = null;

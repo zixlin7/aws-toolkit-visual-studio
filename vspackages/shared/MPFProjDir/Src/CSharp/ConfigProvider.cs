@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -30,7 +30,6 @@ using Microsoft.Build.Construction;
 */
 namespace Microsoft.VisualStudio.Project
 {
-    [CLSCompliant(false)]
     [ComVisible(true)]
     public class ConfigProvider : IVsCfgProvider2, IVsProjectCfgProvider, IVsExtensibleObject
     {

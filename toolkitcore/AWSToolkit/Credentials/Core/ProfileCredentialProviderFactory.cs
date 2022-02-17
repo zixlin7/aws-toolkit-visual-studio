@@ -209,7 +209,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 {
                     //report no of profiles found with this dialog
                     LOGGER.Info(baseMessage);
-                    ToolkitShell.OutputToHostConsole(baseMessage, true);
+                    ToolkitShell.OutputToHostConsole(baseMessage, false);
                 }
             }
             else
@@ -224,9 +224,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 LOGGER.Info(baseMessage);
                 LOGGER.Error($"The following credentials could not be loaded: {Environment.NewLine}{errorLogMessage}");
 
-                ToolkitShell.OutputToHostConsole(baseMessage, true);
+                ToolkitShell.OutputToHostConsole(baseMessage, false);
                 ToolkitShell.OutputToHostConsole(
-                    $"The following credentials could not be loaded: {outputErrorMessage}. Check the Toolkit logs for more details.", true);
+                    $"The following credentials could not be loaded: {outputErrorMessage}. Check the Toolkit logs for more details.", false);
             }
         }
 
@@ -282,12 +282,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
             ValidateRequiredProperty(profile.Options.RoleArn, ProfilePropertyConstants.RoleArn, profile.Name);
 
-            var sourceProfileName = profile.Options.SourceProfile;
-            var sourceProfile = ProfileHolder.GetProfile(sourceProfileName) ??
-                                throw new InvalidOperationException(
-                                    $"Source Profile not found: {sourceProfileName}, referenced by: {profile.Name}");
-
-            var sourceProfileCredentials = CreateAwsCredential(sourceProfile, region);
+            var sourceCredentials = CreateAssumeRoleSourceCredentials(profile, region);
 
             var options = new ToolkitAssumeRoleAwsCredentials.ToolkitAssumeRoleAwsCredentialsOptions()
             {
@@ -304,12 +299,68 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
 
             var credentials = new ToolkitAssumeRoleAwsCredentials(profile,
-                sourceProfileCredentials,
+                sourceCredentials,
                 roleSessionName,
                 options,
                 ToolkitShell);
 
             return credentials;
+        }
+
+        private AWSCredentials CreateAssumeRoleSourceCredentials(CredentialProfile profile, ToolkitRegion region)
+        {
+            if (string.IsNullOrWhiteSpace(profile.Options.SourceProfile) &&
+                string.IsNullOrWhiteSpace(profile.Options.CredentialSource))
+            {
+                throw new ArgumentException(
+                    $"Profile {profile.Name} is missing required property (one of {ProfilePropertyConstants.SourceProfile} and {ProfilePropertyConstants.CredentialSource})");
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.Options.SourceProfile) &&
+                !string.IsNullOrWhiteSpace(profile.Options.CredentialSource))
+            {
+                throw new ArgumentException(
+                    $"Profile {profile.Name} can only have one of the {ProfilePropertyConstants.SourceProfile} and {ProfilePropertyConstants.CredentialSource} properties");
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.Options.SourceProfile))
+            {
+                return CreateSourceProfileCredentials(profile, region);
+            }
+            else if (!string.IsNullOrWhiteSpace(profile.Options.CredentialSource))
+            {
+                return CreateCredentialSourceCredentials(profile);
+            }
+
+            throw new ArgumentException($"Profile {profile.Name} is not a valid configuration.");
+        }
+
+        private AWSCredentials CreateSourceProfileCredentials(CredentialProfile profile, ToolkitRegion region)
+        {
+            var sourceProfileName = profile.Options.SourceProfile;
+            var sourceProfile = ProfileHolder.GetProfile(sourceProfileName) ??
+                                throw new ArgumentException(
+                                    $"Source Profile not found: {sourceProfileName}, referenced by: {profile.Name}");
+
+            return CreateAwsCredential(sourceProfile, region);
+        }
+
+        private static AWSCredentials CreateCredentialSourceCredentials(CredentialProfile profile)
+        {
+            if (!Enum.TryParse(profile.Options.CredentialSource, true,
+                    out CredentialSourceType credentialSourceType))
+            {
+                throw new ArgumentException(
+                    $"Profile {profile.Name} property {ProfilePropertyConstants.CredentialSource} is not set to a known value.");
+            }
+
+            if (credentialSourceType != CredentialSourceType.Ec2InstanceMetadata)
+            {
+                throw new ArgumentException(
+                    $"Profile {profile.Name} property {ProfilePropertyConstants.CredentialSource} value {credentialSourceType} is not supported. Supported Values: {CredentialSourceType.Ec2InstanceMetadata}");
+            }
+
+            return ToolkitDefaultEc2InstanceCredentials.Instance;
         }
 
         private AWSCredentials CreateSso(CredentialProfile profile)

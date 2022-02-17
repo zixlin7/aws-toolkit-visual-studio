@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Project.Automation
 {
-	[ComVisible(true), CLSCompliant(false)]
+	[ComVisible(true)]
 	public class OASolutionFolder<T> : EnvDTE80.SolutionFolder
 		where T : HierarchyNode
 	{

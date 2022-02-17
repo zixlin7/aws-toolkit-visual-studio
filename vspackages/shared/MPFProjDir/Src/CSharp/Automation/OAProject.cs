@@ -1,4 +1,4 @@
-/***************************************************************************
+ï»¿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Project.Automation
 {
-	[ComVisible(true), CLSCompliant(false)]
+	[ComVisible(true)]
 	public class OAProject : EnvDTE.Project, EnvDTE.ISupportVSProperties
 	{
 		#region fields
@@ -381,7 +381,7 @@ namespace Microsoft.VisualStudio.Project.Automation
 							fullPath = Path.Combine(this.project.ProjectFolder, fileName);
 						}
 					}
-					// We want to be consistent in the error message and exception we throw. fileName could be for example #¤&%"¤&"%  and that would trigger an ArgumentException on Path.IsRooted.
+					// We want to be consistent in the error message and exception we throw. fileName could be for example #Â¤&%"Â¤&"%  and that would trigger an ArgumentException on Path.IsRooted.
 					catch(ArgumentException)
 					{
 						throw new InvalidOperationException(SR.GetString(SR.ErrorInvalidFileName, CultureInfo.CurrentUICulture));

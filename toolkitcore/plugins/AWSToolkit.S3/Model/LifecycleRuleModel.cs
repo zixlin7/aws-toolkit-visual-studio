@@ -36,12 +36,14 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string Prefix
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             get => this.rule.Prefix;
             set
             {
                 this.rule.Prefix = value;
                 base.NotifyPropertyChanged("Prefix");
             }
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public string FormattedExpiration
@@ -106,6 +108,8 @@ namespace Amazon.AWSToolkit.S3.Model
             base.NotifyPropertyChanged("ExpirationDays");
             base.NotifyPropertyChanged("FormattedExpiration");
         }
+
+#pragma warning disable CS0618 // Type or member is obsolete (Transition)
 
         public string FormattedTransition
         {
@@ -174,6 +178,7 @@ namespace Amazon.AWSToolkit.S3.Model
             base.NotifyPropertyChanged("TransitionDays");
             base.NotifyPropertyChanged("FormattedTransition");
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         public string Status
         {
@@ -221,7 +226,9 @@ namespace Amazon.AWSToolkit.S3.Model
         {
             var newRule = new Amazon.S3.Model.LifecycleRule();
             newRule.Id = this.rule.Id;
+#pragma warning disable CS0618 // Type or member is obsolete (Prefix)
             newRule.Prefix = this.rule.Prefix;
+#pragma warning restore CS0618 // Type or member is obsolete
             newRule.Status = this.rule.Status;
 
             if (this.rule.Expiration != null)

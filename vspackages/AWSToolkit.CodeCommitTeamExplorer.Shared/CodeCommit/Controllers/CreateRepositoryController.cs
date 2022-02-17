@@ -23,16 +23,23 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
             if (CodeCommitPlugin == null)
             {
                 Logger.Error("Called to create a repository but CodeCommit plugin not loaded, cannot display repository details page");
+                GitUtilities.RecordCodeCommitCreateRepoMetric(false, "codeCommitPlugin");
                 return;
             }
 
             var newRepoInfo = CodeCommitPlugin.PromptForRepositoryToCreate(Account, Region, GetLocalClonePathFromGitProvider());
             if (newRepoInfo == null)
+            {
+                GitUtilities.RecordCodeCommitCreateRepoMetric(false, "newRepoInfo");
                 return;
+            }
 
             var gitCredentials = ObtainGitCredentials();
             if (gitCredentials == null)
+            {
+                GitUtilities.RecordCodeCommitCreateRepoMetric(false, "gitCredentials");
                 return;
+            }
 
             // Create the repo at the service first, then clone locally so that Team Explorer becomes
             // aware of it. We will then call an optional delegate so that external tooling/wizards

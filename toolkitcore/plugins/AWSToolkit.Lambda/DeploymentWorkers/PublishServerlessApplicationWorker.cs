@@ -11,7 +11,11 @@ using Amazon.S3;
 using log4net;
 using System;
 using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.IdentityManagement;
+using Amazon.Lambda;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
@@ -28,8 +32,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         IAmazonCloudFormation CloudFormationClient { get; }
         IAmazonS3 S3Client { get; }
         IAmazonECR ECRClient { get; }
+        private IAmazonIdentityManagementService IamClient { get; }
+        private IAmazonLambda LambdaClient { get; }
 
         public PublishServerlessApplicationWorker(ILambdaFunctionUploadHelpers helpers, IAmazonS3 s3Client, IAmazonCloudFormation cloudFormationClient, IAmazonECR ecrClient,
+            IAmazonIdentityManagementService iamClient, IAmazonLambda lambdaClient,
             PublishServerlessApplicationWorkerSettings settings,
             ITelemetryLogger telemetryLogger)
         {
@@ -37,6 +44,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             this.S3Client = s3Client;
             this.CloudFormationClient = cloudFormationClient;
             this.ECRClient = ecrClient;
+            this.IamClient = iamClient;
+            this.LambdaClient = lambdaClient;
             this.Settings = settings;
             this._telemetryLogger = telemetryLogger;
         }
@@ -49,9 +58,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             {
                 var command = new DeployServerlessCommand(logger, Settings.SourcePath, new string[0]);
                 command.DisableInteractive = true;
-                command.S3Client = this.S3Client;
-                command.CloudFormationClient = this.CloudFormationClient;
-                command.ECRClient = this.ECRClient;
+                command.S3Client = S3Client;
+                command.CloudFormationClient = CloudFormationClient;
+                command.ECRClient = ECRClient;
+                command.IAMClient = IamClient;
+                command.LambdaClient = LambdaClient;
                 command.WaitForStackToComplete = false;
                 command.Profile = Settings.Account.Identifier.ProfileName;
                 command.Credentials = Settings.Credentials;
@@ -69,7 +80,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 {
                     _telemetryLogger.RecordServerlessApplicationDeploy(
                         Result.Succeeded,
-                        Settings.Region.Id
+                        Settings.AccountId,
+                        Settings.Region?.Id
                     );
 
                     this.Helpers.PublishServerlessAsyncCompleteSuccess(this.Settings);
@@ -87,22 +99,36 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     }
                 }
             }
-            catch (ToolsException e)
+            catch (ToolsException)
             {
-                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.Id);
+                _telemetryLogger.RecordServerlessApplicationDeploy(
+                    Result.Failed,
+                    Settings.AccountId,
+                    Settings.Region?.Id);
+
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
             catch (ToolkitException e)
             {
                 logger.WriteLine(e.Message);
-                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.Id);
+
+                _telemetryLogger.RecordServerlessApplicationDeploy(
+                    Result.Failed,
+                    Settings.AccountId,
+                    Settings.Region?.Id);
+
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
             catch (Exception e)
             {
                 logger.WriteLine(e.Message);
                 LOGGER.Error("Error publishing AWS Serverless application.", e);
-                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.Id);
+
+                _telemetryLogger.RecordServerlessApplicationDeploy(
+                    Result.Failed,
+                    Settings.AccountId,
+                    Settings.Region?.Id);
+
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
         }
@@ -111,9 +137,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
     public class PublishServerlessApplicationWorkerSettings
     {
         public AccountViewModel Account { get; set; }
+        public string AccountId { get; set; }
         public AWSCredentials Credentials { get; set; }
         public ToolkitRegion Region { get; set; }
-
         public string SourcePath { get; set; }
         public string Configuration { get; set; }
         public string Framework { get; set; }

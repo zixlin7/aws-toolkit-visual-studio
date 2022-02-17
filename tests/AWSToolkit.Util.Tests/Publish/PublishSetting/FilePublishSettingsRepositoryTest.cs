@@ -33,15 +33,13 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
         {
             // arrange.
             var json =
-                @"{ ""DeployServer"": { ""PortRange"": { ""Start"": 20000, ""End"": 20001 } }, ""ProxySettings"": { ""Host"": ""This-is-the-host"" }, ""ShowPublishBanner"": false, ""ShowOldPublishExperience"": false, ""ShowPublishMenu"": true}";
+                @"{ ""DeployServer"": { ""PortRange"": { ""Start"": 20000, ""End"": 20001 } }, ""ProxySettings"": { ""Host"": ""This-is-the-host"" }, ""ShowPublishBanner"": false}";
             WriteJsonFile(json);
 
             var expectedSettings = new PublishSettings()
             {
                 DeployServer = new DeployServerSettings(new PortRange(20000, 20001)),
                 ShowPublishBanner = false,
-                ShowOldPublishExperience = false,
-                ShowPublishMenu = true,
             };
 
             // act.
@@ -83,7 +81,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             {
                 DeployServer = new DeployServerSettings(new PortRange(20000, 20001)),
                 ShowPublishBanner = true,
-                ShowOldPublishExperience = true
             };
 
             // act.
@@ -122,7 +119,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             {
                 DeployServer = new DeployServerSettings(new PortRange(20000, 20001)),
                 ShowPublishBanner = true,
-                ShowOldPublishExperience = false
             };
 
             // act.

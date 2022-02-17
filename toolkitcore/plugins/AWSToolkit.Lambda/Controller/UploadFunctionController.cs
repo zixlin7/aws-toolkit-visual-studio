@@ -230,7 +230,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {
                 new UploadFunctionDetailsPageController(_toolkitContext),
-                new UploadFunctionAdvancedPageController(),
+                new UploadFunctionAdvancedPageController(_toolkitContext),
                 new UploadFunctionProgressPageController(UploadFunctionProgressPageController.Mode.Lambda, _toolkitContext)
             };
 
@@ -304,6 +304,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         public class UploadFunctionState
         {
             public AccountViewModel Account { get; set; }
+            public string AccountId { get; set; }
             public AWSCredentials Credentials { get; set; }
             public ToolkitRegion Region { get; set; }
             public string SourcePath { get; set; }

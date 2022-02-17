@@ -39,6 +39,23 @@
             "name": "recipeId",
             "type": "string",
             "description": "The recipe used for the deployment"
+        },
+        {
+            "name": "publishSettingType",
+            "type": "string",
+            "description": "The type of a particular configuration setting/detail"
+        },
+        {
+            "name": "publishInstallCliMode",
+            "type": "string",
+            "allowedValues": ["install", "upgrade", "noop"],
+            "description": "The operation that occurred when an attempt was made to download the CLI"
+        },
+        {
+            "name": "publishSetupStage",
+            "type": "string",
+            "allowedValues": ["install", "validate", "initialize", "show", "all"],
+            "description": "Represents a phase of the publish experience startup sequence"
         }
     ],
     "metrics": [
@@ -66,7 +83,10 @@
         {
             "name": "publish_start",
             "description": "Called when user starts the Publish to AWS workflow",
-            "metadata": [ { "type": "result" } ]
+            "metadata": [ 
+                { "type": "result" }, 
+                { "type": "source", "required": false } 
+            ]
         },
         {
             "name": "publish_deploy",
@@ -84,19 +104,40 @@
             ] 
         },
         {
-            "name": "publish_optIn",
-            "description": "Called when user opts into Publish to AWS experience",
+            "name": "publish_setup",
+            "description": "Starting the Publish to AWS experience",
+            "unit": "Milliseconds",            
             "metadata": [
                 { "type": "result" },
-                { "type": "serviceType" }
+                { "type": "duration" },
+                { "type": "publishSetupStage" },
+                { "type": "publishInstallCliMode", "required": false },
+                { "type": "errorCode", "required": false }
+            ] 
+        },
+        {
+            "name": "publish_unsupportedSetting",
+            "description": "Called when user exits the publish workflow to record unsupported setting types",
+            "metadata": [
+                { "type": "recipeId" },
+                { "type": "publishSettingType" }
             ]
         },
         {
-            "name": "publish_optOut",
-            "description": "Called when user opts out of Publish to AWS experience",
+            "name": "lambda_iamRoleCleanup",
+            "description": "Called when cleaning up IAM Role trusted policy",
             "metadata": [
-                { "type": "result" }
+                { "type": "result" },
+                { "type": "reason" }
             ]
+        },
+        {
+            "name": "lambda_addEvent",
+            "description": "Called when adding an event to a lambda function",
+            "metadata": [
+                { "type": "result" },
+                { "type": "variant" }
+            ] 
         }
     ]
 }

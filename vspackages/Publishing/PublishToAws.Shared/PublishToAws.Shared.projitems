@@ -15,7 +15,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PersistBannerVisibilityCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Commands\ReenableOldPublishCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\EditKeyValuesCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEc2InstanceTypeCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectVpcCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StackViewerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommand.cs" />
@@ -45,10 +46,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailChangedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\UnsupportedType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValueConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValuesConversion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishUrls.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\Ec2InstanceConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IamRoleConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IPublishToAwsProperties.cs" />
@@ -84,6 +88,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProgressStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishToAwsDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishViewStage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnsupportedSettingTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ConfigureTargetView.xaml.cs">
       <DependentUpon>ConfigureTargetView.xaml</DependentUpon>
     </Compile>
@@ -93,8 +98,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\NewTargetDetailsView.xaml.cs">
       <DependentUpon>NewTargetDetailsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\Ec2InstanceTypeControl.xaml.cs">
+      <DependentUpon>Ec2InstanceTypeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\IamRolePropertyControl.xaml.cs">
       <DependentUpon>IamRolePropertyControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\KeyValuesTypeControl.xaml.cs">
+      <DependentUpon>KeyValuesTypeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\VpcPropertyControl.xaml.cs">
       <DependentUpon>VpcPropertyControl.xaml</DependentUpon>
@@ -123,9 +134,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishToAwsDocumentControl.xaml.cs">
       <DependentUpon>PublishToAwsDocumentControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\ReenableOldPublishDialog.xaml.cs">
-      <DependentUpon>ReenableOldPublishDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\SelectTargetView.xaml.cs">
       <DependentUpon>SelectTargetView.xaml</DependentUpon>
     </Compile>
@@ -145,6 +153,14 @@
     <Page Include="$(MSBuildThisFileDirectory)Views\NewTargetDetailsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\Ec2InstanceTypeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\KeyValuesTypeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\PropertyEditors.xaml">
       <SubType>Designer</SubType>
@@ -187,10 +203,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishToAwsDocumentControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Views\ReenableOldPublishDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

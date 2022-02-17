@@ -4,7 +4,6 @@ using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
-using Amazon.AWSToolkit.MobileAnalytics;
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
@@ -34,22 +33,14 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
             // if the user has only one profile, we can just proceed
             if (accounts.Count == 1)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitConnectStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
+                GitUtilities.RecordCodeCommitSetCredentialsMetric(true);
                 SelectedAccount = accounts.First();
                 return new ActionResults().WithSuccess(true);
             }
 
-
             var results = accounts.Any() ? SelectFromExistingProfiles() : CreateNewProfile();
-
-            {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitConnectStatus, results.Success ? ToolkitEvent.COMMON_STATUS_SUCCESS : ToolkitEvent.COMMON_STATUS_FAILURE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-            }
+            
+            GitUtilities.RecordCodeCommitSetCredentialsMetric(results.Success);
 
             return results;
         }

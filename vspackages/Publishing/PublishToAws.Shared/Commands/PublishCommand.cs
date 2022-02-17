@@ -35,14 +35,14 @@ namespace Amazon.AWSToolkit.Publish.Commands
                     throw new Exception("One or more configuration settings are invalid.");
                 }
 
-                await PublishDocumentViewModel.ClearPublishedResources(CancellationToken.None).ConfigureAwait(false);
+                await PublishDocumentViewModel.ClearPublishedResourcesAsync(CancellationToken.None).ConfigureAwait(false);
 
                 await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
 
                 PublishDocumentViewModel.ViewStage = PublishViewStage.Publish;
 
                 await TaskScheduler.Default;
-                await PublishDocumentViewModel.PublishApplication().ConfigureAwait(false);
+                await PublishDocumentViewModel.PublishApplicationAsync().ConfigureAwait(false);
             }
             catch (Exception e)
             {

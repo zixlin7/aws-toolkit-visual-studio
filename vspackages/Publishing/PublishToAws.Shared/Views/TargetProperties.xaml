@@ -30,30 +30,43 @@
             </Grid.RowDefinitions>
 
             <!-- Show Missing System Dependencies -->
-            <Grid 
-                Grid.Row="0" Grid.Column="0"
+            <Border 
                 Margin="0 0 0 18"
                 Visibility="{Binding SystemCapabilities, Converter={StaticResource SystemCapabilitiesToVisibilityConverter}}"
+                Grid.Row="0" Grid.Column="0"
+                BorderThickness="1" 
+                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
                 >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+                <Grid Margin="9">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                <TextBlock
-                    Grid.Row="0" Grid.Column="0" 
-                    VerticalAlignment="Top"
-                    FontWeight="Bold"
-                    Text="Missing system capabilities" />
+                    <StackPanel 
+                        Grid.Row="0" Grid.Column="0" 
+                        Orientation="Horizontal">
+                        <Image
+                            VerticalAlignment="Top"
+                            DataContext="{DynamicResource VsImages}"
+                            Source="{Binding StatusError}"/>
 
-                <ItemsControl
-                    Grid.Row="1" Grid.Column="0"
-                    HorizontalContentAlignment="Stretch"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    ItemTemplate="{StaticResource SystemCapabilityTemplate}"
-                    ItemsSource="{Binding SystemCapabilities}" />
+                        <TextBlock
+                            Margin="6 0 0 0"
+                            VerticalAlignment="Top"
+                            FontWeight="Bold"
+                            Text="Missing system requirements" />
+                    </StackPanel>
 
-            </Grid>
+                    <ItemsControl
+                        Grid.Row="1" Grid.Column="0"
+                        HorizontalContentAlignment="Stretch"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ItemTemplate="{StaticResource SystemCapabilityTemplate}"
+                        ItemsSource="{Binding SystemCapabilities}" />
+
+                </Grid>
+            </Border>
 
             <!-- Show Target Description -->
             <Grid 

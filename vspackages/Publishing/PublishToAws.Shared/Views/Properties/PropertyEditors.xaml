@@ -13,6 +13,7 @@
     -->
 
     <commonUi:VsImages x:Key="VsImages" />
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
 
     <Style x:Key="ConfigDetailItemStyle">
@@ -196,6 +197,12 @@
                 </commonUi:BrowserHyperLink>
                 <Run Text="to see if a newer Toolkit version supports it" />
             </TextBlock>
+            <TextBlock 
+                TextWrapping="Wrap"
+                Visibility="{Binding HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+                Text="{Binding ValidationMessage}"
+                />
         </StackPanel>
     </DataTemplate>
 
@@ -205,6 +212,14 @@
 
     <DataTemplate x:Key="VpcEditor" DataType="{x:Type models:ConfigurationDetail}">
         <properties:VpcPropertyControl />
+    </DataTemplate>
+
+    <DataTemplate x:Key="Ec2InstanceTypeEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:Ec2InstanceTypeControl />
+    </DataTemplate>
+
+    <DataTemplate x:Key="KeyValuesTypeEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:KeyValuesTypeControl />
     </DataTemplate>
 
     <models:PropertyTemplateSelector 
@@ -217,6 +232,8 @@
         EnumEditor="{StaticResource EnumEditor}"
         IamRoleEditor="{StaticResource IamRoleEditor}"
         VpcEditor="{StaticResource VpcEditor}"
+        Ec2InstanceTypeEditor="{StaticResource Ec2InstanceTypeEditor}"
+        KeyValuesTypeEditor="{StaticResource KeyValuesTypeEditor}"
         />
 
 </ResourceDictionary>

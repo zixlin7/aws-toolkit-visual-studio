@@ -22,13 +22,15 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             public const string IamRole = "IAMRole";
             public const string Vpc = "Vpc";
+            public const string InstanceType = "InstanceType";
         }
 
         private bool _suspendDetailChangeEvents = false;
         private string _id;
         private string _name;
         private string _description;
-        private Type _type;
+        private DetailType _type;
+        private string _originalType;
         private string _typeHint;
         private object _value;
         private object _defaultValue;
@@ -80,6 +82,16 @@ namespace Amazon.AWSToolkit.Publish.Models
         }
 
         /// <summary>
+        /// The configuration detail's <see cref="OptionSettingItemSummary"/> original type
+        /// (the unaltered version, different from <see cref="Type"/>)
+        /// </summary>
+        public string OriginalType
+        {
+            get => _originalType;
+            set => SetProperty(ref _originalType, value);
+        }
+
+        /// <summary>
         /// The display-friendly name of this configuration field, including the 
         /// full chain of parent details.
         /// Example: "Foo : Bar : Baz"
@@ -101,7 +113,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// <summary>
         /// The configuration field's type, as interpreted by the Toolkit (and how the UI displays it).
         /// </summary>
-        public Type Type
+        public DetailType Type
         {
             get => _type;
             set => SetProperty(ref _type, value);
@@ -304,6 +316,7 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         private void RaiseErrorsChanged(string propertyName)
         {
+            NotifyPropertyChanged(nameof(HasErrors));
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
 

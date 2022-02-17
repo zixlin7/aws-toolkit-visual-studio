@@ -8,7 +8,8 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers;
-using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using EnvDTE;
 
@@ -192,9 +193,10 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
             Dictionary<string, string> replacementsDictionary,
             WizardRunKind runKind, object[] customParams)
         {
+            var result = Result.Failed;
             try
             {
-                this._dte = (DTE2)automationObject;
+                this._dte = (DTE2) automationObject;
                 this._replacementsDictionary = replacementsDictionary;
 
                 IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.View.NewAWSLambdaProject", new Dictionary<string, object>());
@@ -202,7 +204,8 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
                 {
-                    new CSharpProjectTypeController("Select Blueprint", this.Description, this.RequiredTags, BlueprintsManifest.GetBlueprintsPath(ToolkitFactory.Instance.ShellProvider.HostInfo.Version))
+                    new CSharpProjectTypeController("Select Blueprint", this.Description, this.RequiredTags,
+                        BlueprintsManifest.GetBlueprintsPath(ToolkitFactory.Instance.ShellProvider.HostInfo.Version))
                 };
 
                 wizard.RegisterPageControllers(defaultPages, 0);
@@ -211,22 +214,38 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                     throw new WizardCancelledException();
                 }
 
-                this._blueprint = wizard.CollectedProperties[CSharpWizardPropertyNameConstants.propKey_SelectedBlueprint] as Blueprint;
+                this._blueprint =
+                    wizard.CollectedProperties[
+                        CSharpWizardPropertyNameConstants.propKey_SelectedBlueprint] as Blueprint;
 
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.LambdaNETCoreNewProjectType, this.ProjectType);
-                evnt.AddProperty(AttributeKeys.LambdaNETCoreNewProjectLanguage, this.ProjectLanguage);
-                evnt.AddProperty(AttributeKeys.LambdaNETCoreNewProject, this._blueprint.Name);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                result = Result.Succeeded;
             }
             catch (WizardCancelledException)
             {
+                result = Result.Cancelled;
                 throw;
             }
             catch (Exception ex)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError(ex.ToString());
             }
+            finally
+            {
+                RecordLambdaCreateProjectMetric(result);
+            }
+        }
+
+        private void RecordLambdaCreateProjectMetric(Result result)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordLambdaCreateProject(new LambdaCreateProject
+            {
+                AwsAccount = ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = ToolkitFactory.Instance.AwsConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
+                Result = result,
+                Language = ProjectLanguage,
+                Variant = this.ProjectType,
+                TemplateName = this._blueprint?.Name
+            });
         }
     }
 }

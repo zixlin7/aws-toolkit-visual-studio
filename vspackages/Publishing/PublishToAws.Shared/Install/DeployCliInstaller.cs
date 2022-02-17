@@ -24,13 +24,14 @@ namespace Amazon.AWSToolkit.Publish.Install
 
         public async Task<InstallResult> InstallAsync(CancellationToken cancellationToken)
         {
-            if (IsInstalled() && await NoUpdateAvailableAsync(cancellationToken))
+            var previouslyInstalled = IsInstalled();
+            if (previouslyInstalled && await NoUpdateAvailableAsync(cancellationToken))
             {
                 return InstallResult.Skipped;
             }
 
             await _installDeployCli.ExecuteAsync(cancellationToken);
-            return InstallResult.Installed;
+            return previouslyInstalled ? InstallResult.Updated : InstallResult.Installed;
         }
 
         private bool IsInstalled()
