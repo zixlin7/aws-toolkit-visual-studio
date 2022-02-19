@@ -641,7 +641,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         public PublishSetup()
         {
-            this.Passive = false;
+            this.Passive = true;
         }
     }
     
