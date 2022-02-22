@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 
+using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
 
 namespace Amazon.AWSToolkit.Publish.Commands
@@ -41,12 +42,12 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         private bool CanExecuteForPublishView()
         {
-            return HasRecommendations() && PublishDocumentViewModel.Recommendation != null;
+            return HasRecommendations() && PublishDocumentViewModel.PublishDestination is PublishRecommendation;
         }
 
         private bool CanExecuteForRepublishView()
         {
-            return HasRepublishTargets() && PublishDocumentViewModel.RepublishTarget != null;
+            return HasRepublishTargets() && PublishDocumentViewModel.PublishDestination is RepublishTarget;
         }
 
         private bool HasRecommendations()

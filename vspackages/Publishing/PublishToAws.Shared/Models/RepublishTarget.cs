@@ -1,9 +1,4 @@
-﻿using System;
-using System.Windows.Media;
-
-using Amazon.AWSToolkit.Publish.Util;
-
-using AWS.Deploy.ServerMode.Client;
+﻿using AWS.Deploy.ServerMode.Client;
 
 namespace Amazon.AWSToolkit.Publish.Models
 {
@@ -11,28 +6,9 @@ namespace Amazon.AWSToolkit.Publish.Models
     /// Represents an existing destination for publishing a user's application to AWS.
     /// Used by the "Existing Target" UI in "Select Targets".
     /// </summary>
-    public class RepublishTarget : IEquatable<RepublishTarget>
+    public class RepublishTarget : PublishDestinationBase
     {
-        public string Name { get; }
-
-        public string Service { get; }
-
-        public string RecipeId { get; }
-
-        public string RecipeName { get; }
-
-        public string Description { get; }
-
-        public string ShortDescription { get; }
-
         public string ExistingDeploymentId { get; }
-
-        public ImageSource ServiceIcon => RecipeServiceImageResolver.GetServiceImage(Service);
-
-        /// <summary>
-        /// Whether or not this is the most recommended republish target.
-        /// </summary>
-        public bool IsRecommended { get; set; } = false;
 
         public bool DeployedToRecently { get; set; }
 
@@ -56,7 +32,8 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         public bool Equals(RepublishTarget other)
         {
-            return Name == other.Name && Service == other.Service && RecipeId == other.RecipeId && RecipeName == other.RecipeName && Description == other.Description;
+            return base.Equals(other) &&
+                   ExistingDeploymentId == other.ExistingDeploymentId;
         }
 
         public override bool Equals(object obj)
@@ -74,11 +51,8 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             unchecked
             {
-                var hashCode = (Name != null ? Name.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Service != null ? Service.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (RecipeId != null ? RecipeId.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (RecipeName != null ? RecipeName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
+                var hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ (ExistingDeploymentId != null ? ExistingDeploymentId.GetHashCode() : 0);
                 return hashCode;
             }
         }

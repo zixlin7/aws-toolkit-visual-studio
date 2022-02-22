@@ -51,6 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValuesConversion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishDestinationBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishUrls.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\Ec2InstanceConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConfigurationDetail.cs" />

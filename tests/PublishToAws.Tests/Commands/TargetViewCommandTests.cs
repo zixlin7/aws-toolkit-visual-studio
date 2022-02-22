@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Publish.Commands;
+﻿using System.Linq;
+
+using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
 
 using Xunit;
@@ -19,13 +21,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         [Fact]
         public void CanExecute_WhenPublishView()
         {
+            _commandFixture.SetupNewPublish();
             Assert.True(_sut.CanExecute(null));
         }
 
         [Fact]
         public void CanExecute_WhenRepublishView()
         {
-            SetupRepublishView();
+            _commandFixture.SetupRepublish();
             Assert.True(_sut.CanExecute(null));
         }
 
@@ -52,13 +55,15 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         [Fact]
         public void CanExecute_NullRecommendationWhenPublishView()
         {
-            ViewModel.Recommendation = null;
+            _commandFixture.SetupNewPublish();
+            ViewModel.PublishDestination = null;
             Assert.False(_sut.CanExecute(null));
         }
 
         [Fact]
         public void CanExecute_NullRecommendationsWhenPublishView()
         {
+            _commandFixture.SetupNewPublish();
             ViewModel.Recommendations = null;
             Assert.False(_sut.CanExecute(null));
         }
@@ -66,6 +71,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         [Fact]
         public void CanExecute_EmptyRecommendationsWhenPublishView()
         {
+            _commandFixture.SetupNewPublish();
             ViewModel.Recommendations.Clear();
             Assert.False(_sut.CanExecute(null));
         }
@@ -73,8 +79,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         [Fact]
         public void CanExecute_NullRepublishTargetWhenRepublishView()
         {
-            ViewModel.RepublishTarget = null;
-            AssertRepublishViewCanNotExecute();
+            _commandFixture.SetupRepublish();
+            ViewModel.PublishDestination = null;
+            Assert.False(_sut.CanExecute(null));
         }
 
         [Fact]
@@ -102,14 +109,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             Assert.True(raisedCanExecute);
         }
 
-        private void SetupRepublishView()
-        {
-            ViewModel.IsRepublish = true;
-        }
-
         private void AssertRepublishViewCanNotExecute()
         {
-            SetupRepublishView();
+            _commandFixture.SetupRepublish();
             Assert.False(_sut.CanExecute(null));
         }
     }

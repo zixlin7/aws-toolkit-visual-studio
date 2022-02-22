@@ -301,6 +301,10 @@ namespace Amazon.AWSToolkit.Publish.Views
 
         private void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.IsRepublish))
+            {
+                _viewModel.CyclePublishDestination();
+            }
 
             if (AffectsSummary(e.PropertyName))
             {

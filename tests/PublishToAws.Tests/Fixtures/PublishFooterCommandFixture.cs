@@ -39,6 +39,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
         {
             await base.LoadOptionsButtonSettingsAsync();
         }
+
+        public void SetPreviousPublishDestination(PublishDestinationBase publishDestination)
+        {
+            base.SetCachedPublishDestination(publishDestination);
+        }
     }
 
     /// <summary>
@@ -96,8 +101,18 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
                 };
 
             ViewModel.DeploymentClient = DeploymentCommunicationClient.Object;
-            ViewModel.Recommendation = ViewModel.Recommendations.First();
-            ViewModel.RepublishTarget = ViewModel.RepublishTargets.First();
+        }
+
+        public void SetupNewPublish()
+        {
+            ViewModel.IsRepublish = false;
+            ViewModel.PublishDestination = ViewModel.Recommendations?.FirstOrDefault();
+        }
+
+        public void SetupRepublish()
+        {
+            ViewModel.IsRepublish = true;
+            ViewModel.PublishDestination = ViewModel.RepublishTargets?.FirstOrDefault();
         }
 
         public void StubStartSessionToReturn(SessionDetails sessionDetails)

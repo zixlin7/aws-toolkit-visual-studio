@@ -141,7 +141,7 @@
                 SelectionMode="Single"
                 ItemTemplate="{StaticResource RecommendationTemplate}"
                 ItemsSource="{Binding Recommendations}"
-                SelectedItem="{Binding Recommendation}"
+                SelectedItem="{Binding PublishDestination}"
                 >
                 <ListBox.Visibility>
                     <Binding ElementName="NoTargetsPanel" Path="Visibility" Converter="{StaticResource InverseVisibilityConverter}"/>
