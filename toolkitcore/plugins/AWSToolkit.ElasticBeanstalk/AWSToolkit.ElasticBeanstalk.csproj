@@ -70,6 +70,7 @@
     <Compile Include="Commands\DeployWithEbToolsCommand.cs" />
     <Compile Include="Controller\ApplicationStatusController.cs" />
     <Compile Include="Controller\BaseDeleteApplicationController.cs" />
+    <Compile Include="Controller\BeanstalkEnvironmentViewer.cs" />
     <Compile Include="Controller\ChangeEnvironmentTypeController.cs" />
     <Compile Include="Controller\DeleteApplicationController.cs" />
     <Compile Include="Controller\DeleteApplicationVersionController.cs" />

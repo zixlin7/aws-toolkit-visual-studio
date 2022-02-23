@@ -46,6 +46,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Wizard
             throw new NotImplementedException();
         }
 
+        public T GetProperty<T>(string key, T defaultValue)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SetProperty(string key, object value)
         {
             CollectedProperties[key] = value;

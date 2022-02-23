@@ -115,6 +115,7 @@
     <Compile Include="ECS\EcsTelemetryUtilsTests.cs" />
     <Compile Include="ECS\EcsWizardUtilsTests.cs" />
     <Compile Include="ElasticBeanstalk\AWSOptionsPageControllerTests.cs" />
+    <Compile Include="ElasticBeanstalk\BeanstalkEnvironmentViewerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkWizardTests.cs" />
     <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Iam\IamEntityRepositoryTests.cs" />
     <Compile Include="Lambda\LambdaStateWaiterTests.cs" />
+    <Compile Include="Lambda\UploadFunctionViewModelIsValidConfigurationTests.cs" />
     <Compile Include="Models\KeyValueConversionTests.cs" />
     <Compile Include="Models\KeyValueTests.cs" />
     <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />

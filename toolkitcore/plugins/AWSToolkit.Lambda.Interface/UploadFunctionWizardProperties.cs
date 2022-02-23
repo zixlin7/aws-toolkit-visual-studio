@@ -71,6 +71,11 @@
         public static readonly string SaveSettings = "saveSettings";
 
         /// <summary>
+        /// Is true if the project has an executable output type
+        /// </summary>
+        public static readonly string IsExecutable = "isExecutable";
+
+        /// <summary>
         /// 
         /// </summary>
         public static readonly string IsSelectedFunctionExisting = "IsSelectedFunctionExisting";

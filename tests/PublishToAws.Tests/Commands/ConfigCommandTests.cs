@@ -18,16 +18,36 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         }
 
         [Fact]
-        public void ExecuteCommand()
+        public void ExecuteCommand_NewPublish()
         {
+            _commandFixture.SetupNewPublish();
             _sut.Execute(null);
 
             Assert.Equal(PublishViewStage.Configure, ViewModel.ViewStage);
         }
 
         [Fact]
-        public void CanExecute()
+        public void ExecuteCommand_Republish()
         {
+            _commandFixture.SetupRepublish();
+            _sut.Execute(null);
+
+            Assert.Equal(PublishViewStage.Configure, ViewModel.ViewStage);
+        }
+
+        [Fact]
+        public void CanExecute_Republish()
+        {
+            _commandFixture.SetupRepublish();
+
+            Assert.True(_sut.CanExecute(null));
+        }
+
+        [Fact]
+        public void CanExecute_NewPublish()
+        {
+            _commandFixture.SetupNewPublish();
+
             Assert.True(_sut.CanExecute(null));
         }
 

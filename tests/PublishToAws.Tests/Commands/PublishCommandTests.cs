@@ -29,6 +29,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public PublishCommandTests()
         {
             _sut = new PublishCommand(ViewModel, _commandFixture.ShellProvider.Object);
+            _commandFixture.SetupNewPublish();
         }
 
         [StaFact]

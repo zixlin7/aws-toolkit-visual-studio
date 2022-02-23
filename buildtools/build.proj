@@ -24,6 +24,7 @@
         <AWSToolkitVersionNumber Condition="'$(AWSToolkitVersion)'==''"></AWSToolkitVersionNumber>
         <AWSDeployVersionNumber Condition="'$(AWSDeployVersion)'==''"></AWSDeployVersionNumber>
         <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+        <NuGetDisableParallelProcessing Condition=" '$(NuGetDisableParallelProcessing)' == '' ">false</NuGetDisableParallelProcessing>
 
         <AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
 
@@ -35,9 +36,9 @@
 		<!-- cn-north-1 artifact properties -->
         <BJSHostedFilesBucket Condition="'$(BJSHostedFilesBucket)'==''">aws-vs-toolkit-cn-north-1</BJSHostedFilesBucket>
         <BJSCredentials Condition="'$(BJSCredentials)'==''">BJS.SDKUpload</BJSCredentials>
-         
+        
         <VSToolkitDistribution>E38QEBQWXHC945</VSToolkitDistribution>
-         
+        
 		<SignVsixPackages Condition="'$(SignVsixPackages)'==''">false</SignVsixPackages>
         <BuildVSToolkit2017>true</BuildVSToolkit2017>
     </PropertyGroup>
@@ -48,10 +49,20 @@
         Common commands used during development: clean, restore, compile, test
     -->
 
-    <!-- restore - Restore nuget packages for the Visual Studio Toolkit solution and fetches remote assets -->
+    <!-- restore - Restore nuget packages for the Visual Studio Toolkit solution and fetches remote assets 
+            Set the msbuild property "NuGetDisableParallelProcessing" to "true" to disable parallel processing.
+            This might help the issues encountered when CodeBuild is performing a restore.
+    -->
     <Target Name="restore">
+
+        <PropertyGroup>
+            <NuGetRestoreOptions></NuGetRestoreOptions>
+            <NuGetRestoreOptions Condition=" '$(NuGetDisableParallelProcessing)' == 'true' ">-DisableParallelProcessing -Verbosity detailed</NuGetRestoreOptions>
+        </PropertyGroup>
+
         <Message Text="Restoring nuget packages"/>
-        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
+        <Message Text="Restore Options: $(NuGetRestoreOptions)"/>
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln $(NuGetRestoreOptions)" />
 
         <!-- We want builds that are published to always work with the latest endpoints, so we ensure this through the restore target -->
         <Message Text="Fetching endpoints manifest"/>

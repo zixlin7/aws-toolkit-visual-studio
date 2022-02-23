@@ -98,7 +98,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             var startOverCommand = new StartOverCommand(viewModel, this);
             var optionsCommand = new PersistBannerVisibilityCommand(_publishContext.PublishSettingsRepository, viewModel);
             var closeFailureBannerCommand = CloseFailureBannerCommandFactory.Create(viewModel);
-            var stackViewerCommand = StackViewerCommandFactory.Create(viewModel);
+            var artifactViewerCommand = DeploymentArtifactViewerCommand.Create(viewModel);
             var copyToClipboardCommand = CopyToClipboardCommand.Create(viewModel);
 
             _disposables.Push(publishCommand);
@@ -112,7 +112,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             viewModel.StartOverCommand = startOverCommand;
             viewModel.PersistOptionsSettingsCommand = optionsCommand;
             viewModel.CloseFailureBannerCommand = closeFailureBannerCommand;
-            viewModel.StackViewerCommand = stackViewerCommand;
+            viewModel.ViewPublishedArtifactCommand = artifactViewerCommand;
             viewModel.CopyToClipboardCommand = copyToClipboardCommand;
 
             return viewModel;
@@ -301,6 +301,10 @@ namespace Amazon.AWSToolkit.Publish.Views
 
         private void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.IsRepublish))
+            {
+                _viewModel.CyclePublishDestination();
+            }
 
             if (AffectsSummary(e.PropertyName))
             {

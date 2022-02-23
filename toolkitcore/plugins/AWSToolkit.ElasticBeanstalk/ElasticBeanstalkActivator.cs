@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.ElasticBeanstalk.Viewers;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
@@ -49,6 +50,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
 
             if (serviceType == typeof(IAWSToolkitDeploymentService))
                 return this as IAWSToolkitDeploymentService;
+
+            if (serviceType == typeof(IBeanstalkEnvironmentViewer))
+            {
+                return new BeanstalkEnvironmentViewer(ToolkitContext.ToolkitHost, ToolkitFactory.Instance.Navigator);
+            }
 
             return null; 
         }

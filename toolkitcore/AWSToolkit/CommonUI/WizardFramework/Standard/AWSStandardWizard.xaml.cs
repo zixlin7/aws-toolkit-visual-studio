@@ -270,6 +270,11 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
             return _awsBaseWizardImpl.GetPropertyValue<T>(key);
         }
 
+        T IAWSWizard.GetProperty<T>(string key, T defaultValue)
+        {
+            return _awsBaseWizardImpl.GetPropertyValue<T>(key, defaultValue);
+        }
+
         void IAWSWizard.SetProperty(string key, object value)
         {
             _awsBaseWizardImpl.SetProperty(key, value);

@@ -106,6 +106,7 @@
         {
             "name": "publish_setup",
             "description": "Starting the Publish to AWS experience",
+            "passive": true,
             "unit": "Milliseconds",            
             "metadata": [
                 { "type": "result" },

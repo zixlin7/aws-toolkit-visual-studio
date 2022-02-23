@@ -202,7 +202,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Model
     {
         public static readonly string BlueprintsManifestPathV1 = @"LambdaSampleFunctions\NETCore\v1\";
 
-        private static readonly string BlueprintsManifestPathMsbuildStyle = @"LambdaSampleFunctions\NETCore\msbuild-v8";
+        private static readonly string BlueprintsManifestPathMsbuildStyle = @"LambdaSampleFunctions\NETCore\msbuild-v9";
         public static readonly string BlueprintsManifestFile = "vs-lambda-blueprint-manifest.xml";
 
         public static string GetBlueprintManifest(string blueprintTypes)

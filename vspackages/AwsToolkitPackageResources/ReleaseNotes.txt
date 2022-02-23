@@ -1,3 +1,8 @@
+v1.26.0.0 (2022-02-23)
+* Added link to view the Beanstalk environment when publishing to existing Beanstalk environments with the "Publish to AWS" experience
+* Add support for publishing Lambda functions using the .NET 6 managed runtime
+* Visual Studio 2022 Lambda project blueprints have been updated to target .NET 6.
+
 v1.25.0.0 (2022-02-17)
 * The Toolkit Output channel no longer takes focus when credentials profiles are reloaded
 * "Publish to AWS" experience now supports new regions like Jakarta

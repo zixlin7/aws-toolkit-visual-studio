@@ -1,0 +1,18 @@
+{
+  "Date": "2022-02-23",
+  "Version": "1.26.0.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Added link to view the Beanstalk environment when publishing to existing Beanstalk environments with the \"Publish to AWS\" experience"
+    },
+    {
+      "Type": "Feature",
+      "Description": "Add support for publishing Lambda functions using the .NET 6 managed runtime"
+    },
+    {
+      "Type": "Feature",
+      "Description": "Visual Studio 2022 Lambda project blueprints have been updated to target .NET 6."
+    }
+  ]
+}

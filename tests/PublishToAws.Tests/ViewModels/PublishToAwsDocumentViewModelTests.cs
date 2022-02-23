@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
@@ -14,8 +15,6 @@ using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
-using Amazon.AWSToolkit.Shared;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
@@ -32,7 +31,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
     {
         private readonly Mock<IDeployToolController> _deployToolController = new Mock<IDeployToolController>();
         private readonly Mock<IDeploymentCommunicationClient> _deployClient = new Mock<IDeploymentCommunicationClient>();
-        private readonly Mock<IAWSToolkitShellProvider> _toolkitShell = new Mock<IAWSToolkitShellProvider>();
         private readonly PublishToAwsDocumentViewModel _sut;
         private readonly TestPublishToAwsDocumentViewModel _exposedTestViewModel;
 
@@ -478,8 +476,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Equal(_sampleRecommendations, _sut.Recommendations);
 
             // The first recommendation is "selected" and the most recommended.
-            Assert.True(_sut.Recommendation.IsRecommended);
-            Assert.Equal(_sampleRecommendations.First(), _sut.Recommendation);
+            var newPublishTarget = Assert.IsType<PublishRecommendation>(_sut.PublishDestination);
+            Assert.True(newPublishTarget.IsRecommended);
+            Assert.Equal(_sampleRecommendations.First(), newPublishTarget);
         }
 
         [Fact]
@@ -512,6 +511,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshExistingTargets()
         {
             // arrange.
+            _sut.IsRepublish = true;
             await _sut.StartDeploymentSessionAsync(_cancelToken);
 
             // act.
@@ -521,7 +521,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Equal(_sampleRepublishTargets, _sut.RepublishTargets);
 
             // The first target is "selected"
-            Assert.Equal(_sampleRepublishTargets.First(), _sut.RepublishTarget);
+            Assert.Equal(_sampleRepublishTargets.First(), _sut.PublishDestination);
         }
 
         [Fact]
@@ -731,7 +731,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
             _sut.StackName = "abc";
 
-            AssertRequiredPublishProperties("abc", _sut.Recommendation.Name, _sut.Recommendation.Description);
+            AssertRequiredPublishProperties("abc", _sut.PublishDestination.Name, _sut.PublishDestination.Description);
         }
 
         [Fact]
@@ -739,7 +739,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await SetupRepublishView();
 
-            AssertRequiredPublishProperties(_sut.RepublishTarget.Name, _sut.RepublishTarget.RecipeName, _sut.RepublishTarget.Description);
+            AssertRequiredPublishProperties(_sut.PublishDestination.Name, _sut.PublishDestination.RecipeName, _sut.PublishDestination.Description);
         }
 
         [Fact]
@@ -756,7 +756,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         private Expression<Func<IDeployToolController, Task>> NewPublishToSetDeploymentTargetAsyncWithCurrentState()
         {
-            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.Recommendation,
+            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.PublishDestination as PublishRecommendation, 
                 _sut.StackName, _cancelToken);
         }
 
@@ -774,7 +774,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         private Expression<Func<IDeployToolController, Task>> RepublishSetDeploymentTargetAsyncWithCurrentState()
         {
-            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.RepublishTarget, _cancelToken);
+            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.PublishDestination as RepublishTarget, _cancelToken);
         }
 
         [Fact]
@@ -787,7 +787,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task SetDeploymentTarget_NoRecommendation()
         {
             await SetupPublishView();
-            _sut.Recommendation = null;
+            _sut.PublishDestination = null;
 
             await _sut.SetDeploymentTargetAsync(_cancelToken);
 
@@ -798,7 +798,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task SetDeploymentTarget_NoRepublish()
         {
             await SetupRepublishView();
-            _sut.RepublishTarget = null;
+            _sut.PublishDestination = null;
 
             await _sut.SetDeploymentTargetAsync(_cancelToken);
 
@@ -1049,13 +1049,13 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task ClearPublishedResources()
         {
-            _sut.PublishedStackName = "foo";
+            _sut.PublishedArtifactId = "foo";
             _sut.PublishResources =
                 new ObservableCollection<PublishResource>() { new PublishResource("", "", "", null) };
 
             await _sut.ClearPublishedResourcesAsync(_cancelToken);
 
-            Assert.Empty(_sut.PublishedStackName);
+            Assert.Empty(_sut.PublishedArtifactId);
             Assert.Empty(_sut.PublishResources);
         }
 
@@ -1072,7 +1072,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Verify(mock => mock.GetDeploymentDetailsAsync(_sampleSessionId, _cancelToken), Times.Once);
 
             Assert.Single(_sut.PublishResources);
-            Assert.Equal("sampleStack", _sut.PublishedStackName);
+            Assert.Equal("sampleStack", _sut.PublishedArtifactId);
         }
 
         [Fact]
@@ -1094,7 +1094,51 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await Assert.ThrowsAsync<Exception>(async () => await _sut.RefreshPublishedResourcesAsync(_cancelToken));
 
             Assert.Empty(_sut.PublishResources);
-            Assert.True(string.IsNullOrWhiteSpace(_sut.PublishedStackName));
+            Assert.True(string.IsNullOrWhiteSpace(_sut.PublishedArtifactId));
+        }
+
+        [Fact]
+        public void CyclePublishDestination_NewToNew()
+        {
+            _exposedTestViewModel.SetPreviousPublishDestination(_sampleRecommendations[1]);
+            _exposedTestViewModel.PublishDestination = _sampleRecommendations[0];
+            _exposedTestViewModel.IsRepublish = false;
+
+            _exposedTestViewModel.CyclePublishDestination();
+            Assert.Equal(_sampleRecommendations[0], _exposedTestViewModel.PublishDestination);
+        }
+
+        [Fact]
+        public void CyclePublishDestination_RepublishToNew()
+        {
+            _exposedTestViewModel.SetPreviousPublishDestination(_sampleRecommendations[0]);
+            _exposedTestViewModel.PublishDestination = _sampleRepublishTargets[0];
+            _exposedTestViewModel.IsRepublish = false;
+
+            _exposedTestViewModel.CyclePublishDestination();
+            Assert.Equal(_sampleRecommendations[0], _exposedTestViewModel.PublishDestination);
+        }
+
+        [Fact]
+        public void CyclePublishDestination_RepublishToRepublish()
+        {
+            _exposedTestViewModel.SetPreviousPublishDestination(_sampleRepublishTargets[1]);
+            _exposedTestViewModel.PublishDestination = _sampleRepublishTargets[0];
+            _exposedTestViewModel.IsRepublish = true;
+
+            _exposedTestViewModel.CyclePublishDestination();
+            Assert.Equal(_sampleRepublishTargets[0], _exposedTestViewModel.PublishDestination);
+        }
+
+        [Fact]
+        public void CyclePublishDestination_NewToRepublish()
+        {
+            _exposedTestViewModel.SetPreviousPublishDestination(_sampleRepublishTargets[0]);
+            _exposedTestViewModel.PublishDestination = _sampleRecommendations[0];
+            _exposedTestViewModel.IsRepublish = true;
+
+            _exposedTestViewModel.CyclePublishDestination();
+            Assert.Equal(_sampleRepublishTargets[0], _exposedTestViewModel.PublishDestination);
         }
 
         [Fact]

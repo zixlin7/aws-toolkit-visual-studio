@@ -111,6 +111,16 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         T GetProperty<T>(string key);
 
         /// <summary>
+        /// Returns the value associated with the specified key, if set, from the wizard's 
+        /// runtime environment. If the key is not set, <see cref="defaultValue"/> is returned.
+        /// </summary>
+        /// <typeparam name="T">Type of the value to return</typeparam>
+        /// <param name="key">Unique key assigned to the property</param>
+        /// <param name="defaultValue">Value to return if the key is not set</param>
+        /// <returns>Value (or type default) for the property</returns>
+        T GetProperty<T>(string key, T defaultValue);
+
+        /// <summary>
         /// Sets a property value in the runtime environment of the wizard; if 
         /// a value already exists for the specified key it is overwritten.
         /// </summary>

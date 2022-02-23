@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Lambda.Model;
+﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.Lambda.Model;
 using Moq;
 using Xunit;
@@ -7,19 +9,26 @@ namespace AWSToolkit.Tests.Lambda
 {
     public class LambdaModel
     {
-        [Fact]
-        public void RuntimeOptionsAreNetCore()
+        public static readonly IEnumerable<object[]> DotNetManagedRuntimes = new[]
         {
-            Assert.True(RuntimeOption.NetCore_v3_1.IsNetCore);
-            Assert.False(RuntimeOption.NetCore_v3_1.IsNode);
-            Assert.False(RuntimeOption.NetCore_v3_1.IsCustomRuntime);
+            new object[] { RuntimeOption.DotNet6 },
+            new object[] { RuntimeOption.NetCore_v3_1 },
+        };
+
+        [Theory]
+        [MemberData(nameof(DotNetManagedRuntimes))]
+        public void RuntimeOptionsAreNetCore(RuntimeOption runtimeOption)
+        {
+            Assert.True(runtimeOption.IsDotNet);
+            Assert.False(runtimeOption.IsNode);
+            Assert.False(runtimeOption.IsCustomRuntime);
         }
 
         [Fact]
         public void RuntimeOptionsAreNode()
         {
             Assert.True(RuntimeOption.NodeJS_v12_X.IsNode);
-            Assert.False(RuntimeOption.NodeJS_v12_X.IsNetCore);
+            Assert.False(RuntimeOption.NodeJS_v12_X.IsDotNet);
             Assert.False(RuntimeOption.NodeJS_v12_X.IsCustomRuntime);
         }
 

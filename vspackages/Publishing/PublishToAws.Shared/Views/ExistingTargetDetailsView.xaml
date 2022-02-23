@@ -120,7 +120,7 @@
             SelectionMode="Single"
             ItemTemplate="{StaticResource TargetTemplate}"
             ItemsSource="{Binding RepublishCollectionView}"
-            SelectedItem="{Binding RepublishTarget}">
+            SelectedItem="{Binding PublishDestination}">
             <ListBox.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.Panel>

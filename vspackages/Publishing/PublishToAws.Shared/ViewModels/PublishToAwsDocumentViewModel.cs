@@ -53,17 +53,13 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             nameof(StackName),
             nameof(CredentialsId),
             nameof(Region),
-            nameof(Recommendation),
-            nameof(RepublishTarget),
-            nameof(IsRepublish),
+            nameof(PublishDestination),
             nameof(ConfigurationDetails),
         };
 
         public static readonly IList<string> PublishAffectingProperties = new List<string>()
         {
-            nameof(RepublishTarget),
-            nameof(Recommendation),
-            nameof(IsRepublish),
+            nameof(PublishDestination),
             nameof(PublishStackName)
         };
 
@@ -92,16 +88,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private ICommand _closeFailureBannerCommand;
         private ICommand _learnMoreCommand;
         private ICommand _feedbackCommand;
-        private ICommand _stackViewerCommand;
+        private ICommand _viewPublishedArtifactCommand;
         private ICommand _copyToClipboardCommand;
         private ProgressStatus _progressStatus;
         private string _deploymentSessionId;
         private string _publishProgress;
-        private PublishRecommendation _recommendation;
-        private RepublishTarget _republishTarget;
         private string _targetRecipe;
         private ICollectionView _republishCollectionView;
-        private string _publishedStackName;
+        private string _publishedArtifactId;
+
+        /// <summary>
+        /// Holds the currently selected publishing target
+        /// </summary>
+        private PublishDestinationBase _publishDestination;
+
+        /// <summary>
+        /// Holds the previously selected target when toggling between New/Existing deployments (<see cref="IsRepublish"/>)
+        /// </summary>
+        private PublishDestinationBase _publishDestinationCache;
 
         private string _stackName;
 
@@ -202,6 +206,54 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
+        /// Swaps <see cref="_publishDestination"/> and <see cref="_publishDestinationCache"/> if
+        /// <see cref="IsRepublish"/> does not align with the currently selected target type.
+        /// 
+        /// Intended to be called after toggling <see cref="IsRepublish"/>
+        /// </summary>
+        public void CyclePublishDestination()
+        {
+            if (!ShouldCyclePublishDestination())
+            {
+                return;
+            }
+
+            PublishDestinationBase toCache = PublishDestination;
+            PublishDestinationBase toRestore = GetPublishDestinationToRestore();
+
+            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
+            {
+                SetCachedPublishDestination(toCache);
+                PublishDestination = toRestore;
+            });
+        }
+
+        protected void SetCachedPublishDestination(PublishDestinationBase publishDestination)
+        {
+            _publishDestinationCache = publishDestination;
+        }
+
+        private bool ShouldCyclePublishDestination()
+        {
+            if (IsRepublish)
+            {
+                return !(PublishDestination is RepublishTarget);
+            }
+
+            return !(PublishDestination is PublishRecommendation);
+        }
+
+        private PublishDestinationBase GetPublishDestinationToRestore()
+        {
+            if (IsRepublish)
+            {
+                return _publishDestinationCache as RepublishTarget;
+            }
+
+            return _publishDestinationCache as PublishRecommendation;
+        }
+
+        /// <summary>
         /// Indicates whether or not the application is published using the default configurations
         /// </summary>
         public bool IsDefaultConfig
@@ -292,12 +344,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// The published application's CloudFormation stack name
+        /// The Id of the published artifact.
+        ///
+        /// Correlates with the PublishDestination's DeploymentArtifact (<see cref="PublishDestinationBase.DeploymentArtifact"/>)
+        /// Eg: For CloudFormation Stacks: stack Id, Beanstalk Environments: environment name
         /// </summary>
-        public string PublishedStackName
+        public string PublishedArtifactId
         {
-            get => _publishedStackName;
-            set => SetProperty(ref _publishedStackName, value);
+            get => _publishedArtifactId;
+            set => SetProperty(ref _publishedArtifactId, value);
         }
 
         /// <summary>
@@ -373,12 +428,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set => SetProperty(ref _closeFailureBannerCommand, value);
         }
         /// <summary>
-        /// Command that allows viewing the created CloudFormation stack
+        /// Command that allows viewing the deployment artifact
+        /// 
+        /// Correlates with the PublishDestination's DeploymentArtifact (<see cref="PublishDestinationBase.DeploymentArtifact"/>)
+        /// Eg: CloudFormation Stacks, Beanstalk Environments, ...
         /// </summary>
-        public ICommand StackViewerCommand
+        public ICommand ViewPublishedArtifactCommand
         {
-            get => _stackViewerCommand;
-            set => SetProperty(ref _stackViewerCommand, value);
+            get => _viewPublishedArtifactCommand;
+            set => SetProperty(ref _viewPublishedArtifactCommand, value);
         }
 
         /// <summary>
@@ -438,15 +496,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// The target to use when publishing the user's application.
-        /// </summary>
-        public PublishRecommendation Recommendation
-        {
-            get => _recommendation;
-            set => SetProperty(ref _recommendation, value);
-        }
-
-        /// <summary>
         /// Recommendations that show up in the Publish Dialog
         /// </summary>
         public ObservableCollection<PublishRecommendation> Recommendations
@@ -468,13 +517,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// The target to use from list of existing targets
-        /// in Republish view of Select Targets UI
+        /// The target to publish (or republish) the user's application to.
         /// </summary>
-        public RepublishTarget RepublishTarget
+        public PublishDestinationBase PublishDestination
         {
-            get => _republishTarget;
-            set => SetProperty(ref _republishTarget, value);
+            get => _publishDestination;
+            set => SetProperty(ref _publishDestination, value);
         }
 
         /// <summary>
@@ -695,7 +743,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             try
             {
                 ThrowIfSessionIsNotCreated();
-                recipeId = GetPublishRecipeId();
+                recipeId = PublishDestination?.RecipeId;
 
                 var systemCapabilities = await DeployToolController.GetCompatibilityAsync(SessionId, cancellationToken)
                     .ConfigureAwait(false);
@@ -712,7 +760,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 UpdateMissingCapabilities(recipeId, capabilities);
                 if (capabilities.Any())
                 {
-                    var message = $"{ProjectName} cannot be published to {Recommendation.Name}, system dependencies are missing ({capabilities.Count}).";
+                    var message = $"{ProjectName} cannot be published to {PublishDestination?.Name}, system dependencies are missing ({capabilities.Count}).";
                     Logger.Debug(message);
                     _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
                 }
@@ -738,7 +786,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Loads the list of configuration settings for the selected target <see cref="Recommendation"/> <see cref="RepublishTarget"/>
+        /// Loads the list of configuration settings for the selected target <see cref="PublishDestination"/>
         /// <see cref="ConfigurationDetails"/> is populated with any loaded configuration details
         /// A selected target needs to be defined prior to making this call.
         /// </summary>
@@ -750,7 +798,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             try
             {
                 ThrowIfSessionIsNotCreated();
-                recipeId = GetPublishRecipeId();
+                recipeId = PublishDestination?.RecipeId;
 
                 configSettings = await DeployToolController.GetConfigSettingsAsync(SessionId, cancellationToken);
             }
@@ -939,11 +987,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 if (IsRepublish)
                 {
-                    await DeployToolController.SetDeploymentTargetAsync(SessionId, RepublishTarget, cancellationToken);
+                    await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as RepublishTarget, cancellationToken);
                 }
                 else
                 {
-                    await DeployToolController.SetDeploymentTargetAsync(SessionId, Recommendation, StackName, cancellationToken);
+                    await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as PublishRecommendation, StackName, cancellationToken);
                 }
             }
             catch (Exception e)
@@ -1034,12 +1082,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             });
         }
 
-        private string GetPublishRecipeId()
-        {
-            return IsRepublish ? RepublishTarget?.RecipeId : Recommendation?.RecipeId;
-        }
-
-
         /// <summary>
         /// Updates properties required for publishing user's application based on current target view
         /// i.e. publish/republish
@@ -1055,8 +1097,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 }
 
                 StackName = GetUpdatedStackName();
-                TargetRecipe = GetUpdatedTargetRecipe();
-                TargetDescription = GetUpdatedRecommendationDescription();
+                TargetRecipe = PublishDestination?.RecipeName ?? string.Empty;
+                TargetDescription = PublishDestination?.Description ?? string.Empty;
             }
             catch (Exception e)
             {
@@ -1140,14 +1182,18 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                var selectedRecipeId = Recommendation?.RecipeId;
+                var selectedRecipeId = PublishDestination?.RecipeId;
 
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 Recommendations = recommendations;
 
-                Recommendation = recommendations.FirstOrDefault(r => r.RecipeId == selectedRecipeId) ??
-                                 recommendations.FirstOrDefault(r => r.IsRecommended) ??
-                                 recommendations.FirstOrDefault();
+                if (!IsRepublish)
+                {
+                    PublishDestination =
+                        recommendations.FirstOrDefault(r => r.RecipeId == selectedRecipeId) ??
+                        recommendations.FirstOrDefault(r => r.IsRecommended) ??
+                        recommendations.FirstOrDefault();
+                }
             }
             catch (Exception e)
             {
@@ -1164,17 +1210,20 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                var selectedStack = RepublishTarget?.Name;
+                var selectedDestinationName = PublishDestination?.Name;
 
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 RepublishTargets = targets;
 
-                RepublishTarget = targets.FirstOrDefault(r => r.Name == selectedStack) ??
-                                  targets.FirstOrDefault(r => r.IsRecommended) ??
-                                  targets.FirstOrDefault();
+                if (IsRepublish)
+                {
+                    PublishDestination =
+                        targets.FirstOrDefault(r => r.Name == selectedDestinationName) ??
+                        targets.FirstOrDefault(r => r.IsRecommended) ??
+                        targets.FirstOrDefault();
+                }
 
                 UpdateRepublishCollectionView();
-              
             }
             catch (Exception e)
             {
@@ -1182,14 +1231,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
         }
 
-        private async Task SetPublishResourcesAsync(string stackId,
+        private async Task SetPublishResourcesAsync(string publishedArtifactId,
             IList<PublishResource> resource, CancellationToken cancellationToken)
         {
             try
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-                PublishedStackName = stackId;
+                PublishedArtifactId = publishedArtifactId;
                 PublishResources = new ObservableCollection<PublishResource>(resource);
             }
             catch (Exception e)
@@ -1286,17 +1335,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private string GetUpdatedStackName()
         {
-            return IsRepublish ? RepublishTarget?.Name ?? "" : PublishStackName;
-        }
+            if (PublishDestination is RepublishTarget republishTarget)
+            {
+                return republishTarget.Name ?? string.Empty;
+            }
 
-        private string GetUpdatedTargetRecipe()
-        {
-            return IsRepublish ? RepublishTarget?.RecipeName ?? "" : Recommendation?.Name ?? "";
-        }
-
-        private string GetUpdatedRecommendationDescription()
-        {
-            return IsRepublish ? RepublishTarget?.Description ?? "" : Recommendation?.Description ?? "";
+            return PublishStackName ?? string.Empty;
         }
 
         protected async Task LoadOptionsButtonSettingsAsync()
@@ -1390,12 +1434,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 Duration = PublishDuration.Elapsed.TotalMilliseconds,
                 InitialPublish = !IsRepublish,
                 DefaultConfiguration = IsDefaultConfig,
-                RecipeId = GetPublishRecipeId()
+                RecipeId = PublishDestination?.RecipeId
             };
 
             if (payload.InitialPublish)
             {
-                payload.RecommendedTarget = Recommendation.IsRecommended;
+                payload.RecommendedTarget = PublishDestination?.IsRecommended;
             }
 
             if (!string.IsNullOrWhiteSpace(errorCode))

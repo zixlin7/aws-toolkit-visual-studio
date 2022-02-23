@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.Publish.ViewModels;
+﻿using Amazon.AWSToolkit.Publish.Models;
+using Amazon.AWSToolkit.Publish.ViewModels;
 
 namespace Amazon.AWSToolkit.Publish
 {
@@ -6,7 +7,9 @@ namespace Amazon.AWSToolkit.Publish
     {
         public bool ShouldRefreshTarget(PublishToAwsDocumentViewModel viewModel)
         {
-            return viewModel.IsRepublish ? viewModel.RepublishTarget != null : viewModel.Recommendation != null;
+            return viewModel.IsRepublish
+                ? viewModel.PublishDestination is RepublishTarget
+                : viewModel.PublishDestination is PublishRecommendation;
         }
     }
 }

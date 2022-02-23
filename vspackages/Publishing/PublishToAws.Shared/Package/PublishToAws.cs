@@ -260,6 +260,7 @@ namespace Amazon.AWSToolkit.Publish.Package
             {
                 PublishSetupStage = PublishSetupStage.All,
                 Result = result,
+                Passive = false,
                 Value = milliseconds,
                 Duration = milliseconds,
                 AwsAccount = args.AccountId,

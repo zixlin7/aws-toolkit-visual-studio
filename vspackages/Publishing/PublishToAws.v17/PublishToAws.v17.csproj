@@ -99,6 +99,10 @@
       <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
       <Name>AWSToolkit.CloudFormation.Interface</Name>
     </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
+      <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\PublishToAws.Shared\PublishToAws.Shared.projitems" Label="Shared" />

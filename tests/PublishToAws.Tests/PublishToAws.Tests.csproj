@@ -59,6 +59,7 @@
     <Compile Include="Commands\CopyToClipboardCommandTests.cs" />
     <Compile Include="Commands\PersistPublishSettingsCommandTests.cs" />
     <Compile Include="Commands\PublishCommandTests.cs" />
+    <Compile Include="Commands\BeanstalkEnvironmentViewerCommandFactoryTests.cs" />
     <Compile Include="Commands\StackViewerCommandTests.cs" />
     <Compile Include="Commands\StartOverCommandTests.cs" />
     <Compile Include="Commands\TargetCommandTests.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Models\TargetSystemCapabilityTests.cs" />
     <Compile Include="Models\ValidationResultTests.cs" />
     <Compile Include="PublishDocumentViewModelChangeHandlerTests.cs" />
+    <Compile Include="Util\DeploymentTypesExtensionMethodsTests.cs" />
     <Compile Include="Util\OptionSettingItemSummaryBuilder.cs" />
     <Compile Include="Util\ConfigurationDetailBuilder.cs" />
     <Compile Include="Models\ConfigurationDetailTests.cs" />
@@ -130,6 +132,10 @@
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
       <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
       <Name>AWSToolkit.CloudFormation.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
+      <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
     </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\vspackages\Publishing\PublishToAws\PublishToAws.csproj">
       <Project>{9a9a823b-967e-4bb5-809f-a78c1668c363}</Project>

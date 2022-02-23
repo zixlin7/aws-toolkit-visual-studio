@@ -113,7 +113,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 if (_pageUI == null)
                     return false;
 
-                return _pageUI.AllRequiredFieldsAreSet;
+                return _pageUI.ViewModel.IsValidConfiguration();
             }
         }
 
@@ -140,7 +140,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
                 // Other languages (like nodejs) do not have a valid framework value
                 HostingWizard[UploadFunctionWizardProperties.Framework] =
-                    _pageUI.ViewModel.Runtime.IsNetCore ? _pageUI.ViewModel.Framework : string.Empty;
+                    _pageUI.ViewModel.Runtime.IsDotNet ? _pageUI.ViewModel.Framework : string.Empty;
 
                 HostingWizard[UploadFunctionWizardProperties.Handler] = _pageUI.ViewModel.Handler;
                 HostingWizard[UploadFunctionWizardProperties.SourcePath] = _pageUI.ViewModel.SourceCodeLocation;

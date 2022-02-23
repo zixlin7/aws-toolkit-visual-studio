@@ -10,19 +10,30 @@ namespace Amazon.AWSToolkit.Tests.Publishing
     public class PublishDocumentViewModelChangeHandlerTests
     {
         [Fact]
-        public void ShouldRefreshTarget()
+        public void ShouldRefreshTarget_Republish()
         {
             //arrange
             var viewModel = CreateViewModel();
             viewModel.IsRepublish = true;
-            viewModel.Recommendation = null;
-            viewModel.RepublishTarget = CreateRepublishTarget();
+            viewModel.PublishDestination = CreateRepublishTarget();
+            ShouldRefresh(viewModel, true);
+        }
+
+        [Fact]
+        public void ShouldRefreshTarget_NewPublish()
+        {
+            //arrange
+            var viewModel = CreateViewModel();
+            viewModel.IsRepublish = false;
+            viewModel.PublishDestination = CreateNewPublishTarget();
             ShouldRefresh(viewModel, true);
         }
 
         private PublishToAwsDocumentViewModel CreateViewModel() => new PublishToAwsDocumentViewModel(new PublishApplicationContext(new PublishContextFixture().PublishContext));
 
         private RepublishTarget CreateRepublishTarget() => new RepublishTarget( null);
+
+        private PublishRecommendation CreateNewPublishTarget() => new PublishRecommendation( null);
 
         private static void ShouldRefresh(PublishToAwsDocumentViewModel viewModel, bool expected)
         {
@@ -38,8 +49,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing
             //arrange
             var viewModel = CreateViewModel();
             viewModel.IsRepublish = false;
-            viewModel.Recommendation = null;
-            viewModel.RepublishTarget = CreateRepublishTarget();
+            viewModel.PublishDestination = null;
             ShouldRefresh(viewModel, false);
         }
     }
