@@ -3,14 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Amazon.AWSToolkit.Publish.Views"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:designData="clr-namespace:Amazon.AWSToolkit.Publish.Views.DesignData"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=designData:DesignSamplePublishDocumentViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <ResourceDictionary>
             <commonUi:VsImages x:Key="VsImages" />
@@ -130,15 +131,33 @@
                         Grid.Row="0" Grid.Column="0"
                         VerticalAlignment="Top"
                         FontWeight="Bold"
-                        Text="CloudFormation stack" />
+                        >
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Artifact" />
+                                <Style.Triggers>
+                                    <DataTrigger 
+                                        Binding="{Binding PublishDestination.DeploymentArtifact}" 
+                                        Value="{x:Static models:DeploymentArtifact.CloudFormationStack}">
+                                        <Setter Property="Text" Value="CloudFormation stack" />
+                                    </DataTrigger>
+                                    <DataTrigger 
+                                        Binding="{Binding PublishDestination.DeploymentArtifact}" 
+                                        Value="{x:Static models:DeploymentArtifact.BeanstalkEnvironment}" >
+                                        <Setter Property="Text" Value="Beanstalk environment" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
                     <TextBlock
                         Grid.Row="1" Grid.Column="0"
                         Margin="0 6 0 0"
                         TextWrapping="Wrap">
                           <Hyperlink
-                            Command="{Binding StackViewerCommand}">
-                              <Run Text="{Binding PublishedStackName}" />
+                            Command="{Binding ViewPublishedArtifactCommand}">
+                              <Run Text="{Binding PublishedArtifactId}" />
                           </Hyperlink>
                     </TextBlock>
 

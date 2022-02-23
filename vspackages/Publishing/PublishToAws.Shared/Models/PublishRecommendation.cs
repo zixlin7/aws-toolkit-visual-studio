@@ -1,4 +1,6 @@
-﻿using AWS.Deploy.ServerMode.Client;
+﻿using Amazon.AWSToolkit.Publish.Util;
+
+using AWS.Deploy.ServerMode.Client;
 
 namespace Amazon.AWSToolkit.Publish.Models
 {
@@ -12,6 +14,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             RecipeId = recommendation?.RecipeId;
             RecipeName = recommendation?.Name;
+            DeploymentArtifact = recommendation?.DeploymentType.AsDeploymentArtifact() ?? DeploymentArtifact.Unknown;
             Name = recommendation?.Name;
             Description = recommendation?.Description;
             Service = recommendation?.TargetService;

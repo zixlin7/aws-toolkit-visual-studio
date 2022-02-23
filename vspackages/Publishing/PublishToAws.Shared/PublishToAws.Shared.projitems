@@ -18,6 +18,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\EditKeyValuesCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEc2InstanceTypeCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectVpcCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\BeanstalkEnvironmentViewerCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\DeploymentArtifactViewerCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StackViewerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
@@ -49,6 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValueConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValuesConversion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DeploymentArtifact.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishDestinationBase.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\CliServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CliServerFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICliServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\DeploymentTypesExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\OptionSettingItemSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
@@ -93,6 +97,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\ConfigureTargetView.xaml.cs">
       <DependentUpon>ConfigureTargetView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExistingTargetDetailsView.xaml.cs">
       <DependentUpon>ExistingTargetDetailsView.xaml</DependentUpon>
     </Compile>

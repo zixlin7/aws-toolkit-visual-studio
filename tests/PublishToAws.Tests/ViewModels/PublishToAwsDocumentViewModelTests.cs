@@ -1049,13 +1049,13 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task ClearPublishedResources()
         {
-            _sut.PublishedStackName = "foo";
+            _sut.PublishedArtifactId = "foo";
             _sut.PublishResources =
                 new ObservableCollection<PublishResource>() { new PublishResource("", "", "", null) };
 
             await _sut.ClearPublishedResourcesAsync(_cancelToken);
 
-            Assert.Empty(_sut.PublishedStackName);
+            Assert.Empty(_sut.PublishedArtifactId);
             Assert.Empty(_sut.PublishResources);
         }
 
@@ -1072,7 +1072,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Verify(mock => mock.GetDeploymentDetailsAsync(_sampleSessionId, _cancelToken), Times.Once);
 
             Assert.Single(_sut.PublishResources);
-            Assert.Equal("sampleStack", _sut.PublishedStackName);
+            Assert.Equal("sampleStack", _sut.PublishedArtifactId);
         }
 
         [Fact]
@@ -1094,7 +1094,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await Assert.ThrowsAsync<Exception>(async () => await _sut.RefreshPublishedResourcesAsync(_cancelToken));
 
             Assert.Empty(_sut.PublishResources);
-            Assert.True(string.IsNullOrWhiteSpace(_sut.PublishedStackName));
+            Assert.True(string.IsNullOrWhiteSpace(_sut.PublishedArtifactId));
         }
 
         [Fact]

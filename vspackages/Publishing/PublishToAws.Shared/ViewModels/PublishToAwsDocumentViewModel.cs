@@ -88,14 +88,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private ICommand _closeFailureBannerCommand;
         private ICommand _learnMoreCommand;
         private ICommand _feedbackCommand;
-        private ICommand _stackViewerCommand;
+        private ICommand _viewPublishedArtifactCommand;
         private ICommand _copyToClipboardCommand;
         private ProgressStatus _progressStatus;
         private string _deploymentSessionId;
         private string _publishProgress;
         private string _targetRecipe;
         private ICollectionView _republishCollectionView;
-        private string _publishedStackName;
+        private string _publishedArtifactId;
 
         /// <summary>
         /// Holds the currently selected publishing target
@@ -344,12 +344,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// The published application's CloudFormation stack name
+        /// The Id of the published artifact.
+        ///
+        /// Correlates with the PublishDestination's DeploymentArtifact (<see cref="PublishDestinationBase.DeploymentArtifact"/>)
+        /// Eg: For CloudFormation Stacks: stack Id, Beanstalk Environments: environment name
         /// </summary>
-        public string PublishedStackName
+        public string PublishedArtifactId
         {
-            get => _publishedStackName;
-            set => SetProperty(ref _publishedStackName, value);
+            get => _publishedArtifactId;
+            set => SetProperty(ref _publishedArtifactId, value);
         }
 
         /// <summary>
@@ -425,12 +428,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set => SetProperty(ref _closeFailureBannerCommand, value);
         }
         /// <summary>
-        /// Command that allows viewing the created CloudFormation stack
+        /// Command that allows viewing the deployment artifact
+        /// 
+        /// Correlates with the PublishDestination's DeploymentArtifact (<see cref="PublishDestinationBase.DeploymentArtifact"/>)
+        /// Eg: CloudFormation Stacks, Beanstalk Environments, ...
         /// </summary>
-        public ICommand StackViewerCommand
+        public ICommand ViewPublishedArtifactCommand
         {
-            get => _stackViewerCommand;
-            set => SetProperty(ref _stackViewerCommand, value);
+            get => _viewPublishedArtifactCommand;
+            set => SetProperty(ref _viewPublishedArtifactCommand, value);
         }
 
         /// <summary>
@@ -1225,14 +1231,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
         }
 
-        private async Task SetPublishResourcesAsync(string stackId,
+        private async Task SetPublishResourcesAsync(string publishedArtifactId,
             IList<PublishResource> resource, CancellationToken cancellationToken)
         {
             try
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-                PublishedStackName = stackId;
+                PublishedArtifactId = publishedArtifactId;
                 PublishResources = new ObservableCollection<PublishResource>(resource);
             }
             catch (Exception e)

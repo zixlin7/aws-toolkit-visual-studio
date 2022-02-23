@@ -10,6 +10,8 @@ using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
 
+using AWS.Deploy.ServerMode.Client;
+
 using Moq;
 
 using Xunit;
@@ -21,17 +23,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
 
         private const string SampleStackName = "sampleStack";
         private readonly PublishContextFixture _contextFixture = new PublishContextFixture();
+        private readonly TestPublishToAwsDocumentViewModel _viewModel;
         private readonly Mock<ICloudFormationViewer> _cloudFormationViewer = new Mock<ICloudFormationViewer>();
         private readonly ICommand _stackViewerCommand;
         private Mock<IAWSToolkitShellProvider> ToolkitHost => _contextFixture.ToolkitShellProvider;
 
         public StackViewerCommandTests()
         {
-            var viewModel =
+            _viewModel =
                 new TestPublishToAwsDocumentViewModel(
                     new PublishApplicationContext(_contextFixture.PublishContext))
-                { PublishedStackName = SampleStackName };
-            _stackViewerCommand = StackViewerCommandFactory.Create(viewModel);
+                {
+                    PublishedArtifactId = SampleStackName,
+                    PublishDestination = new PublishRecommendation(new RecommendationSummary()
+                    {
+                        DeploymentType = DeploymentTypes.CloudFormationStack,
+                    })
+                };
+            _stackViewerCommand = StackViewerCommandFactory.Create(_viewModel);
             SetupToolkitHost();
         }
 
@@ -39,6 +48,25 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         {
             ToolkitHost.Setup(mock => mock.QueryAWSToolkitPluginService(typeof(ICloudFormationViewer)))
                 .Returns(_cloudFormationViewer.Object);
+        }
+
+        [Fact]
+        public void CanExecute_NoPublishDestination()
+        {
+            _viewModel.PublishDestination = null;
+
+            Assert.False(_stackViewerCommand.CanExecute(null));
+        }
+
+        [Fact]
+        public void CanExecute_BeanstalkEnvironment()
+        {
+            _viewModel.PublishDestination = new PublishRecommendation(new RecommendationSummary()
+            {
+                DeploymentType = DeploymentTypes.BeanstalkEnvironment,
+            });
+
+            Assert.False(_stackViewerCommand.CanExecute(null));
         }
 
         [Fact]

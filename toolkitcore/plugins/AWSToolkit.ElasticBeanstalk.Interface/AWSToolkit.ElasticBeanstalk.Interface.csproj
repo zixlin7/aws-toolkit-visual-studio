@@ -60,12 +60,17 @@
     <Compile Include="Nodes\IEnvironmentViewMetaNode.cs" />
     <Compile Include="Nodes\IEnvironmentViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Viewers\IBeanstalkEnvironmentViewer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
       <Name>AWSToolkit</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
+      <Name>AWSToolkit.Util</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -76,5 +81,6 @@
       <Version>2.0.14</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

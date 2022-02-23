@@ -23,6 +23,8 @@ namespace Amazon.AWSToolkit.Publish.Models
         public string Description { get; protected set; }
         public string ShortDescription { get; protected set; }
 
+        public DeploymentArtifact DeploymentArtifact { get; protected set; }
+
         public string Service { get; protected set; }
         public ImageSource ServiceIcon => RecipeServiceImageResolver.GetServiceImage(Service);
 
@@ -37,6 +39,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                    RecipeName == other.RecipeName &&
                    Description == other.Description &&
                    ShortDescription == other.ShortDescription &&
+                   DeploymentArtifact == other.DeploymentArtifact &&
                    Service == other.Service;
         }
 
@@ -58,6 +61,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                 hashCode = (hashCode * 397) ^ (RecipeName != null ? RecipeName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ShortDescription != null ? ShortDescription.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (DeploymentArtifact != null ? DeploymentArtifact.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Service != null ? Service.GetHashCode() : 0);
                 return hashCode;
             }
