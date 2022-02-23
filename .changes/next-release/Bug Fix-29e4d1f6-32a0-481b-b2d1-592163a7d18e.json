@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Added link to view the Beanstalk environment when publishing to existing Beanstalk environments with the \"Publish to AWS\" experience"
-}
