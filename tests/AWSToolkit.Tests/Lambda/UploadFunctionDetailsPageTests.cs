@@ -1,183 +1,32 @@
-﻿using Amazon.AWSToolkit.Lambda.Model;
-using Amazon.Lambda;
-using System;
-using System.IO;
+﻿using System;
 using System.Linq;
 using System.Windows;
 
 using Amazon.AWSToolkit;
+using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.Lambda;
 
 using Xunit;
 
 namespace AWSToolkit.Tests.Lambda
 {
-    public class UploadFunctionDetailsPageTestsBase : IDisposable
+    public class UploadFunctionDetailsPage_PropertyChanged : IDisposable
     {
-        protected readonly UploadFunctionDetailsPageFixture Fixture = new UploadFunctionDetailsPageFixture();
+        private readonly UploadFunctionDetailsPageFixture _fixture = new UploadFunctionDetailsPageFixture();
 
         public void Dispose()
         {
-            Fixture.Dispose();
-        }
-    }
-
-    public class UploadFunctionDetailsPage_AllRequiredFieldsAreSet : UploadFunctionDetailsPageTestsBase
-    {
-        [StaFact]
-        public void ValidImageDeploy()
-        {
-            Fixture.SetValidImageDeployValues();
-            Assert.True(Fixture.Page.AllRequiredFieldsAreSet);
+            _fixture.Dispose();
         }
 
-        [StaFact]
-        public void ValidZipDeploy()
-        {
-            Fixture.SetValidZipDeployValues();
-            Assert.True(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaFact]
-        public void SourceCodeLocation_NonExistent()
-        {
-            Fixture.SetValidZipDeployValues();
-
-            Fixture.Page.ViewModel.SourceCodeLocation =
-                Path.Combine(Fixture.TestLocation.TestFolder, "bad-folder");
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-
-            Fixture.Page.ViewModel.SourceCodeLocation =
-                Path.Combine(Fixture.TestLocation.TestFolder, "bad-file.zip");
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaFact]
-        public void FunctionName_Empty()
-        {
-            Fixture.SetValidZipDeployValues();
-
-            Fixture.Page.ViewModel.FunctionName = null;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-
-            Fixture.Page.ViewModel.FunctionName = string.Empty;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaFact]
-        public void Runtime_Null()
-        {
-            Fixture.SetValidZipDeployValues();
-
-            Fixture.Page.ViewModel.Runtime = null;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaFact]
-        public void Image_Architecture_Null()
-        {
-            Fixture.SetValidImageDeployValues();
-
-            Fixture.Page.ViewModel.Architecture = null;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaFact]
-        public void Zip_Architecture_Null()
-        {
-            Fixture.SetValidZipDeployValues();
-
-            Fixture.Page.ViewModel.Architecture = null;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaTheory]
-        [InlineData(null, "x", "x")]
-        [InlineData("", "x", "x")]
-        [InlineData("x", null, "x")]
-        [InlineData("x", "", "x")]
-        [InlineData("x", "x", null)]
-        [InlineData("x", "x", "")]
-        public void HandlerComponents_Empty(string assembly, string type, string method)
-        {
-            Fixture.SetValidZipDeployValues();
-
-            Fixture.Page.ViewModel.HandlerAssembly = assembly;
-            Fixture.Page.ViewModel.HandlerType = type;
-            Fixture.Page.ViewModel.HandlerMethod = method;
-
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v3_1;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.PROVIDED_AL2;
-            Assert.True(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaTheory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void Handler_Empty(string handler)
-        {
-            Fixture.SetValidZipDeployValues();
-            Fixture.Page.ViewModel.Handler = handler;
-
-            // Handler can not be empty for non-Custom runtimes
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v3_1;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-
-            // Handler can be empty for Custom runtimes
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.PROVIDED;
-            Assert.True(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaTheory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void Dockerfile_Empty(string dockerfilePath)
-        {
-            Fixture.SetValidImageDeployValues();
-            Fixture.Page.ViewModel.Dockerfile = dockerfilePath;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaFact]
-        public void Dockerfile_NonExistent()
-        {
-            Fixture.SetValidImageDeployValues();
-            Fixture.Page.ViewModel.Dockerfile = Path.Combine(Fixture.TestLocation.TestFolder, "bad-file");
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaTheory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void ImageRepo_Empty(string imageRepo)
-        {
-            Fixture.SetValidImageDeployValues();
-            Fixture.Page.ViewModel.ImageRepo = imageRepo;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-
-        [StaTheory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void ImageTag_Empty(string imageTag)
-        {
-            Fixture.SetValidImageDeployValues();
-            Fixture.Page.ViewModel.ImageTag = imageTag;
-            Assert.False(Fixture.Page.AllRequiredFieldsAreSet);
-        }
-    }
-
-    public class UploadFunctionDetailsPage_PropertyChanged : UploadFunctionDetailsPageTestsBase
-    {
         [StaFact]
         public void PackageTypeAffectsCanEditRuntime()
         {
-            Fixture.Page.ViewModel.PackageType = PackageType.Zip;
-            Assert.True(Fixture.Page.ViewModel.CanEditRuntime);
+            _fixture.Page.ViewModel.PackageType = PackageType.Zip;
+            Assert.True(_fixture.Page.ViewModel.CanEditRuntime);
 
-            Fixture.Page.ViewModel.PackageType = PackageType.Image;
-            Assert.False(Fixture.Page.ViewModel.CanEditRuntime);
+            _fixture.Page.ViewModel.PackageType = PackageType.Image;
+            Assert.False(_fixture.Page.ViewModel.CanEditRuntime);
         }
 
         [StaFact]
@@ -187,6 +36,7 @@ namespace AWSToolkit.Tests.Lambda
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp21, RuntimeOption.PROVIDED);
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp31, RuntimeOption.NetCore_v3_1);
             AssertFrameworkSetsRuntime(Frameworks.Net50, RuntimeOption.PROVIDED);
+            AssertFrameworkSetsRuntime(Frameworks.Net60, RuntimeOption.DotNet6);
         }
 
         [StaFact]
@@ -200,6 +50,7 @@ namespace AWSToolkit.Tests.Lambda
         public void RuntimeAffectsFramework()
         {
             AssertRuntimeAffectsFramework(RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31);
+            AssertRuntimeAffectsFramework(RuntimeOption.DotNet6, Frameworks.Net60);
         }
 
         [StaFact]
@@ -207,6 +58,7 @@ namespace AWSToolkit.Tests.Lambda
         {
             var runtimesToShow = new RuntimeOption[]
             {
+                RuntimeOption.DotNet6,
                 RuntimeOption.NetCore_v3_1,
                 RuntimeOption.PROVIDED,
                 RuntimeOption.PROVIDED_AL2,
@@ -222,54 +74,66 @@ namespace AWSToolkit.Tests.Lambda
         }
 
         [StaFact]
-        public void DotNetHandlerComponentsAffectHandler()
+        public void DotNetHandlerComponentsAffectHandler_NetCore31()
         {
-            Fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v3_1;
+            _fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v3_1;
 
-            Fixture.Page.ViewModel.HandlerAssembly = "aaa";
-            Fixture.Page.ViewModel.HandlerType = "ttt";
-            Fixture.Page.ViewModel.HandlerMethod = "mmm";
+            _fixture.Page.ViewModel.HandlerAssembly = "aaa";
+            _fixture.Page.ViewModel.HandlerType = "ttt";
+            _fixture.Page.ViewModel.HandlerMethod = "mmm";
 
-            Assert.Equal("aaa::ttt::mmm", Fixture.Page.ViewModel.Handler);
+            Assert.Equal("aaa::ttt::mmm", _fixture.Page.ViewModel.Handler);
+        }
+
+        [StaFact]
+        public void DotNetHandlerComponentsAffectHandler_DotNet6()
+        {
+            _fixture.Page.ViewModel.Runtime = RuntimeOption.DotNet6;
+
+            _fixture.Page.ViewModel.HandlerAssembly = "aaa";
+            _fixture.Page.ViewModel.HandlerType = "ttt";
+            _fixture.Page.ViewModel.HandlerMethod = "mmm";
+
+            Assert.Equal("aaa::ttt::mmm", _fixture.Page.ViewModel.Handler);
         }
 
         [StaFact]
         public void HandlerAffectsDotNetHandlerComponents()
         {
-            Fixture.Page.ViewModel.Handler = "aaa::ttt::mmm";
-            Assert.Equal("aaa", Fixture.Page.ViewModel.HandlerAssembly);
-            Assert.Equal("ttt", Fixture.Page.ViewModel.HandlerType);
-            Assert.Equal("mmm", Fixture.Page.ViewModel.HandlerMethod);
+            _fixture.Page.ViewModel.Handler = "aaa::ttt::mmm";
+            Assert.Equal("aaa", _fixture.Page.ViewModel.HandlerAssembly);
+            Assert.Equal("ttt", _fixture.Page.ViewModel.HandlerType);
+            Assert.Equal("mmm", _fixture.Page.ViewModel.HandlerMethod);
         }
 
         private void AssertFrameworkSetsRuntime(string framework, RuntimeOption expectedRuntime)
         {
-            Fixture.Page.ViewModel.Framework = framework;
-            Assert.Equal(expectedRuntime, Fixture.Page.ViewModel.Runtime);
+            _fixture.Page.ViewModel.Framework = framework;
+            Assert.Equal(expectedRuntime, _fixture.Page.ViewModel.Runtime);
         }
 
         private void AssertRuntimeAffectsFramework(RuntimeOption runtime, string expectedFramework)
         {
-            Fixture.Page.ViewModel.Runtime = runtime;
-            Assert.Equal(expectedFramework, Fixture.Page.ViewModel.Framework);
+            _fixture.Page.ViewModel.Runtime = runtime;
+            Assert.Equal(expectedFramework, _fixture.Page.ViewModel.Framework);
         }
 
         private void AssertRuntimeAffectsConfigFrameworkSettingsVisibility(RuntimeOption runtime, bool expectedShow)
         {
-            Fixture.Page.ViewModel.Runtime = runtime;
+            _fixture.Page.ViewModel.Runtime = runtime;
             Assert.Equal(expectedShow ? Visibility.Visible : Visibility.Collapsed,
-                Fixture.Page.ViewModel.ConfigurationVisibility);
+                _fixture.Page.ViewModel.ConfigurationVisibility);
             Assert.Equal(expectedShow ? Visibility.Visible : Visibility.Collapsed,
-                Fixture.Page.ViewModel.FrameworkVisibility);
-            Assert.Equal(expectedShow, Fixture.Page.ViewModel.ShowSaveSettings);
+                _fixture.Page.ViewModel.FrameworkVisibility);
+            Assert.Equal(expectedShow, _fixture.Page.ViewModel.ShowSaveSettings);
         }
 
         private void AssertArchitectureAffectsRuntime(LambdaArchitecture architecture, RuntimeOption expectedRuntime)
         {
-            Fixture.Page.ViewModel.Framework = Frameworks.NetCoreApp10;
-            Fixture.Page.ViewModel.Architecture = architecture;
-            Fixture.Page.ViewModel.Framework = Frameworks.Net50;
-            Assert.Equal(expectedRuntime, Fixture.Page.ViewModel.Runtime);
+            _fixture.Page.ViewModel.Framework = Frameworks.NetCoreApp10;
+            _fixture.Page.ViewModel.Architecture = architecture;
+            _fixture.Page.ViewModel.Framework = Frameworks.Net50;
+            Assert.Equal(expectedRuntime, _fixture.Page.ViewModel.Runtime);
         }
 
     }

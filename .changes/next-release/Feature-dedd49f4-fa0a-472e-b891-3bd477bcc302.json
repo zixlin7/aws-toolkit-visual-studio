@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Add support for publishing Lambda functions using the .NET 6 managed runtime"
+}

@@ -40,12 +40,14 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             new Dictionary<string, RuntimeOption>(StringComparer.OrdinalIgnoreCase)
             {
                 {Frameworks.NetCoreApp31, RuntimeOption.NetCore_v3_1},
+                {Frameworks.Net60, RuntimeOption.DotNet6},
             };
 
         private static readonly IDictionary<RuntimeOption, string> FrameworkByRuntime =
             new Dictionary<RuntimeOption, string>()
             {
                 {RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31},
+                {RuntimeOption.DotNet6, Frameworks.Net60},
             };
 
         public IAWSWizardPageController PageController { get; }
@@ -98,11 +100,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             SetPanelsForOriginatorAndType();
 
+            ViewModel.ProjectIsExecutable = hostWizard.GetProperty<bool>(UploadFunctionWizardProperties.IsExecutable, false);
+
             ViewModel.Runtime = deploymentType == DeploymentType.NETCore
                 ? RuntimeOption.NetCore_v3_1
                 : RuntimeOption.NodeJS_v12_X;
 
-            if (ViewModel.Runtime.IsNetCore)
+            if (ViewModel.Runtime.IsDotNet)
             {
                 InitializeNETCoreFields();
             }
@@ -302,11 +306,17 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 ViewModel.Frameworks.Add(Frameworks.NetCoreApp21);
                 ViewModel.Frameworks.Add(Frameworks.NetCoreApp31);
                 ViewModel.Frameworks.Add(Frameworks.Net50);
+                ViewModel.Frameworks.Add(Frameworks.Net60);
 
                 if (_shellProvider.HostInfo.Name == ToolkitHosts.Vs2017.Name)
                 {
                     // Select a framework supported by VS2017
                     ViewModel.Framework = ViewModel.Frameworks.First(x => x.MatchesFramework(Frameworks.NetCoreApp21));
+                }
+                else if (_shellProvider.HostInfo.Name == ToolkitHosts.Vs2019.Name)
+                {
+                    // Select a framework supported by VS2019
+                    ViewModel.Framework = ViewModel.Frameworks.Last(x => !x.MatchesFramework(Frameworks.Net60));
                 }
                 else
                 {
@@ -318,9 +328,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         public AccountViewModel SelectedAccount => ViewModel.Connection.Account;
 
         public ToolkitRegion SelectedRegion => ViewModel.Connection.Region;
-
-        private bool ShowDotNetHandlerComponents =>
-            ViewModel.Runtime != null && ViewModel.Runtime.IsNetCore && !ViewModel.Runtime.IsCustomRuntime;
 
         private static RuntimeOption GetRuntimeOptionForFramework(string framework, LambdaArchitecture architecture)
         {
@@ -415,29 +422,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        public bool AllRequiredFieldsAreSet
-        {
-            get
-            {
-                if (!ViewModel.Connection.ConnectionIsValid || ViewModel.Connection.IsValidating)
-                {
-                    return false;
-                }
-
-                if (string.IsNullOrEmpty(this.ViewModel.FunctionName))
-                {
-                    return false;
-                }
-
-                if (ViewModel.PackageType.Equals(Amazon.Lambda.PackageType.Zip))
-                {
-                    return AllRequiredFieldsForZipAreSet();
-                }
-
-                return AllRequiredFieldsForImageAreSet();
-            }
-        }
-
         private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ViewModel.PackageType))
@@ -461,7 +445,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             if (e.PropertyName == nameof(ViewModel.HandlerAssembly) ||
                 e.PropertyName == nameof(ViewModel.HandlerType) || e.PropertyName == nameof(ViewModel.HandlerMethod))
             {
-                if (ShowDotNetHandlerComponents)
+                if (ShouldComponentsUpdateHandler())
                 {
                     ViewModel.Handler = ViewModel.CreateDotNetHandler();
                 }
@@ -486,6 +470,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             {
                 UpdateImageTags().LogExceptionAndForget();
             }
+        }
+
+        private bool ShouldComponentsUpdateHandler()
+        {
+            return ViewModel.RequiresDotNetHandlerComponents() && !ViewModel.ProjectIsExecutable;
         }
 
         private void OnFunctionNameChanged()
@@ -563,74 +552,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             ViewModel.HandlerTooltip = ViewModel.CreateHandlerTooltip();
             
             // Toggle control visibilities
-            var showConfigAndFramework = ViewModel.Runtime?.IsNetCore ?? false;
+            var showConfigAndFramework = ViewModel.Runtime?.IsDotNet ?? false;
             ViewModel.ConfigurationVisibility = showConfigAndFramework ? Visibility.Visible : Visibility.Collapsed;
             ViewModel.FrameworkVisibility = showConfigAndFramework ? Visibility.Visible : Visibility.Collapsed;
             ViewModel.ShowSaveSettings = showConfigAndFramework;
-        }
-
-        private bool AllRequiredFieldsForZipAreSet()
-        {
-            if (!File.Exists(ViewModel.SourceCodeLocation) && !Directory.Exists(ViewModel.SourceCodeLocation))
-            {
-                return false;
-            }
-
-            if (ViewModel.Runtime == null)
-            {
-                return false;
-            }
-
-            if (ViewModel.Architecture == null)
-            {
-                return false;
-            }
-
-            if (ShowDotNetHandlerComponents)
-            {
-                if (string.IsNullOrEmpty(ViewModel.HandlerAssembly))
-                {
-                    return false;
-                }
-
-                if (string.IsNullOrEmpty(ViewModel.HandlerType))
-                {
-                    return false;
-                }
-
-                if (string.IsNullOrEmpty(ViewModel.HandlerMethod))
-                {
-                    return false;
-                }
-            }
-
-            if (!ViewModel.Runtime.IsCustomRuntime && string.IsNullOrEmpty(ViewModel.Handler))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool AllRequiredFieldsForImageAreSet()
-        {
-            if (ViewModel.Architecture == null)
-            {
-                return false;
-            }
-            if (!File.Exists(ViewModel.Dockerfile))
-            {
-                return false;
-            }
-            if (string.IsNullOrEmpty(ViewModel.ImageRepo))
-            {
-                return false;
-            }
-            if (string.IsNullOrEmpty(ViewModel.ImageTag))
-            {
-                return false;
-            }
-            return true;
         }
 
         /// <summary>

@@ -90,6 +90,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
                 await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
 
                 // selectedProject can be null if the user is right clicking on a serverless.template file.
+                var selectedHierarchy = VSUtility.GetCurrentVSHierarchySelection(out _);
                 var selectedProject = VSUtility.GetSelectedProject();
 
                 var fullPath = selectedProject?.FullName;
@@ -115,6 +116,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
                 seedProperties[UploadFunctionWizardProperties.SelectedProjectFile] = fullPath;
                 seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Zip;
                 var dockerfilePath = Path.Combine(rootDirectory, "Dockerfile");
+
+                DetectIfExecutable(selectedHierarchy, seedProperties);
 
                 if (selectedProject != null)
                 {
@@ -176,6 +179,26 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
             {
                 Logger.Error("Deploy to Lambda failure", e);
                 _toolkitShell.ShowError("Publish to AWS Lambda failure", e.Message);
+            }
+        }
+
+        private void DetectIfExecutable(IVsHierarchy vsHierarchy, Dictionary<string, object> seedProperties)
+        {
+            try
+            {
+                if (vsHierarchy is IVsBuildPropertyStorage propertyStorage)
+                {
+                    propertyStorage.GetPropertyValue("OutputType", string.Empty, (int) _PersistStorageType.PST_PROJECT_FILE, out string outputType);
+
+                    if (outputType == "Exe")
+                    {
+                        seedProperties[UploadFunctionWizardProperties.IsExecutable] = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Unable to determine project's output type. Top-level Lambda functions might not deploy.", e);
             }
         }
 

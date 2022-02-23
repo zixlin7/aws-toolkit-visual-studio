@@ -719,8 +719,12 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         internal T GetPropertyValue<T>(string key)
         {
-            object value;
-            if (!_wizardProperties.TryGetValue(key, out value)) return default(T);
+            return GetPropertyValue(key, default(T));
+        }
+
+        internal T GetPropertyValue<T>(string key, T defaultValue)
+        {
+            if (!_wizardProperties.TryGetValue(key, out var value)) return defaultValue;
 
             var convertedValue = (T)Convert.ChangeType(value, typeof(T));
             return convertedValue;

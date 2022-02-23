@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,8 +31,9 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 {
     public class UploadFunctionViewModel : BaseModel, IDataErrorInfo
     {
-        public const string HandlerTooltipBase = "The function within your code that Lambda calls to begin execution.";
+        public const string HandlerTooltipBase = "The handler tells Lambda where to find your code to process events with.";
         public const string HandlerTooltipDotNet = "For .NET runtimes, the Lambda handler format is: <assembly>::<type>::<method>";
+        public const string HandlerTooltipDotNetTopLevel = "For .NET managed runtimes using top-level statements, the Lambda handler value should be set to the assembly name.";
         public const string HandlerTooltipGeneric = "For Node.js, the Lambda handler format is: <module-name>.<export value of your function>";
         public const string HandlerTooltipCustomRuntime = "For custom runtimes the Lambda handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
 
@@ -185,6 +187,16 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             get => _handlerTooltip;
             set { SetProperty(ref _handlerTooltip, value, () => HandlerTooltip); }
         }
+
+        /// <summary>
+        /// Lambda functions are typically functions within Class Libraries.
+        /// 
+        /// Functions based on custom runtimes or that use top-level statements reside in
+        /// executable projects.
+        ///
+        /// This can affect Handlers and validation.
+        /// </summary>
+        public bool ProjectIsExecutable = false;
 
         public string HandlerAssembly
         {
@@ -439,6 +451,98 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             {
                 _shellProvider.ExecuteOnUIThread(() => { LoadingImageTags = value; });
             }
+        }
+
+        public bool IsValidConfiguration()
+        {
+            if (!Connection.ConnectionIsValid || Connection.IsValidating)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(FunctionName))
+            {
+                return false;
+            }
+
+            if (PackageType.Equals(PackageType.Zip))
+            {
+                return IsValidZipConfiguration();
+            }
+
+            return IsValidImageConfiguration();
+        }
+
+        private bool IsValidZipConfiguration()
+        {
+            if (!File.Exists(SourceCodeLocation) && !Directory.Exists(SourceCodeLocation))
+            {
+                return false;
+            }
+
+            if (Runtime == null)
+            {
+                return false;
+            }
+
+            if (Architecture == null)
+            {
+                return false;
+            }
+
+            if (RequiresDotNetHandlerComponents())
+            {
+                if (string.IsNullOrEmpty(HandlerAssembly))
+                {
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(HandlerType))
+                {
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(HandlerMethod))
+                {
+                    return false;
+                }
+            }
+
+            if (!Runtime.IsCustomRuntime && string.IsNullOrEmpty(Handler))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool RequiresDotNetHandlerComponents() =>
+            Runtime != null && Runtime.IsDotNet && !Runtime.IsCustomRuntime
+            && !ProjectIsExecutable;
+
+        private bool IsValidImageConfiguration()
+        {
+            if (Architecture == null)
+            {
+                return false;
+            }
+
+            if (!File.Exists(Dockerfile))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(ImageRepo))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(ImageTag))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -712,9 +816,9 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                 return HandlerTooltipCustomRuntime;
             }
 
-            if (Runtime?.IsNetCore ?? false)
+            if (Runtime?.IsDotNet ?? false)
             {
-                return HandlerTooltipDotNet;
+                return ProjectIsExecutable ? HandlerTooltipDotNetTopLevel : HandlerTooltipDotNet;
             }
 
             return HandlerTooltipGeneric;

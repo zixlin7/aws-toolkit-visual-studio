@@ -126,6 +126,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Iam\IamEntityRepositoryTests.cs" />
     <Compile Include="Lambda\LambdaStateWaiterTests.cs" />
+    <Compile Include="Lambda\UploadFunctionViewModelIsValidConfigurationTests.cs" />
     <Compile Include="Models\KeyValueConversionTests.cs" />
     <Compile Include="Models\KeyValueTests.cs" />
     <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />

@@ -25,7 +25,7 @@ namespace AWSToolkit.Tests.Lambda
         private static readonly string[] SampleRepositoryNames = new string[] {"somerepo", "somerepo2"};
 
         public static readonly IEnumerable<object[]> DotNetRuntimes = RuntimeOption.ALL_OPTIONS
-            .Where(r => r.IsNetCore)
+            .Where(r => r.IsDotNet)
             .Where(r => !r.IsCustomRuntime)
             .Select(r => Enumerable.Repeat(r, 1).ToArray())
             .ToArray();
@@ -206,6 +206,15 @@ namespace AWSToolkit.Tests.Lambda
         }
 
         [Theory]
+        [MemberData(nameof(DotNetRuntimes))]
+        public void CreateHandlerHelpText_DotNetRuntime_ExecutableProject(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            _sut.ProjectIsExecutable = true;
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipDotNetTopLevel, _sut.CreateHandlerHelpText());
+        }
+
+        [Theory]
         [MemberData(nameof(JsRuntimes))]
         public void CreateHandlerHelpText_NodeRuntime(RuntimeOption runtime)
         {
@@ -230,6 +239,18 @@ namespace AWSToolkit.Tests.Lambda
 
             Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
             Assert.Contains(UploadFunctionViewModel.HandlerTooltipDotNet, handlerTooltip);
+        }
+
+        [Theory]
+        [MemberData(nameof(DotNetRuntimes))]
+        public void CreateHandlerTooltip_DotNetRuntime_ExecutableProject(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            _sut.ProjectIsExecutable = true;
+            var handlerTooltip = _sut.CreateHandlerTooltip();
+
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipDotNetTopLevel, handlerTooltip);
         }
 
         [Theory]
