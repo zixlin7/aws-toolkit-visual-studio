@@ -123,8 +123,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT, PublishContainerToAWSWizardProperties.DesiredCount);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, PublishContainerToAWSWizardProperties.TaskGroup);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_SCHEDULE_EXPRESSION, PublishContainerToAWSWizardProperties.ScheduleExpression);
 
-                if(!string.IsNullOrEmpty(defaults.GetRawString(WizardPages.ECSWizardUtils.PERSISTED_DEPLOYMENT_MODE)))
+                if (!string.IsNullOrEmpty(defaults.GetRawString(WizardPages.ECSWizardUtils.PERSISTED_DEPLOYMENT_MODE)))
                 {
                     Constants.DeployMode mode;
                     if(Enum.TryParse<Constants.DeployMode>(defaults.GetRawString(WizardPages.ECSWizardUtils.PERSISTED_DEPLOYMENT_MODE), out mode))
