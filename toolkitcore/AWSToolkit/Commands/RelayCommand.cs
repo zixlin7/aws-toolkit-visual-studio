@@ -56,5 +56,13 @@ namespace Amazon.AWSToolkit.Commands
         {
             CanExecuteChangedInternal?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Force the command to re-calculate if it can be executed
+        /// </summary>
+        public void Refresh()
+        {
+            RaiseCanExecuteChanged();
+        }
     }
 }

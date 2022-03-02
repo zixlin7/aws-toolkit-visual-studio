@@ -1,4 +1,5 @@
 ﻿using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
 
@@ -37,6 +38,11 @@ namespace Amazon.AWSToolkit.VisualStudio
         public IKeyValueEditorDialog CreateKeyValueEditorDialog()
         {
             return new KeyValueEditorDialog(_toolkitContext);
+        }
+        
+        public ICredentialSelectionDialog CreateCredentialsSelectionDialog()
+        {
+            return new CredentialSelectionDialog(_toolkitContext, _joinableTaskFactory);
         }
     }
 }

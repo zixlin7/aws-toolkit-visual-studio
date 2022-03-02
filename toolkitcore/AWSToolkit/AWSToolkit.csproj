@@ -119,6 +119,9 @@
     <Compile Include="CommonUI\Converters\EqualityBooleanConverter.cs" />
     <Compile Include="CommonUI\Converters\InverseVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\NullableInverseBooleanConverter.cs" />
+    <Compile Include="CommonUI\CredentialSelector\CredentialConnectionStatus.cs" />
+    <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModel.cs" />
+    <Compile Include="CommonUI\CredentialSelector\ICredentialSelectionDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IIamRoleSelectionDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IKeyValueEditorDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IInstanceTypeSelectionDialog.cs" />

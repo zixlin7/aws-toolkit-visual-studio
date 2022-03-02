@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.CommonUI.Dialogs;
+﻿using Amazon.AWSToolkit.CommonUI.CredentialSelector;
+using Amazon.AWSToolkit.CommonUI.Dialogs;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -11,5 +12,6 @@ namespace Amazon.AWSToolkit.CommonUI
         IVpcSelectionDialog CreateVpcSelectionDialog();
         IInstanceTypeSelectionDialog CreateInstanceTypeSelectionDialog();
         IKeyValueEditorDialog CreateKeyValueEditorDialog();
+        ICredentialSelectionDialog CreateCredentialsSelectionDialog();
     }
 }

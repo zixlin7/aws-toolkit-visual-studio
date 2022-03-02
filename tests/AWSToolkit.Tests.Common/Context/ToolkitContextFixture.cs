@@ -1,6 +1,7 @@
 ﻿using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -35,6 +36,12 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
                 TelemetryLogger = TelemetryLogger.Object,
                 ToolkitHost = ToolkitHost.Object
             };
+        }
+
+        public void DefineCredentialProperties(ICredentialIdentifier credentialIdentifier, ProfileProperties profileProperties)
+        {
+            CredentialSettingsManager.Setup(m => m.GetProfileProperties(credentialIdentifier))
+                .Returns(profileProperties);
         }
     }
 }

@@ -10,6 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Converters\ImageThemeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CredentialSelectionDialog.xaml.cs">
+      <DependentUpon>CredentialSelectionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\DialogWindowHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\IamRoleSelectionDialog.xaml.cs">
       <DependentUpon>IamRoleSelectionDialog.xaml</DependentUpon>
@@ -42,6 +45,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)VSWebProjectInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\CredentialSelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\IamRoleSelectionDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
