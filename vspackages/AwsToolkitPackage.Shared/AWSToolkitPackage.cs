@@ -84,6 +84,7 @@ using Microsoft.VisualStudio.PlatformUI;
 
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
+using Amazon.AWSToolkit.VisualStudio.SupportedVersion;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -155,6 +156,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         private ToolkitContext _toolkitContext;
         private TelemetryManager _telemetryManager;
         private TelemetryInfoBarManager _telemetryInfoBarManager;
+        private SupportedVersionBarManager _supportedVersionBarManager;
         private DateTime _startInitializeOn;
         private IPublishSettingsRepository _publishSettingsRepository;
 
@@ -926,6 +928,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _shellInitialized = true;
                 ShowFirstRun();
                 ShowTelemetryNotice();
+                ShowSupportedVersionNotice(ToolkitHosts.Vs2017);
             }
 
             return VSConstants.S_OK;
@@ -977,6 +980,36 @@ namespace Amazon.AWSToolkit.VisualStudio
                 catch (Exception e)
                 {
                     LOGGER.Error("ShowTelemetryNotice error", e);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Displays an information bar indicating minimum supported version of the IDE
+        /// </summary>
+        /// <param name="hostDeprecated">represents the host version being deprecated</param>
+        private void ShowSupportedVersionNotice(IToolkitHostInfo hostDeprecated)
+        {
+            var supportedVersionStrategy = new SupportedVersionStrategy(ToolkitContext.ToolkitHostInfo, hostDeprecated, ToolkitSettings.Instance);
+
+            if (!supportedVersionStrategy.CanShowNotice())
+            {
+                return;
+            }
+
+            JoinableTaskFactory.Run(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                try
+                {
+                    LOGGER.Debug("Attempting to show minimum supported version info banner");
+                    _supportedVersionBarManager = new SupportedVersionBarManager(this, supportedVersionStrategy);
+                    _supportedVersionBarManager.ShowInfoBar();
+
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Error("Error occurred while trying to show minimum supported version info banner", e);
                 }
             });
         }
@@ -2447,6 +2480,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryManager?.Dispose();
 
             _telemetryInfoBarManager?.Dispose();
+            _supportedVersionBarManager?.Dispose();
             _metricsOutputWindow?.Dispose();
 
             return Microsoft.VisualStudio.VSConstants.S_OK;

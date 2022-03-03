@@ -59,6 +59,8 @@
     <Compile Include="Navigator\NavigatorViewModelTests.cs" />
     <Compile Include="Publishing\PublishToAwsCommandSolutionExplorerTests.cs" />
     <Compile Include="Publishing\PublishToAwsCommandTests.cs" />
+    <Compile Include="SupportedVersion\SupportedVersionInfoBarTests.cs" />
+    <Compile Include="SupportedVersion\SupportedVersionStrategyTests.cs" />
     <Compile Include="Telemetry\TelemetryInfoBarTests.cs" />
     <Compile Include="UIThreadFixture.cs" />
     <Compile Include="Lambda\LambdaTesterUsageEmitterTests.cs" />

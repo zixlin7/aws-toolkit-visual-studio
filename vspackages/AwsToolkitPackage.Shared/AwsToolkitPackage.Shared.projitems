@@ -117,6 +117,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ToolkitProductEnvironment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\VsAppId\IVsAppId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\WindowFrameNotificationController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionBarManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml">
