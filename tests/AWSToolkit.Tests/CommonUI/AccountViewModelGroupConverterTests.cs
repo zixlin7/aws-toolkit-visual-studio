@@ -1,6 +1,7 @@
 ﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.Converters;
+using Amazon.AWSToolkit.Credentials.Presentation;
 using Amazon.AWSToolkit.Tests.Common.Account;
 
 using Xunit;
@@ -18,16 +19,16 @@ namespace AWSToolkit.Tests.CommonUI
         [Fact]
         public void Convert()
         {
-            var sharedGroup = Assert.IsType<AccountViewModelGroup>(_sut.Convert(_sharedCredentialAccount,
-                typeof(AccountViewModelGroup),
+            var sharedGroup = Assert.IsType<CredentialsIdentifierGroup>(_sut.Convert(_sharedCredentialAccount,
+                typeof(CredentialsIdentifierGroup),
                 null, null));
 
-            var sdkGroup = Assert.IsType<AccountViewModelGroup>(_sut.Convert(_sdkCredentialAccount,
-                typeof(AccountViewModelGroup),
+            var sdkGroup = Assert.IsType<CredentialsIdentifierGroup>(_sut.Convert(_sdkCredentialAccount,
+                typeof(CredentialsIdentifierGroup),
                 null, null));
 
-            var alternateGroup = Assert.IsType<AccountViewModelGroup>(_sut.Convert(_alternateCredentialAccount,
-                typeof(AccountViewModelGroup),
+            var alternateGroup = Assert.IsType<CredentialsIdentifierGroup>(_sut.Convert(_alternateCredentialAccount,
+                typeof(CredentialsIdentifierGroup),
                 null, null));
 
             Assert.True(sharedGroup.SortPriority > sdkGroup.SortPriority);

@@ -98,7 +98,8 @@
       <DependentUpon>MonitorGraph.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\CommandHandler.cs" />
-    <Compile Include="CommonUI\Components\AccountViewModelGroup.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparer.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierGroup.cs" />
     <Compile Include="CommonUI\Components\KeyValues\BatchAssignmentsEditor.xaml.cs">
       <DependentUpon>BatchAssignmentsEditor.xaml</DependentUpon>
     </Compile>
@@ -166,6 +167,7 @@
     <Compile Include="Credentials\Core\AwsSsoCredentials.cs" />
     <Compile Include="Credentials\Core\ToolkitDefaultEc2InstanceCredentials.cs" />
     <Compile Include="Credentials\IO\PersistConnectionSettings.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierExtensionMethods.cs" />
     <Compile Include="Credentials\Utils\AccountViewModelExtensionMethods.cs" />
     <Compile Include="Credentials\Utils\ConnectionSettingsChangeArgs.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileExtensionMethods.cs" />

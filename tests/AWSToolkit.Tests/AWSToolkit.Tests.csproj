@@ -102,6 +102,8 @@
     <Compile Include="Credentials\Core\SDKCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\SharedCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\IO\SharedCredentialFileWriterTests.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierExtensionMethodsTests.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparerTests.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileOptionsExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\CredentialTypeExtensionMethodsTests.cs" />
