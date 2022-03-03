@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
                 .ToList();
         }
 
-        public static string ToJson(ICollection<KeyValue> keyValues)
+        public static string ToJson(IEnumerable<KeyValue> keyValues)
         {
             return JsonConvert.SerializeObject(keyValues
                 .ToDictionary(keyValue => keyValue.Key, keyValue => keyValue.Value));
