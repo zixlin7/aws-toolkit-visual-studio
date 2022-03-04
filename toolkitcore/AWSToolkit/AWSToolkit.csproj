@@ -98,6 +98,10 @@
       <DependentUpon>MonitorGraph.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\CommandHandler.cs" />
+    <Compile Include="CommonUI\Components\CredentialIdentitySelector.xaml.cs">
+      <DependentUpon>CredentialIdentitySelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Converters\CredentialIdentifierGroupConverter.cs" />
     <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparer.cs" />
     <Compile Include="Credentials\Presentation\CredentialIdentifierGroup.cs" />
     <Compile Include="CommonUI\Components\KeyValues\BatchAssignmentsEditor.xaml.cs">
@@ -482,6 +486,10 @@
     <Page Include="CommonUI\Components\AppSettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\Components\CredentialIdentitySelector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="CommonUI\Components\IAMCapabilityPicker.xaml">
       <SubType>Designer</SubType>

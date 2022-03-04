@@ -65,6 +65,7 @@
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
     <Compile Include="CommonUI\ConcatenateCollectionConverterTests.cs" />
     <Compile Include="CommonUI\ConverterPipelineTests.cs" />
+    <Compile Include="CommonUI\CredentialIdentifierGroupConverterTests.cs" />
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
     <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
