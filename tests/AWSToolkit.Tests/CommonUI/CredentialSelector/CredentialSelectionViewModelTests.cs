@@ -22,6 +22,11 @@ namespace AWSToolkit.Tests.CommonUI.CredentialSelector
         private readonly CredentialSelectionViewModel _viewModel;
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
 
+        private static readonly ToolkitRegion LocalRegion = new ToolkitRegion()
+        {
+            DisplayName = "local", Id = "local",
+        };
+
         private static readonly ToolkitRegion RegionA1 = new ToolkitRegion()
         {
             PartitionId = PartitionA, DisplayName = "Region a-1", Id = "a1",
@@ -51,7 +56,9 @@ namespace AWSToolkit.Tests.CommonUI.CredentialSelector
         {
             AssociateRegionWithPartition(PartitionA, RegionA1);
             AssociateRegionWithPartition(PartitionA, RegionA2);
+            AssociateRegionWithPartition(PartitionA, LocalRegion);
             AssociateRegionWithPartition(PartitionB, RegionB1);
+            AssociateRegionWithPartition(PartitionB, LocalRegion);
         }
 
         private void SetupGetRegions()
@@ -66,6 +73,9 @@ namespace AWSToolkit.Tests.CommonUI.CredentialSelector
 
                     return regions;
                 });
+
+            _toolkitContextFixture.RegionProvider.Setup(mock => mock.IsRegionLocal(It.IsAny<string>()))
+                .Returns<string>(regionId => LocalRegion.Id == regionId);
         }
 
         private void AssociateRegionWithPartition(string partitionId, ToolkitRegion region)
@@ -82,6 +92,28 @@ namespace AWSToolkit.Tests.CommonUI.CredentialSelector
         [Fact]
         public void ShowRegions()
         {
+            _viewModel.IncludeLocalRegions = true;
+
+            _viewModel.ShowRegions(PartitionA);
+            Assert.Equal(3, _viewModel.Regions.Count);
+            Assert.Contains(RegionA1, _viewModel.Regions);
+            Assert.Contains(RegionA2, _viewModel.Regions);
+            Assert.Contains(LocalRegion, _viewModel.Regions);
+
+            _viewModel.ShowRegions(PartitionB);
+            Assert.Equal(2, _viewModel.Regions.Count);
+            Assert.Contains(RegionB1, _viewModel.Regions);
+            Assert.Contains(LocalRegion, _viewModel.Regions);
+
+            _viewModel.ShowRegions("unknown-partition");
+            Assert.Empty(_viewModel.Regions);
+        }
+
+        [Fact]
+        public void ShowRegions_NoLocal()
+        {
+            _viewModel.IncludeLocalRegions = false;
+
             _viewModel.ShowRegions(PartitionA);
             Assert.Equal(2, _viewModel.Regions.Count);
             Assert.Contains(RegionA1, _viewModel.Regions);

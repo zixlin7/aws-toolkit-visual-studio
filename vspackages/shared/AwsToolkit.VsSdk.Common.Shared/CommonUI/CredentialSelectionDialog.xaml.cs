@@ -32,6 +32,12 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         private readonly ICommand _retryValidationCommand;
         private readonly AwsConnectionManager _connectionManager;
 
+        public bool IncludeLocalRegions
+        {
+            get => _viewModel.IncludeLocalRegions;
+            set => _viewModel.IncludeLocalRegions = value;
+        }
+
         public ICredentialIdentifier CredentialIdentifier
         {
             get => _viewModel.CredentialIdentifier;

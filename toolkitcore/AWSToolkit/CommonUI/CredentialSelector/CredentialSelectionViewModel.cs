@@ -73,6 +73,11 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialSelector
         }
 
         /// <summary>
+        /// Whether or not local regions are shown
+        /// </summary>
+        public bool IncludeLocalRegions = false;
+
+        /// <summary>
         /// The currently selected Credential Id
         /// </summary>
         public ICredentialIdentifier CredentialIdentifier
@@ -160,6 +165,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialSelector
             var partitionRegions = _regionProvider.GetRegions(partitionId);
 
             var regions = partitionRegions
+                .Where(r => IncludeLocalRegions || !_regionProvider.IsRegionLocal(r.Id))
                 .OrderBy(r => r.DisplayName)
                 .ToList();
 
