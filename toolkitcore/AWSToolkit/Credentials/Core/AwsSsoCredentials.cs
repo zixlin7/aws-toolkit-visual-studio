@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
             catch (Exception e)
             {
-                _toolkitShell.OutputToHostConsole($"Login failed for AWS SSO based profile {_profile.Name}: {e.Message}", true);
+                _toolkitShell.OutputToHostConsole($"Login failed for AWS SSO based profile {_profile.Name}: {e.Message}", false);
                 throw;
             }
         }
@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     throw new Exception("User declined to start SSO Login Flow");
                 }
 
-                _toolkitShell.OutputToHostConsole($"SSO Login flow started for Credentials: {_profile.Name}", true);
+                _toolkitShell.OutputToHostConsole($"SSO Login flow started for Credentials: {_profile.Name}", false);
                 Logger.Debug($"SSO Login flow started for Credentials: {_profile.Name}");
 
                 Process.Start(ssoVerification.VerificationUriComplete);
