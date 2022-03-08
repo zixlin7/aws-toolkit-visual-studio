@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Threading;
 
+using Amazon.AWSToolkit.Context;
+
 using log4net;
 
 
@@ -14,7 +16,13 @@ namespace Amazon.AWSToolkit.Navigator.Node
         ObservableCollection<IViewModel> _instances;
 
         public InstanceDataRootViewModel(IMetaNode metaNode, IViewModel parent, string name)
-            : base(metaNode, parent, name)
+            : this(metaNode, parent, name, ToolkitFactory.Instance.ToolkitContext)
+        {
+        }
+
+        public InstanceDataRootViewModel(IMetaNode metaNode, IViewModel parent,
+            string name, ToolkitContext toolkitContext)
+            : base(metaNode, parent, name, toolkitContext)
         {
         }
 

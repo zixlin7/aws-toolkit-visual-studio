@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.Account
         public AccountViewModel(AccountViewMetaNode metaNode, AWSViewModel awsViewModel,
             ICredentialIdentifier identifier,
             ToolkitContext toolkitContext)
-            : base(metaNode, awsViewModel, identifier.DisplayName)
+            : base(metaNode, awsViewModel, identifier.DisplayName, toolkitContext)
         {
             this._metaNode = metaNode;
             this._awsViewModel = awsViewModel;
