@@ -52,6 +52,7 @@
     <Compile Include="Clients\AwsServiceClientManagerTests.cs" />
     <Compile Include="Clients\ServiceClientCreatorTests.cs" />
     <Compile Include="CloudFormation\CloudFormationViewerTests.cs" />
+    <Compile Include="CloudWatch\CloudWatchRootViewModelTests.cs" />
     <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
     <Compile Include="CodeArtifact\ConfigurationTests.cs" />
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
@@ -204,6 +205,10 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
       <Project>{6AE302DB-2304-47C8-8E3C-96C85AC1D469}</Project>
       <Name>AWSToolkit.CloudFormation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudWatch\AWSToolkit.CloudWatch.csproj">
+      <Project>{71CE999A-BF87-4EAA-81B6-BF78FBD05CEB}</Project>
+      <Name>AWSToolkit.CloudWatch</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
       <Project>{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}</Project>

@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Clients;
+﻿using System;
+
+using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -42,6 +44,12 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         {
             CredentialSettingsManager.Setup(m => m.GetProfileProperties(credentialIdentifier))
                 .Returns(profileProperties);
+        }
+
+        public void SetupExecuteOnUIThread()
+        {
+            ToolkitHost.Setup(mock => mock.ExecuteOnUIThread(It.IsAny<Action>()))
+                .Callback<Action>(action => action());
         }
     }
 }
