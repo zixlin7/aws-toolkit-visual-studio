@@ -36,6 +36,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\VpcSelectionDialog.xaml.cs">
       <DependentUpon>VpcSelectionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\SelectionDialog.xaml.cs">
+      <DependentUpon>SelectionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
@@ -72,6 +75,10 @@
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\VpcSelectionDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\SelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 </Project>

@@ -20,6 +20,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             _joinableTaskFactory = joinableTaskFactory;
         }
 
+        public ISelectionDialog CreateSelectionDialog()
+        {
+            return new SelectionDialog();
+        }
+
         public IIamRoleSelectionDialog CreateIamRoleSelectionDialog()
         {
             return new IamRoleSelectionDialog(_toolkitContext, _joinableTaskFactory);

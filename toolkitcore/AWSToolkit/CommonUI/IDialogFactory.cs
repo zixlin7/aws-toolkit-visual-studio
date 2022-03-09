@@ -8,6 +8,7 @@ namespace Amazon.AWSToolkit.CommonUI
     /// </summary>
     public interface IDialogFactory
     {
+        ISelectionDialog CreateSelectionDialog();
         IIamRoleSelectionDialog CreateIamRoleSelectionDialog();
         IVpcSelectionDialog CreateVpcSelectionDialog();
         IInstanceTypeSelectionDialog CreateInstanceTypeSelectionDialog();
