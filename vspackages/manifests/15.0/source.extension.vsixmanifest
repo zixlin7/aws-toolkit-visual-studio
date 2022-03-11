@@ -48,6 +48,7 @@
         <CustomExtension Type="Plugins">AWSToolkit.CloudFront.dll</CustomExtension>
         <CustomExtension Type="Plugins">AWSToolkit.CloudFront.Interface.dll</CustomExtension>
         <CustomExtension Type="Plugins">AWSToolkit.CloudWatch.dll</CustomExtension>
+        <CustomExtension Type="Plugins">AWSToolkit.CloudWatch.Interface.dll</CustomExtension>
         <CustomExtension Type="Plugins">AWSToolkit.CodeArtifact.dll</CustomExtension>
         <CustomExtension Type="Plugins">AWSToolkit.CodeCommit.dll</CustomExtension>
         <CustomExtension Type="Plugins">AWSToolkit.CodeCommit.Interface.dll</CustomExtension>
