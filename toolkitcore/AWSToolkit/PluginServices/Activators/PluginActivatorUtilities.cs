@@ -134,8 +134,10 @@ namespace Amazon.AWSToolkit.PluginServices.Activators
             {
                 try
                 {
-                    var assembly = Assembly.Load(AssemblyName.GetAssemblyName(assemblyPath));
-                    return GetPluginActivatorsFromAssembly(assembly);
+                    // This is broken.  There are duplicate assemblies in the <extension root> as well as <extension root>\Plugins
+                    // folders.  This means the types in each duplicated assembly loaded twice are incompatible.  Need a modern plugin solution.
+                    // See IDE-4975 and IDE-6946
+                    return GetPluginActivatorsFromAssembly(Assembly.Load(AssemblyName.GetAssemblyName(assemblyPath)));
                 }
                 catch (Exception e)
                 {

@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix showing CloudFormation stack after Publish to AWS completes."
+}
