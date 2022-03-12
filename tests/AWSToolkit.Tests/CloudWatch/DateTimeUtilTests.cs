@@ -11,9 +11,9 @@ namespace AWSToolkit.Tests.CloudWatch
     {
         public static IEnumerable<object[]> DateData = new List<object[]>
         {
-            new object[] { 1647022937000, new DateTime(2022, 03, 11, 10, 22, 17, DateTimeKind.Local) },
-            new object[] { 1589505830000, new DateTime(2020, 05, 14, 18, 23, 50, DateTimeKind.Local) },
-            new object[] { 1345482645000, new DateTime(2012, 08, 20, 10, 10, 45, DateTimeKind.Local) }
+            new object[] { 1647022937000, new DateTime(2022, 03, 11, 18, 22, 17, DateTimeKind.Utc) },
+            new object[] { 1589505830000, new DateTime(2020, 05, 15, 01, 23, 50, DateTimeKind.Utc) },
+            new object[] { 1345482645000, new DateTime(2012, 08, 20, 17, 10, 45, DateTimeKind.Utc) }
         };
 
 
@@ -21,7 +21,10 @@ namespace AWSToolkit.Tests.CloudWatch
         [MemberData(nameof(DateData))]
         public void ConvertUnixToLocalTimeStamp(long timestamp, DateTime expectedTime)
         {
-            Assert.Equal(expectedTime, DateTimeUtil.ConvertUnixToLocalTimeStamp(timestamp));
+            var localTime = DateTimeUtil.ConvertUnixToLocalTimeStamp(timestamp);
+            //convert to utc for compatibility with different test environments
+            var utcTime = localTime.ToUniversalTime();
+            Assert.Equal(expectedTime, utcTime);
         }
 
         [Theory]
