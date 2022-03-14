@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix issue where AWS Explorer button images would not display"
+}

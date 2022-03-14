@@ -7,13 +7,12 @@
                          xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
                          xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images"
+                         xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+                         themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          Height="300" Width="500">
     <commonUi:BaseAWSControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
-            </ResourceDictionary.MergedDictionaries>
             <converters:NullableInverseBooleanConverter x:Key="NullableInverseBooleanConverter" />
             <commonUi:VsImages x:Key="VsImages" />
         </ResourceDictionary>
@@ -55,20 +54,22 @@
             <RadioButton Name="PositiveButton" x:FieldModifier="private"
                          VerticalContentAlignment="Center"
                          IsChecked="{Binding FeedbackSentiment,UpdateSourceTrigger=PropertyChanged}">
-                <images:VsImage Width="16"
-                                       Height="16"
-                                       VerticalAlignment="Top"
-                                       Margin="0 0 9 0"
-                                       Source="{Binding Source={StaticResource VsImages}, Path=FeedbackSmile}" />
+                <images:VsImage 
+                    Width="16"
+                    Height="16"
+                    VerticalAlignment="Top"
+                    Margin="0 0 9 0"
+                    Source="{Binding Source={StaticResource VsImages}, Path=FeedbackSmile}" />
             </RadioButton>
             <RadioButton Name="NegativeButton" x:FieldModifier="private"
                          VerticalContentAlignment="Center"
                          IsChecked="{Binding FeedbackSentiment, Converter={StaticResource NullableInverseBooleanConverter}, UpdateSourceTrigger=PropertyChanged}">
-                <images:VsImage Width="16" 
-                                       Height="16"
-                                       VerticalAlignment="Top"
-                                       Margin="0 0 9 0"
-                                       Source="{Binding Source={StaticResource VsImages}, Path=FeedbackFrown}" />
+                <images:VsImage 
+                    Width="16" 
+                    Height="16"
+                    VerticalAlignment="Top"
+                    Margin="0 0 9 0"
+                    Source="{Binding Source={StaticResource VsImages}, Path=FeedbackFrown}" />
             </RadioButton>
         </StackPanel>
 

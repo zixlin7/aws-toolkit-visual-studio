@@ -23,7 +23,7 @@ namespace AWSToolkitPackage.Tests.Feedback
         public SendFeedbackCommandTests()
         {
             _sut = new SendFeedbackCommand(_toolkitContextFixture.ToolkitContext);
-            VsImage.Initialize(new FakeMultiValueConverter(), new FakeValueConverter());
+            VsImage.Initialize(new FakeMultiValueConverter());
         }
 
         [StaFact]
