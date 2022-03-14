@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.CloudWatch;
 using Amazon.AWSToolkit.CloudWatch.Core;
+using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.CloudWatch.Util;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 
@@ -15,6 +15,9 @@ using Moq;
 
 using Xunit;
 
+using GetLogEventsRequest = Amazon.AWSToolkit.CloudWatch.Models.GetLogEventsRequest;
+using LogGroup = Amazon.CloudWatchLogs.Model.LogGroup;
+using LogStream = Amazon.CloudWatchLogs.Model.LogStream;
 using ToolkitLogEvent = Amazon.AWSToolkit.CloudWatch.Models.LogEvent;
 using ToolkitLogGroup = Amazon.AWSToolkit.CloudWatch.Models.LogGroup;
 using ToolkitLogStream = Amazon.AWSToolkit.CloudWatch.Models.LogStream;
@@ -25,17 +28,18 @@ namespace AWSToolkit.Tests.CloudWatch
     {
         private readonly Mock<IAmazonCloudWatchLogs> _cwlClient = new Mock<IAmazonCloudWatchLogs>();
         private readonly CancellationToken _cancelToken = new CancellationToken();
+        private readonly GetLogGroupsRequest _sampleLogGroupRequest = new GetLogGroupsRequest();
+        private readonly GetLogStreamsRequest _sampleLogStreamsRequest = new GetLogStreamsRequest();
+        private readonly GetLogEventsRequest _sampleLogEventsRequest = new GetLogEventsRequest();
         private readonly string _nextToken = "sample-token";
         private readonly string _sampleLogGroup = "sample-log-group";
         private readonly string _sampleLogStream = "sample-log-stream";
 
         private readonly CloudWatchLogsRepository _repository;
-        private readonly CloudWatchLogsProperties _properties;
 
         public CloudWatchLogsRepositoryTests()
         {
-            _repository = new CloudWatchLogsRepository();
-            _properties = new CloudWatchLogsProperties() { CloudWatchLogsClient = _cwlClient.Object };
+            _repository = new CloudWatchLogsRepository(_cwlClient.Object);
         }
 
         [Fact]
@@ -44,7 +48,7 @@ namespace AWSToolkit.Tests.CloudWatch
             SetupDescribeLogGroups(null);
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
-                await _repository.GetLogGroupsAsync(_properties, _cancelToken));
+                await _repository.GetLogGroupsAsync(_sampleLogGroupRequest, _cancelToken));
         }
 
         [Fact]
@@ -54,7 +58,7 @@ namespace AWSToolkit.Tests.CloudWatch
             var output = new DescribeLogGroupsResponse() { NextToken = _nextToken, LogGroups = sampleSdkLogGroups };
             SetupDescribeLogGroups(output);
 
-            var response = await _repository.GetLogGroupsAsync(_properties, _cancelToken);
+            var response = await _repository.GetLogGroupsAsync(_sampleLogGroupRequest, _cancelToken);
             var expectedLogGroups = CreateSampleLogGroups();
 
             Assert.Equal(_nextToken, response.Item1);
@@ -65,11 +69,11 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task GetLogStreamsAsync_ThrowsNull()
         {
-            _properties.LogGroup = _sampleLogGroup;
+            _sampleLogStreamsRequest.LogGroup = _sampleLogGroup;
             SetupDescribeLogStreams((DescribeLogStreamsResponse) null);
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
-                await _repository.GetLogStreamsOrderByNameAsync(_properties, _cancelToken));
+                await _repository.GetLogStreamsOrderByNameAsync(_sampleLogStreamsRequest, _cancelToken));
         }
 
         [Theory]
@@ -77,21 +81,21 @@ namespace AWSToolkit.Tests.CloudWatch
         [InlineData(null)]
         public async Task GetLogStreamsAsync_InvalidLogGroup(string logGroup)
         {
-            _properties.LogGroup = logGroup;
+            _sampleLogStreamsRequest.LogGroup = logGroup;
             await Assert.ThrowsAsync<InvalidParameterException>(async () =>
-                await _repository.GetLogStreamsOrderByNameAsync(_properties, _cancelToken));
+                await _repository.GetLogStreamsOrderByNameAsync(_sampleLogStreamsRequest, _cancelToken));
         }
 
 
         [Fact]
         public async Task GetLogStreamsAsync()
         {
-            _properties.LogGroup = _sampleLogGroup;
+            _sampleLogStreamsRequest.LogGroup = _sampleLogGroup;
             var sampleSdkLogStreams = CreateSampleSdkLogStreams();
             var output = new DescribeLogStreamsResponse() { NextToken = _nextToken, LogStreams = sampleSdkLogStreams };
             SetupDescribeLogStreams(output);
 
-            var response = await _repository.GetLogStreamsOrderByTimeAsync(_properties, _cancelToken);
+            var response = await _repository.GetLogStreamsOrderByTimeAsync(_sampleLogStreamsRequest, _cancelToken);
             var expectedLogStreams = CreateSampleLogStreams();
 
             Assert.Equal(_nextToken, response.Item1);
@@ -102,12 +106,12 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task GetLogEventsAsync_ThrowsNull()
         {
-            _properties.LogGroup = _sampleLogGroup;
-            _properties.LogStream = _sampleLogStream;
+            _sampleLogEventsRequest.LogGroup = _sampleLogGroup;
+            _sampleLogEventsRequest.LogStream = _sampleLogStream;
             SetupFilterLogEvents((FilterLogEventsResponse) null);
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
-                await _repository.GetLogEventsAsync(_properties, _cancelToken));
+                await _repository.GetLogEventsAsync(_sampleLogEventsRequest, _cancelToken));
         }
 
         [Theory]
@@ -115,9 +119,9 @@ namespace AWSToolkit.Tests.CloudWatch
         [InlineData(null)]
         public async Task GetLogEventsAsync_InvalidLogGroup(string logGroup)
         {
-            _properties.LogGroup = logGroup;
+            _sampleLogEventsRequest.LogGroup = logGroup;
             var exception = await Assert.ThrowsAsync<InvalidParameterException>(async () =>
-                await _repository.GetLogEventsAsync(_properties, _cancelToken));
+                await _repository.GetLogEventsAsync(_sampleLogEventsRequest, _cancelToken));
             Assert.Contains("is an invalid log group name.", exception.Message);
         }
 
@@ -126,24 +130,24 @@ namespace AWSToolkit.Tests.CloudWatch
         [InlineData(null)]
         public async Task GetLogEventsAsync_InvalidLogStream(string logStream)
         {
-            _properties.LogGroup = _sampleLogGroup;
-            _properties.LogStream = logStream;
+            _sampleLogEventsRequest.LogGroup = _sampleLogGroup;
+            _sampleLogEventsRequest.LogStream = logStream;
             var exception = await Assert.ThrowsAsync<InvalidParameterException>(async () =>
-                await _repository.GetLogEventsAsync(_properties, _cancelToken));
+                await _repository.GetLogEventsAsync(_sampleLogEventsRequest, _cancelToken));
             Assert.Contains("is an invalid log stream name.", exception.Message);
         }
 
         [Fact]
         public async Task GetLogEventsAsync()
         {
-            _properties.LogGroup = _sampleLogGroup;
-            _properties.LogStream = _sampleLogStream;
+            _sampleLogEventsRequest.LogGroup = _sampleLogGroup;
+            _sampleLogEventsRequest.LogStream = _sampleLogStream;
 
             var sampleSdkLogEvents = CreateSampleSdkLogEvents();
             var output = new FilterLogEventsResponse() { NextToken = _nextToken, Events = sampleSdkLogEvents };
             SetupFilterLogEvents(output);
 
-            var response = await _repository.GetLogEventsAsync(_properties, _cancelToken);
+            var response = await _repository.GetLogEventsAsync(_sampleLogEventsRequest, _cancelToken);
             var expectedLogEvents = CreateSampleLogEvents();
 
             Assert.Equal(_nextToken, response.Item1);
@@ -154,11 +158,10 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task DeleteLogGroupAsync_ThrowsNull()
         {
-            _properties.LogGroup = _sampleLogGroup;
             SetupDeleteLogGroup(null);
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
-                await _repository.DeleteLogGroupAsync(_properties, _cancelToken));
+                await _repository.DeleteLogGroupAsync(_sampleLogGroup, _cancelToken));
         }
 
         [Theory]
@@ -166,20 +169,17 @@ namespace AWSToolkit.Tests.CloudWatch
         [InlineData(null)]
         public async Task DeleteLogGroupAsync_InvalidLogGroup(string logGroup)
         {
-            _properties.LogGroup = logGroup;
             await Assert.ThrowsAsync<InvalidParameterException>(async () =>
-                await _repository.DeleteLogGroupAsync(_properties, _cancelToken));
+                await _repository.DeleteLogGroupAsync(logGroup, _cancelToken));
         }
 
         [Fact]
         public async Task DeleteLogGroupsAsync_Fails()
         {
-            _properties.LogGroup = _sampleLogGroup;
-
             var output = new DeleteLogGroupResponse { HttpStatusCode = HttpStatusCode.BadRequest };
             SetupDeleteLogGroup(output);
 
-            var response = await _repository.DeleteLogGroupAsync(_properties, _cancelToken);
+            var response = await _repository.DeleteLogGroupAsync(_sampleLogGroup, _cancelToken);
 
             Assert.False(response);
         }
@@ -187,12 +187,10 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task DeleteLogGroupsAsync()
         {
-            _properties.LogGroup = _sampleLogGroup;
-
             var output = new DeleteLogGroupResponse { HttpStatusCode = HttpStatusCode.OK };
             SetupDeleteLogGroup(output);
 
-            var response = await _repository.DeleteLogGroupAsync(_properties, _cancelToken);
+            var response = await _repository.DeleteLogGroupAsync(_sampleLogGroup, _cancelToken);
 
             Assert.True(response);
         }
@@ -230,7 +228,7 @@ namespace AWSToolkit.Tests.CloudWatch
         private List<ToolkitLogGroup> CreateSampleLogGroups()
         {
             var sdkLogGroups = CreateSampleSdkLogGroups();
-            return sdkLogGroups.Select(x => new ToolkitLogGroup(x)).ToList();
+            return sdkLogGroups.Select(x => x.ToLogGroup()).ToList();
         }
 
         private static List<LogStream> CreateSampleSdkLogStreams()
@@ -244,7 +242,7 @@ namespace AWSToolkit.Tests.CloudWatch
         private static List<ToolkitLogStream> CreateSampleLogStreams()
         {
             var sdkLogStreams = CreateSampleSdkLogStreams();
-            return sdkLogStreams.Select(x => new ToolkitLogStream(x)).ToList();
+            return sdkLogStreams.Select(x => x.ToLogStream()).ToList();
         }
 
         private static List<FilteredLogEvent> CreateSampleSdkLogEvents()
@@ -258,7 +256,7 @@ namespace AWSToolkit.Tests.CloudWatch
         private static List<ToolkitLogEvent> CreateSampleLogEvents()
         {
             var sdkLogEvents = CreateSampleSdkLogEvents();
-            return sdkLogEvents.Select(x => new ToolkitLogEvent(x)).ToList();
+            return sdkLogEvents.Select(x => x.ToLogEvent()).ToList();
         }
     }
 }

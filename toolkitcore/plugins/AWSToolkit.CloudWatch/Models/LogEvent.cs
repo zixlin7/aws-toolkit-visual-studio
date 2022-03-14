@@ -1,8 +1,5 @@
 ﻿using System;
 
-using Amazon.AWSToolkit.CloudWatch.Util;
-using Amazon.CloudWatchLogs.Model;
-
 namespace Amazon.AWSToolkit.CloudWatch.Models
 {
     /// <summary>
@@ -12,12 +9,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Models
     {
         public string Message { get; set; }
         public DateTime Timestamp { get; set; }
-
-        public LogEvent(FilteredLogEvent logEvent)
-        {
-            Message = logEvent.Message;
-            Timestamp = DateTimeUtil.ConvertUnixToLocalTimeStamp(logEvent.Timestamp);
-        }
 
         protected bool Equals(LogEvent other)
         {

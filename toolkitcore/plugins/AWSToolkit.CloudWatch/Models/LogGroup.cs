@@ -1,6 +1,4 @@
-﻿using CloudWatchLogGroup = Amazon.CloudWatchLogs.Model.LogGroup;
-
-namespace Amazon.AWSToolkit.CloudWatch.Models
+﻿namespace Amazon.AWSToolkit.CloudWatch.Models
 {
     /// <summary>
     /// Represent a CloudWatch log group
@@ -10,12 +8,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Models
         public string Name { get; set; }
 
         public string Arn { get; set; }
-
-        public LogGroup(CloudWatchLogGroup logGroup)
-        {
-            Name = logGroup.LogGroupName;
-            Arn = logGroup.Arn;
-        }
 
         protected bool Equals(LogGroup other)
         {

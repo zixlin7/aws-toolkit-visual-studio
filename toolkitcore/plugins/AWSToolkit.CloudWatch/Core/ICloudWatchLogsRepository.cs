@@ -12,19 +12,19 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
     /// </summary>
     public interface ICloudWatchLogsRepository
     {
-        Task<Tuple<string, List<LogGroup>>> GetLogGroupsAsync(CloudWatchLogsProperties logsProperties,
+        Task<Tuple<string, List<LogGroup>>> GetLogGroupsAsync(GetLogGroupsRequest logGroupsRequest,
             CancellationToken cancelToken);
 
-        Task<Tuple<string, List<LogStream>>> GetLogStreamsOrderByTimeAsync(CloudWatchLogsProperties logsProperties,
+        Task<Tuple<string, List<LogStream>>> GetLogStreamsOrderByTimeAsync(GetLogStreamsRequest logStreamsRequest,
             CancellationToken cancelToken);
 
-        Task<Tuple<string, List<LogStream>>> GetLogStreamsOrderByNameAsync(CloudWatchLogsProperties logsProperties,
+        Task<Tuple<string, List<LogStream>>> GetLogStreamsOrderByNameAsync(GetLogStreamsRequest logStreamsRequest,
             CancellationToken cancelToken);
 
-        Task<Tuple<string, List<LogEvent>>> GetLogEventsAsync(CloudWatchLogsProperties logsProperties,
+        Task<Tuple<string, List<LogEvent>>> GetLogEventsAsync(GetLogEventsRequest logEventsRequest,
             CancellationToken cancelToken);
 
-        Task<bool> DeleteLogGroupAsync(CloudWatchLogsProperties logsProperties,
+        Task<bool> DeleteLogGroupAsync(string logGroup,
             CancellationToken cancelToken);
     }
 }

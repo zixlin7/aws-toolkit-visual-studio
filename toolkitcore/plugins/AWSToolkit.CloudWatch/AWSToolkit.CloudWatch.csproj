@@ -46,11 +46,15 @@
     <Compile Include="CloudWatchActivator.cs" />
     <Compile Include="Core\CloudWatchLogsRepository.cs" />
     <Compile Include="Core\ICloudWatchLogsRepository.cs" />
+    <Compile Include="Models\GetLogEventsRequest.cs" />
+    <Compile Include="Models\GetLogGroupsRequest.cs" />
+    <Compile Include="Models\GetLogStreamsRequest.cs" />
     <Compile Include="Models\LogEvent.cs" />
     <Compile Include="Models\LogGroup.cs" />
     <Compile Include="Models\LogStream.cs" />
     <Compile Include="Nodes\CloudWatchRootViewMetaNode.cs" />
     <Compile Include="Nodes\LogGroupsRootViewMetaNode.cs" />
+    <Compile Include="Util\CloudWatchLogsExtensionMethods.cs" />
     <Compile Include="Util\DateTimeUtil.cs" />
     <Compile Include="ViewModels\CloudWatchRootViewModel.cs" />
     <Compile Include="ViewModels\LogGroupsRootViewModel.cs" />

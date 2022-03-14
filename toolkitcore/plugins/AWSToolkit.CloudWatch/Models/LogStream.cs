@@ -1,7 +1,5 @@
 ﻿using System;
 
-using CloudWatchLogStream = Amazon.CloudWatchLogs.Model.LogStream;
-
 namespace Amazon.AWSToolkit.CloudWatch.Models
 {
     /// <summary>
@@ -14,13 +12,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Models
         public string Arn { get; set; }
 
         public DateTime LastEventTimeStamp { get; set; }
-
-        public LogStream(CloudWatchLogStream logStream)
-        {
-            Name = logStream.LogStreamName;
-            Arn = logStream.Arn;
-            LastEventTimeStamp = logStream.LastEventTimestamp.ToLocalTime();
-        }
 
         protected bool Equals(LogStream other)
         {

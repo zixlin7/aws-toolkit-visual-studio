@@ -19,19 +19,17 @@ namespace AWSToolkit.Tests.CloudWatch
 
         [Theory]
         [MemberData(nameof(DateData))]
-        public void ConvertUnixToLocalTimeStamp(long timestamp, DateTime expectedTime)
+        public void AsDateTime(long timestamp, DateTime expectedTime)
         {
-            var localTime = DateTimeUtil.ConvertUnixToLocalTimeStamp(timestamp);
-            //convert to utc for compatibility with different test environments
-            var utcTime = localTime.ToUniversalTime();
-            Assert.Equal(expectedTime, utcTime);
+            var dateTime = DateTimeUtil.AsDateTime(timestamp, TimeZoneInfo.Utc);
+            Assert.Equal(expectedTime, dateTime);
         }
 
         [Theory]
         [MemberData(nameof(DateData))]
-        public void ConvertLocalToUnixTimeStamp(long expectedTimestamp, DateTime dateTime)
+        public void AsUnixMilliseconds(long expectedTimestamp, DateTime dateTime)
         {
-            Assert.Equal(expectedTimestamp, DateTimeUtil.ConvertLocalToUnixMilliseconds(dateTime));
+            Assert.Equal(expectedTimestamp, dateTime.AsUnixMilliseconds());
         }
     }
 }
