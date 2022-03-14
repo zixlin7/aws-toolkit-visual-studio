@@ -19,9 +19,9 @@ namespace AWSToolkit.Tests.CloudWatch
 
         [Theory]
         [MemberData(nameof(DateData))]
-        public void AsDateTime(long timestamp, DateTime expectedTime)
+        public void ConvertUnixToDateTime(long timestamp, DateTime expectedTime)
         {
-            var dateTime = DateTimeUtil.AsDateTime(timestamp, TimeZoneInfo.Utc);
+            var dateTime = DateTimeUtil.ConvertUnixToDateTime(timestamp, TimeZoneInfo.Utc);
             Assert.Equal(expectedTime, dateTime);
         }
 
