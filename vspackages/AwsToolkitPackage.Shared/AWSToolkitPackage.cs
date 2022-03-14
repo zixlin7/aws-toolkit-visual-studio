@@ -759,7 +759,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             try
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
-                VsImage.Initialize(new ImageThemeConverter(), new BrushToColorConverter());
+                VsImage.Initialize(new ImageThemeConverter(new BrushToColorConverter()));
             }
             catch (Exception e)
             {

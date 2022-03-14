@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using AwsToolkit.VsSdk.Common.CommonUI.Converters;
 
 using Xunit;
-
-using Object = System.Object;
 
 namespace AWSToolkit.Tests.VsSdk.Common
 {
@@ -19,9 +18,8 @@ namespace AWSToolkit.Tests.VsSdk.Common
         {
             new object[] { new object[] { null } },
             new object[] { new object[] { Colors.Black } },
+            new object[] { new object[] { Brushes.Black } },
             new object[] { new object[] { 3, "hello" } },
-            new object[] { new object[] { CreateEmptyBitmap(), 78 } },
-            new object[] { new object[] { Colors.Black, CreateEmptyBitmap() } },
         };
 
         [Theory]
@@ -31,11 +29,15 @@ namespace AWSToolkit.Tests.VsSdk.Common
             Assert.Equal(DependencyProperty.UnsetValue, Convert(values));
         }
 
-        [Fact]
+        [StaFact]
         public void Convert_WhenValid()
         {
+            UserControl parent = new UserControl() { Background = Brushes.DarkBlue };
+            UserControl control = new UserControl();
+            parent.Content = control;
+
             var originalImage = CreateEmptyBitmap();
-            var values = new Object[] { originalImage, Colors.Black };
+            var values = new object[] { originalImage, control };
             var themedImage = Convert(values);
             Assert.NotEqual(themedImage, originalImage);
         }
