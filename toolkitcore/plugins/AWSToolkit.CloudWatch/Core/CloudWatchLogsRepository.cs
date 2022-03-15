@@ -121,7 +121,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             return request;
         }
 
-        private static DescribeLogStreamsRequest CreateLogStreamsRequestByTime(GetLogStreamsRequest logStreamsRequest)
+        private DescribeLogStreamsRequest CreateLogStreamsRequestByTime(GetLogStreamsRequest logStreamsRequest)
         {
             var request = new DescribeLogStreamsRequest
             {
