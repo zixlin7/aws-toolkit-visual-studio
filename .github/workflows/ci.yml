@@ -9,7 +9,7 @@ on:
 jobs:
     build:
         name: VS 2017 (with CodeCommit v16 disabled)
-        runs-on: windows-2016
+        runs-on: windows-2019
         env:
             TEST_REPORT_HTML: TestResults/toolkit-test-results.html
 
