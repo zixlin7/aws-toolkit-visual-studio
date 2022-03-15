@@ -55,7 +55,6 @@
     <Compile Include="CloudWatch\CloudWatchLogsExtensionMethodTests.cs" />
     <Compile Include="CloudWatch\CloudWatchLogsRepositoryTests.cs" />
     <Compile Include="CloudWatch\CloudWatchRootViewModelTests.cs" />
-    <Compile Include="CloudWatch\DateTimeUtilTests.cs" />
     <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
     <Compile Include="CodeArtifact\ConfigurationTests.cs" />
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />

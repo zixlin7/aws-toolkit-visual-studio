@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.Util;
 using Amazon.CloudWatchLogs.Model;
 
 using CloudWatchLogGroup = Amazon.CloudWatchLogs.Model.LogGroup;
@@ -27,7 +28,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             {
                 Name = cloudWatchLogStream.LogStreamName,
                 Arn = cloudWatchLogStream.Arn,
-                LastEventTimeStamp = cloudWatchLogStream.LastEventTimestamp.ToLocalTime()
+                LastEventTime = cloudWatchLogStream.LastEventTimestamp.ToLocalTime()
             };
         }
 

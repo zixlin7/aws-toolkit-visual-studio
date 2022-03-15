@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Amazon.AWSToolkit.CloudWatch.Util
+namespace Amazon.AWSToolkit.Util
 {
     public static class DateTimeUtil
     {

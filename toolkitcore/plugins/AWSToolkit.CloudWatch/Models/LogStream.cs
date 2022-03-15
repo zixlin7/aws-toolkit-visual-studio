@@ -11,11 +11,11 @@ namespace Amazon.AWSToolkit.CloudWatch.Models
 
         public string Arn { get; set; }
 
-        public DateTime LastEventTimeStamp { get; set; }
+        public DateTime LastEventTime { get; set; }
 
         protected bool Equals(LogStream other)
         {
-            return Name == other.Name && Arn == other.Arn && LastEventTimeStamp.Equals(other.LastEventTimeStamp);
+            return Name == other.Name && Arn == other.Arn && LastEventTime.Equals(other.LastEventTime);
         }
 
         public override bool Equals(object obj)
@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Models
             {
                 var hashCode = (Name != null ? Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Arn != null ? Arn.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ LastEventTimeStamp.GetHashCode();
+                hashCode = (hashCode * 397) ^ LastEventTime.GetHashCode();
                 return hashCode;
             }
         }

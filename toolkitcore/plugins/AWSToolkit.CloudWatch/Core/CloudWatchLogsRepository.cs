@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.Util;
+using Amazon.AWSToolkit.Util;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 
 using GetLogEventsRequest = Amazon.AWSToolkit.CloudWatch.Models.GetLogEventsRequest;
 using LogGroup = Amazon.AWSToolkit.CloudWatch.Models.LogGroup;
 using LogStream = Amazon.AWSToolkit.CloudWatch.Models.LogStream;
+using OrderBy = Amazon.AWSToolkit.CloudWatch.Models.OrderBy;
+using CloudWatchOrderBy = Amazon.CloudWatchLogs.OrderBy;
 
 namespace Amazon.AWSToolkit.CloudWatch.Core
 {
@@ -25,8 +28,54 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             _client = client;
         }
 
-        public async Task<Tuple<string, List<LogGroup>>> GetLogGroupsAsync(GetLogGroupsRequest logGroupsRequest,
+        public async Task<PaginatedLogResponse<LogGroup>> GetLogGroupsAsync(GetLogGroupsRequest logGroupsRequest,
             CancellationToken cancelToken)
+        {
+            var request = CreateDescribeLogGroupsRequest(logGroupsRequest);
+            var response = await _client.DescribeLogGroupsAsync(request, cancelToken);
+
+            var logGroups = response.LogGroups.Select(logGroup => logGroup.ToLogGroup()).ToList();
+            return new PaginatedLogResponse<LogGroup>(response.NextToken, logGroups);
+        }
+
+        public async Task<PaginatedLogResponse<LogStream>> GetLogStreamsAsync(
+            GetLogStreamsRequest logStreamsRequest, OrderBy orderBy, CancellationToken cancelToken)
+        {
+            VerifyLogGroupIsValid(logStreamsRequest.LogGroup);
+
+            var request = CreateDescribeLogStreamsRequest(logStreamsRequest, orderBy);
+            var response = await _client.DescribeLogStreamsAsync(request, cancelToken);
+
+            var logStreams = response.LogStreams.Select(logStream => logStream.ToLogStream()).ToList();
+
+            return new PaginatedLogResponse<LogStream>(response.NextToken, logStreams);
+        }
+
+        public async Task<PaginatedLogResponse<LogEvent>> GetLogEventsAsync(GetLogEventsRequest logEventsRequest,
+            CancellationToken cancelToken)
+        {
+            VerifyLogGroupIsValid(logEventsRequest.LogGroup);
+            VerifyLogStreamIsValid(logEventsRequest.LogStream);
+
+            var request = CreateFilterLogEventsRequest(logEventsRequest);
+            var response = await _client.FilterLogEventsAsync(request, cancelToken);
+
+            var logEvents = response.Events.Select(logEvent => logEvent.ToLogEvent()).ToList();
+            return new PaginatedLogResponse<LogEvent>(response.NextToken, logEvents);
+        }
+
+        public async Task<bool> DeleteLogGroupAsync(string logGroup,
+            CancellationToken cancelToken)
+        {
+            VerifyLogGroupIsValid(logGroup);
+
+            var request = new DeleteLogGroupRequest(logGroup);
+            var response = await _client.DeleteLogGroupAsync(request, cancelToken);
+
+            return response.HttpStatusCode == HttpStatusCode.OK;
+        }
+
+        private DescribeLogGroupsRequest CreateDescribeLogGroupsRequest(GetLogGroupsRequest logGroupsRequest)
         {
             var request = new DescribeLogGroupsRequest();
 
@@ -40,45 +89,28 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
                 request.NextToken = logGroupsRequest.NextToken;
             }
 
-            var response = await _client.DescribeLogGroupsAsync(request, cancelToken);
-            var logGroups = response.LogGroups.Select(logGroup => logGroup.ToLogGroup()).ToList();
-            return Tuple.Create(response.NextToken, logGroups);
+            return request;
         }
 
-        public async Task<Tuple<string, List<LogStream>>> GetLogStreamsOrderByTimeAsync(
-            GetLogStreamsRequest logStreamsRequest, CancellationToken cancelToken)
+        private DescribeLogStreamsRequest CreateDescribeLogStreamsRequest(GetLogStreamsRequest logStreamsRequest,
+            OrderBy orderBy)
         {
-            VerifyLogGroupIsValid(logStreamsRequest.LogGroup);
-
-            var request = new DescribeLogStreamsRequest
+            if (orderBy == OrderBy.LogStreamName)
             {
-                LogGroupName = logStreamsRequest.LogGroup,
-                Descending = true,
-                OrderBy = OrderBy.LastEventTime
-            };
-
-            if (!string.IsNullOrEmpty(logStreamsRequest.NextToken))
-            {
-                request.NextToken = logStreamsRequest.NextToken;
+                return CreateLogStreamsRequestByName(logStreamsRequest);
             }
 
-            var response = await _client.DescribeLogStreamsAsync(request, cancelToken);
-
-            var logStreams = response.LogStreams.Select(logStream => logStream.ToLogStream()).ToList();
-            return Tuple.Create(response.NextToken, logStreams);
+            return CreateLogStreamsRequestByTime(logStreamsRequest);
         }
 
-        public async Task<Tuple<string, List<LogStream>>> GetLogStreamsOrderByNameAsync(
-            GetLogStreamsRequest logStreamsRequest, CancellationToken cancelToken)
+        private DescribeLogStreamsRequest CreateLogStreamsRequestByName(GetLogStreamsRequest logStreamsRequest)
         {
-            VerifyLogGroupIsValid(logStreamsRequest.LogGroup);
-
             var request = new DescribeLogStreamsRequest
             {
                 LogGroupName = logStreamsRequest.LogGroup,
                 LogStreamNamePrefix = logStreamsRequest.FilterText,
                 Descending = true,
-                OrderBy = OrderBy.LogStreamName
+                OrderBy = CloudWatchOrderBy.LogStreamName
             };
 
             if (!string.IsNullOrEmpty(logStreamsRequest.NextToken))
@@ -86,18 +118,28 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
                 request.NextToken = logStreamsRequest.NextToken;
             }
 
-            var response = await _client.DescribeLogStreamsAsync(request, cancelToken);
-
-            var logStreams = response.LogStreams.Select(logStream => logStream.ToLogStream()).ToList();
-            return Tuple.Create(response.NextToken, logStreams);
+            return request;
         }
 
-        public async Task<Tuple<string, List<LogEvent>>> GetLogEventsAsync(GetLogEventsRequest logEventsRequest,
-            CancellationToken cancelToken)
+        private static DescribeLogStreamsRequest CreateLogStreamsRequestByTime(GetLogStreamsRequest logStreamsRequest)
         {
-            VerifyLogGroupIsValid(logEventsRequest.LogGroup);
-            VerifyLogStreamIsValid(logEventsRequest.LogStream);
+            var request = new DescribeLogStreamsRequest
+            {
+                LogGroupName = logStreamsRequest.LogGroup,
+                Descending = true,
+                OrderBy = CloudWatchOrderBy.LastEventTime
+            };
 
+            if (!string.IsNullOrEmpty(logStreamsRequest.NextToken))
+            {
+                request.NextToken = logStreamsRequest.NextToken;
+            }
+
+            return request;
+        }
+
+        private FilterLogEventsRequest CreateFilterLogEventsRequest(GetLogEventsRequest logEventsRequest)
+        {
             var request = new FilterLogEventsRequest
             {
                 LogGroupName = logEventsRequest.LogGroup,
@@ -120,22 +162,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
                 request.NextToken = logEventsRequest.NextToken;
             }
 
-            var response = await _client.FilterLogEventsAsync(request, cancelToken);
-
-            var logEvents = response.Events.Select(logEvent => logEvent.ToLogEvent()).ToList();
-            return Tuple.Create(response.NextToken, logEvents);
-        }
-
-        public async Task<bool> DeleteLogGroupAsync(string logGroup,
-            CancellationToken cancelToken)
-        {
-            VerifyLogGroupIsValid(logGroup);
-
-            var request = new DeleteLogGroupRequest(logGroup);
-
-            var response = await _client.DeleteLogGroupAsync(request, cancelToken);
-
-            return response.HttpStatusCode == HttpStatusCode.OK;
+            return request;
         }
 
         private void VerifyLogGroupIsValid(string logGroup)

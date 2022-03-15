@@ -18,6 +18,7 @@ using Xunit;
 using GetLogEventsRequest = Amazon.AWSToolkit.CloudWatch.Models.GetLogEventsRequest;
 using LogGroup = Amazon.CloudWatchLogs.Model.LogGroup;
 using LogStream = Amazon.CloudWatchLogs.Model.LogStream;
+using OrderBy = Amazon.AWSToolkit.CloudWatch.Models.OrderBy;
 using ToolkitLogEvent = Amazon.AWSToolkit.CloudWatch.Models.LogEvent;
 using ToolkitLogGroup = Amazon.AWSToolkit.CloudWatch.Models.LogGroup;
 using ToolkitLogStream = Amazon.AWSToolkit.CloudWatch.Models.LogStream;
@@ -61,9 +62,9 @@ namespace AWSToolkit.Tests.CloudWatch
             var response = await _repository.GetLogGroupsAsync(_sampleLogGroupRequest, _cancelToken);
             var expectedLogGroups = CreateSampleLogGroups();
 
-            Assert.Equal(_nextToken, response.Item1);
-            Assert.Equal(3, response.Item2.Count);
-            Assert.Equal(expectedLogGroups, response.Item2);
+            Assert.Equal(_nextToken, response.NextToken);
+            Assert.Equal(3, response.Values.Count());
+            Assert.Equal(expectedLogGroups, response.Values);
         }
 
         [Fact]
@@ -73,7 +74,7 @@ namespace AWSToolkit.Tests.CloudWatch
             SetupDescribeLogStreams((DescribeLogStreamsResponse) null);
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
-                await _repository.GetLogStreamsOrderByNameAsync(_sampleLogStreamsRequest, _cancelToken));
+                await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, OrderBy.LogStreamName, _cancelToken));
         }
 
         [Theory]
@@ -83,7 +84,7 @@ namespace AWSToolkit.Tests.CloudWatch
         {
             _sampleLogStreamsRequest.LogGroup = logGroup;
             await Assert.ThrowsAsync<InvalidParameterException>(async () =>
-                await _repository.GetLogStreamsOrderByNameAsync(_sampleLogStreamsRequest, _cancelToken));
+                await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, OrderBy.LogStreamName, _cancelToken));
         }
 
 
@@ -95,12 +96,12 @@ namespace AWSToolkit.Tests.CloudWatch
             var output = new DescribeLogStreamsResponse() { NextToken = _nextToken, LogStreams = sampleSdkLogStreams };
             SetupDescribeLogStreams(output);
 
-            var response = await _repository.GetLogStreamsOrderByTimeAsync(_sampleLogStreamsRequest, _cancelToken);
+            var response = await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, OrderBy.LastEventTime, _cancelToken);
             var expectedLogStreams = CreateSampleLogStreams();
 
-            Assert.Equal(_nextToken, response.Item1);
-            Assert.Equal(3, response.Item2.Count);
-            Assert.Equal(expectedLogStreams, response.Item2);
+            Assert.Equal(_nextToken, response.NextToken);
+            Assert.Equal(3, response.Values.Count());
+            Assert.Equal(expectedLogStreams, response.Values);
         }
 
         [Fact]
@@ -150,9 +151,9 @@ namespace AWSToolkit.Tests.CloudWatch
             var response = await _repository.GetLogEventsAsync(_sampleLogEventsRequest, _cancelToken);
             var expectedLogEvents = CreateSampleLogEvents();
 
-            Assert.Equal(_nextToken, response.Item1);
-            Assert.Equal(3, response.Item2.Count);
-            Assert.Equal(expectedLogEvents, response.Item2);
+            Assert.Equal(_nextToken, response.NextToken);
+            Assert.Equal(3, response.Values.Count());
+            Assert.Equal(expectedLogEvents, response.Values);
         }
 
         [Fact]

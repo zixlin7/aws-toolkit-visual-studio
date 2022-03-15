@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CloudWatch.Models;
@@ -12,16 +10,14 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
     /// </summary>
     public interface ICloudWatchLogsRepository
     {
-        Task<Tuple<string, List<LogGroup>>> GetLogGroupsAsync(GetLogGroupsRequest logGroupsRequest,
+        Task<PaginatedLogResponse<LogGroup>> GetLogGroupsAsync(GetLogGroupsRequest logGroupsRequest,
             CancellationToken cancelToken);
 
-        Task<Tuple<string, List<LogStream>>> GetLogStreamsOrderByTimeAsync(GetLogStreamsRequest logStreamsRequest,
+        Task<PaginatedLogResponse<LogStream>> GetLogStreamsAsync(GetLogStreamsRequest logStreamsRequest,
+            OrderBy orderBy,
             CancellationToken cancelToken);
 
-        Task<Tuple<string, List<LogStream>>> GetLogStreamsOrderByNameAsync(GetLogStreamsRequest logStreamsRequest,
-            CancellationToken cancelToken);
-
-        Task<Tuple<string, List<LogEvent>>> GetLogEventsAsync(GetLogEventsRequest logEventsRequest,
+        Task<PaginatedLogResponse<LogEvent>> GetLogEventsAsync(GetLogEventsRequest logEventsRequest,
             CancellationToken cancelToken);
 
         Task<bool> DeleteLogGroupAsync(string logGroup,

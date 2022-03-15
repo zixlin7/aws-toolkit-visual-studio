@@ -34,7 +34,7 @@ namespace AWSToolkit.Tests.CloudWatch
             };
             var expected = new LogStream
             {
-                Name = "sample-stream", Arn = "sample-stream-arn", LastEventTimeStamp = new DateTime(2022, 01, 01).ToLocalTime()
+                Name = "sample-stream", Arn = "sample-stream-arn", LastEventTime = new DateTime(2022, 01, 01).ToLocalTime()
             };
             Assert.Equal(expected, cloudWatchLogStream.ToLogStream());
         }
