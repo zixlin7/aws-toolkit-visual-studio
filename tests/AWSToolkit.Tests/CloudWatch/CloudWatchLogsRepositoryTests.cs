@@ -30,7 +30,7 @@ namespace AWSToolkit.Tests.CloudWatch
         private readonly Mock<IAmazonCloudWatchLogs> _cwlClient = new Mock<IAmazonCloudWatchLogs>();
         private readonly CancellationToken _cancelToken = new CancellationToken();
         private readonly GetLogGroupsRequest _sampleLogGroupRequest = new GetLogGroupsRequest();
-        private readonly GetLogStreamsRequest _sampleLogStreamsRequest = new GetLogStreamsRequest();
+        private readonly GetLogStreamsRequest _sampleLogStreamsRequest = new GetLogStreamsRequest{ OrderBy = OrderBy.LogStreamName };
         private readonly GetLogEventsRequest _sampleLogEventsRequest = new GetLogEventsRequest();
         private readonly string _nextToken = "sample-token";
         private readonly string _sampleLogGroup = "sample-log-group";
@@ -74,7 +74,7 @@ namespace AWSToolkit.Tests.CloudWatch
             SetupDescribeLogStreams((DescribeLogStreamsResponse) null);
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
-                await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, OrderBy.LogStreamName, _cancelToken));
+                await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, _cancelToken));
         }
 
         [Theory]
@@ -84,7 +84,7 @@ namespace AWSToolkit.Tests.CloudWatch
         {
             _sampleLogStreamsRequest.LogGroup = logGroup;
             await Assert.ThrowsAsync<InvalidParameterException>(async () =>
-                await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, OrderBy.LogStreamName, _cancelToken));
+                await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, _cancelToken));
         }
 
 
@@ -92,11 +92,12 @@ namespace AWSToolkit.Tests.CloudWatch
         public async Task GetLogStreamsAsync()
         {
             _sampleLogStreamsRequest.LogGroup = _sampleLogGroup;
+            _sampleLogStreamsRequest.OrderBy = OrderBy.LastEventTime;
             var sampleSdkLogStreams = CreateSampleSdkLogStreams();
             var output = new DescribeLogStreamsResponse() { NextToken = _nextToken, LogStreams = sampleSdkLogStreams };
             SetupDescribeLogStreams(output);
 
-            var response = await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, OrderBy.LastEventTime, _cancelToken);
+            var response = await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, _cancelToken);
             var expectedLogStreams = CreateSampleLogStreams();
 
             Assert.Equal(_nextToken, response.NextToken);

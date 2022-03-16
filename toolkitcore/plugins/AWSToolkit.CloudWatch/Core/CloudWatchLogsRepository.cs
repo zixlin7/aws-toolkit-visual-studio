@@ -39,11 +39,11 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
         }
 
         public async Task<PaginatedLogResponse<LogStream>> GetLogStreamsAsync(
-            GetLogStreamsRequest logStreamsRequest, OrderBy orderBy, CancellationToken cancelToken)
+            GetLogStreamsRequest logStreamsRequest, CancellationToken cancelToken)
         {
             VerifyLogGroupIsValid(logStreamsRequest.LogGroup);
 
-            var request = CreateDescribeLogStreamsRequest(logStreamsRequest, orderBy);
+            var request = CreateDescribeLogStreamsRequest(logStreamsRequest);
             var response = await _client.DescribeLogStreamsAsync(request, cancelToken);
 
             var logStreams = response.LogStreams.Select(logStream => logStream.ToLogStream()).ToList();
@@ -92,10 +92,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             return request;
         }
 
-        private DescribeLogStreamsRequest CreateDescribeLogStreamsRequest(GetLogStreamsRequest logStreamsRequest,
-            OrderBy orderBy)
+        private DescribeLogStreamsRequest CreateDescribeLogStreamsRequest(GetLogStreamsRequest logStreamsRequest)
         {
-            if (orderBy == OrderBy.LogStreamName)
+            if (logStreamsRequest.OrderBy == OrderBy.LogStreamName)
             {
                 return CreateLogStreamsRequestByName(logStreamsRequest);
             }

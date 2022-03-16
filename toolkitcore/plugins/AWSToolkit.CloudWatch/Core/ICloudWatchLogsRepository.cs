@@ -14,7 +14,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             CancellationToken cancelToken);
 
         Task<PaginatedLogResponse<LogStream>> GetLogStreamsAsync(GetLogStreamsRequest logStreamsRequest,
-            OrderBy orderBy,
             CancellationToken cancelToken);
 
         Task<PaginatedLogResponse<LogEvent>> GetLogEventsAsync(GetLogEventsRequest logEventsRequest,

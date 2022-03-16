@@ -10,5 +10,7 @@
         public string NextToken { get; set; }
 
         public string FilterText { get; set; } = string.Empty;
+
+        public OrderBy OrderBy { get; set; }
     }
 }
