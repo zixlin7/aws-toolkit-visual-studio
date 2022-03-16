@@ -172,6 +172,11 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudWatch.Interface.dll">
+      <Link>Plugins\AWSToolkit.CloudWatch.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
   </ItemGroup>
 
   <!-- Plugin Adjacent files -->

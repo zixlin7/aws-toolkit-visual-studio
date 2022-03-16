@@ -237,6 +237,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkit.CloudFormation.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.TemplateWizards.v17", "..\vspackages\cloudformation\AWSToolkit.CloudFormation.TemplateWizards.v17\AWSToolkit.CloudFormation.TemplateWizards.v17.csproj", "{EF567336-499A-47C6-989E-B992B01DBDC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudWatch.Interface", "..\toolkitcore\plugins\AWSToolkit.CloudWatch.Interface\AWSToolkit.CloudWatch.Interface.csproj", "{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{038b2cf8-0089-4ed1-beba-a7d64390190e}*SharedItemsImports = 4
@@ -933,6 +935,14 @@ Global
 		{EF567336-499A-47C6-989E-B992B01DBDC9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EF567336-499A-47C6-989E-B992B01DBDC9}.Release|x86.ActiveCfg = Release|Any CPU
 		{EF567336-499A-47C6-989E-B992B01DBDC9}.Release|x86.Build.0 = Release|Any CPU
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Debug|x86.Build.0 = Debug|Any CPU
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1043,6 +1053,7 @@ Global
 		{FBF6EF8F-0A23-446D-A2F9-A425A9D715CE} = {63BEB71C-D666-4F32-B8D0-620763DDA61A}
 		{5DCDB793-D7F9-4B59-A543-90E518769310} = {63BEB71C-D666-4F32-B8D0-620763DDA61A}
 		{EF567336-499A-47C6-989E-B992B01DBDC9} = {63BEB71C-D666-4F32-B8D0-620763DDA61A}
+		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB} = {62237430-5212-4823-924E-344007109D14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}

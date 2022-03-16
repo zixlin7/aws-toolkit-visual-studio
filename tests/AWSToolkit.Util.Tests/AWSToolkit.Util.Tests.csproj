@@ -48,6 +48,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Util\DateTimeUtilTests.cs" />
     <Compile Include="Events\LogExceptionAndForgetChangedHandlerTests.cs" />
     <Compile Include="IisPathTests.cs" />
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />

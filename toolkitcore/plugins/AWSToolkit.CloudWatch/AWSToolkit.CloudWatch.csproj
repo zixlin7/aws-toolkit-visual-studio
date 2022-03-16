@@ -44,8 +44,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloudWatchActivator.cs" />
+    <Compile Include="Core\CloudWatchLogsRepository.cs" />
+    <Compile Include="Core\ICloudWatchLogsRepository.cs" />
+    <Compile Include="Models\GetLogEventsRequest.cs" />
+    <Compile Include="Models\GetLogGroupsRequest.cs" />
+    <Compile Include="Models\GetLogStreamsRequest.cs" />
+    <Compile Include="Models\LogEvent.cs" />
+    <Compile Include="Models\LogGroup.cs" />
+    <Compile Include="Models\LogStream.cs" />
+    <Compile Include="Models\OrderBy.cs" />
+    <Compile Include="Models\PaginatedLogResponse.cs" />
     <Compile Include="Nodes\CloudWatchRootViewMetaNode.cs" />
     <Compile Include="Nodes\LogGroupsRootViewMetaNode.cs" />
+    <Compile Include="Util\CloudWatchLogsExtensionMethods.cs" />
     <Compile Include="ViewModels\CloudWatchRootViewModel.cs" />
     <Compile Include="ViewModels\LogGroupsRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -74,6 +85,12 @@
       <Name>AWSToolkit</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudWatch.Interface\AWSToolkit.CloudWatch.Interface.csproj">
+      <Project>{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}</Project>
+      <Name>AWSToolkit.CloudWatch.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
