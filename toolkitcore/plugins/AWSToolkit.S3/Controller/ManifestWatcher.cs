@@ -132,7 +132,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                     if (s3Client == null)
                         return;
 
-                    var controller = new BucketBrowserController(s3Client, new BucketBrowserModel(bucket));
+                    var controller = new BucketBrowserController(_toolkitContext, s3Client, new BucketBrowserModel(bucket));
                     DownloadFilesJob job = new DownloadFilesJob(controller, bucket, relativePath, items.ToArray(), new FileInfo(fullPath).DirectoryName);
 
                     ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>

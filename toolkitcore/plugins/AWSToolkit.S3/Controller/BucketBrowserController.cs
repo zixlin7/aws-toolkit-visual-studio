@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             _accountId = _toolkitContext.ConnectionManager.ActiveAccountId;
         }
 
-        public BucketBrowserController(IAmazonS3 s3Client, BucketBrowserModel model)
+        public BucketBrowserController(ToolkitContext toolkitContext, IAmazonS3 s3Client, BucketBrowserModel model) : this(toolkitContext)
         {
             this._s3Client = s3Client;
             this._browserModel = model;
@@ -555,7 +555,9 @@ namespace Amazon.AWSToolkit.S3.Controller
 
         private string GetRegion()
         {
-            return this._bucketViewModel.OverrideRegion;
+            return this._bucketViewModel?.OverrideRegion ??
+                   this._s3Client?.Config?.RegionEndpoint?.SystemName ??
+                   MetadataValue.NotSet;
         }
 
         private string GetAccountId()
