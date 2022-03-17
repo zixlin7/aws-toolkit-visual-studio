@@ -70,6 +70,7 @@ using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Themes;
+using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Commands.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Commands.Publishing;
@@ -801,6 +802,26 @@ namespace Amazon.AWSToolkit.VisualStudio
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) (useVs2017Commands ? PkgCmdIDList.cmdidViewUserGuide2017 : PkgCmdIDList.cmdidViewUserGuide),
+                    this)
+            );
+
+            tasks.Add(
+                ViewUrlCommand.InitializeAsync(
+                    AwsUrls.DotNetOnAws, ToolkitShellProviderService, _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) (useVs2017Commands
+                        ? PkgCmdIDList.cmdidLinkToDotNetOnAws2017
+                        : PkgCmdIDList.cmdidLinkToDotNetOnAws),
+                    this)
+            );
+
+            tasks.Add(
+                ViewUrlCommand.InitializeAsync(
+                    AwsUrls.DotNetOnAwsCommunity, ToolkitShellProviderService, _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) (useVs2017Commands
+                        ? PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity2017
+                        : PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity),
                     this)
             );
 

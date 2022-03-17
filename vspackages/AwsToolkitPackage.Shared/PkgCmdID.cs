@@ -37,6 +37,10 @@ namespace Amazon.AWSToolkit.VisualStudio
         public const uint cmdidSubmitFeedback2017 = 0x0606;
         public const uint cmdidViewGettingStarted = 0x0607;
         public const uint cmdidViewGettingStarted2017 = 0x0608;
+        public const uint cmdidLinkToDotNetOnAws = 0x0609;
+        public const uint cmdidLinkToDotNetOnAws2017 = 0x0610;
+        public const uint cmdidLinkToDotNetOnAwsCommunity = 0x0611;
+        public const uint cmdidLinkToDotNetOnAwsCommunity2017 = 0x0612;
 
         // Groups
         public const uint IDG_AWS_CLOUDFORMATION_DEPLOYMENT = 0x1005;

@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Added menu items to view the '.NET on AWS' and '.NET on AWS Community' websites, available from the \"AWS Toolkit\" menu, located in the \"Extensions\" menu (\"Tools\" menu in Visual Studio 2017)"
+}
