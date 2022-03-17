@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 
 using Amazon.AWSToolkit.Credentials.Control;
 using Amazon.AWSToolkit.Shared;
@@ -134,7 +135,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 _toolkitShell.ExecuteOnUIThread(() =>
                 {
                     control = new MfaPromptControl(viewModel);
-                    if (!_toolkitShell.ShowModal(control))
+                    if (!_toolkitShell.ShowInModalDialogWindow(control, MessageBoxButton.OKCancel))
                     {
                         throw new InvalidOperationException("MFA Login cancelled");
                     }
