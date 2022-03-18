@@ -99,6 +99,7 @@ namespace Microsoft.VisualStudio.Project
             }
 
             IVsMonitorSelection selectionMonitor = site.GetService(typeof(IVsMonitorSelection)) as IVsMonitorSelection;
+            Assumes.Present(selectionMonitor);
             uint cookie = 0;
             int active = 0;
             Guid designContext = VSConstants.UICONTEXT_DesignMode;

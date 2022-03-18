@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -98,8 +98,9 @@ namespace Microsoft.VisualStudio.Project
 			#endregion
 
 			this.fileChangeService = (IVsFileChangeEx)serviceProvider.GetService(typeof(SVsFileChangeEx));
+            Assumes.Present(this.fileChangeService);
 
-			if(this.fileChangeService == null)
+            if (this.fileChangeService == null)
 			{
 				// VS is in bad state, since the SVsFileChangeEx could not be proffered.
 				throw new InvalidOperationException();

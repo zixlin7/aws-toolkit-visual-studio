@@ -185,10 +185,12 @@ namespace Microsoft.VisualStudio.Project
 			}
 
 			IVsUIShellOpenDocument uiShellOpenDocument = this.Node.ProjectMgr.Site.GetService(typeof(SVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
+            Assumes.Present(uiShellOpenDocument);
 			IOleServiceProvider serviceProvider = this.Node.ProjectMgr.Site.GetService(typeof(IOleServiceProvider)) as IOleServiceProvider;
+            Assumes.Present(serviceProvider);
 
-			try
-			{
+            try
+            {
 				this.Node.ProjectMgr.OnOpenItem(fullPath);
 				int result = VSConstants.E_FAIL;
 

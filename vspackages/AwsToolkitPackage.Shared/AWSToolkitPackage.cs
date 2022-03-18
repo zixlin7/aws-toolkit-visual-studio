@@ -2045,8 +2045,8 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
-                IntPtr parent;
-                if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
+                Assumes.Present(uiShell);
+                if (uiShell.GetDialogOwnerHwnd(out var parent) != VSConstants.S_OK)
                 {
                     return null;
                 }
@@ -2435,6 +2435,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var addItemDialog = await this.GetServiceAsync(typeof(IVsAddProjectItemDlg)) as IVsAddProjectItemDlg;
+                Assumes.Present(addItemDialog);
                 addItemDialog.AddProjectItemDlg(selectedItemId, ref projectTypeGuid, vsProject,
                                                         (uint)__VSADDITEMFLAGS.VSADDITEM_AddNewItems, "",
                                                          @"AWS CloudFormation\AWS CloudFormation Template", ref strLocation, ref strFilter, out dontShowAgain);
@@ -2631,6 +2632,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         public void AddDataConnection(DatabaseTypes type, string connectionName, string connectionString)
         {
             var decMgr = (Microsoft.VisualStudio.Data.Services.IVsDataExplorerConnectionManager)GetService(typeof(Microsoft.VisualStudio.Data.Services.IVsDataExplorerConnectionManager));
+            Assumes.Present(decMgr);
             var guidProvider = new Guid("91510608-8809-4020-8897-fba057e22d54");
             var conn = decMgr.AddConnection(connectionName, guidProvider, connectionString, false);
             decMgr.SelectConnection(conn);
@@ -2641,6 +2643,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
                 IVsWindowFrame toolWindow;
                 var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
+                Assumes.Present(uiShell);
                 if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
                 {
                     toolWindow.Show();
@@ -2651,6 +2654,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         public void RegisterDataConnection(DatabaseTypes type, string connectionPrefixName, string host, int port, string masterUsername, string initialDBName)
         {
             var dlgFactory = GetService(typeof(Microsoft.VisualStudio.Data.Services.IVsDataConnectionDialogFactory)) as Microsoft.VisualStudio.Data.Services.IVsDataConnectionDialogFactory;
+            Assumes.Present(dlgFactory);
 
             var dlg = dlgFactory.CreateConnectionDialog();
 
@@ -2670,6 +2674,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 // Retrieve the IVsDataExplorerConnectionManager service
                 var decMgr = GetService(typeof(Microsoft.VisualStudio.Data.Services.IVsDataExplorerConnectionManager)) as Microsoft.VisualStudio.Data.Services.IVsDataExplorerConnectionManager;
+                Assumes.Present(decMgr);
 
                 var dbName = "unknown";
                 if (DatabaseTypes.SQLServer == type)
@@ -2701,9 +2706,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                 {
                     await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                     var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
-                    IVsWindowFrame toolWindow;
                     var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
-                    if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
+                    Assumes.Present(uiShell);
+                    if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out IVsWindowFrame toolWindow) == VSConstants.S_OK)
                     {
                         toolWindow.Show();
                     }
