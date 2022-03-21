@@ -80,6 +80,7 @@
     <Compile Include="Settings\SettingsPersistenceBaseTests.cs" />
     <Compile Include="Settings\ToolkitSettingsTests.cs" />
     <Compile Include="Solutions\ProjectFileTests.cs" />
+    <Compile Include="StringExtensionMethodsTests.cs" />
     <Compile Include="Tasks\TaskExtensionMethodsTests.cs" />
     <Compile Include="Telemetry\ModelExtensionMethodsTests.cs" />
     <Compile Include="Telemetry\TelemetryClientTests.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Telemetry\TestHelper.cs" />
     <Compile Include="Resources\TestResources.cs" />
     <Compile Include="Solutions\ProjectTests.cs" />
+    <Compile Include="Telemetry\ToolkitTelemetryEventsSupplementalTests.cs" />
     <Compile Include="Util\FrameworkNameHelperTests.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
     <Compile Include="Util\ZipUtilTests.cs" />

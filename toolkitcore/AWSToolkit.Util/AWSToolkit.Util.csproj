@@ -103,6 +103,7 @@
     <Compile Include="Settings\IToolkitSettingsRepository.cs" />
     <Compile Include="Settings\ToolkitSettingsWatcher.cs" />
     <Compile Include="Solutions\ProjectFile.cs" />
+    <Compile Include="StringExtensionMethods.cs" />
     <Compile Include="Tasks\TaskExtensionMethods.cs" />
     <Compile Include="Telemetry\ClientId.cs" />
     <Compile Include="Telemetry\IMetricsOutputWindow.cs" />

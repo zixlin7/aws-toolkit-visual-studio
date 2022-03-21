@@ -100,7 +100,8 @@
                 { "type": "defaultConfiguration" },
                 { "type": "recommendedTarget", "required": false },
                 { "type": "recipeId" },
-                { "type": "errorCode", "required": false }
+                { "type": "errorCode", "required": false },
+                { "type": "reason", "required": false }
             ] 
         },
         {

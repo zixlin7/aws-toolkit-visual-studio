@@ -25,7 +25,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Called when deploying a Serverless Application Project
-        public static void RecordServerlessapplicationDeploy(this ITelemetryLogger telemetryLogger, ServerlessapplicationDeploy payload)
+        public static void RecordServerlessapplicationDeploy(this ITelemetryLogger telemetryLogger, ServerlessapplicationDeploy payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -57,6 +57,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("result", payload.Result);
 
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -69,7 +74,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Called when user selects a profile
-        public static void RecordCodeartifactGetRepoUrl(this ITelemetryLogger telemetryLogger, CodeartifactGetRepoUrl payload)
+        public static void RecordCodeartifactGetRepoUrl(this ITelemetryLogger telemetryLogger, CodeartifactGetRepoUrl payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -103,6 +108,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("codeartifactPackageType", payload.CodeartifactPackageType);
 
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -115,7 +125,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Called when user get an endpoint url
-        public static void RecordCodeartifactSetRepoCredentialProfile(this ITelemetryLogger telemetryLogger, CodeartifactSetRepoCredentialProfile payload)
+        public static void RecordCodeartifactSetRepoCredentialProfile(this ITelemetryLogger telemetryLogger, CodeartifactSetRepoCredentialProfile payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -149,6 +159,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("codeartifactPackageType", payload.CodeartifactPackageType);
 
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -161,7 +176,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Called when user starts the Publish to AWS workflow
-        public static void RecordPublishStart(this ITelemetryLogger telemetryLogger, PublishStart payload)
+        public static void RecordPublishStart(this ITelemetryLogger telemetryLogger, PublishStart payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -195,6 +210,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("source", payload.Source);
 
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -207,7 +227,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Called when user publishes the project
-        public static void RecordPublishDeploy(this ITelemetryLogger telemetryLogger, PublishDeploy payload)
+        public static void RecordPublishDeploy(this ITelemetryLogger telemetryLogger, PublishDeploy payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -258,6 +278,13 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("errorCode", payload.ErrorCode);
 
+                datum.AddMetadata("reason", payload.Reason);
+
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -270,7 +297,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Starting the Publish to AWS experience
-        public static void RecordPublishSetup(this ITelemetryLogger telemetryLogger, PublishSetup payload)
+        public static void RecordPublishSetup(this ITelemetryLogger telemetryLogger, PublishSetup payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -313,6 +340,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("errorCode", payload.ErrorCode);
 
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -325,7 +357,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Called when user exits the publish workflow to record unsupported setting types
-        public static void RecordPublishUnsupportedSetting(this ITelemetryLogger telemetryLogger, PublishUnsupportedSetting payload)
+        public static void RecordPublishUnsupportedSetting(this ITelemetryLogger telemetryLogger, PublishUnsupportedSetting payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -359,6 +391,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("publishSettingType", payload.PublishSettingType);
 
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -371,7 +408,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Called when cleaning up IAM Role trusted policy
-        public static void RecordLambdaIamRoleCleanup(this ITelemetryLogger telemetryLogger, LambdaIamRoleCleanup payload)
+        public static void RecordLambdaIamRoleCleanup(this ITelemetryLogger telemetryLogger, LambdaIamRoleCleanup payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -405,6 +442,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("reason", payload.Reason);
 
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
             }
@@ -417,7 +459,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Records Telemetry Event:
         /// Called when adding an event to a lambda function
-        public static void RecordLambdaAddEvent(this ITelemetryLogger telemetryLogger, LambdaAddEvent payload)
+        public static void RecordLambdaAddEvent(this ITelemetryLogger telemetryLogger, LambdaAddEvent payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
             try
             {
@@ -450,6 +492,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 datum.AddMetadata("result", payload.Result);
 
                 datum.AddMetadata("variant", payload.Variant);
+
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -613,6 +660,9 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// Optional - The error code associated with an operation
         public string ErrorCode;
+        
+        /// Optional - The reason for a metric or exception depending on context
+        public string Reason;
         
         public PublishDeploy()
         {

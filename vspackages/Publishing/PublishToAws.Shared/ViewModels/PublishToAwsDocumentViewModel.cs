@@ -1012,6 +1012,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             var progressStatus = ProgressStatus.Fail;
             var result = Result.Failed;
             var errorCode = string.Empty;
+            var errorMessage = string.Empty;
             try
             {
                 SetIsFailureBannerEnabled(false);
@@ -1030,7 +1031,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                     if (deployStatusOutput.Exception != null)
                     {
                         errorCode = deployStatusOutput.Exception.ErrorCode;
-                        finalStatusMessage.Append($": {deployStatusOutput.Exception.Message}");
+                        errorMessage = deployStatusOutput.Exception.Message;
+                        finalStatusMessage.Append($": {errorMessage}");
                     }
                 }
                 else
@@ -1040,11 +1042,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                     result = Result.Succeeded;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 finalStatusMessage.Append($"{ProjectName} failed to publish to AWS.");
                 progressStatus = ProgressStatus.Fail;
                 result = Result.Failed;
+                if (errorMessage == string.Empty)
+                {
+                    errorMessage = ex.Message;
+                }
                 _publishContext.ToolkitShellProvider.UpdateStatus($"{DeploymentStatusMessage}Error");
                 throw;
             }
@@ -1054,7 +1060,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 PublishDuration.Stop();
                 SetIsPublishing(false);
                 SetIsFailureBannerEnabled(progressStatus == ProgressStatus.Fail);
-                RecordPublishDeployMetric(result, errorCode);
+                RecordPublishDeployMetric(result, errorCode, errorMessage);
             }
         }
 
@@ -1424,7 +1430,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return capabilityMetrics;
         }
 
-        private void RecordPublishDeployMetric(Result result, string errorCode)
+        private void RecordPublishDeployMetric(Result result, string errorCode, string errorMessage)
         {
             var payload = new PublishDeploy()
             {
@@ -1435,6 +1441,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 InitialPublish = !IsRepublish,
                 DefaultConfiguration = IsDefaultConfig,
                 RecipeId = PublishDestination?.RecipeId
+                 
             };
 
             if (payload.InitialPublish)
@@ -1447,7 +1454,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 payload.ErrorCode = errorCode;
             }
 
-            this._publishContext.TelemetryLogger.RecordPublishDeploy(payload);
+            _publishContext.TelemetryLogger.RecordPublishDeploy(payload, metricDatum =>
+            {
+                metricDatum.SplitAndAddMetadata("reason", errorMessage.RedactAll());
+                return metricDatum;
+            });
         }
     }
 }
