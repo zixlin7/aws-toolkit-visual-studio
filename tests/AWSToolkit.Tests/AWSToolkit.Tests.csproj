@@ -114,6 +114,8 @@
     <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertyMappingTests.cs" />
     <Compile Include="Ec2\VpcEntityTests.cs" />
+    <Compile Include="Ecr\RepoRepositoryTests.cs" />
+    <Compile Include="Ecr\RepositoryConversionTests.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsDeployTestFixture.cs" />
