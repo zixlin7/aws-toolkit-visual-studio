@@ -7,6 +7,8 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
@@ -73,15 +75,26 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         private readonly PublishContextFixture _publishContextFixture = new PublishContextFixture();
 
+        private static readonly ICredentialIdentifier SampleCredentialIdentifier =
+            new SharedCredentialIdentifier("profile");
+
         private readonly ToolkitRegion _sampleRegion = new ToolkitRegion()
         {
             PartitionId = "SamplePartition", DisplayName = "SampleRegion", Id = "region1",
+        };
+
+        private static readonly ToolkitRegion SampleFallbackRegion = new ToolkitRegion()
+        {
+            PartitionId = "SamplePartition", DisplayName = "FallbackRegion", Id = RegionEndpoint.USEast1.SystemName,
         };
 
         private readonly CancellationToken _cancelToken;
 
         public PublishToAwsDocumentViewModelTests()
         {
+            _publishContextFixture.DefineRegion(_sampleRegion);
+            _publishContextFixture.DefineRegion(SampleFallbackRegion);
+
             StubStartSessionToReturn(CreateSampleSessionDetails());
 
             _sampleRecommendations = SamplePublishData.CreateSampleRecommendations();
@@ -97,8 +110,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _sut = new PublishToAwsDocumentViewModel(
                 new PublishApplicationContext(_publishContextFixture.PublishContext))
             {
-                DeploymentClient = _deployClient.Object, Region = _sampleRegion, DeployToolController = _deployToolController.Object
+                DeploymentClient = _deployClient.Object, DeployToolController = _deployToolController.Object
             };
+            _sut.Connection.Region = _sampleRegion;
 
             _exposedTestViewModel = new TestPublishToAwsDocumentViewModel(new PublishApplicationContext(_publishContextFixture.PublishContext));
             _cancelToken = _publishContextFixture.PublishContext.PublishPackage.DisposalToken;
@@ -1301,6 +1315,66 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _publishContextFixture.TelemetryLogger.Verify(
                 mock => mock.Record(It.Is<Metrics>(m =>
                     m.Data.Any(p => p.Metadata.Keys.Contains("errorCode")))), Times.Never);
+        }
+
+        [Fact]
+        public void IsValidRegion()
+        {
+            Assert.True(_sut.IsValidRegion(_sampleRegion));
+        }
+
+        [Fact]
+        public void IsValidRegion_Null()
+        {
+            Assert.False(_sut.IsValidRegion(null));
+            Assert.False(_sut.IsValidRegion(new ToolkitRegion()
+            {
+                Id = null
+            }));
+        }
+
+        [Fact]
+        public void IsValidRegion_LocalRegion()
+        {
+            var localRegion = new ToolkitRegion() { Id = "local" };
+            _publishContextFixture.SetupRegionAsLocal(localRegion.Id);
+
+            Assert.False(_sut.IsValidRegion(localRegion));
+        }
+
+        [Fact]
+        public void GetValidRegion_NoCredentialProperties()
+        {
+            _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, null);
+
+            Assert.Equal(SampleFallbackRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
+        }
+
+        [Fact]
+        public void GetValidRegion_WithNoRegionProperty()
+        {
+            var properties = new ProfileProperties();
+            _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
+
+            Assert.Equal(SampleFallbackRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
+        }
+
+        [Fact]
+        public void GetValidRegion_WithRegionProperty()
+        {
+            var properties = new ProfileProperties() { Region = _sampleRegion.Id, };
+            _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
+
+            Assert.Equal(_sampleRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
+        }
+
+        [Fact]
+        public void GetValidRegion_WithSsoRegionProperty()
+        {
+            var properties = new ProfileProperties() { SsoRegion = _sampleRegion.Id, };
+            _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
+
+            Assert.Equal(_sampleRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
         }
 
         private void CreateSampleSummaryConfigurationDetail()

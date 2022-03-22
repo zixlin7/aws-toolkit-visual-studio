@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             _commandFixture.StubGetRepublishTargetsAsync(SamplePublishData.CreateSampleRepublishTargets());
 
             _sut = new StartOverCommand(ViewModel, null);
-            ViewModel.Region = new ToolkitRegion()
+            ViewModel.Connection.Region = new ToolkitRegion()
             {
                 Id = "us-west-2"
             };

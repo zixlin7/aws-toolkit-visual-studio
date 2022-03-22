@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\EditKeyValuesCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectCredentialsCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEc2InstanceTypeCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectVpcCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\BeanstalkEnvironmentViewerCommandFactory.cs" />
@@ -88,14 +89,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)Util\OptionSettingItemSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DesignTimePublishConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DocumentLoadingIndicator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MissingCapabilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProgressStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishToAwsDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishViewStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnsupportedSettingTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ConfigureTargetView.xaml.cs">
       <DependentUpon>ConfigureTargetView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\CredentialsRegionControl.xaml.cs">
+      <DependentUpon>CredentialsRegionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExistingTargetDetailsView.xaml.cs">
@@ -209,6 +215,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishToAwsDocumentControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\CredentialsRegionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

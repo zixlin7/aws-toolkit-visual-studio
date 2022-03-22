@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
     /// This ViewModel contains the functionality and data that
     /// backs the "Publish to AWS" document tab (<see cref="Views.PublishApplicationView"/>)
     /// </summary>
-    public class PublishToAwsDocumentViewModel : BaseModel, IPublishToAwsProperties
+    public class PublishToAwsDocumentViewModel : BaseModel
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(PublishToAwsDocumentViewModel));
         private const string DeploymentStatusMessage = "Deployment Status: ";
@@ -51,34 +51,31 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             nameof(ProjectName),
             nameof(StackName),
-            nameof(CredentialsId),
-            nameof(Region),
             nameof(PublishDestination),
             nameof(ConfigurationDetails),
         };
 
         public static readonly IList<string> PublishAffectingProperties = new List<string>()
         {
-            nameof(PublishDestination),
-            nameof(PublishStackName)
+            nameof(PublishDestination), nameof(PublishStackName)
         };
 
         private readonly PublishApplicationContext _publishContext;
-        
+        private readonly PublishConnectionViewModel _publishConnection;
+
         private IDeployToolController _deployToolController;
         private IDeploymentCommunicationClient _deploymentCommunicationClient;
         private bool _isLoading;
+        private string _errorMessage = string.Empty;
         private bool _publishTargetsLoaded;
         private bool _isOptionsBannerEnabled;
         private bool _isFailureBannerEnabled;
         private bool _isRepublish;
         private bool _isDefaultConfig = true;
-        private ICredentialIdentifier _credentialsId;
         private string _projectPath;
         private string _projectName;
         private string _publishSummary;
         private string _targetDescription;
-        private ToolkitRegion _region;
         private PublishViewStage _viewStage;
         private PublishCommand _publishToAwsCommand;
         private ConfigCommand _configTargetCommand;
@@ -121,10 +118,13 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private ObservableCollection<RepublishTarget> _republishTargets =
             new ObservableCollection<RepublishTarget>();
+
         private ObservableCollection<TargetSystemCapability> _systemCapabilities =
             new ObservableCollection<TargetSystemCapability>();
+
         private ObservableCollection<ConfigurationDetail> _configurationDetails =
             new ObservableCollection<ConfigurationDetail>();
+
         private ObservableCollection<PublishResource> _publishResources =
             new ObservableCollection<PublishResource>();
 
@@ -137,6 +137,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public PublishToAwsDocumentViewModel(PublishApplicationContext publishContext)
         {
             _publishContext = publishContext;
+            _publishConnection = new PublishConnectionViewModel(
+                publishContext.ConnectionManager,
+                publishContext.PublishPackage.JoinableTaskFactory);
         }
 
         public void LoadPublishSettings()
@@ -149,6 +152,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         public JoinableTaskFactory JoinableTaskFactory => _publishContext.PublishPackage.JoinableTaskFactory;
+        public PublishConnectionViewModel Connection => _publishConnection;
 
         /// <summary>
         /// Represents the republish targets collection view displayed in the Targets view
@@ -157,6 +161,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _republishCollectionView;
             set => SetProperty(ref _republishCollectionView, value);
+        }
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set => SetProperty(ref _errorMessage, value);
         }
 
         /// <summary>
@@ -290,15 +300,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// The currently selected Credentials to Publish with
-        /// </summary>
-        public ICredentialIdentifier CredentialsId
-        {
-            get => _credentialsId;
-            set => SetProperty(ref _credentialsId, value);
-        }
-
-        /// <summary>
         /// Full path of the project (eg .csproj file) that will be published
         /// </summary>
         public string ProjectPath
@@ -314,15 +315,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _projectName;
             set => SetProperty(ref _projectName, value);
-        }
-
-        /// <summary>
-        /// AWS Region to publish to
-        /// </summary>
-        public ToolkitRegion Region
-        {
-            get => _region;
-            set => SetProperty(ref _region, value);
         }
 
         /// <summary>
@@ -572,10 +564,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public bool IsStackNameSet => !string.IsNullOrWhiteSpace(StackName);
 
-        public string RegionDisplay => Region?.DisplayName ?? "";
-
-        public string CredentialsDisplay => CredentialsId?.DisplayName ?? "";
-
         public bool HasValidationErrors()
         {
             var configurationDetailValidation = ConfigurationDetails?.GetDetailAndDescendants()
@@ -589,6 +577,44 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 return true;
 
             return false;
+        }
+
+        public bool IsValidRegion(ToolkitRegion region)
+        {
+            if (string.IsNullOrWhiteSpace(region?.Id))
+            {
+                return false;
+            }
+
+            return !_publishContext.RegionProvider.IsRegionLocal(region.Id);
+        }
+
+        public ToolkitRegion GetValidRegion(ICredentialIdentifier credentialIdentifier)
+        {
+            try
+            {
+                var props = _publishContext.CredentialSettings.GetProfileProperties(credentialIdentifier);
+
+                var region = _publishContext.RegionProvider.GetRegion(props.Region) ??
+                             _publishContext.RegionProvider.GetRegion(props.SsoRegion);
+
+                if (IsValidRegion(region))
+                {
+                    return region;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Unable to determine a proper region, Publish to AWS will start with an unexpected region", e);
+            }
+            return GetFallbackRegion();
+        }
+
+        private ToolkitRegion GetFallbackRegion()
+        {
+            return _publishContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName) ??
+                   _publishContext.RegionProvider.GetRegions("aws").FirstOrDefault() ??
+                   throw new Exception("Toolkit does not have valid region data");
         }
 
         /// <summary>
@@ -615,7 +641,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Defines a deployment session on the CLI Server for this project, if one isn't already defined.
         /// <see cref="SessionId"/> is assigned the resulting Session Id.
         /// </summary>
-        /// <returns>True on success (or session already defined), False on error</returns>
         public async Task StartDeploymentSessionAsync(CancellationToken cancellationToken)
         {
             try
@@ -627,7 +652,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 Logger.Debug("Starting a deployment session");
 
-                var response = await DeployToolController.StartSessionAsync(Region.Id, ProjectPath, cancellationToken).ConfigureAwait(false);
+                var response = await DeployToolController.StartSessionAsync(Connection.Region.Id, ProjectPath, cancellationToken)
+                    .ConfigureAwait(false);
 
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 SessionId = response.SessionId;
@@ -637,7 +663,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new SessionException("Unable to start a deployment session. Please try opening the publish experience again.", e);
+                throw new SessionException($"Unable to start a deployment session:{Environment.NewLine}{GetExceptionInnerMessage(e)}", e);
             }
         }
 
@@ -645,7 +671,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Removes this project's deployment session from the CLI Server.
         /// <see cref="SessionId"/> is cleared.
         /// </summary>
-        /// <returns>True on success, False on error</returns>
         public async Task StopDeploymentSessionAsync(CancellationToken cancellationToken)
         {
             try
@@ -663,7 +688,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new SessionException("Error stopping the deployment session. You may need to manually terminate the AWS Deploy Tool in your process manager.", e);
+                throw new SessionException("Unable to close current deployment session." +
+                                           " If the problem persists, manually terminate the AWS Deploy Tool in your process manager." +
+                                           $"{Environment.NewLine}Reason: {e.Message}", e);
             }
             finally
             {
@@ -675,9 +702,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <summary>
         /// Loads deployment recommendations for this project.
         /// <see cref="Recommendations"/> is populated with any loaded recommendations.
-        ///
         /// </summary>
-        /// <returns>True on success, False on error</returns>
         public async Task RefreshRecommendationsAsync(CancellationToken cancellationToken)
         {
             var recommendations = new ObservableCollection<PublishRecommendation>();
@@ -692,7 +717,10 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new PublishException("Error getting deployment recommendations. Please reload the publish experience.", e);
+                throw new PublishException(
+                    $"Failure loading deployment recommendations:{Environment.NewLine}" +
+                    $"{GetExceptionInnerMessage(e)}{Environment.NewLine}" +
+                    "You might need to reload the publish experience.", e);
             }
             finally
             {
@@ -708,7 +736,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Loads existing publishing targets for this project.
         /// <see cref="RepublishTargets"/> is populated with any loaded targets
         /// </summary>
-        /// <returns>True on success, False on error</returns>
         public async Task RefreshExistingTargetsAsync(CancellationToken cancellationToken)
         {
             var targets = new ObservableCollection<RepublishTarget>();
@@ -724,7 +751,10 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new PublishException("Error getting existing publish targets. Please reload the publish experience.", e);
+                throw new PublishException(
+                    $"Failure loading re-deployment targets:{Environment.NewLine}" +
+                    $"{GetExceptionInnerMessage(e)}{Environment.NewLine}" +
+                    "You might need to reload the publish experience.", e);
             }
             finally
             {
@@ -752,7 +782,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new PublishException("Error getting system compatibilities for given targets.", e);
+                throw new PublishException($"Error getting system requirements: {GetExceptionInnerMessage(e)}", e);
             }
             finally
             {
@@ -804,7 +834,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new PublishException("Unable to retrieve configuration details.", e);
+                throw new PublishException($"Unable to retrieve configuration details: {GetExceptionInnerMessage(e)}", e);
             }
             finally
             {
@@ -836,7 +866,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception ex)
             {
-                throw new PublishException("Unable to update configuration detail values", ex);
+                throw new PublishException($"Unable to update configuration detail values: {GetExceptionInnerMessage(ex)}", ex);
             }
         }
 
@@ -1459,6 +1489,16 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 metricDatum.SplitAndAddMetadata("reason", errorMessage.RedactAll());
                 return metricDatum;
             });
+        }
+
+        private string GetExceptionInnerMessage(Exception e)
+        {
+            if (e is ApiException apiException)
+            {
+                return apiException.Response;
+            }
+
+            return e.Message;
         }
     }
 }

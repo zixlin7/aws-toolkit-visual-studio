@@ -38,6 +38,13 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
                 TelemetryLogger = TelemetryLogger.Object,
                 ToolkitHost = ToolkitHost.Object
             };
+
+            InitializeRegionProviderMocks();
+        }
+
+        private void InitializeRegionProviderMocks()
+        {
+            RegionProvider.Setup(mock => mock.IsRegionLocal(It.IsAny<string>())).Returns(false);
         }
 
         public void DefineCredentialProperties(ICredentialIdentifier credentialIdentifier, ProfileProperties profileProperties)
@@ -50,6 +57,16 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         {
             ToolkitHost.Setup(mock => mock.ExecuteOnUIThread(It.IsAny<Action>()))
                 .Callback<Action>(action => action());
+        }
+
+        public void SetupRegionAsLocal(string regionId)
+        {
+            RegionProvider.Setup(mock => mock.IsRegionLocal(regionId)).Returns(true);
+        }
+
+        public void DefineRegion(ToolkitRegion region)
+        {
+            RegionProvider.Setup(mock => mock.GetRegion(region.Id)).Returns(region);
         }
     }
 }

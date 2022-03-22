@@ -98,7 +98,7 @@
             <TextBlock
                 Grid.Row="2" Grid.Column="2"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
-                Text="{Binding Region.DisplayName}" />
+                Text="{Binding Connection.RegionDisplayName}" />
         </Grid>
 
         <DockPanel 

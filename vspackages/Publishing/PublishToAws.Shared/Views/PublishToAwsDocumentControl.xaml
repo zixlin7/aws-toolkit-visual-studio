@@ -8,6 +8,7 @@
              xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.Publish.ViewModels"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -15,6 +16,7 @@
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:SessionVisibilityConverter x:Key="SessionVisibilityConverter" />
+            <commonUi:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </commonUi:BaseAWSControl.Resources>
     <DockPanel
@@ -24,6 +26,8 @@
         <views:PublishDocumentHeader DockPanel.Dock="Top" Visibility="Collapsed" />
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -57,9 +61,72 @@
 
             <views:PublishOptions Grid.Row="1" Grid.Column="2"/>
 
+            <views:CredentialsRegionControl 
+                DataContext="{Binding Connection}"
+                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                d:Visibility="Visible"
+                >
+                <views:CredentialsRegionControl.Style>
+                    <Style TargetType="views:CredentialsRegionControl">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DataContext.ViewStage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" Value="Target">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </views:CredentialsRegionControl.Style>
+            </views:CredentialsRegionControl>
+
+            <!-- Show high level error messages when present -->
+            <Grid 
+                Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                Margin="32">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Image
+                    Grid.Row="0" Grid.Column="0"
+                    Width="32" 
+                    Height="32"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    DataContext="{StaticResource VsImages}"
+                    Source="{Binding StatusError32}"
+                    />
+
+                <TextBox
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Grid.Row="0" Grid.Column="1"
+                    Margin="32 0 0 0"
+                    VerticalAlignment="Center"
+                    IsReadOnly="True"
+                    FontWeight="DemiBold"
+                    TextWrapping="Wrap"
+                    d:Text="Some Error Message"
+                    Text="{Binding ErrorMessage}"
+                    />
+            </Grid>
+
             <!-- This shows the appropriate view within this document based on the value of ViewStage -->
             <ContentPresenter 
-                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
                 Visibility="{Binding SessionId, Converter={StaticResource SessionVisibilityConverter}}"
                 Content="{Binding}">
                 <ContentPresenter.Resources>
@@ -93,7 +160,7 @@
 
             <!-- Footer containing actions relevant to the Target and Configure views -->
             <views:PublishDocumentFooter 
-                Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"
                 Margin="0 18 0 0">
                 <views:PublishDocumentFooter.Style>
                     <Style TargetType="{x:Type views:PublishDocumentFooter}">
