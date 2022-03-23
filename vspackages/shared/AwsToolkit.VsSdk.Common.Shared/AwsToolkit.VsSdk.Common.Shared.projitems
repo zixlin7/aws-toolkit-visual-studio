@@ -10,6 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Converters\ImageThemeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CredentialSelectionDialog.xaml.cs">
+      <DependentUpon>CredentialSelectionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\DialogWindowHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\IamRoleSelectionDialog.xaml.cs">
       <DependentUpon>IamRoleSelectionDialog.xaml</DependentUpon>
@@ -33,6 +36,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\VpcSelectionDialog.xaml.cs">
       <DependentUpon>VpcSelectionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\SelectionDialog.xaml.cs">
+      <DependentUpon>SelectionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
@@ -42,6 +48,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)VSWebProjectInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\CredentialSelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\IamRoleSelectionDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -65,6 +75,10 @@
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\VpcSelectionDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\SelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 </Project>

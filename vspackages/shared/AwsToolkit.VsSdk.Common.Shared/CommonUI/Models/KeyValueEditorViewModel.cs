@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
@@ -53,9 +54,14 @@ namespace CommonUI.Models
             UseTextMode = new RelayCommand(param => EditorMode = KeyValueEditorMode.TextEditor);
         }
 
-        public void SetKeyValues(ICollection<KeyValue> keyValues)
+        public void SetKeyValues(IEnumerable<KeyValue> keyValues)
         {
             KeyValues.Collection = new ObservableCollection<KeyValue>(keyValues);
+        }
+
+        public IEnumerable<KeyValue> GetValidKeyValues()
+        {
+            return KeyValues.Collection.Where(keyValue => !string.IsNullOrWhiteSpace(keyValue.Key));
         }
     }
 }

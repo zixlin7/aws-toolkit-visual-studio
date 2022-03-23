@@ -70,6 +70,7 @@ using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Themes;
+using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Commands.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Commands.Publishing;
@@ -84,6 +85,7 @@ using Microsoft.VisualStudio.PlatformUI;
 
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
+using Amazon.AWSToolkit.VisualStudio.SupportedVersion;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -155,6 +157,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         private ToolkitContext _toolkitContext;
         private TelemetryManager _telemetryManager;
         private TelemetryInfoBarManager _telemetryInfoBarManager;
+        private SupportedVersionBarManager _supportedVersionBarManager;
         private DateTime _startInitializeOn;
         private IPublishSettingsRepository _publishSettingsRepository;
 
@@ -757,7 +760,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             try
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
-                VsImage.Initialize(new ImageThemeConverter(), new BrushToColorConverter());
+                VsImage.Initialize(new ImageThemeConverter(new BrushToColorConverter()));
             }
             catch (Exception e)
             {
@@ -799,6 +802,26 @@ namespace Amazon.AWSToolkit.VisualStudio
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) (useVs2017Commands ? PkgCmdIDList.cmdidViewUserGuide2017 : PkgCmdIDList.cmdidViewUserGuide),
+                    this)
+            );
+
+            tasks.Add(
+                ViewUrlCommand.InitializeAsync(
+                    AwsUrls.DotNetOnAws, ToolkitShellProviderService, _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) (useVs2017Commands
+                        ? PkgCmdIDList.cmdidLinkToDotNetOnAws2017
+                        : PkgCmdIDList.cmdidLinkToDotNetOnAws),
+                    this)
+            );
+
+            tasks.Add(
+                ViewUrlCommand.InitializeAsync(
+                    AwsUrls.DotNetOnAwsCommunity, ToolkitShellProviderService, _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) (useVs2017Commands
+                        ? PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity2017
+                        : PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity),
                     this)
             );
 
@@ -926,6 +949,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _shellInitialized = true;
                 ShowFirstRun();
                 ShowTelemetryNotice();
+                ShowSupportedVersionNotice(ToolkitHosts.Vs2017);
             }
 
             return VSConstants.S_OK;
@@ -977,6 +1001,36 @@ namespace Amazon.AWSToolkit.VisualStudio
                 catch (Exception e)
                 {
                     LOGGER.Error("ShowTelemetryNotice error", e);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Displays an information bar indicating minimum supported version of the IDE
+        /// </summary>
+        /// <param name="hostDeprecated">represents the host version being deprecated</param>
+        private void ShowSupportedVersionNotice(IToolkitHostInfo hostDeprecated)
+        {
+            var supportedVersionStrategy = new SupportedVersionStrategy(ToolkitContext.ToolkitHostInfo, hostDeprecated, ToolkitSettings.Instance);
+
+            if (!supportedVersionStrategy.CanShowNotice())
+            {
+                return;
+            }
+
+            JoinableTaskFactory.Run(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                try
+                {
+                    LOGGER.Debug("Attempting to show minimum supported version info banner");
+                    _supportedVersionBarManager = new SupportedVersionBarManager(this, supportedVersionStrategy);
+                    _supportedVersionBarManager.ShowInfoBar();
+
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Error("Error occurred while trying to show minimum supported version info banner", e);
                 }
             });
         }
@@ -1991,8 +2045,8 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
-                IntPtr parent;
-                if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
+                Assumes.Present(uiShell);
+                if (uiShell.GetDialogOwnerHwnd(out var parent) != VSConstants.S_OK)
                 {
                     return null;
                 }
@@ -2381,6 +2435,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var addItemDialog = await this.GetServiceAsync(typeof(IVsAddProjectItemDlg)) as IVsAddProjectItemDlg;
+                Assumes.Present(addItemDialog);
                 addItemDialog.AddProjectItemDlg(selectedItemId, ref projectTypeGuid, vsProject,
                                                         (uint)__VSADDITEMFLAGS.VSADDITEM_AddNewItems, "",
                                                          @"AWS CloudFormation\AWS CloudFormation Template", ref strLocation, ref strFilter, out dontShowAgain);
@@ -2447,6 +2502,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryManager?.Dispose();
 
             _telemetryInfoBarManager?.Dispose();
+            _supportedVersionBarManager?.Dispose();
             _metricsOutputWindow?.Dispose();
 
             return Microsoft.VisualStudio.VSConstants.S_OK;
@@ -2576,6 +2632,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         public void AddDataConnection(DatabaseTypes type, string connectionName, string connectionString)
         {
             var decMgr = (Microsoft.VisualStudio.Data.Services.IVsDataExplorerConnectionManager)GetService(typeof(Microsoft.VisualStudio.Data.Services.IVsDataExplorerConnectionManager));
+            Assumes.Present(decMgr);
             var guidProvider = new Guid("91510608-8809-4020-8897-fba057e22d54");
             var conn = decMgr.AddConnection(connectionName, guidProvider, connectionString, false);
             decMgr.SelectConnection(conn);
@@ -2586,6 +2643,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
                 IVsWindowFrame toolWindow;
                 var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
+                Assumes.Present(uiShell);
                 if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
                 {
                     toolWindow.Show();
@@ -2596,6 +2654,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         public void RegisterDataConnection(DatabaseTypes type, string connectionPrefixName, string host, int port, string masterUsername, string initialDBName)
         {
             var dlgFactory = GetService(typeof(Microsoft.VisualStudio.Data.Services.IVsDataConnectionDialogFactory)) as Microsoft.VisualStudio.Data.Services.IVsDataConnectionDialogFactory;
+            Assumes.Present(dlgFactory);
 
             var dlg = dlgFactory.CreateConnectionDialog();
 
@@ -2615,6 +2674,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 // Retrieve the IVsDataExplorerConnectionManager service
                 var decMgr = GetService(typeof(Microsoft.VisualStudio.Data.Services.IVsDataExplorerConnectionManager)) as Microsoft.VisualStudio.Data.Services.IVsDataExplorerConnectionManager;
+                Assumes.Present(decMgr);
 
                 var dbName = "unknown";
                 if (DatabaseTypes.SQLServer == type)
@@ -2646,9 +2706,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                 {
                     await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                     var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
-                    IVsWindowFrame toolWindow;
                     var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
-                    if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
+                    Assumes.Present(uiShell);
+                    if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out IVsWindowFrame toolWindow) == VSConstants.S_OK)
                     {
                         toolWindow.Show();
                     }

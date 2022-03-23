@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Windows.Data;
+﻿using System.Collections;
+
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.Converters;
+using Amazon.AWSToolkit.Credentials.Presentation;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
@@ -12,17 +11,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
     /// </summary>
     public class GroupedAccountComparer : IComparer
     {
-        private readonly IValueConverter _accountToGroupConverter;
-
-        public GroupedAccountComparer()
-            : this(new AccountViewModelGroupConverter())
-        {
-        }
-
-        public GroupedAccountComparer(IValueConverter accountToGroupConverter)
-        {
-            _accountToGroupConverter = accountToGroupConverter;
-        }
+        private readonly CredentialIdentifierGroupComparer _groupComparer = new CredentialIdentifierGroupComparer();
 
         public int Compare(object x, object y)
         {
@@ -42,25 +31,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                 return -1;
             }
 
-            // Determine the account's grouping
-            var leftGroup =
-                _accountToGroupConverter.Convert(leftAccount, typeof(AccountViewModelGroup), null,
-                    null) as AccountViewModelGroup;
-            var rightGroup =
-                _accountToGroupConverter.Convert(rightAccount, typeof(AccountViewModelGroup), null,
-                    null) as AccountViewModelGroup;
-
-            // First, compare by group priority
-            if (!Equals(leftGroup, rightGroup))
-            {
-                var leftGroupPriority = leftGroup?.SortPriority ?? int.MinValue;
-                var rightGroupPriority = rightGroup?.SortPriority ?? int.MinValue;
-                return leftGroupPriority.CompareTo(rightGroupPriority);
-            }
-
-            // Then compare by Credentials Id
-            return string.Compare(leftAccount.Identifier?.DisplayName, rightAccount.Identifier?.DisplayName,
-                StringComparison.InvariantCulture);
+            return _groupComparer.Compare(leftAccount.Identifier, rightAccount.Identifier);
         }
     }
 }

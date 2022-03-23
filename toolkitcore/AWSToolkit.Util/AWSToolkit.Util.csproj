@@ -103,6 +103,7 @@
     <Compile Include="Settings\IToolkitSettingsRepository.cs" />
     <Compile Include="Settings\ToolkitSettingsWatcher.cs" />
     <Compile Include="Solutions\ProjectFile.cs" />
+    <Compile Include="StringExtensionMethods.cs" />
     <Compile Include="Tasks\TaskExtensionMethods.cs" />
     <Compile Include="Telemetry\ClientId.cs" />
     <Compile Include="Telemetry\IMetricsOutputWindow.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Solutions\Project.cs" />
     <Compile Include="Solutions\ProjectType.cs" />
     <Compile Include="Utility.cs" />
+    <Compile Include="Util\DateTimeUtil.cs" />
     <Compile Include="Util\DebounceDispatcher.cs" />
     <Compile Include="Util\FrameworkNameHelper.cs" />
     <Compile Include="Util\HttpStatusCodeExtensionMethods.cs" />
@@ -278,10 +280,10 @@
       <Version>3.7.5.17</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.39</Version>
+      <Version>1.0.41</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.39</Version>
+      <Version>1.0.41</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.7.0.73</Version>

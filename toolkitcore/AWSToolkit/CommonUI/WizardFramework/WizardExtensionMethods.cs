@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System;
+
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CommonUI.WizardFramework
@@ -76,6 +78,23 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         public static void SetSelectedRegion(this IAWSWizard hostingWizard, ToolkitRegion region, string selectedRegionKey)
         {
             hostingWizard[selectedRegionKey] = region;
+        }
+
+        /// <summary>
+        /// Attempts to return property value if it exists.
+        /// </summary>
+        public static bool TryGetProperty<T>(this IAWSWizard hostingWizard, string key, out T value)
+        {
+            // TODO Replace with 'default' keyword once VS2017 (C# 7.0, needs 7.1) is no longer supported.
+            value = (T) (typeof(T).IsValueType ? Activator.CreateInstance(typeof(T)) : null);
+
+            if (hostingWizard.IsPropertySet(key) && hostingWizard.GetProperty(key) is T casted)
+            {
+                value = casted;
+                return true;
+            }
+
+            return false;
         }
     }
 }

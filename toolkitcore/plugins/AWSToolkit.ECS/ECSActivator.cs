@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.Nodes;
+using Amazon.AWSToolkit.ECS.PluginServices.Ecr;
 using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.ECS
@@ -47,7 +48,14 @@ namespace Amazon.AWSToolkit.ECS
         public override object QueryPluginService(Type serviceType)
         {
             if (serviceType == typeof(IAWSECS))
+            {
                 return this;
+            }
+
+            if (serviceType == typeof(IRepositoryFactory))
+            {
+                return new RepositoryFactory(ToolkitContext);
+            }
 
             return null;
         }

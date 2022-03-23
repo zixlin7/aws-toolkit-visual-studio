@@ -29,8 +29,9 @@ namespace Amazon.AWSToolkit.Lambda
 
         void setupContextMenuHooks(LambdaRootViewMetaNode rootNode)
         {
+            // Called from the AWS Explorer (Lambda node) context menu to deploy a zip or folder containing code
             rootNode.OnUploadFunction =
-                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new UploadFunctionController(ToolkitContext)).Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(CreateUploadFunctionController).Execute);
 
 
             rootNode.LambdaFunctionViewMetaNode.OnOpen =
@@ -47,13 +48,25 @@ namespace Amazon.AWSToolkit.Lambda
             return null;
         }
 
-        public void  UploadFunctionFromPath(Dictionary<string, object> seedProperties)
+        /// <summary>
+        /// Called from the "Publish to AWS Lambda" context menu in the Solution Explorer.
+        /// This is the main Lambda deployment path.
+        /// </summary>
+        public void UploadFunctionFromPath(Dictionary<string, object> seedProperties)
         {
             if (seedProperties == null)
                 seedProperties = new Dictionary<string, object>();
 
-            var controller = new UploadFunctionController(ToolkitContext);
+            var controller = CreateUploadFunctionController();
             controller.UploadFunctionFromPath(seedProperties);
+        }
+
+        private UploadFunctionController CreateUploadFunctionController()
+        {
+            return new UploadFunctionController(ToolkitContext,
+                ToolkitContext.ConnectionManager.ActiveCredentialIdentifier,
+                ToolkitContext.ConnectionManager.ActiveRegion,
+                ToolkitFactory.Instance.RootViewModel);
         }
 
         public async Task EnsureLambdaTesterConfiguredAsync(string projectPath)

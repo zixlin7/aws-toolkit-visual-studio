@@ -48,6 +48,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Util\DateTimeUtilTests.cs" />
     <Compile Include="Events\LogExceptionAndForgetChangedHandlerTests.cs" />
     <Compile Include="IisPathTests.cs" />
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Settings\SettingsPersistenceBaseTests.cs" />
     <Compile Include="Settings\ToolkitSettingsTests.cs" />
     <Compile Include="Solutions\ProjectFileTests.cs" />
+    <Compile Include="StringExtensionMethodsTests.cs" />
     <Compile Include="Tasks\TaskExtensionMethodsTests.cs" />
     <Compile Include="Telemetry\ModelExtensionMethodsTests.cs" />
     <Compile Include="Telemetry\TelemetryClientTests.cs" />
@@ -87,6 +89,7 @@
     <Compile Include="Telemetry\TestHelper.cs" />
     <Compile Include="Resources\TestResources.cs" />
     <Compile Include="Solutions\ProjectTests.cs" />
+    <Compile Include="Telemetry\ToolkitTelemetryEventsSupplementalTests.cs" />
     <Compile Include="Util\FrameworkNameHelperTests.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
     <Compile Include="Util\ZipUtilTests.cs" />
@@ -121,10 +124,10 @@
       <Version>3.7.3.13</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.39</Version>
+      <Version>1.0.41</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.39</Version>
+      <Version>1.0.41</Version>
     </PackageReference>
     <PackageReference Include="Castle.Core">
       <Version>4.2.1</Version>

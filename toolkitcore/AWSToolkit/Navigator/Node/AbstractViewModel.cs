@@ -6,6 +6,7 @@ using System.Linq;
 using System.ComponentModel;
 using System.Windows;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AWSToolkit.Navigator.Node
 {
@@ -14,12 +15,19 @@ namespace Amazon.AWSToolkit.Navigator.Node
         IMetaNode _metaNode;
         string _name;
         IViewModel _parent;
+        private readonly ToolkitContext _toolkitContext;
 
         public AbstractViewModel(IMetaNode metaNode, IViewModel parent, string name)
+            : this(metaNode, parent, name, ToolkitFactory.Instance.ToolkitContext)
+        {
+        }
+
+        public AbstractViewModel(IMetaNode metaNode, IViewModel parent, string name, ToolkitContext toolkitContext)
         {
             this._metaNode = metaNode;
             this._parent = parent;
             this._name = name;
+            _toolkitContext = toolkitContext;
         }
 
         public virtual string Name => this._name;
@@ -33,7 +41,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
                 Stream stream = this.GetType().Assembly.GetManifestResourceStream(this.IconName);
                 if(stream == null)
-                    stream = ToolkitFactory.Instance.GetType().Assembly.GetManifestResourceStream(this.IconName);
+                    stream = typeof(ToolkitFactory).Assembly.GetManifestResourceStream(this.IconName);
                 return stream;
             }
         }
@@ -52,6 +60,8 @@ namespace Amazon.AWSToolkit.Navigator.Node
         }
 
         public IMetaNode MetaNode => this._metaNode;
+
+        public ToolkitContext ToolkitContext => _toolkitContext;
 
         public virtual IList<ActionHandlerWrapper> GetVisibleActions()
         {
@@ -116,7 +126,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         protected void SetChildren(IList<IViewModel> items)
         {
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread((Action)(() =>
             {
                 this.InitializeChildrensCollection();
 
@@ -129,7 +139,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         protected void AddErrorChild(Exception e)
         {
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() => 
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread((Action)(() => 
             {
                 this.Children.Clear();
                 this.Children.Add(new ErrorViewModel(this, e));

@@ -17,7 +17,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         private readonly ToolkitContext _toolkitContext;
         private readonly KeyValueEditorViewModel _viewModel;
 
-        public ICollection<KeyValue> KeyValues { get; set; }
+        public IEnumerable<KeyValue> KeyValues { get; set; }
 
         public KeyValueEditorDialog(ToolkitContext toolkitContext)
         {
@@ -41,29 +41,18 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
         public new bool Show()
         {
+            // Necessary to clone KeyValues coming in so if dialog is cancelled, existing settings aren't mutated
             _viewModel.Title = Title;
-            _viewModel.SetKeyValues(Clone(KeyValues));
+            _viewModel.SetKeyValues(KeyValues.Select(kv => new KeyValue(kv)));
 
             var result = ShowModal() ?? false;
 
             if (result)
             {
-                KeyValues = Clone(_viewModel.KeyValues.Collection);
+                KeyValues = _viewModel.GetValidKeyValues().Select(kv => new KeyValue(kv));
             }
 
             return result;
-        }
-
-        private ICollection<KeyValue> Clone(ICollection<KeyValue> keyValues)
-        {
-            if (keyValues == null)
-            {
-                return new List<KeyValue>();
-            }
-
-            return keyValues
-                .Select(keyValue => new KeyValue(keyValue.Key, keyValue.Value))
-                .ToList();
         }
     }
 }

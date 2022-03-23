@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.Settings
             public const string TelemetryClientId = "AnalyticsAnonymousCustomerId";
             public const string LastSelectedRegion = "lastselectedregion";
             public const string ShowMetricsOutputWindow = "ShowMetricsOutputWindow";
+            public const string Vs2017SunsetNoticeVersionShown = "Vs2017SunsetNoticeVersionShown";
         }
 
         public static class DefaultValues
@@ -31,6 +32,7 @@ namespace Amazon.AWSToolkit.Settings
             public const bool TelemetryEnabled = true; // Opt-out model
             public const bool HasUserSeenFirstRunForm = false;
             public const bool ShowMetricsOutputWindow = false;
+            public const int Vs2017SunsetNoticeVersionNeverShown = 0;
         }
 
         static ToolkitSettings()
@@ -146,6 +148,18 @@ namespace Amazon.AWSToolkit.Settings
                 return showWindow;
             }
             set => SetMiscSetting(SettingNames.ShowMetricsOutputWindow, AsString(value));
+        }
+
+
+        /// <summary>
+        /// Gets or sets the "version" of the VS2017 deprecation notice/InfoBar the user last saw and acknowledged.
+        /// </summary>
+        public int Vs2017SunsetNoticeVersionShown
+        {
+            get =>
+                _settingsPersistence.GetInt(SettingNames.Vs2017SunsetNoticeVersionShown,
+                    DefaultValues.Vs2017SunsetNoticeVersionNeverShown);
+            set => _settingsPersistence.SetInt(SettingNames.Vs2017SunsetNoticeVersionShown, value);
         }
 
         /// <summary>

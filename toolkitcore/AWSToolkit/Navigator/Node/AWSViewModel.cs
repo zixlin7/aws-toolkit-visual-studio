@@ -25,7 +25,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
         public AWSViewModel(
             AWSViewMetaNode metaNode,
             ToolkitContext toolkitContext)
-            : base(metaNode, null, "root")
+            : base(metaNode, null, "root", toolkitContext)
         {
             _metaNode = metaNode;
             _toolkitContext = toolkitContext;

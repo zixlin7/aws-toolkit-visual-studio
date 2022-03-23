@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.PluginServices.Publishing;
@@ -14,6 +15,7 @@ using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.ViewModels;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
 
 using log4net;
@@ -29,9 +31,9 @@ namespace Amazon.AWSToolkit.Publish.Views
         private readonly PublishApplicationContext _publishContext;
         private JoinableTaskFactory JoinableTaskFactory => _publishContext.PublishPackage.JoinableTaskFactory;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _connectionRestartTokenSource = new CancellationTokenSource();
         private CancellationTokenSource _publishSummaryTokenSource = new CancellationTokenSource();
         private CancellationTokenSource _requiredPublishPropertiesTokenSource = new CancellationTokenSource();
-        private readonly AutoResetEvent _setupSessionEvent = new AutoResetEvent(true);
         private readonly PublishToAwsDocumentViewModel _viewModel;
         private readonly Stack<IDisposable> _disposables = new Stack<IDisposable>();
 
@@ -58,36 +60,47 @@ namespace Amazon.AWSToolkit.Publish.Views
         {
             _publishContext = publishContext;
 
-            _disposables.Push(_setupSessionEvent);
             _disposables.Push(_cancellationTokenSource);
+            _disposables.Push(_connectionRestartTokenSource);
             _disposables.Push(_publishSummaryTokenSource);
             _disposables.Push(_requiredPublishPropertiesTokenSource);
 
             _viewModel = CreateViewModel(args, cliServer);
 
+            _viewModel.Connection.StartListeningToConnectionManager();
             publishContext.ConnectionManager.ConnectionStateChanged += ConnectionManagerOnConnectionStateChanged;
-            publishContext.ConnectionManager.ChangeConnectionSettings(args.CredentialId, args.Region);
+            publishContext.ConnectionManager.ChangeConnectionSettings(args.CredentialId, GetInitialRegion(_viewModel, args));
 
             InitializeComponent();
 
             DataContext = _viewModel;
             _viewModel.PropertyChanged += ViewModelOnPropertyChanged;
             _viewModel.WorkflowDuration.Start();
+            Loaded += PublishToAwsDocumentControl_Loaded;
+            Unloaded += PublishToAwsDocumentControl_Unloaded;
+        }
+
+        private void PublishToAwsDocumentControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _viewModel.Connection.StartListeningToConnectionManager();
+        }
+
+        private void PublishToAwsDocumentControl_Unloaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _viewModel.Connection.StopListeningToConnectionManager();
         }
 
         private PublishToAwsDocumentViewModel CreateViewModel(ShowPublishToAwsDocumentArgs args, ICliServer cliServer)
         {
             var viewModel = new PublishToAwsDocumentViewModel(_publishContext)
             {
-                CredentialsId = args.CredentialId,
-                Region = args.Region,
                 ProjectName = args.ProjectName,
                 ProjectPath = args.ProjectPath,
                 ViewStage = PublishViewStage.Target,
             };
             viewModel.LoadPublishSettings();
 
-            var configurationDetailFactory = new ConfigurationDetailFactory(viewModel, _publishContext.ToolkitShellProvider.GetDialogFactory());
+            var configurationDetailFactory = new ConfigurationDetailFactory(viewModel.Connection, _publishContext.ToolkitShellProvider.GetDialogFactory());
             var client = cliServer.GetRestClient(viewModel.GetCredentialsAsync);
             viewModel.DeployToolController = new DeployToolController(client, configurationDetailFactory);
             viewModel.DeploymentClient = cliServer.GetDeploymentClient();
@@ -109,6 +122,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             viewModel.PublishToAwsCommand = publishCommand;
             viewModel.ConfigTargetCommand = configCommand;
             viewModel.BackToTargetCommand = targetCommand;
+            viewModel.Connection.SelectCredentialsCommand = SelectCredentialsCommandFactory.Create(viewModel);
             viewModel.StartOverCommand = startOverCommand;
             viewModel.PersistOptionsSettingsCommand = optionsCommand;
             viewModel.CloseFailureBannerCommand = closeFailureBannerCommand;
@@ -118,14 +132,24 @@ namespace Amazon.AWSToolkit.Publish.Views
             return viewModel;
         }
 
+        private static ToolkitRegion GetInitialRegion(
+            PublishToAwsDocumentViewModel viewModel, ShowPublishToAwsDocumentArgs args)
+        {
+            return viewModel.IsValidRegion(args.Region)
+                ? args.Region
+                : viewModel.GetValidRegion(args.CredentialId);
+        }
+
         public void Dispose()
         {
             _viewModel.WorkflowDuration.Stop();
             Logger.Debug($"Disposing Publish dialog: {_viewModel.ProjectName}");
 
             _viewModel.PropertyChanged -= ViewModelOnPropertyChanged;
+            _publishContext.ConnectionManager.ConnectionStateChanged -= ConnectionManagerOnConnectionStateChanged;
 
             _requiredPublishPropertiesTokenSource.Cancel();
+            _connectionRestartTokenSource.Cancel();
             _publishSummaryTokenSource.Cancel();
             _cancellationTokenSource.Cancel();
 
@@ -162,101 +186,72 @@ namespace Amazon.AWSToolkit.Publish.Views
         {
             _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
             {
+                CancelConnectionRestartInProgress();
+                var cancellationToken = _connectionRestartTokenSource.Token;
+
                 _viewModel.IsLoading = !e.State.IsTerminal;
 
                 if (e.State.IsTerminal)
                 {
-                    if (!(e.State is ConnectionState.ValidConnection))
+                    JoinableTaskFactory.RunAsync(async () =>
                     {
-                        _publishContext.ToolkitShellProvider.OutputToHostConsole(
-                            $"Publish {_viewModel?.ProjectName} to AWS does not have a valid credentials-region combination.{Environment.NewLine}Close the publish screen, select valid credentials in the AWS Explorer, and try again.{Environment.NewLine}{e.State.Message}.",
-                            true);
-
-                        _viewModel.Recommendations.Clear();
-                        _viewModel.RepublishTargets.Clear();
-                        return;
-                    }
-
-                    JoinableTaskFactory.RunAsync(InitializePublishDocumentAsync).Task.LogExceptionAndForget();
+                        await OnTerminalConnectionManagerStateAsync(e.State, cancellationToken).ConfigureAwait(false);
+                    }, JoinableTaskCreationOptions.LongRunning).Task.LogExceptionAndForget();
                 }
             });
         }
 
-        private async Task InitializePublishDocumentAsync()
+        private async Task OnTerminalConnectionManagerStateAsync(ConnectionState connectionState,
+            CancellationToken cancellationToken)
         {
             try
             {
-                using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
+                _viewModel.ErrorMessage = string.Empty;
+                if (connectionState is ConnectionState.ValidConnection)
                 {
-                    await TaskScheduler.Default;
-                    await EnsureDeploymentSessionIdAsync().ConfigureAwait(false);
-                    await LoadPublishTargetsAsync().ConfigureAwait(false);
+                    await RestartDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    _publishContext.ToolkitShellProvider.OutputToHostConsole(
+                        $"Publish {_viewModel?.ProjectName} to AWS does not have a valid credentials-region combination.{Environment.NewLine}Select valid credentials and try again.{Environment.NewLine}{connectionState.Message}.",
+                        true);
+
+                    await _viewModel.StopDeploymentSessionAsync(cancellationToken);
+                    await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+                    _viewModel.Recommendations.Clear();
+                    _viewModel.RepublishTargets.Clear();
                 }
             }
             catch (Exception e)
             {
-                _publishContext.ToolkitShellProvider.OutputError(e, Logger);
-                _publishContext.ToolkitShellProvider.ShowMessage("Unable to setup a deployment session", "An error occurred while starting a deployment session. See the Output window for details.");
+                Logger.Error("Error refreshing publish state", e);
+                _publishContext.ToolkitShellProvider.OutputToHostConsole(
+                    $"Publish to AWS failed to load publish details using the current credentials:{Environment.NewLine}{e.Message}", true);
+
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                _viewModel.ErrorMessage = e.Message;
             }
         }
 
-        /// <summary>
-        /// Responsible for setting up the deployment session.
-        /// Early exits if the deployment session is already established.
-        /// 
-        /// This is the first thing that needs to happen after establishing any valid credentials,
-        /// because all other publish API calls are based on the resulting SessionId.
-        /// </summary>
-        private async Task EnsureDeploymentSessionIdAsync()
+        private async Task RestartDeploymentSessionAsync(CancellationToken cancellationToken)
         {
-            try
-            {
-                // Prevent concurrent attempts at setting up a deployment session
-                _setupSessionEvent.WaitOne();
-
-                // We only ever set up the deployment session once
-                if (!string.IsNullOrWhiteSpace(_viewModel.SessionId))
-                {
-                    return;
-                }
-
-                await SetupDeploymentSessionAsync().ConfigureAwait(false);
-            }
-            catch (SessionException)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                throw new SessionException("Unable to set up a deployment session. Try restarting Visual Studio.", e);
-            }
-            finally
-            {
-                _setupSessionEvent.Set();
-            }
-        }
-
-        private async Task SetupDeploymentSessionAsync()
-        {
-            using (var tokenSource = CreateCancellationTokenSource())
+            using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
             {
                 await TaskScheduler.Default;
-                await _viewModel.StartDeploymentSessionAsync(tokenSource.Token).ConfigureAwait(false);
-                await _viewModel.JoinDeploymentSessionAsync().ConfigureAwait(false);
+                await _viewModel.RestartDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
+                await LoadPublishTargetsAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
-        public async Task LoadPublishTargetsAsync()
+        public async Task LoadPublishTargetsAsync(CancellationToken cancellationToken)
         {
             try
             {
-                using (var tokenSource = CreateCancellationTokenSource())
-                {
-                    await TaskScheduler.Default;
-                    // query appropriate recommendations
-                    await _viewModel.InitializePublishTargetsAsync(tokenSource.Token);
-                    _viewModel.SetPublishTargetsLoaded(true);
-                }
+                await TaskScheduler.Default;
+                // query appropriate recommendations
+                await _viewModel.InitializePublishTargetsAsync(cancellationToken);
+                _viewModel.SetPublishTargetsLoaded(true);
             }
             catch (PublishException)
             {
@@ -384,6 +379,13 @@ namespace Amazon.AWSToolkit.Publish.Views
         {
             SetTargetConfigurationAsync(e.Detail).LogExceptionAndForget();
             _viewModel.IsDefaultConfig = false;
+        }
+
+        private void CancelConnectionRestartInProgress()
+        {
+            _connectionRestartTokenSource.Cancel();
+            _connectionRestartTokenSource.Dispose();
+            _connectionRestartTokenSource = new CancellationTokenSource();
         }
 
         private void CancelSummaryUpdatesInProgress()

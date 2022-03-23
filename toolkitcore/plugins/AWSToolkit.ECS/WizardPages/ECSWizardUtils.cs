@@ -9,6 +9,8 @@ using Amazon.IdentityManagement.Model;
 using Amazon.Runtime;
 using log4net;
 using ThirdParty.Json.LitJson;
+using System.Text.RegularExpressions;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages
 {
@@ -76,6 +78,37 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             return string.Equals(launchType, Amazon.ECS.LaunchType.EC2, StringComparison.OrdinalIgnoreCase);
         }
 
+        public static bool TryParseRateExpression(this IAWSWizard hostWizard, out int value, out string unit)
+        {
+            // https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html
+            if (hostWizard.TryGetProperty(PublishContainerToAWSWizardProperties.ScheduleExpression, out string expr) && expr?.StartsWith("rate(") == true)
+            {
+                Match match = Regex.Match(expr, @"^rate\((\d+) (minute(?:s)?|hour(?:s)?|day(?:s)?)\)$", RegexOptions.Singleline, TimeSpan.FromSeconds(5 /* Use a sane timeout */));
+                if (match.Groups.Count == 3 && int.TryParse(match.Groups[1].Value, out value))
+                {
+                    // To validate, would likely want to promote out and refactor expression parts of RunIntervalUnitItem in ScheduleTaskPage.xaml.cs
+                    unit = match.Groups[2].Value;
+                    return true;
+                }
+            }
+
+            value = 0;
+            unit = null;
+            return false;
+        }
+
+        public static bool TryGetCronExpression(this IAWSWizard hostWizard, out string cronExpr)
+        {
+            // https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html
+            if (hostWizard.TryGetProperty(PublishContainerToAWSWizardProperties.ScheduleExpression, out string expr) && expr?.StartsWith("cron(") == true)
+            {
+                cronExpr = expr;
+                return true;
+            }
+
+            cronExpr = null;
+            return false;
+        }
 
         static IList<TaskCPUItemValue> _taskCPUAllowedValues;
 

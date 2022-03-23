@@ -1274,6 +1274,7 @@ namespace Microsoft.VisualStudio.Project
 
             // Remove the entire project from the solution
             IVsSolution solution = this.Site.GetService(typeof(SVsSolution)) as IVsSolution;
+            Assumes.Present(solution);
             uint iOption = 1; // SLNSAVEOPT_PromptSave
             ErrorHandler.ThrowOnFailure(solution.CloseSolutionElement(iOption, this, 0));
         }
@@ -6497,6 +6498,7 @@ namespace Microsoft.VisualStudio.Project
 		private bool IsFrameworkOnMachine()
 		{
 			var multiTargeting = this.site.GetService(typeof(SVsFrameworkMultiTargeting)) as IVsFrameworkMultiTargeting;
+            Assumes.Present(multiTargeting);
 			Array frameworks;
 			Marshal.ThrowExceptionForHR(multiTargeting.GetSupportedFrameworks(out frameworks));
 			foreach (string fx in frameworks)

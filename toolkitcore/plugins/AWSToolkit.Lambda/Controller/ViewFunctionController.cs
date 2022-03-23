@@ -726,9 +726,15 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         }
 
 
+        /// <summary>
+        /// Called from the Lambda function viewer to update code for an existing Lambda function
+        /// </summary>
         public bool UploadNewFunctionSource()
         {
-            var controller = new UploadFunctionController(_toolkitContext);
+            var controller = new UploadFunctionController(_toolkitContext,
+                _viewModel.LambdaRootViewModel.AccountViewModel?.Identifier,
+                _viewModel.LambdaRootViewModel.Region,
+                _viewModel.FindAncestor<AWSViewModel>());
             var results = controller.Execute(this._lambdaClient, this._ecrClient, this._model.FunctionName);
 
             return results.Success;

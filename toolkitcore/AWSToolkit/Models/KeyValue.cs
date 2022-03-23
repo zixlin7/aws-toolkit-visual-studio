@@ -48,6 +48,12 @@ namespace Amazon.AWSToolkit.Models
             Value = value;
         }
 
+        public KeyValue(KeyValue keyValue)
+        {
+            Key = keyValue.Key;
+            Value = keyValue.Value;
+        }
+
         #region IEquatable
 
         public bool Equals(KeyValue other)

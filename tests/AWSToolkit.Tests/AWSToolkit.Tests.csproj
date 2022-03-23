@@ -52,6 +52,9 @@
     <Compile Include="Clients\AwsServiceClientManagerTests.cs" />
     <Compile Include="Clients\ServiceClientCreatorTests.cs" />
     <Compile Include="CloudFormation\CloudFormationViewerTests.cs" />
+    <Compile Include="CloudWatch\CloudWatchLogsExtensionMethodTests.cs" />
+    <Compile Include="CloudWatch\CloudWatchLogsRepositoryTests.cs" />
+    <Compile Include="CloudWatch\CloudWatchRootViewModelTests.cs" />
     <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
     <Compile Include="CodeArtifact\ConfigurationTests.cs" />
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
@@ -65,7 +68,9 @@
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
     <Compile Include="CommonUI\ConcatenateCollectionConverterTests.cs" />
     <Compile Include="CommonUI\ConverterPipelineTests.cs" />
+    <Compile Include="CommonUI\CredentialIdentifierGroupConverterTests.cs" />
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
+    <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
     <Compile Include="CommonUI\InstanceTypeSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\VpcSelectionViewModelTests.cs" />
@@ -101,12 +106,16 @@
     <Compile Include="Credentials\Core\SDKCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\SharedCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\IO\SharedCredentialFileWriterTests.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierExtensionMethodsTests.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparerTests.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileOptionsExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\CredentialTypeExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertyMappingTests.cs" />
     <Compile Include="Ec2\VpcEntityTests.cs" />
+    <Compile Include="Ecr\RepoRepositoryTests.cs" />
+    <Compile Include="Ecr\RepositoryConversionTests.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsDeployTestFixture.cs" />
@@ -153,6 +162,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Publish\PublishToAwsExtensionMethodsTests.cs" />
     <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
+    <Compile Include="VsSdk.Common\CommonUI\KeyValueEditorViewModelTests.cs" />
     <Compile Include="VsSdk.Common\ImageThemeConverterTests.cs" />
     <Compile Include="ViewModels\KeyValuesViewModelTests.cs" />
     <Compile Include="VsSdk.Common\IVsMonitorSelectionExtensionMethodsTests.cs" />
@@ -199,6 +209,14 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
       <Project>{6AE302DB-2304-47C8-8E3C-96C85AC1D469}</Project>
       <Name>AWSToolkit.CloudFormation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudWatch.Interface\AWSToolkit.CloudWatch.Interface.csproj">
+      <Project>{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}</Project>
+      <Name>AWSToolkit.CloudWatch.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudWatch\AWSToolkit.CloudWatch.csproj">
+      <Project>{71CE999A-BF87-4EAA-81B6-BF78FBD05CEB}</Project>
+      <Name>AWSToolkit.CloudWatch</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
       <Project>{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}</Project>

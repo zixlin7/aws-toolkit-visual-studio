@@ -70,8 +70,9 @@ namespace Microsoft.VisualStudio.Project
 			this.serviceProvider = serviceProvider;
 
 			this.solutionBuildManager = this.serviceProvider.GetService(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager2;
+            Assumes.Present(solutionBuildManager);
 
-			if(this.solutionBuildManager == null)
+            if (this.solutionBuildManager == null)
 			{
 				throw new InvalidOperationException();
 			}

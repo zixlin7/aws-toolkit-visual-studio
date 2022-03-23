@@ -26,6 +26,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         public IRegionProvider RegionProvider => _publishContext.ToolkitContext.RegionProvider;
         public ITelemetryLogger TelemetryLogger => _publishContext.ToolkitContext.TelemetryLogger;
         public ICredentialManager CredentialManager => _publishContext.ToolkitContext.CredentialManager;
+        public ICredentialSettingsManager CredentialSettings => _publishContext.ToolkitContext.CredentialSettingsManager;
         public IAWSToolkitShellProvider ToolkitShellProvider => _publishContext.ToolkitShellProvider;
 
         public IPublishSettingsRepository PublishSettingsRepository => _publishContext.PublishSettingsRepository;

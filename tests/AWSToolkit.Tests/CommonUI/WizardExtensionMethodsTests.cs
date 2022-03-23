@@ -141,6 +141,35 @@ namespace AWSToolkit.Tests.CommonUI
             _wizard.VerifySet(mock => mock[PublishContainerToAWSWizardProperties.Region] = _overloadTestRegion);
         }
 
+        [Fact]
+        public void TestTryGetProperty()
+        {
+            // This test file isn't setup to test properties that don't exist (see SetupGetPropertyMock()), so just do all setup locally.
+            Mock<IAWSWizard> wizard = new Mock<IAWSWizard>();
+
+            wizard.Setup(mock => mock.IsPropertySet("validObject")).Returns(true);
+            wizard.Setup(mock => mock.IsPropertySet("validInt")).Returns(true);
+            wizard.Setup(mock => mock.IsPropertySet("validBool")).Returns(true);
+
+            wizard.Setup(mock => mock.GetProperty("validObject")).Returns<string>(key => "Hi, I am a valid object! :)");
+            wizard.Setup(mock => mock.GetProperty("validInt")).Returns<string>(key => 99);
+            wizard.Setup(mock => mock.GetProperty("validBool")).Returns<string>(key => true);
+
+            // Positive tests
+            Assert.True(wizard.Object.TryGetProperty<string>("validObject", out string objectValue), "Property exists and is valid object");
+            Assert.Equal("Hi, I am a valid object! :)", objectValue);
+
+            Assert.True(wizard.Object.TryGetProperty<int>("validInt", out int intValue), "Property exists and is valid int");
+            Assert.Equal(99, intValue);
+
+            Assert.True(wizard.Object.TryGetProperty<bool>("validBool", out bool boolValue), "Property exists and is valid bool");
+            Assert.True(boolValue);
+
+            // Negative tests
+            Assert.False(wizard.Object.TryGetProperty<string>("I don't exist", out objectValue), "Property doesn't exist");
+            Assert.False(wizard.Object.TryGetProperty<bool>("validObject", out boolValue), "Property exists, but is wrong type");
+        }
+
         private void SetupGetPropertyMock<T>()
         {
             _wizard.Setup(mock => mock.GetProperty<T>(It.IsAny<string>())).Returns<string>(key => (T) _property);

@@ -87,6 +87,7 @@
     <Compile Include="Clients\AwsServiceClientManager.cs" />
     <Compile Include="Clients\IAwsServiceClientManager.cs" />
     <Compile Include="Clients\ServiceClientCreator.cs" />
+    <Compile Include="CloudFormation\ICloudFormationViewer.cs" />
     <Compile Include="Commands\AsyncRelayCommand.cs" />
     <Compile Include="Commands\CommandException.cs" />
     <Compile Include="Commands\LearnMoreCommandFactory.cs" />
@@ -98,7 +99,12 @@
       <DependentUpon>MonitorGraph.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\CommandHandler.cs" />
-    <Compile Include="CommonUI\Components\AccountViewModelGroup.cs" />
+    <Compile Include="CommonUI\Components\CredentialIdentitySelector.xaml.cs">
+      <DependentUpon>CredentialIdentitySelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Converters\CredentialIdentifierGroupConverter.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparer.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierGroup.cs" />
     <Compile Include="CommonUI\Components\KeyValues\BatchAssignmentsEditor.xaml.cs">
       <DependentUpon>BatchAssignmentsEditor.xaml</DependentUpon>
     </Compile>
@@ -119,9 +125,13 @@
     <Compile Include="CommonUI\Converters\EqualityBooleanConverter.cs" />
     <Compile Include="CommonUI\Converters\InverseVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\NullableInverseBooleanConverter.cs" />
+    <Compile Include="CommonUI\CredentialSelector\CredentialConnectionStatus.cs" />
+    <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModel.cs" />
+    <Compile Include="CommonUI\CredentialSelector\ICredentialSelectionDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IIamRoleSelectionDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IKeyValueEditorDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IInstanceTypeSelectionDialog.cs" />
+    <Compile Include="CommonUI\Dialogs\ISelectionDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IVpcSelectionDialog.cs" />
     <Compile Include="CommonUI\IDialogFactory.cs" />
     <Compile Include="CommonUI\Images\AwsImageResourcePath.cs" />
@@ -163,6 +173,7 @@
     <Compile Include="Credentials\Core\AwsSsoCredentials.cs" />
     <Compile Include="Credentials\Core\ToolkitDefaultEc2InstanceCredentials.cs" />
     <Compile Include="Credentials\IO\PersistConnectionSettings.cs" />
+    <Compile Include="Credentials\Presentation\CredentialIdentifierExtensionMethods.cs" />
     <Compile Include="Credentials\Utils\AccountViewModelExtensionMethods.cs" />
     <Compile Include="Credentials\Utils\ConnectionSettingsChangeArgs.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileExtensionMethods.cs" />
@@ -223,6 +234,7 @@
     <Compile Include="Themes\IToolkitThemeProvider.cs" />
     <Compile Include="Themes\ToolkitThemeResourceKeys.cs" />
     <Compile Include="Themes\ToolkitThemes.cs" />
+    <Compile Include="Urls\AwsUrls.cs" />
     <Compile Include="Urls\GitHubUrls.cs" />
     <Compile Include="Util\MruList.cs" />
     <Compile Include="Credentials\Utils\ProfileHolder.cs" />
@@ -477,6 +489,10 @@
     <Page Include="CommonUI\Components\AppSettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\Components\CredentialIdentitySelector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="CommonUI\Components\IAMCapabilityPicker.xaml">
       <SubType>Designer</SubType>

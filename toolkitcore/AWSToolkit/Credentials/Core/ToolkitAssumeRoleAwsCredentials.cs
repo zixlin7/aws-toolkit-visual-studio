@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 
 using Amazon.AWSToolkit.Credentials.Control;
 using Amazon.AWSToolkit.Shared;
@@ -91,7 +92,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             catch (Exception e)
             {
                 _toolkitShell.OutputToHostConsole(
-                    $"Error authenticating AWS Assume Role profile {_profile.Name}: {e.Message}", true);
+                    $"Error authenticating AWS Assume Role profile {_profile.Name}: {e.Message}", false);
                 //concatenate inner exception message if present (helps display MFA based inner exception messages)
                 if (e.InnerException != null)
                 {
@@ -134,18 +135,18 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 _toolkitShell.ExecuteOnUIThread(() =>
                 {
                     control = new MfaPromptControl(viewModel);
-                    if (!_toolkitShell.ShowModal(control))
+                    if (!_toolkitShell.ShowInModalDialogWindow(control, MessageBoxButton.OKCancel))
                     {
                         throw new InvalidOperationException("MFA Login cancelled");
                     }
 
-                    _toolkitShell.OutputToHostConsole($"MFA Login started for profile {_profile.Name}", true);
+                    _toolkitShell.OutputToHostConsole($"MFA Login started for profile {_profile.Name}", false);
                 });
                 return viewModel.MfaToken;
             }
             catch (Exception e)
             {
-                _toolkitShell.OutputToHostConsole($"Login failed for AWS MFA based profile {_profile.Name}: {e.Message}", true);
+                _toolkitShell.OutputToHostConsole($"Login failed for AWS MFA based profile {_profile.Name}: {e.Message}", false);
                 throw;
             }
         }

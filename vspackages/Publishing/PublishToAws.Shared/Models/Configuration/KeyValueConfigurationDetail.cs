@@ -62,7 +62,7 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
             }
         }
 
-        public void SetKeyValues(ICollection<KeyValue> keyValues)
+        public void SetKeyValues(IEnumerable<KeyValue> keyValues)
         {
             Value = KeyValuesConversion.ToJson(keyValues);
         }

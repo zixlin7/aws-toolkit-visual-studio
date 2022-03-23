@@ -39,6 +39,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
             {
                 try
                 {
+                    PublishDocumentViewModel.ErrorMessage = string.Empty;
                     var initialIsRepublishValue = PublishDocumentViewModel.IsRepublish;
 
                     await PublishDocumentViewModel.RestartDeploymentSessionAsync(cancellationToken)
@@ -60,6 +61,9 @@ namespace Amazon.AWSToolkit.Publish.Commands
                 catch (Exception e)
                 {
                     PublishDocumentViewModel.PublishContext.ToolkitShellProvider.OutputError(new Exception($"Failed to reset the Publish to AWS view: {e.Message}", e), Logger);
+
+                    await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    PublishDocumentViewModel.ErrorMessage = e.Message;
                 }
             }
         }

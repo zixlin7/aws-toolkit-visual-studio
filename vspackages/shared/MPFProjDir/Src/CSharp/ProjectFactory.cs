@@ -96,6 +96,7 @@ namespace Microsoft.VisualStudio.Project
 
 			// Launch the aggregate creation process (we should be called back on our IVsAggregatableProjectFactoryCorrected implementation)
 			IVsCreateAggregateProject aggregateProjectFactory = (IVsCreateAggregateProject)this.Site.GetService(typeof(SVsCreateAggregateProject));
+            Assumes.Present(aggregateProjectFactory);
 			int hr = aggregateProjectFactory.CreateAggregateProject(guidsList, fileName, location, name, flags, ref projectGuid, out project);
 			if(hr == VSConstants.E_ABORT)
 				canceled = 1;

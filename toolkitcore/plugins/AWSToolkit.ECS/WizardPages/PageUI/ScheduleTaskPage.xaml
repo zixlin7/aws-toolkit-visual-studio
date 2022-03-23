@@ -117,7 +117,6 @@
 
         <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal">
             <RadioButton GroupName="RuleType" Margin="4,5,4,2"
-                Click="RunType_Click"
                 Name="_ctlRunTypeFixedInterval"
                 Style="{DynamicResource awsRadioButtonBaseStyle}"
                 IsChecked="{Binding IsRunTypeFixedInterval}"
@@ -125,7 +124,6 @@
                 Run at Fixed Interval
             </RadioButton>
             <RadioButton GroupName="RuleType" Margin="4,2,4,2"
-                Click="RunType_Click"
                 Name="_ctlRunTypeCronExpression"
                 Style="{DynamicResource awsRadioButtonBaseStyle}"
                 IsChecked="{Binding IsRunTypeCronExpression}"

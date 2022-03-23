@@ -7,7 +7,7 @@ namespace Amazon.AWSToolkit.CommonUI.Dialogs
     public interface IKeyValueEditorDialog
     {
         string Title { get; set; }
-        ICollection<KeyValue> KeyValues { get; set; }
+        IEnumerable<KeyValue> KeyValues { get; set; }
 
         bool Show();
     }

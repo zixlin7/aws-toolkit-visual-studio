@@ -95,6 +95,8 @@ namespace Microsoft.VisualStudio.Project
 			if(isOpenedByUs)
 			{
 				IVsUIShellOpenDocument shell = this.Node.ProjectMgr.Site.GetService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
+                Assumes.Present(shell);
+
 				Guid logicalView = Guid.Empty;
 				uint grfIDO = 0;
 				IVsUIHierarchy pHierOpen;
@@ -239,9 +241,10 @@ namespace Microsoft.VisualStudio.Project
 			}
 
 			IVsUIShell uiShell = site.GetService(typeof(SVsUIShell)) as IVsUIShell;
+            Assumes.Present(uiShell);
 
-			// We need to tell the windows to update their captions. 
-			IEnumWindowFrames windowFramesEnum;
+            // We need to tell the windows to update their captions. 
+            IEnumWindowFrames windowFramesEnum;
 			ErrorHandler.ThrowOnFailure(uiShell.GetDocumentWindowEnum(out windowFramesEnum));
 			IVsWindowFrame[] windowFrames = new IVsWindowFrame[1];
 			uint fetched;

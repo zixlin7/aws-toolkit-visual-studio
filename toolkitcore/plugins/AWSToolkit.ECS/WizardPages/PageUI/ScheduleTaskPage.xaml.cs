@@ -15,6 +15,8 @@ using System.Diagnostics;
 using Amazon.CloudWatchEvents;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
+using System.Text.RegularExpressions;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -133,6 +135,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             set
             {
                 this._isRunTypeCronExpression = value;
+                CronExpressionVisiblity = value == true ? Visibility.Visible : Visibility.Collapsed;
                 NotifyPropertyChanged("IsRunTypeCronExpression");
             }
         }
@@ -144,6 +147,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             set
             {
                 this._isRunTypeFixedInterval = value;
+                FixedIntervalVisiblity = value == true ? Visibility.Visible : Visibility.Collapsed;
                 NotifyPropertyChanged("IsRunTypeFixedInterval");
             }
         }
@@ -181,7 +185,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-
         private void onCronLearnMoreClick(object sender, RequestNavigateEventArgs e)
         {
             try
@@ -197,7 +200,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error navigating to CloudWatch Events user guide: " + ex.Message);
             }
         }
-
 
         public string Target
         {
@@ -292,17 +294,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        private void RunType_Click(object sender, RoutedEventArgs e)
-        {
-            this.FixedIntervalVisiblity = this._ctlRunTypeFixedInterval.IsChecked.GetValueOrDefault() ? Visibility.Visible : Visibility.Collapsed;
-            this.CronExpressionVisiblity = this._ctlRunTypeCronExpression.IsChecked.GetValueOrDefault() ? Visibility.Visible : Visibility.Collapsed;
-        }
-
         private void LoadPreviousValues()
         {
-            if (this.PageController.HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DesiredCount))
+            IAWSWizard hostWizard = PageController.HostingWizard;
+
+            if (hostWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DesiredCount))
             {
-                this.DesiredCount = (int)PageController.HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount];
+                this.DesiredCount = (int) hostWizard[PublishContainerToAWSWizardProperties.DesiredCount];
+            }
+
+            if (hostWizard.TryParseRateExpression(out int value, out string unit))
+            {
+                RunIntervalValue = value;
+                RunIntervalUnit = RunIntervalUnitItem.FromSystemName(unit);
+                IsRunTypeFixedInterval = true;
+                IsRunTypeCronExpression = false;
+            }
+            else if (hostWizard.TryGetCronExpression(out string cronExpr))
+            {
+                CronExpression = cronExpr;
+                IsRunTypeFixedInterval = false;
+                IsRunTypeCronExpression = true;
             }
         }
 
@@ -342,7 +354,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                                 }
                             } while (!string.IsNullOrEmpty(response.Marker));
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             this.PageController.HostingWizard.SetPageError("Error listing existing IAM roles: " + e.Message);
                         }
@@ -383,13 +395,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         using (var cweClient = CreateServiceClient<AmazonCloudWatchEventsClient>(PageController.HostingWizard))
                         {
                             this._scheduleRulesState = CloudWatchEventHelper.FetchScheduleRuleState(cweClient, this.PageController.Cluster);
-                            if(this._scheduleRulesState.LastException != null)
+                            if (this._scheduleRulesState.LastException != null)
                             {
                                 this.PageController.HostingWizard.SetPageError("Error fetching existing CloudWatch Events schedule rules: " + this._scheduleRulesState.LastException.Message);
                             }
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         this.PageController.HostingWizard.SetPageError("Error fetching existing CloudWatch Events schedule rules: " + e.Message);
 
@@ -455,7 +467,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             new RunIntervalUnitItem("day(s)", "days", "day")
         };
 
-        public RunIntervalUnitItem(string displayName, string pluralSystemName, string singluarSystemName)
+        protected RunIntervalUnitItem(string displayName, string pluralSystemName, string singluarSystemName)
         {
             this.DisplayName = displayName;
             this.PluralSystemName = pluralSystemName;
@@ -472,6 +484,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 return this.SingluarSystemName;
             else
                 return this.PluralSystemName;
+        }
+        public static RunIntervalUnitItem FromSystemName(string systemName)
+        {
+            return ValidValues.FirstOrDefault(value => value.SingluarSystemName == systemName || value.PluralSystemName == systemName);
         }
 
         public override string ToString() => this.DisplayName;

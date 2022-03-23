@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 This code is licensed under the Visual Studio SDK license terms.
@@ -47,7 +47,8 @@ namespace Microsoft.VisualStudio.Project.Automation
 				throw new ArgumentNullException("provider");
 			}
 			extensibility = provider.GetService(typeof(EnvDTE.IVsExtensibility)) as IVsExtensibility3;
-			if(null == extensibility)
+            Assumes.Present(extensibility);
+			if (null == extensibility)
 			{
 				throw new InvalidOperationException();
 			}

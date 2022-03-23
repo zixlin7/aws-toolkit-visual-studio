@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.Regions;
+﻿using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
 
 
 namespace Amazon.AWSToolkit.Navigator.Node
@@ -8,7 +9,13 @@ namespace Amazon.AWSToolkit.Navigator.Node
         private readonly ToolkitRegion _region;
 
         public ServiceRootViewModel(IMetaNode metaNode, IViewModel parent, string name, ToolkitRegion region)
-            : base(metaNode, parent, name)
+            : this(metaNode, parent, name, region, ToolkitFactory.Instance.ToolkitContext)
+        {
+        }
+
+        public ServiceRootViewModel(IMetaNode metaNode, IViewModel parent, string name,
+            ToolkitRegion region, ToolkitContext toolkitContext)
+            : base(metaNode, parent, name, toolkitContext)
         {
             this._region = region;
         }

@@ -15,6 +15,7 @@ using Amazon.AWSToolkit.Lambda.WizardPages.PageControllers;
 using Amazon.Lambda.Tools;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using Amazon.AWSToolkit.Regions;
 using Amazon.ECR;
@@ -34,12 +35,27 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         ActionResults _results;
         private readonly ToolkitContext _toolkitContext;
+        private readonly ICredentialIdentifier _credentialIdentifier;
+        private readonly ToolkitRegion _region;
+        private readonly AWSViewModel _awsViewModel;
 
-        public UploadFunctionController(ToolkitContext toolkitContext)
+        /// <param name="toolkitContext">Core Toolkit functionality</param>
+        /// <param name="credentialIdentifier">The credentials the upload operation was requested against</param>
+        /// <param name="region">The region the upload operation was requested against</param>
+        /// <param name="awsViewModel">The Toolkit's collection of valid accounts</param>
+        public UploadFunctionController(ToolkitContext toolkitContext,
+            ICredentialIdentifier credentialIdentifier, ToolkitRegion region,
+            AWSViewModel awsViewModel)
         {
             _toolkitContext = toolkitContext;
+            _credentialIdentifier = credentialIdentifier;
+            _region = region;
+            _awsViewModel = awsViewModel;
         }
 
+        /// <summary>
+        /// Called from the AWS Explorer (Lambda node) context menu to deploy a zip or folder containing code
+        /// </summary>
         public override ActionResults Execute(IViewModel model)
         {
             var seedValues = new Dictionary<string, object>();
@@ -51,6 +67,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             return _results;
         }
 
+        /// <summary>
+        /// Called from the Lambda function viewer to update code for an existing Lambda function
+        /// </summary>
         public ActionResults Execute(IAmazonLambda lambdaClient, IAmazonECR ecrClient, string functionName)
         {
             var response = lambdaClient.GetFunctionConfiguration(functionName);
@@ -77,6 +96,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             return _results;
         }
 
+        /// <summary>
+        /// Called from the "Publish to AWS Lambda" context menu in the Solution Explorer.
+        /// This is the main Lambda deployment path.
+        /// </summary>
         public ActionResults UploadFunctionFromPath(Dictionary<string, object> seedValues)
         {
             string sourcePath = null;
@@ -97,6 +120,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
                     var defaults = new LambdaToolsDefaults();
                     defaults.LoadDefaults(sourcePath, LambdaToolsDefaults.DEFAULT_FILE_NAME);
+
+                    // Use the account and region from the lambda defaults json file if it is available
+                    var account = GetAccount(defaults.Profile);
+                    ApplyDefaultAccount(seedValues, account);
+                    ApplyDefaultRegion(seedValues, defaults.Region, _toolkitContext.RegionProvider);
 
                     if (File.Exists(serverlessTemplatePath) || !string.IsNullOrEmpty(defaults.CloudFormationTemplate))
                     {
@@ -218,14 +246,34 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             return _results;
         }
 
+        public static void ApplyDefaultAccount(Dictionary<string, object> seedValues,
+            AccountViewModel account)
+        {
+            if (account != null)
+            {
+                seedValues[UploadFunctionWizardProperties.UserAccount] = account;
+            }
+        }
+
+        public static void ApplyDefaultRegion(Dictionary<string, object> seedValues,
+            string regionId,
+            IRegionProvider regionProvider)
+        {
+            if (string.IsNullOrEmpty(regionId)) return;
+
+            var region = regionProvider.GetRegion(regionId);
+            if (region != null)
+            {
+                seedValues[UploadFunctionWizardProperties.Region] = region;
+            }
+        }
+
         private void DisplayUploadWizard(Dictionary<string, object> seedProperties)
         {
-            var navigator = ToolkitFactory.Instance.Navigator;
-
             IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.UploadFunction", seedProperties);
             wizard.Title = "Upload to AWS Lambda";
-            wizard.SetSelectedAccount(navigator.SelectedAccount, UploadFunctionWizardProperties.UserAccount);
-            wizard.SetSelectedRegion(navigator.SelectedRegion, UploadFunctionWizardProperties.Region);
+
+            ApplyConnectionIfMissing(wizard);
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {
@@ -249,12 +297,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         private void DisplayServerlessWizard(Dictionary<string, object> seedProperties)
         {
-            var navigator = ToolkitFactory.Instance.Navigator;
-
             IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.PublishServerless", seedProperties);
             wizard.Title = "Publish AWS Serverless Application";
-            wizard.SetSelectedAccount(navigator.SelectedAccount, UploadFunctionWizardProperties.UserAccount);
-            wizard.SetSelectedRegion(navigator.SelectedRegion, UploadFunctionWizardProperties.Region);
+
+            ApplyConnectionIfMissing(wizard);
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {
@@ -274,6 +320,43 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             wizard.Run();
             var success = wizard.IsPropertySet(UploadFunctionWizardProperties.WizardResult) && (bool)wizard[UploadFunctionWizardProperties.WizardResult];
             _results = new ActionResults().WithSuccess(success);
+        }
+
+        private void ApplyConnectionIfMissing(IAWSWizard wizard)
+        {
+            var account = GetAccount(_credentialIdentifier);
+            ApplyAccountIfMissing(wizard, account);
+            ApplyRegionIfMissing(wizard, _region);
+        }
+
+        public static void ApplyAccountIfMissing(IAWSWizard wizard, AccountViewModel account)
+        {
+            if (wizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount) == null && account != null)
+            {
+                wizard.SetSelectedAccount(account, UploadFunctionWizardProperties.UserAccount);
+            }
+        }
+
+        public static void ApplyRegionIfMissing(IAWSWizard wizard, ToolkitRegion region)
+        {
+            if (wizard.GetSelectedRegion(UploadFunctionWizardProperties.Region) == null && region != null)
+            {
+                wizard.SetSelectedRegion(region, UploadFunctionWizardProperties.Region);
+            }
+        }
+
+        private AccountViewModel GetAccount(string profileName)
+        {
+            if (string.IsNullOrWhiteSpace(profileName)) return null;
+
+            return _awsViewModel.RegisteredAccounts.FirstOrDefault(a => a.Identifier?.ProfileName == profileName);
+        }
+
+        private AccountViewModel GetAccount(ICredentialIdentifier credentialIdentifier)
+        {
+            if (credentialIdentifier == null) return null;
+
+            return _awsViewModel.RegisteredAccounts.FirstOrDefault(a => a.Identifier?.Id == credentialIdentifier.Id);
         }
 
         public static DeploymentType DetermineDeploymentType(string sourcePath)
