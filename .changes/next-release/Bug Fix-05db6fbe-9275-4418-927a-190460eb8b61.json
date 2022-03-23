@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Editing Beanstalk environment values now ignores entries with empty keys in the Publish to AWS experience."
-}
