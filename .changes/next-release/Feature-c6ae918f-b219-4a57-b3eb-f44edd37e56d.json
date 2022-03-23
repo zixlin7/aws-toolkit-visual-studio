@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Added a way to configure the Credentials and region used when publishing with the \"Publish to AWS\" experience."
-}

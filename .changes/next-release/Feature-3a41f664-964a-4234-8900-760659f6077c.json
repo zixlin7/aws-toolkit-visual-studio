@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "The wizard for publishing Lambda projects and Serverless application projects now defaults to the Credentials profile and region from `aws-lambda-tools-defaults.json`. If these values are not found, the current AWS Explorer values are used."
-}

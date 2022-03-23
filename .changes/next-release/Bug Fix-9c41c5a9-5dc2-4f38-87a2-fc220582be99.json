@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fix Publish Container to AWS wizard so that the Schedule Rule Type is correctly restored as Fixed/Cron with the correct expression."
-}
