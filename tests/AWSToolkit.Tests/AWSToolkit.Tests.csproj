@@ -72,6 +72,7 @@
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
     <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
+    <Compile Include="CommonUI\RepositorySelectionViewModelTests.cs" />
     <Compile Include="CommonUI\InstanceTypeSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\VpcSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\IamRoleSelectionViewModelTests.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Ec2\VpcEntityTests.cs" />
     <Compile Include="Ecr\RepoRepositoryTests.cs" />
     <Compile Include="Ecr\RepositoryConversionTests.cs" />
+    <Compile Include="Ecr\RepositoryFactoryFixture.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsDeployTestFixture.cs" />

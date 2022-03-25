@@ -103,6 +103,7 @@
       <DependentUpon>CredentialIdentitySelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\Converters\CredentialIdentifierGroupConverter.cs" />
+    <Compile Include="CommonUI\Dialogs\IEcrRepositorySelectionDialog.cs" />
     <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparer.cs" />
     <Compile Include="Credentials\Presentation\CredentialIdentifierGroup.cs" />
     <Compile Include="CommonUI\Components\KeyValues\BatchAssignmentsEditor.xaml.cs">

@@ -4,6 +4,7 @@ using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
 
 using AwsToolkit.VsSdk.Common.CommonUI;
+using AwsToolkit.VsSdk.Common.CommonUI.Ecr;
 
 using Microsoft.VisualStudio.Threading;
 
@@ -48,6 +49,11 @@ namespace Amazon.AWSToolkit.VisualStudio
         public ICredentialSelectionDialog CreateCredentialsSelectionDialog()
         {
             return new CredentialSelectionDialog(_toolkitContext, _joinableTaskFactory);
+        }
+
+        public IEcrRepositorySelectionDialog CreateEcrRepositorySelectionDialog()
+        {
+            return new EcrRepositorySelectionDialog(_toolkitContext, _joinableTaskFactory);
         }
     }
 }
