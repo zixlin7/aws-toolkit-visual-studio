@@ -111,6 +111,11 @@
       <DependentUpon>AWSNavigatorToolControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\AWSNavigatorToolWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\LogGroupsToolWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\LogGroupsToolWindowControl.xaml.cs">
+      <DependentUpon>LogGroupsToolWindowControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\ToolWindowFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\DteVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\ProjectExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\WindowExtensionMethods.cs" />
@@ -148,6 +153,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)ToolWindow\AWSNavigatorToolControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)ToolWindow\LogGroupsToolWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

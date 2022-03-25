@@ -10,9 +10,11 @@ using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
+using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
+using Amazon.AWSToolkit.VisualStudio.ToolWindow;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
 
 using AwsToolkit.VsSdk.Common.CommonUI;
@@ -559,6 +561,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         public IDialogFactory GetDialogFactory()
         {
             return new DialogFactory(_hostPackage.ToolkitContext, _hostPackage.JoinableTaskFactory);
+        }
+
+        public IToolWindowFactory GetToolWindowFactory()
+        {
+            return new ToolWindowFactory(_hostPackage);
         }
 
         #endregion

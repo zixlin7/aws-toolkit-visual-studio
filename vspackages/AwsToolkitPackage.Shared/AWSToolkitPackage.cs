@@ -137,6 +137,10 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideProfile(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true, DescriptionResourceID = 150)]
     [ProvideOptionPage(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true)]
     [ProvideProfile(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true, DescriptionResourceID = 150)]
+    [ProvideToolWindow(typeof(Amazon.AWSToolkit.VisualStudio.LogGroupsToolWindow), Style = VsDockStyle.Tabbed,
+        Orientation = ToolWindowOrientation.Right,
+        Transient = true,
+        Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     public sealed class AWSToolkitPackage : ProjectAsyncPackage, 
                                             IVsInstalledProduct, 
