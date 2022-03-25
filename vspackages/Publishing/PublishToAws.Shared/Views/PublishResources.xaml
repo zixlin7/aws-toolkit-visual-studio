@@ -8,6 +8,7 @@
              xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:designData="clr-namespace:Amazon.AWSToolkit.Publish.Views.DesignData"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
@@ -181,11 +182,12 @@
                             Text="Created resources" />
                         <Button
                             Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                            Margin="6 0 0 0"
                             VerticalAlignment="Center"
                             Command="{Binding CopyToClipboardCommand}"
                             ToolTip="Copy To Clipboard"
                             >
-                            <Image
+                            <images:VsImage
                                 Width="16"
                                 Height="16"
                                 Source="{Binding Source={StaticResource VsImages}, Path=Copy}" />

@@ -8,6 +8,7 @@
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
              xmlns:commonUiConverters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -40,16 +41,18 @@
                     <Control Style="{DynamicResource awsBusyAnimationStyle}" />
                 </DataTemplate>
                 <DataTemplate x:Key="Success">
-                    <Image Width="32"
-                           Height="32"
-                           VerticalAlignment="Center"
-                           Source="{Binding Source={StaticResource VsImages}, Path=StatusOK32}" />
+                    <images:VsImage 
+                        Width="32"
+                        Height="32"
+                        VerticalAlignment="Center"
+                        Source="{Binding Source={StaticResource VsImages}, Path=StatusOK32}" />
                 </DataTemplate>
                 <DataTemplate x:Key="Fail">
-                    <Image Width="32"
-                           Height="32"
-                           VerticalAlignment="Center"
-                           Source="{Binding Source={StaticResource VsImages}, Path=StatusError32}" />
+                    <images:VsImage 
+                        Width="32"
+                        Height="32"
+                        VerticalAlignment="Center"
+                        Source="{Binding Source={StaticResource VsImages}, Path=StatusError32}" />
                 </DataTemplate>
             </ContentControl.Resources>
             <ContentControl.Style>
