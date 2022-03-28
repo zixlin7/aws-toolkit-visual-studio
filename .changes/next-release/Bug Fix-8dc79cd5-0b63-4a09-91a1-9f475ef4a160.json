@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix DynamoDB Local connection failure when using a non-basic default credentials profile (SSO or MFA for example)"
+}

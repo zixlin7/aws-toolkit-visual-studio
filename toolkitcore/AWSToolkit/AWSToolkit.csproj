@@ -103,6 +103,7 @@
       <DependentUpon>CredentialIdentitySelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\Converters\CredentialIdentifierGroupConverter.cs" />
+    <Compile Include="Credentials\Core\AwsMockCredentials.cs" />
     <Compile Include="CommonUI\ToolWindow\IToolWindowFactory.cs" />
     <Compile Include="CommonUI\Dialogs\IEcrRepositorySelectionDialog.cs" />
     <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparer.cs" />
