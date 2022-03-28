@@ -1,53 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.ECS.Model;
-using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.ECS.View;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Regions;
+using Amazon.ECR;
 using Amazon.ECR.Model;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
-    public class ViewRepositoryController : FeatureController<ViewRepositoryModel>
+    public class ViewRepositoryController : BaseConnectionContextCommand
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewRepositoryController));
+        static readonly ILog Logger = LogManager.GetLogger(typeof(ViewRepositoryController));
+
+        public ViewRepositoryModel Model { get; }
+
+        public string RepositoryArn => Model.Repository.RepositoryArn;
+        public string RepositoryName => Model.Repository.Name;
 
         private ViewRepositoryControl _control;
-        private RepositoryViewModel _viewModel;
+        private readonly IAmazonECR _ecrClient;
 
-        public string RepositoryArn => ViewModel.Repository.RepositoryArn;
-
-        public string RepositoryName => ViewModel.RepositoryName;
-
-        private RepositoryViewModel ViewModel
+        public ViewRepositoryController(ViewRepositoryModel model,
+            ICredentialIdentifier credentialIdentifier, ToolkitRegion region,
+            ToolkitContext toolkitContext,
+            IAmazonECR ecrClient)
+            : base(toolkitContext, credentialIdentifier, region)
         {
-            get
-            {
-                if (_viewModel == null)
-                {
-                    _viewModel = this.FeatureViewModel as RepositoryViewModel;
-                    if (_viewModel == null)
-                        throw new InvalidOperationException("Expected RepositoryViewModel type for FeatureViewModel");
-                }
-
-                return _viewModel;
-            }
+            _ecrClient = ecrClient;
+            Model = model;
         }
 
-        protected override void DisplayView()
+        public override ActionResults Execute()
         {
-            this._control = new ViewRepositoryControl(this);
-            ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
+            _control = new ViewRepositoryControl(this);
+            _toolkitContext.ToolkitHost.OpenInEditor(_control);
+
+            return new ActionResults().WithSuccess(true);
         }
 
         public void LoadModel()
         {
-            var repositoryViewModel = this.FeatureViewModel as RepositoryViewModel;
-            if (repositoryViewModel == null)
-                throw new InvalidOperationException("Expected RepositoryViewModel type for FeatureViewModel");
-
-            ECRClient = repositoryViewModel.ECRClient;
-
             try
             {
                 this.Refresh();
@@ -55,23 +53,18 @@ namespace Amazon.AWSToolkit.ECS.Controller
             catch (Exception e)
             {
                 var msg = "Failed to query details for repository with ARN " + RepositoryArn;
-                LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError(msg, "Resource Query Failure");
+                Logger.Error(msg, e);
+                _toolkitContext.ToolkitHost.ShowError(msg, "Resource Query Failure");
             }
         }
 
         public void Refresh()
         {
-            var request = new DescribeRepositoriesRequest
-            {
-                RepositoryNames = new List<string>
-                {
-                    RepositoryName
-                }
-            };
+            var request = new DescribeRepositoriesRequest { RepositoryNames = new List<string> { RepositoryName } };
 
-            ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(AWSToolkit.Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
-            var response = this.ECRClient.DescribeRepositories(request);
+            ((Amazon.Runtime.Internal.IAmazonWebServiceRequest) request).AddBeforeRequestHandler(AWSToolkit.Constants
+                .AWSExplorerDescribeUserAgentRequestEventHandler);
+            var response = _ecrClient.DescribeRepositories(request);
             if (response.Repositories.Count != 1)
                 throw new Exception("Failed to find repository for ARN: " + RepositoryArn);
 
@@ -98,14 +91,11 @@ namespace Amazon.AWSToolkit.ECS.Controller
         {
             var images = new List<ImageDetailWrapper>();
 
-            var request = new DescribeImagesRequest
-            {
-                RepositoryName = RepositoryName
-            };
+            var request = new DescribeImagesRequest { RepositoryName = RepositoryName };
 
             do
             {
-                var response = this.ECRClient.DescribeImages(request);
+                var response = _ecrClient.DescribeImages(request);
                 request.NextToken = response.NextToken;
 
                 foreach (var i in response.ImageDetails)
@@ -120,7 +110,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         public void UpdateModelImagesCollection(ICollection<ImageDetailWrapper> images)
         {
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action) (() =>
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((System.Action) (() =>
             {
                 this.Model.Repository.SetImages(images);
             }));
