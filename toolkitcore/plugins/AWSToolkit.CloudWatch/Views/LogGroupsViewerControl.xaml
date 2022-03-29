@@ -1,0 +1,65 @@
+﻿<commonUi:BaseAWSControl x:Class="Amazon.AWSToolkit.CloudWatch.Views.LogGroupsViewerControl"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:local="clr-namespace:Amazon.AWSToolkit.CloudWatch.Views"
+                         xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+                         xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+                         themes:ToolkitThemes.UseToolkitTheme="True"
+                         mc:Ignorable="d"
+                         d:DesignHeight="450" d:DesignWidth="800">
+    <commonUi:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <commonUi:VsImages x:Key="VsImages" />
+        </ResourceDictionary>
+    </commonUi:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ToolBar Grid.Row="0"
+                 ToolBarTray.IsLocked="True"
+                 OverflowMode="Never"
+                 themes:ToolkitThemes.UseToolkitTheme="True">
+            <!--TODO: Wire up refresh button-->
+            <Button ToolTip="Refresh">
+                <Image
+                    Width="16"
+                    Height="16"
+                    Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
+            </Button>
+        </ToolBar>
+
+        <local:SearchBar Grid.Row="1" />
+
+        <ListBox Grid.Row="2"
+                 ItemsSource="{Binding LogGroups}"
+                 SelectedItem="{Binding LogGroup}"
+                 ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
+                 ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"></TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <TextBlock Grid.Row="3"
+                   FontWeight="SemiBold"
+                   Margin="5">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0}  {1}">
+                    <Binding Path="CredentialDisplayName" FallbackValue="(not available)" />
+                    <Binding Path="RegionDisplayName" FallbackValue="(not available)" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+
+    </Grid>
+</commonUi:BaseAWSControl>

@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CloudWatch.Core
 {
@@ -10,6 +12,10 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
     /// </summary>
     public interface ICloudWatchLogsRepository
     {
+        ICredentialIdentifier CredentialIdentifier { get; }
+
+        ToolkitRegion Region { get; }
+
         Task<PaginatedLogResponse<LogGroup>> GetLogGroupsAsync(GetLogGroupsRequest logGroupsRequest,
             CancellationToken cancelToken);
 
