@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Ecr;
 using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
@@ -62,6 +63,11 @@ namespace Amazon.AWSToolkit.ECS
             if (serviceType == typeof(IRepositoryFactory))
             {
                 return new RepositoryFactory(ToolkitContext);
+            }
+
+            if (serviceType == typeof(IEcrViewer))
+            {
+                return new EcrViewer(ToolkitContext);
             }
 
             return null;
