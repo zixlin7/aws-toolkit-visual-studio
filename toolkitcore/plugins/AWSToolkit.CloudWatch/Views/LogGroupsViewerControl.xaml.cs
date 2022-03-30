@@ -88,6 +88,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             catch (Exception e)
             {
                 Logger.Error("Error refreshing log groups", e);
+                _viewModel.SetErrorMessage($"Error refreshing log groups:{Environment.NewLine}{e.Message}");
             }
         }
 
@@ -142,6 +143,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             catch (Exception e)
             {
                 Logger.Error("Error loading log groups", e);
+                _viewModel.SetErrorMessage($"Error loading log groups:{Environment.NewLine}{e.Message}");
             }
         }
 

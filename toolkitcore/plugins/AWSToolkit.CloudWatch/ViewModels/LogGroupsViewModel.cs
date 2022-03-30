@@ -30,6 +30,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private LogGroup _logGroup;
         private string _filterText;
         private string _nextToken;
+        private string _errorMessage = string.Empty;
 
         private ObservableCollection<LogGroup> _logGroups =
             new ObservableCollection<LogGroup>();
@@ -64,6 +65,11 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _filterText, value);
         }
 
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set => SetProperty(ref _errorMessage, value);
+        }
         public ICredentialIdentifier CredentialIdentifier => _repository?.CredentialIdentifier;
 
         public ToolkitRegion Region => _repository?.Region;
@@ -85,6 +91,14 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             await GetLogGroupsAsync(cancelToken).ConfigureAwait(false);
         }
 
+        public void SetErrorMessage(string errorMessage)
+        {
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+            {
+                ErrorMessage = errorMessage;
+            });
+        }
+
         private void ResetState()
         {
             _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
@@ -93,6 +107,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 LogGroups.Clear();
                 LogGroup = null;
                 _isInitialized = false;
+                ErrorMessage = string.Empty;
             });
         }
 

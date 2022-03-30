@@ -6,17 +6,23 @@
                          xmlns:local="clr-namespace:Amazon.AWSToolkit.CloudWatch.Views"
                          xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
                          xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+                         xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+                         xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
     <commonUi:BaseAWSControl.Resources>
         <ResourceDictionary>
             <commonUi:VsImages x:Key="VsImages" />
+            <converters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
+            <converters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
+            <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter"/>
         </ResourceDictionary>
     </commonUi:BaseAWSControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -38,28 +44,106 @@
 
         <local:SearchBar Grid.Row="1" />
 
-        <ListBox Grid.Row="2"
+        <!-- Indicates status of results eg. no results found, error message -->
+        <Grid Grid.Row="2"
+              Margin="11">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <images:VsImage Grid.Row="0" Grid.Column="0"
+                            Height="16"
+                            Width="16"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
+                <images:VsImage.Style>
+                    <Style TargetType="{x:Type images:VsImage}">
+                        <Setter Property="Source" Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                        <Style.Triggers>
+                            <DataTrigger
+                                Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                Value="">
+                                <Setter Property="Source"
+                                        Value="{Binding Source={StaticResource VsImages}, Path=StatusInformation}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </images:VsImage.Style>
+            </images:VsImage>
+
+            <TextBox Grid.Row="0" Grid.Column="1"  
+                     Background="Transparent"
+                     BorderBrush="Transparent"
+                     IsReadOnly="True"
+                     FontWeight="SemiBold"
+                     Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                     Margin="6 0 0 0">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Text" Value="{Binding ErrorMessage}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                                <Setter Property="Text" Value="No Results Found" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <Grid.Visibility>
+                <Binding ElementName="LogGroupsList" Path="Visibility"
+                         Converter="{StaticResource InverseVisibilityConverter}" />
+            </Grid.Visibility>
+
+        </Grid>
+
+        <ListBox Grid.Row="3"
+                 x:Name="LogGroupsList"
+                 x:FieldModifier="private"
                  ItemsSource="{Binding LogGroups}"
                  SelectedItem="{Binding LogGroup}"
                  ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
-                 ScrollViewer.VerticalScrollBarVisibility="Visible">
+                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 themes:ToolkitThemes.UseToolkitTheme="True">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}"></TextBlock>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+            <ListBox.Style>
+                <!-- Do not show the listbox when there are no matching results or if an error occurred -->
+                <Style TargetType="ListBox">
+                    <Setter Property="Visibility"
+                            Value="{Binding LogGroups, Converter={StaticResource HasItemsVisibilityConverter}}" />
+                    <Style.Triggers>
+
+                        <DataTrigger
+                            Binding="{Binding ErrorMessage, Converter={StaticResource HasValueVisibilityConverter}}"
+                            Value="Visible">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.Style>
         </ListBox>
 
-        <TextBlock Grid.Row="3"
-                   FontWeight="SemiBold"
-                   Margin="5">
-            <TextBlock.Text>
-                <MultiBinding StringFormat="{}{0}  {1}">
-                    <Binding Path="CredentialDisplayName" FallbackValue="(not available)" />
-                    <Binding Path="RegionDisplayName" FallbackValue="(not available)" />
-                </MultiBinding>
-            </TextBlock.Text>
-        </TextBlock>
-
+        <Border Grid.Row="4"
+                Padding="1"
+                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+                BorderThickness="1">
+            <TextBlock FontWeight="SemiBold"
+                       Margin="5">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0}  {1}">
+                        <Binding Path="CredentialDisplayName" FallbackValue="(not available)" />
+                        <Binding Path="RegionDisplayName" FallbackValue="(not available)" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </Border>
     </Grid>
 </commonUi:BaseAWSControl>
