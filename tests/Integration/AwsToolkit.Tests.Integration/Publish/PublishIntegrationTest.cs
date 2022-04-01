@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.Publish.Install;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.ViewModels;
-using Amazon.AWSToolkit.Util;
+using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 
@@ -22,6 +22,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
     public abstract class PublishIntegrationTest : IAsyncLifetime, IClassFixture<DeployCliInstallationFixture>
     {
         private readonly DeployCliInstallationFixture _cliInstallFixture;
+        private readonly IAWSToolkitShellProvider _toolkitHost = new NoOpToolkitShellProvider();
 
         protected IDeployToolController DeployToolController;
         protected ConfigurationDetailFactory ConfigurationDetailFactory;
@@ -58,7 +59,8 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
         protected Task<CliServer> CreateCliServer()
         {
-            return CliServerFactory.CreateAsync(_cliInstallFixture.InstallOptions, new FilePublishSettingsRepository());
+            return CliServerFactory.CreateAsync(_cliInstallFixture.InstallOptions, new FilePublishSettingsRepository(),
+                _toolkitHost);
         }
 
         protected Task<AWSCredentials> GetCredentials()

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Publish.Services;
+using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.Tests.Common.IO;
 using Amazon.AWSToolkit.Tests.Common.Settings.Publish;
 
@@ -19,6 +21,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
     {
         private readonly IPublishSettingsRepository
             _publishSettingsRepository = new InMemoryPublishSettingsRepository();
+        private readonly IAWSToolkitShellProvider _toolkitHost = new NoOpToolkitShellProvider();
 
         private readonly PublishSettings _publishSettings = PublishSettings.CreateDefault();
         private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation();
@@ -49,7 +52,8 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
         private async Task CreateCliServer()
         {
-            _cliServer = await CliServerFactory.CreateAsync(_deployCliFixture.InstallOptions, _publishSettingsRepository);
+            _cliServer = await CliServerFactory.CreateAsync(_deployCliFixture.InstallOptions,
+                _publishSettingsRepository, _toolkitHost);
         }
 
         protected async Task StartCliServer()

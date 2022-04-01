@@ -69,6 +69,7 @@
     <Compile Include="Converters\TargetsToVisibilityConverterTests.cs" />
     <Compile Include="Fixtures\PublishFooterCommandFixture.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Install\CliServerFactoryTests.cs" />
     <Compile Include="Install\GetCurrentCliVersionTests.cs" />
     <Compile Include="Install\InstallOptionsTests.cs" />
     <Compile Include="Install\ProcessExitHandlerTests.cs" />

@@ -109,7 +109,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         }
 
-        public void OutputToHostConsole(string message, bool forceVisible)
+        public virtual void OutputToHostConsole(string message, bool forceVisible)
         {
 
         }
