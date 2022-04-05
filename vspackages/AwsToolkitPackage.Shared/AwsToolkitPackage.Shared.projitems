@@ -51,12 +51,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Guids.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedEditorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedEditorPane.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedUserControl.Designer.cs">
-      <DependentUpon>HostedUserControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\NavigatorVsUIHierarchy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Images\VsImageProvider.cs" />
@@ -166,9 +160,6 @@
       <SubType>Designer</SubType>
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)HostedEditor\HostedUserControl.resx">
-      <DependentUpon>HostedUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources.resx">
       <SubType>Designer</SubType>

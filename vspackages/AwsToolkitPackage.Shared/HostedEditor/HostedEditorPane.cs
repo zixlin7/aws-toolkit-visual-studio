@@ -1,44 +1,52 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
+using System.Windows.Forms;
+
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Shared;
+
 using EnvDTE;
 
-using ISysServiceProvider = System.IServiceProvider;
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using Amazon.AWSToolkit.CommonUI;
-
 using log4net;
-using Amazon.AWSToolkit.Shared;
+
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
+
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
 {
+    /// <summary>
+    /// Used to host WPF contents in a document tab.
+    ///
+    /// If you need to host non-WPF content, check the documentation
+    /// https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.shell.windowpane for information on
+    /// how to support your use-case.
+    /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     [ComVisible(true)]
     public class HostedEditorPane : Microsoft.VisualStudio.Shell.WindowPane,
                                 IVsPersistDocData2,     //to Enable persistence functionality for document data
                                 IPersistFileFormat,     //to enable the programmatic loading or saving of an object in a format specified by the user.
                                 IVsStatusbarUser,   //support updating the status bar
-                                IExtensibleObject,  //so we can get the atuomation object
+                                IExtensibleObject,  //so we can get the automation object
                                 IEditor  //the automation interface for Editor
     {
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(HostedEditorPane));
-        public HostedEditorPane()
-        {
-
-        }
 
         public HostedEditorPane(AWSToolkitPackage package, IAWSToolkitControl hostedControl)
         {
             this._package = package;
             // Start the data to be load in the background
             hostedControl.ExecuteBackGroundLoadDataLoad();
-            this._hostedControl = new HostedUserControl();
-            this._hostedControl.AddHostedControl(hostedControl);
+
+            PrepareControlForHosting(hostedControl.UserControl);
+
+            // Host the provided control in this window pane
+            base.Content = hostedControl.UserControl;
 
             var propertySupport = hostedControl as IPropertySupport;
             if (propertySupport != null)
@@ -46,6 +54,22 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
                 propertySupport.OnPropertyChange += this.onPropertyChange;
             }
 
+        }
+
+        private static void PrepareControlForHosting(UserControl userControl)
+        {
+            ThemeUtil.UpdateDictionariesForTheme(userControl.Resources);
+
+            // Remove any control sizing, so that the control will fill (and resize to) the provided WindowPane space.
+            if (!double.IsNaN(userControl.Height))
+            {
+                userControl.Height = Double.NaN;
+            }
+
+            if (!double.IsNaN(userControl.Width))
+            {
+                userControl.Width = Double.NaN;
+            }
         }
 
         private const uint MyFormat = 0;
@@ -61,20 +85,10 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
 
         #region "Window.Pane Overrides"
 
-
-        private HostedUserControl _hostedControl;
-
-
         protected override void OnClose()
         {
             base.OnClose();
         }
-
-        /// <summary>
-        /// This is a required override from the Microsoft.VisualStudio.Shell.WindowPane class.
-        /// It returns the extended rich text box that we host.
-        /// </summary>
-        public override IWin32Window Window => this._hostedControl;
 
         #endregion
 
@@ -108,11 +122,6 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
                         FNFStatusbarTrigger = null;
                     }
 
-                    if (_hostedControl != null)
-                    {
-                        _hostedControl.Dispose();
-                        _hostedControl = null;
-                    }
                     if (extensibleObjectSite != null)
                     {
                         extensibleObjectSite.NotifyDelete(this);
