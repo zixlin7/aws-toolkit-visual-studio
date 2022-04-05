@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
@@ -18,9 +19,10 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
     /// <summary>
     /// Backing view model for viewing log groups
     /// </summary>
-    public class LogGroupsViewModel : BaseModel, ILogSearchProperties
+    public class LogGroupsViewModel : BaseModel, ILogSearchProperties, IDisposable
     {
         public static readonly ILog Logger = LogManager.GetLogger(typeof(LogGroupsViewModel));
+        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
         private readonly ToolkitContext _toolkitContext;
         private readonly ICloudWatchLogsRepository _repository;
@@ -31,6 +33,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private string _filterText;
         private string _nextToken;
         private string _errorMessage = string.Empty;
+        private ICommand _refreshCommand;
 
         private ObservableCollection<LogGroup> _logGroups =
             new ObservableCollection<LogGroup>();
@@ -70,6 +73,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             get => _errorMessage;
             set => SetProperty(ref _errorMessage, value);
         }
+
+        public ICommand RefreshCommand
+        {
+            get => _refreshCommand;
+            set => SetProperty(ref _refreshCommand, value);
+        }
+
         public ICredentialIdentifier CredentialIdentifier => _repository?.CredentialIdentifier;
 
         public ToolkitRegion Region => _repository?.Region;
@@ -80,15 +90,17 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         public ToolkitContext ToolkitContext => _toolkitContext;
 
-        public async Task RefreshAsync(CancellationToken cancelToken)
+        private CancellationToken CancellationToken => _tokenSource.Token;
+
+        public async Task RefreshAsync()
         {
             ResetState();
-            await LoadAsync(cancelToken).ConfigureAwait(false);
+            await LoadAsync().ConfigureAwait(false);
         }
 
-        public async Task LoadAsync(CancellationToken cancelToken)
+        public async Task LoadAsync()
         {
-            await GetLogGroupsAsync(cancelToken).ConfigureAwait(false);
+            await GetLogGroupsAsync(CancellationToken).ConfigureAwait(false);
         }
 
         public void SetErrorMessage(string errorMessage)
@@ -97,6 +109,11 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             {
                 ErrorMessage = errorMessage;
             });
+        }
+        public void ResetCancellationToken()
+        {
+            CancelExistingToken();
+            _tokenSource = new CancellationTokenSource();
         }
 
         private void ResetState()
@@ -176,6 +193,21 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 request.NextToken = NextToken;
             }
             return request;
+        }
+
+        private void CancelExistingToken()
+        {
+            if (_tokenSource != null)
+            {
+                _tokenSource.Cancel();
+                _tokenSource.Dispose();
+                _tokenSource = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            CancelExistingToken();
         }
     }
 }

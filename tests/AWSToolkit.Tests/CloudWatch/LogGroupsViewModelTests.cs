@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +34,7 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task LoadAsync_WhenInitial()
         {
-            await _viewModel.LoadAsync(default(CancellationToken));
+            await _viewModel.LoadAsync();
 
             Assert.Equal(_sampleToken, _viewModel.NextToken);
             Assert.Equal(_sampleLogGroups, _viewModel.LogGroups);
@@ -51,7 +50,7 @@ namespace AWSToolkit.Tests.CloudWatch
 
             StubGetLogGroupsToReturn(_sampleToken, _sampleLogGroups);
 
-            await _viewModel.LoadAsync(default(CancellationToken));
+            await _viewModel.LoadAsync();
 
             expectedLogGroups.AddRange(_sampleLogGroups);
 
@@ -69,7 +68,7 @@ namespace AWSToolkit.Tests.CloudWatch
 
             StubGetLogGroupsToReturn(null, _sampleLogGroups);
 
-            await _viewModel.LoadAsync(default(CancellationToken));
+            await _viewModel.LoadAsync();
 
             expectedLogGroups.AddRange(_sampleLogGroups);
 
@@ -89,7 +88,7 @@ namespace AWSToolkit.Tests.CloudWatch
 
             StubGetLogGroupsToReturn(_sampleToken, new List<LogGroup>());
 
-            await _viewModel.LoadAsync(default(CancellationToken));
+            await _viewModel.LoadAsync();
 
             Assert.Null(_viewModel.NextToken);
             Assert.Equal(_sampleLogGroups, _viewModel.LogGroups);
@@ -107,7 +106,7 @@ namespace AWSToolkit.Tests.CloudWatch
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
             {
-                await _viewModel.LoadAsync(default(CancellationToken));
+                await _viewModel.LoadAsync();
             });
 
             Assert.Empty(_viewModel.LogGroups);
@@ -122,7 +121,7 @@ namespace AWSToolkit.Tests.CloudWatch
             var newLogGroups = CreateSampleLogGroups();
             StubGetLogGroupsToReturn("refresh-token", newLogGroups);
 
-            await _viewModel.RefreshAsync(default(CancellationToken));
+            await _viewModel.RefreshAsync();
 
             Assert.Equal("refresh-token", _viewModel.NextToken);
             Assert.Equal(newLogGroups, _viewModel.LogGroups);
@@ -153,7 +152,7 @@ namespace AWSToolkit.Tests.CloudWatch
         private async Task SetupWithInitialLoad(string token, List<LogGroup> logGroups)
         {
             StubGetLogGroupsToReturn(token, logGroups);
-            await _viewModel.LoadAsync(default(CancellationToken));
+            await _viewModel.LoadAsync();
         }
     }
 }

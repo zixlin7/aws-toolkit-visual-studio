@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,7 +22,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         public static readonly ILog Logger = LogManager.GetLogger(typeof(LogGroupsViewerControl));
 
         private LogGroupsViewModel _viewModel;
-        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
         public LogGroupsViewerControl()
         {
@@ -61,7 +59,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
 
         public ToolkitRegion Region => _viewModel?.Region;
 
-
         private void ViewModel_OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(LogGroupsViewModel.FilterText))
@@ -82,8 +79,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         {
             try
             {
-                ResetCancellationToken();
-                await _viewModel.RefreshAsync(_tokenSource.Token).ConfigureAwait(false);
+                _viewModel.ResetCancellationToken();
+                await _viewModel.RefreshAsync().ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -91,13 +88,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 _viewModel.SetErrorMessage($"Error refreshing log groups:{Environment.NewLine}{e.Message}");
             }
         }
-
-        private void ResetCancellationToken()
-        {
-            CancelExistingToken();
-            _tokenSource = new CancellationTokenSource();
-        }
-
 
         private void ScrollViewer_OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
@@ -137,8 +127,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         {
             try
             {
-                ResetCancellationToken();
-                await _viewModel.LoadAsync(_tokenSource.Token).ConfigureAwait(false);
+                _viewModel.ResetCancellationToken();
+                await _viewModel.LoadAsync().ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -147,19 +137,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             }
         }
 
-        private void CancelExistingToken()
-        {
-            if (_tokenSource != null)
-            {
-                _tokenSource.Cancel();
-                _tokenSource.Dispose();
-                _tokenSource = null;
-            }
-        }
-
         public void Dispose()
         {
-            CancelExistingToken();
+            _viewModel?.Dispose();
             DataContextChanged -= OnDataContextChanged;
             // Un-register the existing viewmodel/state
             if (_viewModel != null)

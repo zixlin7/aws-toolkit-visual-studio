@@ -29,18 +29,22 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ToolBar Grid.Row="0"
-                 ToolBarTray.IsLocked="True"
-                 OverflowMode="Never"
-                 themes:ToolkitThemes.UseToolkitTheme="True">
-            <!--TODO: Wire up refresh button-->
-            <Button ToolTip="Refresh">
-                <Image
-                    Width="16"
-                    Height="16"
-                    Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
-            </Button>
-        </ToolBar>
+        <ToolBarTray Grid.Row="0"
+                     Background="{StaticResource {x:Static themes:ToolkitThemes.ToolBarBackgroundBrushKey}}">
+            <ToolBar
+                ToolBarTray.IsLocked="True"
+                OverflowMode="Never"
+                themes:ToolkitThemes.UseToolkitTheme="True"
+                Background="{StaticResource {x:Static themes:ToolkitThemes.ToolBarBackgroundBrushKey}}">
+                <Button ToolTip="Refresh"
+                        Command="{Binding RefreshCommand}">
+                    <images:VsImage
+                        Width="16"
+                        Height="16"
+                        Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
 
         <local:SearchBar Grid.Row="1" />
 

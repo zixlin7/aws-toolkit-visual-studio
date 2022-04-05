@@ -75,6 +75,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
                     _rootModel.Region);
 
             var viewModel = new LogGroupsViewModel(cwLogsRepository, _toolkitContext);
+            viewModel.RefreshCommand = RefreshLogGroupsCommand.Create(viewModel);
 
             return viewModel;
         }

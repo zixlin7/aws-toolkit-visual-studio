@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -37,10 +38,11 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 DockPanel.Dock="Left"
+                IsHitTestVisible="False"
                 Margin="10,0,0,0"
                 Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}" />
 
-            <Image
+            <images:VsImage
                 Width="16"
                 Height="16"
                 HorizontalAlignment="Right"
