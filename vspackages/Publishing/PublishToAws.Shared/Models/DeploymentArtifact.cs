@@ -7,6 +7,7 @@
     {
         CloudFormationStack,
         BeanstalkEnvironment,
+        ElasticContainerRegistry,
         Unknown,
     }
 }

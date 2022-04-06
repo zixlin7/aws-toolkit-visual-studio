@@ -18,9 +18,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\EditKeyValuesCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectCredentialsCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEc2InstanceTypeCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEcrRepoCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectVpcCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\BeanstalkEnvironmentViewerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\DeploymentArtifactViewerCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\EcrRepoViewerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StackViewerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValueConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValuesConversion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\EcrRepositoryConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DeploymentArtifact.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
@@ -113,6 +116,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\Ec2InstanceTypeControl.xaml.cs">
       <DependentUpon>Ec2InstanceTypeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\EcrRepositoryControl.xaml.cs">
+      <DependentUpon>EcrRepositoryControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\IamRolePropertyControl.xaml.cs">
       <DependentUpon>IamRolePropertyControl.xaml</DependentUpon>
     </Compile>
@@ -167,6 +173,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\Ec2InstanceTypeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\EcrRepositoryControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -54,6 +54,8 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         public DataTemplate Ec2InstanceTypeEditor { get; set; }
 
+        public DataTemplate EcrRepositoryEditor { get; set; }
+
         public DataTemplate KeyValuesTypeEditor { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
@@ -97,6 +99,11 @@ namespace Amazon.AWSToolkit.Publish.Models
                 if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.InstanceType)
                 {
                     return Ec2InstanceTypeEditor;
+                }
+
+                if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.EcrRepository)
+                {
+                    return EcrRepositoryEditor;
                 }
             }
 

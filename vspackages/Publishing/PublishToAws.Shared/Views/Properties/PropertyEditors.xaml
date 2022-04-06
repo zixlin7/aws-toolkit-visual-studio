@@ -218,6 +218,10 @@
         <properties:Ec2InstanceTypeControl />
     </DataTemplate>
 
+    <DataTemplate x:Key="EcrRepositoryEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:EcrRepositoryControl />
+    </DataTemplate>
+
     <DataTemplate x:Key="KeyValuesTypeEditor" DataType="{x:Type models:ConfigurationDetail}">
         <properties:KeyValuesTypeControl />
     </DataTemplate>
@@ -233,6 +237,7 @@
         IamRoleEditor="{StaticResource IamRoleEditor}"
         VpcEditor="{StaticResource VpcEditor}"
         Ec2InstanceTypeEditor="{StaticResource Ec2InstanceTypeEditor}"
+        EcrRepositoryEditor="{StaticResource EcrRepositoryEditor}"
         KeyValuesTypeEditor="{StaticResource KeyValuesTypeEditor}"
         />
 

@@ -147,6 +147,11 @@
                                         Value="{x:Static models:DeploymentArtifact.BeanstalkEnvironment}" >
                                         <Setter Property="Text" Value="Beanstalk environment" />
                                     </DataTrigger>
+                                    <DataTrigger 
+                                        Binding="{Binding PublishDestination.DeploymentArtifact}" 
+                                        Value="{x:Static models:DeploymentArtifact.ElasticContainerRegistry}" >
+                                        <Setter Property="Text" Value="ECR Repository" />
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>

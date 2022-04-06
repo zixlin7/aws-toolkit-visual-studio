@@ -23,6 +23,7 @@ namespace Amazon.AWSToolkit.Publish.Models
             public const string IamRole = "IAMRole";
             public const string Vpc = "Vpc";
             public const string InstanceType = "InstanceType";
+            public const string EcrRepository = "ECRRepository";
         }
 
         private bool _suspendDetailChangeEvents = false;

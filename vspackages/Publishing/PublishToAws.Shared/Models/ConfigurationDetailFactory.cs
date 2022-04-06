@@ -101,6 +101,14 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return detail;
             }
 
+            if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.EcrRepository)
+            {
+                var detail = new EcrRepositoryConfigurationDetail();
+                detail.SelectRepo = SelectEcrRepoCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
+                
+                return detail;
+            }
+
             if (itemSummary.Type == ItemSummaryTypes.KeyValue)
             {
                 var detail = new KeyValueConfigurationDetail();

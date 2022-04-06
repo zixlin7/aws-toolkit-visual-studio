@@ -31,6 +31,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
         protected string StackName;
         protected bool DeleteStackOnCleanup = true;
         protected string ProjectPath;
+        protected readonly string RegionId = "us-west-2";
 
         protected PublishIntegrationTest(DeployCliInstallationFixture cliInstallFixture)
         {
@@ -72,11 +73,11 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
         private async Task CreateSessionAndSetId()
         {
-            var result = await DeployToolController.StartSessionAsync("us-west-2", ProjectPath, CancellationToken.None);
+            var result = await DeployToolController.StartSessionAsync(RegionId, ProjectPath, CancellationToken.None);
             SessionId = result.SessionId;
         }
 
-        public async Task DisposeAsync()
+        public virtual async Task DisposeAsync()
         {
             if (DeleteStackOnCleanup)
             {
@@ -99,6 +100,16 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
             var deploymentTarget = new PublishRecommendation(new RecommendationSummary()
             {
                 RecipeId = "AspNetAppAppRunner"
+            });
+
+            await DeployToolController.SetDeploymentTargetAsync(SessionId, deploymentTarget, StackName, CancellationToken.None);
+        }
+
+        protected async Task SetDeploymentTargetToEcrRepo()
+        {
+            var deploymentTarget = new PublishRecommendation(new RecommendationSummary()
+            {
+                RecipeId = "PushContainerImageEcr"
             });
 
             await DeployToolController.SetDeploymentTargetAsync(SessionId, deploymentTarget, StackName, CancellationToken.None);

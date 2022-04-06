@@ -819,6 +819,25 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _deployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
+        [Theory]
+        [InlineData(DeploymentTypes.BeanstalkEnvironment, true)]
+        [InlineData(DeploymentTypes.CloudFormationStack, true)]
+        [InlineData(DeploymentTypes.ElasticContainerRegistryImage, false)]
+        public void IsApplicationNameRequired(DeploymentTypes deploymentType, bool isApplicationNameRequired)
+        {
+            // Arrange
+            var recommendation = new PublishRecommendation(new RecommendationSummary()
+            {
+                RecipeId = "sample-recipe", TargetService = "sample-service", DeploymentType = deploymentType
+            });
+
+            // Act
+            _sut.PublishDestination = recommendation;
+
+            // Assert
+            Assert.Equal(isApplicationNameRequired, _sut.IsApplicationNameRequired);
+        }
+
         [Fact]
         public async Task RefreshTargetConfigurations()
         {
@@ -1085,8 +1104,28 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             _deployToolController.Verify(mock => mock.GetDeploymentDetailsAsync(_sampleSessionId, _cancelToken), Times.Once);
 
-            Assert.Single(_sut.PublishResources);
+            Assert.NotEmpty(_sut.PublishResources);
             Assert.Equal("sampleStack", _sut.PublishedArtifactId);
+        }
+
+        [Fact]
+        public async Task RefreshPublishResources_EcrRepoWorkaround()
+        {
+            await SetupPublishView();
+
+            _deploymentDetails.StackId = null;
+            _sut.PublishDestination = _sampleRecommendations.FirstOrDefault(x =>
+                x.DeploymentArtifact == DeploymentArtifact.ElasticContainerRegistry);
+
+            _deployToolController.Setup(mock =>
+                mock.GetDeploymentDetailsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_deploymentDetails);
+
+            await _sut.RefreshPublishedResourcesAsync(_cancelToken);
+
+            _deployToolController.Verify(mock => mock.GetDeploymentDetailsAsync(_sampleSessionId, _cancelToken), Times.Once);
+
+            Assert.NotEmpty(_sut.PublishResources);
+            Assert.Equal("some-ecr-repo", _sut.PublishedArtifactId);
         }
 
         [Fact]
@@ -1272,6 +1311,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     Type = "AWS::ElasticBeanstalk::Environment",
                     Description = "Application Endpoint",
                     Data = new Dictionary<string, string>() {{"Endpoint", "http://test-dev-endpoint.com/"}}
+                },
+                new DisplayedResourceSummary()
+                {
+                    Id = "some-ecr-repo",
+                    Type = "Elastic Container Registry Repository",
                 }
             };
             var output = new GetDeploymentDetailsOutput() { StackId = "sampleStack", DisplayedResources = resources };

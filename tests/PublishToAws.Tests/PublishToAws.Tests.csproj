@@ -53,6 +53,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\EcrRepoViewerCommandFactoryTests.cs" />
     <Compile Include="Commands\CloseFailureBannerCommandTests.cs" />
     <Compile Include="Commands\ConfigCommandTests.cs" />
     <Compile Include="Commands\CopyToClipboardCommandTests.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Commands\PublishCommandTests.cs" />
     <Compile Include="Commands\BeanstalkEnvironmentViewerCommandFactoryTests.cs" />
     <Compile Include="Commands\SelectCredentialsCommandFactoryTests.cs" />
+    <Compile Include="Commands\SelectEcrRepoCommandFactoryTests.cs" />
     <Compile Include="Commands\StackViewerCommandTests.cs" />
     <Compile Include="Commands\StartOverCommandTests.cs" />
     <Compile Include="Commands\TargetCommandTests.cs" />

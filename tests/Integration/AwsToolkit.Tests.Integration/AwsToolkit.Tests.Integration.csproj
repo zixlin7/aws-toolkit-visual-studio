@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Publish\EcrRepositoryPublishIntegrationTest.cs" />
     <Compile Include="Publish\AppRunnerPublishIntegrationTest.cs" />
     <Compile Include="Publish\DeployCliInstallationFixture.cs" />
     <Compile Include="Publish\FargatePublishIntegrationTest.cs" />
@@ -67,6 +68,9 @@
     <Compile Include="Publish\UniqueStackName.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AWSSDK.ECR">
+      <Version>3.7.1.5</Version>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>
