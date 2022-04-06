@@ -28,6 +28,7 @@ using Amazon.Runtime;
 using Amazon.Common.DotNetCli.Tools;
 
 using LambdaTelemetryUtils = Amazon.AWSToolkit.Lambda.Util.LambdaTelemetryUtils;
+using Amazon.AWSToolkit.Credentials.Core;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 {
@@ -245,7 +246,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                         _telemetryLogger,
                         string.Equals(metricEventState, "Success") ? Result.Succeeded : Result.Failed,
                         metricEventState,
-                        account?.GetAccountId(region),
+                        account?.ToolkitContext.ServiceClientManager.GetAccountId(new AwsConnectionSettings(account?.Identifier, region)),
                         region?.Id);
                 }
             }

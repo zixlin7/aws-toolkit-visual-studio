@@ -13,6 +13,7 @@ using AWSDeployment;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Credentials.Core;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -352,7 +353,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             {
                 if (string.IsNullOrEmpty(bucketName))
                 {
-                    var accountId = account.GetAccountId(region);
+                    var accountId = account.ToolkitContext.ServiceClientManager.GetAccountId(new AwsConnectionSettings(account.Identifier, region));
                     if (string.IsNullOrWhiteSpace(accountId))
                     {
                         throw new Exception("Unable to determine account for use with S3 Buckets");

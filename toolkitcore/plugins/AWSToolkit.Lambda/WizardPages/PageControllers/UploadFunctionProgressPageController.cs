@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.Exceptions;
@@ -164,7 +165,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             settings.Account = account;
             settings.Credentials = credentials;
             settings.Region = region;
-            settings.AccountId = account?.GetAccountId(region);
+            settings.AccountId = account?.ToolkitContext.ServiceClientManager.GetAccountId(new AwsConnectionSettings(account?.Identifier, region));
             settings.SourcePath = HostingWizard[UploadFunctionWizardProperties.SourcePath] as string;
             settings.Configuration = HostingWizard[UploadFunctionWizardProperties.Configuration] as string;
             settings.Framework = HostingWizard[UploadFunctionWizardProperties.Framework] as string;
@@ -210,7 +211,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
                 var account = HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
                 var region = HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
-                var accountId = account?.GetAccountId(region);
+                var accountId = account?.ToolkitContext.ServiceClientManager.GetAccountId(new AwsConnectionSettings(account?.Identifier, region));
                 var runtime = HostingWizard[UploadFunctionWizardProperties.Runtime] as string;
                 var functionName = HostingWizard[UploadFunctionWizardProperties.FunctionName] as string;
                 var description = HostingWizard[UploadFunctionWizardProperties.Description] as string;

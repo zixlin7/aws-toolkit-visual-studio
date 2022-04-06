@@ -24,6 +24,7 @@ using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 
 using AWSDeploymentCryptoUtility;
+using Amazon.AWSToolkit.Credentials.Core;
 
 namespace Amazon.AWSToolkit.CloudFormation.Util
 {
@@ -200,7 +201,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
 
         internal static string CreateCloudFormationUploadBucketName(AccountViewModel account, ToolkitRegion region, string bucketPrefix = "cloudformation")
         {
-            var accountId = account.GetAccountId(region);
+            var accountId = account.ToolkitContext.ServiceClientManager.GetAccountId(new AwsConnectionSettings(account.Identifier, region));
 
             if (string.IsNullOrWhiteSpace(bucketPrefix))
             {

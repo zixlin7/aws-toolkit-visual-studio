@@ -6,11 +6,19 @@ using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Repositories;
 using Amazon.AWSToolkit.Regions;
 using Amazon.EC2;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.EC2.Model;
+using System.Collections.Generic;
+using Amazon.AWSToolkit.EC2.Model;
+using log4net;
 
 namespace Amazon.AWSToolkit.EC2
 {
     public class EC2Activator : AbstractPluginActivator, IAWSEC2
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(EC2Activator));
+
         public override string PluginName => "EC2";
 
         private IVpcRepository _vpcRepository;
@@ -45,7 +53,7 @@ namespace Amazon.AWSToolkit.EC2
         {
             if (serviceType == typeof(IAWSEC2))
             {
-                return this as IAWSEC2;
+                return this;
             }
 
             if (serviceType == typeof(IVpcRepository))
@@ -148,7 +156,58 @@ namespace Amazon.AWSToolkit.EC2
             return EC2Utilities.CheckForVpcOnlyMode(ec2Client);
         }
 
+        void IAWSEC2.ConnectToInstance(AwsConnectionSettings connectionSettings, string settingsUniqueKey, IList<string> instanceIds)
+        {
+            try
+            {
+                var controller = new ConnectToInstanceController(ToolkitContext);
+                controller.Execute(connectionSettings, settingsUniqueKey, instanceIds);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error connecting to instance", e);
+            }
+        }
 
-        #endregion
+        void IAWSEC2.ConnectToInstance(AwsConnectionSettings connectionSettings, string settingsUniqueKey, string instanceId)
+        {
+            try
+            {
+                var instance = getRunningInstance(ToolkitContext, connectionSettings, instanceId);
+                if (instance.IsWindowsPlatform)
+                {
+                    var controller = new OpenRemoteDesktopController(ToolkitContext);
+                    controller.Execute(connectionSettings, settingsUniqueKey, instance);
+                }
+                else
+                {
+                    var controller = new OpenSSHSessionController(ToolkitContext);
+                    controller.Execute(connectionSettings, settingsUniqueKey, instance);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(string.Format("Error connecting to instance {0}", instanceId), e);
+                ToolkitContext.ToolkitHost.ShowError("Error Connecting", string.Format("Error connecting to instance {0}: {1}", instanceId, e.Message));
+            }
+        }
+
+        private RunningInstanceWrapper getRunningInstance(ToolkitContext toolkitContext, AwsConnectionSettings connectionSettings, string instanceId)
+        {
+            var request = new DescribeInstancesRequest() { InstanceIds = new List<string>() { instanceId } };
+            var response = toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>
+                (connectionSettings.CredentialIdentifier, connectionSettings.Region).DescribeInstances(request);
+
+            if (response.Reservations.Count != 1 && response.Reservations[0].Instances.Count != 1)
+            {
+                return null;
+            }
+
+            var reservation = response.Reservations[0];
+            var wrapper = new RunningInstanceWrapper(reservation, reservation.Instances[0]);
+            return wrapper;
+        }
+
+    #endregion
     }
 }

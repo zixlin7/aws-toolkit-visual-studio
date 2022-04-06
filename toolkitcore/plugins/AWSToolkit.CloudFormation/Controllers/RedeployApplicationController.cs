@@ -18,8 +18,8 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         {
             var credentials = toolkitContext.CredentialManager.GetAwsCredentials(_account.Identifier, Region);
 
-            LOGGER = LogManager.GetLogger(typeof(RedeployApplicationController));
-            Observer = new DeploymentControllerBaseObserver(LOGGER);
+            Logger = LogManager.GetLogger(typeof(RedeployApplicationController));
+            Observer = new DeploymentControllerBaseObserver(Logger);
             Deployment.Observer = Observer;
             Deployment.AWSProfileName = _account.Identifier.ProfileName;
             Deployment.Credentials = credentials;

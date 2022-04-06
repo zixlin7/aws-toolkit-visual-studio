@@ -3,9 +3,8 @@ using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
 {
+    // Marker interface for now as ConnectToInstance has been migrated to ConnectionUtil.
     public interface IEC2InstancesViewModel : IViewModel
     {
-        void ConnectToInstance(string instanceId);
-        void ConnectToInstance(IList<string> instanceIds);
     }
 }

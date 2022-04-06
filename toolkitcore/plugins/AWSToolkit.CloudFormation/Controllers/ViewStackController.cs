@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.CloudFormation.Nodes;
-using Amazon.AWSToolkit.CloudFormation.Model;
-using Amazon.AWSToolkit.CloudFormation.View;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-
-using Amazon.AWSToolkit.EC2.Nodes;
 
 using Amazon.AutoScaling;
 using Amazon.AutoScaling.Model;
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CloudFormation.Model;
+using Amazon.AWSToolkit.CloudFormation.Nodes;
+using Amazon.AWSToolkit.CloudFormation.View;
+using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.EC2;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.CloudWatch;
@@ -28,48 +29,40 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     public class ViewStackController : BaseContextCommand
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(ViewStackController));
+        private static ILog Logger = LogManager.GetLogger(typeof(ViewStackController));
 
-        readonly object UPDATE_EVENT_LOCK_OBJECT = new object();
+        private readonly object UPDATE_EVENT_LOCK_OBJECT = new object();
 
-        IEC2InstancesViewModel _ec2InstanceViewModel;
-        CloudFormationStackViewModel _stackModel;
-        ViewStackModel _model;
+        private CloudFormationStackViewModel _stackModel;
+        private ViewStackModel _model;
 
-        IAmazonAutoScaling _asClient;
-        IAmazonCloudFormation _cloudFormationClient;
-        IAmazonEC2 _ec2Client;
-        IAmazonElasticLoadBalancing _elbClient;
-        IAmazonCloudWatch _cwClient;
-        IAmazonRDS _rdsClient;
-
+        private IAmazonAutoScaling _asClient;
+        private IAmazonCloudFormation _cloudFormationClient;
+        private IAmazonEC2 _ec2Client;
+        private IAmazonElasticLoadBalancing _elbClient;
+        private IAmazonCloudWatch _cwClient;
+        private IAmazonRDS _rdsClient;
 
         public override ActionResults Execute(IViewModel model)
         {
-//            Thread.Sleep(4000);
-
-            this._stackModel = model as CloudFormationStackViewModel;
-            if (this._stackModel == null)
-                return new ActionResults().WithSuccess(false);
-
-            var region = this._stackModel.CloudFormationRootViewModel.Region;
-
-            this._cloudFormationClient = this._stackModel.CloudFormationClient;
-
-            var ec2Model = this._stackModel.AccountViewModel.FindSingleChild<IEC2RootViewModel>(false);
-            if (ec2Model != null)
+            _stackModel = model as CloudFormationStackViewModel;
+            if (_stackModel == null)
             {
-                this._ec2InstanceViewModel = ec2Model.FindSingleChild<IEC2InstancesViewModel>(false);
+                return new ActionResults().WithSuccess(false);
             }
 
-            var account = this._stackModel.AccountViewModel;
-            this._elbClient = account.CreateServiceClient<AmazonElasticLoadBalancingClient>(region);
-            this._asClient = account.CreateServiceClient<AmazonAutoScalingClient>(region);
-            this._ec2Client = account.CreateServiceClient<AmazonEC2Client>(region);
-            this._cwClient = account.CreateServiceClient<AmazonCloudWatchClient>(region);
-            this._rdsClient = account.CreateServiceClient<AmazonRDSClient>(region);
+            var region = _stackModel.CloudFormationRootViewModel.Region;
 
-            this._model = new ViewStackModel(region.Id, this._stackModel.StackName);
+            _cloudFormationClient = _stackModel.CloudFormationClient;
+
+            var account = _stackModel.AccountViewModel;
+            _elbClient = account.CreateServiceClient<AmazonElasticLoadBalancingClient>(region);
+            _asClient = account.CreateServiceClient<AmazonAutoScalingClient>(region);
+            _ec2Client = account.CreateServiceClient<AmazonEC2Client>(region);
+            _cwClient = account.CreateServiceClient<AmazonCloudWatchClient>(region);
+            _rdsClient = account.CreateServiceClient<AmazonRDSClient>(region);
+
+            _model = new ViewStackModel(region.Id, _stackModel.StackName);
             var control = new ViewStackControl(this);
 
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(control);
@@ -77,48 +70,37 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             return new ActionResults().WithSuccess(true);
         }
 
-        public string StackName => this._model.StackName;
+        public string StackName => _model.StackName;
 
-        public ViewStackModel Model => this._model;
+        public ViewStackModel Model => _model;
 
-        public CloudFormationStackViewModel StackModel => this._stackModel;
+        public CloudFormationStackViewModel StackModel => _stackModel;
 
-        public IAmazonCloudWatch CloudWatchClient => this._cwClient;
+        public IAmazonCloudWatch CloudWatchClient => _cwClient;
 
         public void LoadModel()
         {
-            this.RefreshAll();
+            RefreshAll();
         }
 
         public void ConnectToInstance(RunningInstanceWrapper instance)
         {
-            if (this._ec2InstanceViewModel == null)
-            {
-                var ec2Model = this._stackModel.AccountViewModel.FindSingleChild<IEC2RootViewModel>(false);
-                if (ec2Model != null)
-                {
-                    this._ec2InstanceViewModel = ec2Model.FindSingleChild<IEC2InstancesViewModel>(false);
-                }
-            }
-
-            if (this._ec2InstanceViewModel == null)
-                return;
-
-            this._ec2InstanceViewModel.ConnectToInstance(instance.InstanceId);
+            IAWSEC2 awsEc2 = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
+            AccountViewModel account = _stackModel.AccountViewModel;
+            awsEc2.ConnectToInstance(new AwsConnectionSettings(account.Identifier, account.Region), account.SettingsUniqueKey, instance.InstanceId);
         }
 
         public void ConnectToInstance()
         {
-            if (this._ec2InstanceViewModel == null)
-                return;
-
             var instanceIds = new List<string>();
-            foreach (var instance in this.Model.Instances)
+            foreach (var instance in Model.Instances)
             {
                 instanceIds.Add(instance.InstanceId);
             }
 
-            this._ec2InstanceViewModel.ConnectToInstance(instanceIds);
+            IAWSEC2 awsEc2 = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
+            AccountViewModel account = _stackModel.AccountViewModel;
+            awsEc2.ConnectToInstance(new AwsConnectionSettings(account.Identifier, account.Region), account.SettingsUniqueKey, instanceIds);
         }
 
         public void DeleteStack()
@@ -219,7 +201,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 RefreshStackResources();
         }
 
-
         public void RefreshEvents()
         {
             string mostRecentId = "";
@@ -308,12 +289,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             }
             catch (AmazonCloudFormationException e)
             {
-                LOGGER.ErrorFormat("Exception requested stack resources: {0}", e.Message);
+                Logger.ErrorFormat("Exception requested stack resources: {0}", e.Message);
             }
             return null;
         }
 
-        void loadInstances(HashSet<string> instanceIds)
+        private void loadInstances(HashSet<string> instanceIds)
         {
             if (instanceIds == null || instanceIds.Count == 0)
                 return;
@@ -336,7 +317,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             }));
         }
 
-        HashSet<string> getListOfInstanceIds(List<StackResource> stackResources, Dictionary<string, object> fetchedDescribes)
+        private HashSet<string> getListOfInstanceIds(List<StackResource> stackResources, Dictionary<string, object> fetchedDescribes)
         {
             return AmazonCloudFormationClientExt.GetListOfInstanceIdsForStack(this._asClient, this._elbClient, stackResources, fetchedDescribes);
         }

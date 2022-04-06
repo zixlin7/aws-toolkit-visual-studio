@@ -97,29 +97,42 @@ namespace Amazon.AWSToolkit.EC2.ConnectionUtils
 
         internal static string WritePEMToPPKFile(string rsaPrivateKey)
         {
-            string pemFile = Path.GetTempFileName();
-            using (StreamWriter writer = new StreamWriter(pemFile))
+            // Temp file paths created by Path.GetTempFileName() created frequent PemToPPKConverter.exe
+            // failures, though no error information beyond the exit code was emitted.  Path.GetTempFileName()
+            // actually creates the files during the call which, speculatively, may have had a lingering lock
+            // or some other behavior that prevented PemToPPKConverter.exe from writing to ppkFile.
+            string pemFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            string ppkFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            try
             {
-                writer.Write(rsaPrivateKey);
+                using (StreamWriter writer = new StreamWriter(pemFile))
+                {
+                    writer.Write(rsaPrivateKey);
+                }
+
+                string pluginsFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+                string executeablePath = Path.Combine(pluginsFolder, CONVERTING_APP);
+                string arguments = string.Format("\"{0}\" \"{1}\"", pemFile, ppkFile);
+
+                using (Process convertProc = new Process())
+                {
+                    convertProc.StartInfo.FileName = executeablePath;
+                    convertProc.StartInfo.Arguments = arguments;
+                    convertProc.Start();
+
+                    convertProc.WaitForExit(5 * 1000);
+
+                    if (!convertProc.HasExited || convertProc.ExitCode != 200)
+                    {
+                        throw new ApplicationException("Unknown error converting pem file to ppk file.  Exit Code: " + convertProc.ExitCode);
+                    }
+                }
             }
-
-            string ppkFile = Path.GetTempFileName();
-            string pluginsFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            string executeablePath = Path.Combine(pluginsFolder, CONVERTING_APP);
-            string arguments = string.Format("\"{0}\" \"{1}\"", pemFile, ppkFile);
-
-            Process convertProc = new Process();
-            convertProc.StartInfo.FileName = executeablePath;
-            convertProc.StartInfo.Arguments = arguments;
-            convertProc.Start();
-
-            convertProc.WaitForExit(5 * 1000);
-            File.Delete(pemFile);
-
-            if (!convertProc.HasExited || convertProc.ExitCode != 200)
+            finally
             {
-                throw new ApplicationException("Unknown error converting pem file to ppk file.  Exit Code: " + convertProc.ExitCode);
+                File.Delete(pemFile);
             }
 
             return ppkFile;
