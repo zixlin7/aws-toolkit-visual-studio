@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <TargetShell Condition="'$(TargetShell)' == ''">$(VisualStudioVersion)</TargetShell>
@@ -27,7 +28,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;VS2017_OR_LATER</DefineConstants>
+    <DefineConstants>$(BuildConstants);DEBUG;VS2019_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>
@@ -42,9 +43,9 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <!-- Only deploy into Experimental VS instance if the solution is loaded in VS 2017 or 2019 -->
     <DeployExtension>False</DeployExtension>
-    <DeployExtension Condition=" '$(VisualStudioVersion)' == '15.0' Or '$(VisualStudioVersion)' == '16.0' ">True</DeployExtension>
+    <DeployExtension Condition=" '$(VisualStudioVersion)' == '16.0' ">True</DeployExtension>
     <DeployVSTemplates>False</DeployVSTemplates>
-    <DeployVSTemplates Condition=" '$(VisualStudioVersion)' == '15.0' Or '$(VisualStudioVersion)' == '16.0' ">True</DeployVSTemplates>
+    <DeployVSTemplates Condition=" '$(VisualStudioVersion)' == '16.0' ">True</DeployVSTemplates>
     <IncludeDebugSymbolsInVSIXContainer>True</IncludeDebugSymbolsInVSIXContainer>
     <VSSDKTargetPlatformRegRootSuffix>Exp</VSSDKTargetPlatformRegRootSuffix>
   </PropertyGroup>
@@ -52,7 +53,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);VS2017_OR_LATER</DefineConstants>
+    <DefineConstants>$(BuildConstants);VS2019_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -384,12 +385,6 @@
     <ProjectReference Include="$(BuildRoot)\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
       <Name>AwsToolkit.VsSdk.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj">
-      <Project>{94f578fb-afeb-4c67-bd0d-c5797e50e9e8}</Project>
-      <Name>AWSToolkit.CodeCommitTeamExplorer.v15</Name>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v16\AWSToolkit.CodeCommitTeamExplorer.v16.csproj">
       <Project>{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}</Project>

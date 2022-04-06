@@ -17,10 +17,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities.DTE
 
         private static IToolkitHostInfo GetMinimumSupportedVsVersion()
         {
-#if VS2022
+#if VS2022_OR_LATER
             return ToolkitHosts.Vs2022;
-#elif VS2017_OR_LATER
-            return ToolkitHosts.Vs2017;
+#elif VS2019_OR_LATER
+            return ToolkitHosts.Vs2019;
 #endif
         }
 

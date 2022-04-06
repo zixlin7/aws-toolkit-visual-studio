@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
 #if VS2022
         public const string AwsToolkitPackageGuidString = Constants.ToolkitPackageGuids.Vs2022AsString;
-#elif VS2017_OR_LATER
+#elif VS2019_OR_LATER
         public const string AwsToolkitPackageGuidString = Constants.ToolkitPackageGuids.Vs20172019AsString;
 #endif
 

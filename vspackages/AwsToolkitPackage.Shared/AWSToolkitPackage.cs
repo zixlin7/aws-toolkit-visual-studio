@@ -608,7 +608,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
 
-                await InitializeAwsToolkitMenuCommandsAsync(hostInfo);
+                await InitializeAwsToolkitMenuCommandsAsync();
 
                 await DeployLambdaCommand.InitializeAsync(
                     ToolkitShellProviderService,
@@ -792,20 +792,15 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <summary>
         /// Set up the commands that appear in the "AWS Toolkit" menu
         /// </summary>
-        private async Task InitializeAwsToolkitMenuCommandsAsync(IToolkitHostInfo hostVersion)
+        private async Task InitializeAwsToolkitMenuCommandsAsync()
         {
             var tasks = new List<Task>();
-
-            // VS 2019 and newer have an "Extensions" menu, which is an ideal location for these commands.
-            // In VS 2017, we use the "Tools" menu instead, so we have to register (enable) the appropriate set of commands based
-            // on which Visual Studio version is running.
-            var useVs2017Commands = hostVersion == ToolkitHosts.Vs2017;
 
             tasks.Add(
                 ViewUserGuideCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
-                    (int) (useVs2017Commands ? PkgCmdIDList.cmdidViewUserGuide2017 : PkgCmdIDList.cmdidViewUserGuide),
+                    (int) PkgCmdIDList.cmdidViewUserGuide,
                     this)
             );
 
@@ -813,9 +808,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ViewUrlCommand.InitializeAsync(
                     AwsUrls.DotNetOnAws, ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
-                    (int) (useVs2017Commands
-                        ? PkgCmdIDList.cmdidLinkToDotNetOnAws2017
-                        : PkgCmdIDList.cmdidLinkToDotNetOnAws),
+                    (int) PkgCmdIDList.cmdidLinkToDotNetOnAws,
                     this)
             );
 
@@ -823,9 +816,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ViewUrlCommand.InitializeAsync(
                     AwsUrls.DotNetOnAwsCommunity, ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
-                    (int) (useVs2017Commands
-                        ? PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity2017
-                        : PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity),
+                    (int) PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity,
                     this)
             );
 
@@ -833,7 +824,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ViewGettingStartedCommand.InitializeAsync(
                     this, _toolkitContext, _toolkitSettingsWatcher,
                     GuidList.CommandSetGuid,
-                    (int) (useVs2017Commands ? PkgCmdIDList.cmdidViewGettingStarted2017 : PkgCmdIDList.cmdidViewGettingStarted),
+                    (int) PkgCmdIDList.cmdidViewGettingStarted,
                     this)
             );
 
@@ -841,7 +832,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 CreateIssueCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
-                    (int) (useVs2017Commands ? PkgCmdIDList.cmdidCreateIssue2017 : PkgCmdIDList.cmdidCreateIssue),
+                    (int) PkgCmdIDList.cmdidCreateIssue,
                     this)
             );
 
@@ -849,7 +840,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ViewFeedbackPanelCommand.InitializeAsync(
                     _toolkitContext,
                     GuidList.CommandSetGuid,
-                    (int) (useVs2017Commands ? PkgCmdIDList.cmdidSubmitFeedback2017 : PkgCmdIDList.cmdidSubmitFeedback),
+                    (int) PkgCmdIDList.cmdidSubmitFeedback,
                     this)
             );
 

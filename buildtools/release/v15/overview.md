@@ -1,4 +1,7 @@
-Note: This edition of the toolkit is for Visual Studio 2017 and 2019 only. If you require the toolkit for Visual Studio 2013 and/or 2015, please use the installer available for download [here](https://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi).
+This edition of the toolkit is for Visual Studio 2017 and 2019.
+- There is a separate [AWS Toolkit extension for Visual Studio 2022](https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.AWSToolkitforVisualStudio2022).
+- Version 1.27.0.0 is the last version of this extension that supports Visual Studio 2017. Newer versions only support Visual Studio 2019.
+- If you require the toolkit for Visual Studio 2013 and/or 2015, please use the installer available for download [here](https://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi).
 
 For issues or questions about this extension please open a GitHub issue at https://github.com/aws/aws-toolkit-visual-studio.
 

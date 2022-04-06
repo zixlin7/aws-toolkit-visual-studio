@@ -1,0 +1,4 @@
+{
+  "Type": "Breaking Change",
+  "Description": "From this version on, the Toolkit no longer supports Visual Studio 2017."
+}
