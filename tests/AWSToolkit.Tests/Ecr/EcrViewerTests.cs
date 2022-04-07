@@ -38,7 +38,7 @@ namespace AWSToolkit.Tests.Ecr
         [InlineData(null)]
         public void ViewRepository_NoName(string repoName)
         {
-            Assert.Throws<ArgumentException>(() => _sut.ViewRepository(repoName, null, null));
+            Assert.Throws<ArgumentException>(() => _sut.ViewRepository(repoName, null));
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace AWSToolkit.Tests.Ecr
             _toolkitContextFixture.SetupCreateServiceClient<AmazonECRClient>(client.Object);
 
             // Act
-            _sut.ViewRepository(repoName, SampleCredentialId, SampleRegion);
+            _sut.ViewRepository(repoName, new AwsConnectionSettings(SampleCredentialId, SampleRegion));
 
             // Assert (this would be the attempt to show the resource)
             _toolkitContextFixture.ToolkitHost.Verify(mock => mock.ExecuteOnUIThread(It.IsAny<Action>()), Times.Once);

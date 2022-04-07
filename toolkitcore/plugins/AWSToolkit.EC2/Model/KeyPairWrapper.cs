@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.EC2.Model
             get
             {
                 string iconPath;
-                if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._account, this._region, this.NativeKeyPair.KeyName))
+                if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._account.SettingsUniqueKey, this._region, this.NativeKeyPair.KeyName))
                 {
                     iconPath = "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.private-found.png";
                     var icon = IconHelper.GetIcon(this.GetType().Assembly, iconPath);
@@ -52,7 +52,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         public string TypeName => "Key Pair";
 
         [DisplayName("Stored Locally")]
-        public bool IsStoredLocally => KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._account, this._region, this.NativeKeyPair.KeyName);
+        public bool IsStoredLocally => KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._account.SettingsUniqueKey, this._region, this.NativeKeyPair.KeyName);
 
         [DisplayName("Fingerprint")]
         public string Fingerprint => NativeKeyPair.KeyFingerprint;

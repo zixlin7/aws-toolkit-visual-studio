@@ -2,6 +2,7 @@
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Ecr;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
@@ -47,8 +48,11 @@ namespace Amazon.AWSToolkit.Publish.Commands
                 }
 
                 repoViewer.ViewRepository(viewModel.PublishedArtifactId,
-                    publishContext.ConnectionManager.ActiveCredentialIdentifier,
-                    publishContext.ConnectionManager.ActiveRegion);
+                    new AwsConnectionSettings(
+                        publishContext.ConnectionManager.ActiveCredentialIdentifier,
+                        publishContext.ConnectionManager.ActiveRegion
+                    )
+                );
             }
             catch (Exception e)
             {

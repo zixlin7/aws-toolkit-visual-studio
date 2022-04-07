@@ -15,12 +15,6 @@ namespace Amazon.AWSToolkit.Util
 
         private KeyPairLocalStoreManager() { }
 
-        [Obsolete("Use the method overload that accepts settingsUniqueKey instead of account.")]
-        public string GetPrivateKey(AccountViewModel account, string region, string keyPairName)
-        {
-            return GetPrivateKey(account.SettingsUniqueKey, region, keyPairName);
-        }
-
         public string GetPrivateKey(string settingsUniqueKey, string region, string keyPairName)
         {
             try
@@ -44,12 +38,6 @@ namespace Amazon.AWSToolkit.Util
             }
         }
 
-        [Obsolete("Use the method overload that accepts settingsUniqueKey instead of account.")]
-        public void SavePrivateKey(AccountViewModel account, string region, string keyPairName, string privateKey)
-        {
-            SavePrivateKey(account.SettingsUniqueKey, region, keyPairName, privateKey);
-        }
-
         public void SavePrivateKey(string settingsUniqueKey, string region, string keyPairName, string privateKey)
         {
             try
@@ -67,12 +55,6 @@ namespace Amazon.AWSToolkit.Util
             }
         }
 
-        [Obsolete("Use the method overload that accepts settingsUniqueKey instead of account.")]
-        public void ClearPrivateKey(AccountViewModel account, string region, string keyPairName)
-        {
-            ClearPrivateKey(account.SettingsUniqueKey, region, keyPairName);
-        }
-
         public void ClearPrivateKey(string settingsUniqueKey, string region, string keyPairName)
         {
             string fullpath = getFullPath(settingsUniqueKey, region, keyPairName);
@@ -81,12 +63,6 @@ namespace Amazon.AWSToolkit.Util
                 File.Delete(fullpath);
                 Logger.InfoFormat("Deleting key pair {0} in region {1} for profile", keyPairName, region);
             }
-        }
-
-        [Obsolete("Use the method overload that accepts settingsUniqueKey instead of account.")]
-        public bool DoesPrivateKeyExist(AccountViewModel account, string region, string keyPairName)
-        {
-            return DoesPrivateKeyExist(account.SettingsUniqueKey, region, keyPairName);
         }
 
         public bool DoesPrivateKeyExist(string settingsUniqueKey, string region, string keyPairName)

@@ -12,6 +12,7 @@ using Amazon.EC2.Model;
 using System.Collections.Generic;
 using Amazon.AWSToolkit.EC2.Model;
 using log4net;
+using Amazon.ElasticLoadBalancing.Model;
 
 namespace Amazon.AWSToolkit.EC2
 {
@@ -156,12 +157,12 @@ namespace Amazon.AWSToolkit.EC2
             return EC2Utilities.CheckForVpcOnlyMode(ec2Client);
         }
 
-        void IAWSEC2.ConnectToInstance(AwsConnectionSettings connectionSettings, string settingsUniqueKey, IList<string> instanceIds)
+        void IAWSEC2.ConnectToInstance(AwsConnectionSettings connectionSettings, IList<string> instanceIds)
         {
             try
             {
                 var controller = new ConnectToInstanceController(ToolkitContext);
-                controller.Execute(connectionSettings, settingsUniqueKey, instanceIds);
+                controller.Execute(connectionSettings, instanceIds);
             }
             catch (Exception e)
             {
@@ -169,7 +170,7 @@ namespace Amazon.AWSToolkit.EC2
             }
         }
 
-        void IAWSEC2.ConnectToInstance(AwsConnectionSettings connectionSettings, string settingsUniqueKey, string instanceId)
+        void IAWSEC2.ConnectToInstance(AwsConnectionSettings connectionSettings, string instanceId)
         {
             try
             {
@@ -177,12 +178,12 @@ namespace Amazon.AWSToolkit.EC2
                 if (instance.IsWindowsPlatform)
                 {
                     var controller = new OpenRemoteDesktopController(ToolkitContext);
-                    controller.Execute(connectionSettings, settingsUniqueKey, instance);
+                    controller.Execute(connectionSettings, instance);
                 }
                 else
                 {
                     var controller = new OpenSSHSessionController(ToolkitContext);
-                    controller.Execute(connectionSettings, settingsUniqueKey, instance);
+                    controller.Execute(connectionSettings, instance);
                 }
             }
             catch (Exception e)

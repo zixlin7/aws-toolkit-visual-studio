@@ -1,78 +1,35 @@
 ﻿using System;
 
-using Amazon.AWSToolkit.CloudFormation.Nodes;
+using Amazon.AWSToolkit.CloudFormation.Controllers;
+using Amazon.AWSToolkit.CloudFormation.Model;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Exceptions;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Regions;
-using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.CloudFormation
 {
     public class CloudFormationViewer : ICloudFormationViewer
     {
-        private readonly IAWSToolkitShellProvider _shellProvider;
-        private readonly NavigatorControl _navigatorControl;
+        private readonly ToolkitContext _toolkitContext;
 
-        public CloudFormationViewer(IAWSToolkitShellProvider shellProvider, NavigatorControl navigatorControl)
+        public CloudFormationViewer(ToolkitContext toolkitContext)
         {
-            _shellProvider = shellProvider;
-            _navigatorControl = navigatorControl;
+            _toolkitContext = toolkitContext;
         }
 
-        public void View(string stackName, ICredentialIdentifier identifier, ToolkitRegion region)
+        public void View(string stackName, AwsConnectionSettings connectionSettings)
         {
             if (string.IsNullOrWhiteSpace(stackName))
             {
                 throw new ArgumentException("Stack Name cannot be null or empty.");
             }
 
-            if (_navigatorControl.SelectedAccount?.Identifier?.Id != identifier?.Id ||
-                _navigatorControl.SelectedRegion != region)
+            var model = new ViewStackModel(connectionSettings.Region.Id, stackName);
+            var controller = new ViewStackController(model, _toolkitContext, connectionSettings);
+
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
-                _shellProvider.OutputToHostConsole(
-                    $"Unable to find {stackName}. You may find it in the AWS Explorer with the following credential settings: {identifier?.DisplayName}, {region?.DisplayName}");
-                return;
-            }
-            
-            _shellProvider.ExecuteOnUIThread(() =>
-            {
-                var cloudFormationRootNode = _navigatorControl.SelectedAccount
-                    .FindSingleChild<CloudFormationRootViewModel>(false);
-
-                if (cloudFormationRootNode == null)
-                {
-                    throw new NodeNotFoundException("Unable to load CloudFormation stacks");
-                }
-
-                var stackNode = GetStackViewModel(stackName, cloudFormationRootNode);
-
-                if (stackNode == null)
-                {
-                    throw new NodeNotFoundException($"CloudFormation stack: {stackName} cannot be found");
-                }
-
-                _navigatorControl.SelectedNode = stackNode;
-                stackNode.ExecuteDefaultAction();
+                controller.Execute();
             });
-        }
-
-        private CloudFormationStackViewModel GetStackViewModel(string stackName, CloudFormationRootViewModel cloudFormationRootNode)
-        {
-            var stackNode = FindSingleChild(stackName, cloudFormationRootNode);
-            if (stackNode == null)
-            {
-                cloudFormationRootNode.Refresh(false);
-                stackNode = FindSingleChild(stackName, cloudFormationRootNode);
-            }
-
-            return stackNode;
-        }
-
-        private CloudFormationStackViewModel FindSingleChild(string stackName, CloudFormationRootViewModel cloudFormationRootNode)
-        {
-            return cloudFormationRootNode.FindSingleChild<CloudFormationStackViewModel>(false,
-                x => string.Equals(x.StackName, stackName));
         }
     }
 }

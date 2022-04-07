@@ -22,17 +22,17 @@ namespace Amazon.AWSToolkit.ECS
             _toolkitContext = toolkitContext;
         }
 
-        public void ViewRepository(string repoName, ICredentialIdentifier identifier, ToolkitRegion region)
+        public void ViewRepository(string repoName, AwsConnectionSettings connectionSettings)
         {
             if (string.IsNullOrWhiteSpace(repoName))
             {
                 throw new ArgumentException("Repo Name cannot be null or empty.");
             }
 
-            IAmazonECR ecrClient = CreateEcrClient(identifier, region);
+            IAmazonECR ecrClient = CreateEcrClient(connectionSettings);
 
             var model = CreateRepositoryModel(repoName, ecrClient);
-            var viewController = new ViewRepositoryController(model, identifier, region, _toolkitContext, ecrClient);
+            var viewController = new ViewRepositoryController(model, connectionSettings, _toolkitContext, ecrClient);
 
             _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
@@ -40,9 +40,9 @@ namespace Amazon.AWSToolkit.ECS
             });
         }
 
-        private IAmazonECR CreateEcrClient(ICredentialIdentifier identifier, ToolkitRegion region)
+        private IAmazonECR CreateEcrClient(AwsConnectionSettings connectionSettings)
         {
-            return _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonECRClient>(identifier, region);
+            return _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonECRClient>(connectionSettings.CredentialIdentifier, connectionSettings.Region);
         }
 
         private ViewRepositoryModel CreateRepositoryModel(string repoName, IAmazonECR ecrClient)

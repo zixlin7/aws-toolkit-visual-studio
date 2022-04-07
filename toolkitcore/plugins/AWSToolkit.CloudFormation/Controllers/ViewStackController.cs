@@ -9,10 +9,12 @@ using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CloudFormation.View;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions.Manifest;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.CloudWatch;
@@ -27,13 +29,12 @@ using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
-    public class ViewStackController : BaseContextCommand
+    public class ViewStackController : BaseConnectionContextCommand
     {
         private static ILog Logger = LogManager.GetLogger(typeof(ViewStackController));
 
         private readonly object UPDATE_EVENT_LOCK_OBJECT = new object();
 
-        private CloudFormationStackViewModel _stackModel;
         private ViewStackModel _model;
 
         private IAmazonAutoScaling _asClient;
@@ -43,29 +44,22 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         private IAmazonCloudWatch _cwClient;
         private IAmazonRDS _rdsClient;
 
-        public override ActionResults Execute(IViewModel model)
+        public ViewStackController(ViewStackModel model, ToolkitContext toolkitContext, AwsConnectionSettings connectionSettings)
+            : base(toolkitContext, connectionSettings)
         {
-            _stackModel = model as CloudFormationStackViewModel;
-            if (_stackModel == null)
-            {
-                return new ActionResults().WithSuccess(false);
-            }
+            _model = model;
 
-            var region = _stackModel.CloudFormationRootViewModel.Region;
+            _cloudFormationClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonCloudFormationClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _elbClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonElasticLoadBalancingClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _asClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonAutoScalingClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _ec2Client = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _cwClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonCloudWatchClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _rdsClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonRDSClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+        }
 
-            _cloudFormationClient = _stackModel.CloudFormationClient;
-
-            var account = _stackModel.AccountViewModel;
-            _elbClient = account.CreateServiceClient<AmazonElasticLoadBalancingClient>(region);
-            _asClient = account.CreateServiceClient<AmazonAutoScalingClient>(region);
-            _ec2Client = account.CreateServiceClient<AmazonEC2Client>(region);
-            _cwClient = account.CreateServiceClient<AmazonCloudWatchClient>(region);
-            _rdsClient = account.CreateServiceClient<AmazonRDSClient>(region);
-
-            _model = new ViewStackModel(region.Id, _stackModel.StackName);
-            var control = new ViewStackControl(this);
-
-            ToolkitFactory.Instance.ShellProvider.OpenInEditor(control);
+        public override ActionResults Execute()
+        {
+            _toolkitContext.ToolkitHost.OpenInEditor(new ViewStackControl(this));
 
             return new ActionResults().WithSuccess(true);
         }
@@ -73,8 +67,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         public string StackName => _model.StackName;
 
         public ViewStackModel Model => _model;
-
-        public CloudFormationStackViewModel StackModel => _stackModel;
 
         public IAmazonCloudWatch CloudWatchClient => _cwClient;
 
@@ -85,9 +77,8 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
         public void ConnectToInstance(RunningInstanceWrapper instance)
         {
-            IAWSEC2 awsEc2 = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
-            AccountViewModel account = _stackModel.AccountViewModel;
-            awsEc2.ConnectToInstance(new AwsConnectionSettings(account.Identifier, account.Region), account.SettingsUniqueKey, instance.InstanceId);
+            IAWSEC2 awsEc2 = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSEC2)) as IAWSEC2;
+            awsEc2.ConnectToInstance(ConnectionSettings, instance.InstanceId);
         }
 
         public void ConnectToInstance()
@@ -98,21 +89,20 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 instanceIds.Add(instance.InstanceId);
             }
 
-            IAWSEC2 awsEc2 = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
-            AccountViewModel account = _stackModel.AccountViewModel;
-            awsEc2.ConnectToInstance(new AwsConnectionSettings(account.Identifier, account.Region), account.SettingsUniqueKey, instanceIds);
+            IAWSEC2 awsEc2 = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSEC2)) as IAWSEC2;
+            awsEc2.ConnectToInstance(ConnectionSettings, instanceIds);
         }
 
         public void DeleteStack()
         {
-            var request = new DeleteStackRequest(){StackName = this._model.StackName};
-            this._cloudFormationClient.DeleteStack(request);
+            var request = new DeleteStackRequest(){StackName = _model.StackName};
+            _cloudFormationClient.DeleteStack(request);
         }
 
         public void CancelUpdate()
         {
-            var request = new CancelUpdateStackRequest() { StackName = this._model.StackName };
-            this._cloudFormationClient.CancelUpdateStack(request);
+            var request = new CancelUpdateStackRequest() { StackName = _model.StackName };
+            _cloudFormationClient.CancelUpdateStack(request);
         }
 
         public void RefreshAll()
@@ -124,99 +114,117 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
         public bool RefreshStackProperties()
         {
-            var requestStack = new DescribeStacksRequest() { StackName = this._model.StackName };
-            var responseStack = this._cloudFormationClient.DescribeStacks(requestStack);
+            var requestStack = new DescribeStacksRequest() { StackName = _model.StackName };
+            var responseStack = _cloudFormationClient.DescribeStacks(requestStack);
 
             if (responseStack.Stacks.Count != 1)
+            {
                 return false;
+            }
 
             var stack = responseStack.Stacks[0];
 
-            var requestTemplate = new GetTemplateRequest() { StackName = this._model.StackName };
+            var requestTemplate = new GetTemplateRequest() { StackName = _model.StackName };
             var responseTemplate = this._cloudFormationClient.GetTemplate(requestTemplate);
             var wrapper = CloudFormationTemplateWrapper.FromString(responseTemplate.TemplateBody);
             wrapper.LoadAndParse();
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => 
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread(() => 
             {
                 
-                this._model.StackId = stack.StackId;
-                this._model.Status = stack.StackStatus;
-                this._model.StatusReason = stack.StackStatusReason;
-                this._model.Created = stack.CreationTime;
-                this._model.SNSTopic = string.Join(", ", stack.NotificationARNs.ToArray());
-                this._model.Tags = stack.Tags;
+                _model.StackId = stack.StackId;
+                _model.Status = stack.StackStatus;
+                _model.StatusReason = stack.StackStatusReason;
+                _model.Created = stack.CreationTime;
+                _model.SNSTopic = string.Join(", ", stack.NotificationARNs.ToArray());
+                _model.Tags = stack.Tags;
                 if (stack.TimeoutInMinutes > 0)
-                    this._model.CreateTimeout = stack.TimeoutInMinutes.ToString();
+                {
+                    _model.CreateTimeout = stack.TimeoutInMinutes.ToString();
+                }
                 else
-                    this._model.CreateTimeout = "None";
+                {
+                    _model.CreateTimeout = "None";
+                }
 
-                this._model.RollbackOnFailure = !stack.DisableRollback;
-                this._model.Description = stack.Description;
+                _model.RollbackOnFailure = !stack.DisableRollback;
+                _model.Description = stack.Description;
 
                 foreach (var parameter in stack.Parameters)
                 {
                     if (!wrapper.Parameters.ContainsKey(parameter.ParameterKey))
+                    {
                         continue;
+                    }
 
                     var wrapperParameter = wrapper.Parameters[parameter.ParameterKey];
                     wrapperParameter.OverrideValue = parameter.ParameterValue;
                 }
 
-                this._model.Outputs.Clear();
+                _model.Outputs.Clear();
                 foreach (var output in stack.Outputs.OrderBy(x => x.OutputKey))
-                    this._model.Outputs.Add(output);
+                {
+                    _model.Outputs.Add(output);
+                }
 
-                this._model.TemplateWrapper = wrapper;
-            }));
+                _model.TemplateWrapper = wrapper;
+            });
 
             return true;
         }
 
         public void Poll()
         {
-            var requestStack = new DescribeStacksRequest() { StackName = this._model.StackName };
-            var responseStack = this._cloudFormationClient.DescribeStacks(requestStack);
+            var requestStack = new DescribeStacksRequest() { StackName = _model.StackName };
+            var responseStack = _cloudFormationClient.DescribeStacks(requestStack);
 
             if (responseStack.Stacks.Count != 1)
+            {
                 return;
+            }
 
             var stack = responseStack.Stacks[0];
 
-            bool stateChange = !string.Equals(this._model.Status, stack.StackStatus);
+            bool stateChange = !string.Equals(_model.Status, stack.StackStatus);
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread(() =>
             {
-                this._model.Status = stack.StackStatus;
-                this._model.StatusReason = stack.StackStatusReason;
+                _model.Status = stack.StackStatus;
+                _model.StatusReason = stack.StackStatusReason;
 
-                this._model.Outputs.Clear();
+                _model.Outputs.Clear();
                 foreach (var output in stack.Outputs.OrderBy(x => x.OutputKey))
-                    this._model.Outputs.Add(output);
-            }));
+                    _model.Outputs.Add(output);
+            });
 
             RefreshEvents();
 
             if (stateChange)
+            {
                 RefreshStackResources();
+            }
         }
 
         public void RefreshEvents()
         {
             string mostRecentId = "";
-            if (this._model.Events.Count > 0)
-                mostRecentId = this._model.Events[0].NativeStackEvent.EventId;
+            if (_model.Events.Count > 0)
+            {
+                mostRecentId = _model.Events[0].NativeStackEvent.EventId;
+            }
 
             bool noNewEvents = false;
             List<StackEvent> events = new List<StackEvent>();
             DescribeStackEventsResponse response = null;            
             do
             {
-                var request = new DescribeStackEventsRequest() { StackName = this._model.StackName };
+                var request = new DescribeStackEventsRequest() { StackName = _model.StackName };
                 if (response != null)
+                {
                     request.NextToken = response.NextToken;
+                }
 
-                response = this._cloudFormationClient.DescribeStackEvents(request);
+                response = _cloudFormationClient.DescribeStackEvents(request);
                 foreach (var evnt in response.StackEvents)
                 {
                     if (string.Equals(evnt.EventId, mostRecentId))
@@ -228,56 +236,60 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                     events.Add(evnt);
                 }
 
-            }while(!noNewEvents && !string.IsNullOrEmpty(response.NextToken));
+            } while(!noNewEvents && !string.IsNullOrEmpty(response.NextToken));
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => 
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread(() => 
             {
                 foreach (var evnt in events.OrderBy(x => x.Timestamp))
                 {
                     var wrapper = new StackEventWrapper(evnt);
-                    this._model.UnfilteredEvents.Insert(0, wrapper);
+                    _model.UnfilteredEvents.Insert(0, wrapper);
 
                     if (wrapper.PassClientFilter(this._model.EventTextFilter))
-                        this._model.Events.Insert(0, wrapper);
+                        _model.Events.Insert(0, wrapper);
                 }
-            }));
+            });
         }
 
         public void ReapplyFilter()
         {
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 lock (UPDATE_EVENT_LOCK_OBJECT)
                 {
-                    this._model.Events.Clear();
+                    _model.Events.Clear();
 
-                    foreach (var evnt in this._model.UnfilteredEvents)
+                    foreach (var evnt in _model.UnfilteredEvents)
                     {
-                        if (evnt.PassClientFilter(this._model.EventTextFilter))
-                            this._model.Events.Add(evnt);
+                        if (evnt.PassClientFilter(_model.EventTextFilter))
+                        {
+                            _model.Events.Add(evnt);
+                        }
                     }
                 }
-            }));
+            });
         }
 
         public void RefreshStackResources()
         {
             List<StackResource> stackResources = GetStackResources();
             if (stackResources == null)
+            {
                 return;
+            }
 
             Dictionary<string, object> fetchedDescribes = new Dictionary<string, object>();
             var instanceIds = getListOfInstanceIds(stackResources, fetchedDescribes);
             loadInstances(instanceIds);
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread(() =>
             {
-                this.Model.Resources.Clear();
+                Model.Resources.Clear();
                 foreach (var resource in stackResources)
                 {
-                    this.Model.Resources.Add(new ResourceWrapper(resource));
+                    Model.Resources.Add(new ResourceWrapper(resource));
                 }
-            }));
+            });
             
         }
 
@@ -285,7 +297,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         {
             try
             {
-                return AmazonCloudFormationClientExt.GetStackResources(this._cloudFormationClient, this.Model.StackName);
+                return AmazonCloudFormationClientExt.GetStackResources(_cloudFormationClient, Model.StackName);
             }
             catch (AmazonCloudFormationException e)
             {
@@ -297,29 +309,31 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         private void loadInstances(HashSet<string> instanceIds)
         {
             if (instanceIds == null || instanceIds.Count == 0)
+            {
                 return;
+            }
 
             var describeInstancesRequest = new DescribeInstancesRequest() { InstanceIds = instanceIds.ToList() };
-            var describeInstanceResponse = this._ec2Client.DescribeInstances(describeInstancesRequest);
+            var describeInstanceResponse = _ec2Client.DescribeInstances(describeInstancesRequest);
 
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
-                this.Model.Instances.Clear();
+                Model.Instances.Clear();
 
                 foreach (var reserveration in describeInstanceResponse.Reservations)
                 {
                     foreach (var instance in reserveration.Instances)
                     {
                         var wrapper = new RunningInstanceWrapper(reserveration, instance);
-                        this.Model.Instances.Add(wrapper);
+                        Model.Instances.Add(wrapper);
                     }
                 }
-            }));
+            });
         }
 
         private HashSet<string> getListOfInstanceIds(List<StackResource> stackResources, Dictionary<string, object> fetchedDescribes)
         {
-            return AmazonCloudFormationClientExt.GetListOfInstanceIdsForStack(this._asClient, this._elbClient, stackResources, fetchedDescribes);
+            return AmazonCloudFormationClientExt.GetListOfInstanceIdsForStack(_asClient, _elbClient, stackResources, fetchedDescribes);
         }
 
         public void ViewDeploymentLog(RunningInstanceWrapper instance)
@@ -333,7 +347,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             var request = new DescribeAutoScalingGroupsRequest { AutoScalingGroupNames = new List<string> { name } };
             var response = this._asClient.DescribeAutoScalingGroups(request);
             if (response.AutoScalingGroups.Count != 1)
+            {
                 return null;
+            }
 
             AutoScalingGroup group = response.AutoScalingGroups[0];
             return new AutoScalingGroupWrapper(group);
@@ -342,9 +358,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         public LoadBalancerDescriptionWrapper GetLoadBalancerDetails(string name)
         {
             var request = new Amazon.ElasticLoadBalancing.Model.DescribeLoadBalancersRequest() { LoadBalancerNames = new List<string>() { name } };
-            var response = this._elbClient.DescribeLoadBalancers(request);
+            var response = _elbClient.DescribeLoadBalancers(request);
             if (response.LoadBalancerDescriptions.Count != 1)
+            {
                 return null;
+            }
 
             LoadBalancerDescription load = response.LoadBalancerDescriptions[0];
             return new LoadBalancerDescriptionWrapper(load);
@@ -353,9 +371,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         public DBInstanceWrapper GetRDSInstanceDetails(string dbidentifier)
         {
             var request = new DescribeDBInstancesRequest() { DBInstanceIdentifier = dbidentifier };
-            var response = this._rdsClient.DescribeDBInstances(request);
+            var response = _rdsClient.DescribeDBInstances(request);
             if (response.DBInstances.Count != 1)
+            {
                 return null;
+            }
 
             DBInstance dbInstance = response.DBInstances[0];
             return new DBInstanceWrapper(dbInstance);
@@ -363,7 +383,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
         public RunningInstanceWrapper GetInstanceDetails(string instanceId)
         {
-            RunningInstanceWrapper instance = this.Model.Instances.FirstOrDefault(x => x.InstanceId == instanceId);
+            RunningInstanceWrapper instance = Model.Instances.FirstOrDefault(x => x.InstanceId == instanceId);
             return instance;
         }
     }

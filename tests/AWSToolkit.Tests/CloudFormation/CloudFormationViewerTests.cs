@@ -1,9 +1,7 @@
 ﻿using System;
 
 using Amazon.AWSToolkit.CloudFormation;
-using Amazon.AWSToolkit.Shared;
-
-using Moq;
+using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Xunit;
 
@@ -11,12 +9,12 @@ namespace AWSToolkit.Tests.CloudFormation
 {
     public class CloudFormationViewerTests
     {
-        private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
+        private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
         private readonly CloudFormationViewer _cloudFormationViewer;
 
         public CloudFormationViewerTests()
         {
-            _cloudFormationViewer = new CloudFormationViewer(_shellProvider.Object, null);
+            _cloudFormationViewer = new CloudFormationViewer(_toolkitContextFixture.ToolkitContext);
         }
 
         [Theory]
@@ -24,7 +22,7 @@ namespace AWSToolkit.Tests.CloudFormation
         [InlineData(null)]
         public void View(string stackName)
         {
-            Assert.Throws<ArgumentException>(() => _cloudFormationViewer.View(stackName, null, null));
+            Assert.Throws<ArgumentException>(() => _cloudFormationViewer.View(stackName, null));
         }
     }
 }

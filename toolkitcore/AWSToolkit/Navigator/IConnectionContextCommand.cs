@@ -10,8 +10,7 @@ namespace Amazon.AWSToolkit.Navigator
     /// (typically <see cref="Node.IViewModel"/> via <see cref="NavigatorControl"/>).
     public interface IConnectionContextCommand
     {
-        ICredentialIdentifier CredentialIdentifier { get; }
-        ToolkitRegion Region { get; }
+        AwsConnectionSettings ConnectionSettings { get; }
 
         ActionResults Execute();
     }

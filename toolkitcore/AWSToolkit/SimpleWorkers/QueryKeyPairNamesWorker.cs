@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.SimpleWorkers
                 foreach(var keyPair in response.KeyPairs)
                 {
                     keyNames.Add(keyPair.KeyName);
-                    if(KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(account, region, keyPair.KeyName))
+                    if(KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(account.SettingsUniqueKey, region, keyPair.KeyName))
                     {
                         storedInToolkit.Add(keyPair.KeyName);
                     }

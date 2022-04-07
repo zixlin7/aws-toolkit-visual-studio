@@ -14,8 +14,8 @@ namespace Amazon.AWSToolkit.EC2
 
         bool IsVpcOnly(AccountViewModel account, ToolkitRegion region);
 
-        void ConnectToInstance(AwsConnectionSettings connectionSettings, string settingsUniqueKey, IList<string> instanceIds);
+        void ConnectToInstance(AwsConnectionSettings connectionSettings, IList<string> instanceIds);
 
-        void ConnectToInstance(AwsConnectionSettings connectionSettings, string settingsUniqueKey, string instanceId);
+        void ConnectToInstance(AwsConnectionSettings connectionSettings, string instanceId);
     }
 }

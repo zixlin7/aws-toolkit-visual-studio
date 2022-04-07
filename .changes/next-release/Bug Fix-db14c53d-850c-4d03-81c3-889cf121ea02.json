@@ -1,0 +1,4 @@
+﻿{
+    "Type": "Bug Fix",
+    "Description": "Fixes case where the Publish to AWS summary screen was unable to open the CloudFormation stack viewer for a profile/region combination that did not match what is currently selected in the AWS Explorer."
+}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Ecr;
 using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.Model;
@@ -116,7 +117,7 @@ namespace Amazon.AWSToolkit.ECS
 
             return new ConnectionContextCommandExecutor(() =>
                     new ViewRepositoryController(model,
-                        repositoryViewModel.AccountViewModel.Identifier, repositoryViewModel.Region,
+                        new AwsConnectionSettings(repositoryViewModel.AccountViewModel.Identifier, repositoryViewModel.Region),
                         ToolkitContext, repositoryViewModel.ECRClient),
                 ToolkitContext.ToolkitHost).Execute();
         }

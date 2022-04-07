@@ -11,6 +11,6 @@ namespace Amazon.AWSToolkit.Ecr
         /// <summary>
         /// Views the specified ECR Repository in a document tab
         /// </summary>
-        void ViewRepository(string repoName, ICredentialIdentifier identifier, ToolkitRegion region);
+        void ViewRepository(string repoName, AwsConnectionSettings connectionSettings);
     }
 }

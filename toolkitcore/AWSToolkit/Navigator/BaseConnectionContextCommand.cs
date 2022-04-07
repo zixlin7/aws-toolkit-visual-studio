@@ -13,16 +13,14 @@ namespace Amazon.AWSToolkit.Navigator
     /// </summary>
     public abstract class BaseConnectionContextCommand : IConnectionContextCommand
     {
-        public ICredentialIdentifier CredentialIdentifier { get; }
-        public ToolkitRegion Region { get; }
+        public AwsConnectionSettings ConnectionSettings { get; }
 
         protected readonly ToolkitContext _toolkitContext;
 
-        protected BaseConnectionContextCommand(ToolkitContext toolkitContext, ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
+        protected BaseConnectionContextCommand(ToolkitContext toolkitContext, AwsConnectionSettings connectionSettings)
         {
             _toolkitContext = toolkitContext;
-            CredentialIdentifier = credentialIdentifier;
-            Region = region;
+            ConnectionSettings = connectionSettings;
         }
 
         public abstract ActionResults Execute();

@@ -30,19 +30,19 @@ namespace Amazon.AWSToolkit.EC2.Controller
         private IAmazonEC2 _ec2Client;
         private RunningInstanceWrapper _instance;
         private OpenRemoteDesktopModel _model;
+        private string _uniqueKey;
         private bool _usingStoredPrivateKey;
         private AwsConnectionSettings _connectionSettings;
-        private string _settingsUniqueKey;
 
         public OpenRemoteDesktopController(ToolkitContext toolkitContext)
         {
             _toolkitContext = toolkitContext;
         }
 
-        public ActionResults Execute(AwsConnectionSettings connectionSettings, string settingsUniqueKey, RunningInstanceWrapper instance)
+        public ActionResults Execute(AwsConnectionSettings connectionSettings, RunningInstanceWrapper instance)
         {
             _connectionSettings = connectionSettings;
-            _settingsUniqueKey = settingsUniqueKey;
+            _uniqueKey = _toolkitContext.CredentialSettingsManager.GetUniqueKey(_connectionSettings.CredentialIdentifier);
             ActionResults actionResults = null;
 
             void Invoke()
@@ -73,9 +73,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
             _instance = instance;
             _model = new OpenRemoteDesktopModel(instance);
 
-            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(_settingsUniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName))
+            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName))
             {
-                _model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(_settingsUniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName);
+                _model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName);
                 _usingStoredPrivateKey = true;
             }
 
@@ -190,8 +190,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             if (string.IsNullOrEmpty(password) && !_usingStoredPrivateKey && Model.SavePrivateKey)
             {
-                KeyPairLocalStoreManager.Instance.SavePrivateKey(_settingsUniqueKey, _connectionSettings.Region.Id,
-                    _instance.NativeInstance.KeyName, Model.PrivateKey);
+                KeyPairLocalStoreManager.Instance.SavePrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName, Model.PrivateKey);
             }
         }
 

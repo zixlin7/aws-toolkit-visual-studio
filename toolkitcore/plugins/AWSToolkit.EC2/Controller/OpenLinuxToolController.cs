@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         protected OpenLinuxToolModel _model;
         protected readonly ToolkitContext _toolkitContext;
         protected AwsConnectionSettings _connectionSettings;
-        protected string _settingsUniqueKey;
+        protected string _uniqueKey;
         private bool _usingStoredPrivateKey;
 
         public OpenLinuxToolController(ToolkitContext toolkitContext)
@@ -47,10 +47,10 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public abstract OpenLinuxToolControl CreateControl(bool useKeyPair, string password);
 
-        public ActionResults Execute(AwsConnectionSettings connectionSettings, string settingsUniqueKey, RunningInstanceWrapper instance)
+        public ActionResults Execute(AwsConnectionSettings connectionSettings, RunningInstanceWrapper instance)
         {
             _connectionSettings = connectionSettings;
-            _settingsUniqueKey = settingsUniqueKey;
+            _uniqueKey = _toolkitContext.CredentialSettingsManager.GetUniqueKey(_connectionSettings.CredentialIdentifier);
 
             if (!instance.HasPublicAddress)
             {
@@ -65,9 +65,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
             _model = new OpenLinuxToolModel(instance);
             _model.ToolLocation = ToolsUtil.FindTool(Executable, ToolSearchFolders);
 
-            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(_settingsUniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName))
+            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName))
             {
-                _model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(_settingsUniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName);
+                _model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName);
                 _usingStoredPrivateKey = true;
             }
 
@@ -150,7 +150,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             if (string.IsNullOrEmpty(password) && !this._usingStoredPrivateKey && this.Model.SavePrivateKey)
             {
-                KeyPairLocalStoreManager.Instance.SavePrivateKey(_settingsUniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName, Model.PrivateKey);
+                KeyPairLocalStoreManager.Instance.SavePrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName, Model.PrivateKey);
             }
         }
 

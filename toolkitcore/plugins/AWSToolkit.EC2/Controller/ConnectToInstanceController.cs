@@ -22,7 +22,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             _toolkitContext = toolkitContext;
         }
 
-        public ActionResults Execute(AwsConnectionSettings connectionSettings, string settingsUniqueKey, IList<string> instanceIds)
+        public ActionResults Execute(AwsConnectionSettings connectionSettings, IList<string> instanceIds)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 }
                 
                 IAWSEC2 awsEc2 =_toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSEC2)) as IAWSEC2;
-                awsEc2.ConnectToInstance(connectionSettings, settingsUniqueKey, selectedInstanceId);
+                awsEc2.ConnectToInstance(connectionSettings, selectedInstanceId);
 
                 return new ActionResults().WithSuccess(true);
             }

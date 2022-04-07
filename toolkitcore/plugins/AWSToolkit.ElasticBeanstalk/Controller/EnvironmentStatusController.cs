@@ -132,7 +132,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             var instanceIds = getListOfInstances();
             IAWSEC2 awsEc2 = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
             AccountViewModel account = _environmentModel.AccountViewModel;
-            awsEc2.ConnectToInstance(new AwsConnectionSettings(account.Identifier, account.Region), account.SettingsUniqueKey, instanceIds);
+            awsEc2.ConnectToInstance(new AwsConnectionSettings(account.Identifier, account.Region), instanceIds);
         }
 
         public void ChangeEnvironmentType(string requestedType)

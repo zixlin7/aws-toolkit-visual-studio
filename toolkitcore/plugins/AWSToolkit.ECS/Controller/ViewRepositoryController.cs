@@ -27,10 +27,10 @@ namespace Amazon.AWSToolkit.ECS.Controller
         private readonly IAmazonECR _ecrClient;
 
         public ViewRepositoryController(ViewRepositoryModel model,
-            ICredentialIdentifier credentialIdentifier, ToolkitRegion region,
+            AwsConnectionSettings connectionSettings,
             ToolkitContext toolkitContext,
             IAmazonECR ecrClient)
-            : base(toolkitContext, credentialIdentifier, region)
+            : base(toolkitContext, connectionSettings)
         {
             _ecrClient = ecrClient;
             Model = model;

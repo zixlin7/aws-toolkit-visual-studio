@@ -83,7 +83,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             _viewerCommand.Execute(null);
 
             ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(IEcrViewer)), Times.Once);
-            _repoViewer.Verify(view => view.ViewRepository(SampleRepoName, It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()), Times.Once);
+            _repoViewer.Verify(view => view.ViewRepository(SampleRepoName, It.IsAny<AwsConnectionSettings>()), Times.Once);
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
 
             ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(IEcrViewer)), Times.Never);
             _repoViewer.Verify(
-                view => view.ViewRepository(SampleRepoName, It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()),
+                view => view.ViewRepository(SampleRepoName, It.IsAny<AwsConnectionSettings>()),
                 Times.Never);
             ToolkitHost.Verify(
                 host => host.OutputToHostConsole(It.Is<string>(str => str.StartsWith("Unable to view ECR Repository")), true),
@@ -111,7 +111,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
 
             ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(IEcrViewer)), Times.Once);
             _repoViewer.Verify(
-                view => view.ViewRepository(SampleRepoName, It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()),
+                view => view.ViewRepository(SampleRepoName, It.IsAny<AwsConnectionSettings>()),
                 Times.Never);
             ToolkitHost.Verify(
                 host => host.OutputToHostConsole(It.Is<string>(str => str.StartsWith("Unable to view ECR Repository")), true),
