@@ -5,6 +5,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
     public class TestProjects
     {
         public static string GetASPNet5() => GetProjectPath("ASPNet5");
+        public static string GetASPNet6() => GetProjectPath("ASPNet6");
 
         private static string GetProjectPath(string projectName)
         {

@@ -156,6 +156,13 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
             Assert.True(await IsProjectDeployed());
         }
 
+        protected async Task AssertDeploymentDetailsAreValid()
+        {
+            var details = await DeployToolController.GetDeploymentDetailsAsync(SessionId, CancellationToken.None);
+
+            Assert.NotEmpty(details.CloudApplicationName);
+        }
+
         protected async Task ResetConnection()
         {
             await CancelSession();

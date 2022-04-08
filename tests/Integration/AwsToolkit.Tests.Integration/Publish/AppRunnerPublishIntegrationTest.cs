@@ -26,6 +26,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
             // assert
             Assert.Equal(DeploymentStatus.Success, status);
+            await AssertDeploymentDetailsAreValid();
             await AssertProjectWasDeployed();
         }
 

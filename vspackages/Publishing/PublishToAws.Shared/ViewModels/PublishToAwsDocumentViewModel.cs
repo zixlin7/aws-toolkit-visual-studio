@@ -18,6 +18,7 @@ using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
+using Amazon.AWSToolkit.Publish.Views;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -912,24 +913,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <param name="cancellationToken"></param>
         public async Task RefreshPublishedResourcesAsync(CancellationToken cancellationToken)
         {
-            IList<PublishResource> resource = new List<PublishResource>();
-            var stackId = string.Empty;
+            IList<PublishResource> resources = new List<PublishResource>();
+            var publishedArtifactId = string.Empty;
             try
             {
                 ThrowIfSessionIsNotCreated();
 
                 var details = await DeployToolController.GetDeploymentDetailsAsync(SessionId, cancellationToken);
 
-                stackId = details?.StackId;
+                if (details == null) return;
 
-                // TODO : remove this once deploy API includes ECR Repo id as top level data
-                if (string.IsNullOrEmpty(stackId) && PublishDestination?.DeploymentArtifact == DeploymentArtifact.ElasticContainerRegistry)
+                publishedArtifactId = GetPublishedArtifactId(details);
+
+                if (details.DisplayedResources != null)
                 {
-                    stackId = WorkaroundGetEcrRepoArtifactName(details);
+                    resources = details.DisplayedResources
+                        .Select(x => x.AsPublishResource())
+                        .ToList();
                 }
-
-                var resourceSummaries = details?.DisplayedResources;
-                resource = resourceSummaries.Select(x => x.AsPublishResource()).ToList();
             }
             catch (Exception e)
             {
@@ -938,8 +939,19 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await SetPublishResourcesAsync(stackId, resource, cancellationToken);
+                await SetPublishResourcesAsync(publishedArtifactId, resources, cancellationToken);
             }
+        }
+
+        private string GetPublishedArtifactId(GetDeploymentDetailsOutput details)
+        {
+            // TODO : remove this once deploy API includes ECR Repo id as top level data
+            if (PublishDestination?.DeploymentArtifact == DeploymentArtifact.ElasticContainerRegistry)
+            {
+                return WorkaroundGetEcrRepoArtifactName(details);
+            }
+
+            return details.CloudApplicationName;
         }
 
         /// <summary>

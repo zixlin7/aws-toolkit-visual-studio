@@ -1113,7 +1113,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await SetupPublishView();
 
-            _deploymentDetails.StackId = null;
+            _deploymentDetails.CloudApplicationName = null;
             _sut.PublishDestination = _sampleRecommendations.FirstOrDefault(x =>
                 x.DeploymentArtifact == DeploymentArtifact.ElasticContainerRegistry);
 
@@ -1318,7 +1318,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     Type = "Elastic Container Registry Repository",
                 }
             };
-            var output = new GetDeploymentDetailsOutput() { StackId = "sampleStack", DisplayedResources = resources };
+            var output = new GetDeploymentDetailsOutput() { CloudApplicationName = "sampleStack", DisplayedResources = resources };
             return output;
         }
 
