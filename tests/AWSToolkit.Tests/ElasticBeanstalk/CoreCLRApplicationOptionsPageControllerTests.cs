@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.ElasticBeanstalk;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
-
 using AWSToolkit.Tests.ElasticBeanstalk.Wizard;
-
 using Xunit;
 
 namespace AWSToolkit.Tests.ElasticBeanstalk
@@ -56,17 +55,23 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
         }
 
         [StaTheory]
-        [InlineData(Frameworks.Net60, true)]
-        [InlineData(Frameworks.Net50, false)]
-        [InlineData(Frameworks.NetCoreApp31, false)]
-        [InlineData(Frameworks.NetCoreApp21, false)]
-        [InlineData(Frameworks.NetFramework47, false)]
-        public void ShouldDefaultSelfContained(string runtime, bool expectedDefault)
+        [InlineData(Frameworks.Net60, "Windows", true)]
+        [InlineData(Frameworks.Net60, "Linux", false)]
+        [InlineData(Frameworks.Net50, "Windows", false)]
+        [InlineData(Frameworks.Net50, "Linux", false)]
+        [InlineData(Frameworks.NetCoreApp31, "Windows", false)]
+        [InlineData(Frameworks.NetCoreApp31, "Linux", false)]
+        [InlineData(Frameworks.NetCoreApp21, "Windows", false)]
+        [InlineData(Frameworks.NetCoreApp21, "Linux", false)]
+        [InlineData(Frameworks.NetFramework47, "Windows", false)]
+        [InlineData(Frameworks.NetFramework47, "Linux", false)]
+        public void ShouldDefaultSelfContained(string runtime, string instance, bool expectedDefault)
         {
             // arrange.
             SetRuntimeTo(runtime);
+            SetDeploymentTo(instance);
 
-            var optionsPageController = new CoreCLRApplicationOptionsPageController()
+            var optionsPageController = new TestableCoreCLRApplicationOptionsPageController(null)
             {
                 HostingWizard = Wizard
             };
@@ -79,6 +84,32 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             Assert.Equal(expectedDefault, page.BuildSelfContainedBundle);
         }
 
+        [StaFact]
+        public void ShouldResetDefaultAfterInstanceSwitch()
+        {
+            // arrange.
+            SetRuntimeTo(Frameworks.Net60);
+            SetDeploymentTo("Linux");
+
+            var optionsPageController = new TestableCoreCLRApplicationOptionsPageController(null)
+            {
+                HostingWizard = Wizard
+            };
+
+            var page = InitializePageFrom(optionsPageController);
+            Assert.False(page.BuildSelfContainedBundle);
+
+            // act.
+            SetDeploymentTo("Windows");
+            // throws on wizard's unimplemented GetProperty, which occurs after default is reset
+            Assert.Throws<NotImplementedException>(() => ActivatePageFrom(optionsPageController));
+            TransferStateFromPageToWizard(optionsPageController);
+
+            // assert.
+            Wizard.AssertPlatformIsWindows();
+            Wizard.AssertIsSelfContained();
+        }
+
         private void SetRuntimeTo(string runtime)
         {
             Wizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = runtime;
@@ -86,9 +117,19 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
                 new Dictionary<string, string>() { { runtime, runtime } };
         }
 
+        private void SetDeploymentTo(string instance)
+        {
+            Wizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack] = instance.Equals("Linux");
+        }
+
         private CoreCLRApplicationOptionsPage InitializePageFrom(CoreCLRApplicationOptionsPageController controller)
         {
             return controller.PageActivating(AWSWizardConstants.NavigationReason.movingForward) as CoreCLRApplicationOptionsPage;
+        }
+
+        private void ActivatePageFrom(CoreCLRApplicationOptionsPageController controller)
+        {
+            controller.PageActivated(AWSWizardConstants.NavigationReason.movingForward);
         }
     }
 }

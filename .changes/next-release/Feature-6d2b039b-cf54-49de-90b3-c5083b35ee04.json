@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "The Publish To Beanstalk experience no longer defaults to using self-contained deployment bundles when publishing .NET 6 projects to Linux images."
+}

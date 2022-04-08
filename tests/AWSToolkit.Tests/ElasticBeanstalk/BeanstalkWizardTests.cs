@@ -6,7 +6,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 {
     public abstract class BeanstalkWizardTests
     {
-        protected IAWSWizard Wizard = new InMemoryAWSWizard();
+        protected IAWSWizard Wizard = new InMemoryAWSWizardFixture();
 
         protected void SetProjectTypeTo(string projectType)
         {
@@ -17,6 +17,15 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             AWSWizardConstants.NavigationReason navigationReason = AWSWizardConstants.NavigationReason.finishPressed)
         {
             controller.PageDeactivating(navigationReason);
+        }
+    }
+
+    public class InMemoryAWSWizardFixture : InMemoryAWSWizard
+    {
+        public override void SetNavigationEnablement(IAWSWizardPageController requestorPage,
+            AWSWizardConstants.NavigationButtons button, bool enable)
+        {
+            return;
         }
     }
 }

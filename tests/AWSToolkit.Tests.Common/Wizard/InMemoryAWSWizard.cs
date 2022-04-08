@@ -18,7 +18,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Wizard
         public bool DisplayHeader { get; set; }
         public bool AutoPollFinishEnablement { get; set; }
 
-        public void SetNavigationEnablement(IAWSWizardPageController requestorPage,
+        public virtual void SetNavigationEnablement(IAWSWizardPageController requestorPage,
             AWSWizardConstants.NavigationButtons button, bool enable)
         {
             throw new NotImplementedException();
