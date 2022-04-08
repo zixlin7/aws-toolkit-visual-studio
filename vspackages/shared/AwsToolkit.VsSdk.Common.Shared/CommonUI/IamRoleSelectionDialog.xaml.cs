@@ -38,6 +38,12 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             set => _viewModel.Region = value;
         }
 
+        public string ServicePrincipalFilter
+        {
+            get => _viewModel.ServicePrincipalFilter;
+            set => _viewModel.ServicePrincipalFilter = value;
+        }
+
         public IamRoleSelectionDialog(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory)
         {
             _toolkitContext = toolkitContext;

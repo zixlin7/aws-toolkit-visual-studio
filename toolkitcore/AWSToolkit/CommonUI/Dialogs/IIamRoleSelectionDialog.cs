@@ -20,6 +20,11 @@ namespace Amazon.AWSToolkit.CommonUI.Dialogs
         /// </summary>
         ToolkitRegion Region { get; set; }
 
+        /// <summary>
+        /// Optional - if set, filters displayed roles to those including the provided service principal
+        /// </summary>
+        string ServicePrincipalFilter { get; set; }
+
         bool Show();
     }
 }

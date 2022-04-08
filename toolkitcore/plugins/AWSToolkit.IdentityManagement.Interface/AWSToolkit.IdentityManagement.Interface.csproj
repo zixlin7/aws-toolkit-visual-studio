@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="IAMActionResultsConstants.cs" />
     <Compile Include="IIamEntityRepository.cs" />
+    <Compile Include="Models\IamRole.cs" />
     <Compile Include="Nodes\IIAMGroupRootViewModel.cs" />
     <Compile Include="Nodes\IIAMGroupViewModel.cs" />
     <Compile Include="Nodes\IIAMRootViewModel.cs" />
