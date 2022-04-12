@@ -115,11 +115,8 @@ namespace Amazon.AWSToolkit.Clients
             ClientConfig serviceClientConfig) where T : class
         {
             Type serviceClientType = typeof(T);
-
             try
             {
-                AWSCredentials credentials = null;
-
                 if (_regionProvider.IsRegionLocal(region.Id))
                 {
                     // Configure the Service client to use the local url
@@ -132,12 +129,13 @@ namespace Amazon.AWSToolkit.Clients
 
                     serviceClientConfig.ServiceURL = serviceUrl;
 
-                    // Service client requires mock credentials to create localhost
-                    credentials = new AwsMockCredentials();
-                    return ServiceClientCreator.CreateServiceClient(serviceClientType, credentials, serviceClientConfig) as T;
+                    // Credentials are not used for local endpoints
+                    return ServiceClientCreator.CreateServiceClient(serviceClientType, serviceClientConfig) as T;
                 }
                 else
                 {
+                    AWSCredentials credentials = null;
+
                     // Configure the Service client to use the provided region
                     var regionEndpoint = RegionEndpoint.GetBySystemName(region.Id);
                     if (regionEndpoint == null)
