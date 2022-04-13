@@ -94,7 +94,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 var keyResponse = this._rootModel.EC2Client.CreateKeyPair(keyRequest);
 
                 KeyPairLocalStoreManager.Instance.SavePrivateKey(
-                    this._rootModel.AccountViewModel, 
+                    this._rootModel.AccountViewModel.SettingsUniqueKey, 
                     this._rootModel.Region.Id, 
                     keyName,
                     keyResponse.KeyPair.KeyMaterial);

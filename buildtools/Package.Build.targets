@@ -34,7 +34,8 @@
       Past/Present Toolkit VSIX Names:
       - 12.0 / VS 2013: AWS Toolkit for Visual Studio 2013
       - 14.0 / VS 2015: AWS Toolkit for Visual Studio 2015
-      - VS 2017 (current Toolkit): AWS Toolkit for Visual Studio 2017 and 2019
+      - VS 2017 & 2019 (current Toolkit): AWS Toolkit for Visual Studio 2017 and 2019
+      - VS 2022 and newer use explicit properties
     -->
     <VsixDisplayName Condition="'$(Configuration)' == 'Release'">AWS Toolkit for Visual Studio 2017 and 2019</VsixDisplayName>
     <VsixDisplayName Condition="'$(Configuration)' == 'Debug'">AWSToolkitDev</VsixDisplayName>
@@ -51,9 +52,11 @@
 
       - 12.0 / VS 2013: [12.0]
       - 14.0 / VS 2015: [14.0,)   (I think this was inadvertently open-ended)
-      - VS 2017 (current Toolkit): [15.0, 17.0)
+      - VS 2017 (Until April 2022, one VSIX supported both VS 2017 and 2019): [15.0, 17.0)
+      - VS 2019 (current Toolkit): [16.0, 17.0)
+      - VS 2022 onwards are declared in their respective vsixmanifest files
     -->
-    <VsixVsTarget>[15.0,17.0)</VsixVsTarget>
+    <VsixVsTarget>[16.0,17.0)</VsixVsTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

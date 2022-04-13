@@ -17,6 +17,8 @@ using Amazon.EC2;
 using Amazon.EC2.Model;
 
 using Amazon.AWSToolkit.Util;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -24,25 +26,28 @@ namespace Amazon.AWSToolkit.EC2.Controller
     {
         private readonly ToolkitContext _toolkitContext;
 
-        ActionResults _results;
-        IAmazonEC2 _ec2Client;
-        RunningInstanceWrapper _instance;
-        OpenRemoteDesktopModel _model;
-        FeatureViewModel _featureViewModel;
-        bool _usingStoredPrivateKey;
+        private ActionResults _results;
+        private IAmazonEC2 _ec2Client;
+        private RunningInstanceWrapper _instance;
+        private OpenRemoteDesktopModel _model;
+        private string _uniqueKey;
+        private bool _usingStoredPrivateKey;
+        private AwsConnectionSettings _connectionSettings;
 
         public OpenRemoteDesktopController(ToolkitContext toolkitContext)
         {
             _toolkitContext = toolkitContext;
         }
 
-        public ActionResults Execute(FeatureViewModel featureViewModel, RunningInstanceWrapper instance)
+        public ActionResults Execute(AwsConnectionSettings connectionSettings, RunningInstanceWrapper instance)
         {
+            _connectionSettings = connectionSettings;
+            _uniqueKey = _toolkitContext.CredentialSettingsManager.GetUniqueKey(_connectionSettings.CredentialIdentifier);
             ActionResults actionResults = null;
 
             void Invoke()
             {
-                actionResults = OpenConnection(featureViewModel, instance);
+                actionResults = OpenConnection(connectionSettings.CredentialIdentifier, instance);
             }
 
             void Record(ITelemetryLogger telemetryLogger)
@@ -54,7 +59,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return actionResults;
         }
 
-        private ActionResults OpenConnection(FeatureViewModel featureViewModel, RunningInstanceWrapper instance)
+        private ActionResults OpenConnection(ICredentialIdentifier credentialIdentifier, RunningInstanceWrapper instance)
         {
             if (!instance.HasPublicAddress)
             {
@@ -64,18 +69,14 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 }
             }
 
-            this._featureViewModel = featureViewModel;
-            this._ec2Client = featureViewModel.EC2Client;
-            this._instance = instance;
-            this._model = new OpenRemoteDesktopModel(instance);
+            _ec2Client = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(credentialIdentifier, _connectionSettings.Region);
+            _instance = instance;
+            _model = new OpenRemoteDesktopModel(instance);
 
-            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._featureViewModel.AccountViewModel,
-                this._featureViewModel.Region.Id, this._instance.NativeInstance.KeyName))
+            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName))
             {
-                this._model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(this._featureViewModel.AccountViewModel,
-                    this._featureViewModel.Region.Id, this._instance.NativeInstance.KeyName);
-
-                this._usingStoredPrivateKey = true;
+                _model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName);
+                _usingStoredPrivateKey = true;
             }
 
             loadLastSelectedValues(out var useKeyPair, out var password);
@@ -89,15 +90,15 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 .WithSuccess(actionResult);
         }
 
-        public string InstanceId => this._instance.InstanceId;
+        public string InstanceId => _instance.InstanceId;
 
-        public OpenRemoteDesktopModel Model => this._model;
+        public OpenRemoteDesktopModel Model => _model;
 
         public void OpenRemoteDesktopWithCredentials(string username, string password)
         {
             checkIfOpenPort();
 
-            RemoteDesktopUtil.Connect(this._instance.ConnectName, username, password, this._model.MapDrives);
+            RemoteDesktopUtil.Connect(_instance.ConnectName, username, password, _model.MapDrives);
 
             this._results = new ActionResults().WithSuccess(true);
             persistLastSelectedValues(false, password);
@@ -105,41 +106,40 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void OpenRemoteDesktopWithEC2KeyPair()
         {
-            var request = new GetPasswordDataRequest() { InstanceId = this._instance.NativeInstance.InstanceId };
-            var response = this._ec2Client.GetPasswordData(request);
+            var request = new GetPasswordDataRequest() { InstanceId = _instance.NativeInstance.InstanceId };
+            var response = _ec2Client.GetPasswordData(request);
 
-            if (!GetPasswordController.ValidateEncryptedPassword(this._instance, response))
+            if (!GetPasswordController.ValidateEncryptedPassword(_instance, response))
             {
                 return;
             }
 
-            string decryptedPassword = response.GetDecryptedPassword(this._model.PrivateKey);
+            string decryptedPassword = response.GetDecryptedPassword(_model.PrivateKey);
 
             OpenRemoteDesktopWithCredentials(EC2Constants.DEFAULT_ADMIN_USER, decryptedPassword);
             persistLastSelectedValues(true, null);
         }
 
-
-        bool checkIfOpenPort()
+        private bool checkIfOpenPort()
         {
-            bool isOpen = EC2Utilities.checkIfPortOpen(this._ec2Client, this._instance.NativeInstance.SecurityGroups, NetworkProtocol.RDP.DefaultPort.Value);
+            bool isOpen = EC2Utilities.checkIfPortOpen(_ec2Client, _instance.NativeInstance.SecurityGroups, NetworkProtocol.RDP.DefaultPort.Value);
 
             if (!isOpen)
             {
-                if (this._instance.NativeInstance.SecurityGroups.Count == 1)
+                if (_instance.NativeInstance.SecurityGroups.Count == 1)
                 {
                     var externalIpAddress = IPAddressUtil.DetermineIPFromExternalSource();
                     if (externalIpAddress != null)
                         externalIpAddress += "/32";
 
                     string msg = string.Format("The security group \"{0}\" used for this instance does not have remote desktop port open, " +
-                        "would you like to open the remote desktop port?", this._instance.SecurityGroups);
+                        "would you like to open the remote desktop port?", _instance.SecurityGroups);
 
                     var control = new AskToOpenPort(msg, externalIpAddress);
 
                     if (!isOpen && _toolkitContext.ToolkitHost.ShowModal(control, MessageBoxButton.OKCancel))
                     {
-                        var request = new AuthorizeSecurityGroupIngressRequest() { GroupId = this._instance.NativeInstance.SecurityGroups[0].GroupId };
+                        var request = new AuthorizeSecurityGroupIngressRequest() { GroupId = _instance.NativeInstance.SecurityGroups[0].GroupId };
 
                         IpPermission permission = new IpPermission()
                         {
@@ -150,7 +150,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                         };
                         request.IpPermissions = new List<IpPermission> { permission };
 
-                        this._ec2Client.AuthorizeSecurityGroupIngress(request);
+                        _ec2Client.AuthorizeSecurityGroupIngress(request);
                         return true;
                     }
                 }
@@ -166,48 +166,45 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return isOpen;
         }
 
-        void persistLastSelectedValues(bool useKeyPair, string password)
+        private void persistLastSelectedValues(bool useKeyPair, string password)
         {
             var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.EC2ConnectSettings);
-            var os = settings[this.InstanceId];
+            var os = settings[InstanceId];
 
             os[ToolkitSettingsConstants.EC2InstanceUseKeyPair] = useKeyPair.ToString();
-            os[ToolkitSettingsConstants.EC2InstanceMapDrives] = this._model.MapDrives.ToString();
-            os[ToolkitSettingsConstants.EC2InstanceSaveCredentials] = this._model.SaveCredentials.ToString();
+            os[ToolkitSettingsConstants.EC2InstanceMapDrives] = _model.MapDrives.ToString();
+            os[ToolkitSettingsConstants.EC2InstanceSaveCredentials] = _model.SaveCredentials.ToString();
 
-            if (useKeyPair || !this._model.SaveCredentials)
+            if (useKeyPair || !_model.SaveCredentials)
             {
                 os[ToolkitSettingsConstants.EC2InstanceUserName] = null;
                 os[ToolkitSettingsConstants.EC2InstancePassword] = null;
             }
             else
             {
-                os[ToolkitSettingsConstants.EC2InstanceUserName] = this._model.EnteredUsername;
+                os[ToolkitSettingsConstants.EC2InstanceUserName] = _model.EnteredUsername;
                 os[ToolkitSettingsConstants.EC2InstancePassword] = password;
             }
 
             PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.EC2ConnectSettings, settings);
 
-            if (string.IsNullOrEmpty(password) && !this._usingStoredPrivateKey && this.Model.SavePrivateKey)
+            if (string.IsNullOrEmpty(password) && !_usingStoredPrivateKey && Model.SavePrivateKey)
             {
-                KeyPairLocalStoreManager.Instance.SavePrivateKey(this._featureViewModel.AccountViewModel,
-                    this._featureViewModel.Region.Id,
-                    this._instance.NativeInstance.KeyName,
-                    this.Model.PrivateKey);
+                KeyPairLocalStoreManager.Instance.SavePrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName, Model.PrivateKey);
             }
         }
 
-        void loadLastSelectedValues(out bool useKeyPair, out string password)
+        private void loadLastSelectedValues(out bool useKeyPair, out string password)
         {
             var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.EC2ConnectSettings);
-            var os = settings[this.InstanceId];
+            var os = settings[InstanceId];
 
             useKeyPair = Convert.ToBoolean(os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceUseKeyPair, true.ToString()));
             password = os[ToolkitSettingsConstants.EC2InstancePassword];
 
-            this._model.MapDrives = Convert.ToBoolean(os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceMapDrives, true.ToString()));
-            this._model.SaveCredentials = Convert.ToBoolean(os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceSaveCredentials, true.ToString()));
-            this._model.EnteredUsername = os[ToolkitSettingsConstants.EC2InstanceUserName];
+            _model.MapDrives = Convert.ToBoolean(os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceMapDrives, true.ToString()));
+            _model.SaveCredentials = Convert.ToBoolean(os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceSaveCredentials, true.ToString()));
+            _model.EnteredUsername = os[ToolkitSettingsConstants.EC2InstanceUserName];
         }
 
         private static Result AsMetricResult(ActionResults actionResults)
@@ -227,7 +224,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         
         private void RecordRemoteConnection(ITelemetryLogger telemetryLogger, Result result)
         {
-            var accountId = _featureViewModel.AccountViewModel.GetAccountId(_featureViewModel?.Region) ??
+            var accountId = _toolkitContext.ServiceClientManager.GetAccountId(_connectionSettings) ??
                             MetadataValue.Invalid;
 
             telemetryLogger.RecordEc2ConnectToInstance(new Ec2ConnectToInstance()
@@ -235,7 +232,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 Result = result,
                 Ec2ConnectionType = Ec2ConnectionType.RemoteDesktop,
                 AwsAccount = accountId,
-                AwsRegion = _featureViewModel?.Region?.Id ?? MetadataValue.NotSet,
+                AwsRegion = _connectionSettings.Region?.Id ?? MetadataValue.NotSet,
             });
         }
     }

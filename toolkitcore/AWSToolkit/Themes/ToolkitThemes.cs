@@ -65,7 +65,7 @@ namespace Amazon.AWSToolkit.Themes
         public static object ToolTipBackgroundBrushKey => GetThemeBrushKeys().ToolTipBackground;
         public static object ToolTipBorderBrushKey => GetThemeBrushKeys().ToolTipBorder;
         public static object ToolTipTextBrushKey => GetThemeBrushKeys().ToolTipText;
-
+        public static object ToolBarBackgroundBrushKey => GetThemeBrushKeys().ToolBarBackground;
         public static object Heading1FontSizeKey => GetThemeFontKeys().Heading1FontSize;
         public static object Heading1FontWeightKey => GetThemeFontKeys().Heading1FontWeight;
         public static object Heading2FontSizeKey => GetThemeFontKeys().Heading2FontSize;

@@ -1,7 +1,7 @@
 ﻿using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.EC2.ConnectionUtils;
-
+using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -10,6 +10,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public override string Executable => SSHUtil.PUTTY_EXECUTABLE;
 
         public override string ToolSearchFolders => @"";
+
+        public OpenSSHSessionController(ToolkitContext toolkitContext)
+            : base(toolkitContext) { }
 
         public override OpenLinuxToolControl CreateControl(bool useKeyPair, string password)
         {

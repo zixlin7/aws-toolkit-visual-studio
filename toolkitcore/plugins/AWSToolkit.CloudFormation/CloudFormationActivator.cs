@@ -17,12 +17,15 @@ using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using log4net;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.CloudFormation.Model;
+using Amazon.AWSToolkit.Credentials.Core;
 
 namespace Amazon.AWSToolkit.CloudFormation
 {
     public class CloudFormationActivator : AbstractPluginActivator, IAWSCloudFormation, IAWSToolkitDeploymentService
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(CloudFormationActivator));
+        static readonly ILog Logger = LogManager.GetLogger(typeof(CloudFormationActivator));
 
         private static readonly string CloudFormationServiceName =
             new AmazonCloudFormationConfig().RegionEndpointServiceName;
@@ -44,29 +47,51 @@ namespace Amazon.AWSToolkit.CloudFormation
         public override object QueryPluginService(Type serviceType)
         {
             if (serviceType == typeof(IAWSCloudFormation))
-                return this as IAWSCloudFormation;
+            {
+                return this;
+            }
 
             if (serviceType == typeof(IAWSToolkitDeploymentService))
-                return this as IAWSToolkitDeploymentService;
+            {
+                return this;
+            }
 
             if (serviceType == typeof(ICloudFormationViewer))
             {
-                return new CloudFormationViewer(ToolkitContext.ToolkitHost, ToolkitFactory.Instance.Navigator);
+                return new CloudFormationViewer(ToolkitContext);
             }
+
             return null;
         }
 
-
-        void setupContextMenuHooks(CloudFormationRootViewMetaNode rootNode)
+        private void setupContextMenuHooks(CloudFormationRootViewMetaNode rootNode)
         {
             rootNode.OnCreate =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateStackController>().Execute);
 
-            rootNode.CloudFormationStackViewMetaNode.OnOpen =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewStackController>().Execute);
+            rootNode.CloudFormationStackViewMetaNode.OnOpen = OnOpenStack;
 
             rootNode.CloudFormationStackViewMetaNode.OnDelete =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteStackController>().Execute);
+        }
+
+        public ActionResults OnOpenStack(IViewModel viewModel)
+        {
+            if (!(viewModel is CloudFormationStackViewModel cloudFormationStackViewModel))
+            {
+                Logger.Error($"Did not receive {nameof(CloudFormationStackViewModel)} when trying to view CloudFormation stack. Cancelling.");
+                Logger.Error($"Received: {viewModel?.GetType().Name ?? "null"}");
+                return new ActionResults().WithSuccess(false);
+            }
+
+            var region = cloudFormationStackViewModel.CloudFormationRootViewModel.Region;
+            var model = new ViewStackModel(region.Id, cloudFormationStackViewModel.StackName);
+            var connectionSettings = new AwsConnectionSettings(cloudFormationStackViewModel.AccountViewModel.Identifier, region);
+
+            return new ConnectionContextCommandExecutor(
+                () => new ViewStackController(model, ToolkitContext, connectionSettings),
+                ToolkitContext.ToolkitHost
+            ).Execute();
         }
 
         #region IAWSCloudFormation Members
@@ -161,7 +186,7 @@ namespace Amazon.AWSToolkit.CloudFormation
             }
             catch (Exception e) 
             {
-                LOGGER.ErrorFormat("Exception while probing for existence of stack {0}: {1}", stackName, e.Message);
+                Logger.ErrorFormat("Exception while probing for existence of stack {0}: {1}", stackName, e.Message);
             }
 
             return isValid;

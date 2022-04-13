@@ -23,6 +23,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             IamRoleEditor = new DataTemplate(),
             VpcEditor = new DataTemplate(),
             Ec2InstanceTypeEditor = new DataTemplate(),
+            EcrRepositoryEditor = new DataTemplate(),
         };
 
         [Fact]
@@ -122,6 +123,17 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
                 .Build();
 
             Assert.Equal(_sut.IamRoleEditor, _sut.SelectTemplate(detail, null));
+        }
+
+        [Fact]
+        public void SelectTemplate_EcrRepositoryHintType()
+        {
+            var detail = ConfigurationDetailBuilder.Create()
+                .WithType(DetailType.String)
+                .WithTypeHint(ConfigurationDetail.TypeHints.EcrRepository)
+                .Build();
+
+            Assert.Equal(_sut.EcrRepositoryEditor, _sut.SelectTemplate(detail, null));
         }
 
         [Fact]

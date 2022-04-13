@@ -220,6 +220,22 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         }
 
         [Fact]
+        public void CreateFrom_EcrRepositoryTypeHint()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithType("String")
+                .WithTypeHint(ConfigurationDetail.TypeHints.EcrRepository)
+                .WithValue("some-repo")
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            var detail = Assert.IsType<EcrRepositoryConfigurationDetail>(configurationDetail);
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+            Assert.Equal("some-repo", detail.Value);
+        }
+
+        [Fact]
         public void CreateFrom_VpcTypeHint()
         {
             var itemSummary = OptionSettingItemSummaryBuilder.Create()

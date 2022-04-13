@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Windows;
 
-using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.Runtime.Internal.Settings;
-using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit.EC2.View;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2.ConnectionUtils;
-
+using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.EC2.View;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Util;
 using Amazon.EC2;
 using Amazon.EC2.Model;
+using Amazon.Runtime.Internal.Settings;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -21,8 +21,15 @@ namespace Amazon.AWSToolkit.EC2.Controller
         protected IAmazonEC2 _ec2Client;
         protected RunningInstanceWrapper _instance;
         protected OpenLinuxToolModel _model;
-        protected FeatureViewModel _featureViewModel;
+        protected readonly ToolkitContext _toolkitContext;
+        protected AwsConnectionSettings _connectionSettings;
+        protected string _uniqueKey;
         private bool _usingStoredPrivateKey;
+
+        public OpenLinuxToolController(ToolkitContext toolkitContext)
+{
+            _toolkitContext = toolkitContext;
+        }
 
         public abstract string Executable
         {
@@ -40,35 +47,34 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public abstract OpenLinuxToolControl CreateControl(bool useKeyPair, string password);
 
-        public ActionResults Execute(FeatureViewModel featureViewModel, RunningInstanceWrapper instance)
+        public ActionResults Execute(AwsConnectionSettings connectionSettings, RunningInstanceWrapper instance)
         {
+            _connectionSettings = connectionSettings;
+            _uniqueKey = _toolkitContext.CredentialSettingsManager.GetUniqueKey(_connectionSettings.CredentialIdentifier);
+
             if (!instance.HasPublicAddress)
             {
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Instance IP Address", EC2Constants.NO_PUBLIC_IP_CONFIRM_CONNECT_PRIVATE_IP))
+                if (!_toolkitContext.ToolkitHost.Confirm("Instance IP Address", EC2Constants.NO_PUBLIC_IP_CONFIRM_CONNECT_PRIVATE_IP))
                 {
                     return new ActionResults().WithSuccess(false);
                 }
             }
 
-            this._featureViewModel = featureViewModel;
-            this._ec2Client = featureViewModel.EC2Client;
-            this._instance = instance;
-            this._model = new OpenLinuxToolModel(instance);
-            this._model.ToolLocation = ToolsUtil.FindTool(Executable, ToolSearchFolders);
+            _ec2Client = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(_connectionSettings.CredentialIdentifier, _connectionSettings.Region);
+            _instance = instance;
+            _model = new OpenLinuxToolModel(instance);
+            _model.ToolLocation = ToolsUtil.FindTool(Executable, ToolSearchFolders);
 
-            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._featureViewModel.AccountViewModel,
-                this._featureViewModel.Region.Id, this._instance.NativeInstance.KeyName))
+            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName))
             {
-                this._model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(this._featureViewModel.AccountViewModel,
-                    this._featureViewModel.Region.Id, this._instance.NativeInstance.KeyName);
-
-                this._usingStoredPrivateKey = true;
+                _model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName);
+                _usingStoredPrivateKey = true;
             }
 
             bool useKeyPair;
             string password;
             loadLastSelectedValues(out useKeyPair, out password);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(CreateControl(useKeyPair, password));
+            _toolkitContext.ToolkitHost.ShowModal(CreateControl(useKeyPair, password));
 
             if (_results == null)
                 return new ActionResults().WithSuccess(false);
@@ -93,7 +99,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
                     var control = new AskToOpenPort(msg, externalIpAddress);
 
-                    if (!isOpen && ToolkitFactory.Instance.ShellProvider.ShowModal(control, MessageBoxButton.OKCancel))
+                    if (!isOpen && _toolkitContext.ToolkitHost.ShowModal(control, MessageBoxButton.OKCancel))
                     {
                         var request = new AuthorizeSecurityGroupIngressRequest() { GroupId = this._instance.NativeInstance.SecurityGroups[0].GroupId };
 
@@ -112,7 +118,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 }
                 else
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShowError(
+                    _toolkitContext.ToolkitHost.ShowError(
                         string.Format("Port {0} is restricted in all security groups associated with this instance.  " +
                         "To connect to this instance allow access to port {0} in one of the associated security groups.", NetworkProtocol.SSH.DefaultPort.Value));
                     return false;
@@ -144,10 +150,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             if (string.IsNullOrEmpty(password) && !this._usingStoredPrivateKey && this.Model.SavePrivateKey)
             {
-                KeyPairLocalStoreManager.Instance.SavePrivateKey(this._featureViewModel.AccountViewModel,
-                    this._featureViewModel.Region.Id,
-                    this._instance.NativeInstance.KeyName,
-                    this.Model.PrivateKey);
+                KeyPairLocalStoreManager.Instance.SavePrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName, Model.PrivateKey);
             }
         }
 

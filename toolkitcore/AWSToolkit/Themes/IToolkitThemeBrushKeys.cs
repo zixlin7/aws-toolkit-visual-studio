@@ -15,5 +15,6 @@
         object ToolTipBorder { get; }
         object ToolTipBackground { get; }
         object ToolTipText { get; }
+        object ToolBarBackground { get; }
     }
 }

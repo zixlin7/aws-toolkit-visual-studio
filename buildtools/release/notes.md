@@ -1,11 +1,9 @@
-## 1.27.0.0 (2022-03-23)
+## 1.28.0.0 (2022-04-12)
 
 ### Changelog
-- **Bug Fix** - Editing Beanstalk environment values now ignores entries with empty keys in the Publish to AWS experience.
-- **Bug Fix** - Fix Publish Container to AWS wizard so that the Schedule Rule Type is correctly restored as Fixed/Cron with the correct expression.
-- **Bug Fix** - Fix showing CloudFormation stack after Publish to AWS completes.
-- **Bug Fix** - Fix issue where AWS Explorer button images would not display
-- **Deprecation** - An upcoming release will remove support for Visual Studio 2017. An info bar has been added to the Toolkit as a reminder - see https://github.com/aws/aws-toolkit-visual-studio/issues/221 for details.
-- **Feature** - The wizard for publishing Lambda projects and Serverless application projects now defaults to the Credentials profile and region from `aws-lambda-tools-defaults.json`. If these values are not found, the current AWS Explorer values are used.
-- **Feature** - Added a way to configure the Credentials and region used when publishing with the "Publish to AWS" experience.
-- **Feature** - Added menu items to view the '.NET on AWS' and '.NET on AWS Community' websites, available from the "AWS Toolkit" menu, located in the "Extensions" menu ("Tools" menu in Visual Studio 2017)
+- **Breaking Change** - From this version on, the Toolkit no longer supports Visual Studio 2017.
+- **Bug Fix** - Fix problem where dropdown controls would not open, and UI controls would flicker when shown on secondary displays. This mostly affected the Publish to AWS settings screen.
+- **Bug Fix** - Fixes case where the Publish to AWS summary screen was unable to open the CloudFormation stack viewer for a profile/region combination that did not match what is currently selected in the AWS Explorer.
+- **Feature** - Add support for publishing .NET 6 applications to Linux based Beanstalk images in the Publish to AWS experience
+- **Feature** - The Publish To Beanstalk experience no longer defaults to using self-contained deployment bundles when publishing .NET 6 projects to Linux images.
+- **Feature** - Publish to AWS experience can now publish images to ECR Repositories

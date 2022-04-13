@@ -39,13 +39,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloudWatchActivator.cs" />
+    <Compile Include="Commands\RefreshLogGroupsCommand.cs" />
+    <Compile Include="Commands\ViewLogGroupsCommand.cs" />
     <Compile Include="Core\CloudWatchLogsRepository.cs" />
     <Compile Include="Core\ICloudWatchLogsRepository.cs" />
+    <Compile Include="Core\ILogSearchProperties.cs" />
+    <Compile Include="Core\IRepositoryFactory.cs" />
+    <Compile Include="Core\RepositoryFactory.cs" />
     <Compile Include="Models\GetLogEventsRequest.cs" />
     <Compile Include="Models\GetLogGroupsRequest.cs" />
     <Compile Include="Models\GetLogStreamsRequest.cs" />
@@ -61,6 +69,13 @@
     <Compile Include="ViewModels\LogGroupsRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ViewModels\LogGroupsViewModel.cs" />
+    <Compile Include="Views\LogGroupsViewerControl.xaml.cs">
+      <DependentUpon>LogGroupsViewerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SearchBar.xaml.cs">
+      <DependentUpon>SearchBar.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -92,5 +107,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Page Include="Views\LogGroupsViewerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SearchBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

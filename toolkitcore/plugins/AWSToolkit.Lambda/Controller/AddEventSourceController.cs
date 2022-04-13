@@ -23,6 +23,7 @@ using Amazon.AWSToolkit.Lambda.View;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using AddPermissionRequest = Amazon.Lambda.Model.AddPermissionRequest;
+using Amazon.AWSToolkit.Credentials.Core;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -108,9 +109,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             {
                 _toolkitContext.TelemetryLogger.RecordLambdaAddEvent(
                     success ? Result.Succeeded : Result.Failed,
-                    this._control.EventSourceType.ToString(),
-                    this._account?.GetAccountId(this._region),
-                    this._region?.Id);
+                    _control.EventSourceType.ToString(),
+                    _account?.ToolkitContext.ServiceClientManager.GetAccountId(new AwsConnectionSettings(_account?.Identifier, _region)),
+                    _region?.Id);
             }
         }
 

@@ -68,5 +68,12 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         {
             RegionProvider.Setup(mock => mock.GetRegion(region.Id)).Returns(region);
         }
+
+        public void SetupCreateServiceClient<TServiceClient>(TServiceClient client) where TServiceClient : class
+        {
+            ServiceClientManager.Setup(mock => mock.CreateServiceClient<TServiceClient>(
+                    It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
+                .Returns(client);
+        }
     }
 }

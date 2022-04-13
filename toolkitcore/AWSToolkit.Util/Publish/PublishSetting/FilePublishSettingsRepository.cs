@@ -52,7 +52,14 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
         {
             using (var file = File.CreateText(_filePath))
             {
-                var serializer = new JsonSerializer() {Formatting = Formatting.Indented};
+                // IgnoreAndPopulate is intended for use with debuggable deploy cli properties (which are meant to be overriden by developers manually)
+                // It ignores properties which are same as their default value when serializing
+                // and set members to their default value when deserializing
+                var serializer = new JsonSerializer()
+                {
+                    Formatting = Formatting.Indented,
+                    DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+                };
                 serializer.Serialize(file, publishSettings);
             }
         }
@@ -82,7 +89,12 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
         {
             try
             {
-                return JsonConvert.DeserializeObject<PublishSettings>(json);
+                var serializerSetting = new JsonSerializerSettings()
+                {
+                    Formatting = Formatting.Indented,
+                    DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+                };
+                return JsonConvert.DeserializeObject<PublishSettings>(json, serializerSetting);
             }
             catch (JsonException e)
             {

@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
 #if VS2022
         public const string AwsToolkitPackageGuidString = Constants.ToolkitPackageGuids.Vs2022AsString;
-#elif VS2017_OR_LATER
+#elif VS2019_OR_LATER
         public const string AwsToolkitPackageGuidString = Constants.ToolkitPackageGuids.Vs20172019AsString;
 #endif
 
@@ -36,6 +36,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         public const string ProxyOptionsGuidString = "5924f985-a351-400a-aae9-dfe37b6837ed";
 
         public const string AWSExplorerToolWindowGuidString = "58d054c4-d113-4446-be66-a2f783515f53";
+        public const string LogGroupsToolWindowGuidString = "84b8a1b5-38c4-49b3-8142-8da39653acf2";
 
         public const string SAWSToolkitServiceGuidString = "b95300f6-10e0-4f28-8edf-00f087d6eebe";
         public const string IAWSToolkitServiceGuidString = "1401bed5-bf44-4f33-a835-04002d66781b";

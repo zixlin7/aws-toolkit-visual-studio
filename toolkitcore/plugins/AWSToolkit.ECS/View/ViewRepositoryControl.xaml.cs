@@ -28,8 +28,8 @@ namespace Amazon.AWSToolkit.ECS.View
         public override string UniqueId =>
             string.Format("Repository: {0} {1}_{2}",
                 this._controller.RepositoryArn,
-                this._controller.EndPointUniqueIdentifier,
-                this._controller.Account.Identifier.Id);
+                this._controller.ConnectionSettings.Region.Id,
+                this._controller.ConnectionSettings.CredentialIdentifier.Id);
 
         public override bool SupportsBackGroundDataLoad => true;
 

@@ -91,6 +91,29 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
         }
 
         [Fact]
+        public async Task ShouldGetNonDefaultSettingsIfPresent()
+        {
+            var json =
+                @"{ ""DeployServer"": { ""PortRange"": { ""Start"": 20000, ""End"": 20001 }, ""AlternateCliPath"": ""mypath"", ""LoggingEnabled"": true, ""AdditionalArguments"": ""args"" }, ""ProxySettings"": { ""Host"": ""This-is-the-host"" }}";
+            WriteJsonFile(json);
+
+            var expectedSettings = new PublishSettings()
+            {
+                DeployServer = new DeployServerSettings(new PortRange(20000, 20001))
+                {
+                    AlternateCliPath = "mypath", AdditionalArguments = "args", LoggingEnabled = true
+                },
+                ShowPublishBanner = true,
+            };
+
+            // act.
+            var settings = await _publishRepository.GetAsync();
+
+            // assert.
+            Assert.Equal(expectedSettings, settings);
+        }
+
+        [Fact]
         public async Task ShouldThrowOnGetWhenFileLocked()
         {
             // arrange.
@@ -118,7 +141,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             var settings = new PublishSettings()
             {
                 DeployServer = new DeployServerSettings(new PortRange(20000, 20001)),
-                ShowPublishBanner = true,
+                ShowPublishBanner = false,
             };
 
             // act.
@@ -130,6 +153,31 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             var actualSettings = await _publishRepository.GetAsync();
 
             Assert.Equal(settings, actualSettings);
+        }
+
+        [Fact]
+        public async Task ShouldNotSaveSettingsWithDefaultValues()
+        {
+            // arrange.
+            var settings = new PublishSettings()
+            {
+                DeployServer = new DeployServerSettings(new PortRange(20000, 20001)) { AlternateCliPath = null },
+                ShowPublishBanner = false,
+            };
+
+            // act.
+            _publishRepository.Save(settings);
+
+            // assert.
+            Assert.True(File.Exists(_filePath));
+
+            var actualSettings = await _publishRepository.GetAsync();
+            var expectedSettings = new PublishSettings()
+            {
+                DeployServer = new DeployServerSettings(new PortRange(20000, 20001)), ShowPublishBanner = false,
+            };
+
+            Assert.Equal(expectedSettings, actualSettings);
         }
 
         [Fact]

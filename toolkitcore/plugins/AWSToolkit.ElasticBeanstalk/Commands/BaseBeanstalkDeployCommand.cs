@@ -234,7 +234,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 var response = client.CreateKeyPair(request);
 
                 IEC2RootViewModel ec2Root = Account.FindSingleChild<IEC2RootViewModel>(false);
-                KeyPairLocalStoreManager.Instance.SavePrivateKey(Account,
+                KeyPairLocalStoreManager.Instance.SavePrivateKey(Account.SettingsUniqueKey,
                     region.Id,
                     keyName,
                     response.KeyPair.KeyMaterial);

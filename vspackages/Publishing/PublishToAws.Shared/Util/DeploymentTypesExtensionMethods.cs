@@ -14,6 +14,8 @@ namespace Amazon.AWSToolkit.Publish.Util
                     return DeploymentArtifact.BeanstalkEnvironment;
                 case DeploymentTypes.CloudFormationStack:
                     return DeploymentArtifact.CloudFormationStack;
+                case DeploymentTypes.ElasticContainerRegistryImage:
+                    return DeploymentArtifact.ElasticContainerRegistry;
                 default:
                     return DeploymentArtifact.Unknown;
             }

@@ -40,13 +40,13 @@ namespace AWSToolkit.Tests.Iam
         }
 
         [Fact]
-        public async Task ListIamRoleArnsAsync()
+        public async Task ListIamRolesAsync()
         {
             int roleCount = 5;
             SetupListRoles(roleCount);
 
-            var arns = await _sut.ListIamRoleArnsAsync(FakeCredentialIdentifier.Create("profile-name"), new ToolkitRegion());
-            Assert.Equal(roleCount, arns.Count);
+            var roles = await _sut.ListIamRolesAsync(FakeCredentialIdentifier.Create("profile-name"), new ToolkitRegion());
+            Assert.Equal(roleCount, roles.Count);
         }
 
         private void SetupListRoles(int roleCount)

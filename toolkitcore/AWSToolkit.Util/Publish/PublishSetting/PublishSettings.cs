@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace Amazon.AWSToolkit.Publish.PublishSetting
@@ -10,6 +11,7 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
     {
         public DeployServerSettings DeployServer { get; set; }
 
+        [DefaultValue(true)]
         public bool ShowPublishBanner { get; set; } = true;
 
         public static PublishSettings CreateDefault()

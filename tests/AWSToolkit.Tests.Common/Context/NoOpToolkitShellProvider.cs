@@ -4,6 +4,7 @@ using System.Windows;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
+using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 
@@ -108,7 +109,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         }
 
-        public void OutputToHostConsole(string message, bool forceVisible)
+        public virtual void OutputToHostConsole(string message, bool forceVisible)
         {
 
         }
@@ -184,6 +185,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         }
 
         public IDialogFactory GetDialogFactory()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IToolWindowFactory GetToolWindowFactory()
         {
             throw new NotImplementedException();
         }

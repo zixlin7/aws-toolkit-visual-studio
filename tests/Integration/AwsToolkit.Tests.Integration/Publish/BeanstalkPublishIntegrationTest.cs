@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
     {
         public BeanstalkPublishIntegrationTest(DeployCliInstallationFixture cliInstallFixture) : base(cliInstallFixture)
         {
-            ProjectPath = TestProjects.GetASPNet5();
+            ProjectPath = TestProjects.GetASPNet6();
             StackName = UniqueStackName.CreateWith("BeanstalkTest");
         }
 
@@ -30,6 +30,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
             // assert
             Assert.Equal(DeploymentStatus.Success, status);
+            await AssertDeploymentDetailsAreValid();
             await AssertProjectWasDeployed();
         }
 

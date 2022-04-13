@@ -10,7 +10,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
     {
         public FargatePublishIntegrationTest(DeployCliInstallationFixture cliInstallFixture) : base(cliInstallFixture)
         {
-            ProjectPath = TestProjects.GetASPNet5();
+            ProjectPath = TestProjects.GetASPNet6();
             StackName = UniqueStackName.CreateWith("FargateTest");
         }
 
@@ -26,6 +26,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
             // assert
             Assert.Equal(DeploymentStatus.Success, status);
+            await AssertDeploymentDetailsAreValid();
             await AssertProjectWasDeployed();
         }
 

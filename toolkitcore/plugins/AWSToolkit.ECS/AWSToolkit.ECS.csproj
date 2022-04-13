@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EcrViewer.cs" />
     <Compile Include="CloudWatchEventHelper.cs" />
     <Compile Include="Controller\CreateRepositoryController.cs" />
     <Compile Include="Controller\CreateTaskDefinitionController.cs" />

@@ -27,6 +27,7 @@
         Refresh,
         Remove,
         RemoveLink,
+        Search,
         StatusError,
         StatusInformation,
         StatusOK,

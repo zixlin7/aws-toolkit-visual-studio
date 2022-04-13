@@ -1,7 +1,7 @@
 ﻿using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.EC2.ConnectionUtils;
-
+using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -15,6 +15,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             return new OpenSCPSessionControl(this, useKeyPair, password);
         }
+
+        public OpenSCPSessionController(ToolkitContext toolkitContext)
+            : base(toolkitContext) { }
 
         public void OpenSCPSessionWithCredentials(string password)
         {

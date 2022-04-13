@@ -10,7 +10,6 @@ using Amazon.AWSToolkit.Publish.Install;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Publish.Services;
-using Amazon.AWSToolkit.Shared;
 
 using log4net;
 
@@ -117,7 +116,8 @@ namespace Amazon.AWSToolkit.Publish.Package
             {
                 if (_cliServer == null)
                 {
-                    _cliServer = await CliServerFactory.CreateAsync(_publishContext.InstallOptions, _publishContext.PublishSettingsRepository);
+                    _cliServer = await CliServerFactory.CreateAsync(_publishContext.InstallOptions,
+                        _publishContext.PublishSettingsRepository, _publishContext.ToolkitShellProvider);
                 }
 
                 return _cliServer;

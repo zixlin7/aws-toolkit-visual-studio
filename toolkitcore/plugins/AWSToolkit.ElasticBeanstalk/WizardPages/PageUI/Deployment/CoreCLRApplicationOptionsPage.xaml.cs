@@ -64,7 +64,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        public bool BuildSelfContainedBundle { get; set; }
+        private bool _buildSelfContainedBundle;
+        public bool BuildSelfContainedBundle
+        {
+            get { return this._buildSelfContainedBundle; }
+            set
+            {
+                this._buildSelfContainedBundle = value;
+                NotifyPropertyChanged(nameof(BuildSelfContainedBundle));
+            }
+        }
 
         private bool _isLinuxDeployment;
         public bool IsLinuxDeployment

@@ -35,6 +35,7 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource Refresh => _imageProvider?.GetImage(VsKnownImages.Refresh, 16);
         public BitmapSource Remove => _imageProvider?.GetImage(VsKnownImages.Remove, 16);
         public BitmapSource RemoveLink => _imageProvider?.GetImage(VsKnownImages.RemoveLink, 16);
+        public BitmapSource Search => _imageProvider?.GetImage(VsKnownImages.Search, 16);
         public BitmapSource StatusError => _imageProvider?.GetImage(VsKnownImages.StatusError, 16);
         public BitmapSource StatusError32 => _imageProvider?.GetImage(VsKnownImages.StatusError, 32);
         public BitmapSource StatusInformation => _imageProvider?.GetImage(VsKnownImages.StatusInformation, 16);

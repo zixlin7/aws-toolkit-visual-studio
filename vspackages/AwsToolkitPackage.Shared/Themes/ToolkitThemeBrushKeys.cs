@@ -22,5 +22,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         public object ToolTipBorder => EnvironmentColors.ToolTipBorderBrushKey;
         public object ToolTipBackground => EnvironmentColors.ToolTipBrushKey;
         public object ToolTipText => EnvironmentColors.ToolTipTextBrushKey;
+        public object ToolBarBackground => EnvironmentColors.CommandBarGradientBrushKey;
     }
 }

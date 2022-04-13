@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.IdentityManagement;
+using Amazon.AWSToolkit.IdentityManagement.Models;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
@@ -24,7 +25,7 @@ namespace AWSToolkit.Tests.CommonUI
 
         private readonly FakeCredentialIdentifier _sampleCredentialsId = FakeCredentialIdentifier.Create("fake-profile");
         private readonly ToolkitRegion _sampleToolkitRegion = new ToolkitRegion();
-        private readonly List<string> _roleArns = new List<string>();
+        private readonly List<IamRole> _roles = new List<IamRole>();
 
         public IamRoleSelectionViewModelTests()
         {
@@ -32,41 +33,66 @@ namespace AWSToolkit.Tests.CommonUI
             var taskContext = new JoinableTaskContext();
 #pragma warning restore VSSDK005
 
-            SetupListIamRoleArns();
+            SetupListIamRoles();
 
             _sut = new IamRoleSelectionViewModel(_iamEntities.Object, taskContext.Factory);
             _sut.CredentialsId = _sampleCredentialsId;
             _sut.Region = _sampleToolkitRegion;
         }
 
-        private void SetupListIamRoleArns()
+        private void SetupListIamRoles()
         {
             _iamEntities.Setup(mock =>
-                    mock.ListIamRoleArnsAsync(It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
-                .ReturnsAsync(() => _roleArns);
+                    mock.ListIamRolesAsync(It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
+                .ReturnsAsync(() => _roles);
         }
 
         [StaFact]
         public async Task RefreshRolesAsync()
         {
-            int arnCount = 10;
-            PopulateSampleRoleArns(arnCount);
+            int roleCount = 10;
+            PopulateSampleRoles(roleCount);
 
             await _sut.RefreshRolesAsync();
 
-            Assert.Equal(arnCount, _sut.RoleArns.Count);
-            Assert.Equal(_roleArns, _sut.RoleArns);
+            Assert.Equal(roleCount, _sut.RoleArns.Count);
+            Assert.Equal(_roles.Select(r => r.Arn), _sut.RoleArns);
 
-            _iamEntities.Verify(mock => mock.ListIamRoleArnsAsync(_sut.CredentialsId, _sut.Region), Times.Once);
+            _iamEntities.Verify(mock => mock.ListIamRolesAsync(_sut.CredentialsId, _sut.Region), Times.Once);
         }
 
-        private void PopulateSampleRoleArns(int arnCount)
+        [StaFact]
+        public async Task RefreshRolesAsync_WithServicePrincipalFilter()
         {
-            Enumerable.Range(0, arnCount)
+            _sut.ServicePrincipalFilter = "some-service-principal";
+
+            int totalRoles = 10;
+            PopulateSampleRoles(totalRoles);
+
+            int expectedRoleCount = 4;
+            var expectedRoles = _roles.Take(expectedRoleCount).ToList();
+            expectedRoles.ForEach(r => r.AssumeRolePolicyDocument = $"some policy doc that includes: {_sut.ServicePrincipalFilter}");
+
+            await _sut.RefreshRolesAsync();
+
+            Assert.Equal(expectedRoleCount, _sut.RoleArns.Count);
+            Assert.Equal(expectedRoles.Select(r => r.Arn), _sut.RoleArns);
+
+            _iamEntities.Verify(mock => mock.ListIamRolesAsync(_sut.CredentialsId, _sut.Region), Times.Once);
+        }
+
+        private void PopulateSampleRoles(int roleCount)
+        {
+            Enumerable.Range(0, roleCount)
                 .ToList()
                 .ForEach(i =>
                 {
-                    _roleArns.Add($"sample-role-arn-{i}");
+                    _roles.Add(new IamRole()
+                    {
+                        Arn = $"sample-role-arn-{i}",
+                        Id = $"sample-role-id-{i}",
+                        Name = $"sample-role-name-{i}",
+                    });
                 });
         }
 

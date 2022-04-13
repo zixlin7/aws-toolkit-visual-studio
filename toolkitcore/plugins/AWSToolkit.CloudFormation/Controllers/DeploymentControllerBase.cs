@@ -9,16 +9,15 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Util;
-
-using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Util;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 
 using AWSDeployment;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
@@ -30,7 +29,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         protected CloudFormationDeploymentEngine Deployment { get; set; }
         protected DeploymentControllerBaseObserver Observer { get; set; }
         
-        protected static ILog LOGGER;
+        protected static ILog Logger;
         protected IDictionary<string, object> DeploymentProperties { get; }
         protected ToolkitContext ToolkitContext { get; set; }
 
@@ -134,9 +133,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
         protected void WriteOutputMessage(string message)
         {
-            ToolkitFactory.Instance.ShellProvider.OutputToHostConsole(message, true);
-            ToolkitFactory.Instance.ShellProvider.UpdateStatus(message);
-            LOGGER.InfoFormat("Publish to AWS CloudFormation: {0}", message);
+            ToolkitContext.ToolkitHost.OutputToHostConsole(message, true);
+            ToolkitContext.ToolkitHost.UpdateStatus(message);
+            Logger.InfoFormat("Publish to AWS CloudFormation: {0}", message);
         }
 
         protected void CreateKeyPair(AccountViewModel account)
@@ -146,11 +145,10 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             var request = new CreateKeyPairRequest() { KeyName = keyName };
             var response = EC2Client.CreateKeyPair(request);
 
-            LOGGER.Debug("key pair created");
-            IEC2RootViewModel ec2Root = account.FindSingleChild<IEC2RootViewModel>(false);
-            KeyPairLocalStoreManager.Instance.SavePrivateKey(account, Region.Id, keyName,
+            Logger.Debug("key pair created");
+            KeyPairLocalStoreManager.Instance.SavePrivateKey(account.SettingsUniqueKey, Region.Id, keyName,
                 response.KeyPair.KeyMaterial);
-            LOGGER.Debug("key pair created, stored in local store");
+            Logger.Debug("key pair created, stored in local store");
         }
 
         protected void SelectNewTreeItems(AccountViewModel account)
@@ -184,7 +182,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             if (stack != null && showStatus)
             {
                 CloudFormationStackViewMetaNode meta = stack.MetaNode as CloudFormationStackViewMetaNode;
-                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => stack.ExecuteDefaultAction() /* meta.OnOpen(stack)*/));
+                ToolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() => stack.ExecuteDefaultAction() /* meta.OnOpen(stack)*/));
 
                 ToolkitFactory.Instance.Navigator.SelectedNode = stack;
             }

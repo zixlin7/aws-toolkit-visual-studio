@@ -55,6 +55,10 @@
     <Compile Include="CloudWatch\CloudWatchLogsExtensionMethodTests.cs" />
     <Compile Include="CloudWatch\CloudWatchLogsRepositoryTests.cs" />
     <Compile Include="CloudWatch\CloudWatchRootViewModelTests.cs" />
+    <Compile Include="CloudWatch\LogGroupsViewModelTests.cs" />
+    <Compile Include="CloudWatch\RefreshLogGroupsCommandTests.cs" />
+    <Compile Include="CloudWatch\TestCloudWatchRootViewModel.cs" />
+    <Compile Include="CloudWatch\ViewLogGroupsCommandTests.cs" />
     <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
     <Compile Include="CodeArtifact\ConfigurationTests.cs" />
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
@@ -72,6 +76,8 @@
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
     <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
+    <Compile Include="CommonUI\HasValueVisibilityConverterTests.cs" />
+    <Compile Include="CommonUI\RepositorySelectionViewModelTests.cs" />
     <Compile Include="CommonUI\InstanceTypeSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\VpcSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\IamRoleSelectionViewModelTests.cs" />
@@ -114,8 +120,10 @@
     <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertyMappingTests.cs" />
     <Compile Include="Ec2\VpcEntityTests.cs" />
+    <Compile Include="Ecr\EcrViewerTests.cs" />
     <Compile Include="Ecr\RepoRepositoryTests.cs" />
     <Compile Include="Ecr\RepositoryConversionTests.cs" />
+    <Compile Include="Ecr\RepositoryFactoryFixture.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsDeployTestFixture.cs" />

@@ -10,34 +10,24 @@ namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class EC2RootViewModel : EC2ServiceViewModel, IEC2RootViewModel
     {
-        private readonly ToolkitContext _toolkitContext;
-        EC2RootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
-
         public EC2RootViewModel(ToolkitContext toolkitContext, AccountViewModel accountViewModel, ToolkitRegion region)
-            : base(accountViewModel.MetaNode.FindChild <EC2RootViewMetaNode>(), accountViewModel, "Amazon EC2", region)
-        {
-            _toolkitContext = toolkitContext;
-            this._metaNode = base.MetaNode as EC2RootViewMetaNode;
-            this._accountViewModel = accountViewModel;
-        }
+            : base(accountViewModel.MetaNode.FindChild <EC2RootViewMetaNode>(), accountViewModel, "Amazon EC2", region) { }
 
         public override string ToolTip => "Amazon Elastic Compute Cloud delivers scalable, pay-as-you-go compute capacity in the cloud.";
 
         protected override string IconName => AwsImageResourcePath.Ec2.Path;
-
 
         protected override void LoadChildren()
         {
             try
             {
                 List<IViewModel> items = new List<IViewModel>();
-                items.Add(new EC2AMIsViewModel(this.MetaNode.FindChild<EC2AMIsViewMetaNode>(), this));
-                items.Add(new EC2InstancesViewModel(_toolkitContext, this.MetaNode.FindChild<EC2InstancesViewMetaNode>(), this));
-                items.Add(new EC2KeyPairsViewModel(this.MetaNode.FindChild<EC2KeyPairsViewMetaNode>(), this));
-                items.Add(new SecurityGroupsViewModel(this.MetaNode.FindChild<SecurityGroupsViewMetaNode>(), this));
-                items.Add(new EC2VolumesViewModel(this.MetaNode.FindChild<EC2VolumesViewMetaNode>(), this));
-                items.Add(new ElasticIPsViewModel(this.MetaNode.FindChild<ElasticIPsViewMetaNode>(), this));
+                items.Add(new EC2AMIsViewModel(MetaNode.FindChild<EC2AMIsViewMetaNode>(), this));
+                items.Add(new EC2InstancesViewModel(MetaNode.FindChild<EC2InstancesViewMetaNode>(), this));
+                items.Add(new EC2KeyPairsViewModel(MetaNode.FindChild<EC2KeyPairsViewMetaNode>(), this));
+                items.Add(new SecurityGroupsViewModel(MetaNode.FindChild<SecurityGroupsViewMetaNode>(), this));
+                items.Add(new EC2VolumesViewModel(MetaNode.FindChild<EC2VolumesViewMetaNode>(), this));
+                items.Add(new ElasticIPsViewModel(MetaNode.FindChild<ElasticIPsViewMetaNode>(), this));
                 SetChildren(items);
             }
             catch (Exception e)

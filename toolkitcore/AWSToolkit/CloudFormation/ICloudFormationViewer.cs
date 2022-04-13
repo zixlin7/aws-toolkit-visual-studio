@@ -1,5 +1,4 @@
 ﻿using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CloudFormation
 {
@@ -8,6 +7,6 @@ namespace Amazon.AWSToolkit.CloudFormation
     // can untangle the knot that is the homegrown plugin solution gone awry.
     public interface ICloudFormationViewer
     {
-        void View(string stackName, ICredentialIdentifier identifier, ToolkitRegion region);
+        void View(string stackName, AwsConnectionSettings connectionSettings);
     }
 }

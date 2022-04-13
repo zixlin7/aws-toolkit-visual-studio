@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             _stackViewerCommand.Execute(null);
 
             ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(ICloudFormationViewer)), Times.Once);
-            _cloudFormationViewer.Verify(view => view.View(SampleStackName, It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()), Times.Once);
+            _cloudFormationViewer.Verify(view => view.View(SampleStackName, It.IsAny<AwsConnectionSettings>()), Times.Once);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             _stackViewerCommand.Execute(null);
 
             ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(ICloudFormationViewer)), Times.Once);
-            _cloudFormationViewer.Verify(view => view.View(SampleStackName, It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()), Times.Never);
+            _cloudFormationViewer.Verify(view => view.View(SampleStackName, It.IsAny<AwsConnectionSettings>()), Times.Never);
             ToolkitHost.Verify(host => host.OutputToHostConsole(It.Is<string>(str => str.Contains("Error viewing")), true), Times.Once);
         }
     }

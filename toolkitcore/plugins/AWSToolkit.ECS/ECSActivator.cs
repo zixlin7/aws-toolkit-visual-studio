@@ -1,15 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Ecr;
 using Amazon.AWSToolkit.ECS.Controller;
+using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.ECS.PluginServices.Ecr;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.ECS
 {
     public class ECSActivator : AbstractPluginActivator, IAWSECS
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ECSActivator));
+
         public override string PluginName => "ECS";
 
         public bool SupportedInThisVersionOfVS()
@@ -57,6 +66,11 @@ namespace Amazon.AWSToolkit.ECS
                 return new RepositoryFactory(ToolkitContext);
             }
 
+            if (serviceType == typeof(IEcrViewer))
+            {
+                return new EcrViewer(ToolkitContext);
+            }
+
             return null;
         }
 
@@ -86,8 +100,26 @@ namespace Amazon.AWSToolkit.ECS
             var repositoriesRootNode = rootNode.FindChild<RepositoriesRootViewMetaNode>();
             repositoriesRootNode.OnCreateRepository = new CommandInstantiator<CreateRepositoryController>().Execute;
             var repositoryNode = repositoriesRootNode.FindChild<RepositoryViewMetaNode>();
-            repositoryNode.OnView = new CommandInstantiator<ViewRepositoryController>().Execute;
+            repositoryNode.OnView = OnViewRepository;
             repositoryNode.OnDelete = new CommandInstantiator<DeleteRepositoryController>().Execute;
+        }
+
+        private ActionResults OnViewRepository(IViewModel viewModel)
+        {
+            if (!(viewModel is RepositoryViewModel repositoryViewModel))
+            {
+                Logger.Error($"Did not receive {nameof(RepositoryViewModel)} when trying to view ECR Repo. Cancelling.");
+                Logger.Error($"Received: {viewModel?.GetType().Name ?? "null"}");
+                return new ActionResults().WithSuccess(false);
+            }
+
+            var model = new ViewRepositoryModel() { Repository = repositoryViewModel.Repository, };
+
+            return new ConnectionContextCommandExecutor(() =>
+                    new ViewRepositoryController(model,
+                        new AwsConnectionSettings(repositoryViewModel.AccountViewModel.Identifier, repositoryViewModel.Region),
+                        ToolkitContext, repositoryViewModel.ECRClient),
+                ToolkitContext.ToolkitHost).Execute();
         }
 
         public void PublishContainerToAWS(Dictionary<string, object> seedProperties)

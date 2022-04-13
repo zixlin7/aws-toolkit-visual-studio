@@ -86,7 +86,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             {
                 if (key.IsStoredLocally)
                 {
-                    KeyPairLocalStoreManager.Instance.ClearPrivateKey(this.FeatureViewModel.AccountViewModel,
+                    KeyPairLocalStoreManager.Instance.ClearPrivateKey(this.FeatureViewModel.AccountViewModel.SettingsUniqueKey,
                         this.FeatureViewModel.Region.Id, key.NativeKeyPair.KeyName);
                     key.RaiseStoredLocallyEvent();
                 }
@@ -101,14 +101,14 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 privateKey = reader.ReadToEnd();
             }
 
-            KeyPairLocalStoreManager.Instance.SavePrivateKey(this.FeatureViewModel.AccountViewModel,
+            KeyPairLocalStoreManager.Instance.SavePrivateKey(this.FeatureViewModel.AccountViewModel.SettingsUniqueKey,
                 this.FeatureViewModel.Region.Id, key.NativeKeyPair.KeyName, privateKey);
             key.RaiseStoredLocallyEvent();
         }
 
         public void ExportPrivatekey(KeyPairWrapper key, string file)
         {
-            string privateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(this.FeatureViewModel.AccountViewModel,
+            string privateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(this.FeatureViewModel.AccountViewModel.SettingsUniqueKey,
                 this.FeatureViewModel.Region.Id, key.NativeKeyPair.KeyName);
 
             using (StreamWriter writer = new StreamWriter(file))

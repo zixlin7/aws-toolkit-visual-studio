@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
+using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 
@@ -256,6 +257,12 @@ namespace Amazon.AWSToolkit.Shared
         /// Get the factory responsible for creating Toolkit dialogs
         /// </summary>
         IDialogFactory GetDialogFactory();
+
+        /// <summary>
+        /// Get the factory responsible for creating tool windows
+        /// </summary>
+        /// <returns></returns>
+        IToolWindowFactory GetToolWindowFactory();
     }
 
     /// <summary>

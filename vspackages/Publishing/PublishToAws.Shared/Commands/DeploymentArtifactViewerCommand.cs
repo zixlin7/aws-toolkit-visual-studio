@@ -30,6 +30,10 @@ namespace Amazon.AWSToolkit.Publish.Commands
                         DeploymentArtifact.CloudFormationStack,
                         StackViewerCommandFactory.Create(viewModel)
                     },
+                    {
+                        DeploymentArtifact.ElasticContainerRegistry,
+                        EcrRepoViewerCommandFactory.Create(viewModel)
+                    },
                 });
         }
 

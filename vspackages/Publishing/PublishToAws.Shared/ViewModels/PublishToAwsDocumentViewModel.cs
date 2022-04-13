@@ -18,6 +18,7 @@ using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
+using Amazon.AWSToolkit.Publish.Views;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -459,6 +460,18 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set => SetProperty(ref _stackName, value);
         }
 
+        // NOTE: This field should be made data-driven through the deploy API.
+        // Until that is available, we hard-code its behavior.
+        public bool IsApplicationNameRequired
+        {
+            get
+            {
+                if (PublishDestination == null) return true;
+
+                return PublishDestination.DeploymentArtifact != DeploymentArtifact.ElasticContainerRegistry;
+            }
+        }
+
         /// <summary>
         /// Stack name for the application specified in the Publish view of Select Targets UI
         /// </summary>
@@ -514,7 +527,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public PublishDestinationBase PublishDestination
         {
             get => _publishDestination;
-            set => SetProperty(ref _publishDestination, value);
+            set
+            {
+                SetProperty(ref _publishDestination, value);
+                NotifyPropertyChanged(nameof(IsApplicationNameRequired));
+            }
         }
 
         /// <summary>
@@ -896,17 +913,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <param name="cancellationToken"></param>
         public async Task RefreshPublishedResourcesAsync(CancellationToken cancellationToken)
         {
-            IList<PublishResource> resource = new List<PublishResource>();
-            var stackId = string.Empty;
+            IList<PublishResource> resources = new List<PublishResource>();
+            var publishedArtifactId = string.Empty;
             try
             {
                 ThrowIfSessionIsNotCreated();
 
                 var details = await DeployToolController.GetDeploymentDetailsAsync(SessionId, cancellationToken);
 
-                stackId = details?.StackId;
-                var resourceSummaries = details?.DisplayedResources;
-                resource = resourceSummaries.Select(x => x.AsPublishResource()).ToList();
+                if (details == null) return;
+
+                publishedArtifactId = GetPublishedArtifactId(details);
+
+                if (details.DisplayedResources != null)
+                {
+                    resources = details.DisplayedResources
+                        .Select(x => x.AsPublishResource())
+                        .ToList();
+                }
             }
             catch (Exception e)
             {
@@ -915,8 +939,27 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             finally
             {
-                await SetPublishResourcesAsync(stackId, resource, cancellationToken);
+                await SetPublishResourcesAsync(publishedArtifactId, resources, cancellationToken);
             }
+        }
+
+        private string GetPublishedArtifactId(GetDeploymentDetailsOutput details)
+        {
+            // TODO : remove this once deploy API includes ECR Repo id as top level data
+            if (PublishDestination?.DeploymentArtifact == DeploymentArtifact.ElasticContainerRegistry)
+            {
+                return WorkaroundGetEcrRepoArtifactName(details);
+            }
+
+            return details.CloudApplicationName;
+        }
+
+        /// <summary>
+        /// This is a workaround until the deploy API can surface the Id of the ECR repo as first-class data.
+        /// </summary>
+        private static string WorkaroundGetEcrRepoArtifactName(GetDeploymentDetailsOutput details)
+        {
+            return details?.DisplayedResources?.FirstOrDefault(x => x.Type == "Elastic Container Registry Repository")?.Id;
         }
 
         public async Task<bool> ValidateTargetConfigurationsAsync()

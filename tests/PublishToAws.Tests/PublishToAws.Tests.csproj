@@ -15,9 +15,8 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">16.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
@@ -54,6 +53,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\EcrRepoViewerCommandFactoryTests.cs" />
     <Compile Include="Commands\CloseFailureBannerCommandTests.cs" />
     <Compile Include="Commands\ConfigCommandTests.cs" />
     <Compile Include="Commands\CopyToClipboardCommandTests.cs" />
@@ -61,6 +61,7 @@
     <Compile Include="Commands\PublishCommandTests.cs" />
     <Compile Include="Commands\BeanstalkEnvironmentViewerCommandFactoryTests.cs" />
     <Compile Include="Commands\SelectCredentialsCommandFactoryTests.cs" />
+    <Compile Include="Commands\SelectEcrRepoCommandFactoryTests.cs" />
     <Compile Include="Commands\StackViewerCommandTests.cs" />
     <Compile Include="Commands\StartOverCommandTests.cs" />
     <Compile Include="Commands\TargetCommandTests.cs" />
@@ -69,6 +70,8 @@
     <Compile Include="Converters\TargetsToVisibilityConverterTests.cs" />
     <Compile Include="Fixtures\PublishFooterCommandFixture.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Install\CliServerFactoryTests.cs" />
+    <Compile Include="Install\GetCurrentCliVersionTests.cs" />
     <Compile Include="Install\InstallOptionsTests.cs" />
     <Compile Include="Install\ProcessExitHandlerTests.cs" />
     <Compile Include="Models\ConfigurationDetailExtensionMethodsTests.cs" />

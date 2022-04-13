@@ -16,6 +16,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
         [Theory]
         [InlineData(DeploymentTypes.BeanstalkEnvironment, DeploymentArtifact.BeanstalkEnvironment)]
         [InlineData(DeploymentTypes.CloudFormationStack, DeploymentArtifact.CloudFormationStack)]
+        [InlineData(DeploymentTypes.ElasticContainerRegistryImage, DeploymentArtifact.ElasticContainerRegistry)]
         public void AsDeploymentArtifact(DeploymentTypes deploymentTypes, DeploymentArtifact expectedDeploymentArtifact)
         {
             Assert.Equal(expectedDeploymentArtifact, deploymentTypes.AsDeploymentArtifact());

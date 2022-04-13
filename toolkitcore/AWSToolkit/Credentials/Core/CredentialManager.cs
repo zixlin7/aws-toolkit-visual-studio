@@ -2,9 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.Credentials.Core
@@ -15,7 +17,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
     /// </summary>
     public class CredentialManager : ICredentialManager, IDisposable
     {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(CredentialManager));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(CredentialManager));
 
         //ConcurrentDictionary with key as ICredentialIdentifier ID(unique id for an identifier) and value as the ICredentialIdentifier
         private readonly ConcurrentDictionary<string, ICredentialIdentifier> _identifierIds;
@@ -180,7 +182,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
             catch (Exception e)
             {
-                LOGGER.Error($"Failed to create underlying AWSCredentials: {e.Message}");
+                Logger.Error($"Failed to create underlying AWSCredentials: {e.Message}");
                 throw new CredentialProviderNotFoundException($"Failed to create underlying AWSCredentials: {e.Message}", e);
             }
 

@@ -61,10 +61,15 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
 
         public static List<RecommendationSummary> CreateSampleRecommendationSummaries()
         {
-            return Enumerable.Range(1, 3).Select(i => new RecommendationSummary()
-            {
-                RecipeId = $"recipe-{i}", Name = i.ToString(), Description = $"Description for {i}",
-            }).ToList();
+            return Enum.GetValues(typeof(DeploymentTypes))
+                .OfType<DeploymentTypes>()
+                .Select((deploymentType, i) => new RecommendationSummary()
+                {
+                    RecipeId = $"recipe-{i}",
+                    Name = i.ToString(),
+                    Description = $"Description for {i}",
+                    DeploymentType = deploymentType
+                }).ToList();
         }
 
         public static RecipeSummary GetSampleRecipeSummary(string recipeId)

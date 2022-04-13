@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.AutoScaling;
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
@@ -27,63 +30,46 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
     public class EnvironmentStatusController : BaseContextCommand
     {
-        readonly object UPDATE_EVENT_LOCK_OBJECT = new object();
+        private readonly object UPDATE_EVENT_LOCK_OBJECT = new object();
 
-        static ILog LOGGER = LogManager.GetLogger(typeof(EnvironmentStatusController));
+        private static ILog Logger = LogManager.GetLogger(typeof(EnvironmentStatusController));
 
-        Amazon.AutoScaling.IAmazonAutoScaling _asClient;
-        Amazon.ElasticLoadBalancing.IAmazonElasticLoadBalancing _elbClient;
-        Amazon.EC2.IAmazonEC2 _ec2Client;
-        IAmazonCloudWatch _cwClient;
+        private IAmazonAutoScaling _asClient;
+        private IAmazonElasticLoadBalancing _elbClient;
+        private IAmazonEC2 _ec2Client;
+        private IAmazonCloudWatch _cwClient;
         private CloudWatchMetrics _cloudWatchMetrics;
-        IAmazonElasticBeanstalk _beanstalkClient;
-        EnvironmentViewModel _environmentModel;
+        private IAmazonElasticBeanstalk _beanstalkClient;
+        private EnvironmentViewModel _environmentModel;
 
-        EnvironmentStatusModel _statusModel;
-        EnvironmentStatusControl _control;
-
-        IEC2InstancesViewModel _ec2InstanceViewModel;
+        private EnvironmentStatusModel _statusModel;
+        private EnvironmentStatusControl _control;
 
         public override ActionResults Execute(IViewModel model)
         {
-            this._environmentModel = model as EnvironmentViewModel;
-            if (this._environmentModel == null)
-                return new ActionResults().WithSuccess(false);
-
-            var region = this._environmentModel.ApplicationViewModel.ElasticBeanstalkRootViewModel.Region;
-            
-            this._beanstalkClient = this._environmentModel.BeanstalkClient;
-
-            this._cwClient =
-                this._environmentModel.AccountViewModel.CreateServiceClient<AmazonCloudWatchClient>(region);
-            _cloudWatchMetrics = new CloudWatchMetrics(_cwClient);
-
-            this._asClient =
-                this._environmentModel.AccountViewModel.CreateServiceClient<AmazonAutoScalingClient>(region);
-
-            this._elbClient =
-                this._environmentModel.AccountViewModel.CreateServiceClient<AmazonElasticLoadBalancingClient>(region);
-
-            this._ec2Client = this._environmentModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(region);
-
-            var ec2Model = this._environmentModel.AccountViewModel.FindSingleChild<IEC2RootViewModel>(false);
-            if (ec2Model != null)
+            _environmentModel = model as EnvironmentViewModel;
+            if (_environmentModel == null)
             {
-                this._ec2InstanceViewModel = ec2Model.FindSingleChild<IEC2InstancesViewModel>(false);
+                return new ActionResults().WithSuccess(false);
             }
 
-            this._statusModel = new EnvironmentStatusModel(
-                this._environmentModel.Environment.EnvironmentId, this._environmentModel.Environment.EnvironmentName);
-
+            var region = _environmentModel.ApplicationViewModel.ElasticBeanstalkRootViewModel.Region;
+            
+            _beanstalkClient = _environmentModel.BeanstalkClient;
+            _cwClient = _environmentModel.AccountViewModel.CreateServiceClient<AmazonCloudWatchClient>(region);
+            _cloudWatchMetrics = new CloudWatchMetrics(_cwClient);
+            _asClient = _environmentModel.AccountViewModel.CreateServiceClient<AmazonAutoScalingClient>(region);
+            _elbClient = _environmentModel.AccountViewModel.CreateServiceClient<AmazonElasticLoadBalancingClient>(region);
+            _ec2Client = _environmentModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(region);
+            _statusModel = new EnvironmentStatusModel(_environmentModel.Environment.EnvironmentId, _environmentModel.Environment.EnvironmentName);
             _control = new EnvironmentStatusControl(this) {DisplayNotificationOnReady = true};
 
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(_control);
 
-            return new ActionResults()
-                    .WithSuccess(true);
+            return new ActionResults().WithSuccess(true);
         }
 
-        public EnvironmentStatusModel Model => this._statusModel;
+        public EnvironmentStatusModel Model => _statusModel;
 
         public void LoadModel()
         {
@@ -144,10 +130,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         public void ConnectToInstance()
         {
             var instanceIds = getListOfInstances();
-            if (this._ec2InstanceViewModel == null)
-                return;
-
-            this._ec2InstanceViewModel.ConnectToInstance(instanceIds);
+            IAWSEC2 awsEc2 = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
+            AccountViewModel account = _environmentModel.AccountViewModel;
+            awsEc2.ConnectToInstance(new AwsConnectionSettings(account.Identifier, account.Region), instanceIds);
         }
 
         public void ChangeEnvironmentType(string requestedType)
@@ -226,7 +211,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Applying Changes", 
                     string.Format("Error applying changes to the environment {0}: {1}" , this.Model.EnvironmentName, e.Message));
-                LOGGER.Error("Error applying changes for environment.", e);
+                Logger.Error("Error applying changes for environment.", e);
             }
         }
 
@@ -452,13 +437,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                     }
                     catch (Exception e)
                     {
-                        LOGGER.Error("Error refreshing UI for resources", e);
+                        Logger.Error("Error refreshing UI for resources", e);
                     }
                 }));
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error refreshing resources", e);
+                Logger.Error("Error refreshing resources", e);
             }
         }
 

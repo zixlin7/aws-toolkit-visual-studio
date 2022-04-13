@@ -9,6 +9,7 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.IdentityManagement;
+using Amazon.AWSToolkit.IdentityManagement.Models;
 using Amazon.AWSToolkit.Regions;
 
 using Microsoft.VisualStudio.Threading;
@@ -22,6 +23,7 @@ namespace CommonUI.Models
 
         public ICredentialIdentifier CredentialsId;
         public ToolkitRegion Region;
+        public string ServicePrincipalFilter;
 
         private string _filter;
 
@@ -68,15 +70,30 @@ namespace CommonUI.Models
         public async Task RefreshRolesAsync()
         {
             await TaskScheduler.Default;
-            var roleArns = await _iamEntities.ListIamRoleArnsAsync(CredentialsId, Region).ConfigureAwait(false);
+            var roles = await _iamEntities.ListIamRolesAsync(CredentialsId, Region).ConfigureAwait(false);
             await _joinableTaskFactory.SwitchToMainThreadAsync();
-            RoleArns = new ObservableCollection<string>(roleArns.OrderBy(s => s));
-            GetRoleArnsView().Filter = FilterRole;
+            RoleArns = new ObservableCollection<string>(roles
+                .Where(IsDisplayCandidate)
+                .Select(role => role.Arn)
+                .OrderBy(arn => arn));
+            GetRoleArnsView().Filter = RoleCollectionViewFilter;
+        }
+
+        /// <summary>
+        /// Whether or not a role is eligible to be shown in the dialog
+        /// </summary>
+        private bool IsDisplayCandidate(IamRole role)
+        {
+            if (string.IsNullOrWhiteSpace(ServicePrincipalFilter)) return true;
+
+            return
+                !string.IsNullOrEmpty(role.AssumeRolePolicyDocument) &&
+                role.AssumeRolePolicyDocument.Contains(ServicePrincipalFilter);
         }
 
         private ICollectionView GetRoleArnsView() => CollectionViewSource.GetDefaultView(RoleArns);
 
-        private bool FilterRole(object candidate)
+        private bool RoleCollectionViewFilter(object candidate)
         {
             return IsObjectFiltered(candidate, Filter);
         }

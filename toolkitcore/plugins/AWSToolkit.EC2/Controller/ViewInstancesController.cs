@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.EC2.Model;
@@ -14,7 +15,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 {
     public class ViewInstancesController : FeatureController<ViewInstancesModel>
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewInstancesController));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ViewInstancesController));
 
         private readonly ToolkitContext _toolkitContext;
         ViewInstancesControl _control;
@@ -146,7 +147,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error refreshing volumes", e);
+                Logger.Error("Error refreshing volumes", e);
             }
         }
 
@@ -300,19 +301,19 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public void OpenRemoteDesktop(RunningInstanceWrapper instance)
         {
             var controller = new OpenRemoteDesktopController(_toolkitContext);
-            controller.Execute(this.FeatureViewModel, instance);
+            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
         }
 
         public void OpenSSHSession(RunningInstanceWrapper instance)
         {
-            var controller = new OpenSSHSessionController();
-            controller.Execute(this.FeatureViewModel, instance);
+            var controller = new OpenSSHSessionController(_toolkitContext);
+            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
         }
 
         public void OpenSCPSession(RunningInstanceWrapper instance)
         {
-            var controller = new OpenSCPSessionController();
-            controller.Execute(this.FeatureViewModel, instance);
+            var controller = new OpenSCPSessionController(_toolkitContext);
+            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
         }
     }
 }

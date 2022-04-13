@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                     var request = new DeleteKeyPairRequest() { KeyName = keypair.NativeKeyPair.KeyName };
                     this._ec2Client.DeleteKeyPair(request);
 
-                    KeyPairLocalStoreManager.Instance.ClearPrivateKey(this._keyPairModel.AccountViewModel,
+                    KeyPairLocalStoreManager.Instance.ClearPrivateKey(this._keyPairModel.AccountViewModel.SettingsUniqueKey,
                         this._keyPairModel.Region.Id, keypair.NativeKeyPair.KeyName);
                 }
                 catch (Exception e)
