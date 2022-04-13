@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Add support for publishing .NET 6 applications to Linux based Beanstalk images in the Publish to AWS experience"
-}

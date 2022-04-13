@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fix problem where dropdown controls would not open, and UI controls would flicker when shown on secondary displays. This mostly affected the Publish to AWS settings screen."
-}
