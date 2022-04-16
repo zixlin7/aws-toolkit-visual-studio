@@ -25,7 +25,7 @@ namespace Amazon.AWSToolkit.Publish.Package
 
         }
 
-        public async Task InitializePackage(ToolkitContext toolkitContext, IAWSToolkitShellProvider shellProvider)
+        public Task InitializePackageAsync(ToolkitContext toolkitContext, IAWSToolkitShellProvider shellProvider)
         {
             if (_isInitialized)
             {
@@ -37,6 +37,8 @@ namespace Amazon.AWSToolkit.Publish.Package
 
             _isInitialized = true;
             RaiseInitialize();
+
+            return Task.CompletedTask;
         }
 
         private void RaiseInitialize()

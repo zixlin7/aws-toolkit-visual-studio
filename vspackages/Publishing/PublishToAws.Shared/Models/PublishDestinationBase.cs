@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                 hashCode = (hashCode * 397) ^ (RecipeName != null ? RecipeName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ShortDescription != null ? ShortDescription.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (DeploymentArtifact != null ? DeploymentArtifact.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ DeploymentArtifact.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Service != null ? Service.GetHashCode() : 0);
                 return hashCode;
             }

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
-using Amazon.AWSToolkit.Publish.Install;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.Runtime;
 
 using AWS.Deploy.ServerMode.Client;
@@ -117,7 +117,12 @@ namespace Amazon.AWSToolkit.Publish.Services
             throw new Exception("No deploy tooling communication client available.");
         }
 
-        private async void OnCheckHealth(object sender, ElapsedEventArgs args)
+        private void OnCheckHealth(object sender, ElapsedEventArgs args)
+        {
+            OnCheckHealthAsync().LogExceptionAndForget();
+        }
+
+        private async Task OnCheckHealthAsync()
         {
             try
             {

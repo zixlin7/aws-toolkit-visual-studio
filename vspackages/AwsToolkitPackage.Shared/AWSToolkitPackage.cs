@@ -878,7 +878,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     return;
                 }
 
-                await initPublishPackageService.InitializePackage(_toolkitContext, ToolkitShellProviderService);
+                await initPublishPackageService.InitializePackageAsync(_toolkitContext, ToolkitShellProviderService);
 
                 // Publish to AWS commands can be initialized below, now that the Publishing Package is initialized
 
