@@ -35,5 +35,5 @@ using Microsoft.VisualStudio.Shell;
 
 // Have this assembly write to the .pkgdef that it will reside at the root of the VSIX, so
 // Visual Studio knows where to load it from.
-[assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\PublishToAws.dll")]
+[assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\PublishToAws.v17.dll")]
 [assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\Microsoft.AspNetCore.SignalR.Client.dll")]
