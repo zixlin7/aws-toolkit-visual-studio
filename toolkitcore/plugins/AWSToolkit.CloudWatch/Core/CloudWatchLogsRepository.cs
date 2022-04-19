@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.Util;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Util;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
@@ -25,17 +24,13 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
     {
         private readonly IAmazonCloudWatchLogs _client;
 
-        public CloudWatchLogsRepository(ICredentialIdentifier identifier, ToolkitRegion region,
+        public CloudWatchLogsRepository(AwsConnectionSettings connectionSettings,
             IAmazonCloudWatchLogs client)
         {
-            CredentialIdentifier = identifier;
-            Region = region;
+            ConnectionSettings = connectionSettings;
             _client = client;
         }
-
-        public ICredentialIdentifier CredentialIdentifier { get; }
-
-        public ToolkitRegion Region { get; }
+        public AwsConnectionSettings ConnectionSettings { get; }
 
         public async Task<PaginatedLogResponse<LogGroup>> GetLogGroupsAsync(GetLogGroupsRequest logGroupsRequest,
             CancellationToken cancelToken)

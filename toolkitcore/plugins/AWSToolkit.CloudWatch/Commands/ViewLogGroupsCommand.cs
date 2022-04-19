@@ -5,6 +5,7 @@ using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.CloudWatch.Views;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -57,7 +58,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
             bool ConnectionSettingsFunc(BaseAWSControl awsControl)
             {
                 var currentControl = awsControl as LogGroupsViewerControl;
-                return currentControl?.CredentialIdentifier?.Id != newControl.CredentialIdentifier?.Id || currentControl?.Region?.Id != newControl.Region?.Id;
+                return currentControl?.ConnectionSettings?.CredentialIdentifier?.Id !=
+                       newControl.ConnectionSettings?.CredentialIdentifier?.Id ||
+                       currentControl?.ConnectionSettings?.Region?.Id != newControl.ConnectionSettings?.Region?.Id;
             }
 
             toolWindowFactory.ShowLogGroupsToolWindow(newControl, ConnectionSettingsFunc);
@@ -70,13 +73,13 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
             {
                 throw new Exception("Unable to load CloudWatch log groups data source");
             }
+
+            var awsConnectionSetting = new AwsConnectionSettings(_rootModel.AccountViewModel?.Identifier, _rootModel.Region);
             var cwLogsRepository =
-                repositoryFactory.CreateCloudWatchLogsRepository(_rootModel.AccountViewModel?.Identifier,
-                    _rootModel.Region);
+                repositoryFactory.CreateCloudWatchLogsRepository(awsConnectionSetting);
 
             var viewModel = new LogGroupsViewModel(cwLogsRepository, _toolkitContext);
             viewModel.RefreshCommand = RefreshLogGroupsCommand.Create(viewModel);
-
             return viewModel;
         }
     }

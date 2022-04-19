@@ -71,6 +71,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\LogGroupsViewModel.cs" />
+    <Compile Include="Views\ConnectionStatus.xaml.cs">
+      <DependentUpon>ConnectionStatus.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LogGroupsViewerControl.xaml.cs">
       <DependentUpon>LogGroupsViewerControl.xaml</DependentUpon>
     </Compile>
@@ -108,6 +111,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="Views\ConnectionStatus.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\LogGroupsViewerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

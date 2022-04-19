@@ -135,19 +135,7 @@
             </ListBox.Style>
         </ListBox>
 
-        <Border Grid.Row="4"
-                Padding="1"
-                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
-                BorderThickness="1">
-            <TextBlock FontWeight="SemiBold"
-                       Margin="5">
-                <TextBlock.Text>
-                    <MultiBinding StringFormat="{}{0}  {1}">
-                        <Binding Path="CredentialDisplayName" FallbackValue="(not available)" />
-                        <Binding Path="RegionDisplayName" FallbackValue="(not available)" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
-        </Border>
+        <local:ConnectionStatus Grid.Row="4" ConnectionSettings="{Binding ConnectionSettings}"/>
+
     </Grid>
 </commonUi:BaseAWSControl>

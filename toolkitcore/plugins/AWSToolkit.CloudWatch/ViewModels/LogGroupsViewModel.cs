@@ -10,7 +10,6 @@ using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 
 using log4net;
 
@@ -80,15 +79,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _refreshCommand, value);
         }
 
-        public ICredentialIdentifier CredentialIdentifier => _repository?.CredentialIdentifier;
+        public AwsConnectionSettings ConnectionSettings => _repository?.ConnectionSettings;
 
-        public ToolkitRegion Region => _repository?.Region;
-
-        public string CredentialDisplayName => CredentialIdentifier?.DisplayName;
-
-        public string RegionDisplayName => Region?.DisplayName;
-
-        public ToolkitContext ToolkitContext => _toolkitContext;
 
         private CancellationToken CancellationToken => _tokenSource.Token;
 

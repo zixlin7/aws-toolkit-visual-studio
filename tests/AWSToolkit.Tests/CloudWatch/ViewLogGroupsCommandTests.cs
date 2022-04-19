@@ -6,7 +6,6 @@ using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
@@ -70,7 +69,7 @@ namespace AWSToolkit.Tests.CloudWatch
                 .Returns(_repoFactory.Object);
             _repoFactory
                 .Setup(mock =>
-                    mock.CreateCloudWatchLogsRepository(It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
+                    mock.CreateCloudWatchLogsRepository(It.IsAny<AwsConnectionSettings>()))
                 .Returns(_cwlRepository.Object);
         }
     }

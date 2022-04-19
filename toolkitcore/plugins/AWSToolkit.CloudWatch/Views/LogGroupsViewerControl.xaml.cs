@@ -55,9 +55,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             }
         }
 
-        public ICredentialIdentifier CredentialIdentifier => _viewModel?.CredentialIdentifier;
-
-        public ToolkitRegion Region => _viewModel?.Region;
+        public AwsConnectionSettings ConnectionSettings => _viewModel?.ConnectionSettings;
 
         private void ViewModel_OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {

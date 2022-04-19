@@ -40,7 +40,7 @@ namespace AWSToolkit.Tests.CloudWatch
 
         public CloudWatchLogsRepositoryTests()
         {
-            _repository = new CloudWatchLogsRepository(null, null, _cwlClient.Object);
+            _repository = new CloudWatchLogsRepository(null, _cwlClient.Object);
         }
 
         [Fact]
