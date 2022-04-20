@@ -56,6 +56,7 @@
     <Compile Include="CloudWatch\CloudWatchLogsRepositoryTests.cs" />
     <Compile Include="CloudWatch\CloudWatchRootViewModelTests.cs" />
     <Compile Include="CloudWatch\LogGroupsViewModelTests.cs" />
+    <Compile Include="CloudWatch\LogStreamsViewModelTests.cs" />
     <Compile Include="CloudWatch\RefreshLogGroupsCommandTests.cs" />
     <Compile Include="CloudWatch\TestCloudWatchRootViewModel.cs" />
     <Compile Include="CloudWatch\ViewLogGroupsCommandTests.cs" />

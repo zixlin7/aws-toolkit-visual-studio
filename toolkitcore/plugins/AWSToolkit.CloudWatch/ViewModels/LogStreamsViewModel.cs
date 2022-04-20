@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.CloudWatch.Core;
@@ -16,37 +18,47 @@ using log4net;
 namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 {
     /// <summary>
-    /// Backing view model for viewing log groups
+    /// Backing view model for viewing log streams
     /// </summary>
-    public class LogGroupsViewModel : BaseModel, ILogSearchProperties, IDisposable
+    public class LogStreamsViewModel : BaseModel, ILogSearchProperties, IDisposable
     {
-        public static readonly ILog Logger = LogManager.GetLogger(typeof(LogGroupsViewModel));
+        public static readonly ILog Logger = LogManager.GetLogger(typeof(LogStreamsViewModel));
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
         private readonly ToolkitContext _toolkitContext;
         private readonly ICloudWatchLogsRepository _repository;
 
         private bool _isInitialized = false;
-
         private LogGroup _logGroup;
+        private LogStream _logStream;
         private string _filterText;
         private string _nextToken;
         private string _errorMessage = string.Empty;
         private ICommand _refreshCommand;
+        private ICollectionView _logStreamsView;
 
-        private ObservableCollection<LogGroup> _logGroups =
-            new ObservableCollection<LogGroup>();
+        private ObservableCollection<LogStream> _logStreams =
+            new ObservableCollection<LogStream>();
 
-        public LogGroupsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext)
+        public LogStreamsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext)
         {
             _toolkitContext = toolkitContext;
             _repository = repository;
         }
 
-        public ObservableCollection<LogGroup> LogGroups
+        public ObservableCollection<LogStream> LogStreams
         {
-            get => _logGroups;
-            set => SetProperty(ref _logGroups, value);
+            get => _logStreams;
+            private set => SetProperty(ref _logStreams, value);
+        }
+
+        /// <summary>
+        /// Represents the log streams collection view
+        /// </summary>
+        public ICollectionView LogStreamsView
+        {
+            get => _logStreamsView;
+            set => SetProperty(ref _logStreamsView, value);
         }
 
         public LogGroup LogGroup
@@ -55,16 +67,25 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _logGroup, value);
         }
 
+        public LogStream LogStream
+        {
+            get => _logStream;
+            set => SetProperty(ref _logStream, value);
+        }
+
         public string NextToken
         {
             get => _nextToken;
-            set => _nextToken = value;
+            set => SetProperty(ref _nextToken, value);
         }
 
         public string FilterText
         {
             get => _filterText;
-            set => SetProperty(ref _filterText, value);
+            set
+            {
+                SetProperty(ref _filterText, value);
+            }
         }
 
         public string ErrorMessage
@@ -81,6 +102,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         public AwsConnectionSettings ConnectionSettings => _repository?.ConnectionSettings;
 
+        private OrderBy OrderBy => string.IsNullOrWhiteSpace(FilterText) ? OrderBy.LastEventTime : OrderBy.LogStreamName;
+
         private CancellationToken CancellationToken => _tokenSource.Token;
 
         public async Task RefreshAsync()
@@ -91,7 +114,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         public async Task LoadAsync()
         {
-            await GetLogGroupsAsync(CancellationToken).ConfigureAwait(false);
+            await GetLogStreamsAsync(CancellationToken).ConfigureAwait(false);
         }
 
         public void SetErrorMessage(string errorMessage)
@@ -101,6 +124,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 ErrorMessage = errorMessage;
             });
         }
+
         public void ResetCancellationToken()
         {
             CancelExistingToken();
@@ -112,32 +136,31 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = null;
-                LogGroups.Clear();
-                LogGroup = null;
+                LogStreams.Clear();
+                LogStream = null;
                 _isInitialized = false;
                 ErrorMessage = string.Empty;
             });
         }
 
-        private async Task GetLogGroupsAsync(CancellationToken cancelToken)
+        private async Task GetLogStreamsAsync(CancellationToken cancelToken)
         {
             try
             {
                 cancelToken.ThrowIfCancellationRequested();
-                
+
                 //if no more entries(last page retrieved), do not make additional calls
                 if (IsLastPageLoaded())
                 {
                     return;
                 }
 
-                var selectedLogGroup = LogGroup?.Arn;
+                var selectedLogStream = LogStream?.Arn;
 
                 var request = CreateGetRequest();
-                var response = await _repository.GetLogGroupsAsync(request, cancelToken).ConfigureAwait(false);
+                var response = await _repository.GetLogStreamsAsync(request, cancelToken).ConfigureAwait(false);
 
-                UpdateLogGroupProperties(response, selectedLogGroup);
-
+                UpdateLogStreamProperties(response, selectedLogStream);
             }
             catch (OperationCanceledException e)
             {
@@ -146,24 +169,25 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         }
 
         /// <summary>
-        /// Indicates if the last page of log groups has already been loaded/retrieved
+        /// Indicates if the last page of log streams has already been loaded/retrieved
         /// </summary>
         private bool IsLastPageLoaded()
         {
             return _isInitialized && string.IsNullOrEmpty(NextToken);
         }
 
-        private void UpdateLogGroupProperties(PaginatedLogResponse<LogGroup> response, string previousLogGroupArn)
+        private void UpdateLogStreamProperties(PaginatedLogResponse<LogStream> response, string previousLogStreamArn)
         {
+            var logStreams = LogStreams.ToList().Concat(response.Values).ToList();
+            LogStreams = new ObservableCollection<LogStream>(logStreams);
+
             _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = response.NextToken;
 
-                var logGroups = LogGroups.ToList();
-                logGroups.AddRange(response.Values.ToList());
-                LogGroups = new ObservableCollection<LogGroup>(logGroups);
-                LogGroup = LogGroups.FirstOrDefault(x => x.Arn == previousLogGroupArn) ?? LogGroups.FirstOrDefault();
-
+                LogStream = LogStreams.FirstOrDefault(x => x.Arn == previousLogStreamArn) ??
+                            LogStreams.FirstOrDefault();
+                LogStreamsView = CollectionViewSource.GetDefaultView(LogStreams);
                 UpdateIsInitialized();
             });
         }
@@ -176,13 +200,20 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             }
         }
 
-        private GetLogGroupsRequest CreateGetRequest()
+        private GetLogStreamsRequest CreateGetRequest()
         {
-            var request = new GetLogGroupsRequest() { FilterText = FilterText };
+            var request = new GetLogStreamsRequest() { LogGroup = LogGroup.Name, OrderBy = OrderBy };
             if (_isInitialized)
             {
                 request.NextToken = NextToken;
             }
+
+            if (!string.IsNullOrWhiteSpace(FilterText))
+            {
+                request.FilterText = FilterText;
+                request.OrderBy = OrderBy.LogStreamName;
+            }
+
             return request;
         }
 
