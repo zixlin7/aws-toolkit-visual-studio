@@ -118,6 +118,11 @@
                     <TextBlock Text="{Binding Name}"></TextBlock>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.Style>
                 <!-- Do not show the listbox when there are no matching results or if an error occurred -->
                 <Style TargetType="ListBox">
@@ -133,6 +138,15 @@
                     </Style.Triggers>
                 </Style>
             </ListBox.Style>
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="View Log Group" Command="{Binding ViewCommand}" CommandParameter="{Binding LogGroup}">
+                        <MenuItem.Icon>
+                            <Image Source="{Binding Source={StaticResource VsImages}, Path=Search}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </ListBox.ContextMenu>
         </ListBox>
 
         <local:ConnectionStatus Grid.Row="4" ConnectionSettings="{Binding ConnectionSettings}"/>

@@ -33,6 +33,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private string _nextToken;
         private string _errorMessage = string.Empty;
         private ICommand _refreshCommand;
+        private ICommand _viewCommand;
 
         private ObservableCollection<LogGroup> _logGroups =
             new ObservableCollection<LogGroup>();
@@ -77,6 +78,12 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         {
             get => _refreshCommand;
             set => SetProperty(ref _refreshCommand, value);
+        }
+
+        public ICommand ViewCommand
+        {
+            get => _viewCommand;
+            set => SetProperty(ref _viewCommand, value);
         }
 
         public AwsConnectionSettings ConnectionSettings => _repository?.ConnectionSettings;

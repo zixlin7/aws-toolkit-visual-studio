@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
+using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Credentials.Core;
@@ -132,6 +134,26 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             {
                 Logger.Error("Error loading log groups", e);
                 _viewModel.SetErrorMessage($"Error loading log groups:{Environment.NewLine}{e.Message}");
+            }
+        }
+
+        private void ListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var listBoxItem = sender as ListBoxItem;
+            if (listBoxItem == null)
+            {
+                return;
+            }
+
+            var selectedLogGroup = listBoxItem.Content as LogGroup;
+            if (selectedLogGroup == null)
+            {
+                return;
+            }
+
+            if (_viewModel.ViewCommand.CanExecute(selectedLogGroup))
+            {
+                _viewModel.ViewCommand.Execute(selectedLogGroup);
             }
         }
 

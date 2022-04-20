@@ -60,6 +60,7 @@
     <Compile Include="CloudWatch\RefreshLogGroupsCommandTests.cs" />
     <Compile Include="CloudWatch\TestCloudWatchRootViewModel.cs" />
     <Compile Include="CloudWatch\ViewLogGroupsCommandTests.cs" />
+    <Compile Include="CloudWatch\ViewLogStreamsCommandTests.cs" />
     <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
     <Compile Include="CodeArtifact\ConfigurationTests.cs" />
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
