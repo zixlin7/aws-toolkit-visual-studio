@@ -16,6 +16,8 @@ using AWS.Deploy.ServerMode.Client;
 
 using Moq;
 
+using Xunit;
+
 namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
 {
     /// <summary>
@@ -101,6 +103,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
                 };
 
             ViewModel.DeploymentClient = DeploymentCommunicationClient.Object;
+            ViewModel.ProjectGuid = Guid.NewGuid();
+            ViewModel.ProjectPath = $"c:\\deploy-project\\{ViewModel.ProjectGuid}\\my.csproj";
         }
 
         public void SetupNewPublish()
@@ -142,6 +146,18 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
             DeployToolController.Setup(mock =>
                     mock.StartSessionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new SessionException("unable to establish session", null));
+        }
+
+        public async Task AssertConfirmationIsSilencedAsync()
+        {
+            var publishSettings = await ViewModel.PublishContext.PublishSettingsRepository.GetAsync();
+            Assert.Contains(ViewModel.ProjectGuid.ToString(), publishSettings.SilencedPublishConfirmations);
+        }
+
+        public async Task AssertConfirmationIsNotSilencedAsync()
+        {
+            var publishSettings = await ViewModel.PublishContext.PublishSettingsRepository.GetAsync();
+            Assert.DoesNotContain(ViewModel.ProjectGuid.ToString(), publishSettings.SilencedPublishConfirmations);
         }
     }
 }

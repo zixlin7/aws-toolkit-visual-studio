@@ -43,5 +43,6 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource StatusOK => _imageProvider?.GetImage(VsKnownImages.StatusOK, 16);
         public BitmapSource StatusOK32 => _imageProvider?.GetImage(VsKnownImages.StatusOK, 32);
         public BitmapSource StatusWarning => _imageProvider?.GetImage(VsKnownImages.StatusWarning, 16);
+        public BitmapSource StatusWarning32 => _imageProvider?.GetImage(VsKnownImages.StatusWarning, 32);
     }
 }

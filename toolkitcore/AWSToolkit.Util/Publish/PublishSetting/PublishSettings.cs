@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Amazon.AWSToolkit.Publish.PublishSetting
@@ -14,11 +16,14 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
         [DefaultValue(true)]
         public bool ShowPublishBanner { get; set; } = true;
 
+        public List<string> SilencedPublishConfirmations { get; set; } = new List<string>();
+
         public static PublishSettings CreateDefault()
         {
             return new PublishSettings()
             {
                 ShowPublishBanner = true,
+                SilencedPublishConfirmations = new List<string>(),
                 DeployServer = DeployServerSettings.CreateDefault()
             };
         }
@@ -27,6 +32,7 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
         internal void SetDefaultValuesAfterDeserialization(StreamingContext context)
         {
             DeployServer = DeployServer ?? DeployServerSettings.CreateDefault();
+            SilencedPublishConfirmations = SilencedPublishConfirmations ?? new List<string>();
         }
 
 
@@ -36,6 +42,7 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
             {
                 var hashCode = (DeployServer != null ? DeployServer.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ ShowPublishBanner.GetHashCode();
+                hashCode = (hashCode * 397) ^ SilencedPublishConfirmations.GetHashCode();
                 return hashCode;
             }
         }
@@ -45,7 +52,9 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            return Equals(DeployServer, other.DeployServer) && ShowPublishBanner == other.ShowPublishBanner;
+            return Equals(DeployServer, other.DeployServer) &&
+                   ShowPublishBanner == other.ShowPublishBanner &&
+                   SilencedPublishConfirmations.SequenceEqual(other.SilencedPublishConfirmations);
         }
 
         public override bool Equals(object obj)

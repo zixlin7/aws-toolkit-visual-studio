@@ -74,6 +74,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private bool _isRepublish;
         private bool _isDefaultConfig = true;
         private string _projectPath;
+        private Guid _projectGuid;
         private string _projectName;
         private string _publishSummary;
         private string _targetDescription;
@@ -307,6 +308,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _projectPath;
             set => SetProperty(ref _projectPath, value);
+        }
+
+        /// <summary>
+        /// Full path of the project (eg .csproj file) that will be published
+        /// </summary>
+        public Guid ProjectGuid
+        {
+            get => _projectGuid;
+            set => SetProperty(ref _projectGuid, value);
         }
 
         /// <summary>

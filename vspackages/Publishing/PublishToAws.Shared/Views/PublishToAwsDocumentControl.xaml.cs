@@ -96,6 +96,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             {
                 ProjectName = args.ProjectName,
                 ProjectPath = args.ProjectPath,
+                ProjectGuid = args.ProjectGuid,
                 ViewStage = PublishViewStage.Target,
             };
             viewModel.LoadPublishSettings();

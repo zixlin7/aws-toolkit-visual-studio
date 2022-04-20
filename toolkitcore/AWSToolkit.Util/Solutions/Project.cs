@@ -9,12 +9,14 @@ namespace Amazon.AWSToolkit.Solutions
     {
         public string Name { get; }
         public string Path { get; }
+        public Guid Guid { get; }
         public FrameworkName TargetFramework { get; }
 
-        public Project(string name, string path, FrameworkName targetFramework)
+        public Project(string name, string path, Guid guid, FrameworkName targetFramework)
         {
             Name = name;
             Path = path;
+            Guid = guid;
             TargetFramework = targetFramework;
         }
 
@@ -32,7 +34,7 @@ namespace Amazon.AWSToolkit.Solutions
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Name == other.Name && Path == other.Path && TargetFramework == other.TargetFramework;
+            return Name == other.Name && Path == other.Path && Guid == other.Guid && TargetFramework == other.TargetFramework;
         }
 
         public override bool Equals(object obj)
@@ -49,6 +51,7 @@ namespace Amazon.AWSToolkit.Solutions
             {
                 var hashCode = (Name != null ? Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Path != null ? Path.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ Guid.GetHashCode();
                 hashCode = (hashCode * 397) ^ (TargetFramework != null ? TargetFramework.GetHashCode() : 0);
                 return hashCode;
             }
@@ -66,7 +69,7 @@ namespace Amazon.AWSToolkit.Solutions
 
         public override string ToString()
         {
-            return $"{nameof(Name)}: {Name}, {nameof(Path)}: {Path}, {nameof(TargetFramework)}: {TargetFramework}";
+            return $"{nameof(Name)}: {Name}, {nameof(Path)}: {Path}, {nameof(Guid)}: {Guid}, {nameof(TargetFramework)}: {TargetFramework}";
         }
     }
 }

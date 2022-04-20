@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
+using Amazon.AWSToolkit.Tests.Publishing.Views;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -24,25 +25,57 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         private readonly PublishFooterCommandFixture _commandFixture = new PublishFooterCommandFixture();
         private TestPublishToAwsDocumentViewModel ViewModel => _commandFixture.ViewModel;
         private Mock<IAWSToolkitShellProvider> ShellProvider => _commandFixture.ShellProvider;
+        private readonly FakeConfirmPublishDialog _confirmationDialog = new FakeConfirmPublishDialog();
         private readonly PublishCommand _sut;
 
         public PublishCommandTests()
         {
-            _sut = new PublishCommand(ViewModel, _commandFixture.ShellProvider.Object);
+            _sut = new PublishCommand(ViewModel, _commandFixture.ShellProvider.Object, _ => _confirmationDialog);
             _commandFixture.SetupNewPublish();
+
+            SetupInitialPublish();
+            SetupApplyConfigSettingsAsync(new ValidationResult());
         }
 
         [StaFact]
         public async Task ExecuteCommand()
         {
-            SetupInitialPublish();
-            SetupApplyConfigSettingsAsync(new ValidationResult());
+            await _sut.ExecuteAsync(null);
+
+            Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
+            await _commandFixture.AssertConfirmationIsNotSilencedAsync();
+        }
+
+        [StaFact]
+        public async Task ExecuteCommand_WithSuppressedConfirmations()
+        {
+            var publishSettings = await ViewModel.PublishContext.PublishSettingsRepository.GetAsync();
+            publishSettings.SilencedPublishConfirmations.Add(ViewModel.ProjectGuid.ToString());
 
             await _sut.ExecuteAsync(null);
 
             Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
         }
 
+        [StaFact]
+        public async Task ExecuteCommand_SuppressFutureConfirmations()
+        {
+            _confirmationDialog.SilenceFutureConfirmations = true;
+            await _sut.ExecuteAsync(null);
+
+            Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
+
+            await _commandFixture.AssertConfirmationIsSilencedAsync();
+        }
+
+        [StaFact]
+        public async Task ExecuteCommand_CancelConfirmation()
+        {
+            _confirmationDialog.ShowModalResult = false;
+            await _sut.ExecuteAsync(null);
+
+            Assert.NotEqual(PublishViewStage.Publish, ViewModel.ViewStage);
+        }
 
         [StaFact]
         public async Task ExecuteCommand_ValidationFails()
@@ -62,7 +95,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public async Task ExecuteCommand_PublishFails()
         {
             SetupStartDeploymentToThrow();
-            SetupApplyConfigSettingsAsync(new ValidationResult());
 
             await _sut.ExecuteAsync(null);
 

@@ -107,6 +107,10 @@
       <DependentUpon>CredentialsRegionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishDocumentViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Dialogs\ConfirmPublishDialog.xaml.cs">
+      <DependentUpon>ConfirmPublishDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Dialogs\IConfirmPublishDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExistingTargetDetailsView.xaml.cs">
       <DependentUpon>ExistingTargetDetailsView.xaml</DependentUpon>
     </Compile>
@@ -163,6 +167,10 @@
     <Page Include="$(MSBuildThisFileDirectory)Views\ConfigureTargetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Dialogs\ConfirmPublishDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\ExistingTargetDetailsView.xaml">
       <SubType>Designer</SubType>
