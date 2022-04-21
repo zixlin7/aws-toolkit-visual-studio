@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -142,24 +141,35 @@ namespace AWSToolkit.Tests.CloudWatch
 
         public static IEnumerable<object[]> FilterToOrderData = new List<object[]>
         {
-            new object[] { null, OrderBy.LastEventTime },
-            new object[] { "", OrderBy.LastEventTime },
-            new object[] { "hello", OrderBy.LogStreamName }
+            new object[] { null, OrderBy.LastEventTime, false },
+            new object[] { "", OrderBy.LastEventTime, false },
+            new object[] { "hello", OrderBy.LogStreamName, true }
         };
 
         [Theory]
         [MemberData(nameof(FilterToOrderData))]
-        public async Task FilterTextUpdatesOrderBy(string filterText, OrderBy expectedOrder)
+        public void UpdateOrderBy(string filterText, OrderBy expectedOrder, bool expectedResult)
         {
             _viewModel.FilterText = filterText;
 
-            await _viewModel.LoadAsync();
+            var actualResult = _viewModel.UpdateOrderBy();
 
-            _repository.Verify(
-              mock => mock.GetLogStreamsAsync(It.Is<GetLogStreamsRequest>(request => request.OrderBy == expectedOrder), It.IsAny<CancellationToken>()),
-              Times.Once);
+            Assert.Equal(expectedOrder, _viewModel.OrderBy);
+            Assert.Equal(expectedResult, actualResult);
         }
 
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        public void UpdateIsDescendingToDefault(bool initialValue, bool expectedResult)
+        {
+            _viewModel.IsDescending = initialValue;
+
+            var actualResult = _viewModel.UpdateIsDescendingToDefault();
+
+            Assert.True(_viewModel.IsDescending);
+            Assert.Equal(expectedResult, actualResult);
+        }
 
         private List<LogStream> CreateSampleLogStreams()
         {

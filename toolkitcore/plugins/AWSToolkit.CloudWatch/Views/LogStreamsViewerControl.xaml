@@ -19,6 +19,8 @@
             <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter" />
             <Style x:Key="CenterGridHeaderStyle" TargetType="DataGridColumnHeader">
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="ToolTip"
+                        Value="Changing sort settings will reset and re-load data" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
@@ -177,17 +179,20 @@
                   x:FieldModifier="private"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False" CanUserDeleteRows="False"
-                  CanUserSortColumns="False"
-                  ItemsSource="{Binding LogStreamsView}"
+                  ItemsSource="{Binding LogStreamsView, NotifyOnTargetUpdated=True}"
+                  TargetUpdated="LogStreamsList_OnTargetUpdated"
                   SelectedItem="{Binding LogStream}"
                   ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
                   ScrollViewer.VerticalScrollBarVisibility="Visible"
                   themes:ToolkitThemes.UseToolkitTheme="True"
                   GridLinesVisibility="None"
                   AreRowDetailsFrozen="True"
+                  Sorting="LogStreamsList_OnSorting"
                   AlternatingRowBackground="LightGray">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Log Stream"
+                <DataGridTextColumn x:Name="StreamNameColumn"
+                                    x:FieldModifier="private"
+                                    Header="{x:Static local:LogStreamsViewerControl.StreamNameHeader}"
                                     Binding="{Binding Path=Name}"
                                     Width="*"
                                     FontFamily="Consolas"
@@ -199,7 +204,9 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <DataGridTextColumn Header="Last Event Time"
+                <DataGridTextColumn x:Name="EventTimeColumn"
+                                    x:FieldModifier="private"
+                                    Header="{x:Static local:LogStreamsViewerControl.EventTimeHeader}"
                                     Binding="{Binding Path=LastEventTime}"
                                     Width="Auto"
                                     FontFamily="Consolas"

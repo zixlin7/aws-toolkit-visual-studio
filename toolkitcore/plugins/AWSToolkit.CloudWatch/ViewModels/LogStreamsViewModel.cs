@@ -29,6 +29,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private readonly ICloudWatchLogsRepository _repository;
 
         private bool _isInitialized = false;
+        private bool _isDescending = true;
         private LogGroup _logGroup;
         private LogStream _logStream;
         private string _filterText;
@@ -36,6 +37,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private string _errorMessage = string.Empty;
         private ICommand _refreshCommand;
         private ICollectionView _logStreamsView;
+        private OrderBy _orderBy = OrderBy.LastEventTime;
 
         private ObservableCollection<LogStream> _logStreams =
             new ObservableCollection<LogStream>();
@@ -82,10 +84,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         public string FilterText
         {
             get => _filterText;
-            set
-            {
-                SetProperty(ref _filterText, value);
-            }
+            set => SetProperty(ref _filterText, value);
         }
 
         public string ErrorMessage
@@ -100,9 +99,22 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _refreshCommand, value);
         }
 
-        public AwsConnectionSettings ConnectionSettings => _repository?.ConnectionSettings;
+        /// <summary>
+        /// Indicates the order in which results are sorted
+        /// </summary>
+        public bool IsDescending
+        {
+            get => _isDescending;
+            set => SetProperty(ref _isDescending, value);
+        }
 
-        private OrderBy OrderBy => string.IsNullOrWhiteSpace(FilterText) ? OrderBy.LastEventTime : OrderBy.LogStreamName;
+        public OrderBy OrderBy
+        {
+            get => _orderBy;
+            set => SetProperty(ref _orderBy, value);
+        }
+
+        public AwsConnectionSettings ConnectionSettings => _repository?.ConnectionSettings;
 
         private CancellationToken CancellationToken => _tokenSource.Token;
 
@@ -123,6 +135,37 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             {
                 ErrorMessage = errorMessage;
             });
+        }
+
+        /// <summary>
+        /// Updates <see cref="OrderBy"/> depending on the value of filter text
+        /// </summary>
+        /// <returns>true or false depending on if the property was updated</returns>
+        public bool UpdateOrderBy()
+        {
+            var orderBy = string.IsNullOrWhiteSpace(FilterText) ? OrderBy.LastEventTime : OrderBy.LogStreamName;
+            if (orderBy != OrderBy)
+            {
+                OrderBy = orderBy;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Updates <see cref="IsDescending"/> to have default value of true
+        /// </summary>
+        /// <returns>true or false depending on if the property was updated</returns>
+        public bool UpdateIsDescendingToDefault()
+        {
+            if (!IsDescending)
+            {
+                IsDescending = true;
+                return true;
+            }
+
+            return false;
         }
 
         public void ResetCancellationToken()
@@ -202,7 +245,10 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private GetLogStreamsRequest CreateGetRequest()
         {
-            var request = new GetLogStreamsRequest() { LogGroup = LogGroup.Name, OrderBy = OrderBy };
+            var request = new GetLogStreamsRequest()
+            {
+                LogGroup = LogGroup.Name, OrderBy = OrderBy, IsDescending = IsDescending
+            };
             if (_isInitialized)
             {
                 request.NextToken = NextToken;

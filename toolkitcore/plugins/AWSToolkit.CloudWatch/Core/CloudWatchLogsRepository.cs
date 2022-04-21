@@ -111,8 +111,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             var request = new DescribeLogStreamsRequest
             {
                 LogGroupName = logStreamsRequest.LogGroup,
-                LogStreamNamePrefix = logStreamsRequest.FilterText,
-                Descending = true,
+                Descending = logStreamsRequest.IsDescending,
                 OrderBy = CloudWatchOrderBy.LogStreamName
             };
 
@@ -121,6 +120,10 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
                 request.NextToken = logStreamsRequest.NextToken;
             }
 
+            if (!string.IsNullOrEmpty(logStreamsRequest.FilterText))
+            {
+                request.LogStreamNamePrefix = logStreamsRequest.FilterText;
+            }
             return request;
         }
 
@@ -129,7 +132,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             var request = new DescribeLogStreamsRequest
             {
                 LogGroupName = logStreamsRequest.LogGroup,
-                Descending = true,
+                Descending = logStreamsRequest.IsDescending,
                 OrderBy = CloudWatchOrderBy.LastEventTime
             };
 
