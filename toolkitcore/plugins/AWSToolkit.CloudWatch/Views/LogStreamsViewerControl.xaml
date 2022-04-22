@@ -13,57 +13,38 @@
                          d:DesignHeight="450" d:DesignWidth="800">
     <commonUi:BaseAWSControl.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
             <commonUi:VsImages x:Key="VsImages" />
             <converters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
             <converters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
             <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter" />
-            <Style x:Key="CenterGridHeaderStyle" TargetType="DataGridColumnHeader">
-                <Setter Property="HorizontalContentAlignment" Value="Center" />
-                <Setter Property="ToolTip"
-                        Value="Changing sort settings will reset and re-load data" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <ContentPresenter Margin="6,3,6,3" VerticalAlignment="Center" />
-
-                                <Path
-                                    x:Name="SortArrow"
-                                    Grid.Column="1"
-                                    Width="8"
-                                    Height="6"
-                                    Margin="0,0,8,0"
-                                    VerticalAlignment="Center"
-                                    Data="M0,0 L1,0 0.5,1 z"
-                                    Fill="{DynamicResource awsGridHeadingForegroundBrushKey}"
-                                    RenderTransformOrigin="0.5,0.4"
-                                    Stretch="Fill"
-                                    Visibility="Collapsed" />
-                            </Grid>
-
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="SortDirection" Value="Ascending">
-                                    <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
-                                    <Setter TargetName="SortArrow" Property="RenderTransform">
-                                        <Setter.Value>
-                                            <RotateTransform Angle="180" />
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                                <Trigger Property="SortDirection" Value="Descending">
-                                    <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+            <Style x:Key="TooltipHeaderStyle"
+                   TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                <Setter Property="ToolTip" Value="Changing sort settings will reset and re-load data" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Style.Triggers>
+                    <Trigger Property="SortDirection" Value="{x:Null}">
+                        <Setter Property="FontWeight" Value="Normal" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
+
+            <Style x:Key="ColumnElementStyle" TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="6" />
+            </Style>
+
+            <DataTemplate x:Key="EventTimeHeaderTemplate">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock
+                        Text="{Binding Content, RelativeSource=
+                                         {RelativeSource Mode=TemplatedParent}}" />
+                    <TextBlock
+                        Text="{Binding Source={x:Static local:LogStreamsViewerControl.TimeZone}, StringFormat={}({0})}" />
+                </StackPanel>
+            </DataTemplate>
         </ResourceDictionary>
 
     </commonUi:BaseAWSControl.Resources>
@@ -174,34 +155,30 @@
 
         </Grid>
 
-        <DataGrid Grid.Row="3"
-                  x:Name="LogStreamsList"
-                  x:FieldModifier="private"
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False" CanUserDeleteRows="False"
-                  ItemsSource="{Binding LogStreamsView, NotifyOnTargetUpdated=True}"
-                  TargetUpdated="LogStreamsList_OnTargetUpdated"
-                  SelectedItem="{Binding LogStream}"
-                  ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
-                  ScrollViewer.VerticalScrollBarVisibility="Visible"
-                  themes:ToolkitThemes.UseToolkitTheme="True"
-                  GridLinesVisibility="None"
-                  AreRowDetailsFrozen="True"
-                  Sorting="LogStreamsList_OnSorting"
-                  AlternatingRowBackground="LightGray">
-            <DataGrid.Columns>
+        <commonUi:ToolkitDataGridWrapper Grid.Row="3"
+                                         x:Name="LogStreamsList"
+                                         x:FieldModifier="private"
+                                         AutoGenerateColumns="False"
+                                         CanUserAddRows="False" CanUserDeleteRows="False"
+                                         ItemsSource="{Binding LogStreamsView, NotifyOnTargetUpdated=True}"
+                                         TargetUpdated="LogStreamsList_OnTargetUpdated"
+                                         SelectedItem="{Binding LogStream}"
+                                         ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
+                                         ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                         themes:ToolkitThemes.UseToolkitTheme="True"
+                                         GridLinesVisibility="None"
+                                         AreRowDetailsFrozen="True"
+                                         Sorting="LogStreamsList_OnSorting"
+                                         HeadersVisibility="Column">
+            <commonUi:ToolkitDataGridWrapper.Columns>
                 <DataGridTextColumn x:Name="StreamNameColumn"
                                     x:FieldModifier="private"
                                     Header="{x:Static local:LogStreamsViewerControl.StreamNameHeader}"
                                     Binding="{Binding Path=Name}"
                                     Width="*"
                                     FontFamily="Consolas"
-                                    HeaderStyle="{StaticResource CenterGridHeaderStyle}">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Margin" Value="5 5 5 0" />
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
+                                    HeaderStyle="{StaticResource TooltipHeaderStyle}"
+                                    ElementStyle="{StaticResource ColumnElementStyle}">
                 </DataGridTextColumn>
 
                 <DataGridTextColumn x:Name="EventTimeColumn"
@@ -210,18 +187,15 @@
                                     Binding="{Binding Path=LastEventTime}"
                                     Width="Auto"
                                     FontFamily="Consolas"
-                                    HeaderStyle="{StaticResource CenterGridHeaderStyle }">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Margin" Value="5 5 5 0" />
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
+                                    HeaderStyle="{StaticResource TooltipHeaderStyle}"
+                                    HeaderTemplate="{StaticResource EventTimeHeaderTemplate}"
+                                    ElementStyle="{StaticResource ColumnElementStyle}">
                 </DataGridTextColumn>
 
-            </DataGrid.Columns>
-            <DataGrid.Style>
+            </commonUi:ToolkitDataGridWrapper.Columns>
+            <commonUi:ToolkitDataGridWrapper.Style>
                 <!-- Do not show the DataGrid when there are no matching results or if an error occurred -->
-                <Style TargetType="DataGrid">
+                <Style TargetType="{x:Type commonUi:ToolkitDataGridWrapper}">
                     <Setter Property="Visibility"
                             Value="{Binding LogStreams, Converter={StaticResource HasItemsVisibilityConverter}}" />
                     <Style.Triggers>
@@ -232,9 +206,9 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </DataGrid.Style>
-        </DataGrid>
+            </commonUi:ToolkitDataGridWrapper.Style>
+        </commonUi:ToolkitDataGridWrapper>
 
-        <local:ConnectionStatus Grid.Row="4" ConnectionSettings="{Binding ConnectionSettings}"/>
+        <local:ConnectionStatus Grid.Row="4" ConnectionSettings="{Binding ConnectionSettings}" />
     </Grid>
 </commonUi:BaseAWSControl>

@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LogStreamsViewerControl));
         public static readonly string StreamNameHeader = "Log Stream";
         public static readonly string EventTimeHeader = "Last Event Time";
+        public static readonly string TimeZone = TimeZoneInfo.Local.Id;
 
         private readonly Dictionary<string, OrderBy> _orderByColumnMap = new Dictionary<string, OrderBy>
         {
@@ -65,6 +66,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         }
 
         public override string Title => $"Group: {_viewModel?.LogGroup.Name}";
+
+        public override string UniqueId => $"Logs:Group:{_viewModel?.LogGroup.Name}";
 
         private void ViewModel_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
