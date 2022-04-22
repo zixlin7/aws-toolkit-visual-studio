@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloudWatchActivator.cs" />
-    <Compile Include="Commands\RefreshLogGroupsCommand.cs" />
+    <Compile Include="Commands\RefreshLogsCommand.cs" />
     <Compile Include="Commands\ViewLogGroupsCommand.cs" />
     <Compile Include="Commands\ViewLogStreamsCommand.cs" />
     <Compile Include="Core\CloudWatchLogsRepository.cs" />
@@ -66,6 +66,7 @@
     <Compile Include="Nodes\CloudWatchRootViewMetaNode.cs" />
     <Compile Include="Nodes\LogGroupsRootViewMetaNode.cs" />
     <Compile Include="Util\CloudWatchLogsExtensionMethods.cs" />
+    <Compile Include="ViewModels\BaseLogsViewModel.cs" />
     <Compile Include="ViewModels\CloudWatchRootViewModel.cs" />
     <Compile Include="ViewModels\LogGroupsRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

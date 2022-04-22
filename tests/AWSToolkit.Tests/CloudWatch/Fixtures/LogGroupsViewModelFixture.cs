@@ -1,0 +1,51 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+
+using Amazon.AWSToolkit.CloudWatch.Core;
+using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.Tests.Common.Context;
+
+using Moq;
+
+namespace AWSToolkit.Tests.CloudWatch.Fixtures
+{
+    public class LogGroupsViewModelFixture
+    {
+        private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
+        public Mock<ICloudWatchLogsRepository> Repository { get; } = new Mock<ICloudWatchLogsRepository>();
+        public List<LogGroup> SampleLogGroups { get; }
+        public string SampleToken => "sample-token";
+
+        public LogGroupsViewModelFixture()
+        {
+            _contextFixture.SetupExecuteOnUIThread();
+            SampleLogGroups = CreateSampleLogGroups();
+            StubGetLogGroupsToReturn(SampleToken, SampleLogGroups);
+        }
+
+        public LogGroupsViewModel CreateViewModel()
+        {
+            return new LogGroupsViewModel(Repository.Object, _contextFixture.ToolkitContext);
+        }
+
+        public List<LogGroup> CreateSampleLogGroups()
+        {
+            return Enumerable.Range(1, 3).Select(i =>
+            {
+                var guid = Guid.NewGuid().ToString();
+                return new LogGroup() { Name = $"lg-{guid}", Arn = $"lg-{guid}-arn" };
+            }).ToList();
+        }
+
+        public void StubGetLogGroupsToReturn(string nextToken, List<LogGroup> logGroups)
+        {
+            var response = new PaginatedLogResponse<LogGroup>(nextToken, logGroups);
+            Repository.Setup(mock =>
+                    mock.GetLogGroupsAsync(It.IsAny<GetLogGroupsRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+        }
+    }
+}

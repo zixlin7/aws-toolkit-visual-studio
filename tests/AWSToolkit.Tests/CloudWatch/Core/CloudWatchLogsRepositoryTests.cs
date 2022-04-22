@@ -23,7 +23,7 @@ using ToolkitLogEvent = Amazon.AWSToolkit.CloudWatch.Models.LogEvent;
 using ToolkitLogGroup = Amazon.AWSToolkit.CloudWatch.Models.LogGroup;
 using ToolkitLogStream = Amazon.AWSToolkit.CloudWatch.Models.LogStream;
 
-namespace AWSToolkit.Tests.CloudWatch
+namespace AWSToolkit.Tests.CloudWatch.Core
 {
     public class CloudWatchLogsRepositoryTests
     {

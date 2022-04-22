@@ -9,11 +9,13 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
+using AWSToolkit.Tests.CloudWatch.ViewModels;
+
 using Moq;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.CloudWatch
+namespace AWSToolkit.Tests.CloudWatch.Commands
 {
     public class ViewLogGroupsCommandTests
     {

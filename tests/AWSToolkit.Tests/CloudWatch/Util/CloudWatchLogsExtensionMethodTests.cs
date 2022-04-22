@@ -11,7 +11,7 @@ using CloudWatchLogStream = Amazon.CloudWatchLogs.Model.LogStream;
 using LogGroup = Amazon.AWSToolkit.CloudWatch.Models.LogGroup;
 using LogStream = Amazon.AWSToolkit.CloudWatch.Models.LogStream;
 
-namespace AWSToolkit.Tests.CloudWatch
+namespace AWSToolkit.Tests.CloudWatch.Util
 {
     public class CloudWatchLogsExtensionMethodTests
     {

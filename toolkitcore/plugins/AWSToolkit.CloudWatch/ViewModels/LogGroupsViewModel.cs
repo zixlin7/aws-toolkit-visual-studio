@@ -7,9 +7,7 @@ using System.Windows.Input;
 
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
 
 using log4net;
 
@@ -18,30 +16,18 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
     /// <summary>
     /// Backing view model for viewing log groups
     /// </summary>
-    public class LogGroupsViewModel : BaseModel, ILogSearchProperties, IDisposable
+    public class LogGroupsViewModel : BaseLogsViewModel
     {
         public static readonly ILog Logger = LogManager.GetLogger(typeof(LogGroupsViewModel));
-        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
-
-        private readonly ToolkitContext _toolkitContext;
-        private readonly ICloudWatchLogsRepository _repository;
-
-        private bool _isInitialized = false;
 
         private LogGroup _logGroup;
-        private string _filterText;
-        private string _nextToken;
-        private string _errorMessage = string.Empty;
-        private ICommand _refreshCommand;
         private ICommand _viewCommand;
 
         private ObservableCollection<LogGroup> _logGroups =
             new ObservableCollection<LogGroup>();
 
-        public LogGroupsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext)
+        public LogGroupsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext) : base(repository, toolkitContext)
         {
-            _toolkitContext = toolkitContext;
-            _repository = repository;
         }
 
         public ObservableCollection<LogGroup> LogGroups
@@ -56,67 +42,28 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _logGroup, value);
         }
 
-        public string NextToken
-        {
-            get => _nextToken;
-            set => _nextToken = value;
-        }
-
-        public string FilterText
-        {
-            get => _filterText;
-            set => SetProperty(ref _filterText, value);
-        }
-
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set => SetProperty(ref _errorMessage, value);
-        }
-
-        public ICommand RefreshCommand
-        {
-            get => _refreshCommand;
-            set => SetProperty(ref _refreshCommand, value);
-        }
-
         public ICommand ViewCommand
         {
             get => _viewCommand;
             set => SetProperty(ref _viewCommand, value);
         }
 
-        public AwsConnectionSettings ConnectionSettings => _repository?.ConnectionSettings;
+        public override string GetLogTypeDisplayName() => "log groups";
 
-        private CancellationToken CancellationToken => _tokenSource.Token;
-
-        public async Task RefreshAsync()
+        public override async Task RefreshAsync()
         {
             ResetState();
             await LoadAsync().ConfigureAwait(false);
         }
 
-        public async Task LoadAsync()
+        public override async Task LoadAsync()
         {
             await GetLogGroupsAsync(CancellationToken).ConfigureAwait(false);
         }
 
-        public void SetErrorMessage(string errorMessage)
-        {
-            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
-            {
-                ErrorMessage = errorMessage;
-            });
-        }
-        public void ResetCancellationToken()
-        {
-            CancelExistingToken();
-            _tokenSource = new CancellationTokenSource();
-        }
-
         private void ResetState()
         {
-            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+            ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = null;
                 LogGroups.Clear();
@@ -141,7 +88,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 var selectedLogGroup = LogGroup?.Arn;
 
                 var request = CreateGetRequest();
-                var response = await _repository.GetLogGroupsAsync(request, cancelToken).ConfigureAwait(false);
+                var response = await Repository.GetLogGroupsAsync(request, cancelToken).ConfigureAwait(false);
 
                 UpdateLogGroupProperties(response, selectedLogGroup);
 
@@ -152,17 +99,9 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             }
         }
 
-        /// <summary>
-        /// Indicates if the last page of log groups has already been loaded/retrieved
-        /// </summary>
-        private bool IsLastPageLoaded()
-        {
-            return _isInitialized && string.IsNullOrEmpty(NextToken);
-        }
-
         private void UpdateLogGroupProperties(PaginatedLogResponse<LogGroup> response, string previousLogGroupArn)
         {
-            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+            ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = response.NextToken;
 
@@ -175,14 +114,6 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             });
         }
 
-        private void UpdateIsInitialized()
-        {
-            if (!_isInitialized)
-            {
-                _isInitialized = true;
-            }
-        }
-
         private GetLogGroupsRequest CreateGetRequest()
         {
             var request = new GetLogGroupsRequest() { FilterText = FilterText };
@@ -191,21 +122,6 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 request.NextToken = NextToken;
             }
             return request;
-        }
-
-        private void CancelExistingToken()
-        {
-            if (_tokenSource != null)
-            {
-                _tokenSource.Cancel();
-                _tokenSource.Dispose();
-                _tokenSource = null;
-            }
-        }
-
-        public void Dispose()
-        {
-            CancelExistingToken();
         }
     }
 }

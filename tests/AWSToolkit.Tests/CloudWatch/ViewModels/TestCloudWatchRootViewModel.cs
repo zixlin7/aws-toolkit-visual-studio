@@ -4,7 +4,7 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 
-namespace AWSToolkit.Tests.CloudWatch
+namespace AWSToolkit.Tests.CloudWatch.ViewModels
 {
     /// <summary>
     /// Test only derived class of CloudWatchRootViewModel

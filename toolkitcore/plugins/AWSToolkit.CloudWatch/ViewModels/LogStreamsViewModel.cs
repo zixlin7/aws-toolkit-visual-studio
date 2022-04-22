@@ -5,13 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using System.Windows.Input;
 
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
 
 using log4net;
 
@@ -20,32 +17,21 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
     /// <summary>
     /// Backing view model for viewing log streams
     /// </summary>
-    public class LogStreamsViewModel : BaseModel, ILogSearchProperties, IDisposable
+    public class LogStreamsViewModel : BaseLogsViewModel
     {
         public static readonly ILog Logger = LogManager.GetLogger(typeof(LogStreamsViewModel));
-        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
-
-        private readonly ToolkitContext _toolkitContext;
-        private readonly ICloudWatchLogsRepository _repository;
-
-        private bool _isInitialized = false;
         private bool _isDescending = true;
         private LogGroup _logGroup;
         private LogStream _logStream;
-        private string _filterText;
-        private string _nextToken;
-        private string _errorMessage = string.Empty;
-        private ICommand _refreshCommand;
         private ICollectionView _logStreamsView;
         private OrderBy _orderBy = OrderBy.LastEventTime;
 
         private ObservableCollection<LogStream> _logStreams =
             new ObservableCollection<LogStream>();
 
-        public LogStreamsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext)
+        public LogStreamsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext) : base(
+            repository, toolkitContext)
         {
-            _toolkitContext = toolkitContext;
-            _repository = repository;
         }
 
         public ObservableCollection<LogStream> LogStreams
@@ -75,30 +61,6 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _logStream, value);
         }
 
-        public string NextToken
-        {
-            get => _nextToken;
-            set => SetProperty(ref _nextToken, value);
-        }
-
-        public string FilterText
-        {
-            get => _filterText;
-            set => SetProperty(ref _filterText, value);
-        }
-
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set => SetProperty(ref _errorMessage, value);
-        }
-
-        public ICommand RefreshCommand
-        {
-            get => _refreshCommand;
-            set => SetProperty(ref _refreshCommand, value);
-        }
-
         /// <summary>
         /// Indicates the order in which results are sorted
         /// </summary>
@@ -114,27 +76,17 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _orderBy, value);
         }
 
-        public AwsConnectionSettings ConnectionSettings => _repository?.ConnectionSettings;
+        public override string GetLogTypeDisplayName() => "log streams";
 
-        private CancellationToken CancellationToken => _tokenSource.Token;
-
-        public async Task RefreshAsync()
+        public override async Task RefreshAsync()
         {
             ResetState();
             await LoadAsync().ConfigureAwait(false);
         }
 
-        public async Task LoadAsync()
+        public override async Task LoadAsync()
         {
             await GetLogStreamsAsync(CancellationToken).ConfigureAwait(false);
-        }
-
-        public void SetErrorMessage(string errorMessage)
-        {
-            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
-            {
-                ErrorMessage = errorMessage;
-            });
         }
 
         /// <summary>
@@ -168,15 +120,9 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             return false;
         }
 
-        public void ResetCancellationToken()
-        {
-            CancelExistingToken();
-            _tokenSource = new CancellationTokenSource();
-        }
-
         private void ResetState()
         {
-            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+            ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = null;
                 LogStreams.Clear();
@@ -201,7 +147,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 var selectedLogStream = LogStream?.Arn;
 
                 var request = CreateGetRequest();
-                var response = await _repository.GetLogStreamsAsync(request, cancelToken).ConfigureAwait(false);
+                var response = await Repository.GetLogStreamsAsync(request, cancelToken).ConfigureAwait(false);
 
                 UpdateLogStreamProperties(response, selectedLogStream);
             }
@@ -211,20 +157,12 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             }
         }
 
-        /// <summary>
-        /// Indicates if the last page of log streams has already been loaded/retrieved
-        /// </summary>
-        private bool IsLastPageLoaded()
-        {
-            return _isInitialized && string.IsNullOrEmpty(NextToken);
-        }
-
         private void UpdateLogStreamProperties(PaginatedLogResponse<LogStream> response, string previousLogStreamArn)
         {
             var logStreams = LogStreams.ToList().Concat(response.Values).ToList();
             LogStreams = new ObservableCollection<LogStream>(logStreams);
 
-            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+            ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = response.NextToken;
 
@@ -233,14 +171,6 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 LogStreamsView = CollectionViewSource.GetDefaultView(LogStreams);
                 UpdateIsInitialized();
             });
-        }
-
-        private void UpdateIsInitialized()
-        {
-            if (!_isInitialized)
-            {
-                _isInitialized = true;
-            }
         }
 
         private GetLogStreamsRequest CreateGetRequest()
@@ -261,21 +191,6 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             }
 
             return request;
-        }
-
-        private void CancelExistingToken()
-        {
-            if (_tokenSource != null)
-            {
-                _tokenSource.Cancel();
-                _tokenSource.Dispose();
-                _tokenSource = null;
-            }
-        }
-
-        public void Dispose()
-        {
-            CancelExistingToken();
         }
     }
 }

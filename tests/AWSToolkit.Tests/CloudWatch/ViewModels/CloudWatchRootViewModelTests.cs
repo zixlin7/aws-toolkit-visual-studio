@@ -1,9 +1,6 @@
-﻿using System;
-
-using Amazon;
+﻿using Amazon;
 using Amazon.AWSToolkit.CloudWatch.Nodes;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
-using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
@@ -16,7 +13,7 @@ using Moq;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.CloudWatch
+namespace AWSToolkit.Tests.CloudWatch.ViewModels
 {
     public class CloudWatchRootViewModelTests
     {

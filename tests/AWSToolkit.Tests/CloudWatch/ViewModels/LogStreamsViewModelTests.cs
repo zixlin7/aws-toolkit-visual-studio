@@ -7,32 +7,27 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
-using Amazon.AWSToolkit.Tests.Common.Context;
+
+using AWSToolkit.Tests.CloudWatch.Fixtures;
 
 using Moq;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.CloudWatch
+namespace AWSToolkit.Tests.CloudWatch.ViewModels
 {
     public class LogStreamsViewModelTests
     {
         private readonly LogStreamsViewModel _viewModel;
-        private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
-        private readonly Mock<ICloudWatchLogsRepository> _repository = new Mock<ICloudWatchLogsRepository>();
-        private readonly string _sampleToken = "sample-token";
-        private readonly LogGroup _sampleLogGroup = new LogGroup() { Name = "lg", Arn = "lg-arn" };
-        private readonly List<LogStream> _sampleLogStreams;
+
+        private readonly LogStreamsFixture _streamsFixture = new LogStreamsFixture();
+        private string SampleToken => _streamsFixture.SampleToken;
+        private List<LogStream> SampleLogStreams => _streamsFixture.SampleLogStreams;
+        private Mock<ICloudWatchLogsRepository> Repository => _streamsFixture.Repository;
 
         public LogStreamsViewModelTests()
         {
-            _contextFixture.SetupExecuteOnUIThread();
-            _sampleLogStreams = CreateSampleLogStreams();
-            StubGetLogStreamsToReturn(_sampleToken, _sampleLogStreams);
-            _viewModel = new LogStreamsViewModel(_repository.Object, _contextFixture.ToolkitContext)
-            {
-                LogGroup = _sampleLogGroup
-            };
+            _viewModel = _streamsFixture.CreateViewModel();
         }
 
         [Fact]
@@ -40,25 +35,25 @@ namespace AWSToolkit.Tests.CloudWatch
         {
             await _viewModel.LoadAsync();
 
-            Assert.Equal(_sampleToken, _viewModel.NextToken);
-            Assert.Equal(_sampleLogStreams, _viewModel.LogStreams);
+            Assert.Equal(SampleToken, _viewModel.NextToken);
+            Assert.Equal(SampleLogStreams, _viewModel.LogStreams);
             //first log stream is selected
-            Assert.Equal(_sampleLogStreams.First(), _viewModel.LogStream);
+            Assert.Equal(SampleLogStreams.First(), _viewModel.LogStream);
         }
 
         [Fact]
         public async Task LoadAsync_WhenMorePages()
         {
-            var initialPageLogStreams = CreateSampleLogStreams();
-            var expectedLogStreams = initialPageLogStreams.Concat(_sampleLogStreams);
+            var initialPageLogStreams = _streamsFixture.CreateSampleLogStreams();
+            var expectedLogStreams = initialPageLogStreams.Concat(SampleLogStreams);
 
             await SetupWithInitialLoad("initial-token", initialPageLogStreams);
 
-            StubGetLogStreamsToReturn(_sampleToken, _sampleLogStreams);
+            _streamsFixture.StubGetLogStreamsToReturn(SampleToken, SampleLogStreams);
 
             await _viewModel.LoadAsync();
 
-            Assert.Equal(_sampleToken, _viewModel.NextToken);
+            Assert.Equal(SampleToken, _viewModel.NextToken);
             Assert.Equal(expectedLogStreams, _viewModel.LogStreams);
             //first log stream is selected
             Assert.Equal(expectedLogStreams.First(), _viewModel.LogStream);
@@ -68,12 +63,12 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task LoadAsync_WhenLastPage()
         {
-            var initialPageLogStreams = CreateSampleLogStreams();
-            var expectedLogStreams = initialPageLogStreams.Concat(_sampleLogStreams);
+            var initialPageLogStreams = _streamsFixture.CreateSampleLogStreams();
+            var expectedLogStreams = initialPageLogStreams.Concat(SampleLogStreams);
 
-            await SetupWithInitialLoad(_sampleToken, initialPageLogStreams);
+            await SetupWithInitialLoad(SampleToken, initialPageLogStreams);
 
-            StubGetLogStreamsToReturn(null, _sampleLogStreams);
+            _streamsFixture.StubGetLogStreamsToReturn(null, SampleLogStreams);
 
             await _viewModel.LoadAsync();
 
@@ -83,7 +78,7 @@ namespace AWSToolkit.Tests.CloudWatch
             //first log stream is selected
             Assert.Equal(expectedLogStreams.First(), _viewModel.LogStream);
 
-            _repository.Verify(
+            Repository.Verify(
                 mock => mock.GetLogStreamsAsync(It.IsAny<GetLogStreamsRequest>(), It.IsAny<CancellationToken>()),
                 Times.Exactly(2));
         }
@@ -91,16 +86,16 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task LoadAsync_WhenNoMorePages()
         {
-            await SetupWithInitialLoad(null, _sampleLogStreams);
+            await SetupWithInitialLoad(null, SampleLogStreams);
 
-            StubGetLogStreamsToReturn(_sampleToken, new List<LogStream>());
+            _streamsFixture.StubGetLogStreamsToReturn(SampleToken, new List<LogStream>());
 
             await _viewModel.LoadAsync();
 
             Assert.Null(_viewModel.NextToken);
-            Assert.Equal(_sampleLogStreams, _viewModel.LogStreams);
+            Assert.Equal(SampleLogStreams, _viewModel.LogStreams);
 
-            _repository.Verify(
+            Repository.Verify(
                 mock => mock.GetLogStreamsAsync(It.IsAny<GetLogStreamsRequest>(), It.IsAny<CancellationToken>()),
                 Times.Once);
         }
@@ -109,7 +104,7 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task LoadAsync_Throws()
         {
-            _repository.Setup(mock =>
+            Repository.Setup(mock =>
                     mock.GetLogStreamsAsync(It.IsAny<GetLogStreamsRequest>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new NullReferenceException());
 
@@ -125,10 +120,10 @@ namespace AWSToolkit.Tests.CloudWatch
         [Fact]
         public async Task RefreshAsync()
         {
-            await SetupWithInitialLoad(_sampleToken, _sampleLogStreams);
+            await SetupWithInitialLoad(SampleToken, SampleLogStreams);
 
-            var newLogStreams = CreateSampleLogStreams();
-            StubGetLogStreamsToReturn("refresh-token", newLogStreams);
+            var newLogStreams = _streamsFixture.CreateSampleLogStreams();
+            _streamsFixture.StubGetLogStreamsToReturn("refresh-token", newLogStreams);
 
             await _viewModel.RefreshAsync();
 
@@ -171,29 +166,12 @@ namespace AWSToolkit.Tests.CloudWatch
             Assert.Equal(expectedResult, actualResult);
         }
 
-        private List<LogStream> CreateSampleLogStreams()
-        {
-            return Enumerable.Range(1, 3).Select(i =>
-            {
-                var guid = Guid.NewGuid().ToString();
-                return new LogStream() { Name = $"lg-{guid}", Arn = $"lg-{guid}-arn", LastEventTime = DateTime.Now };
-            }).ToList();
-        }
-
-        private void StubGetLogStreamsToReturn(string nextToken, List<LogStream> logStreams)
-        {
-            var response = new PaginatedLogResponse<LogStream>(nextToken, logStreams);
-            _repository.Setup(mock =>
-                    mock.GetLogStreamsAsync(It.IsAny<GetLogStreamsRequest>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(response);
-        }
-
         /// <summary>
         /// Sets up an initial load with the specified properties
         /// </summary>
         private async Task SetupWithInitialLoad(string token, List<LogStream> logStreams)
         {
-            StubGetLogStreamsToReturn(token, logStreams);
+            _streamsFixture.StubGetLogStreamsToReturn(token, logStreams);
             await _viewModel.LoadAsync();
         }
     }

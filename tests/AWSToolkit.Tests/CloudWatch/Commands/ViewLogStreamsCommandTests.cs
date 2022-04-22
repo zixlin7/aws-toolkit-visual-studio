@@ -12,7 +12,7 @@ using Moq;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.CloudWatch
+namespace AWSToolkit.Tests.CloudWatch.Commands
 {
     public class ViewLogStreamsCommandTests
     {

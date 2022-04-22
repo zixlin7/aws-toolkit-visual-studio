@@ -79,7 +79,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
                 repositoryFactory.CreateCloudWatchLogsRepository(awsConnectionSetting);
 
             var viewModel = new LogGroupsViewModel(cwLogsRepository, _toolkitContext);
-            viewModel.RefreshCommand = RefreshLogGroupsCommand.Create(viewModel);
+            viewModel.RefreshCommand = RefreshLogsCommand.Create(viewModel);
             viewModel.ViewCommand = ViewLogStreamsCommand.Create(_toolkitContext, cwLogsRepository.ConnectionSettings);
             return viewModel;
         }
