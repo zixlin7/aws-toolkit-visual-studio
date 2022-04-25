@@ -158,6 +158,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public void OpenInEditor(string fileName)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             try
             {
                 var dte = (DTE2) _hostPackage.GetVSShellService(typeof(EnvDTE.DTE));
@@ -561,6 +563,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public async Task<IProgressDialog> CreateProgressDialog()
         {
+            await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var dialogFactory =
                 await _hostPackage.GetServiceAsync(
                     typeof(SVsThreadedWaitDialogFactory)) as IVsThreadedWaitDialogFactory;

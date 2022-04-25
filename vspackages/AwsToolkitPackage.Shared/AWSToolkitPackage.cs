@@ -1251,38 +1251,45 @@ namespace Amazon.AWSToolkit.VisualStudio
             return false;
         }
 
-        void PublishContainerToAWS(object sender, EventArgs e)
+        private void PublishContainerToAWS(object sender, EventArgs e)
         {
-            if(this.AWSECSPlugin != null)
+            JoinableTaskFactory.Run(async () => await PublishContainerToAwsAsync(sender, e));
+        }
+
+        private async Task PublishContainerToAwsAsync(object sender, EventArgs e)
+        {
+            if (this.AWSECSPlugin == null) return;
+
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var item = VSUtility.GetSelectedProject();
+
+            if (item == null)
             {
-                var item = VSUtility.GetSelectedProject();
-
-                if (item == null)
+                if (await GetServiceAsync(typeof(SAWSToolkitShellProvider)) is IAWSToolkitShellProvider shell)
                 {
-                    var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
-                    if (shell != null)
-                        shell.ShowError("The selected item is not a project that can be deployed to AWS");
-                    return;
+                    shell.ShowError("The selected item is not a project that can be deployed to AWS");
                 }
-
-                var rootDirectory = Path.GetDirectoryName(item.FullName);
-
-                var seedProperties = new Dictionary<string, object>();
-                seedProperties[PublishContainerToAWSWizardProperties.SourcePath] = rootDirectory;
-                seedProperties[PublishContainerToAWSWizardProperties.SelectedProjectFile] = item.FullName;
-
-                seedProperties[PublishContainerToAWSWizardProperties.IsWebProject] = VSUtility.SelectedWebProject != null;
-
-                StringBuilder safeProjectName = new StringBuilder();
-                foreach(var c in Path.GetFileNameWithoutExtension(item.FullName).ToCharArray())
-                {
-                    if (char.IsLetterOrDigit(c))
-                        safeProjectName.Append(c);
-                }
-                seedProperties[PublishContainerToAWSWizardProperties.SafeProjectName] = safeProjectName.ToString();
-
-                this.AWSECSPlugin.PublishContainerToAWS(seedProperties);
+                return;
             }
+
+            var rootDirectory = Path.GetDirectoryName(item.FullName);
+
+            var seedProperties = new Dictionary<string, object>();
+            seedProperties[PublishContainerToAWSWizardProperties.SourcePath] = rootDirectory;
+            seedProperties[PublishContainerToAWSWizardProperties.SelectedProjectFile] = item.FullName;
+
+            seedProperties[PublishContainerToAWSWizardProperties.IsWebProject] = VSUtility.SelectedWebProject != null;
+
+            StringBuilder safeProjectName = new StringBuilder();
+            foreach(var c in Path.GetFileNameWithoutExtension(item.FullName).ToCharArray())
+            {
+                if (char.IsLetterOrDigit(c))
+                    safeProjectName.Append(c);
+            }
+            seedProperties[PublishContainerToAWSWizardProperties.SafeProjectName] = safeProjectName.ToString();
+
+            this.AWSECSPlugin.PublishContainerToAWS(seedProperties);
         }
 
         void PublishContainerToAWS_BeforeQueryStatus(object sender, EventArgs evnt)
@@ -1683,11 +1690,17 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// project build configuration for msbuild-based builds, and the solution configuration
         /// name for automation-based builds).
         /// </summary>
-        /// <param name="projectInfo"></param>
-        /// <param name="seedProperties"></param>
-        void SeedAvailableBuildConfigurations(VSWebProjectInfo projectInfo, Dictionary<string, object> seedProperties)
+        private void SeedAvailableBuildConfigurations(VSWebProjectInfo projectInfo, Dictionary<string, object> seedProperties)
         {
-            var dte = (DTE2)GetService(typeof(EnvDTE.DTE));
+            JoinableTaskFactory.Run(
+                async () => await SeedAvailableBuildConfigurationsAsync(projectInfo, seedProperties));
+        }
+
+        private async Task SeedAvailableBuildConfigurationsAsync(VSWebProjectInfo projectInfo, Dictionary<string, object> seedProperties)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var dte = (DTE2) await GetServiceAsync(typeof(EnvDTE.DTE));
             Assumes.Present(dte);
             var solutionBuild = dte.Solution.SolutionBuild;
             var solutionConfigurations = solutionBuild.SolutionConfigurations;
@@ -2103,18 +2116,21 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         void TemplateCommandSolutionExplorer_BeforeQueryStatus(object sender, EventArgs e)
         {
-            TemplateCommand_BeforeQueryStatus(sender as OleMenuCommand, false);
+            JoinableTaskFactory.Run(async () =>
+                await TemplateCommand_BeforeQueryStatusAsync(sender as OleMenuCommand, false));
         }
 
         void TemplateCommandActiveDocument_BeforeQueryStatus(object sender, EventArgs e)
         {
-            TemplateCommand_BeforeQueryStatus(sender as OleMenuCommand, true);
+            JoinableTaskFactory.Run(async () =>
+                await TemplateCommand_BeforeQueryStatusAsync(sender as OleMenuCommand, false));
         }
 
-        void TemplateCommand_BeforeQueryStatus(OleMenuCommand menuCommand, bool activeDocument)
+        private async Task TemplateCommand_BeforeQueryStatusAsync(OleMenuCommand menuCommand, bool activeDocument)
         {
-            if (menuCommand == null)
-                return;
+            if (menuCommand == null) return;
+
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
 
             menuCommand.Visible = false;
 
@@ -2162,28 +2178,40 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         void DeployTemplateSolutionExplorer(object sender, EventArgs e)
         {
-            try
+            JoinableTaskFactory.Run(async () =>
             {
-                var prjItem = VSUtility.GetSelectedProjectItem();
-                DeployTemplate(prjItem);
-            }
-            catch { }
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                try
+                {
+                    var prjItem = VSUtility.GetSelectedProjectItem();
+                    DeployTemplate(prjItem);
+                }
+                catch { }
+            });
         }
 
-        void DeployTemplateActiveDocument(object sender, EventArgs e)
+        private void DeployTemplateActiveDocument(object sender, EventArgs e)
         {
-            try
+            JoinableTaskFactory.Run(async () =>
             {
-                var dte = GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
-                Assumes.Present(dte);
-                var prjItem = dte.ActiveDocument.ProjectItem;
-                DeployTemplate(prjItem);
-            }
-            catch { }
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                try
+                {
+                    var dte = GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
+                    Assumes.Present(dte);
+                    var prjItem = dte.ActiveDocument.ProjectItem;
+                    DeployTemplate(prjItem);
+                }
+                catch { }
+            });
         }
 
         void DeployTemplate(EnvDTE.ProjectItem prjItem)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (prjItem == null)
                 return;
 
@@ -2224,28 +2252,39 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         void EstimateTemplateCostSolutionExplorer(object sender, EventArgs e)
         {
-            try
+            JoinableTaskFactory.Run(async () =>
             {
-                var prjItem = VSUtility.GetSelectedProjectItem();
-                EstimateTemplateCost(prjItem);
-            }
-            catch { }
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                try
+                {
+                    var prjItem = VSUtility.GetSelectedProjectItem();
+                    EstimateTemplateCost(prjItem);
+                }
+                catch { }
+            });
         }
 
         void EstimateTemplateCostActiveDocument(object sender, EventArgs e)
         {
-            try
+            JoinableTaskFactory.Run(async () =>
             {
-                var dte = GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
-                Assumes.Present(dte);
-                var prjItem = dte.ActiveDocument.ProjectItem;
-                EstimateTemplateCost(prjItem);
-            }
-            catch { }
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                try
+                {
+                    var dte = GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
+                    Assumes.Present(dte);
+                    var prjItem = dte.ActiveDocument.ProjectItem;
+                    EstimateTemplateCost(prjItem);
+                }
+                catch { }
+            });
         }
 
         void EstimateTemplateCost(EnvDTE.ProjectItem prjItem)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (prjItem == null)
                 return;
 
