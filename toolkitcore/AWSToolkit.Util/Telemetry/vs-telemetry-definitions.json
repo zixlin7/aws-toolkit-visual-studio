@@ -89,6 +89,14 @@
             ]
         },
         {
+            "name": "publish_end",
+            "description": "Called when user exits the Publish to AWS workflow",
+            "metadata": [
+                { "type": "published" },
+                { "type": "duration" }
+            ]
+        },
+        {
             "name": "publish_deploy",
             "description": "Called when user publishes the project",
             "metadata": [

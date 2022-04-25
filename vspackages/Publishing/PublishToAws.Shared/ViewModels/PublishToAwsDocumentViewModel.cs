@@ -1481,13 +1481,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public void RecordPublishEndMetric(bool published)
         {
             Dictionary<string, object> capabilityMetrics = CreateCapabilityMetrics();
-            this._publishContext.TelemetryLogger.RecordPublishEnd(new PublishEnd()
+
+            var payload = new PublishEnd()
             {
                 AwsAccount = _publishContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
                 AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Duration = WorkflowDuration.Elapsed.TotalMilliseconds,
                 Published = published
-            }, capabilityMetrics);
+            };
+
+            _publishContext.TelemetryLogger.RecordPublishEnd(payload, metricDatum =>
+            {
+                foreach (var item in capabilityMetrics
+                             .Where(item => !metricDatum.Metadata.ContainsKey(item.Key)))
+                {
+                    metricDatum.AddMetadata(item.Key, item.Value);
+                }
+                return metricDatum;
+            });
         }
 
         public void RecordPublishUnsupportedSettingMetric()
