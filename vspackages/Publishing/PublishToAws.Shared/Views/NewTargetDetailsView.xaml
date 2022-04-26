@@ -32,41 +32,46 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
                     <Image
-                        Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                        Grid.Row="0" Grid.Column="0"
+                        VerticalAlignment="Center"
                         Width="32"
                         Height="32"
                         Source="{Binding ServiceIcon}"
                         />
 
-                    <!-- Show the Target name, and conditionally a "Recommended" indicator next to it -->
-                    <WrapPanel
+                    <StackPanel
                         Grid.Row="0" Grid.Column="2"
-                        HorizontalAlignment="Left" >
+                        VerticalAlignment="Center"
+                        Orientation="Vertical"
+                        >
+                        <!-- Show the Target name, and conditionally a "Recommended" indicator next to it -->
+                        <WrapPanel
+                            HorizontalAlignment="Left" >
+                            <TextBlock
+                                FontWeight="Bold"
+                                HorizontalAlignment="Left"
+                                TextWrapping="Wrap"
+                                Text="{Binding Name}"
+                                />
+                            <TextBlock 
+                                Margin="3 0 0 0"
+                                Visibility="{Binding IsRecommended, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Text="(Recommended)"
+                                />
+                        </WrapPanel>
+
                         <TextBlock
-                            FontWeight="Bold"
+                            Margin="0 6 0 0"
                             HorizontalAlignment="Left"
                             TextWrapping="Wrap"
-                            Text="{Binding Name}"
+                            Text="{Binding ShortDescription}"
                             />
-                        <TextBlock 
-                            Margin="3 0 0 0"
-                            Visibility="{Binding IsRecommended, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Text="(Recommended)"
-                            />
-                    </WrapPanel>
+                    </StackPanel>
 
-                    <TextBlock
-                        Grid.Row="1" Grid.Column="2"
-                        Margin="0 3 0 0"
-                        HorizontalAlignment="Left"
-                        TextWrapping="Wrap"
-                        Text="{Binding ShortDescription}"
-                        />
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
