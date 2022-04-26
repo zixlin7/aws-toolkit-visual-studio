@@ -1028,11 +1028,38 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
+        public async Task RefreshSystemCapabilities_AdjustsLoadingSystemCapabilities()
+        {
+            var loadingAdjustments = new List<bool>();
+
+            _sut.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(_sut.LoadingSystemCapabilities))
+                {
+                    loadingAdjustments.Add(_sut.LoadingSystemCapabilities);
+                }
+            };
+
+            await SetupPublishView();
+            _deployToolController.Setup(mock =>
+                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
+
+            Assert.False(_sut.LoadingSystemCapabilities);
+            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
+
+            Assert.Equal(2, loadingAdjustments.Count);
+            Assert.True(loadingAdjustments[0]);
+            Assert.False(loadingAdjustments[1]);
+        }
+
+        [Fact]
         public async Task RefreshSystemCapabilities_CapabilityInstalled()
         {
             await SetupPublishView();
             _deployToolController.Setup(mock =>
                 mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
+
+            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
 
             Assert.Empty(_sut.MissingCapabilities.Missing);
             Assert.Empty(_sut.MissingCapabilities.Resolved);
@@ -1419,6 +1446,17 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
 
             Assert.Equal(_sampleRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
+        }
+
+        [StaFact]
+        public void CreateLoadingScope()
+        {
+            Assert.False(_sut.IsLoading);
+            var loadingScope = _sut.CreateLoadingScope();
+            Assert.True(_sut.IsLoading);
+
+            loadingScope.Dispose();
+            Assert.False(_sut.IsLoading);
         }
 
         private void CreateSampleSummaryConfigurationDetail()

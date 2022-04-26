@@ -88,6 +88,7 @@
     <Compile Include="Models\ValidationResultTests.cs" />
     <Compile Include="PublishDocumentViewModelChangeHandlerTests.cs" />
     <Compile Include="Util\DeploymentTypesExtensionMethodsTests.cs" />
+    <Compile Include="Util\DisposingActionTests.cs" />
     <Compile Include="Util\OptionSettingItemSummaryBuilder.cs" />
     <Compile Include="Util\ConfigurationDetailBuilder.cs" />
     <Compile Include="Models\ConfigurationDetailTests.cs" />

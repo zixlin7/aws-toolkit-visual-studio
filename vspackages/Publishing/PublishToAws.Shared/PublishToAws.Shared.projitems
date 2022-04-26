@@ -93,7 +93,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DesignTimePublishConnectionViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DocumentLoadingIndicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\DisposingAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MissingCapabilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProgressStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishConnectionViewModel.cs" />

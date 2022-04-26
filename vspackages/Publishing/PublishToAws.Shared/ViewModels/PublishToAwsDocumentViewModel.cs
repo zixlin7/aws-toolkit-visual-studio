@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
@@ -18,12 +20,10 @@ using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
-using Amazon.AWSToolkit.Publish.Views;
+using Amazon.AWSToolkit.Publish.Util;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.Runtime;
 
 using AWS.Deploy.ServerMode.Client;
@@ -66,6 +66,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private IDeployToolController _deployToolController;
         private IDeploymentCommunicationClient _deploymentCommunicationClient;
+        private volatile int _isLoadingScope = 0;
         private bool _isLoading;
         private string _errorMessage = string.Empty;
         private bool _publishTargetsLoaded;
@@ -120,6 +121,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private ObservableCollection<RepublishTarget> _republishTargets =
             new ObservableCollection<RepublishTarget>();
+
+        private bool _loadingSystemCapabilities = false;
 
         private ObservableCollection<TargetSystemCapability> _systemCapabilities =
             new ObservableCollection<TargetSystemCapability>();
@@ -553,6 +556,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set => SetProperty(ref _republishTargets, value);
         }
 
+        public bool LoadingSystemCapabilities
+        {
+            get => _loadingSystemCapabilities;
+            private set => SetProperty(ref _loadingSystemCapabilities, value);
+        }
+
         public ObservableCollection<TargetSystemCapability> SystemCapabilities
         {
             get => _systemCapabilities;
@@ -800,6 +809,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             try
             {
                 ThrowIfSessionIsNotCreated();
+                await SetLoadingSystemCapabilitiesAsync(true).ConfigureAwait(false);
                 recipeId = PublishDestination?.RecipeId;
 
                 var systemCapabilities = await DeployToolController.GetCompatibilityAsync(SessionId, cancellationToken)
@@ -817,11 +827,20 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 UpdateMissingCapabilities(recipeId, capabilities);
                 if (capabilities.Any())
                 {
-                    var message = $"{ProjectName} cannot be published to {PublishDestination?.Name}, system dependencies are missing ({capabilities.Count}).";
+                    var missingRequirements = string.Join(", ", capabilities.Select(c => c.Name).OrderBy(s => s));
+                    var message = $"Cannot publish {ProjectName} to {PublishDestination?.Name}, missing requirements: {missingRequirements}";
                     Logger.Debug(message);
                     _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
                 }
+
+                await SetLoadingSystemCapabilitiesAsync(false).ConfigureAwait(false);
             }
+        }
+
+        private async Task SetLoadingSystemCapabilitiesAsync(bool isLoading)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            LoadingSystemCapabilities = isLoading;
         }
 
         private void UpdateMissingCapabilities(string recipeId, ObservableCollection<TargetSystemCapability> capabilities)
@@ -1476,6 +1495,37 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             var toolkitHost = _publishContext.ToolkitShellProvider;
             return new ShowExceptionAndForgetCommand(LearnMoreCommandFactory.Create(toolkitHost), toolkitHost);
+        }
+
+        /// <summary>
+        /// Creates a loading scope that decrements the scope on disposal.
+        /// Creation and disposal of the scope will update <see cref="IsLoading"/>.
+        /// </summary>
+        public IDisposable CreateLoadingScope()
+        {
+            IncrementLoadingScope();
+            return new DisposingAction(DecrementLoadingScope);
+        }
+
+        private void IncrementLoadingScope()
+        {
+            Interlocked.Increment(ref _isLoadingScope);
+            UpdateIsLoading();
+        }
+
+        private void DecrementLoadingScope()
+        {
+            Interlocked.Decrement(ref _isLoadingScope);
+            UpdateIsLoading();
+        }
+
+        private void UpdateIsLoading()
+        {
+            JoinableTaskFactory.Run(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                IsLoading = _isLoadingScope > 0;
+            });
         }
 
         public void RecordPublishEndMetric(bool published)

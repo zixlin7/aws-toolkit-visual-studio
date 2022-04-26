@@ -7,6 +7,7 @@
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -16,6 +17,7 @@
                 <ResourceDictionary Source=".\SystemCapabilityTemplate.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <commonUi:VsImages x:Key="VsImages" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:SystemCapabilitiesToVisibilityConverter x:Key="SystemCapabilitiesToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
@@ -30,43 +32,67 @@
             </Grid.RowDefinitions>
 
             <!-- Show Missing System Dependencies -->
-            <Border 
-                Margin="0 0 0 18"
-                Visibility="{Binding SystemCapabilities, Converter={StaticResource SystemCapabilitiesToVisibilityConverter}}"
+            <StackPanel 
+                Orientation="Vertical"
                 Grid.Row="0" Grid.Column="0"
-                BorderThickness="1" 
-                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
                 >
-                <Grid Margin="9">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
 
-                    <StackPanel 
-                        Grid.Row="0" Grid.Column="0" 
-                        Orientation="Horizontal">
-                        <Image
-                            VerticalAlignment="Top"
-                            DataContext="{DynamicResource VsImages}"
-                            Source="{Binding StatusError}"/>
+                <!-- Loading system requirements -->
+                <StackPanel 
+                    Margin="0 12 12 18"
+                    Orientation="Horizontal"
+                    Visibility="{Binding LoadingSystemCapabilities, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    >
+                    <images:VsImage
+                        VerticalAlignment="Center"
+                        Height="16"
+                        Width="16"
+                        DataContext="{DynamicResource VsImages}"
+                        Source="{Binding Loading}"/>
 
-                        <TextBlock
-                            Margin="6 0 0 0"
-                            VerticalAlignment="Top"
-                            FontWeight="Bold"
-                            Text="Missing system requirements" />
-                    </StackPanel>
+                    <TextBlock
+                        Margin="6 0 0 0"
+                        VerticalAlignment="Center"
+                        FontWeight="Bold"
+                        Text="Loading system requirements..." />
+                </StackPanel>
+                <Border 
+                    Margin="0 0 0 18"
+                    Visibility="{Binding SystemCapabilities, Converter={StaticResource SystemCapabilitiesToVisibilityConverter}}"
+                    BorderThickness="1" 
+                    BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+                    >
+                    <Grid Margin="9">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-                    <ItemsControl
-                        Grid.Row="1" Grid.Column="0"
-                        HorizontalContentAlignment="Stretch"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ItemTemplate="{StaticResource SystemCapabilityTemplate}"
-                        ItemsSource="{Binding SystemCapabilities}" />
+                        <StackPanel 
+                            Grid.Row="0" Grid.Column="0" 
+                            Orientation="Horizontal">
+                            <images:VsImage
+                                VerticalAlignment="Top"
+                                DataContext="{DynamicResource VsImages}"
+                                Source="{Binding StatusError}"/>
 
-                </Grid>
-            </Border>
+                            <TextBlock
+                                Margin="6 0 0 0"
+                                VerticalAlignment="Top"
+                                FontWeight="Bold"
+                                Text="Missing system requirements" />
+                        </StackPanel>
+
+                        <ItemsControl
+                            Grid.Row="1" Grid.Column="0"
+                            HorizontalContentAlignment="Stretch"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ItemTemplate="{StaticResource SystemCapabilityTemplate}"
+                            ItemsSource="{Binding SystemCapabilities}" />
+
+                    </Grid>
+                </Border>
+            </StackPanel>
 
             <!-- Show Target Description -->
             <Grid 

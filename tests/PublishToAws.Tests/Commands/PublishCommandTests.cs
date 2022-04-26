@@ -103,6 +103,18 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
         }
 
+        [Fact]
+        public void CanExecute()
+        {
+            Assert.True(_sut.CanExecute(null));
+        }
+
+        [Fact]
+        public void CanExecute_IsLoading()
+        {
+            ViewModel.IsLoading = true;
+            Assert.False(_sut.CanExecute(null));
+        }
 
         [Fact]
         public void CanExecute_HasValidationErrors()

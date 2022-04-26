@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.PluginServices.Publishing;
@@ -237,7 +236,7 @@ namespace Amazon.AWSToolkit.Publish.Views
 
         private async Task RestartDeploymentSessionAsync(CancellationToken cancellationToken)
         {
-            using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
+            using (_viewModel.CreateLoadingScope())
             {
                 await TaskScheduler.Default;
                 await _viewModel.RestartDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
@@ -309,8 +308,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
             if (AffectsPublishProperties(e.PropertyName))
             {
-                UpdateRequiredPublishProperties();
-                UpdateConfiguration();
+                OnPublishAffectingPropertiesUpdated();
             }
             if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.ConfigurationDetails))
             {
@@ -342,13 +340,22 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
         }
 
-        private void UpdateConfiguration()
+        private void OnPublishAffectingPropertiesUpdated()
         {
-            ResetConfigDetails();
-            ResetSystemCapabilities();
-            if (_viewModelChangeHandler.ShouldRefreshTarget(_viewModel))
+            UpdateRequiredPublishProperties();
+            UpdateConfigurationAsync().LogExceptionAndForget();
+        }
+
+        private async Task UpdateConfigurationAsync()
+        {
+            using (_viewModel.CreateLoadingScope())
             {
-                ReloadTargetConfigurationsAsync().LogExceptionAndForget();
+                ResetConfigDetails();
+                ResetSystemCapabilities();
+                if (_viewModelChangeHandler.ShouldRefreshTarget(_viewModel))
+                {
+                    await ReloadTargetConfigurationsAsync();
+                }
             }
         }
 
@@ -462,7 +469,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             try
             {
                 using (var tokenSource = CreateCancellationTokenSource())
-                using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
+                using (_viewModel.CreateLoadingScope())
                 {
                     await TaskScheduler.Default;
                     await _viewModel.RefreshTargetConfigurationsAsync(tokenSource.Token).ConfigureAwait(false);
@@ -486,7 +493,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             try
             {
                 using (var tokenSource = CreateCancellationTokenSource())
-                using (var _ = new DocumentLoadingIndicator(_viewModel, JoinableTaskFactory))
+                using (_viewModel.CreateLoadingScope())
                 {
                     await TaskScheduler.Default;
                     var validationResult = await _viewModel.SetTargetConfigurationAsync(configurationDetail, tokenSource.Token)

@@ -24,6 +24,7 @@
         Edit,
         FeedbackFrown,
         FeedbackSmile,
+        Loading,
         Refresh,
         Remove,
         RemoveLink,

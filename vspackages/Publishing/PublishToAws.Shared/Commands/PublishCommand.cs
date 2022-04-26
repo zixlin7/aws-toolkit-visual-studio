@@ -116,7 +116,10 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         protected override bool CanExecuteCommand()
         {
-            return !PublishDocumentViewModel.HasValidationErrors() && !PublishDocumentViewModel.IsPublishing;
+            return !PublishDocumentViewModel.HasValidationErrors()
+                   && !PublishDocumentViewModel.IsPublishing
+                   && !PublishDocumentViewModel.IsLoading
+                   && !PublishDocumentViewModel.LoadingSystemCapabilities;
         }
     }
 }

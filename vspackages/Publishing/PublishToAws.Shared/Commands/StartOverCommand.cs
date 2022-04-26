@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.Models;
@@ -34,8 +33,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
         protected override async Task ExecuteCommandAsync()
         {
             var cancellationToken = PublishDocumentViewModel.PublishContext.PublishPackage.DisposalToken;
-            using (var _ = new DocumentLoadingIndicator(PublishDocumentViewModel,
-                PublishDocumentViewModel.JoinableTaskFactory))
+            using (PublishDocumentViewModel.CreateLoadingScope())
             {
                 try
                 {
