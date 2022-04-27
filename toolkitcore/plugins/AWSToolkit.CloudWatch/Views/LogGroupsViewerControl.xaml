@@ -145,6 +145,12 @@
                             <Image Source="{Binding Source={StaticResource VsImages}, Path=Search}" />
                         </MenuItem.Icon>
                     </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Delete Log Group" Command="{Binding DeleteCommand}" CommandParameter="{Binding LogGroup}">
+                        <MenuItem.Icon>
+                            <Image Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </ContextMenu>
             </ListBox.ContextMenu>
         </ListBox>

@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Shared;
 
 using log4net;
 
@@ -22,6 +23,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private LogGroup _logGroup;
         private ICommand _viewCommand;
+        private ICommand _deleteCommand;
 
         private ObservableCollection<LogGroup> _logGroups =
             new ObservableCollection<LogGroup>();
@@ -48,6 +50,12 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _viewCommand, value);
         }
 
+        public ICommand DeleteCommand
+        {
+            get => _deleteCommand;
+            set => SetProperty(ref _deleteCommand, value);
+        }
+
         public override string GetLogTypeDisplayName() => "log groups";
 
         public override async Task RefreshAsync()
@@ -59,6 +67,19 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         public override async Task LoadAsync()
         {
             await GetLogGroupsAsync(CancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<bool> DeleteAsync(LogGroup logGroup)
+        {
+            try
+            {
+                return await Repository.DeleteLogGroupAsync(logGroup.Name, CancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException e)
+            {
+                Logger.Error("Operation to delete log group was cancelled", e);
+                return false;
+            }
         }
 
         private void ResetState()

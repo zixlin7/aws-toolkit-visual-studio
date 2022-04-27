@@ -6,6 +6,7 @@ using System.Threading;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Moq;
@@ -18,6 +19,7 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
         public Mock<ICloudWatchLogsRepository> Repository { get; } = new Mock<ICloudWatchLogsRepository>();
         public List<LogGroup> SampleLogGroups { get; }
         public string SampleToken => "sample-token";
+        public Mock<IAWSToolkitShellProvider> ToolkitHost => _contextFixture.ToolkitHost;
 
         public LogGroupsViewModelFixture()
         {
@@ -46,6 +48,12 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
             Repository.Setup(mock =>
                     mock.GetLogGroupsAsync(It.IsAny<GetLogGroupsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
+        }
+
+        public void SetupToolkitHostConfirm(bool result)
+        {
+            ToolkitHost.Setup(mock => mock.Confirm(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(result);
         }
     }
 }

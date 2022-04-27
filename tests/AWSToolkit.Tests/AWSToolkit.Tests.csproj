@@ -52,6 +52,7 @@
     <Compile Include="Clients\AwsServiceClientManagerTests.cs" />
     <Compile Include="Clients\ServiceClientCreatorTests.cs" />
     <Compile Include="CloudFormation\CloudFormationViewerTests.cs" />
+    <Compile Include="CloudWatch\Commands\DeleteLogGroupCommandTests.cs" />
     <Compile Include="CloudWatch\Util\CloudWatchLogsExtensionMethodTests.cs" />
     <Compile Include="CloudWatch\Core\CloudWatchLogsRepositoryTests.cs" />
     <Compile Include="CloudWatch\ViewModels\CloudWatchRootViewModelTests.cs" />
