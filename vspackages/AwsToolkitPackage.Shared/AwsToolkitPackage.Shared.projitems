@@ -138,6 +138,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Themes\Controls\ExpanderStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Themes\_AWSToolkitDefaultTheme.15.0.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

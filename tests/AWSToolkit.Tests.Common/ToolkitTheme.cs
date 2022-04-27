@@ -18,7 +18,8 @@ namespace Amazon.AWSToolkit.Tests.Common
 
             var resourceDictionary = new ResourceDictionary
             {
-                [ToolkitThemeResourceKeys.ButtonStyle] = new Style() { TargetType = typeof(Button) }
+                [ToolkitThemeResourceKeys.ButtonStyle] = new Style() { TargetType = typeof(Button) },
+                [ToolkitThemeResourceKeys.ExpanderStyle] = new Style() { TargetType = typeof(Expander) },
             };
 
             app.Resources.MergedDictionaries.Add(resourceDictionary);

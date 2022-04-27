@@ -2,7 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
                     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
-                    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit">
+                    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+                    xmlns:toolkit="clr-namespace:Amazon.AWSToolkit.VisualStudio">
+
+    <!-- This is the same padding used by Visual Studio Text Box controls (like TextBox and WatermarkedTextBox). -->
+    <Thickness x:Key="{x:Static toolkit:ThemeResourceKeys.InputPaddingKey}">6,8,6,8</Thickness>
 
     <!-- Apply the VS Button Theme as the default Button theme -->
     <Style 
