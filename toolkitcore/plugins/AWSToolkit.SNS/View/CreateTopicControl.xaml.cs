@@ -5,11 +5,11 @@ using Amazon.AWSToolkit.SNS.Controller;
 namespace Amazon.AWSToolkit.SNS.View
 {
     /// <summary>
-    /// Interaction logic for NewTopicControl.xaml
+    /// UI for creating new SNS Topic
     /// </summary>
     public partial class CreateTopicControl : BaseAWSControl
     {
-        CreateTopicController _controller;
+        private readonly CreateTopicController _controller;
 
         public CreateTopicControl()
             : this(null)
@@ -18,29 +18,28 @@ namespace Amazon.AWSToolkit.SNS.View
 
         public CreateTopicControl(CreateTopicController controller)
         {
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            _controller = controller;
+            DataContext = _controller.Model;
             InitializeComponent();
         }
 
-        public override string Title => "Create New Topic";
+        public override string Title => "Create New SNS Topic";
 
         public override bool OnCommit()
         {
-            string newName = this._controller.Model.TopicName == null ? string.Empty : this._controller.Model.TopicName;
-            if (newName.Trim().Equals(string.Empty))
+            var errorMessage = _controller.Model.AsIDataErrorInfo.Error;
+            if (!string.IsNullOrWhiteSpace(errorMessage))
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Name is required.");
+                ToolkitFactory.Instance.ShellProvider.ShowError("Unable to create SNS Topic", errorMessage);
                 return false;
             }
 
-            this._controller.Persist();
             return true;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            this._ctlNewTopicName.Focus();
+            _ctlNewTopicName.Focus();
         }
 
     }

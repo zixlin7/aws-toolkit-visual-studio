@@ -1,46 +1,79 @@
 ﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.SNS.View.CreateTopicControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"   
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    themes:ToolkitThemes.UseToolkitTheme="True"
     Loaded="OnLoaded"
-    Height="160" Width="350">
+    Height="120" Width="400">
 
     <commonui:BaseAWSControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
+            <!-- ValidationErrorTemplate decorates a control, showing a validation message on the screen -->
+            <ControlTemplate x:Key="ValidationErrorTemplate">
+                <Grid MaxWidth="{Binding ElementName=AdornedElement, Path=ActualWidth}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border 
+                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                        BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+                        BorderThickness="1">
+                        <AdornedElementPlaceholder Name="AdornedElement"  />
+                    </Border>
+                    <Border
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                        BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" BorderThickness="1"
+                        Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
+                     />
+                    <TextBlock 
+                        Grid.Row="1" Grid.Column="1"
+                        Margin="9" 
+                        TextWrapping="Wrap"
+                        MaxWidth="{Binding ElementName=Q, Path=ActualWidth}"
+                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                        Text="{Binding /ErrorContent}" />
+                </Grid>
+            </ControlTemplate>
         </ResourceDictionary>
     </commonui:BaseAWSControl.Resources>
 
-    <DockPanel>
-        <TextBlock DockPanel.Dock="Top" Margin="5, 5, 5, 5" TextWrapping="Wrap"
-                   Style="{DynamicResource awsTextBlockBaseStyle}">
-            A topic name will be used to create a permanent unique identifier called an Amazon Resource Name (ARN).
-        </TextBlock>
-        
-        <Grid Margin="5,10,5,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <!-- Spacer -->
+            <ColumnDefinition Width="9"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">Topic Name:</TextBlock>
-            <TextBox Name="_ctlNewTopicName"  Grid.Column="1" Grid.Row="0" Margin="5,5,5,5" 
-                     Text="{Binding TopicName, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{DynamicResource awsTextBoxStyle}"/>
+        <TextBlock 
+            Grid.Row="0" Grid.Column="0"
+            VerticalAlignment="Center"
+            >Topic Name:</TextBlock>
+        <TextBox 
+            x:Name="_ctlNewTopicName" x:FieldModifier="private" 
+            Grid.Row="0" Grid.Column="2"
+            Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+            Text="{Binding TopicName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+            />
 
-            <TextBlock Grid.Column="1" Grid.Row="1" Margin="5,5,5,5" TextWrapping="Wrap" 
-                       VerticalAlignment="Top"
-                       Style="{DynamicResource awsFieldHintTextStyle}"
-                       FontStyle="Italic">
-                Up to 256 alphanumeric characters, hyphens (-) and underscores (_) allowed.
-            </TextBlock>
+        <TextBlock 
+            Grid.Row="1" Grid.Column="2"
+            Margin="0 6 0 0"
+            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+            TextWrapping="Wrap" 
+            VerticalAlignment="Top"
+            >Up to 256 alphanumeric characters, hyphens (-) and underscores (_) allowed.</TextBlock>
 
-        </Grid>
-    </DockPanel>
+    </Grid>
 </commonui:BaseAWSControl>
