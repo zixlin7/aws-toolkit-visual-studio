@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.Publish.Models
             public const string Bool = "Bool";
             public const string KeyValue = "KeyValue";
             public const string Object = "Object";
+            public const string List = "List";
         }
 
         private readonly IPublishToAwsProperties _publishToAwsProperties;
@@ -81,6 +82,13 @@ namespace Amazon.AWSToolkit.Publish.Models
                 var detail = new IamRoleConfigurationDetail();
                 detail.SelectRoleArn = SelectRoleArnCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
 
+                if (itemSummary.TypeHintData.TryGetValue(IamRoleConfigurationDetail.TypeHintDataKeys.ServicePrincipal,
+                        out object servicePrincipalObj) &&
+                    servicePrincipalObj is string servicePrincipal)
+                {
+                    detail.ServicePrincipal = servicePrincipal;
+                }
+
                 return detail;
             }
 
@@ -120,6 +128,17 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return detail;
             }
 
+            if (itemSummary.Type == ItemSummaryTypes.List)
+            {
+                var detail = new ListConfigurationDetail();
+                detail.EditCommand = EditListCommandFactory.Create(
+                    detail,
+                    $"Edit {itemSummary.Name}",
+                    _dialogFactory);
+
+                return detail;
+            }
+
             return new ConfigurationDetail();
         }
 
@@ -139,6 +158,8 @@ namespace Amazon.AWSToolkit.Publish.Models
                     return DetailType.KeyValue;
                 case ItemSummaryTypes.Object:
                     return DetailType.Blob;
+                case ItemSummaryTypes.List:
+                    return DetailType.List;
                 default:
                     if (Debugger.IsAttached)
                     {

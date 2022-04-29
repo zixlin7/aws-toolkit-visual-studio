@@ -14,6 +14,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
         private OptionSettingItemSummaryBuilder()
         {
             _itemSummary.ChildOptionSettings = new List<OptionSettingItemSummary>();
+            _itemSummary.TypeHintData = new Dictionary<string, object>();
         }
 
         public static OptionSettingItemSummaryBuilder Create()
@@ -48,6 +49,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
         public OptionSettingItemSummaryBuilder WithTypeHint(string typeHint)
         {
             _itemSummary.TypeHint = typeHint;
+            return this;
+        }
+
+        public OptionSettingItemSummaryBuilder WithTypeHintData(string key, object value)
+        {
+            _itemSummary.TypeHintData[key] = value;
             return this;
         }
 

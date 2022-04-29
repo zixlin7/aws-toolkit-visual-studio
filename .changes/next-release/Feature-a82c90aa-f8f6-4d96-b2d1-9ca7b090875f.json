@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Add support for configuring VPC Connectors when publishing to App Runner through the Publish to AWS experience."
+}

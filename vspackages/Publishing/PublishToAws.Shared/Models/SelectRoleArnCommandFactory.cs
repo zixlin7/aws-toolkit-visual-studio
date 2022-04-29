@@ -17,6 +17,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                     dlg.Region = _publishToAwsProperties.Region;
                     dlg.CredentialsId = _publishToAwsProperties.CredentialsId;
                     dlg.RoleArn = roleDetail.RoleArnDetail.Value as string;
+                    dlg.ServicePrincipalFilter = roleDetail.ServicePrincipal;
                     if (dlg.Show())
                     {
                         roleDetail.RoleArnDetail.Value = dlg.RoleArn;

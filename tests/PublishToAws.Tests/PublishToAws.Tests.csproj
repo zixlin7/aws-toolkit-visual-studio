@@ -80,6 +80,7 @@
     <Compile Include="Models\Ec2InstanceConfigurationDetailTests.cs" />
     <Compile Include="Models\KeyValueConfigurationDetailTests.cs" />
     <Compile Include="Models\KeyValuesConversionTests.cs" />
+    <Compile Include="Models\ListConfigurationDetailTests.cs" />
     <Compile Include="Models\VpcConfigurationDetailTests.cs" />
     <Compile Include="Models\IamRoleConfigurationDetailTests.cs" />
     <Compile Include="Models\PublishDialogStepProcessorTests.cs" />

@@ -15,6 +15,8 @@ namespace Amazon.AWSToolkit.CommonUI.Dialogs
 
         bool IsSelectionRequired { get; set; }
 
+        string DisplayMemberPath { get; set; }
+
         bool Show();
     }
 }

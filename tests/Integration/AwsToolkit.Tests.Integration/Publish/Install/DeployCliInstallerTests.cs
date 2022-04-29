@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish.Install
             Assert.Equal(InstallResult.Installed, result);
         }
 
-        [Theory]
+        [Theory(Skip = "Restore this test after the NuGet package has more than one version")]
         [MemberData(nameof(TestLocationSubfolders))]
         public async Task ShouldUpdateExistingCli(string testLocationSubfolder)
         {

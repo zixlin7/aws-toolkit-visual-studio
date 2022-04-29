@@ -221,7 +221,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 return false;
             }
 
-            return detail.Type == DetailType.String && !string.IsNullOrEmpty(detail.TypeHint);
+            return (detail.Type == DetailType.List || detail.Type == DetailType.String) && !string.IsNullOrEmpty(detail.TypeHint);
         }
 
         public async Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.NuGet;
+using Amazon.AWSToolkit.Publish.Util;
 
 namespace Amazon.AWSToolkit.Publish.Install
 {
@@ -47,7 +48,7 @@ namespace Amazon.AWSToolkit.Publish.Install
         private async Task<bool> UpdateIsAvailableAsync(CancellationToken cancellationToken)
         {
             var currentVersion = await _getCurrentCliVersion.ExecuteAsync(cancellationToken);
-            var latestSupportedVersion = await _nuGetRepository.GetBestVersionInRangeAsync("aws.deploy.cli", _options.VersionRange, cancellationToken);
+            var latestSupportedVersion = await _nuGetRepository.GetBestVersionInRangeAsync(PublishToAwsConstants.DeployToolPackageName, _options.VersionRange, cancellationToken);
             return currentVersion < latestSupportedVersion;
         }
     }

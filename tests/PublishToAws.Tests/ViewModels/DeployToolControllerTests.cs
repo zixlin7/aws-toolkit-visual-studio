@@ -519,6 +519,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             new object[] { ConfigurationDetailBuilder.Create().Build() },
             new object[] { ConfigurationDetailBuilder.Create().WithType(DetailType.String).Build() },
+            new object[] { ConfigurationDetailBuilder.Create().WithType(DetailType.List).Build() },
             new object[] { ConfigurationDetailBuilder.Create().WithType(DetailType.Integer).WithTypeHint("dummy").Build() }
         };
 

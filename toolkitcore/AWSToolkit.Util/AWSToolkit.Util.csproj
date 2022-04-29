@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\CollectionExtensionMethods.cs" />
     <Compile Include="CryptoUtil.cs" />
     <Compile Include="Events\LogExceptionAndForgetChangedHandler.cs" />
     <Compile Include="Exceptions\IamToolkitException.cs" />

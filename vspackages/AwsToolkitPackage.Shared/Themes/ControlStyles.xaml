@@ -13,6 +13,9 @@
     <Style TargetType="Button" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
     </Style>
 
+    <Style TargetType="ListBox" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ListBoxStyle}}">
+    </Style>
+
     <!-- Apply the VS ProgressBar Theme as the default ProgressBar theme -->
     <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ProgressBarStyleKey}}">
     </Style>

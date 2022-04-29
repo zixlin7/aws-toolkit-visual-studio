@@ -36,6 +36,11 @@ namespace Amazon.AWSToolkit.Publish.Models
         public DataTemplate BooleanEditor { get; set; }
 
         /// <summary>
+        /// Represents the editor control for a list value
+        /// </summary>
+        public DataTemplate ListEditor { get; set; }
+
+        /// <summary>
         /// Represents a UI for properties the Toolkit doesn't know how to handle
         /// </summary>
         public DataTemplate UnsupportedTypeEditor { get; set; }
@@ -73,6 +78,12 @@ namespace Amazon.AWSToolkit.Publish.Models
             if (configurationDetail.Type == DetailType.KeyValue)
             {
                 return KeyValuesTypeEditor;
+            }
+
+            // List types have ValueMappings, so keep this above the check for that or you'll get an EnumEditor instead
+            if (configurationDetail.Type == DetailType.List)
+            {
+                return ListEditor;
             }
 
             if (configurationDetail.Type == DetailType.Blob)

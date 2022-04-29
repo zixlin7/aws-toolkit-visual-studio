@@ -15,6 +15,11 @@
         BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ButtonStyleKey}}" />
 
     <Style 
+        x:Key="{x:Static themes:ToolkitThemeResourceKeys.ListBoxStyle}" 
+        TargetType="ListBox" 
+        BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ThemedDialogListBoxStyleKey}}" />
+
+    <Style 
         x:Key="{x:Static themes:ToolkitThemeResourceKeys.ToolTipStyle}" 
         TargetType="ToolTip" 
         BasedOn="{StaticResource {x:Type ToolTip}}" />

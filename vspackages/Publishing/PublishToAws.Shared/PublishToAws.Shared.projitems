@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\CloseFailureBannerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ConfigCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\CopyToClipboardCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\EditListCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PersistBannerVisibilityCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValueConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValuesConversion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\EcrRepositoryConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\ListConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DeploymentArtifact.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICliServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\DeploymentTypesExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\OptionSettingItemSummaryExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\PublishToAwsConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DesignTimePublishConnectionViewModel.cs" />
@@ -128,6 +131,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\KeyValuesTypeControl.xaml.cs">
       <DependentUpon>KeyValuesTypeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\ListTypeControl.xaml.cs">
+      <DependentUpon>ListTypeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\VpcPropertyControl.xaml.cs">
       <DependentUpon>VpcPropertyControl.xaml</DependentUpon>
@@ -191,6 +197,10 @@
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\KeyValuesTypeControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\ListTypeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\PropertyEditors.xaml">
       <SubType>Designer</SubType>
