@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
         {
             return new LogEvent
             {
-                Message = cloudWatchLogEvent.Message,
+                Message = cloudWatchLogEvent.Message.Trim(),
                 Timestamp = DateTimeUtil.ConvertUnixToDateTime(cloudWatchLogEvent.Timestamp, TimeZoneInfo.Local)
             };
         }

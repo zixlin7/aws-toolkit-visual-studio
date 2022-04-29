@@ -69,6 +69,7 @@
     <Compile Include="Util\CloudWatchLogsExtensionMethods.cs" />
     <Compile Include="ViewModels\BaseLogsViewModel.cs" />
     <Compile Include="ViewModels\CloudWatchRootViewModel.cs" />
+    <Compile Include="ViewModels\LogEventsViewModel.cs" />
     <Compile Include="ViewModels\LogGroupsRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -77,6 +78,9 @@
     <Compile Include="ViewModels\LogStreamsViewModel.cs" />
     <Compile Include="Views\ConnectionStatus.xaml.cs">
       <DependentUpon>ConnectionStatus.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LogEventsViewerControl.xaml.cs">
+      <DependentUpon>LogEventsViewerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LogGroupsViewerControl.xaml.cs">
       <DependentUpon>LogGroupsViewerControl.xaml</DependentUpon>
@@ -121,6 +125,10 @@
     <Page Include="Views\ConnectionStatus.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\LogEventsViewerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LogGroupsViewerControl.xaml">
       <SubType>Designer</SubType>

@@ -39,10 +39,14 @@ namespace AWSToolkit.Tests.CloudWatch.Util
             Assert.Equal(expected, cloudWatchLogStream.ToLogStream());
         }
 
-        [Fact]
-        public void ToLogEvent()
+        [Theory]
+        [InlineData("sample-event-message")]
+        [InlineData("    sample-event-message")]
+        [InlineData("sample-event-message     ")]
+        [InlineData(" sample-event-message ")]
+        public void ToLogEvent(string message)
         {
-            var cloudWatchLogEvent = new FilteredLogEvent() { Message = "sample-event-message", Timestamp = 1640995200000 };
+            var cloudWatchLogEvent = new FilteredLogEvent() { Message = message, Timestamp = 1640995200000 };
             var expected = new LogEvent
             {
                 Message = "sample-event-message",

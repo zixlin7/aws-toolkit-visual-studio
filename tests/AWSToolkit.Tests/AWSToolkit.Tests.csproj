@@ -53,10 +53,12 @@
     <Compile Include="Clients\ServiceClientCreatorTests.cs" />
     <Compile Include="CloudFormation\CloudFormationViewerTests.cs" />
     <Compile Include="CloudWatch\Commands\DeleteLogGroupCommandTests.cs" />
+    <Compile Include="CloudWatch\Fixtures\LogEventsViewModelFixture.cs" />
     <Compile Include="CloudWatch\Util\CloudWatchLogsExtensionMethodTests.cs" />
     <Compile Include="CloudWatch\Core\CloudWatchLogsRepositoryTests.cs" />
     <Compile Include="CloudWatch\ViewModels\CloudWatchRootViewModelTests.cs" />
     <Compile Include="CloudWatch\Fixtures\LogGroupsViewModelFixture.cs" />
+    <Compile Include="CloudWatch\ViewModels\LogEventsViewModelTests.cs" />
     <Compile Include="CloudWatch\ViewModels\LogGroupsViewModelTests.cs" />
     <Compile Include="CloudWatch\Fixtures\LogStreamsViewModelFixture.cs" />
     <Compile Include="CloudWatch\ViewModels\LogStreamsViewModelTests.cs" />
