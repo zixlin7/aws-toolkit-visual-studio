@@ -88,61 +88,11 @@
         </DockPanel>
 
         <!-- Indicates status of results eg. no results found, error message -->
-        <Grid Grid.Row="2"
-              Margin="11">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+        <local:ResultsStatus Grid.Row="2"
+                             Margin="11"
+                             ErrorMessage="{Binding ErrorMessage}"
+                             Visibility="{Binding Visibility, ElementName=LogEventsList, Converter={StaticResource InverseVisibilityConverter}}" />
 
-            <images:VsImage Grid.Row="0" Grid.Column="0"
-                            Height="16"
-                            Width="16"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center">
-                <images:VsImage.Style>
-                    <Style TargetType="{x:Type images:VsImage}">
-                        <Setter Property="Source" Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
-                        <Style.Triggers>
-                            <DataTrigger
-                                Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
-                                Value="">
-                                <Setter Property="Source"
-                                        Value="{Binding Source={StaticResource VsImages}, Path=StatusInformation}" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </images:VsImage.Style>
-            </images:VsImage>
-
-            <TextBox Grid.Row="0" Grid.Column="1"
-                     Background="Transparent"
-                     BorderBrush="Transparent"
-                     IsReadOnly="True"
-                     FontWeight="SemiBold"
-                     Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
-                     Margin="6 0 0 0">
-                <TextBox.Style>
-                    <Style TargetType="TextBox">
-                        <Setter Property="Text" Value="{Binding ErrorMessage}" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ErrorMessage}" Value="">
-                                <Setter Property="Text" Value="No Results Found" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-
-            <Grid.Visibility>
-                <Binding ElementName="LogEventsList" Path="Visibility"
-                         Converter="{StaticResource InverseVisibilityConverter}" />
-            </Grid.Visibility>
-
-        </Grid>
 
         <commonUi:ToolkitDataGridWrapper Grid.Row="3"
                                          x:Name="LogEventsList"
