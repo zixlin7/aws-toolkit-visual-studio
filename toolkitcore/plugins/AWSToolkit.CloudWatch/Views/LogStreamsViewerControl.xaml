@@ -20,6 +20,7 @@
             <converters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
             <converters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
             <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter" />
+            <converters:ParameterPassThroughConverter x:Key="ParameterPassThroughConverter" />
 
             <Style x:Key="TooltipHeaderStyle"
                    TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
@@ -117,6 +118,8 @@
                                          themes:ToolkitThemes.UseToolkitTheme="True"
                                          GridLinesVisibility="None"
                                          AreRowDetailsFrozen="True"
+                                         SelectionMode="Single"
+                                         IsReadOnly="True"
                                          Sorting="LogStreamsList_OnSorting"
                                          HeadersVisibility="Column">
             <commonUi:ToolkitDataGridWrapper.Columns>
@@ -156,6 +159,27 @@
                     </Style.Triggers>
                 </Style>
             </commonUi:ToolkitDataGridWrapper.Style>
+            <commonUi:ToolkitDataGridWrapper.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="View Log Stream" Command="{Binding ViewCommand}">
+                        <MenuItem.Icon>
+                            <Image Height="16" Width="16"
+                                   Source="{Binding Source={StaticResource VsImages}, Path=Search}" />
+                        </MenuItem.Icon>
+                        <MenuItem.CommandParameter>
+                            <MultiBinding Converter="{StaticResource ParameterPassThroughConverter}">
+                                <Binding Path="LogGroup.Name" />
+                                <Binding Path="LogStream.Name" />
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                </ContextMenu>
+            </commonUi:ToolkitDataGridWrapper.ContextMenu>
+            <commonUi:ToolkitDataGridWrapper.Resources>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                    <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick"/>
+                </Style>
+            </commonUi:ToolkitDataGridWrapper.Resources>
         </commonUi:ToolkitDataGridWrapper>
 
         <local:ConnectionStatus Grid.Row="4" ConnectionSettings="{Binding ConnectionSettings}" />

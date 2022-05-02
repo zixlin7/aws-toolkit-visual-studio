@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 
 using Amazon.AWSToolkit.CloudWatch.Models;
@@ -237,6 +238,27 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 ? EventTimeColumn
                 : StreamNameColumn;
             column.SortDirection = sortDirection;
+        }
+
+        private void Row_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var dataGridRow = sender as DataGridRow;
+            if (dataGridRow == null)
+            {
+                return;
+            }
+
+            var selectedLogStream = dataGridRow.DataContext as LogStream;
+            if (selectedLogStream == null)
+            {
+                return;
+            }
+
+            var parameters = new object[] {_viewModel.LogGroup.Name, selectedLogStream.Name };
+            if (_viewModel.ViewCommand.CanExecute(parameters))
+            {
+                _viewModel.ViewCommand.Execute(parameters);
+            }
         }
 
         public void Dispose()

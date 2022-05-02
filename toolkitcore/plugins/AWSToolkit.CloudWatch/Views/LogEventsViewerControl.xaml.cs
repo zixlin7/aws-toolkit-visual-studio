@@ -55,9 +55,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             }
         }
 
-        public override string Title => $"Stream: {_viewModel?.LogStream.Name}";
+        public override string Title => $"Stream: {_viewModel?.LogStream}";
 
-        public override string UniqueId => $"Logs:Stream:{_viewModel?.LogStream.Name}";
+        public override string UniqueId => $"Logs:Stream:{_viewModel?.LogStream}";
 
         private void ViewModel_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

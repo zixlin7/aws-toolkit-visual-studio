@@ -53,6 +53,7 @@
     <Compile Include="Clients\ServiceClientCreatorTests.cs" />
     <Compile Include="CloudFormation\CloudFormationViewerTests.cs" />
     <Compile Include="CloudWatch\Commands\DeleteLogGroupCommandTests.cs" />
+    <Compile Include="CloudWatch\Commands\ViewLogEventsCommandTests.cs" />
     <Compile Include="CloudWatch\Fixtures\LogEventsViewModelFixture.cs" />
     <Compile Include="CloudWatch\Util\CloudWatchLogsExtensionMethodTests.cs" />
     <Compile Include="CloudWatch\Core\CloudWatchLogsRepositoryTests.cs" />

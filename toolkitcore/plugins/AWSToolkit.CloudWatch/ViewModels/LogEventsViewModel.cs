@@ -20,8 +20,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
     public class LogEventsViewModel : BaseLogsViewModel
     {
         public static readonly ILog Logger = LogManager.GetLogger(typeof(LogEventsViewModel));
-        private LogGroup _logGroup;
-        private LogStream _logStream;
+        private string _logGroup;
+        private string _logStream;
         private LogEvent _logEvent;
         private ICollectionView _logEventsView;
 
@@ -48,13 +48,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _logEventsView, value);
         }
 
-        public LogGroup LogGroup
+        public string LogGroup
         {
             get => _logGroup;
             set => SetProperty(ref _logGroup, value);
         }
 
-        public LogStream LogStream
+        public string LogStream
         {
             get => _logStream;
             set => SetProperty(ref _logStream, value);
@@ -134,7 +134,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private GetLogEventsRequest CreateGetRequest()
         {
-            var request = new GetLogEventsRequest { LogGroup = LogGroup.Name, LogStream = LogStream.Name };
+            var request = new GetLogEventsRequest { LogGroup = LogGroup, LogStream = LogStream };
             if (_isInitialized)
             {
                 request.NextToken = NextToken;

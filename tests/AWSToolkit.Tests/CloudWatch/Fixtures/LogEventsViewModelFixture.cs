@@ -32,7 +32,7 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
         {
             var viewModel = new LogEventsViewModel(Repository.Object, _contextFixture.ToolkitContext)
             {
-                LogGroup = SampleLogGroup, LogStream = SampleLogStream
+                LogGroup = SampleLogGroup.Name, LogStream = SampleLogStream.Name
             };
             return viewModel;
         }

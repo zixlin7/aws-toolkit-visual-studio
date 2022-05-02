@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Input;
 
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
@@ -25,6 +26,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private LogStream _logStream;
         private ICollectionView _logStreamsView;
         private OrderBy _orderBy = OrderBy.LastEventTime;
+        private ICommand _viewCommand;
 
         private ObservableCollection<LogStream> _logStreams =
             new ObservableCollection<LogStream>();
@@ -74,6 +76,12 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         {
             get => _orderBy;
             set => SetProperty(ref _orderBy, value);
+        }
+
+        public ICommand ViewCommand
+        {
+            get => _viewCommand;
+            set => SetProperty(ref _viewCommand, value);
         }
 
         public override string GetLogTypeDisplayName() => "log streams";

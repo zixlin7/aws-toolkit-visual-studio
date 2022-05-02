@@ -60,6 +60,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
 
             var viewModel = new LogStreamsViewModel(cwLogsRepository, toolkitContext);
             viewModel.RefreshCommand = RefreshLogsCommand.Create(viewModel);
+            viewModel.ViewCommand = ViewLogEventsCommand.Create(toolkitContext, cwLogsRepository.ConnectionSettings);
             return viewModel;
         }
     }

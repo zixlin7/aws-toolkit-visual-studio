@@ -89,6 +89,7 @@
     <Compile Include="Clients\ServiceClientCreator.cs" />
     <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
+    <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
     <Compile Include="CommonUI\Converters\ToolkitRegionConverter.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />

@@ -49,6 +49,7 @@
     <Compile Include="CloudWatchActivator.cs" />
     <Compile Include="Commands\DeleteLogGroupCommand.cs" />
     <Compile Include="Commands\RefreshLogsCommand.cs" />
+    <Compile Include="Commands\ViewLogEventsCommand.cs" />
     <Compile Include="Commands\ViewLogGroupsCommand.cs" />
     <Compile Include="Commands\ViewLogStreamsCommand.cs" />
     <Compile Include="Core\CloudWatchLogsRepository.cs" />
