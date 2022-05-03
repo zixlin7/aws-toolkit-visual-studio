@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private string _logStream;
         private LogEvent _logEvent;
         private ICollectionView _logEventsView;
+        private bool _isWrapped = false;
 
         private ObservableCollection<LogEvent> _logEvents =
             new ObservableCollection<LogEvent>();
@@ -64,6 +65,12 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         {
             get => _logEvent;
             set => SetProperty(ref _logEvent, value);
+        }
+
+        public bool IsWrapped
+        {
+            get => _isWrapped;
+            set => SetProperty(ref _isWrapped, value);
         }
 
         public override string GetLogTypeDisplayName() => "log events";

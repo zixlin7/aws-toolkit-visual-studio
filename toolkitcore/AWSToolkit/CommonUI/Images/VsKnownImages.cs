@@ -33,5 +33,6 @@
         StatusInformation,
         StatusOK,
         StatusWarning,
+        WordWrap
     }
 }
