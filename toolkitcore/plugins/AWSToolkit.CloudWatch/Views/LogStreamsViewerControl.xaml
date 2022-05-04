@@ -173,6 +173,12 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                     </MenuItem>
+                    <MenuItem Header="Copy Arn" Command="{Binding CopyArnCommand}" CommandParameter="{Binding LogStream.Arn}">
+                        <MenuItem.Icon>
+                            <Image Height="16" Width="16"
+                                   Source="{Binding Source={StaticResource VsImages}, Path=Copy}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </ContextMenu>
             </commonUi:ToolkitDataGridWrapper.ContextMenu>
             <commonUi:ToolkitDataGridWrapper.Resources>

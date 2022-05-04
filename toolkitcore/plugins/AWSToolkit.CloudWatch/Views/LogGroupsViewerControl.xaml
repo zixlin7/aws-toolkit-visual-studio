@@ -94,6 +94,11 @@
                             <Image Source="{Binding Source={StaticResource VsImages}, Path=Search}" />
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="Copy Arn" Command="{Binding CopyArnCommand}" CommandParameter="{Binding LogGroup.Arn}">
+                        <MenuItem.Icon>
+                            <Image Source="{Binding Source={StaticResource VsImages}, Path=Copy}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <Separator />
                     <MenuItem Header="Delete Log Group" Command="{Binding DeleteCommand}" CommandParameter="{Binding LogGroup}">
                         <MenuItem.Icon>

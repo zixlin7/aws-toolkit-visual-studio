@@ -25,6 +25,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private string _nextToken;
         private string _errorMessage = string.Empty;
         private ICommand _refreshCommand;
+        private ICommand _copyArnCommand;
 
         protected BaseLogsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext)
         {
@@ -54,6 +55,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         {
             get => _refreshCommand;
             set => SetProperty(ref _refreshCommand, value);
+        }
+
+        public ICommand CopyArnCommand => _copyArnCommand ?? (_copyArnCommand = CreateCopyArnCommand());
+
+        private ICommand CreateCopyArnCommand()
+        {
+            return Commands.CopyArnCommand.Create(GetLogTypeDisplayName(), ToolkitContext.ToolkitHost);
         }
 
         public AwsConnectionSettings ConnectionSettings => Repository?.ConnectionSettings;

@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloudWatchActivator.cs" />
+    <Compile Include="Commands\CopyArnCommand.cs" />
     <Compile Include="Commands\DeleteLogGroupCommand.cs" />
     <Compile Include="Commands\RefreshLogsCommand.cs" />
     <Compile Include="Commands\ViewLogEventsCommand.cs" />
