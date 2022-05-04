@@ -8,6 +8,7 @@ using System.Windows;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
+using Amazon.AWSToolkit.Shared;
 
 using log4net;
 
@@ -20,12 +21,12 @@ namespace Amazon.AWSToolkit.Publish.Commands
     {
         static readonly ILog Logger = LogManager.GetLogger(typeof(CopyToClipboardCommand));
 
-        public static ICommand Create(PublishToAwsDocumentViewModel viewModel)
+        public static ICommand Create(PublishProjectViewModel viewModel, IAWSToolkitShellProvider shellProvider)
         {
-            return new RelayCommand((obj) => Copy(viewModel));
+            return new RelayCommand((obj) => Copy(viewModel, shellProvider));
         }
 
-        private static void Copy(PublishToAwsDocumentViewModel viewModel)
+        private static void Copy(PublishProjectViewModel viewModel, IAWSToolkitShellProvider shellProvider)
         {
             try
             {
@@ -35,7 +36,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
             catch (Exception e)
             {
                 Logger.Error("Failed to copy to clipboard details about published resources", e);
-                viewModel.PublishContext.ToolkitShellProvider.OutputToHostConsole(
+                shellProvider.OutputToHostConsole(
                     $"Error copying to clipboard details about published resources");
             }
         }

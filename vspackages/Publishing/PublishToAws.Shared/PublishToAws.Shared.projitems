@@ -29,7 +29,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetViewCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ConfigurationDetailsToVisibilityConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishResourcesToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishTargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\RepublishTargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\SessionVisibilityConverter.cs" />
@@ -61,6 +60,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishDestinationBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishProjectResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishUrls.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\Ec2InstanceConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConfigurationDetail.cs" />
@@ -95,8 +95,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Util\PublishToAwsConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishProjectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DesignTimePublishConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\DisposingAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishProjectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MissingCapabilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProgressStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishConnectionViewModel.cs" />
@@ -109,7 +111,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\CredentialsRegionControl.xaml.cs">
       <DependentUpon>CredentialsRegionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\Dialogs\ConfirmPublishDialog.xaml.cs">
       <DependentUpon>ConfirmPublishDialog.xaml</DependentUpon>
     </Compile>

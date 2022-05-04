@@ -6,7 +6,7 @@ namespace Amazon.AWSToolkit.Publish.Views
 {
     /// <summary>
     /// View panel that is shown while a publish is in progress.
-    /// Data bound to <see cref="PublishToAwsDocumentViewModel"/>
+    /// Data bound to <see cref="PublishProjectViewModel"/>
     /// </summary>
     public partial class PublishApplicationView : UserControl
     {

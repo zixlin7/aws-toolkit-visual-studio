@@ -110,9 +110,9 @@ namespace Amazon.AWSToolkit.Publish.Views
             var targetCommand = new TargetCommand(viewModel);
             var startOverCommand = new StartOverCommand(viewModel, this);
             var optionsCommand = new PersistBannerVisibilityCommand(_publishContext.PublishSettingsRepository, viewModel);
-            var closeFailureBannerCommand = CloseFailureBannerCommandFactory.Create(viewModel);
+            var closeFailureBannerCommand = CloseFailureBannerCommandFactory.Create(viewModel.PublishProjectViewModel, JoinableTaskFactory);
             var artifactViewerCommand = DeploymentArtifactViewerCommand.Create(viewModel);
-            var copyToClipboardCommand = CopyToClipboardCommand.Create(viewModel);
+            var copyToClipboardCommand = CopyToClipboardCommand.Create(viewModel.PublishProjectViewModel, _publishContext.ToolkitShellProvider);
 
             _disposables.Push(publishCommand);
             _disposables.Push(configCommand);
@@ -123,11 +123,11 @@ namespace Amazon.AWSToolkit.Publish.Views
             viewModel.ConfigTargetCommand = configCommand;
             viewModel.BackToTargetCommand = targetCommand;
             viewModel.Connection.SelectCredentialsCommand = SelectCredentialsCommandFactory.Create(viewModel);
-            viewModel.StartOverCommand = startOverCommand;
+            viewModel.PublishProjectViewModel.StartOverCommand = startOverCommand;
             viewModel.PersistOptionsSettingsCommand = optionsCommand;
-            viewModel.CloseFailureBannerCommand = closeFailureBannerCommand;
-            viewModel.ViewPublishedArtifactCommand = artifactViewerCommand;
-            viewModel.CopyToClipboardCommand = copyToClipboardCommand;
+            viewModel.PublishProjectViewModel.CloseFailureBannerCommand = closeFailureBannerCommand;
+            viewModel.PublishProjectViewModel.ViewPublishedArtifactCommand = artifactViewerCommand;
+            viewModel.PublishProjectViewModel.CopyToClipboardCommand = copyToClipboardCommand;
 
             return viewModel;
         }
@@ -168,7 +168,7 @@ namespace Amazon.AWSToolkit.Publish.Views
 
         public override bool CanClose()
         {
-            if (_viewModel.IsPublishing)
+            if (_viewModel.PublishProjectViewModel.IsPublishing)
             {
                 return _publishContext.ToolkitShellProvider.Confirm("Publish In Progress",
                     $"Publish will continue in the background but you will not see any updates.{Environment.NewLine}Are you sure you want to close?");
@@ -322,22 +322,6 @@ namespace Amazon.AWSToolkit.Publish.Views
                     }
                 }
             }
-
-            if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.ViewStage))
-            {
-                if (_viewModel.ViewStage == PublishViewStage.Publish)
-                {
-                    _viewModel.SetIsPublishing(true);
-                }
-            }
-
-            if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.ProgressStatus))
-            {
-                if (_viewModel.ProgressStatus != ProgressStatus.Loading)
-                {
-                    ReloadPublishedResourcesAsync().LogExceptionAndForget();
-                }
-            }
         }
 
         private void OnPublishAffectingPropertiesUpdated()
@@ -444,23 +428,6 @@ namespace Amazon.AWSToolkit.Publish.Views
             catch (Exception e)
             {
                 Logger.Error("Error reloading system capabilities", e);
-            }
-        }
-
-        private async Task ReloadPublishedResourcesAsync()
-        {
-            try
-            {
-                using (var tokenSource = CreateCancellationTokenSource())
-                {
-                    await TaskScheduler.Default;
-                    await _viewModel.RefreshPublishedResourcesAsync(tokenSource.Token).ConfigureAwait(false);
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Error reloading published resources", e);
-                _publishContext.ToolkitShellProvider.OutputToHostConsole("Unable to retrieve published resource details. See Toolkit logs for details.", true);
             }
         }
 

@@ -30,9 +30,13 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         private static void ViewRepository(PublishToAwsDocumentViewModel viewModel)
         {
+            string artifactId = string.Empty;
+
             try
             {
-                if (string.IsNullOrWhiteSpace(viewModel.PublishedArtifactId))
+                artifactId = viewModel.PublishProjectViewModel.PublishedArtifactId;
+
+                if (string.IsNullOrWhiteSpace(artifactId))
                 {
                     throw new ArgumentException("No ECR Repository name");
                 }
@@ -47,7 +51,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
                     throw new Exception("Toolkit was unable to access the ECR Repo viewer.");
                 }
 
-                repoViewer.ViewRepository(viewModel.PublishedArtifactId,
+                repoViewer.ViewRepository(artifactId,
                     new AwsConnectionSettings(
                         publishContext.ConnectionManager.ActiveCredentialIdentifier,
                         publishContext.ConnectionManager.ActiveRegion
@@ -56,9 +60,9 @@ namespace Amazon.AWSToolkit.Publish.Commands
             }
             catch (Exception e)
             {
-                Logger.Error($"Failure to view the ECR Repo {viewModel.PublishedArtifactId}", e);
+                Logger.Error($"Failure to view the ECR Repo {artifactId}", e);
                 viewModel.PublishContext.ToolkitShellProvider.OutputToHostConsole(
-                    $"Unable to view ECR Repository {viewModel.PublishedArtifactId}: {e.Message}",
+                    $"Unable to view ECR Repository {artifactId}: {e.Message}",
                     true);
             }
         }

@@ -34,12 +34,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
                 new TestPublishToAwsDocumentViewModel(
                     new PublishApplicationContext(_contextFixture.PublishContext))
                 {
-                    PublishedArtifactId = SampleStackName,
                     PublishDestination = new PublishRecommendation(new RecommendationSummary()
                     {
                         DeploymentType = DeploymentTypes.CloudFormationStack,
                     })
                 };
+            _viewModel.PublishProjectViewModel.PublishedArtifactId = SampleStackName;
             _stackViewerCommand = StackViewerCommandFactory.Create(_viewModel);
             SetupToolkitHost();
         }

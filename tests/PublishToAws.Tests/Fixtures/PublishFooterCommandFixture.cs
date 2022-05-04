@@ -14,6 +14,8 @@ using Amazon.AWSToolkit.Tests.Publishing.Common;
 
 using AWS.Deploy.ServerMode.Client;
 
+using Microsoft.VisualStudio.Threading;
+
 using Moq;
 
 using Xunit;
@@ -78,9 +80,15 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
         public Mock<IDeploymentCommunicationClient> DeploymentCommunicationClient = new Mock<IDeploymentCommunicationClient>();
         public TestPublishToAwsDocumentViewModel ViewModel { get; }
         public Mock<IAWSToolkitShellProvider> ShellProvider => _publishContextFixture.ToolkitShellProvider;
+        public JoinableTaskFactory JoinableTaskFactory { get; }
 
         public PublishFooterCommandFixture()
         {
+#pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
+            var taskCollection = new JoinableTaskContext();
+#pragma warning restore VSSDK005
+            JoinableTaskFactory = taskCollection.Factory;
+
             ViewModel =
                 new TestPublishToAwsDocumentViewModel(
                     new PublishApplicationContext(_publishContextFixture.PublishContext))

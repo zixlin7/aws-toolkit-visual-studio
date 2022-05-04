@@ -66,9 +66,10 @@
     <Compile Include="Commands\StartOverCommandTests.cs" />
     <Compile Include="Commands\TargetCommandTests.cs" />
     <Compile Include="Converters\ConfigurationDetailsToVisibilityConverterTests.cs" />
-    <Compile Include="Converters\PublishResourcesToVisibilityConverterTests.cs" />
     <Compile Include="Converters\TargetsToVisibilityConverterTests.cs" />
+    <Compile Include="Fixtures\DeployToolControllerFixture.cs" />
     <Compile Include="Fixtures\PublishFooterCommandFixture.cs" />
+    <Compile Include="Fixtures\PublishToAwsFixture.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Install\CliServerFactoryTests.cs" />
     <Compile Include="Install\GetCurrentCliVersionTests.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Util\ImageSourceExtensionMethods.cs" />
     <Compile Include="Util\RecipeServiceImageResolverTests.cs" />
     <Compile Include="ViewModels\DeployToolControllerTests.cs" />
+    <Compile Include="ViewModels\PublishProjectViewModelTests.cs" />
     <Compile Include="ViewModels\MissingCapabilitiesTests.cs" />
     <Compile Include="ViewModels\PublishConnectionViewModelTests.cs" />
     <Compile Include="ViewModels\PublishToAwsDocumentViewModelTests.cs" />

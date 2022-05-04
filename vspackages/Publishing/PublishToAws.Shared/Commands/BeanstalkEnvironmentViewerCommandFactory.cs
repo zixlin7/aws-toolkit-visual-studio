@@ -29,9 +29,13 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         private static void ViewEnvironment(PublishToAwsDocumentViewModel viewModel)
         {
+            string artifactId = string.Empty;
+
             try
             {
-                if (string.IsNullOrWhiteSpace(viewModel.PublishedArtifactId))
+                artifactId = viewModel.PublishProjectViewModel.PublishedArtifactId;
+
+                if (string.IsNullOrWhiteSpace(artifactId))
                 {
                     throw new ArgumentException("No environment name");
                 }
@@ -41,13 +45,13 @@ namespace Amazon.AWSToolkit.Publish.Commands
                     publishContext.ToolkitShellProvider.QueryAWSToolkitPluginService(typeof(IBeanstalkEnvironmentViewer)) as
                         IBeanstalkEnvironmentViewer;
 
-                viewer.View(viewModel.PublishedArtifactId,
+                viewer.View(artifactId,
                     publishContext.ConnectionManager.ActiveCredentialIdentifier,
                     publishContext.ConnectionManager.ActiveRegion);
             }
             catch (Exception e)
             {
-                viewModel.PublishContext.ToolkitShellProvider.OutputError(new Exception($"Error viewing Beanstalk environment {viewModel.PublishedArtifactId}", e), Logger);
+                viewModel.PublishContext.ToolkitShellProvider.OutputError(new Exception($"Error viewing Beanstalk environment {artifactId}", e), Logger);
             }
         }
     }

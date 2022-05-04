@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
         public override bool CanExecute(object paramter)
         {
             return PublishDocumentViewModel.ViewStage == PublishViewStage.Publish
-                && !PublishDocumentViewModel.IsPublishing;
+                && !PublishDocumentViewModel.PublishProjectViewModel.IsPublishing;
         }
 
         protected override async Task ExecuteCommandAsync()
@@ -46,15 +46,14 @@ namespace Amazon.AWSToolkit.Publish.Commands
                     await PublishDocumentViewModel.InitializePublishTargetsAsync(cancellationToken).ConfigureAwait(false);
 
                     // If user chose a new publish target and the publish failed, re-choose that setting
-                    if (PublishDocumentViewModel.ProgressStatus == ProgressStatus.Fail)
+                    if (PublishDocumentViewModel.PublishProjectViewModel.ProgressStatus == ProgressStatus.Fail)
                     {
                         await PublishDocumentViewModel.SetIsRepublishAsync(initialIsRepublishValue, cancellationToken).ConfigureAwait(false);
                     }
 
                     await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
                     PublishDocumentViewModel.ViewStage = PublishViewStage.Target;
-                    PublishDocumentViewModel.ProgressStatus = ProgressStatus.Loading;
-                    PublishDocumentViewModel.PublishProgress = string.Empty;
+                    PublishDocumentViewModel.PublishProjectViewModel.Clear();
                 }
                 catch (Exception e)
                 {

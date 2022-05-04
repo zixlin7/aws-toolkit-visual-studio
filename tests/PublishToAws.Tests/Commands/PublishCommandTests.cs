@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,6 +45,46 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
 
             Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
             await _commandFixture.AssertConfirmationIsNotSilencedAsync();
+        }
+
+        public class FailureBannerEnabledSpy
+        {
+            private readonly PublishProjectViewModel _viewModel;
+            public int FalseCount;
+            public int TrueCount;
+
+            public FailureBannerEnabledSpy(PublishProjectViewModel viewModel)
+            {
+                _viewModel = viewModel;
+                _viewModel.PropertyChanged += OnHandle;
+            }
+
+            public void OnHandle(object sender, PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == nameof(PublishProjectViewModel.IsFailureBannerEnabled))
+                {
+                    if (_viewModel.IsFailureBannerEnabled)
+                    {
+                        TrueCount += 1;
+                    }
+                    else
+                    {
+                        FalseCount += 1;
+                    }
+                }
+            }
+        }
+
+        [StaFact]
+        public async Task HasFailureBannerDisabledAtStartOfPublish()
+        {
+            ViewModel.PublishProjectViewModel.IsFailureBannerEnabled = true;
+            FailureBannerEnabledSpy spy = new FailureBannerEnabledSpy(ViewModel.PublishProjectViewModel);
+
+            await _sut.ExecuteAsync(null);
+
+            Assert.Equal(1, spy.FalseCount);
+            Assert.Equal(0, spy.TrueCount);
         }
 
         [StaFact]

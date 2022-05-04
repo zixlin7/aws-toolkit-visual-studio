@@ -22,19 +22,18 @@ namespace Amazon.AWSToolkit.Publish.Views
 
         private void OnResourceLinkNavigate(object sender, RequestNavigateEventArgs e)
         {
-            if (!(DataContext is PublishToAwsDocumentViewModel viewModel))
+            if (!(DataContext is PublishProjectViewModel viewModel))
             {
                 return;
             }
 
             try
             {
-                viewModel.PublishContext.ToolkitShellProvider.OpenInBrowser(e.Uri.AbsoluteUri, true);
+                viewModel.OpenUrlCommand.Execute(e.Uri.AbsoluteUri);
             }
             catch (Exception ex)
             {
                 Logger.Error($"Failed to open url", ex);
-                viewModel.PublishContext.ToolkitShellProvider.OutputToHostConsole("Error opening url in browser");
             }
         }
     }

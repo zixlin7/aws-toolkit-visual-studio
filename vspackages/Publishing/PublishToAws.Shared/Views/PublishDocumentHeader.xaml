@@ -71,7 +71,7 @@
         <Label Grid.Row="3" Grid.Column="1" Content="{Binding SessionId}" />
 
         <Label Grid.Row="3" Grid.Column="2" Content="IsPublishing" />
-        <CheckBox Grid.Row="3" Grid.Column="3" IsChecked="{Binding IsPublishing}" />
+        <CheckBox Grid.Row="3" Grid.Column="3" IsChecked="{Binding PublishProjectViewModel.IsPublishing}" />
 
 </Grid>
 </UserControl>

@@ -10,6 +10,29 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
 {
     public class SamplePublishData
     {
+        public static class GetDeploymentStatusOutputs
+        {
+            public static readonly GetDeploymentStatusOutput Error =
+                new GetDeploymentStatusOutput() { Status = DeploymentStatus.Error };
+
+            public static readonly GetDeploymentStatusOutput Executing =
+                new GetDeploymentStatusOutput() { Status = DeploymentStatus.Executing };
+
+            public static readonly GetDeploymentStatusOutput Success =
+                new GetDeploymentStatusOutput() { Status = DeploymentStatus.Success };
+
+            public static readonly GetDeploymentStatusOutput Fail =
+                new GetDeploymentStatusOutput()
+                {
+                    Status = DeploymentStatus.Error,
+                    Exception = new DeployToolExceptionSummary()
+                    {
+                        ErrorCode = "FailedToDeployCdkApplication",
+                        Message = "Failed to deploy cdk app"
+                    }
+                };
+        }
+
         private static readonly IDictionary<string, RecipeSummary> SampleRecipes =
             new Dictionary<string, RecipeSummary>()
             {

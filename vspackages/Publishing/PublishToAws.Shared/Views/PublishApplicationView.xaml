@@ -6,19 +6,27 @@
              xmlns:local="clr-namespace:Amazon.AWSToolkit.Publish.Views"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
-             xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
              xmlns:commonUiConverters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
              xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+             xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.Publish.ViewModels"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:designData="clr-namespace:Amazon.AWSToolkit.Publish.Views.DesignData"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=designData:DesignSamplePublishProjectViewModel, IsDesignTimeCreatable=True}"
+             >
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <commonUi:VsImages x:Key="VsImages" />
-            <converters:PublishResourcesToVisibilityConverter x:Key="PublishResourcesToVisibilityConverter" />
+            <system:Int32 x:Key="Zero">0</system:Int32>
+            <commonUiConverters:ConverterPipeline x:Key="VisibleIfNotMatching">
+                <commonUiConverters:EqualityBooleanConverter />
+                <commonUiConverters:InverseBooleanToVisibilityConverter />
+            </commonUiConverters:ConverterPipeline>
             <commonUiConverters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
@@ -58,13 +66,13 @@
             <ContentControl.Style>
                 <Style TargetType="ContentControl">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding ProgressStatus}" Value="Loading">
+                        <DataTrigger Binding="{Binding ProgressStatus}" Value="{x:Static viewModels:ProgressStatus.Loading}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Loading}" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding ProgressStatus}" Value="Success">
+                        <DataTrigger Binding="{Binding ProgressStatus}" Value="{x:Static viewModels:ProgressStatus.Success}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Success}" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding ProgressStatus}" Value="Fail">
+                        <DataTrigger Binding="{Binding ProgressStatus}" Value="{x:Static viewModels:ProgressStatus.Fail}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Fail}" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -96,12 +104,12 @@
             <TextBlock
                 Grid.Row="2" Grid.Column="0"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
-                Text="{Binding TargetRecipe}" />
+                Text="{Binding RecipeName}" />
 
             <TextBlock
                 Grid.Row="2" Grid.Column="2"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
-                Text="{Binding Connection.RegionDisplayName}" />
+                Text="{Binding RegionName}" />
         </Grid>
 
         <DockPanel 
@@ -127,7 +135,7 @@
                 DockPanel.Dock="Right"
                 MaxWidth="400"
                 Margin="12 0 0 0"
-                Visibility="{Binding PublishResources, Converter={StaticResource PublishResourcesToVisibilityConverter}}"/>
+                Visibility="{Binding PublishResources.Count, Converter={StaticResource VisibleIfNotMatching}, ConverterParameter={StaticResource Zero}}"/>
 
             <local:PublishFailureBanner
                 DockPanel.Dock="Top"

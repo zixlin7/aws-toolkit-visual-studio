@@ -12,7 +12,7 @@
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance Type=designData:DesignSamplePublishDocumentViewModel, IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance Type=designData:DesignSamplePublishProjectViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <ResourceDictionary>
             <commonUi:VsImages x:Key="VsImages" />
@@ -138,17 +138,17 @@
                                 <Setter Property="Text" Value="Artifact" />
                                 <Style.Triggers>
                                     <DataTrigger 
-                                        Binding="{Binding PublishDestination.DeploymentArtifact}" 
+                                        Binding="{Binding ArtifactType}" 
                                         Value="{x:Static models:DeploymentArtifact.CloudFormationStack}">
                                         <Setter Property="Text" Value="CloudFormation stack" />
                                     </DataTrigger>
                                     <DataTrigger 
-                                        Binding="{Binding PublishDestination.DeploymentArtifact}" 
+                                        Binding="{Binding ArtifactType}" 
                                         Value="{x:Static models:DeploymentArtifact.BeanstalkEnvironment}" >
                                         <Setter Property="Text" Value="Beanstalk environment" />
                                     </DataTrigger>
                                     <DataTrigger 
-                                        Binding="{Binding PublishDestination.DeploymentArtifact}" 
+                                        Binding="{Binding ArtifactType}" 
                                         Value="{x:Static models:DeploymentArtifact.ElasticContainerRegistry}" >
                                         <Setter Property="Text" Value="ECR Repository" />
                                     </DataTrigger>

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
@@ -17,6 +16,7 @@ using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
@@ -31,49 +31,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 {
     public class PublishToAwsDocumentViewModelTests
     {
-        private readonly Mock<IDeployToolController> _deployToolController = new Mock<IDeployToolController>();
+        private readonly PublishToAwsFixture _publishToAwsFixture = new PublishToAwsFixture();
+
+        private DeployToolControllerFixture DeployToolControllerFixture =>
+            _publishToAwsFixture.DeployToolControllerFixture;
+        private PublishContextFixture PublishContextFixture => _publishToAwsFixture.PublishContextFixture;
+
         private readonly Mock<IDeploymentCommunicationClient> _deployClient = new Mock<IDeploymentCommunicationClient>();
         private readonly PublishToAwsDocumentViewModel _sut;
         private readonly TestPublishToAwsDocumentViewModel _exposedTestViewModel;
 
-        private static readonly string _sampleSessionId = Guid.NewGuid().ToString();
-        private static readonly string _sampleApplicationName = $"Sample-app-{Guid.NewGuid()}";
-
-
-        private static readonly GetDeploymentStatusOutput DeploymentResultError =
-            new GetDeploymentStatusOutput() { Status = DeploymentStatus.Error };
-
-        private static readonly GetDeploymentStatusOutput DeploymentResultExecuting =
-            new GetDeploymentStatusOutput() { Status = DeploymentStatus.Executing };
-            
-        private static readonly GetDeploymentStatusOutput DeploymentResultSuccess =
-            new GetDeploymentStatusOutput() { Status = DeploymentStatus.Success };
-
-        private static readonly GetDeploymentStatusOutput DeploymentResultFail =
-            new GetDeploymentStatusOutput()
-            {
-                Status = DeploymentStatus.Error,
-                Exception = new DeployToolExceptionSummary()
-                {
-                    ErrorCode = "FailedToDeployCdkApplication", Message = "Failed to deploy cdk app"
-                }
-            };
-
-        private readonly ValidationResult _sampleValidationResult =
-            new ValidationResult();
-
-        private readonly GetDeploymentDetailsOutput _deploymentDetails;
-
         private readonly List<TargetSystemCapability> _sampleGetCompatibilityOutput =
             new List<TargetSystemCapability>();
 
-        private readonly List<PublishRecommendation> _sampleRecommendations;
+        private List<PublishRecommendation> SamplePublishRecommendations => DeployToolControllerFixture.GetRecommendationsAsyncResponse;
 
-        private readonly List<RepublishTarget> _sampleRepublishTargets;
+        private List<RepublishTarget> SampleRepublishTargets => DeployToolControllerFixture.GetRepublishTargetsAsyncResponse;
 
-        private readonly ObservableCollection<ConfigurationDetail> _sampleConfigurationDetails;
-
-        private readonly PublishContextFixture _publishContextFixture = new PublishContextFixture();
+        private List<ConfigurationDetail> SampleConfigurationDetails => DeployToolControllerFixture.GetConfigSettingsAsyncResponse;
 
         private static readonly ICredentialIdentifier SampleCredentialIdentifier =
             new SharedCredentialIdentifier("profile");
@@ -88,69 +63,31 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             PartitionId = "SamplePartition", DisplayName = "FallbackRegion", Id = RegionEndpoint.USEast1.SystemName,
         };
 
-        private readonly CancellationToken _cancelToken;
+        private CancellationToken CancelToken => PublishContextFixture.PublishContext.PublishPackage.DisposalToken;
 
         public PublishToAwsDocumentViewModelTests()
         {
-            _publishContextFixture.DefineRegion(_sampleRegion);
-            _publishContextFixture.DefineRegion(SampleFallbackRegion);
+            PublishContextFixture.DefineRegion(_sampleRegion);
+            PublishContextFixture.DefineRegion(SampleFallbackRegion);
 
-            StubStartSessionToReturn(CreateSampleSessionDetails());
-
-            _sampleRecommendations = SamplePublishData.CreateSampleRecommendations();
-            _sampleConfigurationDetails = CreateSampleConfigurationDetails(1);
-            _deploymentDetails = CreateSampleDeploymentDetails();
-
-            StubGetRecommendationsToReturn(_sampleRecommendations);
-
-            _sampleRepublishTargets = SamplePublishData.CreateSampleRepublishTargets();
-            StubGetRepublishTargetsToReturn(_sampleRepublishTargets);
-
-
-            _sut = new PublishToAwsDocumentViewModel(
-                new PublishApplicationContext(_publishContextFixture.PublishContext))
+            _sut = new PublishToAwsDocumentViewModel(_publishToAwsFixture.PublishApplicationContext)
             {
-                DeploymentClient = _deployClient.Object, DeployToolController = _deployToolController.Object
+                DeploymentClient = _deployClient.Object, DeployToolController = DeployToolControllerFixture.DeployToolController.Object
             };
             _sut.Connection.Region = _sampleRegion;
 
-            _exposedTestViewModel = new TestPublishToAwsDocumentViewModel(new PublishApplicationContext(_publishContextFixture.PublishContext));
-            _cancelToken = _publishContextFixture.PublishContext.PublishPackage.DisposalToken;
-        }
+            _exposedTestViewModel = new TestPublishToAwsDocumentViewModel(_publishToAwsFixture.PublishApplicationContext);
 
-        private SessionDetails CreateSampleSessionDetails()
-        {
-            return new SessionDetails()
-            {
-                SessionId = _sampleSessionId, DefaultApplicationName = _sampleApplicationName,
-            };
-        }
-
-        private void StubStartSessionToReturn(SessionDetails sessionDetails)
-        {
-            _deployToolController.Setup(mock => mock.StartSessionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(sessionDetails);
-        }
-        private void StubGetRecommendationsToReturn(ICollection<PublishRecommendation> recommendations)
-        {
-            _deployToolController.Setup(mock => mock.GetRecommendationsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(recommendations);
-        }
-
-        private void StubGetRepublishTargetsToReturn(ICollection<RepublishTarget> republishTargets)
-        {
-            _deployToolController.Setup(mock => mock.GetRepublishTargetsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(republishTargets);
+            DeployToolControllerFixture.GetCompatibilityAsyncResponse = _sampleGetCompatibilityOutput;
         }
 
         [Fact]
         public async Task ShouldInitializeAsRepublish()
         {
             //arrange
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
-            StubGetRepublishTargetsToReturn(_sampleRepublishTargets);
+            await _sut.StartDeploymentSessionAsync(CancelToken);
             //act
-            await _sut.InitializePublishTargetsAsync(_cancelToken);
+            await _sut.InitializePublishTargetsAsync(CancelToken);
             //assert
             Assert.True(_sut.RepublishTargets.Any());
             Assert.True(_sut.IsRepublish);
@@ -160,10 +97,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task ShouldInitializeAsPublish()
         {
             //arrange
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
-            StubGetRepublishTargetsToReturn(Array.Empty<RepublishTarget>());
+            await _sut.StartDeploymentSessionAsync(CancelToken);
+            SampleRepublishTargets.Clear();
             //act
-            await _sut.InitializePublishTargetsAsync(_cancelToken);
+            await _sut.InitializePublishTargetsAsync(CancelToken);
             //assert
             Assert.False(_sut.RepublishTargets.Any());
             Assert.False(_sut.IsRepublish);
@@ -179,7 +116,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task HasOptionsButtonPropertiesEnabled_WhenNull()
         {
-            _publishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
+            PublishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
                 .ReturnsAsync((PublishSettings)null);
 
            await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
@@ -189,7 +126,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task HasOptionsButtonPropertiesEnabled_WhenErrorRetrievingSettings()
         {
-            _publishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
+            PublishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
                 .ThrowsAsync(new SettingsException("error", null));
 
            await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
@@ -200,85 +137,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task HasOptionsButtonPropertiesDisabled()
         {
-            _publishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
+            PublishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
                 .ReturnsAsync(new PublishSettings() {ShowPublishBanner = false});
 
             await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
 
             Assert.False(_exposedTestViewModel.IsOptionsBannerEnabled);
-        }
-
-        [Fact]
-        public async Task HasFailureBannerDisabled_NotPublished()
-        {
-            await SetupPublishView();
-
-            Assert.False(_sut.IsFailureBannerEnabled);
-        }
-
-        [Fact]
-        public async Task HasFailureBannerDisabled_SuccessfullyPublished()
-        {
-            await SetupPublishView();
-            StubGetDeploymentStatus(DeploymentResultSuccess);
-
-            await _sut.PublishApplicationAsync();
-
-            Assert.False(_sut.IsFailureBannerEnabled);
-        }
-
-        [Fact]
-        public async Task HasFailureBannerEnabled()
-        {
-            await SetupPublishView();
-            StubGetDeploymentStatus(DeploymentResultFail);
-
-            await _sut.PublishApplicationAsync();
-
-            Assert.True(_sut.IsFailureBannerEnabled);
-        }
-
-        public class FailureBannerEnabledSpy
-        {
-            private PublishToAwsDocumentViewModel _viewModel;
-            public int falseCount;
-            public int trueCount;
-
-            public FailureBannerEnabledSpy(PublishToAwsDocumentViewModel viewModel)
-            {
-                _viewModel = viewModel;
-                _viewModel.PropertyChanged += OnHandle;
-            }
-
-            public void OnHandle(object sender, PropertyChangedEventArgs e)
-            {
-                if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.IsFailureBannerEnabled))
-                {
-                    if (_viewModel.IsFailureBannerEnabled)
-                    {
-                        trueCount += 1;
-                    }
-                    else
-                    {
-                        falseCount += 1;
-                    }
-                }
-            }
-        }
-
-        [Fact]
-        public async Task HasFailureBannerDisabledAtStartOfPublish()
-        {
-            FailureBannerEnabledSpy _spy = new FailureBannerEnabledSpy(_sut);
-            _sut.IsFailureBannerEnabled = true;
-            await SetupPublishView();
-            StubGetDeploymentStatus(DeploymentResultFail);
-
-            await _sut.PublishApplicationAsync();
-
-            Assert.Equal(1, _spy.falseCount);
-            Assert.Equal(2, _spy.trueCount);
-            Assert.True(_sut.IsFailureBannerEnabled);
         }
 
         [Fact]
@@ -297,7 +161,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public void HasValidationErrors_WithNoError()
         {
-            _sut.ConfigurationDetails = _sampleConfigurationDetails;
+            _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(SampleConfigurationDetails);
 
             Assert.False(_sut.HasValidationErrors());
         }
@@ -331,13 +195,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task PublishApplication()
         {
             await SetupPublishView();
+            await _sut.UpdatePublishProjectViewModelAsync();
 
-            StubGetDeploymentStatus(DeploymentResultSuccess);
+            StubGetDeploymentStatus(SamplePublishData.GetDeploymentStatusOutputs.Success);
 
             await _sut.PublishApplicationAsync();
 
-            Assert.Equal(_sampleApplicationName, _sut.StackName);
-            Assert.Equal(ProgressStatus.Success, _sut.ProgressStatus);
+            Assert.Equal(PublishToAwsFixture.SampleApplicationName, _sut.StackName);
+            Assert.Equal(ProgressStatus.Success, _sut.PublishProjectViewModel.ProgressStatus);
             AssertPublishCallsAreCorrect();
             VerifyNoErrorCodeEmitted();
         }
@@ -346,47 +211,36 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task PublishApplication_Failed()
         {
             await SetupPublishView();
+            await _sut.UpdatePublishProjectViewModelAsync();
 
-            StubGetDeploymentStatus(DeploymentResultFail);
+            StubGetDeploymentStatus(SamplePublishData.GetDeploymentStatusOutputs.Fail);
 
             await _sut.PublishApplicationAsync();
 
-            Assert.Equal(ProgressStatus.Fail, _sut.ProgressStatus);
-            Assert.Contains(DeploymentResultFail.Exception.Message, _sut.PublishProgress);
+            Assert.Equal(ProgressStatus.Fail, _sut.PublishProjectViewModel.ProgressStatus);
+            Assert.Contains(SamplePublishData.GetDeploymentStatusOutputs.Fail.Exception.Message, _sut.PublishProjectViewModel.PublishProgress);
             AssertPublishCallsAreCorrect();
             VerifyErrorCodeEmitted();
         }
 
         private void StubGetDeploymentStatus(GetDeploymentStatusOutput statusOutput)
         {
-            _deployToolController.SetupSequence(mock => mock.GetDeploymentStatusAsync(_sampleSessionId))
-                .Returns(Task.FromResult(DeploymentResultExecuting))
-                .Returns(Task.FromResult(statusOutput))
-                .Returns(Task.FromResult(statusOutput));
+            DeployToolControllerFixture.SetupGetDeploymentStatusAsync(SamplePublishData.GetDeploymentStatusOutputs.Executing, statusOutput, statusOutput);
         }
 
         private void AssertPublishCallsAreCorrect()
         {
-            AssertStartDeploymentCalledTimes(1);
-            AssertGetDeploymentCalledTimes(3);
-        }
-
-        private void AssertStartDeploymentCalledTimes(int times)
-        {
-            _deployToolController.Verify(mock => mock.StartDeploymentAsync(_sampleSessionId), Times.Exactly(times));
-        }
-
-        private void AssertGetDeploymentCalledTimes(int times)
-        {
-            _deployToolController.Verify(mock => mock.GetDeploymentStatusAsync(_sampleSessionId), Times.Exactly(times));
+            DeployToolControllerFixture.AssertStartDeploymentCalledTimes(1);
+            DeployToolControllerFixture.AssertGetDeploymentCalledTimes(3);
         }
 
         [Fact]
         public async Task PublishApplication_WhenRepublish()
         {
             await SetupRepublishView();
+            await _sut.UpdatePublishProjectViewModelAsync();
 
-            StubGetDeploymentStatus(DeploymentResultSuccess);
+            StubGetDeploymentStatus(SamplePublishData.GetDeploymentStatusOutputs.Success);
 
             await _sut.PublishApplicationAsync();
 
@@ -397,34 +251,92 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task PublishApplication_WhenExceptionThrown()
         {
             await SetupPublishView();
+            await _sut.UpdatePublishProjectViewModelAsync();
 
-            _deployToolController.Setup(mock =>
-                    mock.StartDeploymentAsync(It.IsAny<string>()))
-                .ThrowsAsync(new Exception("error"));
+            DeployToolControllerFixture.StubStartDeploymentAsyncThrows("service failure");
 
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.PublishApplicationAsync());
+            var result = await _sut.PublishApplicationAsync();
 
-            Assert.Equal(_sampleApplicationName, _sut.StackName);
-            AssertStartDeploymentCalledTimes(1);
-            AssertGetDeploymentCalledTimes(0);
+            Assert.False(result.IsSuccess);
+            Assert.Contains("service failure", result.ErrorMessage);
+            Assert.Equal(PublishToAwsFixture.SampleApplicationName, _sut.StackName);
+            DeployToolControllerFixture.AssertStartDeploymentCalledTimes(1);
+            DeployToolControllerFixture.AssertGetDeploymentCalledTimes(0);
+        }
+
+        [Fact]
+        public async Task EmitMetricsForPublishProjectAsync()
+        {
+            var publishResult = new PublishProjectResult() { IsSuccess = true };
+
+            var result = await _sut.EmitMetricsForPublishProjectAsync(() => Task.FromResult(publishResult));
+
+            Assert.Equal(publishResult, result);
+
+            _publishToAwsFixture.PublishContextFixture.TelemetryLogger.Verify(
+                mock => mock.Record(It.Is<Metrics>(m =>
+                    m.Data.Any(metricDatum => metricDatum.Metadata.Keys.Contains("result") &&
+                                              metricDatum.Metadata["result"] == Result.Failed.ToString()))),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task EmitMetricsForPublishProjectAsync_PublishFailure()
+        {
+            var publishResult = new PublishProjectResult() { IsSuccess = false, ErrorCode = "error-code" };
+
+            var result = await _sut.EmitMetricsForPublishProjectAsync(() => Task.FromResult(publishResult));
+
+            Assert.Equal(publishResult, result);
+
+            _publishToAwsFixture.PublishContextFixture.TelemetryLogger.Verify(
+                mock => mock.Record(It.Is<Metrics>(m =>
+                    m.Data.Any(metricDatum => metricDatum.Metadata.Values.Contains(publishResult.ErrorCode)))),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task AdjustUiForPublishProjectAsync()
+        {
+            var publishResult = new PublishProjectResult() { IsSuccess = true };
+
+            var result = await _sut.AdjustUiForPublishProjectAsync(() => Task.FromResult(publishResult));
+
+            Assert.Equal(publishResult, result);
+            Assert.Equal(ProgressStatus.Success, _sut.PublishProjectViewModel.ProgressStatus);
+            Assert.Contains("was published as", _sut.PublishProjectViewModel.PublishProgress);
+            Assert.False(_sut.PublishProjectViewModel.IsFailureBannerEnabled);
+        }
+
+        [Fact]
+        public async Task AdjustUiForPublishProjectAsync_PublishFailed()
+        {
+            var publishResult = new PublishProjectResult() { IsSuccess = false, ErrorMessage = "some error message" };
+
+            var result = await _sut.AdjustUiForPublishProjectAsync(() => Task.FromResult(publishResult));
+
+            Assert.Equal(publishResult, result);
+
+            Assert.Equal(ProgressStatus.Fail, _sut.PublishProjectViewModel.ProgressStatus);
+            Assert.Contains(publishResult.ErrorMessage, _sut.PublishProjectViewModel.PublishProgress);
+            Assert.True(_sut.PublishProjectViewModel.IsFailureBannerEnabled);
         }
 
         [Fact]
         public async Task StartDeploymentSession()
         {
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(CancelToken);
 
-            Assert.Equal(_sampleSessionId, _sut.SessionId);
-            Assert.Equal(_sampleApplicationName, _sut.PublishStackName);
+            Assert.Equal(PublishToAwsFixture.SampleSessionId, _sut.SessionId);
+            Assert.Equal(PublishToAwsFixture.SampleApplicationName, _sut.PublishStackName);
         }
 
         [Fact]
         public async Task StartDeploymentSession_RequestThrows()
         {
-            _deployToolController.Setup(mock => mock.StartSessionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new Exception("simulated service error"));
+            DeployToolControllerFixture.StubStartSessionAsyncThrows();
 
-            await Assert.ThrowsAsync<SessionException>(async () => await _sut.StartDeploymentSessionAsync(_cancelToken));
+            await Assert.ThrowsAsync<SessionException>(async () => await _sut.StartDeploymentSessionAsync(CancelToken));
 
             Assert.Null(_sut.SessionId);
         }
@@ -432,8 +344,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task StopDeploymentSession()
         {
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
-            await _sut.StopDeploymentSessionAsync(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(CancelToken);
+            await _sut.StopDeploymentSessionAsync(CancelToken);
 
             Assert.Null(_sut.SessionId);
         }
@@ -443,7 +355,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             Assert.Null(_sut.SessionId);
 
-            await _sut.StopDeploymentSessionAsync(_cancelToken);
+            await _sut.StopDeploymentSessionAsync(CancelToken);
 
             Assert.Null(_sut.SessionId);
         }
@@ -451,11 +363,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task StopDeploymentSession_RequestThrows()
         {
-            _deployToolController.Setup(mock => mock.StopSessionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new Exception("simulated service error"));
+            DeployToolControllerFixture.StubStopSessionAsyncThrows();
 
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
-            await Assert.ThrowsAsync<SessionException>(async () => await _sut.StopDeploymentSessionAsync(_cancelToken));
+            await _sut.StartDeploymentSessionAsync(CancelToken);
+            await Assert.ThrowsAsync<SessionException>(async () => await _sut.StopDeploymentSessionAsync(CancelToken));
 
             Assert.Null(_sut.SessionId);
         }
@@ -463,16 +374,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RestartDeploymentSessionAsync()
         {
-            _sut.Recommendations = new ObservableCollection<PublishRecommendation>(_sampleRecommendations);
-            _sut.RepublishTargets = new ObservableCollection<RepublishTarget>(_sampleRepublishTargets);
+            _sut.Recommendations = new ObservableCollection<PublishRecommendation>(SamplePublishRecommendations);
+            _sut.RepublishTargets = new ObservableCollection<RepublishTarget>(SampleRepublishTargets);
 
-            var sampleSessionDetails = CreateSampleSessionDetails();
-            sampleSessionDetails.SessionId = Guid.NewGuid().ToString();
-            StubStartSessionToReturn(sampleSessionDetails);
+            DeployToolControllerFixture.StartSessionAsyncResponse.SessionId = Guid.NewGuid().ToString();
 
-            await _sut.RestartDeploymentSessionAsync(_cancelToken);
+            await _sut.RestartDeploymentSessionAsync(CancelToken);
 
-            Assert.Equal(sampleSessionDetails.SessionId, _sut.SessionId);
+            Assert.Equal(DeployToolControllerFixture.StartSessionAsyncResponse.SessionId, _sut.SessionId);
             Assert.Empty(_sut.Recommendations);
             Assert.Empty(_sut.RepublishTargets);
         }
@@ -481,18 +390,18 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshRecommendations()
         {
             // arrange.
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(CancelToken);
 
             // act.
-            await _sut.RefreshRecommendationsAsync(_cancelToken);
+            await _sut.RefreshRecommendationsAsync(CancelToken);
 
             // assert.
-            Assert.Equal(_sampleRecommendations, _sut.Recommendations);
+            Assert.Equal(SamplePublishRecommendations, _sut.Recommendations);
 
             // The first recommendation is "selected" and the most recommended.
             var newPublishTarget = Assert.IsType<PublishRecommendation>(_sut.PublishDestination);
             Assert.True(newPublishTarget.IsRecommended);
-            Assert.Equal(_sampleRecommendations.First(), newPublishTarget);
+            Assert.Equal(SamplePublishRecommendations.First(), newPublishTarget);
         }
 
         [Fact]
@@ -500,7 +409,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<PublishException>(async () =>
             {
-                await _sut.RefreshRecommendationsAsync(_cancelToken);
+                await _sut.RefreshRecommendationsAsync(CancelToken);
             });
 
             Assert.Empty(_sut.Recommendations);
@@ -509,14 +418,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RefreshRecommendations_RequestThrows()
         {
-            _deployToolController.Setup(mock =>
-                    mock.GetRecommendationsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new DeployToolException("simulated service error"));
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            DeployToolControllerFixture.StubGetRecommendationsAsyncThrows();
+            await _sut.StartDeploymentSessionAsync(CancelToken);
 
             await Assert.ThrowsAsync<PublishException>(async () =>
             {
-                await _sut.RefreshRecommendationsAsync(_cancelToken);
+                await _sut.RefreshRecommendationsAsync(CancelToken);
             });
             Assert.Empty(_sut.Recommendations);
         }
@@ -526,16 +433,16 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             // arrange.
             _sut.IsRepublish = true;
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(CancelToken);
 
             // act.
-            await _sut.RefreshExistingTargetsAsync(_cancelToken);
+            await _sut.RefreshExistingTargetsAsync(CancelToken);
 
             // assert.
-            Assert.Equal(_sampleRepublishTargets, _sut.RepublishTargets);
+            Assert.Equal(SampleRepublishTargets, _sut.RepublishTargets);
 
             // The first target is "selected"
-            Assert.Equal(_sampleRepublishTargets.First(), _sut.PublishDestination);
+            Assert.Equal(SampleRepublishTargets.First(), _sut.PublishDestination);
         }
 
         [Fact]
@@ -543,7 +450,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<PublishException>(async () =>
             {
-                await _sut.RefreshExistingTargetsAsync(_cancelToken);
+                await _sut.RefreshExistingTargetsAsync(CancelToken);
             });
             Assert.Empty(_sut.RepublishTargets);
         }
@@ -551,14 +458,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RefreshExistingTargets_RequestThrows()
         {
-            _deployToolController.Setup(mock =>
-                    mock.GetRepublishTargetsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new DeployToolException("simulated service error"));
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            DeployToolControllerFixture.StubGetRepublishTargetsAsyncThrows();
+            await _sut.StartDeploymentSessionAsync(CancelToken);
 
             await Assert.ThrowsAsync<PublishException>(async () =>
             {
-                await _sut.RefreshExistingTargetsAsync(_cancelToken);
+                await _sut.RefreshExistingTargetsAsync(CancelToken);
             });
             Assert.Empty(_sut.RepublishTargets);
         }
@@ -567,7 +472,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task UpdateSummaryAsync()
         {
             await SetupPublishView();
-            await _sut.UpdateSummaryAsync(_cancelToken);
+            await _sut.UpdateSummaryAsync(CancelToken);
 
             Assert.Equal(_sut.GeneratePublishSummary(), _sut.PublishSummary);
         }
@@ -628,8 +533,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public void GeneratePublishSummary_ConfigurationDetails(bool isRepublish)
         {
             _sut.IsRepublish = isRepublish;
-            var newConfigDetails = CreateSampleConfigurationDetails(2);
-            _sut.ConfigurationDetails = newConfigDetails;
+            var newConfigDetails = PublishToAwsFixture.CreateSampleConfigurationDetails(2);
+            _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(newConfigDetails);
 
             var summary = _sut.GeneratePublishSummary();
 
@@ -643,8 +548,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public void GeneratePublishSummary_NonVisibleConfigurationDetails()
         {
             _sut.IsRepublish = false;
-            var newConfigDetails = CreateSampleConfigurationDetails(2, d => d.Visible = false);
-            _sut.ConfigurationDetails = newConfigDetails;
+            var newConfigDetails = PublishToAwsFixture.CreateSampleConfigurationDetails(2, d => d.Visible = false);
+            _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(newConfigDetails);
 
             var summary = _sut.GeneratePublishSummary();
 
@@ -658,8 +563,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public void GeneratePublishSummary_AdvancedConfigurationDetails()
         {
             _sut.IsRepublish = false;
-            var newConfigDetails = CreateSampleConfigurationDetails(2, d => d.Advanced = true);
-            _sut.ConfigurationDetails = newConfigDetails;
+            var newConfigDetails = PublishToAwsFixture.CreateSampleConfigurationDetails(2, d => d.Advanced = true);
+            _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(newConfigDetails);
 
             var summary = _sut.GeneratePublishSummary();
 
@@ -673,8 +578,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public void GeneratePublishSummary_NonSummaryDisplayableConfigurationDetails()
         {
             _sut.IsRepublish = true;
-            var newConfigDetails = CreateSampleConfigurationDetails(2, d => d.SummaryDisplayable = false);
-            _sut.ConfigurationDetails = newConfigDetails;
+            var newConfigDetails = PublishToAwsFixture.CreateSampleConfigurationDetails(2, d => d.SummaryDisplayable = false);
+            _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(newConfigDetails);
 
             var summary = _sut.GeneratePublishSummary();
 
@@ -703,10 +608,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task JoinSession()
         {
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(CancelToken);
             await _sut.JoinDeploymentSessionAsync();
 
-            _deployClient.Verify(mock => mock.JoinSession(_sampleSessionId), Times.Once);
+            _deployClient.Verify(mock => mock.JoinSession(DeployToolControllerFixture.SessionId), Times.Once);
         }
 
         [Fact]
@@ -717,13 +622,13 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 await _sut.JoinDeploymentSessionAsync();
             });
 
-            _deployClient.Verify(mock => mock.JoinSession(_sampleSessionId), Times.Never);
+            _deployClient.Verify(mock => mock.JoinSession(DeployToolControllerFixture.SessionId), Times.Never);
         }
 
         [Fact]
         public async Task UpdateRequiredPublishProperties_WhenInitialPublish()
         {
-            await _sut.UpdateRequiredPublishPropertiesAsync(_cancelToken);
+            await _sut.UpdateRequiredPublishPropertiesAsync(CancelToken);
 
             Assert.True(string.IsNullOrEmpty(_sut.StackName));
             Assert.True(string.IsNullOrEmpty(_sut.TargetRecipe));
@@ -734,7 +639,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task UpdateRequiredPublishProperties_WhenInitialRepublish()
         {
             _sut.IsRepublish = true;
-            await _sut.UpdateRequiredPublishPropertiesAsync(_cancelToken);
+            await _sut.UpdateRequiredPublishPropertiesAsync(CancelToken);
 
             AssertRequiredPublishProperties("","", "");
         }
@@ -759,42 +664,34 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task SetDeploymentTarget_NewPublish()
         {
-            _deployToolController.Setup(mock =>
-                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<PublishRecommendation>(),
-                    It.IsAny<string>(), It.IsAny<CancellationToken>()));
-
             await SetupPublishView();
 
-            _deployToolController.Verify(NewPublishToSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
+            DeployToolControllerFixture.DeployToolController.Verify(NewPublishToSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
         private Expression<Func<IDeployToolController, Task>> NewPublishToSetDeploymentTargetAsyncWithCurrentState()
         {
-            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.PublishDestination as PublishRecommendation, 
-                _sut.StackName, _cancelToken);
+            return mock => mock.SetDeploymentTargetAsync(DeployToolControllerFixture.SessionId, _sut.PublishDestination as PublishRecommendation, 
+                _sut.StackName, CancelToken);
         }
 
         [Fact]
         public async Task SetDeploymentTarget_Republish()
         {
-            _deployToolController.Setup(mock =>
-                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<RepublishTarget>(),
-                    It.IsAny<CancellationToken>()));
-
             await SetupRepublishView();
 
-            _deployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
+            DeployToolControllerFixture.DeployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
         private Expression<Func<IDeployToolController, Task>> RepublishSetDeploymentTargetAsyncWithCurrentState()
         {
-            return mock => mock.SetDeploymentTargetAsync(_sampleSessionId, _sut.PublishDestination as RepublishTarget, _cancelToken);
+            return mock => mock.SetDeploymentTargetAsync(DeployToolControllerFixture.SessionId, _sut.PublishDestination as RepublishTarget, CancelToken);
         }
 
         [Fact]
         public async Task SetDeploymentTarget_NoSession()
         {
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.SetDeploymentTargetAsync(_cancelToken));
+            await Assert.ThrowsAsync<Exception>(async () => await _sut.SetDeploymentTargetAsync(CancelToken));
         }
 
         [Fact]
@@ -803,9 +700,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
             _sut.PublishDestination = null;
 
-            await _sut.SetDeploymentTargetAsync(_cancelToken);
+            await _sut.SetDeploymentTargetAsync(CancelToken);
 
-            _deployToolController.Verify(NewPublishToSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
+            DeployToolControllerFixture.DeployToolController.Verify(NewPublishToSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
         [Fact]
@@ -814,9 +711,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupRepublishView();
             _sut.PublishDestination = null;
 
-            await _sut.SetDeploymentTargetAsync(_cancelToken);
+            await _sut.SetDeploymentTargetAsync(CancelToken);
 
-            _deployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
+            DeployToolControllerFixture.DeployToolController.Verify(RepublishSetDeploymentTargetAsyncWithCurrentState(), Times.Once);
         }
 
         [Theory]
@@ -843,12 +740,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await SetupPublishView();
 
-            _deployToolController.Setup(mock =>
-                    mock.GetConfigSettingsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleConfigurationDetails);
+            await _sut.RefreshTargetConfigurationsAsync(CancelToken);
 
-            await _sut.RefreshTargetConfigurationsAsync(_cancelToken);
-
-            _deployToolController.Verify(mock => mock.GetConfigSettingsAsync(_sampleSessionId, _cancelToken), Times.Once);
+            DeployToolControllerFixture.AssertGetConfigSettingsAsyncCalledTimes(1);
             Assert.Single(_sut.ConfigurationDetails);
         }
 
@@ -856,7 +750,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RefreshTargetConfigurations_NoSession()
         {
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(CancelToken));
         }
 
         [Fact]
@@ -864,11 +758,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await SetupPublishView();
 
-            _deployToolController.Setup(mock =>
-                    mock.GetConfigSettingsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new DeployToolException("simulated service error"));
+            DeployToolControllerFixture.StubGetConfigSettingsAsyncThrows();
 
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(CancelToken));
             Assert.Empty(_sut.ConfigurationDetails);
         }
 
@@ -878,11 +770,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await SetupPublishView();
             Assert.False(_sut.UnsupportedSettingTypes.RecipeToUnsupportedSetting.Any());
 
-            var configDetails = CreateSampleConfigurationDetails(2, d => d.Type = DetailType.Unsupported);
-            _deployToolController.Setup(mock =>
-                mock.GetConfigSettingsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(configDetails);
+            SampleConfigurationDetails.Clear();
+            SampleConfigurationDetails.AddRange(
+                PublishToAwsFixture.CreateSampleConfigurationDetails(2, d => d.Type = DetailType.Unsupported));
 
-            await _sut.RefreshTargetConfigurationsAsync(_cancelToken);
+            await _sut.RefreshTargetConfigurationsAsync(CancelToken);
 
             Assert.True(_sut.UnsupportedSettingTypes.RecipeToUnsupportedSetting.Any());
         }
@@ -891,21 +783,21 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshConfigurationSettingValues()
         {
             await SetupPublishView();
-            _sut.ConfigurationDetails = _sampleConfigurationDetails;
+            _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(SampleConfigurationDetails);
 
             Assert.False(_sut.ConfigurationDetails.First().HasValueMappings());
 
-            var output = ApplyResourcesToConfigDetails(_sampleConfigurationDetails);
-            _deployToolController.Setup(mock =>
-                mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), _sampleConfigurationDetails, It.IsAny<CancellationToken>())).ReturnsAsync(output);
+            var output = ApplyResourcesToConfigDetails(SampleConfigurationDetails);
+            DeployToolControllerFixture.DeployToolController.Setup(mock =>
+                mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), SampleConfigurationDetails, It.IsAny<CancellationToken>())).ReturnsAsync(output);
 
-            await _sut.RefreshConfigurationSettingValuesAsync(_cancelToken);
+            await _sut.RefreshConfigurationSettingValuesAsync(CancelToken);
 
-            _deployToolController.Verify(mock => mock.UpdateConfigSettingValuesAsync(_sampleSessionId, _sampleConfigurationDetails,  _cancelToken), Times.Once);
+            DeployToolControllerFixture.DeployToolController.Verify(mock => mock.UpdateConfigSettingValuesAsync(DeployToolControllerFixture.SessionId, SampleConfigurationDetails,  CancelToken), Times.Once);
             Assert.True(_sut.ConfigurationDetails.First().ValueMappings.ContainsKey("abc"));
         }
 
-        private List<ConfigurationDetail> ApplyResourcesToConfigDetails(ObservableCollection<ConfigurationDetail> sampleConfigurationDetails)
+        private List<ConfigurationDetail> ApplyResourcesToConfigDetails(IList<ConfigurationDetail> sampleConfigurationDetails)
         {
             sampleConfigurationDetails.ToList().ForEach(x => x.ValueMappings = new Dictionary<string, string>() {{"abc", "def"}});
             return sampleConfigurationDetails.ToList();
@@ -914,7 +806,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RefreshConfigurationSettingValues_NoSession()
         {
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValuesAsync(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValuesAsync(CancelToken));
         }
 
         [Fact]
@@ -922,11 +814,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await SetupPublishView();
 
-            _deployToolController.Setup(mock =>
+            DeployToolControllerFixture.DeployToolController.Setup(mock =>
                     mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), It.IsAny<List<ConfigurationDetail>>(),It.IsAny<CancellationToken>()))
                 .Throws(new DeployToolException("simulated service error"));
 
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValuesAsync(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValuesAsync(CancelToken));
             Assert.Empty(_sut.ConfigurationDetails);
         }
 
@@ -934,15 +826,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task SetTargetConfiguration()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock =>
-                mock.ApplyConfigSettingsAsync(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
-                    It.IsAny<CancellationToken>())).ReturnsAsync(_sampleValidationResult);
 
-            var validation = await _sut.SetTargetConfigurationAsync(_sampleConfigurationDetails[0], _cancelToken);
+            var validation = await _sut.SetTargetConfigurationAsync(SampleConfigurationDetails[0], CancelToken);
 
-            _deployToolController.Verify(
-                mock => mock.ApplyConfigSettingsAsync(_sampleSessionId, _sampleConfigurationDetails[0],
-                    _cancelToken), Times.Once);
+            DeployToolControllerFixture.DeployToolController.Verify(
+                mock => mock.ApplyConfigSettingsAsync(DeployToolControllerFixture.SessionId, SampleConfigurationDetails[0],
+                    CancelToken), Times.Once);
             Assert.False(validation.HasErrors());
         }
 
@@ -951,7 +840,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         {
             await Assert.ThrowsAsync<Exception>(async () =>
             {
-                await _sut.SetTargetConfigurationAsync(_sampleConfigurationDetails[0], _cancelToken);
+                await _sut.SetTargetConfigurationAsync(SampleConfigurationDetails[0], CancelToken);
             });
         }
 
@@ -959,14 +848,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task SetTargetConfiguration_ThrowsException()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock =>
-                    mock.ApplyConfigSettingsAsync(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
-                        It.IsAny<CancellationToken>()))
-                .Throws(new Exception("simulated service error"));
+            DeployToolControllerFixture.StubApplyConfigSettingsAsyncThrows();
 
             await Assert.ThrowsAsync<Exception>(async () =>
             {
-                await _sut.SetTargetConfigurationAsync(_sampleConfigurationDetails[0], _cancelToken);
+                await _sut.SetTargetConfigurationAsync(SampleConfigurationDetails[0], CancelToken);
             });
         }
 
@@ -982,15 +868,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             var failedValidation = new ValidationResult();
             failedValidation.AddError("parentid.id", "sample failure message");
+            DeployToolControllerFixture.ApplyConfigSettingsAsyncResponse = failedValidation;
 
-            _deployToolController.Setup(mock =>
-                mock.ApplyConfigSettingsAsync(It.IsAny<string>(), It.IsAny<ConfigurationDetail>(),
-                    It.IsAny<CancellationToken>())).ReturnsAsync(failedValidation);
+            var validation = await _sut.SetTargetConfigurationAsync(configDetail, CancelToken);
 
-            var validation = await _sut.SetTargetConfigurationAsync(configDetail, _cancelToken);
-
-            _deployToolController.Verify(
-                mock => mock.ApplyConfigSettingsAsync(_sampleSessionId, configDetail, _cancelToken),
+            DeployToolControllerFixture.DeployToolController.Verify(
+                mock => mock.ApplyConfigSettingsAsync(DeployToolControllerFixture.SessionId, configDetail, CancelToken),
                 Times.Once);
 
             Assert.Equal("sample failure message", validation.GetError(validation.GetErrantDetailIds().First()));
@@ -1000,31 +883,27 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task SetSystemCapabilities()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock =>
-                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
 
-            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(CancelToken);
 
-            _deployToolController.Verify(
-                mock => mock.GetCompatibilityAsync(_sampleSessionId, _cancelToken), Times.Once);
+            DeployToolControllerFixture.DeployToolController.Verify(
+                mock => mock.GetCompatibilityAsync(DeployToolControllerFixture.SessionId, CancelToken), Times.Once);
             Assert.Empty(_sampleGetCompatibilityOutput);
         }
 
         [Fact]
         public async Task SetSystemCapabilities_NoSession()
         {
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshSystemCapabilitiesAsync(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshSystemCapabilitiesAsync(CancelToken));
         }
 
         [Fact]
         public async Task SetSystemCapabilities_ThrowsException()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock =>
-                    mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new DeployToolException("simulated service error"));
+            DeployToolControllerFixture.StubGetCompatibilityAsyncThrows();
 
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshSystemCapabilitiesAsync(_cancelToken));
+            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshSystemCapabilitiesAsync(CancelToken));
         }
 
         [Fact]
@@ -1041,11 +920,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             };
 
             await SetupPublishView();
-            _deployToolController.Setup(mock =>
-                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
 
             Assert.False(_sut.LoadingSystemCapabilities);
-            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(CancelToken);
 
             Assert.Equal(2, loadingAdjustments.Count);
             Assert.True(loadingAdjustments[0]);
@@ -1056,10 +933,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshSystemCapabilities_CapabilityInstalled()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock =>
-                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
 
-            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(CancelToken);
 
             Assert.Empty(_sut.MissingCapabilities.Missing);
             Assert.Empty(_sut.MissingCapabilities.Resolved);
@@ -1069,10 +944,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshSystemCapabilities_CapabilityMissing()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock =>
-                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(CreateSampleSystemCapabilities);
+            DeployToolControllerFixture.GetCompatibilityAsyncResponse = CreateSampleSystemCapabilities();
 
-            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(CancelToken);
 
             Assert.Contains("Docker", _sut.MissingCapabilities.Missing);
             Assert.Empty(_sut.MissingCapabilities.Resolved);
@@ -1094,137 +968,64 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshSystemCapabilities_CapabilityResolved()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock =>
-                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(CreateSampleSystemCapabilities);
+            DeployToolControllerFixture.GetCompatibilityAsyncResponse = CreateSampleSystemCapabilities();
+            await _sut.RefreshSystemCapabilitiesAsync(CancelToken);
+            DeployToolControllerFixture.GetCompatibilityAsyncResponse = _sampleGetCompatibilityOutput;
 
-            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
-            _deployToolController.Setup(mock =>
-                mock.GetCompatibilityAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_sampleGetCompatibilityOutput);
-            await _sut.RefreshSystemCapabilitiesAsync(_cancelToken);
+            await _sut.RefreshSystemCapabilitiesAsync(CancelToken);
 
             Assert.Contains("Docker", _sut.MissingCapabilities.Missing);
             Assert.Contains("Docker", _sut.MissingCapabilities.Resolved);
         }
 
         [Fact]
-        public async Task ClearPublishedResources()
-        {
-            _sut.PublishedArtifactId = "foo";
-            _sut.PublishResources =
-                new ObservableCollection<PublishResource>() { new PublishResource("", "", "", null) };
-
-            await _sut.ClearPublishedResourcesAsync(_cancelToken);
-
-            Assert.Empty(_sut.PublishedArtifactId);
-            Assert.Empty(_sut.PublishResources);
-        }
-
-        [Fact]
-        public async Task RefreshPublishResources()
-        {
-            await SetupPublishView();
-
-            _deployToolController.Setup(mock =>
-                mock.GetDeploymentDetailsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_deploymentDetails);
-
-            await _sut.RefreshPublishedResourcesAsync(_cancelToken);
-
-            _deployToolController.Verify(mock => mock.GetDeploymentDetailsAsync(_sampleSessionId, _cancelToken), Times.Once);
-
-            Assert.NotEmpty(_sut.PublishResources);
-            Assert.Equal("sampleStack", _sut.PublishedArtifactId);
-        }
-
-        [Fact]
-        public async Task RefreshPublishResources_EcrRepoWorkaround()
-        {
-            await SetupPublishView();
-
-            _deploymentDetails.CloudApplicationName = null;
-            _sut.PublishDestination = _sampleRecommendations.FirstOrDefault(x =>
-                x.DeploymentArtifact == DeploymentArtifact.ElasticContainerRegistry);
-
-            _deployToolController.Setup(mock =>
-                mock.GetDeploymentDetailsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_deploymentDetails);
-
-            await _sut.RefreshPublishedResourcesAsync(_cancelToken);
-
-            _deployToolController.Verify(mock => mock.GetDeploymentDetailsAsync(_sampleSessionId, _cancelToken), Times.Once);
-
-            Assert.NotEmpty(_sut.PublishResources);
-            Assert.Equal("some-ecr-repo", _sut.PublishedArtifactId);
-        }
-
-        [Fact]
-        public async Task RefreshPublishResources_NoSession()
-        {
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.RefreshPublishedResourcesAsync(_cancelToken));
-        }
-
-        [Fact]
-        public async Task RefreshPublishResources_ThrowsException()
-        {
-            await SetupPublishView();
-
-
-            _deployToolController.Setup(mock =>
-                mock.GetDeploymentDetailsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Throws(new Exception("simulated service error"));
-
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.RefreshPublishedResourcesAsync(_cancelToken));
-
-            Assert.Empty(_sut.PublishResources);
-            Assert.True(string.IsNullOrWhiteSpace(_sut.PublishedArtifactId));
-        }
-
-        [Fact]
         public void CyclePublishDestination_NewToNew()
         {
-            _exposedTestViewModel.SetPreviousPublishDestination(_sampleRecommendations[1]);
-            _exposedTestViewModel.PublishDestination = _sampleRecommendations[0];
+            _exposedTestViewModel.SetPreviousPublishDestination(SamplePublishRecommendations[1]);
+            _exposedTestViewModel.PublishDestination = SamplePublishRecommendations[0];
             _exposedTestViewModel.IsRepublish = false;
 
             _exposedTestViewModel.CyclePublishDestination();
-            Assert.Equal(_sampleRecommendations[0], _exposedTestViewModel.PublishDestination);
+            Assert.Equal(SamplePublishRecommendations[0], _exposedTestViewModel.PublishDestination);
         }
 
         [Fact]
         public void CyclePublishDestination_RepublishToNew()
         {
-            _exposedTestViewModel.SetPreviousPublishDestination(_sampleRecommendations[0]);
-            _exposedTestViewModel.PublishDestination = _sampleRepublishTargets[0];
+            _exposedTestViewModel.SetPreviousPublishDestination(SamplePublishRecommendations[0]);
+            _exposedTestViewModel.PublishDestination = SampleRepublishTargets[0];
             _exposedTestViewModel.IsRepublish = false;
 
             _exposedTestViewModel.CyclePublishDestination();
-            Assert.Equal(_sampleRecommendations[0], _exposedTestViewModel.PublishDestination);
+            Assert.Equal(SamplePublishRecommendations[0], _exposedTestViewModel.PublishDestination);
         }
 
         [Fact]
         public void CyclePublishDestination_RepublishToRepublish()
         {
-            _exposedTestViewModel.SetPreviousPublishDestination(_sampleRepublishTargets[1]);
-            _exposedTestViewModel.PublishDestination = _sampleRepublishTargets[0];
+            _exposedTestViewModel.SetPreviousPublishDestination(SampleRepublishTargets[1]);
+            _exposedTestViewModel.PublishDestination = SampleRepublishTargets[0];
             _exposedTestViewModel.IsRepublish = true;
 
             _exposedTestViewModel.CyclePublishDestination();
-            Assert.Equal(_sampleRepublishTargets[0], _exposedTestViewModel.PublishDestination);
+            Assert.Equal(SampleRepublishTargets[0], _exposedTestViewModel.PublishDestination);
         }
 
         [Fact]
         public void CyclePublishDestination_NewToRepublish()
         {
-            _exposedTestViewModel.SetPreviousPublishDestination(_sampleRepublishTargets[0]);
-            _exposedTestViewModel.PublishDestination = _sampleRecommendations[0];
+            _exposedTestViewModel.SetPreviousPublishDestination(SampleRepublishTargets[0]);
+            _exposedTestViewModel.PublishDestination = SamplePublishRecommendations[0];
             _exposedTestViewModel.IsRepublish = true;
 
             _exposedTestViewModel.CyclePublishDestination();
-            Assert.Equal(_sampleRepublishTargets[0], _exposedTestViewModel.PublishDestination);
+            Assert.Equal(SampleRepublishTargets[0], _exposedTestViewModel.PublishDestination);
         }
 
         [Fact]
         public async Task ValidateTargetConfigurationsAsync()
         {
-            await SetupForSetTargetConfigurations(_sampleValidationResult);
+            await SetupForSetTargetConfigurations();
 
             var response = await _sut.ValidateTargetConfigurationsAsync();
 
@@ -1241,8 +1042,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task ValidateTargetConfigurationsAsync_WhenExceptionThrown()
         {
             await SetupPublishView();
-            _deployToolController.Setup(mock => mock.ApplyConfigSettingsAsync(It.IsAny<string>(),
-                It.IsAny<IList<ConfigurationDetail>>(), It.IsAny<CancellationToken>())).Throws(new Exception("error"));
+            DeployToolControllerFixture.StubApplyConfigSettingsAsyncThrows();
 
             await Assert.ThrowsAsync<Exception>(async () => await _sut.ValidateTargetConfigurationsAsync());
         }
@@ -1250,11 +1050,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task ValidateTargetConfigurationsAsync_WhenValidationError()
         {
-            var problemDetail = _sampleConfigurationDetails[0];
+            var problemDetail = SampleConfigurationDetails[0];
 
             var validationResult = new ValidationResult();
             validationResult.AddError(problemDetail.GetLeafId(), "error");
-            await SetupForSetTargetConfigurations(validationResult);
+            DeployToolControllerFixture.ApplyConfigSettingsAsyncResponse = validationResult;
+            await SetupForSetTargetConfigurations();
 
             var response = await _sut.ValidateTargetConfigurationsAsync();
 
@@ -1274,13 +1075,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     )
                 .Build();
 
-            _sampleConfigurationDetails.Add(detail);
+            SampleConfigurationDetails.Add(detail);
 
             var problemChild = detail.Children.First();
 
             var validationResult = new ValidationResult();
             validationResult.AddError(problemChild.GetLeafId(), "child-error");
-            await SetupForSetTargetConfigurations(validationResult);
+            DeployToolControllerFixture.ApplyConfigSettingsAsyncResponse = validationResult;
+            await SetupForSetTargetConfigurations();
 
             var response = await _sut.ValidateTargetConfigurationsAsync();
 
@@ -1288,82 +1090,27 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Equal("child-error", problemChild.ValidationMessage);
         }
 
-        private async Task SetupForSetTargetConfigurations(ValidationResult validationResult)
+        private async Task SetupForSetTargetConfigurations()
         {
             await SetupPublishView();
-            _sut.ConfigurationDetails = _sampleConfigurationDetails;
-            _deployToolController.Setup(mock => mock.ApplyConfigSettingsAsync(It.IsAny<string>(),
-                It.IsAny<IList<ConfigurationDetail>>(), It.IsAny<CancellationToken>())).ReturnsAsync(validationResult);
-        }
-
-        private static ObservableCollection<ConfigurationDetail> CreateSampleConfigurationDetails(int amount,
-            Action<ConfigurationDetail> detailAdjustor = null)
-        {
-            var configurationDetails = new ObservableCollection<ConfigurationDetail>();
-            var batch = Guid.NewGuid().ToString();
-
-            for (int i = 0; i < amount; i++)
-            {
-                var name = Guid.NewGuid().ToString();
-
-                var detail = new ConfigurationDetail
-                {
-                    Id = $"{batch}-{i}",
-                    Name = name,
-                    Description = $"Description for {name}",
-                    Visible = true,
-                    ReadOnly = false,
-                    Advanced = false,
-                    SummaryDisplayable = true,
-                    DefaultValue = "test",
-                    Value = "test",
-                    Type = DetailType.String
-                };
-
-                detailAdjustor?.Invoke(detail);
-
-                configurationDetails.Add(detail);
-            }
-
-            return configurationDetails;
-        }
-
-        private GetDeploymentDetailsOutput CreateSampleDeploymentDetails()
-        {
-            var resources = new List<DisplayedResourceSummary>()
-            {
-                new DisplayedResourceSummary()
-                {
-                    Id = "test-dev",
-                    Type = "AWS::ElasticBeanstalk::Environment",
-                    Description = "Application Endpoint",
-                    Data = new Dictionary<string, string>() {{"Endpoint", "http://test-dev-endpoint.com/"}}
-                },
-                new DisplayedResourceSummary()
-                {
-                    Id = "some-ecr-repo",
-                    Type = "Elastic Container Registry Repository",
-                }
-            };
-            var output = new GetDeploymentDetailsOutput() { CloudApplicationName = "sampleStack", DisplayedResources = resources };
-            return output;
+            _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(SampleConfigurationDetails);
         }
 
         private async Task SetupPublishView()
         {
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
-            await _sut.RefreshRecommendationsAsync(_cancelToken);
-            await _sut.UpdateRequiredPublishPropertiesAsync(_cancelToken);
-            await _sut.SetDeploymentTargetAsync(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(CancelToken);
+            await _sut.RefreshRecommendationsAsync(CancelToken);
+            await _sut.UpdateRequiredPublishPropertiesAsync(CancelToken);
+            await _sut.SetDeploymentTargetAsync(CancelToken);
         }
 
         private async Task SetupRepublishView()
         {
             _sut.IsRepublish = true;
-            await _sut.StartDeploymentSessionAsync(_cancelToken);
-            await _sut.RefreshExistingTargetsAsync(_cancelToken);
-            await _sut.UpdateRequiredPublishPropertiesAsync(_cancelToken);
-            await _sut.SetDeploymentTargetAsync(_cancelToken);
+            await _sut.StartDeploymentSessionAsync(CancelToken);
+            await _sut.RefreshExistingTargetsAsync(CancelToken);
+            await _sut.UpdateRequiredPublishPropertiesAsync(CancelToken);
+            await _sut.SetDeploymentTargetAsync(CancelToken);
         }
 
         private void AssertRequiredPublishProperties(string stackName, string targetRecipe, string expectedRecommendationDescription)
@@ -1375,15 +1122,15 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         private void VerifyErrorCodeEmitted()
         {
-            _publishContextFixture.TelemetryLogger.Verify(
+            PublishContextFixture.TelemetryLogger.Verify(
                 mock => mock.Record(It.Is<Metrics>(m =>
-                    m.Data.Any(p => p.Metadata.Values.Contains(DeploymentResultFail.Exception.ErrorCode)))),
+                    m.Data.Any(p => p.Metadata.Values.Contains(SamplePublishData.GetDeploymentStatusOutputs.Fail.Exception.ErrorCode)))),
                 Times.Once);
         }
 
         private void VerifyNoErrorCodeEmitted()
         {
-            _publishContextFixture.TelemetryLogger.Verify(
+            PublishContextFixture.TelemetryLogger.Verify(
                 mock => mock.Record(It.Is<Metrics>(m =>
                     m.Data.Any(p => p.Metadata.Keys.Contains("errorCode")))), Times.Never);
         }
@@ -1408,7 +1155,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public void IsValidRegion_LocalRegion()
         {
             var localRegion = new ToolkitRegion() { Id = "local" };
-            _publishContextFixture.SetupRegionAsLocal(localRegion.Id);
+            PublishContextFixture.SetupRegionAsLocal(localRegion.Id);
 
             Assert.False(_sut.IsValidRegion(localRegion));
         }
@@ -1416,7 +1163,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public void GetValidRegion_NoCredentialProperties()
         {
-            _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, null);
+            PublishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, null);
 
             Assert.Equal(SampleFallbackRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
         }
@@ -1425,7 +1172,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public void GetValidRegion_WithNoRegionProperty()
         {
             var properties = new ProfileProperties();
-            _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
+            PublishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
 
             Assert.Equal(SampleFallbackRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
         }
@@ -1434,7 +1181,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public void GetValidRegion_WithRegionProperty()
         {
             var properties = new ProfileProperties() { Region = _sampleRegion.Id, };
-            _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
+            PublishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
 
             Assert.Equal(_sampleRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
         }
@@ -1443,7 +1190,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public void GetValidRegion_WithSsoRegionProperty()
         {
             var properties = new ProfileProperties() { SsoRegion = _sampleRegion.Id, };
-            _publishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
+            PublishContextFixture.DefineCredentialProperties(SampleCredentialIdentifier, properties);
 
             Assert.Equal(_sampleRegion, _sut.GetValidRegion(SampleCredentialIdentifier));
         }

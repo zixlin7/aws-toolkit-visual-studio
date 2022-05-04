@@ -38,13 +38,13 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             _viewModel =
                 new PublishToAwsDocumentViewModel(new PublishApplicationContext(_contextFixture.PublishContext))
                 {
-                    PublishedArtifactId = SampleStackName,
                     PublishDestination = new PublishRecommendation(new RecommendationSummary()
                     {
                         DeploymentType = DeploymentTypes.CloudFormationStack,
                     }),
                 };
 
+            _viewModel.PublishProjectViewModel.PublishedArtifactId = SampleStackName;
             _viewModel.Connection.Region = SampleRegionA;
             _viewModel.Connection.CredentialsId = SampleCredentialA;
 
@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         [Fact]
         public void CanExecute_IsPublishing()
         {
-            _viewModel.IsPublishing = true;
+            _viewModel.PublishProjectViewModel.IsPublishing = true;
 
             Assert.False(_selectDialogCommand.CanExecute(null));
         }

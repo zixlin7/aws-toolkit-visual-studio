@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
                 Id = "us-west-2"
             };
             ViewModel.ViewStage = PublishViewStage.Publish;
-            ViewModel.IsPublishing = false;
+            ViewModel.PublishProjectViewModel.IsPublishing = false;
         }
 
         [Theory]
@@ -47,16 +47,16 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         {
             ViewModel.SessionId = "old-session-id";
             ViewModel.IsRepublish = initialIsRepublish;
-            ViewModel.ProgressStatus = publishSuccess ? ProgressStatus.Success : ProgressStatus.Fail;
+            ViewModel.PublishProjectViewModel.ProgressStatus = publishSuccess ? ProgressStatus.Success : ProgressStatus.Fail;
             _sut.Execute(null);
 
             Assert.Equal(PublishViewStage.Target, ViewModel.ViewStage);
-            Assert.Equal(ProgressStatus.Loading, ViewModel.ProgressStatus);
+            Assert.Equal(ProgressStatus.Loading, ViewModel.PublishProjectViewModel.ProgressStatus);
             Assert.Equal(SampleSessionId, ViewModel.SessionId);
             Assert.Equal(expectedIsRepublish, ViewModel.IsRepublish);
             Assert.NotEmpty(ViewModel.Recommendations);
             Assert.NotEmpty(ViewModel.RepublishTargets);
-            Assert.Empty(ViewModel.PublishProgress);
+            Assert.Empty(ViewModel.PublishProjectViewModel.PublishProgress);
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public void CanExecute_PublishStage(bool isPublishing, bool expectedCanExecute)
         {
             ViewModel.ViewStage = PublishViewStage.Publish;
-            ViewModel.IsPublishing = isPublishing;
+            ViewModel.PublishProjectViewModel.IsPublishing = isPublishing;
             Assert.Equal(expectedCanExecute, _sut.CanExecute(null));
         }
     }

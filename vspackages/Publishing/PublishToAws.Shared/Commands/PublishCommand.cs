@@ -67,14 +67,22 @@ namespace Amazon.AWSToolkit.Publish.Commands
                     throw new Exception("One or more configuration settings are invalid.");
                 }
 
-                await PublishDocumentViewModel.ClearPublishedResourcesAsync(CancellationToken.None).ConfigureAwait(false);
-
                 await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                PublishDocumentViewModel.PublishProjectViewModel.Clear();
+                await PublishDocumentViewModel.UpdatePublishProjectViewModelAsync().ConfigureAwait(true);
 
                 PublishDocumentViewModel.ViewStage = PublishViewStage.Publish;
 
                 await TaskScheduler.Default;
-                await PublishDocumentViewModel.PublishApplicationAsync().ConfigureAwait(false);
+                var publishResult = await PublishDocumentViewModel.PublishApplicationAsync().ConfigureAwait(false);
+
+                await TaskScheduler.Default;
+                if (publishResult.IsSuccess)
+                {
+                    await PublishDocumentViewModel.PublishProjectViewModel
+                        .UpdatePublishedResourcesAsync(CancellationToken.None).ConfigureAwait(false);
+                }
             }
             catch (Exception e)
             {
@@ -117,7 +125,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
         protected override bool CanExecuteCommand()
         {
             return !PublishDocumentViewModel.HasValidationErrors()
-                   && !PublishDocumentViewModel.IsPublishing
+                   && !PublishDocumentViewModel.PublishProjectViewModel.IsPublishing
                    && !PublishDocumentViewModel.IsLoading
                    && !PublishDocumentViewModel.LoadingSystemCapabilities;
         }

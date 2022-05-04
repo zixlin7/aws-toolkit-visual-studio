@@ -137,7 +137,7 @@
                         <views:ConfigureTargetView />
                     </DataTemplate>
                     <DataTemplate x:Key="ViewPublish">
-                        <views:PublishApplicationView />
+                        <views:PublishApplicationView DataContext="{Binding PublishProjectViewModel}" />
                     </DataTemplate>
                 </ContentPresenter.Resources>
 

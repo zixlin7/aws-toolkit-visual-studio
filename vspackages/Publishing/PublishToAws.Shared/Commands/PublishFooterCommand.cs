@@ -20,6 +20,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
         {
             PublishDocumentViewModel = publishDocumentViewModel;
             PublishDocumentViewModel.PropertyChanged += PublishDocumentViewModelOnPropertyChanged;
+            PublishDocumentViewModel.PublishProjectViewModel.PropertyChanged += PublishDocumentViewModelOnPropertyChanged;
         }
 
         public abstract bool CanExecute(object parameter);
@@ -36,6 +37,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         public void Dispose()
         {
+            PublishDocumentViewModel.PublishProjectViewModel.PropertyChanged -= PublishDocumentViewModelOnPropertyChanged;
             PublishDocumentViewModel.PropertyChanged -= PublishDocumentViewModelOnPropertyChanged;
         }
 
