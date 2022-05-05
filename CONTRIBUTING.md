@@ -86,6 +86,10 @@ The following files are no longer referenced by the Toolkit, but were used in pr
 - hostedfiles\\flags\\*.png
   - Older versions of the Toolkit used to show a flag next to each region in region selection UIs. The code to show flags was removed in 2019. While unused, flag images were still embedded into the DLL, and this was removed in 2022.
 
+## AWS SDK Package References
+
+The AWS .NET SDK’s NuGet packages are referenced from multiple locations across to repo. To help keep the referenced versions in alignment, an msbuild task automates the process of updating the package references. The task is called `update-awssdk` and resides in `build.proj`.
+
 ## Reporting Bugs/Feature Requests
 
 We welcome you to use the GitHub issue tracker to report bugs or suggest features.

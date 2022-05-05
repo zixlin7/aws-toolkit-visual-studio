@@ -23,6 +23,7 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.S3.View;
 
 using Statement = Amazon.Auth.AccessControlPolicy.Statement;
+using Filter = Amazon.S3.Model.Filter;
 
 namespace Amazon.AWSToolkit.S3.Controller
 {

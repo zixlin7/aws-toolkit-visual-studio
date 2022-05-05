@@ -24,6 +24,7 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using AddPermissionRequest = Amazon.Lambda.Model.AddPermissionRequest;
 using Amazon.AWSToolkit.Credentials.Core;
+using Filter = Amazon.S3.Model.Filter;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {

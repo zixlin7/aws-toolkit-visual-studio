@@ -99,13 +99,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.7.3.28</Version>
+      <Version>3.7.4.7</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.7.1.48</Version>
+      <Version>3.7.2.48</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.8.3</Version>
+      <Version>3.7.10.15</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

@@ -198,13 +198,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.7.4.0</Version>
+      <Version>3.7.12.10</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.2.44</Version>
+      <Version>3.7.3.54</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.1.16</Version>
+      <Version>3.7.2.51</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.14</Version>

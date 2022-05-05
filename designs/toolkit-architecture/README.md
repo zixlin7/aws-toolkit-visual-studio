@@ -75,7 +75,7 @@ ServiceRootViewMetaNode:
 
 ## AWS SDK Package References
 
-The AWS .NET SDK’s NuGet packages are referenced from multiple locations across to repo. To help keep the referenced versions in alignment, an msbuild task automates the process of updating the package references. The task is called `update-awssdk` and resides in `build.proj`.
+See [Contributing Guide](https://github.com/aws/aws-toolkit-visual-studio-staging/blob/main/CONTRIBUTING.md#aws-sdk-package-references).
 
 ## Projects and Assemblies
 

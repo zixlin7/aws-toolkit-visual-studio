@@ -70,31 +70,31 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.AutoScaling">
-      <Version>3.7.5.25</Version>
+      <Version>3.7.10.5</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.5.17</Version>
+      <Version>3.7.9.32</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.3.13</Version>
+      <Version>3.7.10.15</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.30.2</Version>
+      <Version>3.7.67.1</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticBeanstalk">
-      <Version>3.7.0.73</Version>
+      <Version>3.7.0.154</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancing">
-      <Version>3.7.0.73</Version>
+      <Version>3.7.0.154</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.53</Version>
+      <Version>3.7.2.134</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.RDS">
-      <Version>3.7.5.9</Version>
+      <Version>3.7.13.4</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.3.6</Version>
+      <Version>3.7.8.27</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
