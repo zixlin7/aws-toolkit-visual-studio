@@ -759,7 +759,23 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             await DeploymentClient.JoinSession(SessionId);
             // register callback to log all deployment output in the progress dialog
-            DeploymentClient.ReceiveLogAllLogAction = OnDeploymentClientReceiveLog;
+            DeploymentClient.ReceiveLogSectionStart = OnDeploymentClientStartLogSection;
+            DeploymentClient.ReceiveLogInfoMessage = OnDeploymentClientReceiveLog;
+            DeploymentClient.ReceiveLogErrorMessage = OnDeploymentClientReceiveLog;
+        }
+
+        /// <summary>
+        /// Event: A new message log section has been started
+        /// </summary>
+        private void OnDeploymentClientStartLogSection(string sectionName, string description)
+        {
+            // IDE-7426 will take these groups and produce rich UI groupings. For now, output a text-based header.
+            var builder = new StringBuilder();
+            builder.AppendLine(new string('*', sectionName.Length));
+            builder.AppendLine(sectionName);
+            builder.Append(new string('*', sectionName.Length));
+
+            OnDeploymentClientReceiveLog(builder.ToString());
         }
 
         /// <summary>
