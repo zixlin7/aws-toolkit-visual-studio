@@ -112,5 +112,15 @@ namespace CommonUI.Models
 
             return roleArn.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
+
+        public string CreateNoRolesMessage()
+        {
+            if (string.IsNullOrWhiteSpace(ServicePrincipalFilter))
+            {
+                return "No IAM Roles were found.";
+            }
+
+            return $"No IAM Roles were found that support service principal: {ServicePrincipalFilter}";
+        }
     }
 }

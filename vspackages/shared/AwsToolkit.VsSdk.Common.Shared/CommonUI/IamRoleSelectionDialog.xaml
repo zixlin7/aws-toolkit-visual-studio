@@ -11,9 +11,11 @@
     themes:ToolkitThemes.UseToolkitTheme="True"
     Width="600"
     Height="400"
+    MinWidth="600"
+    MinHeight="400"
     WindowStartupLocation="CenterOwner">
 
-    <Grid Name="_ctlMainGrid" Margin="12">
+    <Grid Margin="12">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -25,6 +27,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <!-- The main UI (Filter and list) -->
         <Grid
             Grid.Row="0"
             Grid.Column="0"
@@ -56,9 +59,11 @@
                 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                 ItemsSource="{Binding RoleArns}"
                 SelectedItem="{Binding RoleArn}"
+                MouseDoubleClick="RoleList_OnMouseDoubleClick"
                 />
         </Grid>
 
+        <!-- Footer Row -->
         <StackPanel
             Grid.Row="2"
             Grid.Column="0"
