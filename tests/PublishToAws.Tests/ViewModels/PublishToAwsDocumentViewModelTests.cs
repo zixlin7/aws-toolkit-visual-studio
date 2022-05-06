@@ -218,7 +218,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await _sut.PublishApplicationAsync();
 
             Assert.Equal(ProgressStatus.Fail, _sut.PublishProjectViewModel.ProgressStatus);
-            Assert.Contains(SamplePublishData.GetDeploymentStatusOutputs.Fail.Exception.Message, _sut.PublishProjectViewModel.PublishProgress);
+            Assert.Contains(SamplePublishData.GetDeploymentStatusOutputs.Fail.Exception.Message, _sut.PublishProjectViewModel.DeploymentMessages.Last().Message);
             AssertPublishCallsAreCorrect();
             VerifyErrorCodeEmitted();
         }
@@ -304,7 +304,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             Assert.Equal(publishResult, result);
             Assert.Equal(ProgressStatus.Success, _sut.PublishProjectViewModel.ProgressStatus);
-            Assert.Contains("was published as", _sut.PublishProjectViewModel.PublishProgress);
+            Assert.Contains("was published as", _sut.PublishProjectViewModel.DeploymentMessages.Last().Message);
             Assert.False(_sut.PublishProjectViewModel.IsFailureBannerEnabled);
         }
 
@@ -318,7 +318,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Equal(publishResult, result);
 
             Assert.Equal(ProgressStatus.Fail, _sut.PublishProjectViewModel.ProgressStatus);
-            Assert.Contains(publishResult.ErrorMessage, _sut.PublishProjectViewModel.PublishProgress);
+            Assert.Contains(publishResult.ErrorMessage, _sut.PublishProjectViewModel.DeploymentMessages.Last().Message);
             Assert.True(_sut.PublishProjectViewModel.IsFailureBannerEnabled);
         }
 

@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             Assert.Equal(expectedIsRepublish, ViewModel.IsRepublish);
             Assert.NotEmpty(ViewModel.Recommendations);
             Assert.NotEmpty(ViewModel.RepublishTargets);
-            Assert.Empty(ViewModel.PublishProjectViewModel.PublishProgress);
+            Assert.Empty(ViewModel.PublishProjectViewModel.DeploymentMessages);
         }
 
         [Fact]

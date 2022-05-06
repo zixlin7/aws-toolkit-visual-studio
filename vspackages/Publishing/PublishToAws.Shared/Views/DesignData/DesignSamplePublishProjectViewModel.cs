@@ -17,9 +17,9 @@ namespace Amazon.AWSToolkit.Publish.Views.DesignData
             RecipeName = "Recipe Name";
             RegionName = "US West (Oregon)";
 
-            PublishProgress = "this is\nsome publish output\nfoo...";
             PublishedArtifactId = "some-resource-id";
 
+            PopulateLogMessages();
             PopulatePublishResources();
 
             // Cycle through states so that we can see the different presentation modes at design time
@@ -30,6 +30,15 @@ namespace Amazon.AWSToolkit.Publish.Views.DesignData
                 CyclePublishStates();
             };
             timer.Start();
+        }
+
+        private void PopulateLogMessages()
+        {
+            CreateMessageGroup("Preparing build...", "");
+            CreateMessageGroup("Creating CDK Project...", "");
+            CreateMessageGroup("Publishing CDK Project...", "");
+            AppendLineDeploymentMessage("some build output");
+            AppendLineDeploymentMessage("some more build output");
         }
 
         private void PopulatePublishResources()
@@ -67,7 +76,9 @@ namespace Amazon.AWSToolkit.Publish.Views.DesignData
         private void PopulateWithLoading()
         {
             ProgressStatus = ProgressStatus.Loading;
-            PublishProgress = "publish output\npublish in progress...";
+            DeploymentMessages.Clear();
+            PopulateLogMessages();
+            AppendLineDeploymentMessage("publish in progress...");
             IsFailureBannerEnabled = false;
             IsPublishing = true;
         }
@@ -75,7 +86,9 @@ namespace Amazon.AWSToolkit.Publish.Views.DesignData
         private void PopulateWithSuccess()
         {
             ProgressStatus = ProgressStatus.Success;
-            PublishProgress = "publish output\nSample: publish succeeded!";
+            DeploymentMessages.Clear();
+            PopulateLogMessages();
+            AppendLineDeploymentMessage("publish succeeded!");
             IsFailureBannerEnabled = false;
             IsPublishing = false;
         }
@@ -83,7 +96,9 @@ namespace Amazon.AWSToolkit.Publish.Views.DesignData
         private void PopulateWithFailure()
         {
             ProgressStatus = ProgressStatus.Fail;
-            PublishProgress = "publish output\nSample: publish failed";
+            DeploymentMessages.Clear();
+            PopulateLogMessages();
+            AppendLineDeploymentMessage("publish failed");
             IsFailureBannerEnabled = true;
             IsPublishing = false;
         }

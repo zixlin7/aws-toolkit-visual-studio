@@ -31,6 +31,7 @@
         Search,
         StatusError,
         StatusInformation,
+        StatusInformationOutline,
         StatusOK,
         StatusWarning,
         WordWrap

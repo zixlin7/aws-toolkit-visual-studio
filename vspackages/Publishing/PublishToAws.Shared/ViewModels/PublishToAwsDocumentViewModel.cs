@@ -769,13 +769,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// </summary>
         private void OnDeploymentClientStartLogSection(string sectionName, string description)
         {
-            // IDE-7426 will take these groups and produce rich UI groupings. For now, output a text-based header.
-            var builder = new StringBuilder();
-            builder.AppendLine(new string('*', sectionName.Length));
-            builder.AppendLine(sectionName);
-            builder.Append(new string('*', sectionName.Length));
-
-            OnDeploymentClientReceiveLog(builder.ToString());
+            JoinableTaskFactory.Run(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                PublishProjectViewModel.CreateMessageGroup(sectionName, description);
+            });
         }
 
         /// <summary>
@@ -783,8 +781,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// </summary>
         private void OnDeploymentClientReceiveLog(string text)
         {
-            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(async () =>
+            JoinableTaskFactory.Run(async () =>
             {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
                 await UpdateDeploymentProgressAsync(text);
             });
         }
@@ -1091,7 +1090,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private async Task UpdateDeploymentProgressAsync(string text)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync();
-            _publishProjectViewModel.AppendLinePublishProgress(text);
+            _publishProjectViewModel.AppendLineDeploymentMessage(text);
         }
 
         /// <summary>

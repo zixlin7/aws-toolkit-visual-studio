@@ -32,12 +32,54 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
-        public void AppendLinePublishProgress()
+        public void CreateMessageGroup()
         {
-            _sut.AppendLinePublishProgress("hello");
-            _sut.AppendLinePublishProgress("world");
+            _sut.CreateMessageGroup("hello", "world");
 
-            Assert.Equal(string.Format("hello{0}world{0}", Environment.NewLine), _sut.PublishProgress);
+            var deploymentMessage = Assert.Single(_sut.DeploymentMessages);
+            Assert.Equal("hello", deploymentMessage.Name);
+            Assert.Equal("world", deploymentMessage.Description);
+            Assert.Empty(deploymentMessage.Message);
+        }
+
+        [Fact]
+        public void CreateMessageGroup_CollapsesPreviousGroup()
+        {
+            _sut.CreateMessageGroup("hello", "world");
+            _sut.CreateMessageGroup("foo", "bar");
+
+            var collapsedMessage = Assert.Single(_sut.DeploymentMessages, g => g.Name == "hello");
+            Assert.False(collapsedMessage.IsExpanded);
+
+            var expandedMessage = Assert.Single(_sut.DeploymentMessages, g => g.Name == "foo");
+            Assert.True(expandedMessage.IsExpanded);
+        }
+
+        [Fact]
+        public void AppendLineDeploymentMessage()
+        {
+            _sut.AppendLineDeploymentMessage("hello");
+            _sut.AppendLineDeploymentMessage("world");
+
+            var deploymentMessage = Assert.Single(_sut.DeploymentMessages);
+            Assert.Equal(string.Format("hello{0}world{0}", Environment.NewLine), deploymentMessage.Message);
+        }
+
+        [Fact]
+        public void AppendLineDeploymentMessage_AppendsToLatestGroup()
+        {
+            _sut.CreateMessageGroup("hello", "world");
+            _sut.CreateMessageGroup("foo", "bar");
+            _sut.CreateMessageGroup("baz", "baz");
+
+            _sut.AppendLineDeploymentMessage("hello world");
+
+            var emptyGroup1 = Assert.Single(_sut.DeploymentMessages, g => g.Name == "hello");
+            Assert.Empty(emptyGroup1.Message);
+            var emptyGroup2 = Assert.Single(_sut.DeploymentMessages, g => g.Name == "foo");
+            Assert.Empty(emptyGroup2.Message);
+            var nonEmptyGroup = Assert.Single(_sut.DeploymentMessages, g => g.Name == "baz");
+            Assert.Contains("hello world", nonEmptyGroup.Message);
         }
 
         [Fact]

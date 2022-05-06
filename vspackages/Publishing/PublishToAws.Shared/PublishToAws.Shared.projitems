@@ -96,6 +96,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Util\OptionSettingItemSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\PublishToAwsConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeploymentMessageGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishProjectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DesignTimePublishConnectionViewModel.cs" />

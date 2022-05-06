@@ -70,13 +70,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Deployment progress messages displayed in the Publish in Progress View
+        /// Deployment progress messages
         /// </summary>
-        public string PublishProgress
-        {
-            get => _publishProgress;
-            set => SetProperty(ref _publishProgress, value);
-        }
+        public ObservableCollection<DeploymentMessageGroup> DeploymentMessages { get; } = new ObservableCollection<DeploymentMessageGroup>();
 
         /// <summary>
         /// The Id of the published artifact.
@@ -173,7 +169,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private string _sessionId;
         private DeploymentArtifact _artifactType;
 
-        private string _publishProgress;
+        private DeploymentMessageGroup _currentMessageGroup;
         private bool _isFailureBannerEnabled;
         private ProgressStatus _progressStatus;
         private string _publishedArtifactId;
@@ -191,9 +187,31 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             _publishContext = publishContext;
         }
 
-        public void AppendLinePublishProgress(string text)
+        public void AppendLineDeploymentMessage(string text)
         {
-            PublishProgress += string.Concat(text, Environment.NewLine);
+            if (_currentMessageGroup == null)
+            {
+                // If there was no group created before the first message arrived, make one
+                CreateMessageGroup("Publish to AWS", "");
+            }
+
+            _currentMessageGroup.AppendLine(text);
+        }
+
+        public void CreateMessageGroup(string groupName, string description)
+        {
+            if (_currentMessageGroup != null)
+            {
+                _currentMessageGroup.IsExpanded = false;
+            }
+
+            _currentMessageGroup = new DeploymentMessageGroup()
+            {
+                Name = groupName,
+                Description = description,
+            };
+
+            DeploymentMessages.Add(_currentMessageGroup);
         }
 
         public void Clear()
@@ -203,7 +221,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             RegionName = string.Empty;
             SessionId = string.Empty;
             IsPublishing = false;
-            PublishProgress = string.Empty;
+            DeploymentMessages.Clear();
+            _currentMessageGroup = null;
             PublishedArtifactId = string.Empty;
             ProgressStatus = ProgressStatus.Loading;
             IsFailureBannerEnabled = false;
