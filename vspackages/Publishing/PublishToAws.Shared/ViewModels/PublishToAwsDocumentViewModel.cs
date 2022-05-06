@@ -1412,7 +1412,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 Duration = elapsedMs,
                 InitialPublish = !IsRepublish,
                 DefaultConfiguration = IsDefaultConfig,
-                RecipeId = PublishDestination?.RecipeId,
+                RecipeId = PublishDestination?.BaseRecipeId ?? PublishDestination?.RecipeId,
+                IsGeneratedProject = PublishDestination?.IsGenerated,
             };
 
             if (payload.InitialPublish)

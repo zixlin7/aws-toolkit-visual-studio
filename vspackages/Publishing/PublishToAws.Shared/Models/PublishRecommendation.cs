@@ -13,10 +13,12 @@ namespace Amazon.AWSToolkit.Publish.Models
         public PublishRecommendation(RecommendationSummary recommendation)
         {
             RecipeId = recommendation?.RecipeId;
+            BaseRecipeId = recommendation?.BaseRecipeId;
             RecipeName = recommendation?.Name;
             DeploymentArtifact = recommendation?.DeploymentType.AsDeploymentArtifact() ?? DeploymentArtifact.Unknown;
             Name = recommendation?.Name;
             Description = recommendation?.Description;
+            IsGenerated = recommendation?.IsPersistedDeploymentProject ?? false;
             Service = recommendation?.TargetService;
             ShortDescription = recommendation?.ShortDescription;
         }

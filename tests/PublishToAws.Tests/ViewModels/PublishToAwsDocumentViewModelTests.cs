@@ -295,6 +295,37 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 Times.Once);
         }
 
+        [Theory]
+        [InlineData("base-recipe", "recipe", true, "base-recipe")]
+        [InlineData(null, "recipe", true, "recipe")]
+        public async Task EmitMetricsForPublishProjectAsync_EmitsRecipeId(string baseRecipeId, string recipeId, bool isGenerated, string expectedRecipeId)
+        {
+            var recommendationSummary = SamplePublishData.CreateSampleRecommendationSummaries().First();
+            recommendationSummary.BaseRecipeId = baseRecipeId;
+            recommendationSummary.RecipeId = recipeId;
+            recommendationSummary.IsPersistedDeploymentProject = isGenerated;
+            _sut.PublishDestination = new PublishRecommendation(recommendationSummary);
+            var publishResult = new PublishProjectResult() { IsSuccess = true };
+            MetricDatum publishMetric = null;
+
+            _publishToAwsFixture.PublishContextFixture.TelemetryLogger
+                .Setup(mock => mock.Record(It.IsAny<Metrics>()))
+                .Callback<Metrics>(metrics =>
+                {
+                    var datum = metrics.Data.FirstOrDefault(x => x.MetricName == "publish_deploy");
+                    if (datum != null)
+                    {
+                        publishMetric = datum;
+                    }
+                });
+
+            await _sut.EmitMetricsForPublishProjectAsync(() => Task.FromResult(publishResult));
+
+            Assert.NotNull(publishMetric);
+            Assert.Equal(expectedRecipeId, publishMetric.Metadata["recipeId"]);
+            Assert.Equal(isGenerated, bool.Parse(publishMetric.Metadata["isGeneratedProject"]));
+        }
+
         [Fact]
         public async Task AdjustUiForPublishProjectAsync()
         {

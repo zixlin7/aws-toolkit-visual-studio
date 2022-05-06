@@ -41,6 +41,11 @@
             "description": "The recipe used for the deployment"
         },
         {
+            "name": "isGeneratedProject",
+            "type": "boolean",
+            "description": "Whether or not the referenced project was generated"
+        },
+        {
             "name": "publishSettingType",
             "type": "string",
             "description": "The type of a particular configuration setting/detail"
@@ -108,6 +113,7 @@
                 { "type": "defaultConfiguration" },
                 { "type": "recommendedTarget", "required": false },
                 { "type": "recipeId" },
+                { "type": "isGeneratedProject", "required": false },
                 { "type": "errorCode", "required": false },
                 { "type": "reason", "required": false }
             ] 
