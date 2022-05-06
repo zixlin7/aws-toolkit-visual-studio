@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Allow selection of an alternate Dockerfile in Publish to AWS."
+}

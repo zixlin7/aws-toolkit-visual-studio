@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
@@ -214,6 +216,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return detail;
         }
 
+        private readonly IEnumerable<DetailType> _supportedTypeHints = new HashSet<DetailType>() { DetailType.List, DetailType.String };
+
         private bool IsTypeHintSupported(ConfigurationDetail detail)
         {
             if (TypeHintLoadingExclusions.Contains(detail.TypeHint))
@@ -221,7 +225,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 return false;
             }
 
-            return (detail.Type == DetailType.List || detail.Type == DetailType.String) && !string.IsNullOrEmpty(detail.TypeHint);
+            return _supportedTypeHints.Contains(detail.Type) && !string.IsNullOrEmpty(detail.TypeHint);
         }
 
         public async Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,

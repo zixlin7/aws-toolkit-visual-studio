@@ -8,25 +8,27 @@ using System.Linq;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 
+using AWS.Deploy.ServerMode.Client;
+
 namespace Amazon.AWSToolkit.Publish.Models
 {
     /// <summary>
     /// A primitive that describes a singular configuration value/field of a publish target.
     /// This is the model that translates from the CLI server's API to what is shown in the UI
-    /// (see <see cref="ConfigurationDetailPropertyDescriptor"/> for the UI related property descriptors).
     /// </summary>
     [DebuggerDisplay("{Id} | {Value}")]
     public class ConfigurationDetail : BaseModel, INotifyDataErrorInfo
     {
         public static class TypeHints
         {
-            public const string IamRole = "IAMRole";
-            public const string Vpc = "Vpc";
-            public const string InstanceType = "InstanceType";
             public const string EcrRepository = "ECRRepository";
+            public const string FilePath = "FilePath";
+            public const string IamRole = "IAMRole";
+            public const string InstanceType = "InstanceType";
+            public const string Vpc = "Vpc";
         }
 
-        private bool _suspendDetailChangeEvents = false;
+        private bool _suspendDetailChangeEvents;
         private string _id;
         private string _name;
         private string _description;
@@ -97,10 +99,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// full chain of parent details.
         /// Example: "Foo : Bar : Baz"
         /// </summary>
-        public string FullDisplayName
-        {
-            get => GetFullDisplayName();
-        }
+        public string FullDisplayName => GetFullDisplayName();
 
         /// <summary>
         /// User-friendly explanation of the configuration field
@@ -343,7 +342,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return Name;
             }
 
-            return string.Join(" : ", new string[] { Parent.FullDisplayName, Name });
+            return string.Join(" : ", Parent.FullDisplayName, Name);
         }
 
         /// <summary>

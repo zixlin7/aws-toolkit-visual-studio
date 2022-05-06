@@ -7,6 +7,7 @@ using AwsToolkit.VsSdk.Common.CommonUI;
 using AwsToolkit.VsSdk.Common.CommonUI.Ecr;
 
 using Microsoft.VisualStudio.Threading;
+using Microsoft.Win32;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -19,6 +20,11 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             _toolkitContext = toolkitContext;
             _joinableTaskFactory = joinableTaskFactory;
+        }
+
+        public OpenFileDialog CreateOpenFileDialog()
+        {
+            return new OpenFileDialog();
         }
 
         public ISelectionDialog CreateSelectionDialog()

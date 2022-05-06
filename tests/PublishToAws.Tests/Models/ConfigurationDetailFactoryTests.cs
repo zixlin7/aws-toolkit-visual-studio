@@ -97,6 +97,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.True(expectedSelectedItems.SequenceEqual(configurationDetail.SelectedItems));
         }
 
+        [Fact (Skip = "Until https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and available in VSTK.")]
+        public void CreateFrom_WithFilePath()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithId("DockerfilePath")
+                .WithName("Dockerfile Path")
+                .WithType("String")
+                .WithTypeHint("FilePath")
+                .WithTypeHintData("Filter", "All files (*.*)|*.*")
+                .WithTypeHintData("CheckFileExists", true)
+                .WithTypeHintData("Title", "Select a Dockerfile")
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary) as FilePathConfigurationDetail;
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+        }
+
         [Fact]
         public void CreateFrom_WithValueMapping()
         {

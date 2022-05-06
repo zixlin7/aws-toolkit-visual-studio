@@ -24,7 +24,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             VpcEditor = new DataTemplate(),
             Ec2InstanceTypeEditor = new DataTemplate(),
             EcrRepositoryEditor = new DataTemplate(),
-            ListEditor = new DataTemplate()
+            ListEditor = new DataTemplate(),
+            FilePathEditor = new DataTemplate()
         };
 
         [Fact]

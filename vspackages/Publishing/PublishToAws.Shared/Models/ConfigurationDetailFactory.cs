@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Models;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Util;
@@ -25,6 +24,7 @@ namespace Amazon.AWSToolkit.Publish.Models
             public const string KeyValue = "KeyValue";
             public const string Object = "Object";
             public const string List = "List";
+            public const string FilePath = "FilePath";
         }
 
         private readonly IPublishToAwsProperties _publishToAwsProperties;
@@ -75,19 +75,18 @@ namespace Amazon.AWSToolkit.Publish.Models
             return configurationDetail;
         }
 
+        protected static T GetTypeHintData<T>(OptionSettingItemSummary itemSummary, string key, T defaultValue = default)
+        {
+            return itemSummary.TypeHintData.TryGetValue(key, out object value) && value is T castValue ? castValue : defaultValue;
+        }
+
         private ConfigurationDetail InstantiateFor(OptionSettingItemSummary itemSummary)
         {
             if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.IamRole)
             {
                 var detail = new IamRoleConfigurationDetail();
                 detail.SelectRoleArn = SelectRoleArnCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
-
-                if (itemSummary.TypeHintData.TryGetValue(IamRoleConfigurationDetail.TypeHintDataKeys.ServicePrincipal,
-                        out object servicePrincipalObj) &&
-                    servicePrincipalObj is string servicePrincipal)
-                {
-                    detail.ServicePrincipal = servicePrincipal;
-                }
+                detail.ServicePrincipal = GetTypeHintData<string>(itemSummary, IamRoleConfigurationDetail.TypeHintDataKeys.ServicePrincipal);
 
                 return detail;
             }
@@ -116,6 +115,21 @@ namespace Amazon.AWSToolkit.Publish.Models
                 
                 return detail;
             }
+
+            // TODO When https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and that version of the Deploy CLI is merged into the
+            // VSTK then uncomment this code to support FilePath TypeHints.
+            //if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.FilePath)
+            //{
+            //    var detail = new FilePathConfigurationDetail()
+            //    {
+            //        CheckFileExists = GetTypeHintData<bool>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.CheckFileExists),
+            //        Filter = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Filter),
+            //        Title = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Title)
+            //    };
+            //    detail.BrowseCommand = OpenFileSelectionCommandFactory.Create(detail, _dialogFactory);
+            //
+            //    return detail;
+            //}
 
             if (itemSummary.Type == ItemSummaryTypes.KeyValue)
             {
