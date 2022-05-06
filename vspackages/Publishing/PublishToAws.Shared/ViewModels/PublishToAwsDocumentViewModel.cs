@@ -250,10 +250,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             if (IsRepublish)
             {
-                return _publishDestinationCache as RepublishTarget;
+                return GetRepublishTargetOrFallback(_publishDestinationCache as RepublishTarget);
             }
 
-            return _publishDestinationCache as PublishRecommendation;
+            return GetRecommendationOrFallback(_publishDestinationCache as PublishRecommendation);
+        }
+
+        public PublishRecommendation GetRecommendationOrFallback(PublishRecommendation recommendation)
+        {
+            return Recommendations.FirstOrDefault(r => r == recommendation) ??
+                   Recommendations.FirstOrDefault(r => r.IsRecommended) ??
+                   Recommendations.FirstOrDefault();
+        }
+
+        public RepublishTarget GetRepublishTargetOrFallback(RepublishTarget republishTarget)
+        {
+            return RepublishTargets.FirstOrDefault(r => r == republishTarget) ??
+                   RepublishTargets.FirstOrDefault(r => r.IsRecommended) ??
+                   RepublishTargets.FirstOrDefault();
         }
 
         /// <summary>
@@ -474,7 +488,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public ObservableCollection<TargetSystemCapability> SystemCapabilities
         {
             get => _systemCapabilities;
-            set => SetProperty(ref _systemCapabilities, value);
+            private set => SetProperty(ref _systemCapabilities, value);
         }
 
         /// <summary>
@@ -564,6 +578,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public async Task RestartDeploymentSessionAsync(CancellationToken cancellationToken)
         {
+            await ClearTargetSelectionAsync(cancellationToken).ConfigureAwait(false);
             await StopDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
             await StartDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
 
@@ -572,6 +587,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 SetRepublishTargetsAsync(new ObservableCollection<RepublishTarget>(), cancellationToken),
                 SetRecommendationsAsync(new ObservableCollection<PublishRecommendation>(), cancellationToken)
             ).ConfigureAwait(false);
+        }
+
+        public async Task ClearTargetSelectionAsync(CancellationToken cancellationToken)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            ErrorMessage = string.Empty;
+            PublishDestination = null;
+            SetCachedPublishDestination(null);
+            SystemCapabilities?.Clear();
+            TargetDescription = string.Empty;
+            PublishSummary = string.Empty;
         }
 
         /// <summary>
@@ -705,18 +731,25 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public async Task RefreshSystemCapabilitiesAsync(CancellationToken cancellationToken)
         {
-            var capabilities = new ObservableCollection<TargetSystemCapability>();
-            var recipeId = string.Empty;
+            var capabilities = new List<TargetSystemCapability>();
+
             try
             {
                 ThrowIfSessionIsNotCreated();
-                await SetLoadingSystemCapabilitiesAsync(true).ConfigureAwait(false);
-                recipeId = PublishDestination?.RecipeId;
 
-                var systemCapabilities = await DeployToolController.GetCompatibilityAsync(SessionId, cancellationToken)
-                    .ConfigureAwait(false);
+                var recipeId = PublishDestination?.RecipeId;
+                if (string.IsNullOrWhiteSpace(recipeId)) { return; }
 
-                capabilities = new ObservableCollection<TargetSystemCapability>(systemCapabilities);
+                using (await CreateLoadingSystemCapabilitiesScopeAsync().ConfigureAwait(false))
+                {
+                    var systemCapabilities = await DeployToolController
+                        .GetCompatibilityAsync(SessionId, cancellationToken)
+                        .ConfigureAwait(false);
+
+                    capabilities.AddRange(systemCapabilities);
+
+                    UpdateMissingCapabilities(recipeId, capabilities);
+                }
             }
             catch (Exception e)
             {
@@ -725,17 +758,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             finally
             {
                 await SetSystemCapabilitiesAsync(capabilities, cancellationToken);
-                UpdateMissingCapabilities(recipeId, capabilities);
-                if (capabilities.Any())
-                {
-                    var missingRequirements = string.Join(", ", capabilities.Select(c => c.Name).OrderBy(s => s));
-                    var message = $"Cannot publish {ProjectName} to {PublishDestination?.Name}, missing requirements: {missingRequirements}";
-                    Logger.Debug(message);
-                    _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
-                }
-
-                await SetLoadingSystemCapabilitiesAsync(false).ConfigureAwait(false);
             }
+        }
+
+        private async Task<IDisposable> CreateLoadingSystemCapabilitiesScopeAsync()
+        {
+            await SetLoadingSystemCapabilitiesAsync(true).ConfigureAwait(false);
+
+            return new DisposingAction(() =>
+            {
+                JoinableTaskFactory.Run(async () => await SetLoadingSystemCapabilitiesAsync(false).ConfigureAwait(false));
+            });
         }
 
         private async Task SetLoadingSystemCapabilitiesAsync(bool isLoading)
@@ -744,7 +777,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             LoadingSystemCapabilities = isLoading;
         }
 
-        private void UpdateMissingCapabilities(string recipeId, ObservableCollection<TargetSystemCapability> capabilities)
+        private void UpdateMissingCapabilities(string recipeId, IEnumerable<TargetSystemCapability> capabilities)
         {
             MissingCapabilities.Update(recipeId, capabilities);
         }
@@ -1102,18 +1135,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                var selectedRecipeId = PublishDestination?.RecipeId;
-
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 Recommendations = recommendations;
-
-                if (!IsRepublish)
-                {
-                    PublishDestination =
-                        recommendations.FirstOrDefault(r => r.RecipeId == selectedRecipeId) ??
-                        recommendations.FirstOrDefault(r => r.IsRecommended) ??
-                        recommendations.FirstOrDefault();
-                }
             }
             catch (Exception e)
             {
@@ -1130,18 +1153,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                var selectedDestinationName = PublishDestination?.Name;
-
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 RepublishTargets = targets;
-
-                if (IsRepublish)
-                {
-                    PublishDestination =
-                        targets.FirstOrDefault(r => r.Name == selectedDestinationName) ??
-                        targets.FirstOrDefault(r => r.IsRecommended) ??
-                        targets.FirstOrDefault();
-                }
 
                 UpdateRepublishCollectionView();
             }
@@ -1166,8 +1179,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public async Task InitializePublishTargetsAsync(CancellationToken cancelToken)
         {
-            var republishTargets = await DeployToolController.GetRepublishTargetsAsync(SessionId, ProjectPath, cancelToken);
-            await SetIsRepublishAsync(republishTargets.Any(), cancelToken);
             await Task.WhenAll(RefreshExistingTargetsAsync(cancelToken), RefreshRecommendationsAsync(cancelToken)).ConfigureAwait(false);
         }
 
@@ -1179,13 +1190,23 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 new PropertyGroupDescription(nameof(RepublishTarget.Category)));
         }
 
-        private async Task SetSystemCapabilitiesAsync(ObservableCollection<TargetSystemCapability> capabilities,
+        public async Task SetSystemCapabilitiesAsync(IEnumerable<TargetSystemCapability> capabilities,
             CancellationToken cancellationToken)
         {
             try
             {
+                var missingRequirements = capabilities.ToArray();
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-                SystemCapabilities = capabilities;
+                SystemCapabilities = new ObservableCollection<TargetSystemCapability>(missingRequirements);
+
+                if (missingRequirements.Any())
+                {
+                    var missingRequirementsStr = string.Join(", ", missingRequirements.Select(c => c.Name).OrderBy(s => s));
+                    var message =
+                        $"Cannot publish {ProjectName} to {PublishDestination?.Name}, missing requirements: {missingRequirementsStr}";
+                    Logger.Debug(message);
+                    _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
+                }
             }
             catch (Exception e)
             {

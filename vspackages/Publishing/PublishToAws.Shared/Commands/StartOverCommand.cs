@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.Models;
@@ -37,19 +38,17 @@ namespace Amazon.AWSToolkit.Publish.Commands
             {
                 try
                 {
-                    PublishDocumentViewModel.ErrorMessage = string.Empty;
-                    var initialIsRepublishValue = PublishDocumentViewModel.IsRepublish;
+                    var publishDestination = PublishDocumentViewModel.PublishDestination;
+
+                    await PublishDocumentViewModel.ClearTargetSelectionAsync(cancellationToken).ConfigureAwait(false);
 
                     await PublishDocumentViewModel.RestartDeploymentSessionAsync(cancellationToken)
                         .ConfigureAwait(false);
 
-                    await PublishDocumentViewModel.InitializePublishTargetsAsync(cancellationToken).ConfigureAwait(false);
+                    await PublishDocumentViewModel.InitializePublishTargetsAsync(cancellationToken)
+                        .ConfigureAwait(false);
 
-                    // If user chose a new publish target and the publish failed, re-choose that setting
-                    if (PublishDocumentViewModel.PublishProjectViewModel.ProgressStatus == ProgressStatus.Fail)
-                    {
-                        await PublishDocumentViewModel.SetIsRepublishAsync(initialIsRepublishValue, cancellationToken).ConfigureAwait(false);
-                    }
+                    await UpdateSelectedTargetAsync(publishDestination, cancellationToken).ConfigureAwait(false);
 
                     await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
                     PublishDocumentViewModel.ViewStage = PublishViewStage.Target;
@@ -57,11 +56,38 @@ namespace Amazon.AWSToolkit.Publish.Commands
                 }
                 catch (Exception e)
                 {
-                    PublishDocumentViewModel.PublishContext.ToolkitShellProvider.OutputError(new Exception($"Failed to reset the Publish to AWS view: {e.Message}", e), Logger);
+                    PublishDocumentViewModel.PublishContext.ToolkitShellProvider.OutputError(
+                        new Exception($"Failed to reset the Publish to AWS view: {e.Message}", e), Logger);
 
                     await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
                     PublishDocumentViewModel.ErrorMessage = e.Message;
                 }
+            }
+        }
+
+        private async Task UpdateSelectedTargetAsync(PublishDestinationBase publishDestination, CancellationToken cancellationToken)
+        {
+            if (publishDestination is PublishRecommendation recommendation)
+            {
+                if (PublishDocumentViewModel.PublishProjectViewModel.ProgressStatus == ProgressStatus.Success)
+                {
+                    // The new deployment was successful, so take users to the redeployment list, and select the corresponding entry
+                    await PublishDocumentViewModel.SetIsRepublishAsync(true, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Re-select the same recommendation, within the new deployment list
+                    await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    PublishDocumentViewModel.PublishDestination =
+                        PublishDocumentViewModel.GetRecommendationOrFallback(recommendation);
+                }
+            }
+            else if (publishDestination is RepublishTarget republishTarget)
+            {
+                // Pass or fail, keep users in the redeployment list, and select the same entry
+                await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
+                PublishDocumentViewModel.PublishDestination =
+                    PublishDocumentViewModel.GetRepublishTargetOrFallback(republishTarget);
             }
         }
     }

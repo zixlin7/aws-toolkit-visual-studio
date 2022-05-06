@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -251,6 +252,11 @@ namespace Amazon.AWSToolkit.Publish.Views
                 await TaskScheduler.Default;
                 // query appropriate recommendations
                 await _viewModel.InitializePublishTargetsAsync(cancellationToken);
+
+                // pre-select the re-publish option if there are any existing publish targets
+                await _viewModel.SetIsRepublishAsync(_viewModel.RepublishTargets.Any(), cancellationToken);
+                _viewModel.CyclePublishDestination();
+
                 _viewModel.SetPublishTargetsLoaded(true);
             }
             catch (PublishException)
@@ -335,7 +341,9 @@ namespace Amazon.AWSToolkit.Publish.Views
             using (_viewModel.CreateLoadingScope())
             {
                 ResetConfigDetails();
-                ResetSystemCapabilities();
+                await _viewModel.SetSystemCapabilitiesAsync(Enumerable.Empty<TargetSystemCapability>().ToList(),
+                    CancellationToken.None);
+
                 if (_viewModelChangeHandler.ShouldRefreshTarget(_viewModel))
                 {
                     await ReloadTargetConfigurationsAsync();
@@ -360,11 +368,6 @@ namespace Amazon.AWSToolkit.Publish.Views
 
                 _viewModel.ConfigurationDetails = null;
             }
-        }
-
-        private void ResetSystemCapabilities()
-        {
-            _viewModel.SystemCapabilities = new ObservableCollection<TargetSystemCapability>();
         }
 
         private void Config_DetailChanged(object sender, DetailChangedEventArgs e)

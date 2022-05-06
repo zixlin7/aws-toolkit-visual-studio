@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Media;
 
 using Amazon.AWSToolkit.Publish.Util;
@@ -8,6 +9,7 @@ namespace Amazon.AWSToolkit.Publish.Models
     /// <summary>
     /// Represents a destination and technique for deploying an application.
     /// </summary>
+    [DebuggerDisplay("{RecipeId} | {Name}")]
     public abstract class PublishDestinationBase : IEquatable<PublishDestinationBase>
     {
         public string Name { get; protected set; }

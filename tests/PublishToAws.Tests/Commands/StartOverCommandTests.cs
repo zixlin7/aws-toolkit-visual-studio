@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Publish.Commands;
+﻿using System.Linq;
+
+using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Regions;
@@ -47,6 +49,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         {
             ViewModel.SessionId = "old-session-id";
             ViewModel.IsRepublish = initialIsRepublish;
+            ViewModel.PublishDestination = initialIsRepublish
+                ? ViewModel.RepublishTargets.First<PublishDestinationBase>()
+                : ViewModel.Recommendations.First<PublishDestinationBase>();
             ViewModel.PublishProjectViewModel.ProgressStatus = publishSuccess ? ProgressStatus.Success : ProgressStatus.Fail;
             _sut.Execute(null);
 

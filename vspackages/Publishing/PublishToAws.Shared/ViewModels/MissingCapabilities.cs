@@ -12,8 +12,10 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private readonly Dictionary<string, HashSet<string>> _recipeToMissingCapabilities = new Dictionary<string, HashSet<string>>();
 
-        public void Update(string recipeId, IList<TargetSystemCapability> systemCapabilities)
+        public void Update(string recipeId, IEnumerable<TargetSystemCapability> systemCapabilities)
         {
+            if (string.IsNullOrWhiteSpace(recipeId)) { return; }
+
             var missingCapabilities = systemCapabilities.Select(c => c.Name).ToList();
             UpdateMissing(missingCapabilities);
             UpdateResolved(recipeId, missingCapabilities);
