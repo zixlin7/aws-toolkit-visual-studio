@@ -51,11 +51,12 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
         }
 
         #region IDataErrorInfo
-        private IDictionary<string, string> _errors = new Dictionary<string, string>();
 
-        string IDataErrorInfo.this[string columnName] => _errors[columnName];
+        private readonly IDictionary<string, string> _errors = new Dictionary<string, string>();
 
-        string IDataErrorInfo.Error => _errors.Values.FirstOrDefault();
+        string IDataErrorInfo.this[string columnName] => _errors.TryGetValue(columnName, out string value) ? value : string.Empty;
+
+        string IDataErrorInfo.Error => _errors.Values.FirstOrDefault() ?? string.Empty;
 
         private static readonly StringConverter StringConverter = new StringConverter();
 
@@ -73,6 +74,7 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
                 }
             }
         }
+
         #endregion
 
         public FilePathConfigurationDetail()

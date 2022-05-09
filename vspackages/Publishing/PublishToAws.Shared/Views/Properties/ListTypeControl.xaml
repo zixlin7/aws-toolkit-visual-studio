@@ -24,17 +24,17 @@
                 TextWrapping="Wrap"
                 Visibility="{Binding HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
-                Text="{Binding ValidationMessage}" />
-            <StackPanel 
-                Orientation="Horizontal"
-                Margin="0 6 0 0">
-                <Button
-                    Content="Edit" 
-                    ToolTip="Modify the selected items list"
-                    Command="{Binding EditCommand}"/>
-            </StackPanel>
+                Text="{Binding ValidationMessage}"
+            />        
+            <Button
+                Content="Edit" 
+                ToolTip="Modify the selected items list"
+                Command="{Binding EditCommand}"
+                HorizontalAlignment="Left"
+                Margin="0 6 0 0" />
         </StackPanel>
-        <!-- todo : Replace the "6 8 6 8" padding with a centralized resource key by
+
+            <!-- todo : Replace the "6 8 6 8" padding with a centralized resource key by
             moving ThemeResourceKeys::InputPaddingKey to the more generally 
             accessible ToolkitThemeResourceKeys -->
         <Border
@@ -42,8 +42,8 @@
             BorderThickness="1"
             Padding="6 8 6 8">
             <ItemsControl ItemsSource="{Binding SelectedItems}"
-                          DisplayMemberPath="DisplayName"
-                          IsEnabled="False">
+                DisplayMemberPath="DisplayName"
+                IsEnabled="False">
                 <ItemsControl.Style>
                     <Style 
                         TargetType="ItemsControl"

@@ -85,6 +85,9 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
                         SelectedItems.Add(item);
                     }
                 }
+
+                // TODO This is temporary logic assuming that any TypeHint = List will require at least one selection.  Deploy Tool will revisit recipe data provided later.
+                ValidationMessage = _selectedItems.Any() ? string.Empty : $"Must select at least one of the {Name.ToLower()}.";
             }
         }
 
