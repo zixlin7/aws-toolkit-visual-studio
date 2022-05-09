@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
-using Castle.Core.Internal;
+
 using Moq;
+
 using Xunit;
+
 using static System.Windows.Visibility;
 
 using Architecture = Amazon.Lambda.Architecture;
@@ -195,7 +197,7 @@ namespace AWSToolkit.Tests.Lambda
 
             Assert.True(_controller.Model.CanInvoke);
             Assert.Equal(Collapsed, _controller.Model.InvokeWarningVisibility);
-            Assert.True(_controller.Model.InvokeWarningText.IsNullOrEmpty());
+            Assert.True(string.IsNullOrEmpty(_controller.Model.InvokeWarningText));
             Assert.Contains("Invoke Function", _controller.Model.InvokeWarningTooltip);
         }
 

@@ -1,12 +1,16 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+
 using Amazon.AWSToolkit.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Lambda;
+
 using EnvDTE;
+
 using Microsoft.VisualStudio.Threading;
 
 using Moq;
+
 using Xunit;
 
 using Task = System.Threading.Tasks.Task;
@@ -45,8 +49,10 @@ namespace AWSToolkitPackage.Tests.Lambda
             var project = new Mock<Project>();
             project.Setup(x => x.Kind).Returns("csharpproject");
             project.Setup(x => x.FileName).Returns("child-project.csproj");
+            var projectList = new List<Project>() { project.Object };
 
-            var projects = CreateEnumerableMock<Project, Projects>(project);
+            var projects = new Mock<Projects>();
+            projects.Setup(x => x.GetEnumerator()).Returns(() => projectList.GetEnumerator());
 
             var solution = new Mock<Solution>();
             solution.Setup(x => x.Projects).Returns(projects.Object);
@@ -94,7 +100,7 @@ namespace AWSToolkitPackage.Tests.Lambda
 
         private Mock<ProjectItems> CreateProjectItemsMock(params Mock<Project>[] projects)
         {
-            var projectItems = projects
+            var projectItemsList = projects
                 .Select(project =>
                 {
                     var projectItem = new Mock<ProjectItem>();
@@ -102,17 +108,9 @@ namespace AWSToolkitPackage.Tests.Lambda
                     return projectItem;
                 }).ToArray();
 
-            return CreateEnumerableMock<ProjectItem, ProjectItems>(projectItems);
-        }
-
-        private Mock<TOut> CreateEnumerableMock<TIn, TOut>(params Mock<TIn>[] items)
-            where TIn : class
-            where TOut : class, IEnumerable
-        {
-            var projectItemsMock = new Mock<TOut>();
-            projectItemsMock.Setup(x => x.GetEnumerator()).Returns(items.Select(x => x.Object).GetEnumerator());
-
-            return projectItemsMock;
+            var projectItems = new Mock<ProjectItems>();
+            projectItems.Setup(x => x.GetEnumerator()).Returns(() => projectItemsList.Select(x => x.Object).GetEnumerator());
+            return projectItems;
         }
     }
 }

@@ -91,7 +91,7 @@
       <Version>15.0.1</Version>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.8.1</Version>
+      <Version>4.17.2</Version>
     </PackageReference>
     <PackageReference Include="xunit.extensibility.core">
       <Version>2.4.1</Version>
