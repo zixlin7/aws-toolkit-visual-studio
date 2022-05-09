@@ -10,7 +10,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
 
   <Choose>
