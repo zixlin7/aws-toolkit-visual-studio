@@ -1,0 +1,25 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:toolkit="clr-namespace:Amazon.AWSToolkit.VisualStudio"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../BaseToolkitStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- Define a "Base" ToolTip that supports custom content -->
+    <!-- The VS themed ToolTip only supports string contents. When the contents are other controls, only the type name is displayed. -->
+    <Style 
+        x:Key="{x:Static themes:ToolkitThemeResourceKeys.ToolTipStyle}" 
+        TargetType="{x:Type ToolTip}" 
+        BasedOn="{StaticResource {x:Type ToolTip}}">
+
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
+        <Setter Property="Padding" Value="{DynamicResource {x:Static toolkit:ThemeResourceKeys.InputPaddingKey}}" />
+    </Style>
+
+</ResourceDictionary>

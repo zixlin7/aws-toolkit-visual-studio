@@ -8,6 +8,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="BaseToolkitStyles.xaml" />
         <ResourceDictionary Source="./Controls/ExpanderStyles.xaml" />
+        <ResourceDictionary Source="./Controls/ToolTipStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="Button" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
@@ -69,5 +70,7 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style TargetType="ToolTip" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ToolTipStyle}}"/>
 
 </ResourceDictionary>

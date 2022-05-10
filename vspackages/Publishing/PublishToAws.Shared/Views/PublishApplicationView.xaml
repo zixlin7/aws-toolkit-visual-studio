@@ -49,12 +49,7 @@
                                     <images:VsImage.ToolTip>
                                         <ToolTip 
                                             DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource TemplatedParent}}"
-                                            Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ToolTipStyle}}"
-                                            BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" BorderThickness="1"
-                                            Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
-                                            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
                                             MaxWidth="500"
-                                            Padding="6"
                                             >
                                             <StackPanel Orientation="Vertical">
                                                 <TextBlock 

@@ -3,12 +3,7 @@
                     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
                     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes">
     <commonUi:VsImages x:Key="VsImages" />
-    <ToolTip
-        x:Key="ErrorToolTip"
-        Style="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ToolTipStyle}}"
-        BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" BorderThickness="1"
-        Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
-        >
+    <ToolTip x:Key="ErrorToolTip">
         <ItemsControl
             Margin="9"
             ItemsSource="{Binding}">
@@ -16,7 +11,6 @@
                 <DataTemplate>
                     <TextBlock
                         Margin="0 0 0 3"
-                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
                         Text="{Binding ErrorContent}"
                     />
                 </DataTemplate>

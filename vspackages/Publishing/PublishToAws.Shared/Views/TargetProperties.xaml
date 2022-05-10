@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Amazon.AWSToolkit.Publish.Views"
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
@@ -97,29 +96,15 @@
                 </Border>
             </StackPanel>
 
-            <!-- Show Target Description -->
-            <Grid 
+            <!-- Show the Publish destination (Name) -->
+            <TextBlock
                 Grid.Row="1" Grid.Column="0"
-                Margin="0 0 0 0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <TextBlock
-                    Grid.Row="0" Grid.Column="0" 
-                    VerticalAlignment="Top"
-                    FontWeight="Bold"
-                    Text="Target details" />
-
-                <TextBlock
-                    Grid.Row="1" Grid.Column="0"
-                    Margin="0 6 0 0"
-                    TextWrapping="Wrap"
-                    Text="{Binding TargetDescription}"
-                    />
-
-            </Grid>
+                DataContext="{Binding PublishDestination}"
+                TextWrapping="Wrap"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}"
+                Text="{Binding Name}"
+                />
 
             <!-- Application Name (Artifact ID), shown when applicable -->
             <StackPanel 

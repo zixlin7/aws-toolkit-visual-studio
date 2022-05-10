@@ -9,69 +9,88 @@
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:commonConverters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="TargetsDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <commonUi:VsImages x:Key="VsImages" />
             <commonConverters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
             <converters:RepublishTargetsToVisibilityConverter x:Key="RepublishTargetsToVisibilityConverter" />
-            <ToolTip x:Key="TargetToolTip"
-                     Content="The Republish Target represents how and where your application will be deployed." />
+
             <DataTemplate x:Key="TargetTemplate" DataType="{x:Type models:RepublishTarget}">
-                <Grid
-                    Margin="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <!-- Column 2: Spacing between Icon and Text -->
-                        <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                <Border
+                    Padding="12"
+                    BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+                    BorderThickness="1"
+                    >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <!-- Column 2: Spacing between Icon and Text -->
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-                    <Image
-                        Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
-                        Width="32"
-                        Height="32"
-                        Source="{Binding ServiceIcon}"/>
+                        <Image
+                            Grid.Row="0" Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Width="32"
+                            Height="32"
+                            Source="{Binding ServiceIcon}"/>
 
-                    <!-- Show the Target name-->
-                    <WrapPanel
-                        Grid.Row="0" Grid.Column="2"
-                        HorizontalAlignment="Left">
-                        <TextBlock
-                            FontWeight="Bold"
-                            HorizontalAlignment="Left"
-                            TextWrapping="Wrap"
-                            Text="{Binding Name}" />
+                        <StackPanel
+                            Grid.Row="0" Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Orientation="Vertical"
+                            >
+                            <!-- Show the Target name, and if it is recommended -->
+                            <WrapPanel
+                                HorizontalAlignment="Left">
+                                <TextBlock
+                                    FontWeight="Bold"
+                                    HorizontalAlignment="Left"
+                                    TextWrapping="Wrap"
+                                    Text="{Binding Name}" />
 
-                        <TextBlock 
-                            Margin="10 0 0 0"
-                            Visibility="{Binding IsRecommended, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Text="(Recommended)"
-                            />
-                    </WrapPanel>
+                                <TextBlock 
+                                    Margin="3 0 0 0"
+                                    Visibility="{Binding IsRecommended, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Text="(Recommended)"
+                                    />
+                            </WrapPanel>
 
-                    <TextBlock
-                        Grid.Row="1" Grid.Column="2"
-                        Margin="0 3 0 0"
-                        HorizontalAlignment="Left"
-                        TextWrapping="Wrap"
-                        Text="{Binding RecipeName}" />
-
-                    <TextBlock
-                        Grid.Row="2" Grid.Column="2"
-                        Margin="0 3 0 0"
-                        HorizontalAlignment="Left"
-                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
-                        Text="{Binding Service}" />
-                </Grid>
+                            <WrapPanel
+                                Margin="0 6 0 0"
+                                HorizontalAlignment="Left">
+                                <TextBlock
+                                    TextWrapping="Wrap"
+                                    >
+                                    <Run 
+                                        BaselineAlignment="Top"
+                                        Text="{Binding RecipeName, Mode=OneWay}" />
+                                    <images:VsImage
+                                        Margin="3 0 0 0"
+                                        VerticalAlignment="Center"
+                                        Width="16"
+                                        Height="16"
+                                        ToolTip="{StaticResource RecipeDescriptionToolTip}"
+                                        Source="{Binding Source={StaticResource VsImages}, Path=StatusInformationOutline}" 
+                                        />
+                                </TextBlock>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -93,7 +112,7 @@
             HorizontalAlignment="Center"
             Orientation="Horizontal" 
             >
-            <Image
+            <images:VsImage
                 VerticalAlignment="Center"
                 Width="16" Height="16"
                 Source="{Binding Source={StaticResource VsImages}, Path=StatusInformation}" 
@@ -116,11 +135,18 @@
         <ListBox
             Grid.Column="0" Grid.Row="0"
             HorizontalContentAlignment="Stretch"
+            ScrollViewer.CanContentScroll="False"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             SelectionMode="Single"
             ItemTemplate="{StaticResource TargetTemplate}"
             ItemsSource="{Binding RepublishCollectionView}"
             SelectedItem="{Binding PublishDestination}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="6 3 6 3" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.Panel>
@@ -134,7 +160,7 @@
                                 <Setter.Value>
                                     <ControlTemplate>
                                         <Expander
-                                            Padding="0"
+                                            Padding="0 3 0 3"
                                             BorderThickness="0"
                                             Header="{Binding Name}"
                                             themes:ToolkitThemes.UseToolkitTheme="True"

@@ -19,11 +19,6 @@
         TargetType="ListBox" 
         BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ThemedDialogListBoxStyleKey}}" />
 
-    <Style 
-        x:Key="{x:Static themes:ToolkitThemeResourceKeys.ToolTipStyle}" 
-        TargetType="ToolTip" 
-        BasedOn="{StaticResource {x:Type ToolTip}}" />
-
     <!-- Apply the VS Hyperlink Theme as the default for our custom types -->
     <Style
         TargetType="commonUi:BrowserHyperLink" 
