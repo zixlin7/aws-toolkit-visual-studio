@@ -65,19 +65,19 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Label
+            <TextBox
                 Grid.Column="0"
-                Margin="5"
+                IsReadOnly="True"
+                BorderThickness="0"
+                Background="Transparent"
                 HorizontalContentAlignment="Left"
-                Content="{Binding LogGroup.Name}"
-                ContentStringFormat="Log Group: {0}" />
+                Text="{Binding LogGroup.Name, StringFormat=Log Group: {0}}"/>
 
-            <Label
+            <TextBlock
                 Grid.Column="1"
                 Margin="5"
-                HorizontalContentAlignment="Right"
-                Content="{Binding LogStreams.Count}"
-                ContentStringFormat="Streams fetched: {0}" />
+                HorizontalAlignment="Right"
+                Text="{Binding LogStreams.Count, StringFormat=Streams fetched: {0}}"/>
         </Grid>
 
         <!--Search bar and the actions toolbar-->
@@ -181,11 +181,11 @@
                     </MenuItem>
                 </ContextMenu>
             </commonUi:ToolkitDataGridWrapper.ContextMenu>
-            <commonUi:ToolkitDataGridWrapper.Resources>
+            <commonUi:ToolkitDataGridWrapper.RowStyle>
                 <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
                     <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick"/>
                 </Style>
-            </commonUi:ToolkitDataGridWrapper.Resources>
+            </commonUi:ToolkitDataGridWrapper.RowStyle>
         </commonUi:ToolkitDataGridWrapper>
 
         <local:ConnectionStatus Grid.Row="4" ConnectionSettings="{Binding ConnectionSettings}" />

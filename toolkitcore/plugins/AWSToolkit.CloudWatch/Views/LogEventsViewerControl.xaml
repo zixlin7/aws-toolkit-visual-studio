@@ -70,19 +70,19 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Label
+            <TextBox
                 Grid.Column="0"
-                Margin="5"
                 HorizontalContentAlignment="Left"
-                Content="{Binding LogStream}"
-                ContentStringFormat="Log Stream: {0}" />
+                Background="Transparent"
+                BorderThickness="0"
+                IsReadOnly="True"
+                Text="{Binding LogStream, StringFormat=Log Stream: {0}}"/>
 
-            <Label
+            <TextBlock
                 Grid.Column="1"
                 Margin="5"
-                HorizontalContentAlignment="Right"
-                Content="{Binding LogEvents.Count}"
-                ContentStringFormat="Events fetched: {0}" />
+                HorizontalAlignment="Right"
+                Text="{Binding LogEvents.Count, StringFormat=Events fetched: {0}}"/>
         </Grid>
 
         <!--Search bar and the actions toolbar-->
@@ -133,7 +133,6 @@
                                          ScrollViewer.VerticalScrollBarVisibility="Visible"
                                          themes:ToolkitThemes.UseToolkitTheme="True"
                                          GridLinesVisibility="None"
-                                         AreRowDetailsFrozen="True"
                                          SelectionMode="Single"
                                          IsReadOnly="True"
                                          HeadersVisibility="Column">
