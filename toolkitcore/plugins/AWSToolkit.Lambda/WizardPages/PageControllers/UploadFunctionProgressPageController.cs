@@ -302,7 +302,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
 
 
-                if (subnets != null && subnets.Any())
+                if (subnets != null)
                 {
                     request.VpcConfig = new VpcConfig();
 
