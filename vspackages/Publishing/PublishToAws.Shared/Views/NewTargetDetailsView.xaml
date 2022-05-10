@@ -15,12 +15,9 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <commonConverters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <commonUi:VsImages x:Key="VsImages" />
             <converters:PublishTargetsToVisibilityConverter x:Key="PublishTargetsToVisibilityConverter" />
             <commonConverters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
-            <ToolTip x:Key="ApplicationNameToolTip" Content="Name of the application you are publishing to AWS. This will be used as the CloudFormation Stack name." />
-            <ToolTip x:Key="ApplicationNameNotUsedToolTip" Content="This publish target does not require an Application Name." />
             <DataTemplate x:Key="RecommendationTemplate" DataType="{x:Type models:PublishRecommendation}">
                 <Grid 
                     Margin="12"
@@ -78,44 +75,14 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Label
-            Grid.Row="0" Grid.Column="0" 
-            VerticalAlignment="Center"
-            Content="Application name" 
-            ToolTip="{StaticResource ApplicationNameToolTip}" />
-
-        <!-- We are swapping one TextBox for another because we cannot extend VS Styled TextBoxes at this time :( 
-            Discussion: https://github.com/VsixCommunity/Community.VisualStudio.Toolkit/discussions/135 -->
-        <TextBox
-            Grid.Row="1" Grid.Column="0"
-            Visibility="{Binding IsApplicationNameRequired, Converter={StaticResource BooleanToVisibilityConverter}}"
-            Text="{Binding PublishStackName, Delay=500, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-            ToolTip="{StaticResource ApplicationNameToolTip}" 
-            />
-
-        <!-- This TextBox is swapped in instead of the one above when the ApplicationName is not relevant.
-            The TextBox is disabled instead of made non-visible so that the target list below does not pop up,
-            which can affect the selected/clicked target. -->
-        <TextBox
-            Grid.Row="1" Grid.Column="0"
-            Visibility="{Binding IsApplicationNameRequired, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-            Text="{Binding PublishStackName}"
-            IsEnabled="False"
-            ToolTipService.ShowOnDisabled="True"
-            ToolTip="{StaticResource ApplicationNameNotUsedToolTip}" 
-            />
-
         <Grid
-            Grid.Row="2" Grid.Column="0"
-            Margin="0 12 0 0"
+            Grid.Row="0" Grid.Column="0"
             >
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />

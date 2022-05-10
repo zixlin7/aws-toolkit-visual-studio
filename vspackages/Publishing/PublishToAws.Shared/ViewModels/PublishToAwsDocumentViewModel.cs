@@ -408,7 +408,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get
             {
-                if (PublishDestination == null) return true;
+                if (PublishDestination == null) { return false; }
+                if (!(PublishDestination is PublishRecommendation)) { return false; }
 
                 return PublishDestination.DeploymentArtifact != DeploymentArtifact.ElasticContainerRegistry;
             }

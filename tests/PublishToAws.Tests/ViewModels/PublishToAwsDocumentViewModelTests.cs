@@ -749,7 +749,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [InlineData(DeploymentTypes.BeanstalkEnvironment, true)]
         [InlineData(DeploymentTypes.CloudFormationStack, true)]
         [InlineData(DeploymentTypes.ElasticContainerRegistryImage, false)]
-        public void IsApplicationNameRequired(DeploymentTypes deploymentType, bool isApplicationNameRequired)
+        public void IsApplicationNameRequired_NewDeployment(DeploymentTypes deploymentType, bool isApplicationNameRequired)
         {
             // Arrange
             var recommendation = new PublishRecommendation(new RecommendationSummary()
@@ -762,6 +762,26 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             // Assert
             Assert.Equal(isApplicationNameRequired, _sut.IsApplicationNameRequired);
+        }
+
+        [Fact]
+        public void IsApplicationNameRequired_ExistingDeployment()
+        {
+            // Act
+            _sut.PublishDestination = SampleRepublishTargets.First();
+
+            // Assert
+            Assert.False(_sut.IsApplicationNameRequired);
+        }
+
+        [Fact]
+        public void IsApplicationNameRequired_NullTarget()
+        {
+            // Act
+            _sut.PublishDestination = null;
+
+            // Assert
+            Assert.False(_sut.IsApplicationNameRequired);
         }
 
         [Fact]

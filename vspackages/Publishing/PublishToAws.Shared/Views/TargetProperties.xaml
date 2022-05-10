@@ -19,6 +19,8 @@
             <commonUi:VsImages x:Key="VsImages" />
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:SystemCapabilitiesToVisibilityConverter x:Key="SystemCapabilitiesToVisibilityConverter" />
+
+            <ToolTip x:Key="ApplicationNameToolTip" Content="Name of the application you are publishing to AWS. This will be used as the CloudFormation Stack name." />
         </ResourceDictionary>
     </UserControl.Resources>
     <ScrollViewer
@@ -26,6 +28,7 @@
         >
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -118,10 +121,38 @@
 
             </Grid>
 
+            <!-- Application Name (Artifact ID), shown when applicable -->
+            <StackPanel 
+                Margin="0 12 0 0"
+                Grid.Row="2" Grid.Column="0"
+                Orientation="Vertical"
+                Visibility="{Binding IsApplicationNameRequired, Converter={StaticResource BooleanToVisibilityConverter}}"
+                >
+                <TextBlock>
+                    <Run 
+                        BaselineAlignment="Top"
+                        Text="Application name" />
+                    <images:VsImage
+                        Margin="3 0 0 0"
+                        VerticalAlignment="Center"
+                        Width="16"
+                        Height="16"
+                        ToolTip="{StaticResource ApplicationNameToolTip}"
+                        Source="{Binding Source={StaticResource VsImages}, Path=StatusInformationOutline}" 
+                        />
+                </TextBlock>
+
+                <TextBox
+                    Margin="0 6 0 0"
+                    Text="{Binding PublishStackName, Delay=500, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                    ToolTip="{StaticResource ApplicationNameToolTip}" 
+                    />
+            </StackPanel>
+
             <!-- Show Settings -->
             <StackPanel 
-                Grid.Row="2" Grid.Column="0"
-                Margin="0 18 0 0"
+                Grid.Row="3" Grid.Column="0"
+                Margin="0 12 0 0"
                 Orientation="Vertical"
                 >
 
