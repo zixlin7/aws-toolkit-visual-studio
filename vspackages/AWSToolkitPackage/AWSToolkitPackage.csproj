@@ -514,9 +514,6 @@
     <PackageReference Include="System.Text.Json">
       <Version>5.0.2</Version>
     </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.3.0</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="..\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems" Label="Shared" />
   <PropertyGroup>
