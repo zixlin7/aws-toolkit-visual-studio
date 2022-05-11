@@ -506,7 +506,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework">
-      <Version>15.0.26606</Version>
+      <Version>16.0.28729</Version>
     </PackageReference>
     <PackageReference Include="NuGet.VisualStudio">
       <Version>4.9.4</Version>
