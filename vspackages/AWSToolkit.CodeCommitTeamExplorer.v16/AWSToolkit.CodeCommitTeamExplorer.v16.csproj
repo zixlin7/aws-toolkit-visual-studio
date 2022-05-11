@@ -93,9 +93,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework">
       <Version>16.1.28917.181</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Threading">
-      <Version>16.0.102</Version>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>9.0.1</Version>
     </PackageReference>
