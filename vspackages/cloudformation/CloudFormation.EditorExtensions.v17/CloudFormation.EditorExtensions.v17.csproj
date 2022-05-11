@@ -69,7 +69,7 @@
       <Version>2.0.14</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Language">
-      <Version>17.0.487</Version>
+      <Version>17.0.491</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.0.31902.203</Version>
