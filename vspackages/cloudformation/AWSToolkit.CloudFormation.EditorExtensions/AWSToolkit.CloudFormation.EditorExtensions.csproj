@@ -75,8 +75,9 @@
       <Version>16.0.467</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>15.0.1</Version>
+      <Version>16.0.206</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
   <Import Project="..\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems" Label="Shared" />
