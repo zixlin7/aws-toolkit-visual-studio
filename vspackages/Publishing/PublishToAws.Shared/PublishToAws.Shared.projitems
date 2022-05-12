@@ -57,6 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValuesConversion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\EcrRepositoryConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\ListConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\VpcConnectorVpcConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DeploymentArtifact.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />

@@ -88,6 +88,7 @@
     <Compile Include="Models\PublishResourceTemplateSelectorTests.cs" />
     <Compile Include="Models\TargetSystemCapabilityTests.cs" />
     <Compile Include="Models\ValidationResultTests.cs" />
+    <Compile Include="Models\VpcConnectorVpcConfigurationDetailTests.cs" />
     <Compile Include="PublishDocumentViewModelChangeHandlerTests.cs" />
     <Compile Include="Util\DeploymentTypesExtensionMethodsTests.cs" />
     <Compile Include="Util\DisposingActionTests.cs" />

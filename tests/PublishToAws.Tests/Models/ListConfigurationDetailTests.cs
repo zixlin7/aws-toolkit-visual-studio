@@ -38,7 +38,10 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             SelectedItems.Add(new ListConfigurationDetail.ListItem("display 2", "value2"));
         }
 
-        private readonly ListConfigurationDetail _sut = new ListConfigurationDetail();
+        private readonly ListConfigurationDetail _sut = new ListConfigurationDetail()
+        {
+            Name = "Test Items",
+        };
 
         [Fact]
         public void ValueMappingsBecomeItems()
@@ -63,6 +66,16 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             _sut.Items = Items;
             _sut.UpdateListValues();
             Assert.Equal(Value, _sut.Value);
+        }
+
+        [Theory]
+        [InlineData(true, true)]
+        [InlineData(false, false)]
+        public void EmptySelectionHasValidationMessage(bool isVisible, bool expectedHasErrorMessage)
+        {
+            _sut.Visible = isVisible;
+            _sut.Value = "[]";
+            Assert.Equal(expectedHasErrorMessage, !string.IsNullOrWhiteSpace(_sut.ValidationMessage));
         }
     }
 }

@@ -15,6 +15,12 @@ namespace Amazon.AWSToolkit.Publish.Models
 {
     public class ConfigurationDetailFactory
     {
+        public static class ItemSummaryIds
+        {
+            public const string VpcId = "VpcId";
+            public const string VpcConnector = "VPCConnector";
+        }
+
         private static class ItemSummaryTypes
         {
             public const string String = "String";
@@ -36,9 +42,11 @@ namespace Amazon.AWSToolkit.Publish.Models
             _dialogFactory = dialogFactory;
         }
 
-        public ConfigurationDetail CreateFrom(OptionSettingItemSummary itemSummary)
+        public ConfigurationDetail CreateFrom(OptionSettingItemSummary itemSummary) => CreateFrom(itemSummary, null);
+
+        public ConfigurationDetail CreateFrom(OptionSettingItemSummary itemSummary, OptionSettingItemSummary parent)
         {
-            var configurationDetail = InstantiateFor(itemSummary);
+            var configurationDetail = InstantiateFor(itemSummary, parent);
 
             configurationDetail.Id = itemSummary.Id;
             configurationDetail.Name = itemSummary.Name;
@@ -63,7 +71,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                 itemSummary.ChildOptionSettings?
                     .Select(childOption =>
                     {
-                        var child = CreateFrom(childOption);
+                        var child = CreateFrom(childOption, itemSummary);
                         child.Parent = configurationDetail;
 
                         return child;
@@ -80,7 +88,7 @@ namespace Amazon.AWSToolkit.Publish.Models
             return itemSummary.TypeHintData.TryGetValue(key, out object value) && value is T castValue ? castValue : defaultValue;
         }
 
-        private ConfigurationDetail InstantiateFor(OptionSettingItemSummary itemSummary)
+        private ConfigurationDetail InstantiateFor(OptionSettingItemSummary itemSummary, OptionSettingItemSummary parent)
         {
             if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.IamRole)
             {
@@ -151,6 +159,12 @@ namespace Amazon.AWSToolkit.Publish.Models
                     _dialogFactory);
 
                 return detail;
+            }
+
+            // TODO This is a temporary fix until deploy tool validates that "existing VPC" is not empty when using an existing VPC Connector 
+            if (itemSummary.Id == ItemSummaryIds.VpcId && parent?.Id == ItemSummaryIds.VpcConnector)
+            {
+                return new VpcConnectorVpcConfigurationDetail();
             }
 
             return new ConfigurationDetail();

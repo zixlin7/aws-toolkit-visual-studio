@@ -51,6 +51,9 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
         {
             switch (e.PropertyName)
             {
+                case nameof(Visible):
+                    UpdateValidationMessage();
+                    break;
                 case nameof(Value):
                     DeserializeValue();
                     TryUpdateSelectedItems();
@@ -86,9 +89,20 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
                     }
                 }
 
-                // TODO This is temporary logic assuming that any TypeHint = List will require at least one selection.  Deploy Tool will revisit recipe data provided later.
-                ValidationMessage = _selectedItems.Any() ? string.Empty : $"Must select at least one of the {Name.ToLower()}.";
+                UpdateValidationMessage();
             }
+        }
+
+        private void UpdateValidationMessage()
+        {
+            // TODO This is temporary logic assuming that any TypeHint = List will require at least one selection.  Deploy Tool will revisit recipe data provided later.
+            if (Visible && (_selectedItems == null || !_selectedItems.Any()))
+            {
+                ValidationMessage = $"Must select at least one of the {Name?.ToLower()}.";
+                return;
+            }
+
+            ValidationMessage = string.Empty;
         }
 
         private void DeserializeValue()

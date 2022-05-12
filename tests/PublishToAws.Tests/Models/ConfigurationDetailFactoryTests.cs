@@ -97,6 +97,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.True(expectedSelectedItems.SequenceEqual(configurationDetail.SelectedItems));
         }
 
+        [Fact]
+        public void CreateFrom_WithVpcConnectorExistingVpcId()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithId(ConfigurationDetailFactory.ItemSummaryIds.VpcId)
+                .Build();
+
+            var parentItemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithId(ConfigurationDetailFactory.ItemSummaryIds.VpcConnector)
+                .Build();
+
+            Assert.IsNotType<VpcConnectorVpcConfigurationDetail>(_sut.CreateFrom(itemSummary));
+            var configurationDetail = Assert.IsType<VpcConnectorVpcConfigurationDetail>(_sut.CreateFrom(itemSummary, parentItemSummary));
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+        }
+
         [Fact (Skip = "Until https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and available in VSTK.")]
         public void CreateFrom_WithFilePath()
         {
