@@ -62,6 +62,7 @@
     <Compile Include="Context\ProjectFixture.cs" />
     <Compile Include="Context\TelemetryFixture.cs" />
     <Compile Include="Context\ToolkitContextFixture.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ToolkitTheme.cs" />
     <Compile Include="Wizard\InMemoryAWSWizard.cs" />
     <Compile Include="IntegrationTest.cs" />

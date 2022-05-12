@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionExtensionMethodsTests.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Util\DateTimeUtilTests.cs" />
     <Compile Include="Events\LogExceptionAndForgetChangedHandlerTests.cs" />
     <Compile Include="IisPathTests.cs" />

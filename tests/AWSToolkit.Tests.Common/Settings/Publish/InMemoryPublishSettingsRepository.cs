@@ -11,9 +11,9 @@ namespace Amazon.AWSToolkit.Tests.Common.Settings.Publish
     {
         private PublishSettings _publishSettings;
 
-        public async Task<PublishSettings> GetAsync()
+        public Task<PublishSettings> GetAsync()
         {
-            return _publishSettings ?? new PublishSettings();
+            return Task.FromResult(_publishSettings ?? new PublishSettings());
         }
 
         public void Save(PublishSettings publishSettings)

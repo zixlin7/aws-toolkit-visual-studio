@@ -54,6 +54,7 @@
     <Compile Include="Feedback\FeedbackPanelViewModelTests.cs" />
     <Compile Include="Feedback\SendFeedbackCommandTests.cs" />
     <Compile Include="FirstRun\FirstRunControllerTests.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Images\VsImageProviderTests.cs" />
     <Compile Include="Lambda\ProjectCreatorUtilitiesTests.cs" />
     <Compile Include="Navigator\NavigatorViewModelTests.cs" />
