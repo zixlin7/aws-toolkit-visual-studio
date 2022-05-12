@@ -167,5 +167,13 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
             var publishSettings = await ViewModel.PublishContext.PublishSettingsRepository.GetAsync();
             Assert.DoesNotContain(ViewModel.ProjectGuid.ToString(), publishSettings.SilencedPublishConfirmations);
         }
+
+        public void AddMissingRequirement(string requirementName)
+        {
+            ViewModel.SystemCapabilities.Add(new TargetSystemCapability(new SystemCapabilitySummary()
+            {
+                Name = requirementName,
+            }));
+        }
     }
 }

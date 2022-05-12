@@ -16,5 +16,7 @@
         object Heading2FontWeight { get; }
         object Heading3FontSize { get; }
         object Heading3FontWeight { get; }
+        object Heading4FontSize { get; }
+        object Heading4FontWeight { get; }
     }
 }

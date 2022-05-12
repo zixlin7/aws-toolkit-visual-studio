@@ -21,5 +21,7 @@ namespace Amazon.AWSToolkit.Themes
         public object Heading2FontWeight => FallbackWeightKey;
         public object Heading3FontSize => FallbackSizeKey;
         public object Heading3FontWeight => FallbackWeightKey;
+        public object Heading4FontSize => FallbackSizeKey;
+        public object Heading4FontWeight => FallbackWeightKey;
     }
 }

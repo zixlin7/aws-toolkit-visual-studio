@@ -113,6 +113,8 @@
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="12" />
                 <ColumnDefinition Width="*" />
+                <!-- Column 4: Spacing after sidebar -->
+                <ColumnDefinition Width="12" />
             </Grid.ColumnDefinitions>
 
             <StackPanel

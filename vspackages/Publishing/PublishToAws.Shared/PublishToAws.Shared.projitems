@@ -33,7 +33,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishTargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\RepublishTargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\SessionVisibilityConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\SystemCapabilitiesToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\TargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Install\DeployCli.cs" />
