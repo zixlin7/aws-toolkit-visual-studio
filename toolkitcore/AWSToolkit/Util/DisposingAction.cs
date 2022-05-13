@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Amazon.AWSToolkit.Publish.Util
+namespace Amazon.AWSToolkit.Util
 {
     public class DisposingAction : IDisposable
     {

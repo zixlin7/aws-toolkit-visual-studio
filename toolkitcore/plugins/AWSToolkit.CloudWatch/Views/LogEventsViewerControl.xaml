@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <commonUi:VsImages x:Key="VsImages" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
             <converters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
             <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter" />
@@ -78,11 +79,21 @@
                 IsReadOnly="True"
                 Text="{Binding LogStream, StringFormat=Log Stream: {0}}"/>
 
+
+            <local:ResultsStatus x:Name="LoadingIndicator"
+                                 x:FieldModifier="private"
+                                 Grid.Column="1"
+                                 Margin="5"
+                                 HorizontalAlignment="Right" 
+                                 ErrorMessage="{Binding ErrorMessage}"
+                                 LoadingLogs="{Binding LoadingLogs}"
+                                 Visibility="{Binding LoadingLogs, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <TextBlock
                 Grid.Column="1"
                 Margin="5"
                 HorizontalAlignment="Right"
-                Text="{Binding LogEvents.Count, StringFormat=Events fetched: {0}}"/>
+                Text="{Binding LogEvents.Count, StringFormat=Events fetched: {0}}"
+                Visibility="{Binding Visibility, ElementName=LoadingIndicator, Converter={StaticResource InverseVisibilityConverter}}"/>
         </Grid>
 
         <!--Search bar and the actions toolbar-->
@@ -118,6 +129,7 @@
         <local:ResultsStatus Grid.Row="2"
                              Margin="11"
                              ErrorMessage="{Binding ErrorMessage}"
+                             LoadingLogs="{Binding LoadingLogs}"
                              Visibility="{Binding Visibility, ElementName=LogEventsList, Converter={StaticResource InverseVisibilityConverter}}" />
 
 

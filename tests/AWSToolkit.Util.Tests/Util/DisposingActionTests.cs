@@ -1,8 +1,6 @@
-﻿using Amazon.AWSToolkit.Publish.Util;
+﻿using Xunit;
 
-using Xunit;
-
-namespace Amazon.AWSToolkit.Tests.Publishing.Util
+namespace Amazon.AWSToolkit.Util.Tests.Util
 {
     public class DisposingActionTests
     {

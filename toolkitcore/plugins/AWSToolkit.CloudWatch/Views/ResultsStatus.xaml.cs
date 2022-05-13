@@ -18,10 +18,23 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 nameof(ErrorMessage), typeof(string), typeof(ResultsStatus),
                 new PropertyMetadata(null));
 
+
+        public static readonly DependencyProperty LoadingLogsProperty =
+            DependencyProperty.Register(
+                nameof(LoadingLogs), typeof(bool), typeof(ResultsStatus),
+                new PropertyMetadata(null));
+
+
         public string ErrorMessage
         {
             get => (string) GetValue(ErrorMessageProperty);
             set => SetValue(ErrorMessageProperty, value);
+        }
+
+        public bool LoadingLogs
+        {
+            get => (bool) GetValue(LoadingLogsProperty);
+            set => SetValue(LoadingLogsProperty, value);
         }
     }
 }

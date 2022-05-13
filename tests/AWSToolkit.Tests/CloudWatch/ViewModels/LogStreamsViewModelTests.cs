@@ -42,6 +42,28 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         }
 
         [Fact]
+        public async Task LoadAsync_AdjustsLoadingLogs()
+        {
+            var loadingAdjustments = new List<bool>();
+
+            _viewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(_viewModel.LoadingLogs))
+                {
+                    loadingAdjustments.Add(_viewModel.LoadingLogs);
+                }
+            };
+
+            Assert.False(_viewModel.LoadingLogs);
+
+            await _viewModel.LoadAsync();
+
+            Assert.Equal(2, loadingAdjustments.Count);
+            Assert.True(loadingAdjustments[0]);
+            Assert.False(loadingAdjustments[1]);
+        }
+
+        [Fact]
         public async Task LoadAsync_WhenMorePages()
         {
             var initialPageLogStreams = _streamsFixture.CreateSampleLogStreams();

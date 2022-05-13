@@ -112,10 +112,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
                 var selectedLogEvent = LogEvent?.Message;
 
-                var request = CreateGetRequest();
-                var response = await Repository.GetLogEventsAsync(request, cancelToken).ConfigureAwait(false);
+                using (CreateLoadingLogsScope())
+                {
+                    var request = CreateGetRequest();
+                    var response = await Repository.GetLogEventsAsync(request, cancelToken).ConfigureAwait(false);
 
-                UpdateLogEventProperties(response, selectedLogEvent);
+                    UpdateLogEventProperties(response, selectedLogEvent);
+                }
             }
             catch (OperationCanceledException e)
             {

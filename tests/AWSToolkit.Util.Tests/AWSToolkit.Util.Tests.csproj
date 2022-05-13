@@ -92,6 +92,7 @@
     <Compile Include="Resources\TestResources.cs" />
     <Compile Include="Solutions\ProjectTests.cs" />
     <Compile Include="Telemetry\ToolkitTelemetryEventsSupplementalTests.cs" />
+    <Compile Include="Util\DisposingActionTests.cs" />
     <Compile Include="Util\FrameworkNameHelperTests.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
     <Compile Include="Util\ZipUtilTests.cs" />

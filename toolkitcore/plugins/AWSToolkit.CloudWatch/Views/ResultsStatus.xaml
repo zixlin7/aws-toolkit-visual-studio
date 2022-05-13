@@ -32,12 +32,30 @@
                 <Style TargetType="{x:Type images:VsImage}">
                     <Setter Property="Source" Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
                     <Style.Triggers>
-                        <DataTrigger
-                            Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
-                            Value="">
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition
+                                    Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                    Value="" />
+                                <Condition
+                                    Binding="{Binding DataContext.LoadingLogs, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                    Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Source"
+                                    Value="{Binding Source={StaticResource VsImages}, Path=Loading}" />
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition
+                                    Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                    Value="" />
+                                <Condition
+                                    Binding="{Binding DataContext.LoadingLogs, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                    Value="False" />
+                            </MultiDataTrigger.Conditions>
                             <Setter Property="Source"
                                     Value="{Binding Source={StaticResource VsImages}, Path=StatusInformation}" />
-                        </DataTrigger>
+                        </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>
             </images:VsImage.Style>
@@ -56,9 +74,20 @@
                 <Style TargetType="TextBox">
                     <Setter Property="Text" Value="{Binding ErrorMessage}" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding ErrorMessage}" Value="">
-                            <Setter Property="Text" Value="No Results Found" />
-                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ErrorMessage}" Value="" />
+                                <Condition Binding="{Binding LoadingLogs}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Text" Value="Loading..."></Setter>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ErrorMessage}" Value="" />
+                                <Condition Binding="{Binding LoadingLogs}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Text" Value="No Results Found"></Setter>
+                        </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>
             </TextBox.Style>

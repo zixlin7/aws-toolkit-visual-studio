@@ -107,12 +107,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 }
 
                 var selectedLogGroup = LogGroup?.Arn;
+                using (CreateLoadingLogsScope())
+                {
+                    var request = CreateGetRequest();
+                    var response = await Repository.GetLogGroupsAsync(request, cancelToken).ConfigureAwait(false);
 
-                var request = CreateGetRequest();
-                var response = await Repository.GetLogGroupsAsync(request, cancelToken).ConfigureAwait(false);
-
-                UpdateLogGroupProperties(response, selectedLogGroup);
-
+                    UpdateLogGroupProperties(response, selectedLogGroup);
+                }
             }
             catch (OperationCanceledException e)
             {

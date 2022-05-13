@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 {
@@ -18,6 +19,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         protected readonly ToolkitContext ToolkitContext;
         protected readonly ICloudWatchLogsRepository Repository;
 
+        protected bool _loadingLogs = false;
         protected bool _isInitialized = false;
 
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
@@ -39,6 +41,11 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => _nextToken = value;
         }
 
+        public bool LoadingLogs
+        {
+            get => _loadingLogs;
+            private set => SetProperty(ref _loadingLogs, value);
+        }
         public string FilterText
         {
             get => _filterText;
@@ -82,6 +89,22 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             });
         }
 
+        protected IDisposable CreateLoadingLogsScope()
+        {
+            SetLoadingLogs(true);
+            return new DisposingAction(() =>
+            {
+                SetLoadingLogs(false);
+            });
+        }
+
+        private void SetLoadingLogs(bool value)
+        {
+            ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+            {
+                LoadingLogs = value;
+            });
+        }
         public void ResetCancellationToken()
         {
             CancelExistingToken();

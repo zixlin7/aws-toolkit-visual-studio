@@ -153,11 +153,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 }
 
                 var selectedLogStream = LogStream?.Arn;
+                using (CreateLoadingLogsScope())
+                {
+                    var request = CreateGetRequest();
+                    var response = await Repository.GetLogStreamsAsync(request, cancelToken).ConfigureAwait(false);
 
-                var request = CreateGetRequest();
-                var response = await Repository.GetLogStreamsAsync(request, cancelToken).ConfigureAwait(false);
-
-                UpdateLogStreamProperties(response, selectedLogStream);
+                    UpdateLogStreamProperties(response, selectedLogStream);
+                }
             }
             catch (OperationCanceledException e)
             {
