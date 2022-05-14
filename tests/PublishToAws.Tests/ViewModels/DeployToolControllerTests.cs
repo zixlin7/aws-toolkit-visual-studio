@@ -268,6 +268,46 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _restClient.Verify(mock => mock.SetDeploymentTargetAsync(_sessionId, It.IsAny<SetDeploymentTargetInput>(), _cancelToken), Times.Never);
         }
 
+        [Fact]
+        public async Task SetDeploymentTargetAsync_ThrowsException()
+        {
+            var apiException = new ApiException("message", 400, "response", null, null);
+
+            _restClient.Setup(mock =>
+                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<SetDeploymentTargetInput>(),
+                    It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
+
+            var exception = await Assert.ThrowsAsync<ApiException>(async () =>
+                await _deployToolController.SetDeploymentTargetAsync(_sessionId, _newPublishTarget, _stackName,
+                    _cancelToken));
+
+            Assert.Equal(apiException, exception);
+        }
+
+        [Fact]
+        public async Task SetDeploymentTargetAsync_ThrowsInvalidApplicationNameException()
+        {
+            ProblemDetails details = new ProblemDetails()
+            {
+                Status = 400,
+                Detail = InvalidApplicationNameException.ErrorText,
+            };
+
+            var apiException = new ApiException<ProblemDetails>("qwerty", 400,
+                $"{{\"detail\":\"{InvalidApplicationNameException.ErrorText}\"}}",
+                null, details, null);
+
+            _restClient.Setup(mock =>
+                mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<SetDeploymentTargetInput>(),
+                    It.IsAny<CancellationToken>())).ThrowsAsync(apiException);
+
+            var exception = await Assert.ThrowsAsync<InvalidApplicationNameException>(async () =>
+                await _deployToolController.SetDeploymentTargetAsync(_sessionId, _newPublishTarget, _stackName,
+                    _cancelToken));
+
+            Assert.Equal(InvalidApplicationNameException.ErrorText, exception.Message);
+        }
+
         public static IEnumerable<object[]> GetRecommendationOutputData = new List<object[]>
         {
             new object[] {null},

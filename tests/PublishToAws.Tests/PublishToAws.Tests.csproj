@@ -67,6 +67,7 @@
     <Compile Include="Commands\TargetCommandTests.cs" />
     <Compile Include="Converters\ConfigurationDetailsToVisibilityConverterTests.cs" />
     <Compile Include="Converters\TargetsToVisibilityConverterTests.cs" />
+    <Compile Include="Exceptions\InvalidApplicationNameExceptionTests.cs" />
     <Compile Include="Fixtures\DeployToolControllerFixture.cs" />
     <Compile Include="Fixtures\PublishFooterCommandFixture.cs" />
     <Compile Include="Fixtures\PublishToAwsFixture.cs" />

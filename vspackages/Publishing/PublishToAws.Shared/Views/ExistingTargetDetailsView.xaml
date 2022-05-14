@@ -20,7 +20,6 @@
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <commonUi:VsImages x:Key="VsImages" />
             <commonConverters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
             <converters:RepublishTargetsToVisibilityConverter x:Key="RepublishTargetsToVisibilityConverter" />
 

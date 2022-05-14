@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
@@ -311,7 +310,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             var setTargetRequest = new SetDeploymentTargetInput { NewDeploymentName = stackName, NewDeploymentRecipeId = recipeId };
 
-            await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+            await InvokeSetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -333,7 +332,29 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             var setTargetRequest = new SetDeploymentTargetInput { ExistingDeploymentId = existingDeploymentId };
 
-            await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+            await InvokeSetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Calls SetDeploymentTargetAsync and wraps exception that are understood by the Toolkit
+        /// </summary>
+        private async Task InvokeSetDeploymentTargetAsync(string sessionId, SetDeploymentTargetInput setTargetRequest,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (ApiException<ProblemDetails> e)
+            {
+                if (InvalidApplicationNameException.TryCreate(e,
+                        out InvalidApplicationNameException invalidApplicationNameException))
+                {
+                    throw invalidApplicationNameException;
+                }
+
+                throw;
+            }
         }
 
         public Task<HealthStatusOutput> HealthAsync()

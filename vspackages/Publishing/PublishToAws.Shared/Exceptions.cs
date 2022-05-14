@@ -1,5 +1,7 @@
 ﻿using System;
 
+using AWS.Deploy.ServerMode.Client;
+
 namespace Amazon.AWSToolkit.Publish
 {
     /// <summary>
@@ -16,6 +18,47 @@ namespace Amazon.AWSToolkit.Publish
     public class InvalidSessionIdException : Exception
     {
         public InvalidSessionIdException(string message) : base(message) { }
+    }
+
+    public class InvalidApplicationNameException : Exception
+    {
+        public const string ErrorText = "Invalid cloud application name";
+
+        public static bool TryCreate(ApiException<ProblemDetails> apiException,
+            out InvalidApplicationNameException exception)
+        {
+            exception = null;
+
+            try
+            {
+                if (apiException.StatusCode != 400)
+                {
+                    return false;
+                }
+
+                var detail = apiException.Result?.Detail;
+                if (string.IsNullOrWhiteSpace(detail))
+                {
+                    return false;
+                }
+
+                if (!detail.Contains(ErrorText))
+                {
+                    return false;
+                }
+
+                exception = new InvalidApplicationNameException(detail, apiException);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public InvalidApplicationNameException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 
     /// <summary>

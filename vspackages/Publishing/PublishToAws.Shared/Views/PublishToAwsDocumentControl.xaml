@@ -128,6 +128,7 @@
             <ContentPresenter 
                 Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
                 Visibility="{Binding SessionId, Converter={StaticResource SessionVisibilityConverter}}"
+                Validation.ErrorTemplate="{x:Null}"
                 Content="{Binding}">
                 <ContentPresenter.Resources>
                     <DataTemplate x:Key="ViewTarget">

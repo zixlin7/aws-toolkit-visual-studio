@@ -20,7 +20,6 @@
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <commonUi:VsImages x:Key="VsImages" />
             <converters:PublishTargetsToVisibilityConverter x:Key="PublishTargetsToVisibilityConverter" />
             <commonConverters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
             <DataTemplate x:Key="RecommendationTemplate" DataType="{x:Type models:PublishRecommendation}">

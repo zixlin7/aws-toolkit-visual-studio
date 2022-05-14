@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -41,7 +42,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
     /// This ViewModel contains the functionality and data that
     /// backs the "Publish to AWS" document tab (<see cref="Views.PublishApplicationView"/>)
     /// </summary>
-    public class PublishToAwsDocumentViewModel : BaseModel
+    public class PublishToAwsDocumentViewModel : BaseModel, INotifyDataErrorInfo
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(PublishToAwsDocumentViewModel));
         private const string DeploymentStatusMessage = "Deployment Status: ";
@@ -518,15 +519,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public bool HasValidationErrors()
         {
+            if (AsINotifyDataErrorInfo.HasErrors)
+            {
+                return true;
+            }
+
             var configurationDetailValidation = ConfigurationDetails?.GetDetailAndDescendants()
                        .Any(detail => detail.HasErrors)
                    ?? false;
             if (configurationDetailValidation)
+            {
                 return true;
+            }
 
             var systemCapabilitiesValidation = SystemCapabilities?.Any() ?? false;
             if (systemCapabilitiesValidation)
+            {
                 return true;
+            }
 
             return false;
         }
@@ -994,12 +1004,26 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 {
                     await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as PublishRecommendation, StackName, cancellationToken);
                 }
+
+                await UpdatePublishStackNameValidationAsync(string.Empty);
+            }
+            catch (InvalidApplicationNameException e)
+            {
+                await UpdatePublishStackNameValidationAsync(e.Message);
+
+                throw;
             }
             catch (Exception e)
             {
                 Logger.Error("Error setting deployment target", e);
                 throw;
             }
+        }
+
+        public async Task UpdatePublishStackNameValidationAsync(string validationMessage)
+        {
+            _errors[nameof(PublishStackName)] = validationMessage;
+            await RaiseErrorsChangedAsync(nameof(PublishStackName)).ConfigureAwait(false);
         }
 
         public async Task UpdatePublishProjectViewModelAsync()
@@ -1467,6 +1491,47 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
 
             return e.Message;
+        }
+
+        #region INotifyDataErrorInfo
+
+        private readonly IDictionary<string, string> _errors = new Dictionary<string, string>();
+
+        IEnumerable INotifyDataErrorInfo.GetErrors(string propertyName)
+        {
+            var errors = new List<string>();
+
+            if (propertyName == null)
+            {
+                errors.AddRange(_errors.Values.Where(x => !string.IsNullOrWhiteSpace(x)));
+            }
+            else if (_errors.TryGetValue(propertyName, out string value))
+            {
+                errors.Add(value);
+            }
+
+            return errors;
+        }
+
+        bool INotifyDataErrorInfo.HasErrors => _errors.Values.Any(value => !string.IsNullOrWhiteSpace(value));
+
+        private event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        event EventHandler<DataErrorsChangedEventArgs> INotifyDataErrorInfo.ErrorsChanged
+        {
+            add => ErrorsChanged += value;
+            remove => ErrorsChanged -= value;
+        }
+
+        public INotifyDataErrorInfo AsINotifyDataErrorInfo => this;
+
+        #endregion
+
+        private async Task RaiseErrorsChangedAsync(string propertyName)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            NotifyPropertyChanged(nameof(INotifyDataErrorInfo.HasErrors));
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
     }
 }

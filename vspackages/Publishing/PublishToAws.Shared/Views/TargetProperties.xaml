@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
-             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              xmlns:commonUiConverters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
              xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
@@ -15,8 +14,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source=".\SystemCapabilityTemplate.xaml"></ResourceDictionary>
+                <ResourceDictionary Source=".\TargetsDictionary.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <commonUi:VsImages x:Key="VsImages" />
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <commonUiConverters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
             <commonUiConverters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter" />
@@ -122,8 +121,16 @@
                 </TextBlock>
 
                 <TextBox
+                    Name="tbApplicationName" x:FieldModifier="private"
                     Margin="0 3 0 0"
-                    Text="{Binding PublishStackName, Delay=500, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    Text="{Binding PublishStackName, Delay=500, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnNotifyDataErrors=True}" />
+
+                <!-- Show a validation message for Application Name directly below the TextBox, when there is a validation error -->
+                <ContentPresenter 
+                    Content="{Binding ElementName=tbApplicationName, Path=(Validation.Errors).CurrentItem}" 
+                    Visibility="{Binding ElementName=tbApplicationName, Path=(Validation.Errors), Converter={StaticResource HasItemsVisibilityConverter}}"
+                    ContentTemplate="{StaticResource ValidationErrorTemplate}"
+                    />
             </StackPanel>
 
         </StackPanel>
