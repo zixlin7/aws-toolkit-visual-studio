@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "When configuring roles in the Publish to AWS experience, if the publish target requires a service principal, the role selection dialog will only show roles that reference the service principal."
-}

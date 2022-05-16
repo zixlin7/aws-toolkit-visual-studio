@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "The Publish to AWS experience now indicates if the Application Name is not valid, and prevents a deployment from starting."
-}
