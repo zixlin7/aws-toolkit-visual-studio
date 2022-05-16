@@ -1,4 +1,0 @@
-﻿{
-    "Type": "Bug Fix",
-    "Description": "Configuring the Lambda publish wizard to remove all VPC subnets and security groups from an existing Lambda will now do this when publishing to Lambda. Previously, the Lambda function would be updated, but the function's VPC settings would not be adjusted."
-}
