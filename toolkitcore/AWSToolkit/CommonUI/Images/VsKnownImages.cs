@@ -24,13 +24,16 @@
         Edit,
         FeedbackFrown,
         FeedbackSmile,
+        Loading,
         Refresh,
         Remove,
         RemoveLink,
         Search,
         StatusError,
         StatusInformation,
+        StatusInformationOutline,
         StatusOK,
         StatusWarning,
+        WordWrap
     }
 }

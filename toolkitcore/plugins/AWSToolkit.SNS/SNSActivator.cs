@@ -25,7 +25,7 @@ namespace Amazon.AWSToolkit.SNS
         void setupContextMenuHooks(SNSRootViewMetaNode rootNode)
         {
             rootNode.OnCreateTopic =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateTopicController>().Execute);
+                new ContextCommandExecutor(() => new CreateTopicController(ToolkitContext)).Execute;
 
             rootNode.OnViewSubscriptions =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewSubscriptionsController>().Execute);

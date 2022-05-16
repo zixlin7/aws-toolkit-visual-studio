@@ -3,13 +3,13 @@
     public class InstallOptions
     {
         /// <summary>
-        /// the dotnet toolpath that the aws.deploy.cli will be installed at
+        /// the dotnet toolpath that the aws.deploy.tools package will be installed at
         /// https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools-how-to-use#use-the-tool-as-a-global-tool-installed-in-a-custom-location
         /// </summary>
         public string ToolPath { get; }
 
         /// <summary>
-        /// the NuGet version range to install the aws.deploy.cli with
+        /// the NuGet version range to install the aws.deploy.tools package with
         /// https://docs.microsoft.com/en-us/nuget/concepts/package-versioning#version-ranges
         /// </summary>
         public string VersionRange { get; }

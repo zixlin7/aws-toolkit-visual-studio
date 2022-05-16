@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.Publish.Util;
 using Amazon.AWSToolkit.Shell;
 
 using log4net;
@@ -11,7 +12,7 @@ using Microsoft.VisualStudio.Threading;
 namespace Amazon.AWSToolkit.Publish.Install
 {
     /// <summary>
-    /// Responsible for verifying the aws.deploy.cli nuget package
+    /// Responsible for verifying the aws.deploy.tools nuget package
     /// </summary>
     public class VerifyDeployCli
     {
@@ -32,7 +33,7 @@ namespace Amazon.AWSToolkit.Publish.Install
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var process =
-                DotnetProcess.CreateHeadless($"nuget verify \"{_options.ToolPath}\\**\\aws.deploy.cli.*.nupkg\" --all");
+                DotnetProcess.CreateHeadless($"nuget verify \"{_options.ToolPath}\\**\\{PublishToAwsConstants.DeployToolPackageName}.*.nupkg\" --all");
             process.Start();
 
             var data = await RetrieveProcessDataAsync(process);

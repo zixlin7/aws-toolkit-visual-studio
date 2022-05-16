@@ -36,6 +36,16 @@ namespace Amazon.AWSToolkit.Publish.Models
         public DataTemplate BooleanEditor { get; set; }
 
         /// <summary>
+        /// Represents the editor control for a list value
+        /// </summary>
+        public DataTemplate ListEditor { get; set; }
+
+        /// <summary>
+        /// Represents the editor control for a file path value
+        /// </summary>
+        public DataTemplate FilePathEditor { get; set; }
+
+        /// <summary>
         /// Represents a UI for properties the Toolkit doesn't know how to handle
         /// </summary>
         public DataTemplate UnsupportedTypeEditor { get; set; }
@@ -75,6 +85,12 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return KeyValuesTypeEditor;
             }
 
+            // List types have ValueMappings, so keep this above the check for that or you'll get an EnumEditor instead
+            if (configurationDetail.Type == DetailType.List)
+            {
+                return ListEditor;
+            }
+
             if (configurationDetail.Type == DetailType.Blob)
             {
                 if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.IamRole)
@@ -105,6 +121,13 @@ namespace Amazon.AWSToolkit.Publish.Models
                 {
                     return EcrRepositoryEditor;
                 }
+
+                // TODO When https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and that version of the Deploy CLI is merged into the
+                // VSTK then uncomment this code to support FilePath TypeHints.
+                //if (configurationDetail.TypeHint == ConfigurationDetail.TypeHints.FilePath)
+                //{
+                //    return FilePathEditor;
+                //}
             }
 
             if (configurationDetail.ValueMappings?.Any() ?? false)

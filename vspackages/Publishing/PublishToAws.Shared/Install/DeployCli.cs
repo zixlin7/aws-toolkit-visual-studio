@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Publish.Util;
 using Amazon.AWSToolkit.Telemetry;
 
 using log4net;
@@ -11,7 +12,7 @@ using log4net;
 namespace Amazon.AWSToolkit.Publish.Install
 {
     /// <summary>
-    /// Initializes the aws.deploy.cli including installation and verification
+    /// Installs and verifies the NuGet package aws.deploy.tools
     /// </summary>
     public class DeployCli
     {
@@ -30,7 +31,7 @@ namespace Amazon.AWSToolkit.Publish.Install
         {
             await InstallCliAsync(cancellationToken);
             await VerifyCliAsync(cancellationToken);
-            Logger.Debug("Finished initializing AWS.Deploy.CLI");
+            Logger.Debug($"Finished initializing {PublishToAwsConstants.DeployToolPackageName}");
         }
 
         private async Task InstallCliAsync(CancellationToken cancellationToken)

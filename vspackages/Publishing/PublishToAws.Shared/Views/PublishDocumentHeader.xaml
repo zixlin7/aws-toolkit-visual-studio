@@ -44,15 +44,15 @@
         </Grid.RowDefinitions>
         
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="Temporary Development header! This is only here until we have a more formal view established." FontWeight="Bold" />
-        
-        <Label Grid.Row="1" Grid.Column="0" Content="Credentials Id" />
-        <Label Grid.Row="1" Grid.Column="1" Content="{Binding Connection.CredentialsId}" />
-        
-        <Label Grid.Row="2" Grid.Column="0" Content="Region" />
-        <Label Grid.Row="2" Grid.Column="1" Content="{Binding Connection.Region}" />
 
-        <Label Grid.Row="1" Grid.Column="2" Content="View Stage" />
-        <ComboBox Grid.Row="1" Grid.Column="3" 
+        <Label Grid.Row="1" Grid.Column="0" Content="Project" />
+        <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Content="{Binding ProjectPath}" />
+
+        <Label Grid.Row="2" Grid.Column="0" Content="SessionId" />
+        <Label Grid.Row="2" Grid.Column="1" Content="{Binding SessionId}" />
+
+        <Label Grid.Row="2" Grid.Column="2" Content="View Stage" />
+        <ComboBox Grid.Row="2" Grid.Column="3" 
                   SelectedItem="{Binding ViewStage}"
                   >
             <ComboBox.Items>
@@ -64,14 +64,18 @@
 
         <Button Grid.Row="1" Grid.Column="4" Margin="9 0 0 0" Content="HealthCheck" Click="HealthCheck_OnClick" />
 
-        <Label Grid.Row="2" Grid.Column="2" Content="Project" />
-        <Label Grid.Row="2" Grid.Column="3" Content="{Binding ProjectPath}" />
+        <Label Grid.Row="3" Grid.Column="0" Content="IsPublishing" />
+        <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding PublishProjectViewModel.IsPublishing}" />
 
-        <Label Grid.Row="3" Grid.Column="0" Content="SessionId" />
-        <Label Grid.Row="3" Grid.Column="1" Content="{Binding SessionId}" />
-
-        <Label Grid.Row="3" Grid.Column="2" Content="IsPublishing" />
-        <CheckBox Grid.Row="3" Grid.Column="3" IsChecked="{Binding IsPublishing}" />
-
-</Grid>
+        <Label Grid.Row="3" Grid.Column="2" Content="Publish Status" />
+        <ComboBox Grid.Row="3" Grid.Column="3"
+                  SelectedItem="{Binding PublishProjectViewModel.ProgressStatus}"
+                  >
+            <ComboBox.Items>
+                <viewModels:ProgressStatus>Success</viewModels:ProgressStatus>
+                <viewModels:ProgressStatus>Fail</viewModels:ProgressStatus>
+                <viewModels:ProgressStatus>Loading</viewModels:ProgressStatus>
+            </ComboBox.Items>
+        </ComboBox>
+    </Grid>
 </UserControl>

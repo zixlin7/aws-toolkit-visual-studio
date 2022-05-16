@@ -56,6 +56,7 @@
     <Compile Include="Nodes\ISNSTopicViewMetaNode.cs" />
     <Compile Include="Nodes\ISNSTopicViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SnsValidation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
@@ -66,7 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.2.44</Version>
+      <Version>3.7.3.54</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Media;
 
 using Amazon.AWSToolkit.Publish.Util;
@@ -8,6 +9,7 @@ namespace Amazon.AWSToolkit.Publish.Models
     /// <summary>
     /// Represents a destination and technique for deploying an application.
     /// </summary>
+    [DebuggerDisplay("{RecipeId} | {Name}")]
     public abstract class PublishDestinationBase : IEquatable<PublishDestinationBase>
     {
         public string Name { get; protected set; }
@@ -18,10 +20,16 @@ namespace Amazon.AWSToolkit.Publish.Models
         public bool IsRecommended { get; set; } = false;
 
         public string RecipeId { get; protected set; }
+        public string BaseRecipeId { get; protected set; }
         public string RecipeName { get; protected set; }
 
         public string Description { get; protected set; }
         public string ShortDescription { get; protected set; }
+
+        /// <summary>
+        /// Does the deployment target originate from a generated deployment project
+        /// </summary>
+        public bool IsGenerated { get; protected set; }
 
         public DeploymentArtifact DeploymentArtifact { get; protected set; }
 
@@ -36,8 +44,10 @@ namespace Amazon.AWSToolkit.Publish.Models
             return Name == other.Name &&
                    IsRecommended == other.IsRecommended &&
                    RecipeId == other.RecipeId &&
+                   BaseRecipeId == other.BaseRecipeId &&
                    RecipeName == other.RecipeName &&
                    Description == other.Description &&
+                   IsGenerated == other.IsGenerated &&
                    ShortDescription == other.ShortDescription &&
                    DeploymentArtifact == other.DeploymentArtifact &&
                    Service == other.Service;
@@ -58,10 +68,12 @@ namespace Amazon.AWSToolkit.Publish.Models
                 var hashCode = (Name != null ? Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ IsRecommended.GetHashCode();
                 hashCode = (hashCode * 397) ^ (RecipeId != null ? RecipeId.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (BaseRecipeId != null ? BaseRecipeId.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (RecipeName != null ? RecipeName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ IsGenerated.GetHashCode();
                 hashCode = (hashCode * 397) ^ (ShortDescription != null ? ShortDescription.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (DeploymentArtifact != null ? DeploymentArtifact.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ DeploymentArtifact.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Service != null ? Service.GetHashCode() : 0);
                 return hashCode;
             }

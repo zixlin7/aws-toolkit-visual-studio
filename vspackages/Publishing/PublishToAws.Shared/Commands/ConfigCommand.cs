@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.ViewModels;
 
@@ -19,7 +20,10 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         protected override bool CanExecuteCommand()
         {
-            return PublishDocumentViewModel.ViewStage == PublishViewStage.Target;
+            return PublishDocumentViewModel.ViewStage == PublishViewStage.Target &&
+                   !PublishDocumentViewModel.IsLoading &&
+                   !PublishDocumentViewModel.LoadingSystemCapabilities &&
+                   !PublishDocumentViewModel.SystemCapabilities.Any();
         }
     }
 }

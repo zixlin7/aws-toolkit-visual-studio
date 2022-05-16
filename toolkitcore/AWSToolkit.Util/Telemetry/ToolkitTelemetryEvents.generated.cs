@@ -226,6 +226,57 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         }
         
         /// Records Telemetry Event:
+        /// Called when user exits the Publish to AWS workflow
+        public static void RecordPublishEnd(this ITelemetryLogger telemetryLogger, PublishEnd payload, Func<MetricDatum, MetricDatum> transformDatum = null)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "publish_end";
+                datum.Unit = Unit.None;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+
+                datum.AddMetadata("published", payload.Published);
+
+                datum.AddMetadata("duration", payload.Duration);
+
+                if ((transformDatum != null))
+                {
+                    datum = transformDatum.Invoke(datum);
+                }
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+        
+        /// Records Telemetry Event:
         /// Called when user publishes the project
         public static void RecordPublishDeploy(this ITelemetryLogger telemetryLogger, PublishDeploy payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
@@ -275,6 +326,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
 
                 datum.AddMetadata("recipeId", payload.RecipeId);
+
+                if (payload.IsGeneratedProject.HasValue)
+                {
+                    datum.AddMetadata("isGeneratedProject", payload.IsGeneratedProject.Value);
+                }
 
                 datum.AddMetadata("errorCode", payload.ErrorCode);
 
@@ -630,6 +686,22 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         }
     }
     
+    /// Called when user exits the Publish to AWS workflow
+    public sealed class PublishEnd : BaseTelemetryEvent
+    {
+        
+        /// Whether or not the user published an application
+        public bool Published;
+        
+        /// The duration of the operation in milliseconds
+        public double Duration;
+        
+        public PublishEnd()
+        {
+            this.Passive = false;
+        }
+    }
+    
     /// Called when user publishes the project
     public sealed class PublishDeploy : BaseTelemetryEvent
     {
@@ -657,6 +729,9 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// The recipe used for the deployment
         public string RecipeId;
+        
+        /// Optional - Whether or not the referenced project was generated
+        public System.Boolean? IsGeneratedProject;
         
         /// Optional - The error code associated with an operation
         public string ErrorCode;

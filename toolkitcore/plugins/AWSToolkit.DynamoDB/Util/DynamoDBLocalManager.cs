@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
         {
             try
             {
-                if (this._javaProcess != null && !this._javaProcess.HasExited)
+                if (this._javaProcess != null && this._state != CurrentState.Stopped)
                 {
                     this._javaProcess.Kill();
                 }
@@ -43,17 +43,13 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
 
         public static DynamoDBLocalManager Instance => _instance;
 
-        public bool IsRunning => this._javaProcess != null && !this._javaProcess.HasExited;
+        public bool IsRunning => this._javaProcess != null && this._state != CurrentState.Stopped;
 
         CurrentState _state = CurrentState.Stopped;
         public CurrentState State
         {
             get
             {
-                if (this._state == CurrentState.Started && (this._javaProcess == null || this._javaProcess.HasExited))
-                {
-                    return CurrentState.Stopped;
-                }
                 return this._state;
             }
         }
@@ -249,6 +245,19 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
         public event EventHandler StartedJavaProcessExited;
         void _javaProcess_Exited(object sender, EventArgs e)
         {
+            if (sender.Equals(_javaProcess))
+            {
+                this._state = CurrentState.Stopped;
+                this._javaProcess = null;
+            }
+
+            if (!(sender is Process process))
+            {
+                return;
+            }
+
+            process.Dispose();
+
             if (StartedJavaProcessExited != null)
             {
                 ToolkitFactory.Instance.ShellProvider.OutputToHostConsole("DynamoDB Local has exited", true);
@@ -271,11 +280,13 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
 
         public void Stop()
         {
-            if (this._javaProcess != null && !this._javaProcess.HasExited)
+            if (this._javaProcess != null)
             {
-                this._javaProcess.Kill();
-                this._javaProcess.WaitForExit(500);
-                this._javaProcess.Dispose();
+                if (this._state != CurrentState.Stopped)
+                {
+                    this._javaProcess.Kill();
+                }
+
                 this._javaProcess = null;
             }
 

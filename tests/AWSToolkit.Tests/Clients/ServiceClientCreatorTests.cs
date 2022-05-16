@@ -31,7 +31,7 @@ namespace AWSToolkit.Tests.Clients
         public void CreateServiceClient_CredentialsAndClientConfig()
         {
             var clientConfig = new AmazonEC2Config();
-            clientConfig.ServiceURL = "some-url";
+            clientConfig.ServiceURL = "https://abcxyz.com";
             var client = ServiceClientCreator.CreateServiceClient(typeof(AmazonEC2Client), _credentials, clientConfig);
             Assert.NotNull(client);
             var ec2Client = Assert.IsType<AmazonEC2Client>(client);
@@ -42,7 +42,7 @@ namespace AWSToolkit.Tests.Clients
         public void CreateServiceClient_ClientConfig()
         {
             var clientConfig = new AmazonEC2Config();
-            clientConfig.ServiceURL = "some-url";
+            clientConfig.ServiceURL = "https://abcxyz.com";
             var client = ServiceClientCreator.CreateServiceClient(typeof(AmazonEC2Client), clientConfig);
             Assert.NotNull(client);
             var ec2Client = Assert.IsType<AmazonEC2Client>(client);

@@ -14,7 +14,11 @@ using Amazon.AWSToolkit.Tests.Publishing.Common;
 
 using AWS.Deploy.ServerMode.Client;
 
+using Microsoft.VisualStudio.Threading;
+
 using Moq;
+
+using Xunit;
 
 namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
 {
@@ -76,9 +80,15 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
         public Mock<IDeploymentCommunicationClient> DeploymentCommunicationClient = new Mock<IDeploymentCommunicationClient>();
         public TestPublishToAwsDocumentViewModel ViewModel { get; }
         public Mock<IAWSToolkitShellProvider> ShellProvider => _publishContextFixture.ToolkitShellProvider;
+        public JoinableTaskFactory JoinableTaskFactory { get; }
 
         public PublishFooterCommandFixture()
         {
+#pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
+            var taskCollection = new JoinableTaskContext();
+#pragma warning restore VSSDK005
+            JoinableTaskFactory = taskCollection.Factory;
+
             ViewModel =
                 new TestPublishToAwsDocumentViewModel(
                     new PublishApplicationContext(_publishContextFixture.PublishContext))
@@ -101,6 +111,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
                 };
 
             ViewModel.DeploymentClient = DeploymentCommunicationClient.Object;
+            ViewModel.ProjectGuid = Guid.NewGuid();
+            ViewModel.ProjectPath = $"c:\\deploy-project\\{ViewModel.ProjectGuid}\\my.csproj";
         }
 
         public void SetupNewPublish()
@@ -142,6 +154,26 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
             DeployToolController.Setup(mock =>
                     mock.StartSessionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new SessionException("unable to establish session", null));
+        }
+
+        public async Task AssertConfirmationIsSilencedAsync()
+        {
+            var publishSettings = await ViewModel.PublishContext.PublishSettingsRepository.GetAsync();
+            Assert.Contains(ViewModel.ProjectGuid.ToString(), publishSettings.SilencedPublishConfirmations);
+        }
+
+        public async Task AssertConfirmationIsNotSilencedAsync()
+        {
+            var publishSettings = await ViewModel.PublishContext.PublishSettingsRepository.GetAsync();
+            Assert.DoesNotContain(ViewModel.ProjectGuid.ToString(), publishSettings.SilencedPublishConfirmations);
+        }
+
+        public void AddMissingRequirement(string requirementName)
+        {
+            ViewModel.SystemCapabilities.Add(new TargetSystemCapability(new SystemCapabilitySummary()
+            {
+                Name = requirementName,
+            }));
         }
     }
 }

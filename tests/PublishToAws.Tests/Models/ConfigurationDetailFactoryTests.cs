@@ -26,6 +26,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             {"Double", DetailType.Double},
             {"Bool", DetailType.Boolean},
             {"Object", DetailType.Blob},
+            {"List", DetailType.List},
             {"SomeFutureType", DetailType.Unsupported}
         };
 
@@ -61,6 +62,74 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
                 .WithValue(value)
                 .Build();
             var configurationDetail = _sut.CreateFrom(itemSummary);
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+        }
+
+        [Fact]
+        public void CreateFrom_WithList()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithType("List")
+                .WithValue("[\"value1\", \"value2\"]")
+                .WithValueMapping("display 1", "value1")
+                .WithValueMapping("display 2", "value2")
+                .WithValueMapping("display 3", "value3")
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary) as ListConfigurationDetail;
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+
+            var expectedItems = new[]
+            {
+                new ListConfigurationDetail.ListItem("display 1", "value1"),
+                new ListConfigurationDetail.ListItem("display 2", "value2"),
+                new ListConfigurationDetail.ListItem("display 3", "value3")
+            };
+
+            var expectedSelectedItems = new[]
+            {
+                new ListConfigurationDetail.ListItem("display 1", "value1"),
+                new ListConfigurationDetail.ListItem("display 2", "value2")
+            };
+
+            Assert.True(expectedItems.SequenceEqual(configurationDetail.Items));
+            Assert.True(expectedSelectedItems.SequenceEqual(configurationDetail.SelectedItems));
+        }
+
+        [Fact]
+        public void CreateFrom_WithVpcConnectorExistingVpcId()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithId(ConfigurationDetailFactory.ItemSummaryIds.VpcId)
+                .Build();
+
+            var parentItemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithId(ConfigurationDetailFactory.ItemSummaryIds.VpcConnector)
+                .Build();
+
+            Assert.IsNotType<VpcConnectorVpcConfigurationDetail>(_sut.CreateFrom(itemSummary));
+            var configurationDetail = Assert.IsType<VpcConnectorVpcConfigurationDetail>(_sut.CreateFrom(itemSummary, parentItemSummary));
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+        }
+
+        [Fact (Skip = "Until https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and available in VSTK.")]
+        public void CreateFrom_WithFilePath()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithId("DockerfilePath")
+                .WithName("Dockerfile Path")
+                .WithType("String")
+                .WithTypeHint("FilePath")
+                .WithTypeHintData("Filter", "All files (*.*)|*.*")
+                .WithTypeHintData("CheckFileExists", true)
+                .WithTypeHintData("Title", "Select a Dockerfile")
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary) as FilePathConfigurationDetail;
             AssertPropertiesMatch(configurationDetail, itemSummary);
         }
 
@@ -197,7 +266,34 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         [Fact]
         public void CreateFrom_IamRoleTypeHint()
         {
-            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+            var itemSummary = CreateSampleIamRoleItemSummary()
+                .WithTypeHintData(IamRoleConfigurationDetail.TypeHintDataKeys.ServicePrincipal, "some-service-principal")
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            var roleDetail = Assert.IsType<IamRoleConfigurationDetail>(configurationDetail);
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+            Assert.NotNull(roleDetail.SelectRoleArn);
+            Assert.Equal("some-arn", roleDetail.RoleArnDetail.Value);
+            Assert.Equal("some-service-principal", roleDetail.ServicePrincipal);
+            Assert.True(roleDetail.CreateNewRole);
+        }
+
+        [Fact]
+        public void CreateFrom_IamRoleTypeHint_NoServicePrincipal()
+        {
+            var itemSummary = CreateSampleIamRoleItemSummary()
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            var roleDetail = Assert.IsType<IamRoleConfigurationDetail>(configurationDetail);
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+            Assert.Null(roleDetail.ServicePrincipal);
+        }
+
+        private OptionSettingItemSummaryBuilder CreateSampleIamRoleItemSummary()
+        {
+            return OptionSettingItemSummaryBuilder.Create()
                 .UseSampleData()
                 .WithType("Object")
                 .WithTypeHint(ConfigurationDetail.TypeHints.IamRole)
@@ -208,15 +304,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
                 .WithChild(OptionSettingItemSummaryBuilder.Create()
                     .WithId("RoleArn")
                     .WithType("String")
-                    .WithValue("some-arn"))
-                .Build();
-
-            var configurationDetail = _sut.CreateFrom(itemSummary);
-            var roleDetail = Assert.IsType<IamRoleConfigurationDetail>(configurationDetail);
-            AssertPropertiesMatch(configurationDetail, itemSummary);
-            Assert.NotNull(roleDetail.SelectRoleArn);
-            Assert.Equal("some-arn", roleDetail.RoleArnDetail.Value);
-            Assert.True(roleDetail.CreateNewRole);
+                    .WithValue("some-arn"));
         }
 
         [Fact]

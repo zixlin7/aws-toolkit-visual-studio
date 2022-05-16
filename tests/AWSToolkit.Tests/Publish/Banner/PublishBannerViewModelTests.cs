@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Versioning;
 
 using Amazon.AWSToolkit.Context;
@@ -38,7 +39,7 @@ namespace AWSToolkit.Tests.Publish.Banner
 
         private Project CreateProjectWithTargetFramework(FrameworkName targetFramework)
         {
-            return new Project("SampleProject", @"\my\path\SampleProject.csproj", targetFramework);
+            return new Project("SampleProject", @"\my\path\SampleProject.csproj", Guid.NewGuid(), targetFramework);
         }
 
         private ToolkitContext CreateToolkitContextWithProject(Project project)

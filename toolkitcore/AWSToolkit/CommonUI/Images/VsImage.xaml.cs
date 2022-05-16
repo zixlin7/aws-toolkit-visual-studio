@@ -35,7 +35,6 @@ namespace Amazon.AWSToolkit.CommonUI.Images
         public VsImage()
         {
             InitializeComponent();
-            DataContext = this;
             Loaded += VsImage_Loaded;
             Unloaded += VsImage_Unloaded;
 
@@ -97,7 +96,10 @@ namespace Amazon.AWSToolkit.CommonUI.Images
             });
 
             // Binding 3: Whether or not the image is visible - used to update the binding whenever this changes (changing the theme for example)
-            binding.Bindings.Add(new Binding(nameof(IsVisible)));
+            binding.Bindings.Add(new Binding(nameof(IsVisible))
+            {
+                RelativeSource = new RelativeSource(RelativeSourceMode.Self),
+            });
 
             // Binding 4: Background of the VsImage's parent control - used to update the binding whenever this changes (changing the theme for example)
             binding.Bindings.Add(new Binding(nameof(Background))

@@ -7,6 +7,8 @@
     {
         /// <summary>Key that references the "base" button style</summary>
         public static object ButtonStyle { get; } = GenerateKeyName(nameof(ButtonStyle));
+        public static object ExpanderStyle { get; } = GenerateKeyName(nameof(ExpanderStyle));
+        public static object ListBoxStyle { get; } = GenerateKeyName(nameof(ListBoxStyle));
         public static object ToolTipStyle { get; } = GenerateKeyName(nameof(ToolTipStyle));
 
         private static string GenerateKeyName(string baseName)

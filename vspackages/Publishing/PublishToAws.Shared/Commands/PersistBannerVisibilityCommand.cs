@@ -13,7 +13,10 @@ namespace Amazon.AWSToolkit.Publish.Commands
     /// </summary>
     public class PersistBannerVisibilityCommand : ICommand
     {
+#pragma warning disable CS0067 // (CanExecuteChanged is never used) - UIs consume this via ICommand
         public event EventHandler CanExecuteChanged;
+#pragma warning restore CS0067 // (CanExecuteChanged is never used)
+
         private readonly IPublishSettingsRepository _settingsRepository;
         private readonly PublishToAwsDocumentViewModel _publishDocumentViewModel;
 

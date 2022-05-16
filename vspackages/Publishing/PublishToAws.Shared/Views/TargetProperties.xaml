@@ -1,55 +1,89 @@
 ﻿<UserControl x:Class="Amazon.AWSToolkit.Publish.Views.TargetProperties"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Amazon.AWSToolkit.Publish.Views"
-             xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
-             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+             xmlns:commonUiConverters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+             xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
              themes:ToolkitThemes.UseToolkitTheme="True"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source=".\SystemCapabilityTemplate.xaml"></ResourceDictionary>
+                <ResourceDictionary Source=".\TargetsDictionary.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <commonUi:VsImages x:Key="VsImages" />
-            <converters:SystemCapabilitiesToVisibilityConverter x:Key="SystemCapabilitiesToVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <commonUiConverters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
+            <commonUiConverters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter" />
+            <commonUiConverters:ConverterPipeline x:Key="MeetsSystemRequirementsVisibility">
+                <commonUiConverters:HasItemsVisibilityConverter />
+                <commonUiConverters:InverseVisibilityConverter />
+            </commonUiConverters:ConverterPipeline>
+
+            <ToolTip x:Key="ApplicationNameToolTip">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Name of the application you are publishing to AWS." />
+                    <TextBlock Margin="0 12 0 0" Text="This will be used as the CloudFormation Stack name." />
+                </StackPanel>
+            </ToolTip>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer
-        VerticalScrollBarVisibility="Auto"
-        >
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
 
-            <!-- Show Missing System Dependencies -->
-            <Border 
-                Margin="0 0 0 18"
-                Visibility="{Binding SystemCapabilities, Converter={StaticResource SystemCapabilitiesToVisibilityConverter}}"
-                Grid.Row="0" Grid.Column="0"
-                BorderThickness="1" 
-                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
-                >
+    <DockPanel LastChildFill="True">
+        <!-- Heading -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+
+            <!-- Show the Publish destination (Name) -->
+            <TextBlock
+                DataContext="{Binding PublishDestination}"
+                TextWrapping="Wrap"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}"
+                d:Text="Target Name is shown here"
+                Text="{Binding Name}" />
+
+            <!-- Show Missing System Dependencies : Loading -->
+            <StackPanel
+                Margin="0 12 0 0"
+                Orientation="Horizontal"
+                Visibility="{Binding LoadingSystemCapabilities, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <images:VsImage
+                    VerticalAlignment="Center"
+                    Height="16"
+                    Width="16"
+                    DataContext="{DynamicResource VsImages}"
+                    Source="{Binding Loading}" />
+
+                <TextBlock
+                    Margin="6 0 0 0"
+                    VerticalAlignment="Center"
+                    FontWeight="Bold"
+                    Text="Loading system requirements..." />
+            </StackPanel>
+
+            <!-- Show Missing System Dependencies : Actual Warning -->
+            <Border
+                Margin="0 12 0 0"
+                Visibility="{Binding SystemCapabilities, Converter={StaticResource HasItemsVisibilityConverter}}"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}">
                 <Grid Margin="9">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <StackPanel 
-                        Grid.Row="0" Grid.Column="0" 
+                    <StackPanel
+                        Grid.Row="0" Grid.Column="0"
                         Orientation="Horizontal">
-                        <Image
+                        <images:VsImage
                             VerticalAlignment="Top"
                             DataContext="{DynamicResource VsImages}"
-                            Source="{Binding StatusError}"/>
+                            Source="{Binding StatusError}" />
 
                         <TextBlock
                             Margin="6 0 0 0"
@@ -68,52 +102,100 @@
                 </Grid>
             </Border>
 
-            <!-- Show Target Description -->
-            <Grid 
-                Grid.Row="1" Grid.Column="0"
-                Margin="0 0 0 0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <TextBlock
-                    Grid.Row="0" Grid.Column="0" 
-                    VerticalAlignment="Top"
-                    FontWeight="Bold"
-                    Text="Target details" />
-
-                <TextBlock
-                    Grid.Row="1" Grid.Column="0"
-                    Margin="0 6 0 0"
-                    TextWrapping="Wrap"
-                    Text="{Binding TargetDescription}"
-                    />
-
-            </Grid>
-
-            <!-- Show Settings -->
-            <StackPanel 
-                Grid.Row="2" Grid.Column="0"
-                Margin="0 18 0 0"
+            <!-- Application Name (Artifact ID), shown when applicable -->
+            <StackPanel
+                Margin="0 12 0 0"
                 Orientation="Vertical"
-                >
-
-                <TextBlock
-                    VerticalAlignment="Top"
-                    FontWeight="Bold"
-                    Text="Publish details" />
-
-                <TextBlock Margin="0 6 0 0">
-                    <Hyperlink Command="{Binding ConfigTargetCommand}">Edit publish settings</Hyperlink>
+                Visibility="{Binding IsApplicationNameRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock>
+                    <Run
+                        BaselineAlignment="Top"
+                        Text="Application name" />
+                    <images:VsImage
+                        Margin="3 0 0 0"
+                        VerticalAlignment="Center"
+                        Width="16"
+                        Height="16"
+                        ToolTip="{StaticResource ApplicationNameToolTip}"
+                        Source="{Binding Source={StaticResource VsImages}, Path=StatusInformationOutline}" />
                 </TextBlock>
 
-                <TextBlock
-                    Margin="0 6 0 0"
-                    TextWrapping="Wrap"
-                    Text="{Binding PublishSummary}" />
+                <TextBox
+                    Name="tbApplicationName" x:FieldModifier="private"
+                    Margin="0 3 0 0"
+                    Text="{Binding PublishStackName, Delay=500, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnNotifyDataErrors=True}" />
+
+                <!-- Show a validation message for Application Name directly below the TextBox, when there is a validation error -->
+                <ContentPresenter 
+                    Content="{Binding ElementName=tbApplicationName, Path=(Validation.Errors).CurrentItem}" 
+                    Visibility="{Binding ElementName=tbApplicationName, Path=(Validation.Errors), Converter={StaticResource HasItemsVisibilityConverter}}"
+                    ContentTemplate="{StaticResource ValidationErrorTemplate}"
+                    />
             </StackPanel>
 
+        </StackPanel>
+
+        <!-- Footing -->
+        <Grid
+            DockPanel.Dock="Bottom"
+            Background="{DynamicResource {x:Static platformUi:ThemedDialogColors.WizardFooterBrushKey}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel
+                Margin="0 6 0 6"
+                Grid.Row="0"
+                Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button
+                    Command="{Binding PublishToAwsCommand}"
+                    IsDefault="True"
+                    Content="Publish"
+                    d:DesignHeight="23" MinWidth="75" />
+            </StackPanel>
         </Grid>
-    </ScrollViewer>
+
+        <!-- Main -->
+        <Grid
+            Margin="0 12 0 0"
+            Visibility="{Binding SystemCapabilities, Converter={StaticResource MeetsSystemRequirementsVisibility}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+
+            <!-- Show Settings -->
+            <StackPanel
+                Grid.Row="0" Grid.Column="0"
+                Orientation="Vertical"
+                Visibility="{Binding PublishSummary, Converter={StaticResource HasValueVisibilityConverter}}">
+
+                <TextBlock
+                    VerticalAlignment="Top"
+                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                    FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontWeightKey}}"
+                    Text="Publish details" />
+
+                <StackPanel Orientation="Horizontal">
+                    <Button
+                        Margin="0 6 0 0"
+                        Command="{Binding ConfigTargetCommand}"
+                        Content="Edit settings"
+                        d:DesignHeight="23" MinWidth="75" />
+                </StackPanel>
+            </StackPanel>
+
+            <ScrollViewer
+                Grid.Row="1" Grid.Column="0"
+                Margin="0 6 0 0"
+                VerticalScrollBarVisibility="Auto"
+                HorizontalScrollBarVisibility="Disabled">
+                <TextBlock
+                    TextWrapping="Wrap"
+                    Text="{Binding PublishSummary}" />
+            </ScrollViewer>
+
+        </Grid>
+
+    </DockPanel>
 </UserControl>

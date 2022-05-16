@@ -12,5 +12,7 @@
         public string FilterText { get; set; } = string.Empty;
 
         public OrderBy OrderBy { get; set; }
+
+        public bool IsDescending { get; set; } = true;
     }
 }

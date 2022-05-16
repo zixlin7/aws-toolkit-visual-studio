@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
@@ -73,6 +75,12 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                 await LoadRolesAsync();
             });
 
+            if (!_viewModel.RoleArns.Any())
+            {
+                _toolkitContext.ToolkitHost.ShowMessage("No IAM Roles available", _viewModel.CreateNoRolesMessage());
+                return false;
+            }
+
             return ShowModal() ?? false;
         }
 
@@ -89,6 +97,14 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
                 progressDialog.Hide();
+            }
+        }
+
+        private void RoleList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (_viewModel.OkCommand.CanExecute(null))
+            {
+                _viewModel.OkCommand.Execute(null);
             }
         }
     }

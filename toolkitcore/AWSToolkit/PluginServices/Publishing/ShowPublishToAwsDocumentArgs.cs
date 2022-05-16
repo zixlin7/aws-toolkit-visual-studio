@@ -18,6 +18,11 @@ namespace Amazon.AWSToolkit.PluginServices.Publishing
         public string ProjectPath { get; set; }
 
         /// <summary>
+        /// Unique identifier of the project (eg ProjectGuid of the .csproj file) that will be published
+        /// </summary>
+        public Guid ProjectGuid { get; set; }
+
+        /// <summary>
         /// Initially selected Credentials to Publish with
         /// </summary>
         public ICredentialIdentifier CredentialId { get; set; }
@@ -41,7 +46,11 @@ namespace Amazon.AWSToolkit.PluginServices.Publishing
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return ProjectName == other.ProjectName && ProjectPath == other.ProjectPath && Equals(CredentialId, other.CredentialId) && Equals(Region, other.Region)
+            return ProjectName == other.ProjectName
+                   && ProjectPath == other.ProjectPath
+                   && Equals(ProjectGuid, other.ProjectGuid)
+                   && Equals(CredentialId, other.CredentialId)
+                   && Equals(Region, other.Region)
                    && Equals(Requester, other.Requester)
                    && Equals(AccountId, other.AccountId);
         }
@@ -60,6 +69,7 @@ namespace Amazon.AWSToolkit.PluginServices.Publishing
             {
                 var hashCode = (ProjectName != null ? ProjectName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ProjectPath != null ? ProjectPath.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ProjectGuid != null ? ProjectGuid.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (CredentialId != null ? CredentialId.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Region != null ? Region.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Requester != null ? Requester.GetHashCode() : 0);

@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Models;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Util;
@@ -16,6 +15,12 @@ namespace Amazon.AWSToolkit.Publish.Models
 {
     public class ConfigurationDetailFactory
     {
+        public static class ItemSummaryIds
+        {
+            public const string VpcId = "VpcId";
+            public const string VpcConnector = "VPCConnector";
+        }
+
         private static class ItemSummaryTypes
         {
             public const string String = "String";
@@ -24,6 +29,8 @@ namespace Amazon.AWSToolkit.Publish.Models
             public const string Bool = "Bool";
             public const string KeyValue = "KeyValue";
             public const string Object = "Object";
+            public const string List = "List";
+            public const string FilePath = "FilePath";
         }
 
         private readonly IPublishToAwsProperties _publishToAwsProperties;
@@ -35,9 +42,11 @@ namespace Amazon.AWSToolkit.Publish.Models
             _dialogFactory = dialogFactory;
         }
 
-        public ConfigurationDetail CreateFrom(OptionSettingItemSummary itemSummary)
+        public ConfigurationDetail CreateFrom(OptionSettingItemSummary itemSummary) => CreateFrom(itemSummary, null);
+
+        public ConfigurationDetail CreateFrom(OptionSettingItemSummary itemSummary, OptionSettingItemSummary parent)
         {
-            var configurationDetail = InstantiateFor(itemSummary);
+            var configurationDetail = InstantiateFor(itemSummary, parent);
 
             configurationDetail.Id = itemSummary.Id;
             configurationDetail.Name = itemSummary.Name;
@@ -62,7 +71,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                 itemSummary.ChildOptionSettings?
                     .Select(childOption =>
                     {
-                        var child = CreateFrom(childOption);
+                        var child = CreateFrom(childOption, itemSummary);
                         child.Parent = configurationDetail;
 
                         return child;
@@ -74,12 +83,18 @@ namespace Amazon.AWSToolkit.Publish.Models
             return configurationDetail;
         }
 
-        private ConfigurationDetail InstantiateFor(OptionSettingItemSummary itemSummary)
+        protected static T GetTypeHintData<T>(OptionSettingItemSummary itemSummary, string key, T defaultValue = default)
+        {
+            return itemSummary.TypeHintData.TryGetValue(key, out object value) && value is T castValue ? castValue : defaultValue;
+        }
+
+        private ConfigurationDetail InstantiateFor(OptionSettingItemSummary itemSummary, OptionSettingItemSummary parent)
         {
             if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.IamRole)
             {
                 var detail = new IamRoleConfigurationDetail();
                 detail.SelectRoleArn = SelectRoleArnCommandFactory.Create(detail, _publishToAwsProperties, _dialogFactory);
+                detail.ServicePrincipal = GetTypeHintData<string>(itemSummary, IamRoleConfigurationDetail.TypeHintDataKeys.ServicePrincipal);
 
                 return detail;
             }
@@ -109,6 +124,21 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return detail;
             }
 
+            // TODO When https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and that version of the Deploy CLI is merged into the
+            // VSTK then uncomment this code to support FilePath TypeHints.
+            //if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.FilePath)
+            //{
+            //    var detail = new FilePathConfigurationDetail()
+            //    {
+            //        CheckFileExists = GetTypeHintData<bool>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.CheckFileExists),
+            //        Filter = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Filter),
+            //        Title = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Title)
+            //    };
+            //    detail.BrowseCommand = OpenFileSelectionCommandFactory.Create(detail, _dialogFactory);
+            //
+            //    return detail;
+            //}
+
             if (itemSummary.Type == ItemSummaryTypes.KeyValue)
             {
                 var detail = new KeyValueConfigurationDetail();
@@ -118,6 +148,23 @@ namespace Amazon.AWSToolkit.Publish.Models
                     _dialogFactory);
 
                 return detail;
+            }
+
+            if (itemSummary.Type == ItemSummaryTypes.List)
+            {
+                var detail = new ListConfigurationDetail();
+                detail.EditCommand = EditListCommandFactory.Create(
+                    detail,
+                    $"Edit {itemSummary.Name}",
+                    _dialogFactory);
+
+                return detail;
+            }
+
+            // TODO This is a temporary fix until deploy tool validates that "existing VPC" is not empty when using an existing VPC Connector 
+            if (itemSummary.Id == ItemSummaryIds.VpcId && parent?.Id == ItemSummaryIds.VpcConnector)
+            {
+                return new VpcConnectorVpcConfigurationDetail();
             }
 
             return new ConfigurationDetail();
@@ -139,6 +186,8 @@ namespace Amazon.AWSToolkit.Publish.Models
                     return DetailType.KeyValue;
                 case ItemSummaryTypes.Object:
                     return DetailType.Blob;
+                case ItemSummaryTypes.List:
+                    return DetailType.List;
                 default:
                     if (Debugger.IsAttached)
                     {

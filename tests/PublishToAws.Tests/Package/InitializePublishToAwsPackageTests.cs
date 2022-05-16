@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
             var eventArgs = await Assert.RaisesAsync<EventArgs>(
                 listener => _sut.Initialize += listener,
                 listener => _sut.Initialize -= listener,
-                async () => await _sut.InitializePackage(null, null)
+                async () => await _sut.InitializePackageAsync(null, null)
             );
 
             Assert.NotNull(eventArgs);
@@ -31,11 +31,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
         [Fact]
         public async Task InitializeMultipleTimes()
         {
-            await _sut.InitializePackage(null, null);
+            await _sut.InitializePackageAsync(null, null);
 
             await Assert.ThrowsAsync<Exception>(async () =>
             {
-                await _sut.InitializePackage(null, null);
+                await _sut.InitializePackageAsync(null, null);
             });
         }
     }

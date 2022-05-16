@@ -1,4 +1,5 @@
 ﻿using Amazon.AWSToolkit.Publish.NuGet;
+using Amazon.AWSToolkit.Publish.Util;
 
 using Xunit;
 
@@ -8,11 +9,11 @@ namespace Amazon.AWSToolkit.Tests.Integration.NuGet
 {
     public class NuGetRepositoryTests
     {
-        private readonly NuGetRepository repository;
+        private readonly NuGetRepository _repository;
 
         public NuGetRepositoryTests()
         {
-            repository = new NuGetRepository();
+            _repository = new NuGetRepository();
         }
 
         [Theory]
@@ -20,10 +21,13 @@ namespace Amazon.AWSToolkit.Tests.Integration.NuGet
         [InlineData("aws.deploy.cli", "0.10.*", "0.10.6")]
         [InlineData("aws.deploy.cli", "[0.9, 0.10]", "0.9.7")]
         [InlineData("aws.deploy.cli", "0.10.6", "0.10.6")]
+        [InlineData(PublishToAwsConstants.DeployToolPackageName, "0.41.*", "0.41.4")]
+        [InlineData(PublishToAwsConstants.DeployToolPackageName, "[0.40, 0.42]", "0.41.4")]
+        [InlineData(PublishToAwsConstants.DeployToolPackageName, "0.41.4", "0.41.4")]
         public async Task ShouldGetBestVersionInRange(string package, string versionRange, string expectedVersion)
         {
             // act.
-            var version = await repository.GetBestVersionInRangeAsync(package, versionRange);
+            var version = await _repository.GetBestVersionInRangeAsync(package, versionRange);
 
             // assert.
             Assert.Equal(expectedVersion, version.ToString());
@@ -32,7 +36,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.NuGet
         [Fact]
         public async Task ShouldThrowIfNoVersionFound()
         {
-            await Assert.ThrowsAsync<NoVersionFoundException>(() => repository.GetBestVersionInRangeAsync("aws.deploy.cli", "123.123.123"));
+            await Assert.ThrowsAsync<NoVersionFoundException>(() => _repository.GetBestVersionInRangeAsync(PublishToAwsConstants.DeployToolPackageName, "123.123.123"));
         }
     }
 }

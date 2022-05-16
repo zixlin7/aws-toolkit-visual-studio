@@ -1,6 +1,5 @@
 ﻿using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 using Amazon.CloudWatchLogs;
 
 namespace Amazon.AWSToolkit.CloudWatch.Core
@@ -14,13 +13,11 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             _toolkitContext = toolkitContext;
         }
 
-        public ICloudWatchLogsRepository CreateCloudWatchLogsRepository(ICredentialIdentifier credentialsId,
-            ToolkitRegion region)
+        public ICloudWatchLogsRepository CreateCloudWatchLogsRepository(AwsConnectionSettings connectionSettings)
         {
             var cwlClient =
-                _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonCloudWatchLogsClient>(credentialsId,
-                    region);
-            return new CloudWatchLogsRepository(credentialsId, region, cwlClient);
+                _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonCloudWatchLogsClient>(connectionSettings?.CredentialIdentifier, connectionSettings?.Region);
+            return new CloudWatchLogsRepository(connectionSettings, cwlClient);
         }
     }
 }

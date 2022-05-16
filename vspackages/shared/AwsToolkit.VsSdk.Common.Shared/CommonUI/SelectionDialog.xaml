@@ -43,6 +43,7 @@
         </StackPanel>
 
         <ListBox
-            x:Name="_listBox" />
+            x:Name="_listBox"
+            Style="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ListBoxStyle}}" />
     </DockPanel>
 </platformUi:DialogWindow>

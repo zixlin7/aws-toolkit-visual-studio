@@ -1,12 +1,14 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish.ViewModels;
 
 namespace Amazon.AWSToolkit.Publish.Views
 {
     /// <summary>
     /// View panel that is shown while a publish is in progress.
-    /// Data bound to <see cref="PublishToAwsDocumentViewModel"/>
+    /// Data bound to <see cref="PublishProjectViewModel"/>
     /// </summary>
     public partial class PublishApplicationView : UserControl
     {
@@ -17,10 +19,14 @@ namespace Amazon.AWSToolkit.Publish.Views
 
         private void OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (sender is TextBox textBox)
+            if (!(sender is DependencyObject control))
             {
-                textBox.ScrollToEnd();
+                return;
             }
+
+            var scrollViewer = UIUtils.FindVisualParent<ScrollViewer>(control);
+
+            scrollViewer?.ScrollToEnd();
         }
     }
 }

@@ -30,14 +30,18 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         private static void ViewStack(PublishToAwsDocumentViewModel viewModel)
         {
+            string artifactId = string.Empty;
+
             try
             {
+                artifactId = viewModel.PublishProjectViewModel.PublishedArtifactId;
                 var publishContext = viewModel.PublishContext;
+
                 var cloudFormationViewer =
                     publishContext.ToolkitShellProvider.QueryAWSToolkitPluginService(typeof(ICloudFormationViewer)) as
                         ICloudFormationViewer;
 
-                cloudFormationViewer.View(viewModel.PublishedArtifactId,
+                cloudFormationViewer.View(artifactId,
                     new AwsConnectionSettings(
                         publishContext.ConnectionManager.ActiveCredentialIdentifier,
                         publishContext.ConnectionManager.ActiveRegion
@@ -45,7 +49,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
             }
             catch (Exception e)
             {
-                viewModel.PublishContext.ToolkitShellProvider.OutputError(new Exception($"Error viewing CloudFormation stack {viewModel.PublishedArtifactId}", e), Logger);
+                viewModel.PublishContext.ToolkitShellProvider.OutputError(new Exception($"Error viewing CloudFormation stack {artifactId}", e), Logger);
             }
         }
     }

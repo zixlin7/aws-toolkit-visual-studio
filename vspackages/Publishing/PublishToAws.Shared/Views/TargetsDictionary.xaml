@@ -1,0 +1,59 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+                    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+                    xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit">
+    <!-- 
+        This file defines content relating to target selection that is shared with more than one xaml.
+    -->
+    <commonUi:VsImages x:Key="VsImages" />
+
+    <ToolTip 
+        x:Key="RecipeDescriptionToolTip"
+        MaxWidth="500"
+        >
+        <StackPanel Orientation="Vertical">
+            <TextBlock 
+                FontWeight="Bold"
+                TextWrapping="Wrap"
+                Text="{Binding ShortDescription}" />
+            <TextBlock 
+                Margin="0 12 0 0"
+                TextWrapping="Wrap"
+                Text="{Binding Description}" />
+        </StackPanel>
+    </ToolTip>
+
+    <!-- ValidationErrorTemplate shows a validation message on the screen.
+    It does not decorate another control. It is intended to be displayed underneath the control containing an error. -->
+    <DataTemplate x:Key="ValidationErrorTemplate" DataType="{x:Type ValidationError}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" BorderThickness="1"
+                Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
+                />
+            <images:VsImage
+                Grid.Row="0" Grid.Column="0"
+                Height="16" Width="16" 
+                Margin="9 9 9 9"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Source="{Binding Source={StaticResource VsImages}, Path=StatusWarning}" />
+            <TextBlock 
+                Grid.Row="0" Grid.Column="1"
+                Margin="0 9 9 9" 
+                TextWrapping="Wrap"
+                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                Text="{Binding Path=ErrorContent}" />
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

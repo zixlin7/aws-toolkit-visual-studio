@@ -7,22 +7,32 @@ on:
         branches: [main, feature/*, release/*]
 
 jobs:
-    build-vs2019:
-        name: VS 2019
-        runs-on: windows-2019
-        env:
-            TEST_REPORT_HTML: TestResults/toolkit-test-results.html
-
+    build:
         strategy:
             matrix:
+                vs: [2019, 2022]
                 configuration: [Debug, Release]
+                include:
+                  - vs: 2019
+                    name: VS 2019
+                    os: windows-2019
+                    vs-version: "[16.0,17.0)"
+                  - vs: 2022
+                    name: VS 2022
+                    os: windows-2022
+                    vs-version: "[17.0,18.0)"
+
+        name: ${{ matrix.name }} (${{ matrix.configuration }})
+        runs-on: ${{ matrix.os }}
+        env:
+            TEST_REPORT_HTML: TestResults/toolkit-test-results.html
 
         steps:
             - uses: actions/checkout@v2
             - name: Add msbuild to PATH
               uses: microsoft/setup-msbuild@v1.0.2
               with:
-                  vs-version: "[16.0,17.0)"
+                  vs-version: ${{ matrix.vs-version }}
 
             - name: Restore
               run: msbuild buildtools\build.proj /t:restore /p:Configuration=${{ matrix.configuration }}
@@ -42,5 +52,5 @@ jobs:
               if: always()
               uses: actions/upload-artifact@v2
               with:
-                  name: test-reports-vs2019-${{ matrix.configuration }}
+                  name: test-reports-${{ matrix.vs }}-${{ matrix.configuration }}
                   path: ${{ env.TEST_REPORT_HTML }}

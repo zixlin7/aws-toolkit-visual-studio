@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Amazon.AWSToolkit.Publish.Util;
+
 namespace Amazon.AWSToolkit.Publish.Install
 {
     /// <summary>
@@ -21,13 +23,13 @@ namespace Amazon.AWSToolkit.Publish.Install
             if (ContainsVerifyError())
             {
                 throw new InvalidOperationException(
-                    $"AWS Toolkit was unable to verify the contents of the aws.deploy.cli tool.{Environment.NewLine}You might need to install .NET 5 or newer.");
+                    $"AWS Toolkit was unable to verify the contents of the {PublishToAwsConstants.DeployToolPackageName} tool.{Environment.NewLine}You might need to install .NET 5 or newer.");
             }
 
             if (_exitCode != 0)
             {
                 throw new InvalidOperationException(
-                    $"AWS Toolkit was unable to verify the contents of the aws.deploy.cli tool.{Environment.NewLine}Restart Visual Studio to try again.");
+                    $"AWS Toolkit was unable to verify the contents of the {PublishToAwsConstants.DeployToolPackageName} tool.{Environment.NewLine}Restart Visual Studio to try again.");
             }
         }
 

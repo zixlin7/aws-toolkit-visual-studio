@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.Util;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Util;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
@@ -25,17 +24,13 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
     {
         private readonly IAmazonCloudWatchLogs _client;
 
-        public CloudWatchLogsRepository(ICredentialIdentifier identifier, ToolkitRegion region,
+        public CloudWatchLogsRepository(AwsConnectionSettings connectionSettings,
             IAmazonCloudWatchLogs client)
         {
-            CredentialIdentifier = identifier;
-            Region = region;
+            ConnectionSettings = connectionSettings;
             _client = client;
         }
-
-        public ICredentialIdentifier CredentialIdentifier { get; }
-
-        public ToolkitRegion Region { get; }
+        public AwsConnectionSettings ConnectionSettings { get; }
 
         public async Task<PaginatedLogResponse<LogGroup>> GetLogGroupsAsync(GetLogGroupsRequest logGroupsRequest,
             CancellationToken cancelToken)
@@ -116,8 +111,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             var request = new DescribeLogStreamsRequest
             {
                 LogGroupName = logStreamsRequest.LogGroup,
-                LogStreamNamePrefix = logStreamsRequest.FilterText,
-                Descending = true,
+                Descending = logStreamsRequest.IsDescending,
                 OrderBy = CloudWatchOrderBy.LogStreamName
             };
 
@@ -126,6 +120,10 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
                 request.NextToken = logStreamsRequest.NextToken;
             }
 
+            if (!string.IsNullOrEmpty(logStreamsRequest.FilterText))
+            {
+                request.LogStreamNamePrefix = logStreamsRequest.FilterText;
+            }
             return request;
         }
 
@@ -134,7 +132,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             var request = new DescribeLogStreamsRequest
             {
                 LogGroupName = logStreamsRequest.LogGroup,
-                Descending = true,
+                Descending = logStreamsRequest.IsDescending,
                 OrderBy = CloudWatchOrderBy.LastEventTime
             };
 

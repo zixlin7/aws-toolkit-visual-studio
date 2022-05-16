@@ -1,6 +1,8 @@
 ﻿using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 
+using Microsoft.Win32;
+
 namespace Amazon.AWSToolkit.CommonUI
 {
     /// <summary>
@@ -8,6 +10,7 @@ namespace Amazon.AWSToolkit.CommonUI
     /// </summary>
     public interface IDialogFactory
     {
+        OpenFileDialog CreateOpenFileDialog();
         ISelectionDialog CreateSelectionDialog();
         IIamRoleSelectionDialog CreateIamRoleSelectionDialog();
         IVpcSelectionDialog CreateVpcSelectionDialog();

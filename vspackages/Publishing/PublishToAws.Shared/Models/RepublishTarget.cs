@@ -22,8 +22,10 @@ namespace Amazon.AWSToolkit.Publish.Models
             Service = deploymentStack?.TargetService;
             DeploymentArtifact = deploymentStack?.DeploymentType.AsDeploymentArtifact() ?? DeploymentArtifact.Unknown;
             RecipeId = deploymentStack?.RecipeId;
+            BaseRecipeId = deploymentStack?.BaseRecipeId;
             RecipeName = deploymentStack?.RecipeName;
             Description = deploymentStack?.Description;
+            IsGenerated = deploymentStack?.IsPersistedDeploymentProject ?? false;
             ShortDescription = deploymentStack?.ShortDescription;
             ExistingDeploymentId = deploymentStack?.ExistingDeploymentId;
         }

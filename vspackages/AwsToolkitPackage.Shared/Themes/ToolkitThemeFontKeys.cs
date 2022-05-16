@@ -15,5 +15,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         public object Heading2FontWeight => VsFonts.Environment155PercentFontWeightKey;
         public object Heading3FontSize => VsFonts.Environment133PercentFontSizeKey;
         public object Heading3FontWeight => VsFonts.Environment133PercentFontWeightKey;
+        public object Heading4FontSize => VsFonts.Environment122PercentFontSizeKey;
+        public object Heading4FontWeight => VsFonts.Environment122PercentFontWeightKey;
     }
 }

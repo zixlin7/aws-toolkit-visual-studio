@@ -226,6 +226,14 @@
         <properties:KeyValuesTypeControl />
     </DataTemplate>
 
+    <DataTemplate x:Key="ListEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:ListTypeControl />
+    </DataTemplate>
+
+    <DataTemplate x:Key="FilePathEditor" DataType="{x:Type models:ConfigurationDetail}">
+        <properties:FilePathTypeControl />
+    </DataTemplate>
+
     <models:PropertyTemplateSelector 
         x:Key="PropertyTemplateSelector" 
         ParentEditor="{StaticResource ParentEditor}"
@@ -239,6 +247,8 @@
         Ec2InstanceTypeEditor="{StaticResource Ec2InstanceTypeEditor}"
         EcrRepositoryEditor="{StaticResource EcrRepositoryEditor}"
         KeyValuesTypeEditor="{StaticResource KeyValuesTypeEditor}"
+        ListEditor="{StaticResource ListEditor}"
+        FilePathEditor="{StaticResource FilePathEditor}"
         />
 
 </ResourceDictionary>

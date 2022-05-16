@@ -31,7 +31,7 @@ namespace BuildTasks.Test
             // eg: October 1 -> "1001"
             var month = dateTime.Month;
             var day = dateTime.Day;
-            return $"{month:00}{day:00}";
+            return $"{month}{day:00}";
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SNS.Nodes;
@@ -11,47 +14,57 @@ namespace Amazon.AWSToolkit.SNS.Controller
 {
     public class CreateTopicController : BaseContextCommand
     {
-        CreateTopicControl _control;
-        CreateTopicModel _model;
-        SNSRootViewModel _rootModel;
-        ActionResults _results;
+        private readonly ToolkitContext _toolkitContext;
+        private CreateTopicControl _control;
+        private CreateTopicModel _model;
+        private SNSRootViewModel _rootModel;
+
+        public CreateTopicController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public override ActionResults Execute(IViewModel model)
         {
-            this._rootModel = model as SNSRootViewModel;
-            if (this._rootModel == null)
+            _rootModel = model as SNSRootViewModel;
+            if (_rootModel == null)
+            {
                 return new ActionResults().WithSuccess(false);
+            }
 
-            this._model = new CreateTopicModel();
-            this._control = new CreateTopicControl(this);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);
+            _model = new CreateTopicModel();
+            _control = new CreateTopicControl(this);
 
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-            return this._results;
+            if (!_toolkitContext.ToolkitHost.ShowInModalDialogWindow(_control, MessageBoxButton.OKCancel))
+            {
+                return new ActionResults()
+                    .WithCancelled(true)
+                    .WithSuccess(false);
+            }
+
+            return Persist();
         }
 
-        public CreateTopicModel Model => this._model;
+        public CreateTopicModel Model => _model;
 
-        public void Persist()
+        private ActionResults Persist()
         {
             try
             {
-                var request = new CreateTopicRequest() { Name = this._model.TopicName };
+                var request = new CreateTopicRequest() { Name = _model.TopicName };
 
-                var createResponse = this._rootModel.SNSClient.CreateTopic(request);
-                this._model.TopicARN = createResponse.TopicArn;
+                var createResponse = _rootModel.SNSClient.CreateTopic(request);
 
-                this._results = new ActionResults()
+                return new ActionResults()
                     .WithSuccess(true)
-                    .WithFocalname(this.Model.TopicName)
+                    .WithFocalname(Model.TopicName)
                     .WithParameters(new KeyValuePair<string, object>("CreatedTopic", createResponse.TopicArn))
                     .WithShouldRefresh(true);
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating bucket: " + e.Message);
-                this._results = new ActionResults().WithSuccess(false);
+                _toolkitContext.ToolkitHost.ShowError($"Error creating SNS Topic:{Environment.NewLine}{e.Message}");
+                return new ActionResults().WithSuccess(false);
             }
         }
     }

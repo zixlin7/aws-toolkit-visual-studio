@@ -41,6 +41,11 @@
             "description": "The recipe used for the deployment"
         },
         {
+            "name": "isGeneratedProject",
+            "type": "boolean",
+            "description": "Whether or not the referenced project was generated"
+        },
+        {
             "name": "publishSettingType",
             "type": "string",
             "description": "The type of a particular configuration setting/detail"
@@ -89,6 +94,14 @@
             ]
         },
         {
+            "name": "publish_end",
+            "description": "Called when user exits the Publish to AWS workflow",
+            "metadata": [
+                { "type": "published" },
+                { "type": "duration" }
+            ]
+        },
+        {
             "name": "publish_deploy",
             "description": "Called when user publishes the project",
             "metadata": [
@@ -100,6 +113,7 @@
                 { "type": "defaultConfiguration" },
                 { "type": "recommendedTarget", "required": false },
                 { "type": "recipeId" },
+                { "type": "isGeneratedProject", "required": false },
                 { "type": "errorCode", "required": false },
                 { "type": "reason", "required": false }
             ] 

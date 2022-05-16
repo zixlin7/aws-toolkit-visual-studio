@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Publish\SetDeploymentTargetAsyncTest.cs" />
     <Compile Include="Publish\EcrRepositoryPublishIntegrationTest.cs" />
     <Compile Include="Publish\AppRunnerPublishIntegrationTest.cs" />
     <Compile Include="Publish\DeployCliInstallationFixture.cs" />
@@ -69,13 +70,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.ECR">
-      <Version>3.7.1.5</Version>
+      <Version>3.7.4.16</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.12.0</Version>
+      <Version>4.17.2</Version>
     </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.4.1</Version>
@@ -84,12 +85,12 @@
       <Version>2.4.1</Version>
     </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.4.3</Version>
+      <Version>2.4.5</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Xunit.StaFact">
-      <Version>0.3.18</Version>
+      <Version>1.1.11</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

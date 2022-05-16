@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Solutions
 
         private Project CreateProjectWithTargetFramework(FrameworkName targetFramework)
         {
-            return new Project("SampleProject", @"\my\project\SampleProject.csproj", targetFramework);
+            return new Project("SampleProject", @"\my\project\SampleProject.csproj", Guid.NewGuid(), targetFramework);
         }
 
         [Fact]

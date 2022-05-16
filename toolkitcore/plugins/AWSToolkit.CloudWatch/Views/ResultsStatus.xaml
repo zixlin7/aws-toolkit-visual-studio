@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.CloudWatch.Views.ResultsStatus"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+             themes:ToolkitThemes.UseToolkitTheme="True"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <commonUi:VsImages x:Key="VsImages" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <images:VsImage Grid.Row="0" Grid.Column="0"
+                        Height="16"
+                        Width="16"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+            <images:VsImage.Style>
+                <Style TargetType="{x:Type images:VsImage}">
+                    <Setter Property="Source" Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition
+                                    Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                    Value="" />
+                                <Condition
+                                    Binding="{Binding DataContext.LoadingLogs, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                    Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Source"
+                                    Value="{Binding Source={StaticResource VsImages}, Path=Loading}" />
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition
+                                    Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                    Value="" />
+                                <Condition
+                                    Binding="{Binding DataContext.LoadingLogs, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"
+                                    Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Source"
+                                    Value="{Binding Source={StaticResource VsImages}, Path=StatusInformation}" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </images:VsImage.Style>
+        </images:VsImage>
+
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 Background="Transparent"
+                 BorderBrush="Transparent"
+                 BorderThickness="0"
+                 IsReadOnly="True"
+                 TextWrapping="WrapWithOverflow"
+                 FontWeight="SemiBold"
+                 Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                 Margin="6 0 0 0">
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="Text" Value="{Binding ErrorMessage}" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ErrorMessage}" Value="" />
+                                <Condition Binding="{Binding LoadingLogs}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Text" Value="Loading..."></Setter>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ErrorMessage}" Value="" />
+                                <Condition Binding="{Binding LoadingLogs}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Text" Value="No Results Found"></Setter>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+    </Grid>
+</UserControl>

@@ -51,6 +51,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             Assert.True(_sut.CanExecute(null));
         }
 
+        [Fact]
+        public void CanExecute_IsLoading()
+        {
+            _commandFixture.SetupNewPublish();
+            _commandFixture.ViewModel.IsLoading = true;
+
+            Assert.False(_sut.CanExecute(null));
+        }
+
+        [Fact]
+        public void CanExecute_MissingRequirement()
+        {
+            _commandFixture.SetupNewPublish();
+            _commandFixture.AddMissingRequirement("some-requirement");
+
+            Assert.False(_sut.CanExecute(null));
+        }
+
         [Theory]
         [InlineData(PublishViewStage.Configure)]
         [InlineData(PublishViewStage.Publish)]

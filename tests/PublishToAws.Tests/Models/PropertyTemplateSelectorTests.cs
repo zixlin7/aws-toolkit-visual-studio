@@ -24,6 +24,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             VpcEditor = new DataTemplate(),
             Ec2InstanceTypeEditor = new DataTemplate(),
             EcrRepositoryEditor = new DataTemplate(),
+            ListEditor = new DataTemplate(),
+            FilePathEditor = new DataTemplate()
         };
 
         [Fact]
@@ -70,6 +72,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             var detail = new ConfigurationDetail() {Type = DetailType.Boolean};
 
             Assert.Equal(_sut.BooleanEditor, _sut.SelectTemplate(detail, null));
+        }
+
+        [Fact]
+        public void SelectTemplate_ListDetail()
+        {
+            var detail = new ListConfigurationDetail() { Type = DetailType.List };
+
+            Assert.Equal(_sut.ListEditor, _sut.SelectTemplate(detail, null));
         }
 
         [Fact]

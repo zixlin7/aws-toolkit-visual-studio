@@ -72,6 +72,8 @@ namespace Amazon.AWSToolkit.Themes
         public static object Heading2FontWeightKey => GetThemeFontKeys().Heading2FontWeight;
         public static object Heading3FontSizeKey => GetThemeFontKeys().Heading3FontSize;
         public static object Heading3FontWeightKey => GetThemeFontKeys().Heading3FontWeight;
+        public static object Heading4FontSizeKey => GetThemeFontKeys().Heading4FontSize;
+        public static object Heading4FontWeightKey => GetThemeFontKeys().Heading4FontWeight;
 
         /// <summary>
         /// Obtains the source of Brush Keys to be used by the Toolkit

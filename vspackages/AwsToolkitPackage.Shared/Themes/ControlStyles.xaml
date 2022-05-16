@@ -7,12 +7,14 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="BaseToolkitStyles.xaml" />
+        <ResourceDictionary Source="./Controls/ExpanderStyles.xaml" />
+        <ResourceDictionary Source="./Controls/ToolTipStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <!-- This is the same padding used by Visual Studio Text Box controls (like TextBox and WatermarkedTextBox). -->
-    <Thickness x:Key="{x:Static toolkit:ThemeResourceKeys.InputPaddingKey}">6,8,6,8</Thickness>
-
     <Style TargetType="Button" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
+    </Style>
+
+    <Style TargetType="ListBox" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ListBoxStyle}}">
     </Style>
 
     <!-- Apply the VS ProgressBar Theme as the default ProgressBar theme -->
@@ -68,5 +70,7 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style TargetType="ToolTip" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ToolTipStyle}}"/>
 
 </ResourceDictionary>

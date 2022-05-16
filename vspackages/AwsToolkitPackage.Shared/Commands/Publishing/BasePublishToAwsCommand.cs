@@ -126,11 +126,22 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
                     return;
                 }
 
+                if (!TryGetVsHierarchy(project, out IVsHierarchy vsHierarchy))
+                {
+                    return; 
+                }
+
+                if (Solution.GetGuidOfProject(vsHierarchy, out Guid projectGuid) != VSConstants.S_OK)
+                {
+                    return;
+                }
+
                 var publishArgs = new ShowPublishToAwsDocumentArgs()
                 {
                     Requester = PublishRequester,
                     ProjectName = project.Name,
                     ProjectPath = project.FileName,
+                    ProjectGuid = projectGuid,
                     CredentialId = ToolkitContext.ConnectionManager.ActiveCredentialIdentifier,
                     AccountId = ToolkitContext.ConnectionManager.ActiveAccountId,
                     Region = ToolkitContext.ConnectionManager.ActiveRegion,
@@ -257,9 +268,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
 
         private bool IsProjectPublishable(Project project)
         {
-            if (Solution.GetProjectOfUniqueName(project.UniqueName, out var hierarchy) != VSConstants.S_OK)
+            if (!TryGetVsHierarchy(project, out var hierarchy))
             {
-                return false;
+                return false; 
             }
 
             if (!VsHierarchyHelpers.TryGetTargetFramework(hierarchy, VSConstants.VSITEMID_ROOT,
@@ -269,6 +280,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
             }
 
             return PublishableProjectSpecification.IsSatisfiedBy(targetFramework);
+        }
+
+        private bool TryGetVsHierarchy(Project project, out IVsHierarchy hierarchy)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (Solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy) != VSConstants.S_OK)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void RecordPublishStartMetric(string accountId, string regionId, Result result)

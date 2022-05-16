@@ -25,7 +25,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         private static bool CanExecute(PublishToAwsDocumentViewModel viewModel)
         {
-            if (viewModel.IsPublishing || viewModel.ViewStage != PublishViewStage.Target) { return false; }
+            if (viewModel.PublishProjectViewModel.IsPublishing || viewModel.ViewStage != PublishViewStage.Target) { return false; }
 
             return true;
         }

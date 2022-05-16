@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +13,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AWSToolkit.Tests</RootNamespace>
     <AssemblyName>AWSToolkit.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -52,13 +55,23 @@
     <Compile Include="Clients\AwsServiceClientManagerTests.cs" />
     <Compile Include="Clients\ServiceClientCreatorTests.cs" />
     <Compile Include="CloudFormation\CloudFormationViewerTests.cs" />
-    <Compile Include="CloudWatch\CloudWatchLogsExtensionMethodTests.cs" />
-    <Compile Include="CloudWatch\CloudWatchLogsRepositoryTests.cs" />
-    <Compile Include="CloudWatch\CloudWatchRootViewModelTests.cs" />
-    <Compile Include="CloudWatch\LogGroupsViewModelTests.cs" />
-    <Compile Include="CloudWatch\RefreshLogGroupsCommandTests.cs" />
-    <Compile Include="CloudWatch\TestCloudWatchRootViewModel.cs" />
-    <Compile Include="CloudWatch\ViewLogGroupsCommandTests.cs" />
+    <Compile Include="CloudWatch\Commands\DeleteLogGroupCommandTests.cs" />
+    <Compile Include="CloudWatch\Commands\RefreshLogEventsCommandTests.cs" />
+    <Compile Include="CloudWatch\Commands\ViewLogEventsCommandTests.cs" />
+    <Compile Include="CloudWatch\Fixtures\LogEventsViewModelFixture.cs" />
+    <Compile Include="CloudWatch\Util\CloudWatchLogsExtensionMethodTests.cs" />
+    <Compile Include="CloudWatch\Core\CloudWatchLogsRepositoryTests.cs" />
+    <Compile Include="CloudWatch\ViewModels\CloudWatchRootViewModelTests.cs" />
+    <Compile Include="CloudWatch\Fixtures\LogGroupsViewModelFixture.cs" />
+    <Compile Include="CloudWatch\ViewModels\LogEventsViewModelTests.cs" />
+    <Compile Include="CloudWatch\ViewModels\LogGroupsViewModelTests.cs" />
+    <Compile Include="CloudWatch\Fixtures\LogStreamsViewModelFixture.cs" />
+    <Compile Include="CloudWatch\ViewModels\LogStreamsViewModelTests.cs" />
+    <Compile Include="CloudWatch\Commands\RefreshLogGroupsCommandTests.cs" />
+    <Compile Include="CloudWatch\Commands\RefreshLogStreamsCommandTests.cs" />
+    <Compile Include="CloudWatch\ViewModels\TestCloudWatchRootViewModel.cs" />
+    <Compile Include="CloudWatch\Commands\ViewLogGroupsCommandTests.cs" />
+    <Compile Include="CloudWatch\Commands\ViewLogStreamsCommandTests.cs" />
     <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
     <Compile Include="CodeArtifact\ConfigurationTests.cs" />
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
@@ -72,6 +85,7 @@
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
     <Compile Include="CommonUI\ConcatenateCollectionConverterTests.cs" />
     <Compile Include="CommonUI\ConverterPipelineTests.cs" />
+    <Compile Include="CommonUI\CredentialIdentifierConverterTests.cs" />
     <Compile Include="CommonUI\CredentialIdentifierGroupConverterTests.cs" />
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
     <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModelTests.cs" />
@@ -79,6 +93,7 @@
     <Compile Include="CommonUI\HasValueVisibilityConverterTests.cs" />
     <Compile Include="CommonUI\RepositorySelectionViewModelTests.cs" />
     <Compile Include="CommonUI\InstanceTypeSelectionViewModelTests.cs" />
+    <Compile Include="CommonUI\ToolkitRegionConverterTests.cs" />
     <Compile Include="CommonUI\VpcSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\IamRoleSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
@@ -170,6 +185,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Publish\PublishToAwsExtensionMethodsTests.cs" />
     <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
+    <Compile Include="SNS\CreateTopicModelTests.cs" />
     <Compile Include="VsSdk.Common\CommonUI\KeyValueEditorViewModelTests.cs" />
     <Compile Include="VsSdk.Common\ImageThemeConverterTests.cs" />
     <Compile Include="ViewModels\KeyValuesViewModelTests.cs" />
@@ -177,10 +193,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeArtifact">
-      <Version>3.7.0.73</Version>
+      <Version>3.7.0.154</Version>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.12.0</Version>
+      <Version>4.17.2</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>9.0.1</Version>
@@ -189,12 +205,12 @@
       <Version>2.4.1</Version>
     </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.4.1</Version>
+      <Version>2.4.5</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Xunit.StaFact">
-      <Version>0.3.18</Version>
+      <Version>1.1.11</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

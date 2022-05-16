@@ -12,6 +12,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\CloseFailureBannerCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ConfigCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\CopyToClipboardCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\EditListCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\OpenFileSelectionCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PersistBannerVisibilityCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
@@ -28,11 +30,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetViewCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ConfigurationDetailsToVisibilityConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishResourcesToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishTargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\RepublishTargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\SessionVisibilityConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\SystemCapabilitiesToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\TargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Install\DeployCli.cs" />
@@ -52,13 +52,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\FilePathConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValueConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\KeyValuesConversion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\EcrRepositoryConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\ListConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\VpcConnectorVpcConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DeploymentArtifact.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExceptionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishDestinationBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishProjectResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishUrls.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\Ec2InstanceConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConfigurationDetail.cs" />
@@ -90,10 +94,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICliServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\DeploymentTypesExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\OptionSettingItemSummaryExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\PublishToAwsConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeploymentMessageGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishProjectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DesignTimePublishConnectionViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DocumentLoadingIndicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishProjectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MissingCapabilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProgressStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishConnectionViewModel.cs" />
@@ -106,7 +113,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\CredentialsRegionControl.xaml.cs">
       <DependentUpon>CredentialsRegionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishDocumentViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Dialogs\ConfirmPublishDialog.xaml.cs">
+      <DependentUpon>ConfirmPublishDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Dialogs\IConfirmPublishDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\ExistingTargetDetailsView.xaml.cs">
       <DependentUpon>ExistingTargetDetailsView.xaml</DependentUpon>
     </Compile>
@@ -119,11 +129,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\EcrRepositoryControl.xaml.cs">
       <DependentUpon>EcrRepositoryControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\FilePathTypeControl.xaml.cs">
+      <DependentUpon>FilePathTypeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\IamRolePropertyControl.xaml.cs">
       <DependentUpon>IamRolePropertyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\KeyValuesTypeControl.xaml.cs">
       <DependentUpon>KeyValuesTypeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\ListTypeControl.xaml.cs">
+      <DependentUpon>ListTypeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\Properties\VpcPropertyControl.xaml.cs">
       <DependentUpon>VpcPropertyControl.xaml</DependentUpon>
@@ -164,6 +180,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Dialogs\ConfirmPublishDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\ExistingTargetDetailsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -180,9 +200,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\FilePathTypeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\KeyValuesTypeControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\Properties\ListTypeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\PropertyEditors.xaml">
       <SubType>Designer</SubType>
@@ -195,6 +223,10 @@
     <Page Include="$(MSBuildThisFileDirectory)Views\Properties\VpcPropertyControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\TargetsDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishApplicationView.xaml">
       <SubType>Designer</SubType>

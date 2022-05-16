@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
@@ -18,18 +21,17 @@ using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
-using Amazon.AWSToolkit.Publish.Views;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
 
 using AWS.Deploy.ServerMode.Client;
 
 using log4net;
 
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
 using Task = System.Threading.Tasks.Task;
@@ -40,7 +42,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
     /// This ViewModel contains the functionality and data that
     /// backs the "Publish to AWS" document tab (<see cref="Views.PublishApplicationView"/>)
     /// </summary>
-    public class PublishToAwsDocumentViewModel : BaseModel
+    public class PublishToAwsDocumentViewModel : BaseModel, INotifyDataErrorInfo
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(PublishToAwsDocumentViewModel));
         private const string DeploymentStatusMessage = "Deployment Status: ";
@@ -66,14 +68,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private IDeployToolController _deployToolController;
         private IDeploymentCommunicationClient _deploymentCommunicationClient;
+        private volatile int _isLoadingScope = 0;
         private bool _isLoading;
         private string _errorMessage = string.Empty;
         private bool _publishTargetsLoaded;
         private bool _isOptionsBannerEnabled;
-        private bool _isFailureBannerEnabled;
         private bool _isRepublish;
         private bool _isDefaultConfig = true;
         private string _projectPath;
+        private Guid _projectGuid;
         private string _projectName;
         private string _publishSummary;
         private string _targetDescription;
@@ -81,19 +84,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private PublishCommand _publishToAwsCommand;
         private ConfigCommand _configTargetCommand;
         private TargetCommand _backToTargetCommand;
-        private ICommand _startOverCommand;
         private ICommand _persistOptionsSettingsCommand;
-        private ICommand _closeFailureBannerCommand;
         private ICommand _learnMoreCommand;
         private ICommand _feedbackCommand;
-        private ICommand _viewPublishedArtifactCommand;
-        private ICommand _copyToClipboardCommand;
-        private ProgressStatus _progressStatus;
         private string _deploymentSessionId;
-        private string _publishProgress;
         private string _targetRecipe;
         private ICollectionView _republishCollectionView;
-        private string _publishedArtifactId;
+
+        private readonly PublishProjectViewModel _publishProjectViewModel;
 
         /// <summary>
         /// Holds the currently selected publishing target
@@ -109,8 +107,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         private string _publishStackName;
 
-        private bool _isPublishing;
-        private Stopwatch _publishDuration = new Stopwatch();
         private Stopwatch _workflowDuration = new Stopwatch();
 
 
@@ -120,14 +116,13 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private ObservableCollection<RepublishTarget> _republishTargets =
             new ObservableCollection<RepublishTarget>();
 
+        private bool _loadingSystemCapabilities = false;
+
         private ObservableCollection<TargetSystemCapability> _systemCapabilities =
             new ObservableCollection<TargetSystemCapability>();
 
         private ObservableCollection<ConfigurationDetail> _configurationDetails =
             new ObservableCollection<ConfigurationDetail>();
-
-        private ObservableCollection<PublishResource> _publishResources =
-            new ObservableCollection<PublishResource>();
 
         public readonly MissingCapabilities MissingCapabilities =
             new MissingCapabilities();
@@ -135,12 +130,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public readonly UnsupportedSettingTypes UnsupportedSettingTypes =
             new UnsupportedSettingTypes();
 
+        /// <summary>
+        /// Class constructor
+        /// </summary>
         public PublishToAwsDocumentViewModel(PublishApplicationContext publishContext)
         {
             _publishContext = publishContext;
             _publishConnection = new PublishConnectionViewModel(
                 publishContext.ConnectionManager,
                 publishContext.PublishPackage.JoinableTaskFactory);
+
+            _publishProjectViewModel = new PublishProjectViewModel(_publishContext);
         }
 
         public void LoadPublishSettings()
@@ -154,6 +154,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public JoinableTaskFactory JoinableTaskFactory => _publishContext.PublishPackage.JoinableTaskFactory;
         public PublishConnectionViewModel Connection => _publishConnection;
+
+        public PublishProjectViewModel PublishProjectViewModel => _publishProjectViewModel;
 
         /// <summary>
         /// Represents the republish targets collection view displayed in the Targets view
@@ -196,15 +198,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _isOptionsBannerEnabled;
             set => SetProperty(ref _isOptionsBannerEnabled, value);
-        }
-
-        /// <summary>
-        /// Whether or not the UI should show the publish failure banner
-        /// </summary>
-        public bool IsFailureBannerEnabled
-        {
-            get => _isFailureBannerEnabled;
-            set => SetProperty(ref _isFailureBannerEnabled, value);
         }
 
         /// <summary>
@@ -258,10 +251,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             if (IsRepublish)
             {
-                return _publishDestinationCache as RepublishTarget;
+                return GetRepublishTargetOrFallback(_publishDestinationCache as RepublishTarget);
             }
 
-            return _publishDestinationCache as PublishRecommendation;
+            return GetRecommendationOrFallback(_publishDestinationCache as PublishRecommendation);
+        }
+
+        public PublishRecommendation GetRecommendationOrFallback(PublishRecommendation recommendation)
+        {
+            return Recommendations.FirstOrDefault(r => r == recommendation) ??
+                   Recommendations.FirstOrDefault(r => r.IsRecommended) ??
+                   Recommendations.FirstOrDefault();
+        }
+
+        public RepublishTarget GetRepublishTargetOrFallback(RepublishTarget republishTarget)
+        {
+            return RepublishTargets.FirstOrDefault(r => r == republishTarget) ??
+                   RepublishTargets.FirstOrDefault(r => r.IsRecommended) ??
+                   RepublishTargets.FirstOrDefault();
         }
 
         /// <summary>
@@ -271,24 +278,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _isDefaultConfig;
             set => SetProperty(ref _isDefaultConfig, value);
-        }
-
-        /// <summary>
-        /// Indicates whether or not a publish is in progress
-        /// </summary>
-        public bool IsPublishing
-        {
-            get => _isPublishing;
-            set => SetProperty(ref _isPublishing, value);
-        }
-
-        /// <summary>
-        /// The time it takes to publish the project
-        /// </summary>
-        public Stopwatch PublishDuration
-        {
-            get => _publishDuration;
-            set => SetProperty(ref _publishDuration, value);
         }
 
         /// <summary>
@@ -310,6 +299,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
+        /// Full path of the project (eg .csproj file) that will be published
+        /// </summary>
+        public Guid ProjectGuid
+        {
+            get => _projectGuid;
+            set => SetProperty(ref _projectGuid, value);
+        }
+
+        /// <summary>
         /// Display-friendly name of the project that will be published
         /// </summary>
         public string ProjectName
@@ -328,27 +326,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Indicates the current deployment progress status of the application 
-        /// </summary>
-        public ProgressStatus ProgressStatus
-        {
-            get => _progressStatus;
-            set => SetProperty(ref _progressStatus, value);
-        }
-
-        /// <summary>
-        /// The Id of the published artifact.
-        ///
-        /// Correlates with the PublishDestination's DeploymentArtifact (<see cref="PublishDestinationBase.DeploymentArtifact"/>)
-        /// Eg: For CloudFormation Stacks: stack Id, Beanstalk Environments: environment name
-        /// </summary>
-        public string PublishedArtifactId
-        {
-            get => _publishedArtifactId;
-            set => SetProperty(ref _publishedArtifactId, value);
-        }
-
-        /// <summary>
         /// SignalR client used to get deployment status updates from the Publish CLI Server
         /// </summary>
         public IDeploymentCommunicationClient DeploymentClient
@@ -364,7 +341,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public IDeployToolController DeployToolController
         {
             get => _deployToolController;
-            set => SetProperty(ref _deployToolController, value);
+            set
+            {
+                _deployToolController = value;
+                PublishProjectViewModel.SetDeployToolController(value);
+            }
         }
 
         /// <summary>
@@ -395,41 +376,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Command that resets the overall state and takes the user back to the starting (Target selection) screen
-        /// </summary>
-        public ICommand StartOverCommand
-        {
-            get => _startOverCommand;
-            set => SetProperty(ref _startOverCommand, value);
-        }
-
-        /// <summary>
         /// Command that persists settings related to new publish options banner
         /// </summary>
         public ICommand PersistOptionsSettingsCommand
         {
             get => _persistOptionsSettingsCommand;
             set => SetProperty(ref _persistOptionsSettingsCommand, value);
-        }
-
-        /// <summary>
-        /// Command that closes publish failure banner
-        /// </summary>
-        public ICommand CloseFailureBannerCommand
-        {
-            get => _closeFailureBannerCommand;
-            set => SetProperty(ref _closeFailureBannerCommand, value);
-        }
-        /// <summary>
-        /// Command that allows viewing the deployment artifact
-        /// 
-        /// Correlates with the PublishDestination's DeploymentArtifact (<see cref="PublishDestinationBase.DeploymentArtifact"/>)
-        /// Eg: CloudFormation Stacks, Beanstalk Environments, ...
-        /// </summary>
-        public ICommand ViewPublishedArtifactCommand
-        {
-            get => _viewPublishedArtifactCommand;
-            set => SetProperty(ref _viewPublishedArtifactCommand, value);
         }
 
         /// <summary>
@@ -441,15 +393,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Command that shows the feedback panel for the Publish experience
         /// </summary>
         public ICommand FeedbackCommand => _feedbackCommand ?? (_feedbackCommand = CreateFeedbackCommand());
-
-        /// <summary>
-        /// Command that copies to clipboard the published resources details
-        /// </summary>
-        public ICommand CopyToClipboardCommand
-        {
-            get => _copyToClipboardCommand;
-            set => SetProperty(ref _copyToClipboardCommand, value);
-        }
 
         /// <summary>
         /// Stack name for the deployed application
@@ -466,7 +409,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get
             {
-                if (PublishDestination == null) return true;
+                if (PublishDestination == null) { return false; }
+                if (!(PublishDestination is PublishRecommendation)) { return false; }
 
                 return PublishDestination.DeploymentArtifact != DeploymentArtifact.ElasticContainerRegistry;
             }
@@ -515,12 +459,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set => SetProperty(ref _configurationDetails, value);
         }
 
-        public ObservableCollection<PublishResource> PublishResources
-        {
-            get => _publishResources;
-            set => SetProperty(ref _publishResources, value);
-        }
-
         /// <summary>
         /// The target to publish (or republish) the user's application to.
         /// </summary>
@@ -543,10 +481,16 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set => SetProperty(ref _republishTargets, value);
         }
 
+        public bool LoadingSystemCapabilities
+        {
+            get => _loadingSystemCapabilities;
+            private set => SetProperty(ref _loadingSystemCapabilities, value);
+        }
+
         public ObservableCollection<TargetSystemCapability> SystemCapabilities
         {
             get => _systemCapabilities;
-            set => SetProperty(ref _systemCapabilities, value);
+            private set => SetProperty(ref _systemCapabilities, value);
         }
 
         /// <summary>
@@ -567,14 +511,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set => SetProperty(ref _targetDescription, value);
         }
 
-        /// <summary>
-        /// Deployment progress messages displayed in the Publish in Progress View
-        /// </summary>
-        public string PublishProgress
-        {
-            get => _publishProgress;
-            set => SetProperty(ref _publishProgress, value);
-        }
         public PublishApplicationContext PublishContext => _publishContext;
 
         public bool IsSessionEstablished => !string.IsNullOrWhiteSpace(SessionId);
@@ -583,15 +519,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public bool HasValidationErrors()
         {
+            if (AsINotifyDataErrorInfo.HasErrors)
+            {
+                return true;
+            }
+
             var configurationDetailValidation = ConfigurationDetails?.GetDetailAndDescendants()
                        .Any(detail => detail.HasErrors)
                    ?? false;
             if (configurationDetailValidation)
+            {
                 return true;
+            }
 
             var systemCapabilitiesValidation = SystemCapabilities?.Any() ?? false;
             if (systemCapabilitiesValidation)
+            {
                 return true;
+            }
 
             return false;
         }
@@ -644,6 +589,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public async Task RestartDeploymentSessionAsync(CancellationToken cancellationToken)
         {
+            await ClearTargetSelectionAsync(cancellationToken).ConfigureAwait(false);
             await StopDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
             await StartDeploymentSessionAsync(cancellationToken).ConfigureAwait(false);
 
@@ -652,6 +598,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 SetRepublishTargetsAsync(new ObservableCollection<RepublishTarget>(), cancellationToken),
                 SetRecommendationsAsync(new ObservableCollection<PublishRecommendation>(), cancellationToken)
             ).ConfigureAwait(false);
+        }
+
+        public async Task ClearTargetSelectionAsync(CancellationToken cancellationToken)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            ErrorMessage = string.Empty;
+            PublishDestination = null;
+            SetCachedPublishDestination(null);
+            SystemCapabilities?.Clear();
+            TargetDescription = string.Empty;
+            PublishSummary = string.Empty;
         }
 
         /// <summary>
@@ -785,17 +742,25 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public async Task RefreshSystemCapabilitiesAsync(CancellationToken cancellationToken)
         {
-            var capabilities = new ObservableCollection<TargetSystemCapability>();
-            var recipeId = string.Empty;
+            var capabilities = new List<TargetSystemCapability>();
+
             try
             {
                 ThrowIfSessionIsNotCreated();
-                recipeId = PublishDestination?.RecipeId;
 
-                var systemCapabilities = await DeployToolController.GetCompatibilityAsync(SessionId, cancellationToken)
-                    .ConfigureAwait(false);
+                var recipeId = PublishDestination?.RecipeId;
+                if (string.IsNullOrWhiteSpace(recipeId)) { return; }
 
-                capabilities = new ObservableCollection<TargetSystemCapability>(systemCapabilities);
+                using (await CreateLoadingSystemCapabilitiesScopeAsync().ConfigureAwait(false))
+                {
+                    var systemCapabilities = await DeployToolController
+                        .GetCompatibilityAsync(SessionId, cancellationToken)
+                        .ConfigureAwait(false);
+
+                    capabilities.AddRange(systemCapabilities);
+
+                    UpdateMissingCapabilities(recipeId, capabilities);
+                }
             }
             catch (Exception e)
             {
@@ -804,17 +769,26 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             finally
             {
                 await SetSystemCapabilitiesAsync(capabilities, cancellationToken);
-                UpdateMissingCapabilities(recipeId, capabilities);
-                if (capabilities.Any())
-                {
-                    var message = $"{ProjectName} cannot be published to {PublishDestination?.Name}, system dependencies are missing ({capabilities.Count}).";
-                    Logger.Debug(message);
-                    _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
-                }
             }
         }
 
-        private void UpdateMissingCapabilities(string recipeId, ObservableCollection<TargetSystemCapability> capabilities)
+        private async Task<IDisposable> CreateLoadingSystemCapabilitiesScopeAsync()
+        {
+            await SetLoadingSystemCapabilitiesAsync(true).ConfigureAwait(false);
+
+            return new DisposingAction(() =>
+            {
+                JoinableTaskFactory.Run(async () => await SetLoadingSystemCapabilitiesAsync(false).ConfigureAwait(false));
+            });
+        }
+
+        private async Task SetLoadingSystemCapabilitiesAsync(bool isLoading)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            LoadingSystemCapabilities = isLoading;
+        }
+
+        private void UpdateMissingCapabilities(string recipeId, IEnumerable<TargetSystemCapability> capabilities)
         {
             MissingCapabilities.Update(recipeId, capabilities);
         }
@@ -829,7 +803,33 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             await DeploymentClient.JoinSession(SessionId);
             // register callback to log all deployment output in the progress dialog
-            DeploymentClient.ReceiveLogAllLogAction = UpdateDeploymentProgress;
+            DeploymentClient.ReceiveLogSectionStart = OnDeploymentClientStartLogSection;
+            DeploymentClient.ReceiveLogInfoMessage = OnDeploymentClientReceiveLog;
+            DeploymentClient.ReceiveLogErrorMessage = OnDeploymentClientReceiveLog;
+        }
+
+        /// <summary>
+        /// Event: A new message log section has been started
+        /// </summary>
+        private void OnDeploymentClientStartLogSection(string sectionName, string description)
+        {
+            JoinableTaskFactory.Run(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                PublishProjectViewModel.CreateMessageGroup(sectionName, description);
+            });
+        }
+
+        /// <summary>
+        /// Event: The deployment service emitted a log entry
+        /// </summary>
+        private void OnDeploymentClientReceiveLog(string text)
+        {
+            JoinableTaskFactory.Run(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                await UpdateDeploymentProgressAsync(text);
+            });
         }
 
         /// <summary>
@@ -898,68 +898,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             return await DeployToolController.ApplyConfigSettingsAsync(SessionId, configurationDetail, cancellationToken)
                 .ConfigureAwait(false);
-        }
-
-        public async Task ClearPublishedResourcesAsync(CancellationToken cancellationToken)
-        {
-            await SetPublishResourcesAsync(string.Empty, Enumerable.Empty<PublishResource>().ToList(), cancellationToken)
-                .ConfigureAwait(false);
-        }
-
-        /// <summary>
-        ///  Loads the list of resources created once the application is published
-        /// <see cref="PublishResources"/> is populated with any published resources
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        public async Task RefreshPublishedResourcesAsync(CancellationToken cancellationToken)
-        {
-            IList<PublishResource> resources = new List<PublishResource>();
-            var publishedArtifactId = string.Empty;
-            try
-            {
-                ThrowIfSessionIsNotCreated();
-
-                var details = await DeployToolController.GetDeploymentDetailsAsync(SessionId, cancellationToken);
-
-                if (details == null) return;
-
-                publishedArtifactId = GetPublishedArtifactId(details);
-
-                if (details.DisplayedResources != null)
-                {
-                    resources = details.DisplayedResources
-                        .Select(x => x.AsPublishResource())
-                        .ToList();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Unable to retrieve published resource details.", e);
-                throw;
-            }
-            finally
-            {
-                await SetPublishResourcesAsync(publishedArtifactId, resources, cancellationToken);
-            }
-        }
-
-        private string GetPublishedArtifactId(GetDeploymentDetailsOutput details)
-        {
-            // TODO : remove this once deploy API includes ECR Repo id as top level data
-            if (PublishDestination?.DeploymentArtifact == DeploymentArtifact.ElasticContainerRegistry)
-            {
-                return WorkaroundGetEcrRepoArtifactName(details);
-            }
-
-            return details.CloudApplicationName;
-        }
-
-        /// <summary>
-        /// This is a workaround until the deploy API can surface the Id of the ECR repo as first-class data.
-        /// </summary>
-        private static string WorkaroundGetEcrRepoArtifactName(GetDeploymentDetailsOutput details)
-        {
-            return details?.DisplayedResources?.FirstOrDefault(x => x.Type == "Elastic Container Registry Repository")?.Id;
         }
 
         public async Task<bool> ValidateTargetConfigurationsAsync()
@@ -1066,6 +1004,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 {
                     await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as PublishRecommendation, StackName, cancellationToken);
                 }
+
+                await UpdatePublishStackNameValidationAsync(string.Empty);
+            }
+            catch (InvalidApplicationNameException e)
+            {
+                await UpdatePublishStackNameValidationAsync(e.Message);
+
+                throw;
             }
             catch (Exception e)
             {
@@ -1074,83 +1020,74 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
         }
 
+        public async Task UpdatePublishStackNameValidationAsync(string validationMessage)
+        {
+            _errors[nameof(PublishStackName)] = validationMessage;
+            await RaiseErrorsChangedAsync(nameof(PublishStackName)).ConfigureAwait(false);
+        }
+
+        public async Task UpdatePublishProjectViewModelAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            PublishProjectViewModel.StackName = StackName;
+            PublishProjectViewModel.RecipeName = TargetRecipe;
+            PublishProjectViewModel.RegionName = Connection.RegionDisplayName;
+            PublishProjectViewModel.ArtifactType = PublishDestination.DeploymentArtifact;
+            PublishProjectViewModel.SessionId = SessionId;
+        }
+
         /// <summary>
         /// Publishes this project.
         /// State is expected to be valid prior to calling this function.
         /// </summary>
-        public async Task PublishApplicationAsync()
+        public async Task<PublishProjectResult> PublishApplicationAsync()
         {
-            PublishDuration.Start();
-            var finalStatusMessage = new StringBuilder();
-            var progressStatus = ProgressStatus.Fail;
-            var result = Result.Failed;
-            var errorCode = string.Empty;
-            var errorMessage = string.Empty;
-            try
+            Func<Task<PublishProjectResult>> publish = PublishProjectViewModel.PublishProjectAsync;
+            Func<Func<Task<PublishProjectResult>>, Task<PublishProjectResult>> telemetry = EmitMetricsForPublishProjectAsync;
+            Func<Func<Task<PublishProjectResult>>, Task<PublishProjectResult>> ui = AdjustUiForPublishProjectAsync;
+
+            return await ui(() => telemetry(publish));
+        }
+
+        public async Task<PublishProjectResult> EmitMetricsForPublishProjectAsync(
+            Func<Task<PublishProjectResult>> publishProjectAsyncFunc)
+        {
+            PublishProjectResult result = null;
+            Stopwatch publishDuration = new Stopwatch();
+
+            using (new DisposingAction(() => publishDuration.Stop()))
             {
-                SetIsFailureBannerEnabled(false);
+                publishDuration.Start();
+
+                result = await publishProjectAsyncFunc().ConfigureAwait(false);
+
+                var metricResult = result.IsSuccess ? Result.Succeeded : Result.Failed;
+                RecordPublishDeployMetric(metricResult,
+                    publishDuration.Elapsed.TotalMilliseconds,
+                    result.ErrorCode,
+                    result.ErrorMessage);
+            }
+
+            return result;
+        }
+
+        public async Task<PublishProjectResult> AdjustUiForPublishProjectAsync(
+            Func<Task<PublishProjectResult>> publishProjectAsyncFunc)
+        {
+            PublishProjectResult result = null;
+
+            using (PublishProjectViewModel.IsPublishedScope())
+            {
+                await SetProgressStatusAsync(ProgressStatus.Loading);
                 _publishContext.ToolkitShellProvider.OutputToHostConsole($"Starting to publish {ProjectName}");
-                await DeployToolController.StartDeploymentAsync(SessionId).ConfigureAwait(false);
 
-                // wait for the deployment to finish
-                var deployStatusOutput = await WaitForDeploymentAsync(SessionId).ConfigureAwait(false);
-                _publishContext.ToolkitShellProvider.UpdateStatus($"{DeploymentStatusMessage}{deployStatusOutput.Status}");
+                result = await publishProjectAsyncFunc().ConfigureAwait(false);
 
-                if (deployStatusOutput.Status != DeploymentStatus.Success)
-                {
-                    finalStatusMessage.Append($"{StackName} could not be published as {TargetRecipe}");
-                    progressStatus = ProgressStatus.Fail;
-                    result = Result.Failed;
-                    if (deployStatusOutput.Exception != null)
-                    {
-                        errorCode = deployStatusOutput.Exception.ErrorCode;
-                        errorMessage = deployStatusOutput.Exception.Message;
-                        finalStatusMessage.Append($": {errorMessage}");
-                    }
-                }
-                else
-                {
-                    finalStatusMessage.Append($"{StackName} Published as {TargetRecipe}");
-                    progressStatus = ProgressStatus.Success;
-                    result = Result.Succeeded;
-                }
+                await ApplyPublishResultToUiAsync(result).ConfigureAwait(false);
             }
-            catch (Exception ex)
-            {
-                finalStatusMessage.Append($"{ProjectName} failed to publish to AWS.");
-                progressStatus = ProgressStatus.Fail;
-                result = Result.Failed;
-                if (errorMessage == string.Empty)
-                {
-                    errorMessage = ex.Message;
-                }
-                _publishContext.ToolkitShellProvider.UpdateStatus($"{DeploymentStatusMessage}Error");
-                throw;
-            }
-            finally
-            {
-                await ReportFinalStatusAsync(progressStatus, finalStatusMessage.ToString());
-                PublishDuration.Stop();
-                SetIsPublishing(false);
-                SetIsFailureBannerEnabled(progressStatus == ProgressStatus.Fail);
-                RecordPublishDeployMetric(result, errorCode, errorMessage);
-            }
-        }
 
-        public void SetIsPublishing(bool value)
-        {
-            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
-            {
-                IsPublishing = value;
-            });
-        }
-
-        private void SetIsFailureBannerEnabled(bool value)
-        {
-            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
-            {
-                IsFailureBannerEnabled = value;
-            });
+            return result;
         }
 
         public void SetPublishTargetsLoaded(bool value)
@@ -1206,50 +1143,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Keep polling for deployment status and wait for it to finish until timeout
-        /// </summary>
-        /// <param name="sessionId"></param>
-        private async Task<GetDeploymentStatusOutput> WaitForDeploymentAsync(string sessionId)
-        {
-            await WaitUntilAsync(async () =>
-            {
-                var status = (await DeployToolController.GetDeploymentStatusAsync(sessionId))?.Status;
-                var progressStatus = $"{DeploymentStatusMessage}{status}";
-                await SetProgressStatusAsync(ProgressStatus.Loading);
-                _publishContext.ToolkitShellProvider.UpdateStatus(progressStatus);
-                return status != null && status != DeploymentStatus.Executing;
-            }, TimeSpan.FromSeconds(1));
-
-            return await DeployToolController.GetDeploymentStatusAsync(sessionId);
-        }
-
-        /// <summary>
-        /// Helper method for waiting until a task is finished
-        /// </summary>
-        /// <param name="predicate">Termination condition for breaking the wait loop</param>
-        /// <param name="frequency">Interval between the two executions of the task</param>
-        private async Task WaitUntilAsync(Func<Task<bool>> predicate, TimeSpan frequency)
-        {
-            var waitTask = Task.Run(async () =>
-            {
-                while (!await predicate())
-                {
-                    await Task.Delay(frequency);
-                }
-            });
-            await waitTask;
-        }
-
-        /// <summary>
         /// Updates deployment progress status in the Publish in Progress View
         /// </summary>
-        /// <param name="progressMessage"></param>
-        private void UpdateDeploymentProgress(string progressMessage)
+        private async Task UpdateDeploymentProgressAsync(string text)
         {
-            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
-            {
-                PublishProgress += string.Concat(progressMessage, Environment.NewLine);
-            });
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            _publishProjectViewModel.AppendLineDeploymentMessage(text);
         }
 
         /// <summary>
@@ -1261,18 +1160,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                var selectedRecipeId = PublishDestination?.RecipeId;
-
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 Recommendations = recommendations;
-
-                if (!IsRepublish)
-                {
-                    PublishDestination =
-                        recommendations.FirstOrDefault(r => r.RecipeId == selectedRecipeId) ??
-                        recommendations.FirstOrDefault(r => r.IsRecommended) ??
-                        recommendations.FirstOrDefault();
-                }
             }
             catch (Exception e)
             {
@@ -1289,40 +1178,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                var selectedDestinationName = PublishDestination?.Name;
-
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 RepublishTargets = targets;
-
-                if (IsRepublish)
-                {
-                    PublishDestination =
-                        targets.FirstOrDefault(r => r.Name == selectedDestinationName) ??
-                        targets.FirstOrDefault(r => r.IsRecommended) ??
-                        targets.FirstOrDefault();
-                }
 
                 UpdateRepublishCollectionView();
             }
             catch (Exception e)
             {
                 Logger.Error("Error setting republish targets list", e);
-            }
-        }
-
-        private async Task SetPublishResourcesAsync(string publishedArtifactId,
-            IList<PublishResource> resource, CancellationToken cancellationToken)
-        {
-            try
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-
-                PublishedArtifactId = publishedArtifactId;
-                PublishResources = new ObservableCollection<PublishResource>(resource);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Error setting published resources", e);
             }
         }
 
@@ -1341,8 +1204,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
         public async Task InitializePublishTargetsAsync(CancellationToken cancelToken)
         {
-            var republishTargets = await DeployToolController.GetRepublishTargetsAsync(SessionId, ProjectPath, cancelToken);
-            await SetIsRepublishAsync(republishTargets.Any(), cancelToken);
             await Task.WhenAll(RefreshExistingTargetsAsync(cancelToken), RefreshRecommendationsAsync(cancelToken)).ConfigureAwait(false);
         }
 
@@ -1354,13 +1215,23 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 new PropertyGroupDescription(nameof(RepublishTarget.Category)));
         }
 
-        private async Task SetSystemCapabilitiesAsync(ObservableCollection<TargetSystemCapability> capabilities,
+        public async Task SetSystemCapabilitiesAsync(IEnumerable<TargetSystemCapability> capabilities,
             CancellationToken cancellationToken)
         {
             try
             {
+                var missingRequirements = capabilities.ToArray();
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-                SystemCapabilities = capabilities;
+                SystemCapabilities = new ObservableCollection<TargetSystemCapability>(missingRequirements);
+
+                if (missingRequirements.Any())
+                {
+                    var missingRequirementsStr = string.Join(", ", missingRequirements.Select(c => c.Name).OrderBy(s => s));
+                    var message =
+                        $"Cannot publish {ProjectName} to {PublishDestination?.Name}, missing requirements: {missingRequirementsStr}";
+                    Logger.Debug(message);
+                    _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
+                }
             }
             catch (Exception e)
             {
@@ -1376,7 +1247,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             try
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
-                ProgressStatus = status;
+                _publishProjectViewModel.ProgressStatus = status;
             }
             catch (Exception e)
             {
@@ -1387,21 +1258,53 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <summary>
         /// Reports final deployment status in the Publish View
         /// </summary>
-        /// <param name="status">final deployment status </param>
-        /// <param name="statusMessage">final deployment status message</param>
-        private async Task ReportFinalStatusAsync(ProgressStatus status, string statusMessage)
+        private async Task ApplyPublishResultToUiAsync(PublishProjectResult publishResult)
         {
             try
             {
+                string statusMessage = CreateStatusMessage(publishResult);
+                ProgressStatus status = publishResult.IsSuccess ? ProgressStatus.Success : ProgressStatus.Fail;
+
                 await SetProgressStatusAsync(status);
-                UpdateDeploymentProgress(statusMessage);
+                await UpdateDeploymentProgressAsync(statusMessage);
                 _publishContext.ToolkitShellProvider.OutputToHostConsole(statusMessage,
                     true);
+
+                await SetIsFailureBannerEnabledAsync(!publishResult.IsSuccess).ConfigureAwait(false);
             }
             catch (Exception e)
             {
                 Logger.Error("Error reporting final deployment status.", e);
             }
+        }
+
+        private string CreateStatusMessage(PublishProjectResult result)
+        {
+            var builder = new StringBuilder();
+
+            if (result.IsSuccess)
+            {
+                builder.Append($"{StackName} was published as {TargetRecipe}");
+            }
+            else
+            {
+                builder.Append($"{StackName} could not be published as {TargetRecipe}");
+                if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
+                {
+                    builder.Append($": {result.ErrorMessage}");
+                }
+
+                builder.AppendLine();
+                builder.Append($"{ProjectName} failed to publish to AWS.");
+            }
+
+            return builder.ToString();
+        }
+
+        private async Task SetIsFailureBannerEnabledAsync(bool value)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            _publishProjectViewModel.IsFailureBannerEnabled = value;
         }
 
         private void ThrowIfSessionIsNotCreated()
@@ -1468,16 +1371,58 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return new ShowExceptionAndForgetCommand(LearnMoreCommandFactory.Create(toolkitHost), toolkitHost);
         }
 
+        /// <summary>
+        /// Creates a loading scope that decrements the scope on disposal.
+        /// Creation and disposal of the scope will update <see cref="IsLoading"/>.
+        /// </summary>
+        public IDisposable CreateLoadingScope()
+        {
+            IncrementLoadingScope();
+            return new DisposingAction(DecrementLoadingScope);
+        }
+
+        private void IncrementLoadingScope()
+        {
+            Interlocked.Increment(ref _isLoadingScope);
+            UpdateIsLoading();
+        }
+
+        private void DecrementLoadingScope()
+        {
+            Interlocked.Decrement(ref _isLoadingScope);
+            UpdateIsLoading();
+        }
+
+        private void UpdateIsLoading()
+        {
+            JoinableTaskFactory.Run(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                IsLoading = _isLoadingScope > 0;
+            });
+        }
+
         public void RecordPublishEndMetric(bool published)
         {
             Dictionary<string, object> capabilityMetrics = CreateCapabilityMetrics();
-            this._publishContext.TelemetryLogger.RecordPublishEnd(new PublishEnd()
+
+            var payload = new PublishEnd()
             {
                 AwsAccount = _publishContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
                 AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Duration = WorkflowDuration.Elapsed.TotalMilliseconds,
                 Published = published
-            }, capabilityMetrics);
+            };
+
+            _publishContext.TelemetryLogger.RecordPublishEnd(payload, metricDatum =>
+            {
+                foreach (var item in capabilityMetrics
+                             .Where(item => !metricDatum.Metadata.ContainsKey(item.Key)))
+                {
+                    metricDatum.AddMetadata(item.Key, item.Value);
+                }
+                return metricDatum;
+            });
         }
 
         public void RecordPublishUnsupportedSettingMetric()
@@ -1503,18 +1448,18 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return capabilityMetrics;
         }
 
-        private void RecordPublishDeployMetric(Result result, string errorCode, string errorMessage)
+        private void RecordPublishDeployMetric(Result result, double elapsedMs, string errorCode, string errorMessage)
         {
             var payload = new PublishDeploy()
             {
                 AwsAccount = _publishContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
                 AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result,
-                Duration = PublishDuration.Elapsed.TotalMilliseconds,
+                Duration = elapsedMs,
                 InitialPublish = !IsRepublish,
                 DefaultConfiguration = IsDefaultConfig,
-                RecipeId = PublishDestination?.RecipeId
-                 
+                RecipeId = PublishDestination?.BaseRecipeId ?? PublishDestination?.RecipeId,
+                IsGeneratedProject = PublishDestination?.IsGenerated,
             };
 
             if (payload.InitialPublish)
@@ -1529,7 +1474,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             _publishContext.TelemetryLogger.RecordPublishDeploy(payload, metricDatum =>
             {
-                metricDatum.SplitAndAddMetadata("reason", errorMessage.RedactAll());
+                if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    metricDatum.SplitAndAddMetadata("reason", errorMessage.RedactAll());
+                }
+
                 return metricDatum;
             });
         }
@@ -1542,6 +1491,47 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
 
             return e.Message;
+        }
+
+        #region INotifyDataErrorInfo
+
+        private readonly IDictionary<string, string> _errors = new Dictionary<string, string>();
+
+        IEnumerable INotifyDataErrorInfo.GetErrors(string propertyName)
+        {
+            var errors = new List<string>();
+
+            if (propertyName == null)
+            {
+                errors.AddRange(_errors.Values.Where(x => !string.IsNullOrWhiteSpace(x)));
+            }
+            else if (_errors.TryGetValue(propertyName, out string value))
+            {
+                errors.Add(value);
+            }
+
+            return errors;
+        }
+
+        bool INotifyDataErrorInfo.HasErrors => _errors.Values.Any(value => !string.IsNullOrWhiteSpace(value));
+
+        private event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        event EventHandler<DataErrorsChangedEventArgs> INotifyDataErrorInfo.ErrorsChanged
+        {
+            add => ErrorsChanged += value;
+            remove => ErrorsChanged -= value;
+        }
+
+        public INotifyDataErrorInfo AsINotifyDataErrorInfo => this;
+
+        #endregion
+
+        private async Task RaiseErrorsChangedAsync(string propertyName)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            NotifyPropertyChanged(nameof(INotifyDataErrorInfo.HasErrors));
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
     }
 }

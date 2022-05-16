@@ -9,108 +9,101 @@
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.Publish.Converters" 
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:commonConverters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="TargetsDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <commonConverters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
-            <commonUi:VsImages x:Key="VsImages" />
             <converters:PublishTargetsToVisibilityConverter x:Key="PublishTargetsToVisibilityConverter" />
             <commonConverters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
-            <ToolTip x:Key="ApplicationNameToolTip" Content="Name of the application you are publishing to AWS. This will be used as the CloudFormation Stack name." />
-            <ToolTip x:Key="ApplicationNameNotUsedToolTip" Content="This publish target does not require an Application Name." />
             <DataTemplate x:Key="RecommendationTemplate" DataType="{x:Type models:PublishRecommendation}">
-                <Grid 
-                    Margin="12"
+                <Border
+                    Padding="12"
+                    BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+                    BorderThickness="1"
                     >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <!-- Column 2: Spacing between Icon and Text -->
-                        <ColumnDefinition Width="12" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <!-- Column 2: Spacing between Icon and Text -->
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-                    <Image
-                        Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                        Width="32"
-                        Height="32"
-                        Source="{Binding ServiceIcon}"
-                        />
-
-                    <!-- Show the Target name, and conditionally a "Recommended" indicator next to it -->
-                    <WrapPanel
-                        Grid.Row="0" Grid.Column="2"
-                        HorizontalAlignment="Left" >
-                        <TextBlock
-                            FontWeight="Bold"
-                            HorizontalAlignment="Left"
-                            TextWrapping="Wrap"
-                            Text="{Binding Name}"
+                        <Image
+                            Grid.Row="0" Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Width="32"
+                            Height="32"
+                            Source="{Binding ServiceIcon}"
                             />
-                        <TextBlock 
-                            Margin="3 0 0 0"
-                            Visibility="{Binding IsRecommended, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Text="(Recommended)"
-                            />
-                    </WrapPanel>
 
-                    <TextBlock
-                        Grid.Row="1" Grid.Column="2"
-                        Margin="0 3 0 0"
-                        HorizontalAlignment="Left"
-                        TextWrapping="Wrap"
-                        Text="{Binding ShortDescription}"
-                        />
-                </Grid>
+                        <StackPanel
+                            Grid.Row="0" Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Orientation="Vertical"
+                            >
+                            <!-- Show the Target name, and conditionally a "Recommended" indicator next to it -->
+                            <WrapPanel
+                                HorizontalAlignment="Left" >
+                                <TextBlock
+                                    FontWeight="Bold"
+                                    HorizontalAlignment="Left"
+                                    TextWrapping="Wrap"
+                                    Text="{Binding Name}"
+                                    />
+                                <TextBlock 
+                                    Margin="3 0 0 0"
+                                    Visibility="{Binding IsRecommended, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Text="(Recommended)"
+                                    />
+                            </WrapPanel>
+
+                            <WrapPanel
+                                Margin="0 6 0 0"
+                                HorizontalAlignment="Left">
+                                <TextBlock
+                                    TextWrapping="Wrap"
+                                    >
+                                    <Run 
+                                        BaselineAlignment="Top"
+                                        Text="{Binding ShortDescription, Mode=OneWay}" />
+                                    <images:VsImage
+                                        Margin="3 0 0 0"
+                                        VerticalAlignment="Center"
+                                        Width="16"
+                                        Height="16"
+                                        ToolTip="{StaticResource RecipeDescriptionToolTip}"
+                                        Source="{Binding Source={StaticResource VsImages}, Path=StatusInformationOutline}" 
+                                        />
+                                </TextBlock>
+                            </WrapPanel>
+                        </StackPanel>
+
+                    </Grid>
+                </Border>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Label
-            Grid.Row="0" Grid.Column="0" 
-            VerticalAlignment="Center"
-            Content="Application name" 
-            ToolTip="{StaticResource ApplicationNameToolTip}" />
-
-        <!-- We are swapping one TextBox for another because we cannot extend VS Styled TextBoxes at this time :( 
-            Discussion: https://github.com/VsixCommunity/Community.VisualStudio.Toolkit/discussions/135 -->
-        <TextBox
-            Grid.Row="1" Grid.Column="0"
-            Visibility="{Binding IsApplicationNameRequired, Converter={StaticResource BooleanToVisibilityConverter}}"
-            Text="{Binding PublishStackName, Delay=500, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-            ToolTip="{StaticResource ApplicationNameToolTip}" 
-            />
-
-        <!-- This TextBox is swapped in instead of the one above when the ApplicationName is not relevant.
-            The TextBox is disabled instead of made non-visible so that the target list below does not pop up,
-            which can affect the selected/clicked target. -->
-        <TextBox
-            Grid.Row="1" Grid.Column="0"
-            Visibility="{Binding IsApplicationNameRequired, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-            Text="{Binding PublishStackName}"
-            IsEnabled="False"
-            ToolTipService.ShowOnDisabled="True"
-            ToolTip="{StaticResource ApplicationNameNotUsedToolTip}" 
-            />
-
         <Grid
-            Grid.Row="2" Grid.Column="0"
-            Margin="0 12 0 0"
+            Grid.Row="0" Grid.Column="0"
             >
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -119,6 +112,8 @@
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="12" />
                 <ColumnDefinition Width="*" />
+                <!-- Column 4: Spacing after sidebar -->
+                <ColumnDefinition Width="12" />
             </Grid.ColumnDefinitions>
 
             <StackPanel
@@ -129,10 +124,10 @@
                 Orientation="Horizontal"
                 HorizontalAlignment="Center"
                 >
-                <Image
-                     VerticalAlignment="Center"
-                     Width="16" Height="16"
-                     Source="{Binding Source={StaticResource VsImages}, Path=StatusInformation}" 
+                <images:VsImage
+                    VerticalAlignment="Center"
+                    Width="16" Height="16"
+                    Source="{Binding Source={StaticResource VsImages}, Path=StatusInformation}" 
                     />
 
                 <TextBlock
@@ -153,15 +148,23 @@
             <ListBox
                 Grid.Row="0" Grid.Column="0"
                 HorizontalContentAlignment="Stretch"
+                ScrollViewer.CanContentScroll="False"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionMode="Single"
                 ItemTemplate="{StaticResource RecommendationTemplate}"
                 ItemsSource="{Binding Recommendations}"
                 SelectedItem="{Binding PublishDestination}"
+                Padding="0 3 0 3"
                 >
                 <ListBox.Visibility>
                     <Binding ElementName="NoTargetsPanel" Path="Visibility" Converter="{StaticResource InverseVisibilityConverter}"/>
                 </ListBox.Visibility>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Margin" Value="6 3 6 3" />
+                        <Setter Property="Padding" Value="0" />
+                    </Style>
+                </ListBox.ItemContainerStyle>   
             </ListBox>
 
             <local:TargetProperties 

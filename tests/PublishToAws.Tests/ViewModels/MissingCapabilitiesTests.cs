@@ -9,27 +9,32 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 {
     public class MissingCapabilitiesTests
     {
+        private static readonly TargetSystemCapability SampleCapability =
+            new TargetSystemCapability(new SystemCapabilitySummary() { Name = "Docker" });
+
         [Fact]
         public void ShouldUpdateMissingAndResolved()
         {
             var missingCapabilities = new MissingCapabilities();
-            var targetCapability = new TargetSystemCapability(new SystemCapabilitySummary() { Name = "Docker" });
 
             missingCapabilities.Update("recipe-1",
-                new List<TargetSystemCapability>() { targetCapability });
+                new List<TargetSystemCapability>() { SampleCapability });
             missingCapabilities.Update("recipe-1",
                 new List<TargetSystemCapability>());
 
-            Assert.Contains("Docker", missingCapabilities.Missing);
-            Assert.Contains("Docker", missingCapabilities.Resolved);
+            Assert.Contains(SampleCapability.Name, missingCapabilities.Missing);
+            Assert.Contains(SampleCapability.Name, missingCapabilities.Resolved);
         }
 
-        [Fact]
-        public void Update_NullRecipeIdDoesNothing()
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Update_NullRecipeIdDoesNothing(string recipeId)
         {
             var missingCapabilities = new MissingCapabilities();
 
-            missingCapabilities.Update("", new List<TargetSystemCapability>());
+            missingCapabilities.Update(recipeId,
+                new List<TargetSystemCapability>() { SampleCapability });
 
             Assert.Empty(missingCapabilities.Missing);
             Assert.Empty(missingCapabilities.Resolved);

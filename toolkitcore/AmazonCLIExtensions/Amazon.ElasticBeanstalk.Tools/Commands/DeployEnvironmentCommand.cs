@@ -230,7 +230,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             string environmentArn;
             if(environmentDescription != null)
             {                
-                 environmentArn = await UpdateEnvironment(environmentDescription, versionLabel);
+                environmentArn = await UpdateEnvironment(environmentDescription, versionLabel);
             }
             else
             {

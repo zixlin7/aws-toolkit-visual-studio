@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
+using Amazon.AWSToolkit.Tests.Publishing.Views;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -24,25 +26,97 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         private readonly PublishFooterCommandFixture _commandFixture = new PublishFooterCommandFixture();
         private TestPublishToAwsDocumentViewModel ViewModel => _commandFixture.ViewModel;
         private Mock<IAWSToolkitShellProvider> ShellProvider => _commandFixture.ShellProvider;
+        private readonly FakeConfirmPublishDialog _confirmationDialog = new FakeConfirmPublishDialog();
         private readonly PublishCommand _sut;
 
         public PublishCommandTests()
         {
-            _sut = new PublishCommand(ViewModel, _commandFixture.ShellProvider.Object);
+            _sut = new PublishCommand(ViewModel, _commandFixture.ShellProvider.Object, _ => _confirmationDialog);
             _commandFixture.SetupNewPublish();
+
+            SetupInitialPublish();
+            SetupApplyConfigSettingsAsync(new ValidationResult());
         }
 
         [StaFact]
         public async Task ExecuteCommand()
         {
-            SetupInitialPublish();
-            SetupApplyConfigSettingsAsync(new ValidationResult());
+            await _sut.ExecuteAsync(null);
+
+            Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
+            await _commandFixture.AssertConfirmationIsNotSilencedAsync();
+        }
+
+        public class FailureBannerEnabledSpy
+        {
+            private readonly PublishProjectViewModel _viewModel;
+            public int FalseCount;
+            public int TrueCount;
+
+            public FailureBannerEnabledSpy(PublishProjectViewModel viewModel)
+            {
+                _viewModel = viewModel;
+                _viewModel.PropertyChanged += OnHandle;
+            }
+
+            public void OnHandle(object sender, PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == nameof(PublishProjectViewModel.IsFailureBannerEnabled))
+                {
+                    if (_viewModel.IsFailureBannerEnabled)
+                    {
+                        TrueCount += 1;
+                    }
+                    else
+                    {
+                        FalseCount += 1;
+                    }
+                }
+            }
+        }
+
+        [StaFact]
+        public async Task HasFailureBannerDisabledAtStartOfPublish()
+        {
+            ViewModel.PublishProjectViewModel.IsFailureBannerEnabled = true;
+            FailureBannerEnabledSpy spy = new FailureBannerEnabledSpy(ViewModel.PublishProjectViewModel);
+
+            await _sut.ExecuteAsync(null);
+
+            Assert.Equal(1, spy.FalseCount);
+            Assert.Equal(0, spy.TrueCount);
+        }
+
+        [StaFact]
+        public async Task ExecuteCommand_WithSuppressedConfirmations()
+        {
+            var publishSettings = await ViewModel.PublishContext.PublishSettingsRepository.GetAsync();
+            publishSettings.SilencedPublishConfirmations.Add(ViewModel.ProjectGuid.ToString());
 
             await _sut.ExecuteAsync(null);
 
             Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
         }
 
+        [StaFact]
+        public async Task ExecuteCommand_SuppressFutureConfirmations()
+        {
+            _confirmationDialog.SilenceFutureConfirmations = true;
+            await _sut.ExecuteAsync(null);
+
+            Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
+
+            await _commandFixture.AssertConfirmationIsSilencedAsync();
+        }
+
+        [StaFact]
+        public async Task ExecuteCommand_CancelConfirmation()
+        {
+            _confirmationDialog.ShowModalResult = false;
+            await _sut.ExecuteAsync(null);
+
+            Assert.NotEqual(PublishViewStage.Publish, ViewModel.ViewStage);
+        }
 
         [StaFact]
         public async Task ExecuteCommand_ValidationFails()
@@ -62,7 +136,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public async Task ExecuteCommand_PublishFails()
         {
             SetupStartDeploymentToThrow();
-            SetupApplyConfigSettingsAsync(new ValidationResult());
 
             await _sut.ExecuteAsync(null);
 
@@ -71,6 +144,18 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
         }
 
+        [Fact]
+        public void CanExecute()
+        {
+            Assert.True(_sut.CanExecute(null));
+        }
+
+        [Fact]
+        public void CanExecute_IsLoading()
+        {
+            ViewModel.IsLoading = true;
+            Assert.False(_sut.CanExecute(null));
+        }
 
         [Fact]
         public void CanExecute_HasValidationErrors()

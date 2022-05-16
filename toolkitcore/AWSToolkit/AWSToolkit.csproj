@@ -87,7 +87,10 @@
     <Compile Include="Clients\AwsServiceClientManager.cs" />
     <Compile Include="Clients\IAwsServiceClientManager.cs" />
     <Compile Include="Clients\ServiceClientCreator.cs" />
+    <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
+    <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
+    <Compile Include="CommonUI\Converters\ToolkitRegionConverter.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />
@@ -245,6 +248,7 @@
     <Compile Include="Themes\ToolkitThemes.cs" />
     <Compile Include="Urls\AwsUrls.cs" />
     <Compile Include="Urls\GitHubUrls.cs" />
+    <Compile Include="Util\DisposingAction.cs" />
     <Compile Include="Util\MruList.cs" />
     <Compile Include="Credentials\Utils\ProfileHolder.cs" />
     <Compile Include="Credentials\Core\SDKCredentialIdentifier.cs" />
@@ -911,51 +915,51 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.5.17</Version>
+      <Version>3.7.9.32</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.7.2.29</Version>
+      <Version>3.7.4.7</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
-      <Version>3.7.0.73</Version>
+      <Version>3.7.0.154</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoSync">
-      <Version>3.7.1.69</Version>
+      <Version>3.7.1.150</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.30.2</Version>
+      <Version>3.7.67.1</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticBeanstalk">
-      <Version>3.7.0.73</Version>
+      <Version>3.7.0.154</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancingV2">
-      <Version>3.7.1.1</Version>
+      <Version>3.7.3.73</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.53</Version>
+      <Version>3.7.2.134</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.KeyManagementService">
-      <Version>3.7.2.17</Version>
+      <Version>3.7.3.5</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.7.4.0</Version>
+      <Version>3.7.12.10</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SecurityToken">
-      <Version>3.7.1.63</Version>
+      <Version>3.7.1.146</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.2.44</Version>
+      <Version>3.7.3.54</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.1.16</Version>
+      <Version>3.7.2.51</Version>
     </PackageReference>
     <!-- SSO and SSOOIDC are required for the AWS .NET SDK credentials system to resolve SSO based profiles -->
     <PackageReference Include="AWSSDK.SSO">
-      <Version>3.7.0.73</Version>
+      <Version>3.7.0.154</Version>
     </PackageReference>
     <!-- SSO and SSOOIDC are required for the AWS .NET SDK credentials system to resolve SSO based profiles -->
     <PackageReference Include="AWSSDK.SSOOIDC">
-      <Version>3.7.0.73</Version>
+      <Version>3.7.0.154</Version>
     </PackageReference>
     <PackageReference Include="LiveCharts.Wpf">
       <Version>0.9.7</Version>

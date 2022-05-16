@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
 
         public Task<InstallResult> InstallOlderVersionFromNuGetAsync(string destinationPath)
         {
-            return InstallFromNuGetAsync(destinationPath, "0.10.6");
+            return InstallFromNuGetAsync(destinationPath, "0.41.4");
         }
 
         /// <summary>

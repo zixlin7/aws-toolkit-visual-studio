@@ -14,6 +14,7 @@ using log4net;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 
 using Task = System.Threading.Tasks.Task;
 
@@ -67,6 +68,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
             Guid menuGroup, int commandId,
             AsyncPackage package)
         {
+            await package.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var monitorSelection = await package.GetServiceAsync(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
 
             return await InitializeAsync(
@@ -184,6 +187,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Lambda
 
         private void DetectIfExecutable(IVsHierarchy vsHierarchy, Dictionary<string, object> seedProperties)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             try
             {
                 if (vsHierarchy is IVsBuildPropertyStorage propertyStorage)

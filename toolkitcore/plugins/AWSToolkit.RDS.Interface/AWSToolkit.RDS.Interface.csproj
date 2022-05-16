@@ -72,7 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.RDS">
-      <Version>3.7.5.9</Version>
+      <Version>3.7.13.4</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.14</Version>

@@ -34,12 +34,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
                 new TestPublishToAwsDocumentViewModel(
                     new PublishApplicationContext(_contextFixture.PublishContext))
                 {
-                    PublishedArtifactId = SampleEnvironmentName,
                     PublishDestination = new PublishRecommendation(new RecommendationSummary()
                     {
                         DeploymentType = DeploymentTypes.BeanstalkEnvironment,
                     })
                 };
+            _viewModel.PublishProjectViewModel.PublishedArtifactId = SampleEnvironmentName;
             _viewerCommand = BeanstalkEnvironmentViewerCommandFactory.Create(_viewModel);
             SetupToolkitHost();
         }

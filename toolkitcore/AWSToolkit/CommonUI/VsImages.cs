@@ -32,6 +32,7 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource Edit => _imageProvider?.GetImage(VsKnownImages.Edit, 16);
         public BitmapSource FeedbackFrown => _imageProvider?.GetImage(VsKnownImages.FeedbackFrown, 16);
         public BitmapSource FeedbackSmile => _imageProvider?.GetImage(VsKnownImages.FeedbackSmile, 16);
+        public BitmapSource Loading => _imageProvider?.GetImage(VsKnownImages.Loading, 16);
         public BitmapSource Refresh => _imageProvider?.GetImage(VsKnownImages.Refresh, 16);
         public BitmapSource Remove => _imageProvider?.GetImage(VsKnownImages.Remove, 16);
         public BitmapSource RemoveLink => _imageProvider?.GetImage(VsKnownImages.RemoveLink, 16);
@@ -40,8 +41,11 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource StatusError32 => _imageProvider?.GetImage(VsKnownImages.StatusError, 32);
         public BitmapSource StatusInformation => _imageProvider?.GetImage(VsKnownImages.StatusInformation, 16);
         public BitmapSource StatusInformation32 => _imageProvider?.GetImage(VsKnownImages.StatusInformation, 32);
+        public BitmapSource StatusInformationOutline => _imageProvider?.GetImage(VsKnownImages.StatusInformationOutline, 16);
         public BitmapSource StatusOK => _imageProvider?.GetImage(VsKnownImages.StatusOK, 16);
         public BitmapSource StatusOK32 => _imageProvider?.GetImage(VsKnownImages.StatusOK, 32);
         public BitmapSource StatusWarning => _imageProvider?.GetImage(VsKnownImages.StatusWarning, 16);
+        public BitmapSource StatusWarning32 => _imageProvider?.GetImage(VsKnownImages.StatusWarning, 32);
+        public BitmapSource WordWrap => _imageProvider?.GetImage(VsKnownImages.WordWrap, 16);
     }
 }

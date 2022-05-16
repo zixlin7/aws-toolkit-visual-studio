@@ -47,8 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloudWatchActivator.cs" />
-    <Compile Include="Commands\RefreshLogGroupsCommand.cs" />
+    <Compile Include="Commands\CopyArnCommand.cs" />
+    <Compile Include="Commands\DeleteLogGroupCommand.cs" />
+    <Compile Include="Commands\RefreshLogsCommand.cs" />
+    <Compile Include="Commands\ViewLogEventsCommand.cs" />
     <Compile Include="Commands\ViewLogGroupsCommand.cs" />
+    <Compile Include="Commands\ViewLogStreamsCommand.cs" />
     <Compile Include="Core\CloudWatchLogsRepository.cs" />
     <Compile Include="Core\ICloudWatchLogsRepository.cs" />
     <Compile Include="Core\ILogSearchProperties.cs" />
@@ -65,14 +69,29 @@
     <Compile Include="Nodes\CloudWatchRootViewMetaNode.cs" />
     <Compile Include="Nodes\LogGroupsRootViewMetaNode.cs" />
     <Compile Include="Util\CloudWatchLogsExtensionMethods.cs" />
+    <Compile Include="ViewModels\BaseLogsViewModel.cs" />
     <Compile Include="ViewModels\CloudWatchRootViewModel.cs" />
+    <Compile Include="ViewModels\LogEventsViewModel.cs" />
     <Compile Include="ViewModels\LogGroupsRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\LogGroupsViewModel.cs" />
+    <Compile Include="ViewModels\LogStreamsViewModel.cs" />
+    <Compile Include="Views\ConnectionStatus.xaml.cs">
+      <DependentUpon>ConnectionStatus.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ResultsStatus.xaml.cs">
+      <DependentUpon>ResultsStatus.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LogEventsViewerControl.xaml.cs">
+      <DependentUpon>LogEventsViewerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LogGroupsViewerControl.xaml.cs">
       <DependentUpon>LogGroupsViewerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LogStreamsViewerControl.xaml.cs">
+      <DependentUpon>LogStreamsViewerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SearchBar.xaml.cs">
       <DependentUpon>SearchBar.xaml</DependentUpon>
@@ -80,13 +99,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.7.3.28</Version>
+      <Version>3.7.4.7</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.7.1.48</Version>
+      <Version>3.7.2.48</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.8.3</Version>
+      <Version>3.7.10.15</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +127,23 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="Views\ConnectionStatus.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ResultsStatus.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LogEventsViewerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LogGroupsViewerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LogStreamsViewerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

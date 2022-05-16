@@ -5,7 +5,6 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Ecr;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
@@ -34,12 +33,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
                 new TestPublishToAwsDocumentViewModel(
                     new PublishApplicationContext(_contextFixture.PublishContext))
                 {
-                    PublishedArtifactId = SampleRepoName,
                     PublishDestination = new PublishRecommendation(new RecommendationSummary()
                     {
                         DeploymentType = DeploymentTypes.ElasticContainerRegistryImage,
                     })
                 };
+            _viewModel.PublishProjectViewModel.PublishedArtifactId = SampleRepoName;
             _viewerCommand = EcrRepoViewerCommandFactory.Create(_viewModel);
             SetupToolkitHost();
         }
@@ -89,7 +88,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         [Fact]
         public void ViewRepository_NoRepoName()
         {
-            _viewModel.PublishedArtifactId = "";
+            _viewModel.PublishProjectViewModel.PublishedArtifactId = "";
             _viewerCommand.Execute(null);
 
             ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(IEcrViewer)), Times.Never);

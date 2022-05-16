@@ -58,6 +58,17 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             }
         }
 
+        private string _displayMemberPath;
+        public string DisplayMemberPath
+        {
+            get => _displayMemberPath;
+            set
+            {
+                VerifyBeforeShowCalled();
+                _displayMemberPath = value;
+            }
+        }
+
         private readonly ICommand _okCommand;
         public ICommand OkCommand
         {
@@ -97,7 +108,8 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             _hasBeenShown = true;
 
-            _listBox.SelectionMode = this.SelectionMode;
+            _listBox.SelectionMode = SelectionMode;
+            _listBox.DisplayMemberPath = DisplayMemberPath;
             
             if (Items != null)
             {

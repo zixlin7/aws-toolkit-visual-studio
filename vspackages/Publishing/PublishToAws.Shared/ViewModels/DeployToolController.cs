@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -214,6 +215,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return detail;
         }
 
+        private readonly IEnumerable<DetailType> _supportedTypeHints = new HashSet<DetailType>() { DetailType.List, DetailType.String };
+
         private bool IsTypeHintSupported(ConfigurationDetail detail)
         {
             if (TypeHintLoadingExclusions.Contains(detail.TypeHint))
@@ -221,7 +224,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 return false;
             }
 
-            return detail.Type == DetailType.String && !string.IsNullOrEmpty(detail.TypeHint);
+            return _supportedTypeHints.Contains(detail.Type) && !string.IsNullOrEmpty(detail.TypeHint);
         }
 
         public async Task<Dictionary<string, string>> GetConfigSettingValuesAsync(string sessionId, string configId,
@@ -307,7 +310,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             var setTargetRequest = new SetDeploymentTargetInput { NewDeploymentName = stackName, NewDeploymentRecipeId = recipeId };
 
-            await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+            await InvokeSetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -329,7 +332,29 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             var setTargetRequest = new SetDeploymentTargetInput { ExistingDeploymentId = existingDeploymentId };
 
-            await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+            await InvokeSetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Calls SetDeploymentTargetAsync and wraps exception that are understood by the Toolkit
+        /// </summary>
+        private async Task InvokeSetDeploymentTargetAsync(string sessionId, SetDeploymentTargetInput setTargetRequest,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (ApiException<ProblemDetails> e)
+            {
+                if (InvalidApplicationNameException.TryCreate(e,
+                        out InvalidApplicationNameException invalidApplicationNameException))
+                {
+                    throw invalidApplicationNameException;
+                }
+
+                throw;
+            }
         }
 
         public Task<HealthStatusOutput> HealthAsync()

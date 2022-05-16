@@ -2,6 +2,7 @@
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
 using Amazon.EC2;
+using Amazon.EC2.Model;
 using Amazon.Runtime;
 
 using Moq;
@@ -15,7 +16,6 @@ namespace AWSToolkit.Tests.Clients
         private readonly Mock<ICredentialManager> _credentialManager = new Mock<ICredentialManager>();
         private readonly Mock<IRegionProvider> _regionProvider = new Mock<IRegionProvider>();
         private readonly AwsServiceClientManager _sut;
-
         private readonly ICredentialIdentifier _credentialId = new SharedCredentialIdentifier("profile-name");
         private readonly ToolkitRegion _sampleRegion = new ToolkitRegion()
         {
@@ -23,9 +23,8 @@ namespace AWSToolkit.Tests.Clients
             Id = "us-west-2",
             DisplayName = "us west two",
         };
-
-        private readonly string _localServiceUrl = "some-local-url";
-        private bool _isRegionLocal = false;
+        private readonly string _localServiceUrl = "http://aws.amazon.com/";
+        private bool _isRegionLocal;
 
         public AwsServiceClientManagerTests()
         {
@@ -141,6 +140,23 @@ namespace AWSToolkit.Tests.Clients
             Assert.Equal(_sampleRegion.Id, client.Config.RegionEndpoint.SystemName);
             Assert.Null(client.Config.ServiceURL);
             Assert.Equal(config.BufferSize, client.Config.BufferSize);
+        }
+
+        /*
+         * Summary:
+         * This test confirms that using a localhost client no longer returns the AmazonServiceException:
+         * "Unable to get IAM security credentials from EC2 Instance Metadata Service".
+         * A successful test run catches a different AmazonEC2Exception due to the given _localServiceUrl that
+         * occurs further downstream of the IAM credentials error (on the sdk side after invoking the client)
+         */
+        [Fact]
+        public void CreateServiceClient_LocalClientShouldUseMockCredentials()
+        {
+            _isRegionLocal = true;
+            var config = new AmazonEC2Config() { BufferSize = 123 };
+            var client = _sut.CreateServiceClient<AmazonEC2Client>(_credentialId, _sampleRegion, config);
+            CreateKeyPairRequest request = new CreateKeyPairRequest("testKey");
+            Assert.Throws<AmazonEC2Exception>(() => client.CreateKeyPair(request));
         }
     }
 }

@@ -158,6 +158,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public void OpenInEditor(string fileName)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             try
             {
                 var dte = (DTE2) _hostPackage.GetVSShellService(typeof(EnvDTE.DTE));
@@ -466,8 +468,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public Project GetSelectedProject()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var vsMonitorSelection = _hostPackage.GetVSShellService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
             Assumes.Present(vsMonitorSelection);
+
+            var vsSolution = _hostPackage.GetVSShellService(typeof(SVsSolution)) as IVsSolution;
+            Assumes.Present(vsSolution);
 
             var hierarchy = vsMonitorSelection.GetCurrentSelectionVsHierarchy(out var itemId);
             if (hierarchy == null)
@@ -485,12 +492,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 return null;
             }
 
+            if (vsSolution.GetGuidOfProject(hierarchy, out Guid projectGuid) != VSConstants.S_OK)
+            {
+                return null;
+            }
+
             if (!VsHierarchyHelpers.TryGetTargetFramework(hierarchy, itemId, out var targetFramework))
             {
                 return null;
             }
 
-            return new Project(dteProject.Name, dteProject.FileName, targetFramework);
+            return new Project(dteProject.Name, dteProject.FileName, projectGuid, targetFramework);
         }
 
         public void CloseEditor(IAWSToolkitControl editorControl)
@@ -551,6 +563,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public async Task<IProgressDialog> CreateProgressDialog()
         {
+            await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var dialogFactory =
                 await _hostPackage.GetServiceAsync(
                     typeof(SVsThreadedWaitDialogFactory)) as IVsThreadedWaitDialogFactory;

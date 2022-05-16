@@ -22,6 +22,6 @@ namespace Amazon.AWSToolkit.PluginServices.Publishing
     {
         event EventHandler<EventArgs> Initialize;
 
-        Task InitializePackage(ToolkitContext toolkitContext, IAWSToolkitShellProvider shellProvider);
+        Task InitializePackageAsync(ToolkitContext toolkitContext, IAWSToolkitShellProvider shellProvider);
     }
 }

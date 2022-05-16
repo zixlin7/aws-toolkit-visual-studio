@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Publish.ViewModels;
-using Amazon.AWSToolkit.Tasks;
+
+using Microsoft.VisualStudio.Threading;
 
 namespace Amazon.AWSToolkit.Publish.Commands
 {
@@ -12,15 +11,16 @@ namespace Amazon.AWSToolkit.Publish.Commands
     {
         private CloseFailureBannerCommandFactory() {}
 
-        public static IAsyncCommand Create(PublishToAwsDocumentViewModel publishDocumentViewModel)
+        public static IAsyncCommand Create(PublishProjectViewModel viewModel, JoinableTaskFactory joinableTaskFactory)
         {
-            return new AsyncRelayCommand((_) => CloseFailureBannerAsync(publishDocumentViewModel));
+            return new AsyncRelayCommand((_) => CloseFailureBannerAsync(viewModel, joinableTaskFactory));
         }
 
-        private static async Task CloseFailureBannerAsync(PublishToAwsDocumentViewModel publishDocumentViewModel)
+        private static async Task CloseFailureBannerAsync(PublishProjectViewModel viewModel,
+            JoinableTaskFactory joinableTaskFactory)
         {
-            await publishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
-            publishDocumentViewModel.IsFailureBannerEnabled = false;
+            await joinableTaskFactory.SwitchToMainThreadAsync();
+            viewModel.IsFailureBannerEnabled = false;
         }
     }
 }

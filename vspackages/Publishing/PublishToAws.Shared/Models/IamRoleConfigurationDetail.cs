@@ -12,6 +12,11 @@ namespace Amazon.AWSToolkit.Publish.Models
             public const string RoleArn = "RoleArn";
         }
 
+        public static class TypeHintDataKeys
+        {
+            public const string ServicePrincipal = "ServicePrincipal";
+        }
+
         private ConfigurationDetail _createNewRole;
         private ConfigurationDetail _roleArn;
 
@@ -41,6 +46,8 @@ namespace Amazon.AWSToolkit.Publish.Models
                 }
             }
         }
+
+        public string ServicePrincipal { get; set; }
 
         protected override void RemoveChild(ConfigurationDetail child)
         {

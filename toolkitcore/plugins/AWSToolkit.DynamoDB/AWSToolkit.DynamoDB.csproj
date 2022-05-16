@@ -230,13 +230,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.7.2.29</Version>
+      <Version>3.7.4.7</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>3.7.0.74</Version>
+      <Version>3.7.3.30</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.2.44</Version>
+      <Version>3.7.3.54</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.14</Version>

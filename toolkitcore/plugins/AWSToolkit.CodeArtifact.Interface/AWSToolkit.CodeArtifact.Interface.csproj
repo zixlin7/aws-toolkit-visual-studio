@@ -12,7 +12,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Amazon.CodeArtifact.Interface</RootNamespace>
     <AssemblyName>AWSToolkit.CodeArtifact.Interface</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkProfile />
@@ -67,7 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeArtifact">
-      <Version>3.7.0.73</Version>
+      <Version>3.7.0.154</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
