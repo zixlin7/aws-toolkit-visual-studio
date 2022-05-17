@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
     /// <summary>
     /// Base view model for viewing log resources such as groups, streams etc
     /// </summary>
-    public abstract class BaseLogsViewModel : BaseModel, ILogSearchProperties, IDisposable
+    public abstract class BaseLogsViewModel : BaseModel, IDisposable
     {
         protected readonly ToolkitContext ToolkitContext;
         protected readonly ICloudWatchLogsRepository Repository;
@@ -46,6 +46,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             get => _loadingLogs;
             private set => SetProperty(ref _loadingLogs, value);
         }
+
         public string FilterText
         {
             get => _filterText;

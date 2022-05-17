@@ -55,7 +55,6 @@
     <Compile Include="Commands\ViewLogStreamsCommand.cs" />
     <Compile Include="Core\CloudWatchLogsRepository.cs" />
     <Compile Include="Core\ICloudWatchLogsRepository.cs" />
-    <Compile Include="Core\ILogSearchProperties.cs" />
     <Compile Include="Core\IRepositoryFactory.cs" />
     <Compile Include="Core\RepositoryFactory.cs" />
     <Compile Include="Models\GetLogEventsRequest.cs" />

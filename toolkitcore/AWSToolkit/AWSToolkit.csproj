@@ -786,6 +786,7 @@
     <EmbeddedResource Include="Resources\ResourceIcons\CloudFormation-Template.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\CloudFront-Download-Distribution.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\CloudFront-Streaming-Distribution.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\CloudWatch-Log-Groups.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\CodeArtifact-Repository.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\CodeCommit-Repository.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\DynamoDB-Table.png" />

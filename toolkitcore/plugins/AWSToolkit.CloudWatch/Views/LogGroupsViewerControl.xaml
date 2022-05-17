@@ -46,7 +46,7 @@
             </ToolBar>
         </ToolBarTray>
 
-        <local:SearchBar Grid.Row="1" />
+        <local:SearchBar Grid.Row="1" FilterText="{Binding FilterText}" />
 
         <!-- Indicates status of results eg. no results found, error message -->
         <local:ResultsStatus Grid.Row="2"

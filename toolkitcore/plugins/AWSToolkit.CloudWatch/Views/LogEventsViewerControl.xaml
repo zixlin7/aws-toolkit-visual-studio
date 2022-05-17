@@ -98,7 +98,17 @@
 
         <!--Search bar and the actions toolbar-->
         <DockPanel Grid.Row="1" LastChildFill="True">
-
+           
+            <TextBlock DockPanel.Dock="Top" 
+                       Margin="9 6 6 6"
+                       Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}">
+                <Run Text="Search for and match terms, phrases, or values in your log events."/>
+                <commonUi:BrowserHyperLink 
+                    NavigateUri="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#matching-terms-events">
+                    <Run Text="Learn more about filter patterns." />
+                </commonUi:BrowserHyperLink>
+            </TextBlock>
+            
             <ToolBar DockPanel.Dock="Right"
                      ToolBarTray.IsLocked="True"
                      OverflowMode="Never"
@@ -122,7 +132,10 @@
                         Source="{Binding Source={StaticResource VsImages}, Path=WordWrap}" />
                 </ToggleButton>
             </ToolBar>
-            <local:SearchBar DockPanel.Dock="Left" />
+            <local:SearchBar DockPanel.Dock="Left" 
+                             FilterText="{Binding FilterText}"
+                             HintText="{Binding Source={x:Static local:LogEventsViewerControl.DefaultHintText}}"/>
+            
         </DockPanel>
 
         <!-- Indicates status of results eg. no results found, error message -->

@@ -17,7 +17,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Nodes
             set;
         }
 
-        //TODO: Replace with log groups icon when available
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
                 new ActionHandlerWrapper("View",
@@ -25,7 +24,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Nodes
                     null,
                     true,
                     typeof(AwsImageResourcePath).Assembly,
-                    AwsImageResourcePath.CloudWatch.Path)
+                    AwsImageResourcePath.CloudWatchLogGroups.Path)
             );
     }
 }

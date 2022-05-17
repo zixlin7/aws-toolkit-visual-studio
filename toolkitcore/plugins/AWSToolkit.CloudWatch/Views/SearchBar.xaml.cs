@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Amazon.AWSToolkit.CloudWatch.Core;
 
 namespace Amazon.AWSToolkit.CloudWatch.Views
 {
@@ -12,15 +11,28 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         public SearchBar()
         {
             InitializeComponent();
-            DataContextChanged += OnDataContextChanged;
         }
 
-        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        public static readonly DependencyProperty FilterTextProperty =
+           DependencyProperty.Register(
+               nameof(FilterText), typeof(string), typeof(SearchBar),
+               new PropertyMetadata(null));
+
+        public static readonly DependencyProperty HintTextProperty =
+         DependencyProperty.Register(
+             nameof(HintText), typeof(string), typeof(SearchBar),
+             new PropertyMetadata("Search by prefix"));
+
+        public string FilterText
         {
-            if(!(e.NewValue is ILogSearchProperties))
-            {
-                throw new System.InvalidOperationException($"Did not receive expected type: {nameof(ILogSearchProperties)}");
-            }
+            get => (string) GetValue(FilterTextProperty);
+            set => SetValue(FilterTextProperty, value);
+        }
+
+        public string HintText
+        {
+            get => (string) GetValue(HintTextProperty);
+            set => SetValue(HintTextProperty, value);
         }
     }
 }

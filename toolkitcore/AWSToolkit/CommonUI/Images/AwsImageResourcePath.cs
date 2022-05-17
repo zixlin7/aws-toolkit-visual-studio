@@ -81,6 +81,9 @@
         public static readonly AwsImageResourcePath CloudFrontStreamingDistribution =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ResourceIcons.CloudFront-Streaming-Distribution.png");
 
+        public static readonly AwsImageResourcePath CloudWatchLogGroups =
+            new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ResourceIcons.CloudWatch-Log-Groups.png");
+
         public static readonly AwsImageResourcePath CodeArtifactRepository =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ResourceIcons.CodeArtifact-Repository.png");
 

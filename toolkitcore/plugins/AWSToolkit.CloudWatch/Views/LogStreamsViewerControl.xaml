@@ -106,7 +106,7 @@
                         Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
                 </Button>
             </ToolBar>
-            <local:SearchBar DockPanel.Dock="Left" />
+            <local:SearchBar DockPanel.Dock="Left" FilterText="{Binding FilterText}"/>
         </DockPanel>
 
         <!-- Indicates status of results eg. no results found, error message -->

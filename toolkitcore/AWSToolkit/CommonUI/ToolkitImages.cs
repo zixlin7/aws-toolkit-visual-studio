@@ -75,6 +75,9 @@ namespace Amazon.AWSToolkit.CommonUI
         public static ImageSource CloudFrontStreamingDistribution =>
             ImageSourceFactory.GetImageSource(AwsImageResourcePath.CloudFrontStreamingDistribution.Path);
 
+        public static ImageSource CloudWatchLogGroups =>
+            ImageSourceFactory.GetImageSource(AwsImageResourcePath.CloudWatchLogGroups.Path);
+
         public static ImageSource CodeArtifactRepository =>
             ImageSourceFactory.GetImageSource(AwsImageResourcePath.CodeArtifactRepository.Path);
 

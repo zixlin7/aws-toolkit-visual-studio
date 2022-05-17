@@ -34,7 +34,7 @@
 
         <DockPanel Style="{StaticResource SearchBoxStyle}">
             <TextBlock
-                Text="Search by prefix"
+                Text="{Binding HintText, RelativeSource={RelativeSource AncestorType=UserControl}}"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 DockPanel.Dock="Left"
