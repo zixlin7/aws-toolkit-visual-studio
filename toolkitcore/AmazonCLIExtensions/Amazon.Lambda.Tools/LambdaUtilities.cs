@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using YamlDotNet.RepresentationModel;
-using YamlDotNet.Serialization;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,7 +12,6 @@ using Amazon.Common.DotNetCli.Tools;
 
 using Amazon.Lambda.Model;
 using Amazon.S3;
-using Amazon.S3.Model;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 using Environment = System.Environment;
@@ -27,8 +24,7 @@ namespace Amazon.Lambda.Tools
 
         static readonly IReadOnlyDictionary<string, string> _lambdaRuntimeToDotnetFramework = new Dictionary<string, string>()
         {
-            // Using string "dotnet6" instead of Runtime.Dotnet6 because the AWS SDK for .NET hasn't been updated yet with the new value.
-            {"dotnet6", "net6.0"},
+            {Amazon.Lambda.Runtime.Dotnet6.Value, "net6.0"},
             {Amazon.Lambda.Runtime.Dotnetcore31.Value, "netcoreapp3.1"},
             {Amazon.Lambda.Runtime.Dotnetcore21.Value, "netcoreapp2.1"},
             {Amazon.Lambda.Runtime.Dotnetcore20.Value, "netcoreapp2.0"},
