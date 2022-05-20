@@ -368,5 +368,10 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             return ValueMappings?.Any() ?? false;
         }
+
+        public virtual string GetSummaryValue()
+        {
+            return Value?.ToString() ?? string.Empty;
+        }
     }
 }

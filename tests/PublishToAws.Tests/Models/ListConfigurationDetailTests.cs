@@ -77,5 +77,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             _sut.Value = "[]";
             Assert.Equal(expectedHasErrorMessage, !string.IsNullOrWhiteSpace(_sut.ValidationMessage));
         }
+
+        [Fact]
+        public void GetSummaryValue()
+        {
+            _sut.SelectedItems = SelectedItems;
+            var summary = _sut.GetSummaryValue();
+
+            Assert.Equal("display 1,\r\ndisplay 2", summary);
+        }
     }
 }

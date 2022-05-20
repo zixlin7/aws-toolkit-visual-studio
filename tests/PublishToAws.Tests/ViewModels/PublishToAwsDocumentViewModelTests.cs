@@ -1336,6 +1336,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     .WithChild(ConfigurationDetailBuilder.Create()
                         .IsVisible()
                         .WithName("create-new-vpc")
+                        .WithValue("foo")
                     )
                     .WithChild(ConfigurationDetailBuilder.Create()
                         .IsAdvanced()
@@ -1348,6 +1349,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                     )
                     .WithChild(ConfigurationDetailBuilder.Create()
                         .WithName("summary displayable #summaryvpc")
+                        .WithValue("foo")
                         .IsSummaryDisplayable())
                     .Build()
             );

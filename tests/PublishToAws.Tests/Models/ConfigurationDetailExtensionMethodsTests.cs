@@ -142,6 +142,38 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         }
 
         [Fact]
+        public void GenerateSummaryForLeaf_WithMultilineText()
+        {
+            var details = new List<ConfigurationDetail>()
+            {
+                ConfigurationDetailBuilder.Create()
+                    .WithName("env-var")
+                    .WithValue("a: b\r\nc: d")
+                    .IsVisible()
+                    .Build()
+            };
+
+            var summary = details.GenerateSummary(false);
+            Assert.Equal("env-var: \r\n    a: b\r\n    c: d\r\n", summary);
+        }
+
+        [Fact]
+        public void GenerateSummaryForLeaf_WithNoValue()
+        {
+            var details = new List<ConfigurationDetail>()
+            {
+                ConfigurationDetailBuilder.Create()
+                    .WithName("foo")
+                    .WithValue("")
+                    .IsVisible()
+                    .Build()
+            };
+
+            var summary = details.GenerateSummary(false);
+            Assert.DoesNotContain("foo", summary);
+        }
+
+        [Fact]
         public void GenerateSummaryForParent()
         {
             var details = new List<ConfigurationDetail>()

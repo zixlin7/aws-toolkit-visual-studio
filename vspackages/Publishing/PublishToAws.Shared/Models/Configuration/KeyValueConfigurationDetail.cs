@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Models;
@@ -65,6 +66,13 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
         public void SetKeyValues(IEnumerable<KeyValue> keyValues)
         {
             Value = KeyValuesConversion.ToJson(keyValues);
+        }
+
+        public override string GetSummaryValue()
+        {
+            return string.Join(
+                $",{Environment.NewLine}",
+                _keyValues.Collection.Select(x => $"{x.Key}: {x.Value}"));
         }
     }
 }
