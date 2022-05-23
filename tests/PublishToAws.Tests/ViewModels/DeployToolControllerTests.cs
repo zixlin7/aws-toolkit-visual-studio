@@ -614,6 +614,40 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
+        public async Task ApplyConfigSettingsForConfigurationDetails_WithReadOnlyDetail()
+        {
+            // arrange.
+            var configurationDetails = _optionSettingItemSummaries.Take(2)
+                .Select(_configurationDetailFactory.CreateFrom)
+                .ToList();
+
+            var readOnlyDetail = configurationDetails[0];
+            readOnlyDetail.ReadOnly = true;
+            var writableDetail = configurationDetails[1];
+
+            ApplyConfigSettingsInput actualInput = null;
+
+            Func<string, ApplyConfigSettingsInput, CancellationToken, ApplyConfigSettingsOutput> applyConfigSettingsFunc = (sessionId, input, token) => {
+                actualInput = input;
+                return new ApplyConfigSettingsOutput();
+            };
+
+            _restClient.Setup(mock => mock.ApplyConfigSettingsAsync(It.IsAny<string>(), It.IsAny<ApplyConfigSettingsInput>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(applyConfigSettingsFunc);
+
+            // act.
+            await _deployToolController.ApplyConfigSettingsAsync(_sessionId, configurationDetails, _cancelToken);
+
+            // assert.
+            Assert.False(actualInput.UpdatedSettings.ContainsKey(readOnlyDetail.GetLeafId()));
+            var expectedIdsTransmitted = writableDetail.GetSelfAndDescendants()
+                .Where(x => x.IsLeaf())
+                .Select(x => x.GetLeafId())
+                .ToList();
+            Assert.Equal(expectedIdsTransmitted, actualInput.UpdatedSettings.Keys);
+        }
+
+        [Fact]
         public async Task ApplyConfigSettingsForConfigurationDetail()
         {
             var configurationDetail = _configurationDetailFactory.CreateFrom(_optionSettingItemSummaries[0]);

@@ -266,6 +266,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             var configSettings = configurationDetails
                 .SelectMany(detail => detail.GetSelfAndDescendants())
                 .Where(detail => detail.IsLeaf())
+                .Where(detail => !detail.ReadOnly)
                 .ToDictionary(x => x.GetLeafId(), x => x.Value.ToString());
 
             var input = new ApplyConfigSettingsInput {UpdatedSettings = configSettings};
