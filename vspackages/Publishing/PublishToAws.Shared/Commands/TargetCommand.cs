@@ -13,7 +13,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         public override bool CanExecute(object paramter)
         {
-            return PublishDocumentViewModel.ViewStage == PublishViewStage.Configure;
+            return true;
         }
 
         protected override async Task ExecuteCommandAsync()

@@ -65,13 +65,27 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock 
+        <StackPanel 
             Grid.Row="0"
-            Margin="0 6 0 0"
-            FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontSizeKey}}"
-            FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontWeightKey}}"
-            Text="{Binding TargetRecipe}"
-            />
+            Orientation="Horizontal">
+            <TextBlock 
+                Margin="0 6 0 0"
+                VerticalAlignment="Center"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontSizeKey}}"
+                FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontWeightKey}}"
+                d:Text="Target Recipe Name shown here"
+                Text="{Binding TargetRecipe}"
+                />
+            <TextBlock 
+                Margin="12 6 0 0"
+                VerticalAlignment="Center"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                >
+                <Hyperlink 
+                    ToolTip="Select a different publish target"
+                    Command="{Binding BackToTargetCommand}">Modify</Hyperlink>
+            </TextBlock>
+        </StackPanel>
         <CheckBox 
             Name="ConfigCheckbox" x:FieldModifier="private"
             Grid.Row="1" 

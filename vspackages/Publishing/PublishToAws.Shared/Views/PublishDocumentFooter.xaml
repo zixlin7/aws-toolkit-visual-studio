@@ -8,25 +8,11 @@
              mc:Ignorable="d"
              d:DesignWidth="800">
     <UserControl.Resources>
-        <Style TargetType="Button" x:Key="BackButtonStyle" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
-            <Setter Property="Visibility" Value="Collapsed" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ViewStage}" Value="Configure">
-                    <Setter Property="Visibility" Value="Visible" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
     </UserControl.Resources>
     <StackPanel
         Orientation="Horizontal"
         VerticalAlignment="top"
         HorizontalAlignment="Right">
-        <Button
-            Content="Back"
-            d:DesignHeight="23" MinWidth="75"
-            Margin="6,0,0,0"
-            Command="{Binding BackToTargetCommand}"
-            Style="{DynamicResource BackButtonStyle}" />
         <Button
             Content="Publish"
             d:DesignHeight="23" MinWidth="75"

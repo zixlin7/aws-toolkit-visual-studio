@@ -25,21 +25,5 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
 
             Assert.Equal(PublishViewStage.Target, ViewModel.ViewStage);
         }
-
-        [Fact]
-        public void CanExecute()
-        {
-            ViewModel.ViewStage = PublishViewStage.Configure;
-            Assert.True(_sut.CanExecute(null));
-        }
-
-        [Theory]
-        [InlineData(PublishViewStage.Target)]
-        [InlineData(PublishViewStage.Publish)]
-        public void CanExecute_NotCorrectView(PublishViewStage viewStage)
-        {
-            ViewModel.ViewStage = viewStage;
-            Assert.False(_sut.CanExecute(null));
-        }
     }
 }
