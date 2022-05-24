@@ -1,0 +1,64 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI">
+    <Style TargetType="local:DualListBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:DualListBox">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox 
+                            Grid.Column="0"
+                            Header="Available">
+                            <ListBox
+                                x:Name="PART_AvailableListBox"
+                                DisplayMemberPath="{TemplateBinding DisplayMemberPath}"
+                                ItemsSource="{TemplateBinding AvailableItems}"
+                                SelectionMode="{TemplateBinding SelectionMode}"
+                                Margin="6">
+                            </ListBox>
+                        </GroupBox>
+                        <StackPanel
+                            Grid.Column="1"
+                            Orientation="Vertical"
+                            VerticalAlignment="Center">
+                            <Button 
+                                x:Name="PART_AddButton"
+                                IsEnabled="{Binding ElementName=PART_AvailableListBox, Path=SelectedItems.Count}"
+                                Margin="6">Add</Button>
+                            <Button 
+                                x:Name="PART_AddAllButton"
+                                IsEnabled="{Binding ElementName=PART_AvailableListBox, Path=Items.Count}"
+                                Margin="6, 0, 6, 6">Add All</Button>
+                            <Button
+                                x:Name="PART_RemoveButton"
+                                IsEnabled="{Binding ElementName=PART_SelectedListBox, Path=SelectedItems.Count}"
+                                Margin="6, 0, 6, 6">Remove</Button>
+                            <Button 
+                                x:Name="PART_RemoveAllButton"
+                                IsEnabled="{Binding ElementName=PART_SelectedListBox, Path=Items.Count}"
+                                Margin="6, 0, 6, 6">Remove All</Button>
+                        </StackPanel>
+                        <GroupBox 
+                            Grid.Column="2"
+                            Header="Selected">
+                            <!-- SelectedItems is a SelectedItemCollection which derives from ObservableCollection -->
+                            <ListBox 
+                                x:Name="PART_SelectedListBox"
+                                DisplayMemberPath="{TemplateBinding DisplayMemberPath}"
+                                ItemsSource="{TemplateBinding SelectedItems}"
+                                SelectionMode="{TemplateBinding SelectionMode}"
+                                Margin="6">
+                            </ListBox>
+                        </GroupBox>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

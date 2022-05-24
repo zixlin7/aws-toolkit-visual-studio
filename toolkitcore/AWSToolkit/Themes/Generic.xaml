@@ -16,7 +16,7 @@
 
         <!--
             These dictionaries remain constant and are define elements in terms of keys specified
-            in the preceeding dictionary (and overridden as necessary in the host shell)
+            in the preceding dictionary (and overridden as necessary in the host shell)
         -->
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Converters.xaml" />
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Geometries.xaml" />
@@ -39,6 +39,7 @@
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/ProgressControls.xaml" />
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/FlowDocument.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Separators.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/DualListBox.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

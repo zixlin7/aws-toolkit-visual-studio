@@ -91,6 +91,7 @@
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
     <Compile Include="CommonUI\Converters\ToolkitRegionConverter.cs" />
+    <Compile Include="CommonUI\DualListBox.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />
@@ -640,6 +641,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Default\DesignTimeFonts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\DualListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -121,7 +121,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
             if (SelectedItems != null)
             {
-                if (this.SelectionMode == SelectionMode.Single)
+                if (SelectionMode == SelectionMode.Single)
                 {
                     IEnumerator enumerator = SelectedItems.GetEnumerator();
                     if (enumerator?.MoveNext() == true)

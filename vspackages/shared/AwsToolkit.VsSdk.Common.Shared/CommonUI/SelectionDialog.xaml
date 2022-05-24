@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:local="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
@@ -42,8 +43,7 @@
                 Style="{StaticResource DialogCommitButtonStyle}" />
         </StackPanel>
 
-        <ListBox
-            x:Name="_listBox"
-            Style="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ListBoxStyle}}" />
+        <commonUi:DualListBox
+            x:Name="_listBox" />
     </DockPanel>
 </platformUi:DialogWindow>
