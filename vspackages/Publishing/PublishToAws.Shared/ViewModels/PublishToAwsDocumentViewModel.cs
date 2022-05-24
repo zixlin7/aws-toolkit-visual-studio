@@ -833,58 +833,60 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Loads the list of configuration settings for the selected target <see cref="PublishDestination"/>
-        /// <see cref="ConfigurationDetails"/> is populated with any loaded configuration details
-        /// A selected target needs to be defined prior to making this call.
+        /// Populates <see cref="ConfigurationDetails"/> with configuration settings for the
+        /// selected target (<see cref="PublishDestination"/>).
+        /// 
+        /// Settings that may offer a selection of values (<see cref="ConfigurationDetail.ValueMappings"/>) are also loaded.
         /// </summary>
         public async Task RefreshTargetConfigurationsAsync(CancellationToken cancellationToken)
         {
-            IList<ConfigurationDetail> configSettings = new List<ConfigurationDetail>();
-            var recipeId = string.Empty;
-
             try
             {
                 ThrowIfSessionIsNotCreated();
-                recipeId = PublishDestination?.RecipeId;
 
-                configSettings = await DeployToolController.GetConfigSettingsAsync(SessionId, cancellationToken);
+                if (PublishDestination == null)
+                {
+                    await ClearConfigurationDetailsAsync();
+                    return;
+                }
+
+                var recipeId = PublishDestination?.RecipeId;
+
+                var configurationDetails =
+                    (await LoadConfigurationDetailsAsync(SessionId, cancellationToken).ConfigureAwait(false))
+                    .ToList();
+
+                await SetConfigurationDetailsAsync(configurationDetails);
+                UpdateUnsupportedSetting(recipeId, configurationDetails);
             }
             catch (Exception e)
             {
+                await ClearConfigurationDetailsAsync();
                 throw new PublishException($"Unable to retrieve configuration details: {GetExceptionInnerMessage(e)}", e);
             }
-            finally
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-                UpdateUnsupportedSetting(recipeId, configSettings);
-                ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(configSettings);
-            }
+        }
+
+        public async Task<IEnumerable<ConfigurationDetail>> LoadConfigurationDetailsAsync(string sessionId, CancellationToken cancellationToken)
+        {
+            var configurationDetails = await DeployToolController.GetConfigSettingsAsync(sessionId, cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            return await DeployToolController.UpdateConfigSettingValuesAsync(sessionId, configurationDetails, cancellationToken);
+        }
+
+        public async Task ClearConfigurationDetailsAsync()
+        {
+            await SetConfigurationDetailsAsync(Enumerable.Empty<ConfigurationDetail>());
+        }
+
+        public async Task SetConfigurationDetailsAsync(IEnumerable<ConfigurationDetail> configurationDetails)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(configurationDetails);
         }
 
         private void UpdateUnsupportedSetting(string recipeId, IList<ConfigurationDetail> configurationDetails)
         {
             UnsupportedSettingTypes.Update(recipeId, configurationDetails);
-        }
-
-        /// <summary>
-        /// Loads possible values associated with the configuration details for the selected target
-        /// <see cref="ConfigurationDetails"/> is re-populated with updated configuration details
-        /// Configuration details must be initially retrieved prior to making this call.
-        /// </summary>
-        public async Task RefreshConfigurationSettingValuesAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                ThrowIfSessionIsNotCreated();
-                var configSettings = await DeployToolController.UpdateConfigSettingValuesAsync(SessionId, ConfigurationDetails.ToList(), cancellationToken);
-
-                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-                ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(configSettings);
-            }
-            catch (Exception ex)
-            {
-                throw new PublishException($"Unable to update configuration detail values: {GetExceptionInnerMessage(ex)}", ex);
-            }
         }
 
         /// <summary>

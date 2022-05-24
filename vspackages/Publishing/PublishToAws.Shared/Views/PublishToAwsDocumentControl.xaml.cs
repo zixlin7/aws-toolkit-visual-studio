@@ -443,8 +443,6 @@ namespace Amazon.AWSToolkit.Publish.Views
                 {
                     await TaskScheduler.Default;
                     await _viewModel.RefreshTargetConfigurationsAsync(tokenSource.Token).ConfigureAwait(false);
-                    await TaskScheduler.Default;
-                    await _viewModel.RefreshConfigurationSettingValuesAsync(tokenSource.Token).ConfigureAwait(false);
                 }
             }
             catch (PublishException e)

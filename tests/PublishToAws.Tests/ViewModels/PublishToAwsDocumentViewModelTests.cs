@@ -80,6 +80,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _exposedTestViewModel = new TestPublishToAwsDocumentViewModel(_publishToAwsFixture.PublishApplicationContext);
 
             DeployToolControllerFixture.GetCompatibilityAsyncResponse = _sampleGetCompatibilityOutput;
+            DeployToolControllerFixture.UpdateConfigSettingValuesAsyncValueMappings.Add("abc", "def");
         }
 
         [Fact]
@@ -792,9 +793,20 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await _sut.RefreshTargetConfigurationsAsync(CancelToken);
 
             DeployToolControllerFixture.AssertGetConfigSettingsAsyncCalledTimes(1);
-            Assert.Single(_sut.ConfigurationDetails);
+            var detail = Assert.Single(_sut.ConfigurationDetails);
+            Assert.Equal(DeployToolControllerFixture.UpdateConfigSettingValuesAsyncValueMappings, detail.ValueMappings);
         }
 
+        [Fact]
+        public async Task RefreshTargetConfigurations_NoPublishDestination()
+        {
+            await SetupPublishView();
+            _sut.PublishDestination = null;
+
+            await _sut.RefreshTargetConfigurationsAsync(CancelToken);
+
+            Assert.Empty(_sut.ConfigurationDetails);
+        }
 
         [Fact]
         public async Task RefreshTargetConfigurations_NoSession()
@@ -826,49 +838,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             await _sut.RefreshTargetConfigurationsAsync(CancelToken);
 
             Assert.True(_sut.UnsupportedSettingTypes.RecipeToUnsupportedSetting.Any());
-        }
-
-        [Fact]
-        public async Task RefreshConfigurationSettingValues()
-        {
-            await SetupPublishView();
-            _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(SampleConfigurationDetails);
-
-            Assert.False(_sut.ConfigurationDetails.First().HasValueMappings());
-
-            var output = ApplyResourcesToConfigDetails(SampleConfigurationDetails);
-            DeployToolControllerFixture.DeployToolController.Setup(mock =>
-                mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), SampleConfigurationDetails, It.IsAny<CancellationToken>())).ReturnsAsync(output);
-
-            await _sut.RefreshConfigurationSettingValuesAsync(CancelToken);
-
-            DeployToolControllerFixture.DeployToolController.Verify(mock => mock.UpdateConfigSettingValuesAsync(DeployToolControllerFixture.SessionId, SampleConfigurationDetails,  CancelToken), Times.Once);
-            Assert.True(_sut.ConfigurationDetails.First().ValueMappings.ContainsKey("abc"));
-        }
-
-        private List<ConfigurationDetail> ApplyResourcesToConfigDetails(IList<ConfigurationDetail> sampleConfigurationDetails)
-        {
-            sampleConfigurationDetails.ToList().ForEach(x => x.ValueMappings = new Dictionary<string, string>() {{"abc", "def"}});
-            return sampleConfigurationDetails.ToList();
-        }
-
-        [Fact]
-        public async Task RefreshConfigurationSettingValues_NoSession()
-        {
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValuesAsync(CancelToken));
-        }
-
-        [Fact]
-        public async Task RefreshConfigurationSettingValues_ThrowsException()
-        {
-            await SetupPublishView();
-
-            DeployToolControllerFixture.DeployToolController.Setup(mock =>
-                    mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(), It.IsAny<List<ConfigurationDetail>>(),It.IsAny<CancellationToken>()))
-                .Throws(new DeployToolException("simulated service error"));
-
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshConfigurationSettingValuesAsync(CancelToken));
-            Assert.Empty(_sut.ConfigurationDetails);
         }
 
         [Fact]

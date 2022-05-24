@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
@@ -27,6 +28,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
         public GetDeploymentDetailsOutput GetDeploymentDetailsAsyncResponse;
         public List<TargetSystemCapability> GetCompatibilityAsyncResponse = new List<TargetSystemCapability>();
         public ValidationResult ApplyConfigSettingsAsyncResponse = new ValidationResult();
+        public Dictionary<string, string>
+            UpdateConfigSettingValuesAsyncValueMappings = new Dictionary<string, string>();
 
         public DeployToolControllerFixture()
         {
@@ -42,6 +45,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
             StubGetDeploymentDetailsAsync();
             StubGetCompatibilityAsync();
             StubApplyConfigSettingsAsync();
+            StubUpdateConfigSettingValuesAsyncAsync();
+
 
             DeployToolController.Setup(mock =>
                 mock.SetDeploymentTargetAsync(It.IsAny<string>(), It.IsAny<PublishRecommendation>(),
@@ -181,6 +186,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
             DeployToolController.Setup(mock => mock.ApplyConfigSettingsAsync(It.IsAny<string>(),
                 It.IsAny<IList<ConfigurationDetail>>(), It.IsAny<CancellationToken>())).ReturnsAsync(
                 () => ApplyConfigSettingsAsyncResponse);
+        }
+
+        private void StubUpdateConfigSettingValuesAsyncAsync()
+        {
+            DeployToolController.Setup(mock => mock.UpdateConfigSettingValuesAsync(It.IsAny<string>(),
+                    It.IsAny<IEnumerable<ConfigurationDetail>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    (string sessionId, IEnumerable<ConfigurationDetail> configurationDetails,
+                        CancellationToken cancellationToken) =>
+                    {
+                        var details = configurationDetails.ToList();
+                        foreach (var configurationDetail in details)
+                        {
+                            configurationDetail.ValueMappings = UpdateConfigSettingValuesAsyncValueMappings;
+                        }
+
+                        return details;
+                    });
         }
 
         public void SetupGetDeploymentStatusAsync(params GetDeploymentStatusOutput[] getDeploymentStatusAsyncResponses)
