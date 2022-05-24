@@ -61,8 +61,21 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
     public class DeployToolController : IDeployToolController
     {
-        private static readonly string[] TypeHintLoadingExclusions = new string[]
+        /// <summary>
+        /// Skip loading Value Mappings for these type hints.
+        /// This improves the overall performance of configuration detail loading, by
+        /// avoiding server requests, which may perform AWS account lookups or other computations.
+        /// </summary>
+        public static readonly string[] TypeHintLoadingExclusions = new string[]
         {
+            // Type Hints with low relevance for Value Mappings
+            ConfigurationDetail.TypeHints.DockerBuildArgs,
+            ConfigurationDetail.TypeHints.DockerExecutionDirectory,
+            ConfigurationDetail.TypeHints.DotnetPublishAdditionalBuildArguments,
+
+            // Type Hints with Custom selection (and loading) UIs in the Toolkit
+            ConfigurationDetail.TypeHints.EcrRepository,
+            ConfigurationDetail.TypeHints.ExistingIamRole,
             ConfigurationDetail.TypeHints.InstanceType,
         };
 
@@ -190,29 +203,28 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             IEnumerable<ConfigurationDetail> configDetails,
             CancellationToken token)
         {
-            var settings = await Task.WhenAll(configDetails.Select(async setting =>
-                    await UpdateConfigSettingValuesAsync(sessionId, setting, token).ConfigureAwait(false)))
+            var configurationDetails = configDetails.ToList();
+
+            var detailsToUpdate = configurationDetails
+                .SelectMany(d => d.GetSelfAndDescendants())
+                .Where(d => d.IsLeaf())
+                .Where(d => d.Visible)
+                .Where(d => IsTypeHintSupported(d) && !d.HasValueMappings())
+                .ToList();
+
+            await Task.WhenAll(detailsToUpdate.Select(async detail =>
+                {
+                    var updatedValueMappings = await GetConfigSettingValuesAsync(
+                        sessionId, detail.GetLeafId(), token).ConfigureAwait(false);
+
+                    token.ThrowIfCancellationRequested();
+                    detail.ValueMappings = updatedValueMappings;
+
+                    return Task.CompletedTask;
+                }))
                 .ConfigureAwait(false);
-            return settings.ToList();
-        }
 
-        private async Task<ConfigurationDetail> UpdateConfigSettingValuesAsync(string sessionId,
-            ConfigurationDetail detail, CancellationToken token)
-        {
-            if (!detail.IsLeaf())
-            {
-                var children = await UpdateConfigSettingValuesAsync(sessionId, detail.Children, token)
-                    .ConfigureAwait(false);
-                detail.ClearChildren();
-                children.ToList().ForEach(detail.AddChild);
-            }
-            else if (IsTypeHintSupported(detail) && !detail.HasValueMappings())
-            {
-                detail.ValueMappings = await GetConfigSettingValuesAsync(sessionId, detail.GetLeafId(),
-                    token).ConfigureAwait(false);
-            }
-
-            return detail;
+            return configurationDetails;
         }
 
         private readonly IEnumerable<DetailType> _supportedTypeHints = new HashSet<DetailType>() { DetailType.List, DetailType.String };

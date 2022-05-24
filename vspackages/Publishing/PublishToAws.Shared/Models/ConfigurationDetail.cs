@@ -21,7 +21,11 @@ namespace Amazon.AWSToolkit.Publish.Models
     {
         public static class TypeHints
         {
+            public const string DockerBuildArgs = "DockerBuildArgs";
+            public const string DockerExecutionDirectory = "DockerExecutionDirectory";
+            public const string DotnetPublishAdditionalBuildArguments = "DotnetPublishAdditionalBuildArguments";
             public const string EcrRepository = "ECRRepository";
+            public const string ExistingIamRole = "ExistingIAMRole";
             public const string FilePath = "FilePath";
             public const string IamRole = "IAMRole";
             public const string InstanceType = "InstanceType";
