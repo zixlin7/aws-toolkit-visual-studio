@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
                     dlg.Items = listDetail.Items;
                     dlg.SelectedItems = listDetail.SelectedItems;
                     dlg.SelectionMode = SelectionMode.Extended;
-                    dlg.DisplayMemberPath = nameof(ListConfigurationDetail.ListItem.DisplayName);
+                    dlg.DisplayMemberPath = nameof(ListItem.DisplayName);
 
                     if (dlg.Show())
                     {

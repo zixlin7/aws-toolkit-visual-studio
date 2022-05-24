@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -8,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 using Amazon.AWSToolkit.Collections;
-using Amazon.AWSToolkit.Themes;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -43,10 +41,10 @@ namespace Amazon.AWSToolkit.CommonUI
 
         internal static readonly DependencyProperty AvailableItemsProperty = AvailableItemsPropertyKey.DependencyProperty;
 
-        private IList AvailableItems
+        public IList AvailableItems
         {
             get => (IList) GetValue(AvailableItemsProperty);
-            set => SetValue(AvailableItemsPropertyKey, value);
+            private set => SetValue(AvailableItemsPropertyKey, value);
         }
 
         static DualListBox()
@@ -77,6 +75,20 @@ namespace Amazon.AWSToolkit.CommonUI
             _addAllButton.Click += PART_AddAllButton_OnClick;
             _removeButton.Click += PART_RemoveButton_OnClick;
             _removeAllButton.Click += PART_RemoveAllButton_OnClick;
+
+            UpdateSorting();
+        }
+
+        private void UpdateSorting()
+        {
+            _availableListBox?.Items.SortDescriptions.Clear();
+            _selectedListBox?.Items.SortDescriptions.Clear();
+
+            if (!string.IsNullOrWhiteSpace(DisplayMemberPath))
+            {
+                _availableListBox?.Items.SortDescriptions.Add(new SortDescription(DisplayMemberPath, ListSortDirection.Ascending));
+                _selectedListBox?.Items.SortDescriptions.Add(new SortDescription(DisplayMemberPath, ListSortDirection.Ascending));
+            }
         }
 
         private T GetTemplatePart<T>(string partName) where T : class
@@ -94,11 +106,18 @@ namespace Amazon.AWSToolkit.CommonUI
 
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (e.Property == ListBox.SelectionModeProperty && e.NewValue is SelectionMode &&
-                ((SelectionMode) e.NewValue) == SelectionMode.Single)
+            switch (e.Property.Name)
             {
-                throw new InvalidEnumArgumentException(
-                    $"{nameof(DualListBox)} does not support {nameof(SelectionMode)}.{nameof(SelectionMode.Single)}.  Consider using a {nameof(ComboBox)} instead.");
+                case nameof(DisplayMemberPath):
+                    UpdateSorting();
+                    break;
+                case nameof(SelectionMode):
+                    if ((SelectionMode) e.NewValue == SelectionMode.Single)
+                    {
+                        throw new InvalidEnumArgumentException(
+                            $@"{nameof(DualListBox)} does not support {nameof(SelectionMode)}.{nameof(SelectionMode.Single)}.  Consider using a {nameof(ComboBox)} instead.");
+                    }
+                    break;
             }
 
             base.OnPropertyChanged(e);
