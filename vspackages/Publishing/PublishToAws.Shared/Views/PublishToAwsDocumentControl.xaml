@@ -31,7 +31,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -160,23 +159,6 @@
                 </ContentPresenter.Style>
             </ContentPresenter>
 
-            <!-- Footer containing actions relevant to the Configure view -->
-            <views:PublishDocumentFooter 
-                Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"
-                Margin="0 18 0 0">
-                <views:PublishDocumentFooter.Style>
-                    <Style TargetType="{x:Type views:PublishDocumentFooter}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ViewStage}" Value="{x:Static viewModels:PublishViewStage.Target}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewStage}" Value="{x:Static viewModels:PublishViewStage.Publish}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </views:PublishDocumentFooter.Style>
-            </views:PublishDocumentFooter>
         </Grid>
     </DockPanel>
 </commonUi:BaseAWSControl>

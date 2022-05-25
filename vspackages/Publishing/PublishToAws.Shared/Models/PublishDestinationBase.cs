@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Media;
 
+using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.Util;
 
 namespace Amazon.AWSToolkit.Publish.Models
@@ -26,6 +29,8 @@ namespace Amazon.AWSToolkit.Publish.Models
         public string Description { get; protected set; }
         public string ShortDescription { get; protected set; }
 
+        public List<Category> ConfigurationCategories { get; } = new List<Category>();
+
         /// <summary>
         /// Does the deployment target originate from a generated deployment project
         /// </summary>
@@ -36,6 +41,15 @@ namespace Amazon.AWSToolkit.Publish.Models
         public string Service { get; protected set; }
         public ImageSource ServiceIcon => RecipeServiceImageResolver.GetServiceImage(Service);
 
+        protected PublishDestinationBase()
+        {
+            ConfigurationCategories.Add(new Category()
+            {
+                Id = Category.FallbackCategoryId,
+                DisplayName = "Other",
+                Order = 0,
+            });
+        }
 
         public bool Equals(PublishDestinationBase other)
         {
@@ -49,6 +63,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                    Description == other.Description &&
                    IsGenerated == other.IsGenerated &&
                    ShortDescription == other.ShortDescription &&
+                   ConfigurationCategories.SequenceEqual(other.ConfigurationCategories) &&
                    DeploymentArtifact == other.DeploymentArtifact &&
                    Service == other.Service;
         }
@@ -73,6 +88,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                 hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ IsGenerated.GetHashCode();
                 hashCode = (hashCode * 397) ^ (ShortDescription != null ? ShortDescription.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ ConfigurationCategories.GetHashCode();
                 hashCode = (hashCode * 397) ^ DeploymentArtifact.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Service != null ? Service.GetHashCode() : 0);
                 return hashCode;

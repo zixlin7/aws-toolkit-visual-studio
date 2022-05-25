@@ -993,7 +993,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             var systemCapabilities = new List<TargetSystemCapability>();
             var summary = new SystemCapabilitySummary()
             {
-                Name = "Docker", Message = "Please install Docker", Installed = false
+                Name = "Docker", Message = "Please install Docker",
             };
             var capability = new TargetSystemCapability(summary);
             systemCapabilities.Add(capability);

@@ -434,6 +434,10 @@ namespace Amazon.AWSToolkit.Publish.Views
             {
                 await TaskScheduler.Default;
                 await _viewModel.RefreshTargetConfigurationsAsync(cancellationToken).ConfigureAwait(false);
+                if (_viewModel.ViewStage == PublishViewStage.Configure)
+                {
+                    await _viewModel.UpdateConfigurationViewModelAsync();
+                }
             }
         }
 

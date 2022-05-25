@@ -88,6 +88,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
             return this;
         }
 
+        public OptionSettingItemSummaryBuilder WithCategory(string category)
+        {
+            _itemSummary.Category = category;
+            return this;
+        }
+
         public OptionSettingItemSummaryBuilder WithAdvanced()
         {
             _itemSummary.Advanced = true;
@@ -122,6 +128,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
                 .WithType("String")
                 .WithTypeHint("some-type-hint")
                 .WithValue(guid)
+                .WithCategory("some-category")
                 .WithVisible()
                 .WithSummaryDisplayable();
         }

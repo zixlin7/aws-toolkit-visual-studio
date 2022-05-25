@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows;
-
-using Amazon.AWSToolkit.Publish.Models;
+﻿using Amazon.AWSToolkit.Publish.Models;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -29,8 +26,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             return new SystemCapabilitySummary()
             {
                 Name = "Docker",
-                Installed = false,
-                Available = false,
                 Message = "Docker must be installed to publish application",
                 InstallationUrl = url
             };
@@ -39,8 +34,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         private void AssertSummaryEqualsCapability(SystemCapabilitySummary summary, TargetSystemCapability capability)
         {
             Assert.Equal(summary.Name, capability.Name);
-            Assert.Equal(summary.Installed, capability.Installed);
-            Assert.Equal(summary.Available, capability.Available);
             Assert.Equal(summary.Message, capability.Message);
             Assert.Equal(summary.InstallationUrl, capability.InstallationUrl);
         }

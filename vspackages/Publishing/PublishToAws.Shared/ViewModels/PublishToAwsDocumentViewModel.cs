@@ -92,6 +92,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private string _targetRecipe;
         private ICollectionView _republishCollectionView;
 
+        private readonly ConfigurationViewModel _configurationViewModel;
         private readonly PublishProjectViewModel _publishProjectViewModel;
 
         /// <summary>
@@ -136,6 +137,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 publishContext.ConnectionManager,
                 publishContext.PublishPackage.JoinableTaskFactory);
 
+            _configurationViewModel = new ConfigurationViewModel(_publishContext);
             _publishProjectViewModel = new PublishProjectViewModel(_publishContext);
 
             _targetSelectionViewModels.Add(new NewPublishTargetsViewModel());
@@ -155,6 +157,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public JoinableTaskFactory JoinableTaskFactory => _publishContext.PublishPackage.JoinableTaskFactory;
         public PublishConnectionViewModel Connection => _publishConnection;
 
+        public ConfigurationViewModel ConfigurationViewModel => _configurationViewModel;
         public PublishProjectViewModel PublishProjectViewModel => _publishProjectViewModel;
 
         /// <summary>
@@ -1006,6 +1009,16 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             _errors[nameof(PublishStackName)] = validationMessage;
             await RaiseErrorsChangedAsync(nameof(PublishStackName)).ConfigureAwait(false);
+        }
+
+        public async Task UpdateConfigurationViewModelAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            ConfigurationViewModel.PublishDestination = PublishDestination;
+            ConfigurationViewModel.SetConfigurationDetails(ConfigurationDetails?.ToList() ?? new List<ConfigurationDetail>());
+
+            await ConfigurationViewModel.RecreateGroupsAsync();
         }
 
         public async Task UpdatePublishProjectViewModelAsync()

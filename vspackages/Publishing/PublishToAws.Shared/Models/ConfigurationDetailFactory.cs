@@ -55,8 +55,9 @@ namespace Amazon.AWSToolkit.Publish.Models
             configurationDetail.Type = GetConfigurationDetailType(itemSummary.Type);
             configurationDetail.TypeHint = itemSummary.TypeHint;
             configurationDetail.DefaultValue = itemSummary.Value;
-            // TODO : use category once API provides it. (View is already set to render it)
-            configurationDetail.Category = string.Empty;
+            configurationDetail.Category = string.IsNullOrWhiteSpace(itemSummary.Category)
+                ? Category.FallbackCategoryId
+                : itemSummary.Category;
             configurationDetail.Advanced = itemSummary.Advanced;
             configurationDetail.ReadOnly = itemSummary.ReadOnly;
             configurationDetail.Visible = itemSummary.Visible;
