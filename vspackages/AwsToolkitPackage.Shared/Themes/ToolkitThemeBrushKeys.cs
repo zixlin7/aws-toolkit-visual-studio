@@ -1,6 +1,4 @@
-﻿using System.Windows.Media;
-
-using Amazon.AWSToolkit.Themes;
+﻿using Amazon.AWSToolkit.Themes;
 
 using Microsoft.VisualStudio.PlatformUI;
 
@@ -16,7 +14,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 #if VS2022_OR_LATER
         public object ErrorBorder => EnvironmentColors.ToolWindowValidationErrorBorderBrushKey;
 #else
-        public object ErrorBorder => Brushes.Red;
+        public object ErrorBorder => ThemeResourceKeys.VS2019ErrorBrushKey;
 #endif
         public object HintText => EnvironmentColors.ControlEditHintTextBrushKey;
         public object ToolTipBorder => EnvironmentColors.ToolTipBorderBrushKey;
