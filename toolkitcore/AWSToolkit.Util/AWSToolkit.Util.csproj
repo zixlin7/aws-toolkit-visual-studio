@@ -120,6 +120,7 @@
     <Compile Include="Telemetry\TelemetryService.cs" />
     <Compile Include="Telemetry\ToolkitTelemetryEvents.generated.cs" />
     <Compile Include="Telemetry\ToolkitTelemetryEventsSupplemental.cs" />
+    <Compile Include="Threading\ResettableCancellationToken.cs" />
     <Compile Include="ToolkitAppDataPath.cs" />
     <Compile Include="ToolkitSettingsConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

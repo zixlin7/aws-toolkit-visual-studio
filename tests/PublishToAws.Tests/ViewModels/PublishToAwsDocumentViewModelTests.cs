@@ -665,7 +665,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task JoinSession_NoSession()
         {
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<NoDeploymentSessionException>(async () =>
             {
                 await _sut.JoinDeploymentSessionAsync();
             });
@@ -739,7 +739,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task SetDeploymentTarget_NoSession()
         {
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.SetDeploymentTargetAsync(CancelToken));
+            await Assert.ThrowsAsync<NoDeploymentSessionException>(async () => await _sut.SetDeploymentTargetAsync(CancelToken));
         }
 
         [Fact]
@@ -829,7 +829,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task RefreshTargetConfigurations_NoSession()
         {
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(CancelToken));
+            await Assert.ThrowsAsync<NoDeploymentSessionException>(async () => await _sut.RefreshTargetConfigurationsAsync(CancelToken));
         }
 
         [Fact]
@@ -839,7 +839,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
             DeployToolControllerFixture.StubGetConfigSettingsAsyncThrows();
 
-            await Assert.ThrowsAsync<PublishException>(async () => await _sut.RefreshTargetConfigurationsAsync(CancelToken));
+            await Assert.ThrowsAsync<DeployToolException>(async () => await _sut.RefreshTargetConfigurationsAsync(CancelToken));
             Assert.Empty(_sut.ConfigurationDetails);
         }
 
@@ -874,7 +874,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task SetTargetConfiguration_NoSession()
         {
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<NoDeploymentSessionException>(async () =>
             {
                 await _sut.SetTargetConfigurationAsync(SampleConfigurationDetails[0], CancelToken);
             });
@@ -1159,7 +1159,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task ValidateTargetConfigurationsAsync_NoSession()
         {
-            await Assert.ThrowsAsync<Exception>(async () => await _sut.ValidateTargetConfigurationsAsync());
+            await Assert.ThrowsAsync<NoDeploymentSessionException>(async () => await _sut.ValidateTargetConfigurationsAsync());
         }
 
         [Fact]

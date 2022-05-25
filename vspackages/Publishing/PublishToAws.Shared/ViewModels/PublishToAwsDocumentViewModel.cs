@@ -835,7 +835,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 await SetConfigurationDetailsAsync(configurationDetails);
                 UpdateUnsupportedSetting(recipeId, configurationDetails);
             }
-            catch (Exception e)
+            catch (ApiException e)
             {
                 await ClearConfigurationDetailsAsync();
                 throw new PublishException($"Unable to retrieve configuration details: {e.GetExceptionInnerMessage()}", e);
@@ -1293,7 +1293,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             if (!IsSessionEstablished)
             {
-                throw new Exception("No deployment session available");
+                throw new NoDeploymentSessionException("No deployment session available");
             }
         }
 

@@ -16,6 +16,7 @@ using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AWSToolkit.Threading;
 
 using log4net;
 
@@ -33,6 +34,7 @@ namespace Amazon.AWSToolkit.Publish.Views
         private CancellationTokenSource _connectionRestartTokenSource = new CancellationTokenSource();
         private CancellationTokenSource _publishSummaryTokenSource = new CancellationTokenSource();
         private CancellationTokenSource _requiredPublishPropertiesTokenSource = new CancellationTokenSource();
+        private readonly ResettableCancellationToken _reloadConfigurationsTokenSource = new ResettableCancellationToken();
         private readonly PublishToAwsDocumentViewModel _viewModel;
         private readonly Stack<IDisposable> _disposables = new Stack<IDisposable>();
 
@@ -63,6 +65,7 @@ namespace Amazon.AWSToolkit.Publish.Views
             _disposables.Push(_connectionRestartTokenSource);
             _disposables.Push(_publishSummaryTokenSource);
             _disposables.Push(_requiredPublishPropertiesTokenSource);
+            _disposables.Push(_reloadConfigurationsTokenSource);
 
             _viewModel = CreateViewModel(args, cliServer);
 
@@ -395,15 +398,15 @@ namespace Amazon.AWSToolkit.Publish.Views
         {
             try
             {
-                using (var tokenSource = CreateCancellationTokenSource())
-                {
-                    await TaskScheduler.Default;
-                    await _viewModel.SetDeploymentTargetAsync(tokenSource.Token).ConfigureAwait(false);
+                var cancelToken = _reloadConfigurationsTokenSource.Reset();
 
-                    var loadTargetConfigurationTask = LoadTargetConfigurationsAsync();
-                    var reloadSystemCapabilitiesTask = ReloadSystemCapabilitiesAsync();
-                    await Task.WhenAll(loadTargetConfigurationTask, reloadSystemCapabilitiesTask).ConfigureAwait(false);
-                }
+                await TaskScheduler.Default;
+                await _viewModel.SetDeploymentTargetAsync(cancelToken).ConfigureAwait(false);
+
+                var loadTargetConfigurationTask = LoadTargetConfigurationsAsync(cancelToken);
+                var reloadSystemCapabilitiesTask = ReloadSystemCapabilitiesAsync(cancelToken);
+                await Task.WhenAll(loadTargetConfigurationTask, reloadSystemCapabilitiesTask).ConfigureAwait(false);
+
                 _viewModel.IsDefaultConfig = true;
             }
             catch (Exception e)
@@ -412,15 +415,12 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
         }
 
-        private async Task ReloadSystemCapabilitiesAsync()
+        private async Task ReloadSystemCapabilitiesAsync(CancellationToken cancellationToken)
         {
             try
             {
-                using (var tokenSource = CreateCancellationTokenSource())
-                {
-                    await TaskScheduler.Default;
-                    await _viewModel.RefreshSystemCapabilitiesAsync(tokenSource.Token).ConfigureAwait(false);
-                }
+                await TaskScheduler.Default;
+                await _viewModel.RefreshSystemCapabilitiesAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -428,25 +428,12 @@ namespace Amazon.AWSToolkit.Publish.Views
             }
         }
 
-        private async Task LoadTargetConfigurationsAsync()
+        private async Task LoadTargetConfigurationsAsync(CancellationToken cancellationToken)
         {
-            try
+            using (_viewModel.CreateLoadingScope())
             {
-                using (var tokenSource = CreateCancellationTokenSource())
-                using (_viewModel.CreateLoadingScope())
-                {
-                    await TaskScheduler.Default;
-                    await _viewModel.RefreshTargetConfigurationsAsync(tokenSource.Token).ConfigureAwait(false);
-                }
-            }
-            catch (PublishException e)
-            {
-                _publishContext.ToolkitShellProvider.OutputError(e, Logger);
-            }
-            catch (Exception e)
-            {
-                _publishContext.ToolkitShellProvider.OutputError(
-                    new Exception($"Unable to retrieve publish settings: {e.Message}", e), Logger);
+                await TaskScheduler.Default;
+                await _viewModel.RefreshTargetConfigurationsAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -467,7 +454,7 @@ namespace Amazon.AWSToolkit.Publish.Views
                     }
                     else
                     {
-                        await LoadTargetConfigurationsAsync();
+                        await LoadTargetConfigurationsAsync(tokenSource.Token);
                     }
                 }
             }
