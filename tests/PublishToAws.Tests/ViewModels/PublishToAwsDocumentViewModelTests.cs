@@ -254,6 +254,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
+        public async Task PublishApplication_WhenApiExceptionProblemDetailsThrown()
+        {
+            var expected = "Unable to start deployment due to missing system capabilities.\r\nThe selected deployment option requires Docker, which was not detected. Please install and start the appropriate version of Docker for your OS. https://docs.docker.com/engine/install/\r\n";
+            await SetupPublishView();
+            await _sut.UpdatePublishProjectViewModelAsync();
+
+            DeployToolControllerFixture.StubStartDeploymentAsyncThrowsProblemDetails();
+
+            var result = await _sut.PublishApplicationAsync();
+
+            Assert.False(result.IsSuccess);
+            Assert.Contains(expected, result.ErrorMessage);
+            Assert.Equal(PublishToAwsFixture.SampleApplicationName, _sut.StackName);
+            DeployToolControllerFixture.AssertStartDeploymentCalledTimes(1);
+            DeployToolControllerFixture.AssertGetDeploymentCalledTimes(0);
+        }
+
+        [Fact]
         public async Task EmitMetricsForPublishProjectAsync()
         {
             var publishResult = new PublishProjectResult() { IsSuccess = true };

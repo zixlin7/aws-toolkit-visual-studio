@@ -337,14 +337,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                 publishResult.IsSuccess = false;
 
                 // Take the exception message if we didn't already have a failure message
                 if (string.IsNullOrWhiteSpace(publishResult.ErrorMessage))
                 {
-                    publishResult.ErrorMessage = ex.Message;
+                    publishResult.ErrorMessage = e.GetExceptionInnerMessage();
                 }
             }
 

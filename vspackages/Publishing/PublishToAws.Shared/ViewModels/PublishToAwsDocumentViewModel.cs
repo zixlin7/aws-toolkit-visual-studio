@@ -613,7 +613,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new SessionException($"Unable to start a deployment session:{Environment.NewLine}{GetExceptionInnerMessage(e)}", e);
+                throw new SessionException($"Unable to start a deployment session:{Environment.NewLine}{e.GetExceptionInnerMessage()}", e);
             }
         }
 
@@ -669,7 +669,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 throw new PublishException(
                     $"Failure loading deployment recommendations:{Environment.NewLine}" +
-                    $"{GetExceptionInnerMessage(e)}{Environment.NewLine}" +
+                    $"{e.GetExceptionInnerMessage()}{Environment.NewLine}" +
                     "You might need to reload the publish experience.", e);
             }
             finally
@@ -703,7 +703,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 throw new PublishException(
                     $"Failure loading re-deployment targets:{Environment.NewLine}" +
-                    $"{GetExceptionInnerMessage(e)}{Environment.NewLine}" +
+                    $"{e.GetExceptionInnerMessage()}{Environment.NewLine}" +
                     "You might need to reload the publish experience.", e);
             }
             finally
@@ -740,7 +740,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new PublishException($"Error getting system requirements: {GetExceptionInnerMessage(e)}", e);
+                throw new PublishException($"Error getting system requirements: {e.GetExceptionInnerMessage()}", e);
             }
             finally
             {
@@ -838,7 +838,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             catch (Exception e)
             {
                 await ClearConfigurationDetailsAsync();
-                throw new PublishException($"Unable to retrieve configuration details: {GetExceptionInnerMessage(e)}", e);
+                throw new PublishException($"Unable to retrieve configuration details: {e.GetExceptionInnerMessage()}", e);
             }
         }
 
@@ -1463,16 +1463,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 return metricDatum;
             });
-        }
-
-        private string GetExceptionInnerMessage(Exception e)
-        {
-            if (e is ApiException apiException)
-            {
-                return apiException.Response;
-            }
-
-            return e.Message;
         }
 
         #region INotifyDataErrorInfo

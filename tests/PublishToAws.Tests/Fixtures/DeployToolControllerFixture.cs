@@ -57,6 +57,20 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
                     It.IsAny<CancellationToken>()));
         }
 
+        public void StubStartDeploymentAsyncThrowsProblemDetails()
+        {
+            var problemDetails = new ProblemDetails()
+            {
+                Detail =
+                    "Unable to start deployment due to missing system capabilities.\r\nThe selected deployment option requires Docker, which was not detected. Please install and start the appropriate version of Docker for your OS. https://docs.docker.com/engine/install/\r\n"
+            };
+
+            DeployToolController.Setup(mock =>
+                    mock.StartDeploymentAsync(It.IsAny<string>()))
+                .ThrowsAsync(new ApiException<ProblemDetails>("", 424, "", null, problemDetails, null));
+        }
+
+
         public void StubStartDeploymentAsyncThrows(string errorMessage)
         {
             DeployToolController.Setup(mock =>
