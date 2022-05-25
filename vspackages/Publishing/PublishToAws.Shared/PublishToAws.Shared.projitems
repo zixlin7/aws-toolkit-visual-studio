@@ -65,6 +65,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishProjectResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishUrls.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\Ec2InstanceConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\TargetSelectionMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IamRoleConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IPublishToAwsProperties.cs" />
@@ -98,6 +99,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeploymentMessageGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ExistingPublishTargetsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\NewPublishTargetsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\TargetSelectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishProjectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DesignTimePublishConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishProjectViewModel.cs" />

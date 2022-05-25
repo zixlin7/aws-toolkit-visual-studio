@@ -22,12 +22,13 @@ namespace Amazon.AWSToolkit.Publish.Commands
                 return false;
             }
 
-            if (PublishDocumentViewModel.IsRepublish && !CanExecuteForRepublishView())
+            var mode = PublishDocumentViewModel.GetTargetSelectionMode();
+            if (mode == TargetSelectionMode.ExistingTargets && !CanExecuteForRepublishView())
             {
                 return false;
             }
 
-            if (!PublishDocumentViewModel.IsRepublish && !CanExecuteForPublishView())
+            if (mode == TargetSelectionMode.NewTargets && !CanExecuteForPublishView())
             {
                 return false;
             }

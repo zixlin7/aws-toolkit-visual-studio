@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
@@ -19,16 +20,16 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         }
 
         [Fact]
-        public void CanExecute_WhenPublishView()
+        public async Task CanExecute_WhenPublishView()
         {
-            _commandFixture.SetupNewPublish();
+            await _commandFixture.SetupNewPublishAsync();
             Assert.True(_sut.CanExecute(null));
         }
 
         [Fact]
-        public void CanExecute_WhenRepublishView()
+        public async Task CanExecute_WhenRepublishView()
         {
-            _commandFixture.SetupRepublish();
+            await _commandFixture.SetupRepublishAsync();
             Assert.True(_sut.CanExecute(null));
         }
 
@@ -53,33 +54,33 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         }
 
         [Fact]
-        public void CanExecute_NullRecommendationWhenPublishView()
+        public async Task CanExecute_NullRecommendationWhenPublishView()
         {
-            _commandFixture.SetupNewPublish();
+            await _commandFixture.SetupNewPublishAsync();
             ViewModel.PublishDestination = null;
             Assert.False(_sut.CanExecute(null));
         }
 
         [Fact]
-        public void CanExecute_NullRecommendationsWhenPublishView()
+        public async Task CanExecute_NullRecommendationsWhenPublishView()
         {
-            _commandFixture.SetupNewPublish();
+            await _commandFixture.SetupNewPublishAsync();
             ViewModel.Recommendations = null;
             Assert.False(_sut.CanExecute(null));
         }
 
         [Fact]
-        public void CanExecute_EmptyRecommendationsWhenPublishView()
+        public async Task CanExecute_EmptyRecommendationsWhenPublishView()
         {
-            _commandFixture.SetupNewPublish();
+            await _commandFixture.SetupNewPublishAsync();
             ViewModel.Recommendations.Clear();
             Assert.False(_sut.CanExecute(null));
         }
 
         [Fact]
-        public void CanExecute_NullRepublishTargetWhenRepublishView()
+        public async Task CanExecute_NullRepublishTargetWhenRepublishView()
         {
-            _commandFixture.SetupRepublish();
+            await _commandFixture.SetupRepublishAsync();
             ViewModel.PublishDestination = null;
             Assert.False(_sut.CanExecute(null));
         }
@@ -109,9 +110,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             Assert.True(raisedCanExecute);
         }
 
-        private void AssertRepublishViewCanNotExecute()
+        private async Task AssertRepublishViewCanNotExecute()
         {
-            _commandFixture.SetupRepublish();
+            await _commandFixture.SetupRepublishAsync();
             Assert.False(_sut.CanExecute(null));
         }
     }

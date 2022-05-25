@@ -43,11 +43,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
         {
             await base.LoadOptionsButtonSettingsAsync();
         }
-
-        public void SetPreviousPublishDestination(PublishDestinationBase publishDestination)
-        {
-            base.SetCachedPublishDestination(publishDestination);
-        }
     }
 
     /// <summary>
@@ -81,6 +76,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
         public TestPublishToAwsDocumentViewModel ViewModel { get; }
         public Mock<IAWSToolkitShellProvider> ShellProvider => _publishContextFixture.ToolkitShellProvider;
         public JoinableTaskFactory JoinableTaskFactory { get; }
+        public CancellationToken CancellationToken => _publishContextFixture.PackageCancellationTokenSource.Token;
 
         public PublishFooterCommandFixture()
         {
@@ -115,15 +111,15 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
             ViewModel.ProjectPath = $"c:\\deploy-project\\{ViewModel.ProjectGuid}\\my.csproj";
         }
 
-        public void SetupNewPublish()
+        public async Task SetupNewPublishAsync()
         {
-            ViewModel.IsRepublish = false;
+            await ViewModel.SetTargetSelectionModeAsync(TargetSelectionMode.NewTargets, CancellationToken);
             ViewModel.PublishDestination = ViewModel.Recommendations?.FirstOrDefault();
         }
 
-        public void SetupRepublish()
+        public async Task SetupRepublishAsync()
         {
-            ViewModel.IsRepublish = true;
+            await ViewModel.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, CancellationToken);
             ViewModel.PublishDestination = ViewModel.RepublishTargets?.FirstOrDefault();
         }
 

@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public PublishCommandTests()
         {
             _sut = new PublishCommand(ViewModel, _commandFixture.ShellProvider.Object, _ => _confirmationDialog);
-            _commandFixture.SetupNewPublish();
+            _commandFixture.JoinableTaskFactory.Run(async () => await _commandFixture.SetupNewPublishAsync());
 
             SetupInitialPublish();
             SetupApplyConfigSettingsAsync(new ValidationResult());

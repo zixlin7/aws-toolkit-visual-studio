@@ -44,13 +44,14 @@
                 Visibility="{Binding IsOptionsBannerEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 />
             
-            <Label
+            <TextBlock
                 Grid.Row="1" Grid.Column="0"
                 Margin="0 0 9 0"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
                 FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontWeightKey}}"
-                Content="{Binding ProjectName}"
-                ContentStringFormat="Publish to AWS: {0}" />
+                Text="{Binding ProjectName, StringFormat=Publish to AWS: {0}}"
+                d:Text="Publish to AWS: Some Project Name"
+                />
 
             <ProgressBar 
                 Grid.Row="1" Grid.Column="1" 

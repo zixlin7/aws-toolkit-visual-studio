@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -254,8 +253,8 @@ namespace Amazon.AWSToolkit.Publish.Views
                 await _viewModel.InitializePublishTargetsAsync(cancellationToken);
 
                 // pre-select the re-publish option if there are any existing publish targets
-                await _viewModel.SetIsRepublishAsync(_viewModel.RepublishTargets.Any(), cancellationToken);
-                _viewModel.CyclePublishDestination();
+                var targetSelectionMode = _viewModel.RepublishTargets.Any() ? TargetSelectionMode.ExistingTargets : TargetSelectionMode.NewTargets;
+                await _viewModel.SetTargetSelectionModeAsync(targetSelectionMode, cancellationToken);
 
                 _viewModel.SetPublishTargetsLoaded(true);
             }
@@ -302,11 +301,6 @@ namespace Amazon.AWSToolkit.Publish.Views
 
         private void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.IsRepublish))
-            {
-                _viewModel.CyclePublishDestination();
-            }
-
             if (AffectsSummary(e.PropertyName))
             {
                 CancelSummaryUpdatesInProgress();
@@ -344,7 +338,7 @@ namespace Amazon.AWSToolkit.Publish.Views
                 await _viewModel.SetSystemCapabilitiesAsync(Enumerable.Empty<TargetSystemCapability>().ToList(),
                     CancellationToken.None);
 
-                if (_viewModelChangeHandler.ShouldRefreshTarget(_viewModel))
+                if (_viewModelChangeHandler.IsTargetRefreshNeeded(_viewModel))
                 {
                     await ReloadTargetConfigurationsAsync();
                 }

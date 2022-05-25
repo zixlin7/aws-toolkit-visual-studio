@@ -73,7 +73,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private string _errorMessage = string.Empty;
         private bool _publishTargetsLoaded;
         private bool _isOptionsBannerEnabled;
-        private bool _isRepublish;
+        private TargetSelectionViewModel _currentSelectionViewModel;
+        private readonly List<TargetSelectionViewModel> _targetSelectionViewModels = new List<TargetSelectionViewModel>();
         private bool _isDefaultConfig = true;
         private string _projectPath;
         private Guid _projectGuid;
@@ -97,11 +98,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Holds the currently selected publishing target
         /// </summary>
         private PublishDestinationBase _publishDestination;
-
-        /// <summary>
-        /// Holds the previously selected target when toggling between New/Existing deployments (<see cref="IsRepublish"/>)
-        /// </summary>
-        private PublishDestinationBase _publishDestinationCache;
 
         private string _stackName;
 
@@ -141,6 +137,10 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 publishContext.PublishPackage.JoinableTaskFactory);
 
             _publishProjectViewModel = new PublishProjectViewModel(_publishContext);
+
+            _targetSelectionViewModels.Add(new NewPublishTargetsViewModel());
+            _targetSelectionViewModels.Add(new ExistingPublishTargetsViewModel());
+            _currentSelectionViewModel = _targetSelectionViewModels.First();
         }
 
         public void LoadPublishSettings()
@@ -201,60 +201,36 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Indicates whether or not the application is being re-published to an existing target
+        /// All possible operations that user can choose from
         /// </summary>
-        public bool IsRepublish
-        {
-            get => _isRepublish;
-            set => SetProperty(ref _isRepublish, value);
-        }
+        public IEnumerable<TargetSelectionViewModel> TargetSelectionViewModels => _targetSelectionViewModels;
 
         /// <summary>
-        /// Swaps <see cref="_publishDestination"/> and <see cref="_publishDestinationCache"/> if
-        /// <see cref="IsRepublish"/> does not align with the currently selected target type.
-        /// 
-        /// Intended to be called after toggling <see cref="IsRepublish"/>
+        /// The current user-selected operation (eg: new publish, existing publish)
         /// </summary>
-        public void CyclePublishDestination()
+        public TargetSelectionViewModel CurrentSelectionViewModel
         {
-            if (!ShouldCyclePublishDestination())
+            get => _currentSelectionViewModel;
+            set
             {
-                return;
+                SetProperty(ref _currentSelectionViewModel, value);
+                PublishDestination = GetPublishDestinationOrFallback(_currentSelectionViewModel);
             }
-
-            PublishDestinationBase toCache = PublishDestination;
-            PublishDestinationBase toRestore = GetPublishDestinationToRestore();
-
-            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
-            {
-                SetCachedPublishDestination(toCache);
-                PublishDestination = toRestore;
-            });
         }
 
-        protected void SetCachedPublishDestination(PublishDestinationBase publishDestination)
+        private PublishDestinationBase GetPublishDestinationOrFallback(TargetSelectionViewModel targetSelectionViewModel)
         {
-            _publishDestinationCache = publishDestination;
-        }
-
-        private bool ShouldCyclePublishDestination()
-        {
-            if (IsRepublish)
+            if (targetSelectionViewModel?.TargetSelectionMode == TargetSelectionMode.NewTargets)
             {
-                return !(PublishDestination is RepublishTarget);
+                return GetRecommendationOrFallback(targetSelectionViewModel.SelectedTarget as PublishRecommendation);
             }
 
-            return !(PublishDestination is PublishRecommendation);
-        }
-
-        private PublishDestinationBase GetPublishDestinationToRestore()
-        {
-            if (IsRepublish)
+            if (targetSelectionViewModel?.TargetSelectionMode == TargetSelectionMode.ExistingTargets)
             {
-                return GetRepublishTargetOrFallback(_publishDestinationCache as RepublishTarget);
+                return GetRepublishTargetOrFallback(targetSelectionViewModel.SelectedTarget as RepublishTarget);
             }
 
-            return GetRecommendationOrFallback(_publishDestinationCache as PublishRecommendation);
+            return null;
         }
 
         public PublishRecommendation GetRecommendationOrFallback(PublishRecommendation recommendation)
@@ -468,6 +444,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set
             {
                 SetProperty(ref _publishDestination, value);
+                _currentSelectionViewModel.SelectedTarget = value;
                 NotifyPropertyChanged(nameof(IsApplicationNameRequired));
             }
         }
@@ -605,7 +582,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             ErrorMessage = string.Empty;
             PublishDestination = null;
-            SetCachedPublishDestination(null);
             SystemCapabilities?.Clear();
             TargetDescription = string.Empty;
             PublishSummary = string.Empty;
@@ -975,7 +951,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                return ConfigurationDetails.GenerateSummary(IsRepublish);
+                return ConfigurationDetails.GenerateSummary(GetTargetSelectionMode() == TargetSelectionMode.ExistingTargets);
             }
             catch (Exception e)
             {
@@ -998,13 +974,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 ThrowIfSessionIsNotCreated();
 
-                if (IsRepublish)
+                var mode = GetTargetSelectionMode();
+                switch (mode)
                 {
-                    await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as RepublishTarget, cancellationToken);
-                }
-                else
-                {
-                    await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as PublishRecommendation, StackName, cancellationToken);
+                    case TargetSelectionMode.ExistingTargets:
+                        await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as RepublishTarget, cancellationToken);
+                        break;
+                    case TargetSelectionMode.NewTargets:
+                        await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as PublishRecommendation, StackName, cancellationToken);
+                        break;
+                    default:
+                        throw new NotSupportedException($"Unsupported mode: {mode}");
                 }
 
                 await UpdatePublishStackNameValidationAsync(string.Empty);
@@ -1065,10 +1045,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 result = await publishProjectAsyncFunc().ConfigureAwait(false);
 
                 var metricResult = result.IsSuccess ? Result.Succeeded : Result.Failed;
+                bool isNewPublish = GetTargetSelectionMode() == TargetSelectionMode.NewTargets;
                 RecordPublishDeployMetric(metricResult,
                     publishDuration.Elapsed.TotalMilliseconds,
                     result.ErrorCode,
-                    result.ErrorMessage);
+                    result.ErrorMessage,
+                    isNewPublish);
             }
 
             return result;
@@ -1191,17 +1173,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
         }
 
-        public async Task SetIsRepublishAsync(bool value, CancellationToken cancelToken)
+        public TargetSelectionMode GetTargetSelectionMode()
         {
-            try
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync(cancelToken);
-                IsRepublish = value;
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Error setting is republish", e);
-            }
+            return _currentSelectionViewModel.TargetSelectionMode;
+        }
+
+        public async Task SetTargetSelectionModeAsync(TargetSelectionMode mode, CancellationToken cancelToken)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancelToken);
+            CurrentSelectionViewModel = _targetSelectionViewModels.Single(t => t.TargetSelectionMode == mode);
         }
 
         public async Task InitializePublishTargetsAsync(CancellationToken cancelToken)
@@ -1450,7 +1430,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return capabilityMetrics;
         }
 
-        private void RecordPublishDeployMetric(Result result, double elapsedMs, string errorCode, string errorMessage)
+        private void RecordPublishDeployMetric(Result result, double elapsedMs, string errorCode, string errorMessage, bool isNewPublish)
         {
             var payload = new PublishDeploy()
             {
@@ -1458,7 +1438,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result,
                 Duration = elapsedMs,
-                InitialPublish = !IsRepublish,
+                InitialPublish = isNewPublish,
                 DefaultConfiguration = IsDefaultConfig,
                 RecipeId = PublishDestination?.BaseRecipeId ?? PublishDestination?.RecipeId,
                 IsGeneratedProject = PublishDestination?.IsGenerated,

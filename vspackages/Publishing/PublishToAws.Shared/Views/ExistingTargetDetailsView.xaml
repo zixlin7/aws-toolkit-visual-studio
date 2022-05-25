@@ -95,19 +95,18 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="12" />
             <ColumnDefinition Width="*" />
-            <!-- Column 4: Spacing after sidebar -->
-            <ColumnDefinition Width="12" />
         </Grid.ColumnDefinitions>
 
         <StackPanel
             Name="NoTargetsPanel" x:FieldModifier="private"
-            Grid.Row="0" Grid.Column="0"
+            Grid.Row="1" Grid.Column="0"
             VerticalAlignment="Center"
             Grid.ColumnSpan="3"
             HorizontalAlignment="Center"
@@ -133,8 +132,22 @@
             </StackPanel.Visibility>
         </StackPanel>
 
+        <TextBlock
+            Grid.Row="0" Grid.Column="0"
+            Margin="0 0 0 6"
+            Visibility="{Binding ElementName=NoTargetsPanel, Path=Visibility, Converter={StaticResource InverseVisibilityConverter}}"
+            Text="Publish Targets:"
+            />
+
+        <TextBlock
+            Grid.Row="0" Grid.Column="2"
+            Margin="0 0 0 6"
+            Visibility="{Binding ElementName=NoTargetsPanel, Path=Visibility, Converter={StaticResource InverseVisibilityConverter}}"
+            Text="Target Configuration:"
+            />
+
         <ListBox
-            Grid.Column="0" Grid.Row="0"
+            Grid.Row="1" Grid.Column="0"
             HorizontalContentAlignment="Stretch"
             ScrollViewer.CanContentScroll="False"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -181,7 +194,7 @@
 
         </ListBox>
         <local:TargetProperties 
-            Grid.Row="0" Grid.Column="2"
+            Grid.Row="1" Grid.Column="2"
             Visibility="{Binding Visibility, ElementName=NoTargetsPanel, Converter={StaticResource InverseVisibilityConverter}}"
             />
 

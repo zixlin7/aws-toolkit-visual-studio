@@ -465,7 +465,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         public async Task RefreshExistingTargets()
         {
             // arrange.
-            _sut.IsRepublish = true;
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, CancelToken);
             await _sut.StartDeploymentSessionAsync(CancelToken);
 
             // act.
@@ -558,11 +558,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void GeneratePublishSummary_ConfigurationDetails(bool isRepublish)
+        [InlineData(TargetSelectionMode.ExistingTargets)]
+        [InlineData(TargetSelectionMode.NewTargets)]
+        public async Task GeneratePublishSummary_ConfigurationDetails(TargetSelectionMode mode)
         {
-            _sut.IsRepublish = isRepublish;
+            await _sut.SetTargetSelectionModeAsync(mode, CancelToken);
             var newConfigDetails = PublishToAwsFixture.CreateSampleConfigurationDetails(2);
             _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(newConfigDetails);
 
@@ -575,9 +575,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
-        public void GeneratePublishSummary_NonVisibleConfigurationDetails()
+        public async Task GeneratePublishSummary_NonVisibleConfigurationDetails()
         {
-            _sut.IsRepublish = false;
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.NewTargets, CancelToken);
             var newConfigDetails = PublishToAwsFixture.CreateSampleConfigurationDetails(2, d => d.Visible = false);
             _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(newConfigDetails);
 
@@ -590,9 +590,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
-        public void GeneratePublishSummary_AdvancedConfigurationDetails()
+        public async Task GeneratePublishSummary_AdvancedConfigurationDetails()
         {
-            _sut.IsRepublish = false;
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.NewTargets, CancelToken);
             var newConfigDetails = PublishToAwsFixture.CreateSampleConfigurationDetails(2, d => d.Advanced = true);
             _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(newConfigDetails);
 
@@ -605,9 +605,9 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
-        public void GeneratePublishSummary_NonSummaryDisplayableConfigurationDetails()
+        public async Task GeneratePublishSummary_NonSummaryDisplayableConfigurationDetails()
         {
-            _sut.IsRepublish = true;
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, CancelToken);
             var newConfigDetails = PublishToAwsFixture.CreateSampleConfigurationDetails(2, d => d.SummaryDisplayable = false);
             _sut.ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(newConfigDetails);
 
@@ -620,11 +620,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Theory]
-        [InlineData(true, "#summaryvpc")]
-        [InlineData(false, "create-new-vpc")]
-        public void GeneratePublishSummary_NestedConfigurationDetails(bool isRepublish, string expectedChildDetail)
+        [InlineData(TargetSelectionMode.ExistingTargets, "#summaryvpc")]
+        [InlineData(TargetSelectionMode.NewTargets, "create-new-vpc")]
+        public async Task GeneratePublishSummary_NestedConfigurationDetails(TargetSelectionMode mode, string expectedChildDetail)
         {
-            _sut.IsRepublish = isRepublish;
+            await _sut.SetTargetSelectionModeAsync(mode, CancelToken);
             CreateSampleSummaryConfigurationDetail();
 
             var summary = _sut.GeneratePublishSummary();
@@ -668,7 +668,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public async Task UpdateRequiredPublishProperties_WhenInitialRepublish()
         {
-            _sut.IsRepublish = true;
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, CancelToken);
             await _sut.UpdateRequiredPublishPropertiesAsync(CancelToken);
 
             AssertRequiredPublishProperties("","", "");
@@ -996,51 +996,76 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             Assert.Contains("Docker", _sut.MissingCapabilities.Resolved);
         }
 
-        [Fact]
-        public void CyclePublishDestination_NewToNew()
+        [Theory]
+        [InlineData(TargetSelectionMode.ExistingTargets)]
+        [InlineData(TargetSelectionMode.NewTargets)]
+        public async Task SetTargetSelectionModeAsync(TargetSelectionMode mode)
         {
-            _exposedTestViewModel.SetPreviousPublishDestination(SamplePublishRecommendations[1]);
-            _exposedTestViewModel.PublishDestination = SamplePublishRecommendations[0];
-            _exposedTestViewModel.IsRepublish = false;
+            await _sut.SetTargetSelectionModeAsync(mode, CancelToken);
 
-            _exposedTestViewModel.CyclePublishDestination();
-            Assert.Equal(SamplePublishRecommendations[0], _exposedTestViewModel.PublishDestination);
+            Assert.Equal(mode, _sut.CurrentSelectionViewModel.TargetSelectionMode);
         }
 
         [Fact]
-        public void CyclePublishDestination_RepublishToNew()
+        public async Task SetTargetSelectionModeAsync_NewToExisting()
         {
-            _exposedTestViewModel.Recommendations.AddAll(SamplePublishRecommendations);
-            _exposedTestViewModel.SetPreviousPublishDestination(SamplePublishRecommendations[0]);
-            _exposedTestViewModel.PublishDestination = SampleRepublishTargets[0];
-            _exposedTestViewModel.IsRepublish = false;
+            _sut.RepublishTargets = new ObservableCollection<RepublishTarget>(SampleRepublishTargets);
 
-            _exposedTestViewModel.CyclePublishDestination();
-            Assert.Equal(SamplePublishRecommendations[0], _exposedTestViewModel.PublishDestination);
+            // arrange
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.NewTargets, CancelToken);
+
+            // act
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, CancelToken);
+
+            // assert
+            Assert.Equal(TargetSelectionMode.ExistingTargets, _sut.GetTargetSelectionMode());
+            Assert.IsType<RepublishTarget>(_sut.PublishDestination);
         }
 
         [Fact]
-        public void CyclePublishDestination_RepublishToRepublish()
+        public async Task PublishDestination_UpdatesCurrentSelection_Recommendation()
         {
-            _exposedTestViewModel.RepublishTargets.AddAll(SampleRepublishTargets);
-            _exposedTestViewModel.SetPreviousPublishDestination(SampleRepublishTargets[1]);
-            _exposedTestViewModel.PublishDestination = SampleRepublishTargets[0];
-            _exposedTestViewModel.IsRepublish = true;
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.NewTargets, CancelToken);
 
-            _exposedTestViewModel.CyclePublishDestination();
-            Assert.Equal(SampleRepublishTargets[0], _exposedTestViewModel.PublishDestination);
+            _sut.PublishDestination = SamplePublishRecommendations.Last();
+
+            Assert.Equal(_sut.PublishDestination, _sut.CurrentSelectionViewModel.SelectedTarget);
         }
 
         [Fact]
-        public void CyclePublishDestination_NewToRepublish()
+        public async Task PublishDestination_UpdatesCurrentSelection_ExistingTarget()
         {
-            _exposedTestViewModel.RepublishTargets.AddAll(SampleRepublishTargets);
-            _exposedTestViewModel.SetPreviousPublishDestination(SampleRepublishTargets[0]);
-            _exposedTestViewModel.PublishDestination = SamplePublishRecommendations[0];
-            _exposedTestViewModel.IsRepublish = true;
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, CancelToken);
 
-            _exposedTestViewModel.CyclePublishDestination();
-            Assert.Equal(SampleRepublishTargets[0], _exposedTestViewModel.PublishDestination);
+            _sut.PublishDestination = SampleRepublishTargets.Last();
+
+            Assert.Equal(_sut.PublishDestination, _sut.CurrentSelectionViewModel.SelectedTarget);
+        }
+
+        [Fact]
+        public void CurrentSelectionViewModel_UpdatesPublishDestination_Recommendation()
+        {
+            var targetSelectionViewModel = new NewPublishTargetsViewModel()
+            {
+                SelectedTarget = SamplePublishRecommendations.Last(),
+            };
+
+            _sut.CurrentSelectionViewModel = targetSelectionViewModel;
+
+            Assert.Equal(targetSelectionViewModel.SelectedTarget, _sut.PublishDestination);
+        }
+
+        [Fact]
+        public void CurrentSelectionViewModel_UpdatesPublishDestination_ExistingTarget()
+        {
+            var targetSelectionViewModel = new ExistingPublishTargetsViewModel()
+            {
+                SelectedTarget = SampleRepublishTargets.Last(),
+            };
+
+            _sut.CurrentSelectionViewModel = targetSelectionViewModel;
+
+            Assert.Equal(targetSelectionViewModel.SelectedTarget, _sut.PublishDestination);
         }
 
         [Fact]
@@ -1179,6 +1204,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         private async Task SetupPublishView()
         {
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.NewTargets, CancelToken);
             await _sut.StartDeploymentSessionAsync(CancelToken);
             await _sut.RefreshRecommendationsAsync(CancelToken);
             _sut.PublishDestination = SamplePublishRecommendations.First();
@@ -1188,7 +1214,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 
         private async Task SetupRepublishView()
         {
-            _sut.IsRepublish = true;
+            await _sut.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, CancelToken);
             await _sut.StartDeploymentSessionAsync(CancelToken);
             await _sut.RefreshExistingTargetsAsync(CancelToken);
             _sut.PublishDestination = SampleRepublishTargets.First();
