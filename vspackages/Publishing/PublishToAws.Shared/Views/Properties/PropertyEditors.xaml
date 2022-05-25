@@ -120,7 +120,7 @@
             <TextBlock
                 Grid.Row="1"
                 Grid.Column="0"
-                Margin="0 6 10 3"
+                Margin="0 6 0 3"
                 TextWrapping="WrapWithOverflow"
                 Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
                 Text="{Binding Description}">
@@ -141,7 +141,7 @@
 
             <ContentControl
                 Grid.Row="2" Grid.Column="0"
-                Margin="0 6 10 3"
+                Margin="0 6 0 3"
                 HorizontalContentAlignment="Stretch"
                 Content="{Binding .}" ContentTemplateSelector="{DynamicResource PropertyTemplateSelector}" />
         </Grid>

@@ -15,7 +15,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source=".\Properties\PropertyEditors.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <publishconverters:ConfigurationDetailsToVisibilityConverter x:Key="ConfigurationDetailsToVisibilityConverter" />
 
             <Style x:Key="NoEditableSettingsStyle" TargetType="TextBlock">
@@ -101,6 +100,7 @@
         <ScrollViewer
             Grid.Row="3"
             Margin="0 9 0 0"
+            Padding="0 0 10 0"
             VerticalScrollBarVisibility="Auto">
             <ItemsControl
                 Grid.IsSharedSizeScope="True"
