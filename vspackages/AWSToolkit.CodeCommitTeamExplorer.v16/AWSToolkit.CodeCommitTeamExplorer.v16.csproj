@@ -94,9 +94,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework">
       <Version>16.0.28729</Version>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>9.0.1</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="..\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

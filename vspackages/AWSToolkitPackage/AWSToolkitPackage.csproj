@@ -65,9 +65,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(BuildRoot)\thirdparty\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
     </Reference>
@@ -356,8 +353,8 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\thirdparty\Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="$(OutputRoot)\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>Newtonsoft.Json.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>

@@ -96,9 +96,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework">
       <Version>17.0.32112.339</Version>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>9.0.1</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
