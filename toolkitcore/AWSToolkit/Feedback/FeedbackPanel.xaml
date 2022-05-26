@@ -3,7 +3,6 @@
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         xmlns:local="clr-namespace:Amazon.AWSToolkit.Feedback"
                          xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
                          xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images"
@@ -15,6 +14,10 @@
         <ResourceDictionary>
             <converters:NullableInverseBooleanConverter x:Key="NullableInverseBooleanConverter" />
             <commonUi:VsImages x:Key="VsImages" />
+            <converters:ConverterPipeline x:Key="VisibleIfNull">
+                <converters:EqualityBooleanConverter />
+                <BooleanToVisibilityConverter />
+            </converters:ConverterPipeline>
         </ResourceDictionary>
     </commonUi:BaseAWSControl.Resources>
 
@@ -29,7 +32,7 @@
         </Grid.RowDefinitions>
 
 
-        <TextBlock Margin="5" Grid.Row="0">
+        <TextBlock Margin="6" Grid.Row="0">
             Have an issue or feature request?
             <Hyperlink
                 NavigateUri="https://github.com/aws/aws-toolkit-visual-studio"
@@ -39,7 +42,7 @@
         </TextBlock>
 
         <TextBlock 
-            Margin="5,0,5,0" 
+            Margin="6 9 6 6" 
             Grid.Row="1" 
             FontWeight="SemiBold" 
             Text="How is your experience with the AWS Toolkit?" 
@@ -48,48 +51,56 @@
         <StackPanel 
             Name="FeedbackSentiment" x:FieldModifier="private"
             Grid.Row="2" 
-            Margin="5" 
+            Margin="6" 
             Orientation="Horizontal" 
             HorizontalAlignment="Left">
             <RadioButton Name="PositiveButton" x:FieldModifier="private"
                          VerticalContentAlignment="Center"
                          IsChecked="{Binding FeedbackSentiment,UpdateSourceTrigger=PropertyChanged}">
                 <images:VsImage 
-                    Width="16"
-                    Height="16"
+                    Width="32"
+                    Height="32"
                     VerticalAlignment="Top"
                     Margin="0 0 9 0"
-                    Source="{Binding Source={StaticResource VsImages}, Path=FeedbackSmile}" />
+                    Source="{Binding Source={StaticResource VsImages}, Path=FeedbackSmile32}" />
             </RadioButton>
             <RadioButton Name="NegativeButton" x:FieldModifier="private"
                          VerticalContentAlignment="Center"
                          IsChecked="{Binding FeedbackSentiment, Converter={StaticResource NullableInverseBooleanConverter}, UpdateSourceTrigger=PropertyChanged}">
                 <images:VsImage 
-                    Width="16" 
-                    Height="16"
+                    Width="32" 
+                    Height="32"
                     VerticalAlignment="Top"
                     Margin="0 0 9 0"
-                    Source="{Binding Source={StaticResource VsImages}, Path=FeedbackFrown}" />
+                    Source="{Binding Source={StaticResource VsImages}, Path=FeedbackFrown32}" />
             </RadioButton>
+            <TextBlock 
+                Margin="12 6 0 0"
+                TextWrapping="Wrap"
+                Visibility="{Binding FeedbackSentiment, Converter={StaticResource VisibleIfNull}, ConverterParameter={x:Null}}"
+                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+                Text="Please select how you are feeling."
+            />
         </StackPanel>
 
         <TextBlock 
-            Margin="5" 
+            Margin="6 9 6 6" 
             Grid.Row="3" 
             FontWeight="SemiBold" 
             Text="Please enter your feedback"   
             />
 
-        <TextBox   
-            Name="FeedbackComment" x:FieldModifier="private"
-            Margin="5" 
+        <commonUi:HintTextBox
+            x:Name="FeedbackComment" x:FieldModifier="private"
+            Margin="6" 
             Grid.Row="4"
             VerticalAlignment="Stretch"
+            HintText="[Optional]"
             Text="{Binding FeedbackComment, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-            AcceptsReturn="True" />
+             />
 
         <TextBlock 
-            Margin="5" 
+            Margin="6" 
             Grid.Row="5"
             VerticalAlignment="Stretch"
             Text="{Binding RemainingCharacters, StringFormat={}{0} characters remaining}" />
