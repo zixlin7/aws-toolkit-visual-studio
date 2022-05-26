@@ -7,6 +7,9 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.EC2.Model;
 
 using log4net;
@@ -192,25 +195,37 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public void TerminateInstances(IList<RunningInstanceWrapper> instances)
         {
             var controller = new TerminateController();
-            controller.Execute(this.EC2Client, instances);
+            ExecuteAndRecordChangeState(() => controller.Execute(this.EC2Client, instances), Ec2InstanceState.Terminate);
         }
 
         public void RebootInstances(IList<RunningInstanceWrapper> instances)
         {
             var controller = new RebootController();
-            controller.Execute(this.EC2Client, instances);
+            ExecuteAndRecordChangeState(() => controller.Execute(this.EC2Client, instances), Ec2InstanceState.Reboot);
         }
 
         public void StopInstances(IList<RunningInstanceWrapper> instances)
         {
             var controller = new StopController();
-            controller.Execute(this.EC2Client, instances);
+            ExecuteAndRecordChangeState(() => controller.Execute(this.EC2Client, instances), Ec2InstanceState.Stop);
         }
 
         public void StartInstances(IList<RunningInstanceWrapper> instances)
         {
             var controller = new StartController();
-            controller.Execute(this.EC2Client, instances);
+            ExecuteAndRecordChangeState(() => controller.Execute(this.EC2Client, instances), Ec2InstanceState.Start);
+        }
+
+        private void ExecuteAndRecordChangeState(Func<ActionResults> fnExecute, Ec2InstanceState instanceState)
+        {
+            var result = fnExecute();
+            _toolkitContext.TelemetryLogger.RecordEc2ChangeState(new Ec2ChangeState()
+            {
+                AwsAccount = AwsConnectionSettings.GetAccountId(_toolkitContext.ServiceClientManager) ?? MetadataValue.NotSet,
+                AwsRegion = AwsConnectionSettings.Region.Id,
+                Ec2InstanceState = instanceState,
+                Result = AsMetricResult(result),
+            });
         }
 
         public void CreateImage(RunningInstanceWrapper instance)
@@ -314,6 +329,21 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             var controller = new OpenSCPSessionController(_toolkitContext);
             controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
+        }
+
+        private static Result AsMetricResult(ActionResults actionResults)
+        {
+            if (actionResults == null)
+            {
+                return Result.Failed;
+            }
+
+            if (actionResults.Success)
+            {
+                return Result.Succeeded;
+            }
+
+            return actionResults.Cancelled ? Result.Cancelled : Result.Failed;
         }
     }
 }

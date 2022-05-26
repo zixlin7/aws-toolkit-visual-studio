@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.EC2.Nodes;
@@ -15,12 +16,18 @@ namespace Amazon.AWSToolkit.EC2.Controller
         M _model;
         string _endpointUniqueIdentifier;
         FeatureViewModel _featureViewModel;
+        private AwsConnectionSettings _awsConnectionSettings;
 
         public override ActionResults Execute(IViewModel model)
         {
             this._featureViewModel = model as FeatureViewModel;
             if (this._featureViewModel == null)
+            {
                 return new ActionResults().WithSuccess(false);
+            }
+
+            _awsConnectionSettings =
+                new AwsConnectionSettings(_featureViewModel.AccountViewModel.Identifier, _featureViewModel.Region);
 
             this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).Region.Id;
             this._ec2Client = this._featureViewModel.EC2Client;
@@ -46,5 +53,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public string RegionDisplayName => this._featureViewModel.Region.DisplayName ?? string.Empty;
 
         public ToolkitRegion Region => this.FeatureViewModel.Region;
+
+        public AwsConnectionSettings AwsConnectionSettings => _awsConnectionSettings;
     }
 }
