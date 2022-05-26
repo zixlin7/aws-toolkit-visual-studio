@@ -24,7 +24,7 @@
 
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="6 0 0 0">
+    <Grid Margin="1 0 0 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -39,7 +39,7 @@
             Grid.Row="0"
             Orientation="Horizontal">
             <TextBlock 
-                Margin="0 6 0 0"
+                Margin="0 0 0 0"
                 VerticalAlignment="Center"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontSizeKey}}"
                 FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontWeightKey}}"
@@ -47,7 +47,7 @@
                 Text="{Binding TargetRecipe}"
                 />
             <TextBlock 
-                Margin="12 6 0 0"
+                Margin="12 0 0 0"
                 VerticalAlignment="Center"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
                 >
