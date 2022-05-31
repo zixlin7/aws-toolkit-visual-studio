@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix issue where clicking different targets in the Publish to AWS experience could show the configuration for an older selection"
+}
