@@ -41,24 +41,24 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         }
 
         [Theory]
-        [InlineData(true, true, true)]
-        [InlineData(true, false, true)]
-        [InlineData(false, true, true)]
-        [InlineData(false, false, false)]
-        public void ExecuteCommand(bool initialIsRepublish, bool publishSuccess, bool expectedIsRepublish)
+        [InlineData(TargetSelectionMode.ExistingTargets, true, TargetSelectionMode.ExistingTargets)]
+        [InlineData(TargetSelectionMode.ExistingTargets, false, TargetSelectionMode.ExistingTargets)]
+        [InlineData(TargetSelectionMode.NewTargets, true, TargetSelectionMode.ExistingTargets)]
+        [InlineData(TargetSelectionMode.NewTargets, false, TargetSelectionMode.NewTargets)]
+        public async Task ExecuteCommand(TargetSelectionMode initialSelectionMode, bool publishSuccess, TargetSelectionMode expectedSelectionMode)
         {
             ViewModel.SessionId = "old-session-id";
-            ViewModel.IsRepublish = initialIsRepublish;
-            ViewModel.PublishDestination = initialIsRepublish
+            await ViewModel.SetTargetSelectionModeAsync(initialSelectionMode, _commandFixture.CancellationToken);
+            ViewModel.PublishDestination = initialSelectionMode == TargetSelectionMode.ExistingTargets
                 ? ViewModel.RepublishTargets.First<PublishDestinationBase>()
                 : ViewModel.Recommendations.First<PublishDestinationBase>();
             ViewModel.PublishProjectViewModel.ProgressStatus = publishSuccess ? ProgressStatus.Success : ProgressStatus.Fail;
-            _sut.Execute(null);
+            await _sut.ExecuteAsync(null);
 
             Assert.Equal(PublishViewStage.Target, ViewModel.ViewStage);
             Assert.Equal(ProgressStatus.Loading, ViewModel.PublishProjectViewModel.ProgressStatus);
             Assert.Equal(SampleSessionId, ViewModel.SessionId);
-            Assert.Equal(expectedIsRepublish, ViewModel.IsRepublish);
+            Assert.Equal(expectedSelectionMode, ViewModel.GetTargetSelectionMode());
             Assert.NotEmpty(ViewModel.Recommendations);
             Assert.NotEmpty(ViewModel.RepublishTargets);
             Assert.Empty(ViewModel.PublishProjectViewModel.DeploymentMessages);

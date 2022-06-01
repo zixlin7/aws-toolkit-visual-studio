@@ -29,7 +29,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetViewCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\ConfigurationDetailsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PublishTargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\RepublishTargetsToVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\SessionVisibilityConverter.cs" />
@@ -50,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\Category.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\DetailType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\FilePathConfigurationDetail.cs" />
@@ -65,6 +65,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishProjectResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PublishUrls.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\Ec2InstanceConfigurationDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\TargetSelectionMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IamRoleConfigurationDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IPublishToAwsProperties.cs" />
@@ -92,12 +93,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\CliServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CliServerFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICliServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\CategorySummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\DeploymentTypesExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\OptionSettingItemSummaryExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\PublishToAwsConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ConfigurationViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeploymentMessageGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ExistingPublishTargetsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\NewPublishTargetsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\TargetSelectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\DesignData\DesignSamplePublishProjectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DesignTimePublishConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishProjectViewModel.cs" />
@@ -146,9 +152,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishApplicationView.xaml.cs">
       <DependentUpon>PublishApplicationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishDocumentFooter.xaml.cs">
-      <DependentUpon>PublishDocumentFooter.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishDocumentHeader.xaml.cs">
       <DependentUpon>PublishDocumentHeader.xaml</DependentUpon>
@@ -229,10 +232,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishApplicationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Views\PublishDocumentFooter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

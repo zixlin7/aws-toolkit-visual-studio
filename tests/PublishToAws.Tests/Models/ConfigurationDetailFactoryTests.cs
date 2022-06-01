@@ -219,6 +219,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.Equal(TypeMappings[expectedProperties.Type], configurationDetail.Type);
             Assert.Equal(expectedProperties.TypeHint, configurationDetail.TypeHint);
             Assert.Equal(GetExpectedValue(expectedProperties), configurationDetail.Value);
+            Assert.Equal(GetExpectedCategory(expectedProperties), configurationDetail.Category);
             Assert.Equal(expectedProperties.Value, configurationDetail.DefaultValue);
             Assert.Equal(expectedProperties.Advanced, configurationDetail.Advanced);
             Assert.Equal(expectedProperties.ReadOnly, configurationDetail.ReadOnly);
@@ -247,6 +248,16 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
                 return Convert.ToString(expectedProperties.Value, CultureInfo.InvariantCulture);
             }
             return expectedProperties.Value;
+        }
+
+        private string GetExpectedCategory(OptionSettingItemSummary expectedProperties)
+        {
+            if (string.IsNullOrWhiteSpace(expectedProperties.Category))
+            {
+                return Category.FallbackCategoryId;
+            }
+
+            return expectedProperties.Category;
         }
 
         private void AssertValueMappingProperties(OptionSettingItemSummary expectedProperties, IDictionary<string, string> valueMappings)

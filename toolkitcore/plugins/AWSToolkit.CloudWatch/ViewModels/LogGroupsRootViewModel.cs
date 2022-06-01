@@ -32,7 +32,6 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             }
         }
 
-        //TODO: Replace with log groups icon when available
-        protected override string IconName => AwsImageResourcePath.CloudWatch.Path;
+        protected override string IconName => AwsImageResourcePath.CloudWatchLogGroups.Path;
     }
 }

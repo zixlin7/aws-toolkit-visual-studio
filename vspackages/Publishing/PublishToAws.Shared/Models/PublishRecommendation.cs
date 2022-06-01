@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Publish.Util;
+﻿using System.Linq;
+
+using Amazon.AWSToolkit.Publish.Util;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -21,6 +23,13 @@ namespace Amazon.AWSToolkit.Publish.Models
             IsGenerated = recommendation?.IsPersistedDeploymentProject ?? false;
             Service = recommendation?.TargetService;
             ShortDescription = recommendation?.ShortDescription;
+
+            if (recommendation?.SettingsCategories != null)
+            {
+                ConfigurationCategories.AddRange(recommendation.SettingsCategories
+                    .Select(categorySummary => categorySummary.AsCategory())
+                    .OrderBy(category => category));
+            }
         }
     }
 }

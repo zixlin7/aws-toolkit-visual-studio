@@ -33,169 +33,174 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <DockPanel LastChildFill="True">
-        <!-- Heading -->
-        <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+    <Border 
+        BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" 
+        BorderThickness="1">
+        <DockPanel LastChildFill="True">
+            <!-- Heading -->
+            <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Margin="6">
 
-            <!-- Show the Publish destination (Name) -->
-            <TextBlock
-                DataContext="{Binding PublishDestination}"
-                TextWrapping="Wrap"
-                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
-                FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}"
-                d:Text="Target Name is shown here"
-                Text="{Binding Name}" />
-
-            <!-- Show Missing System Dependencies : Loading -->
-            <StackPanel
-                Margin="0 12 0 0"
-                Orientation="Horizontal"
-                Visibility="{Binding LoadingSystemCapabilities, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <images:VsImage
-                    VerticalAlignment="Center"
-                    Height="16"
-                    Width="16"
-                    DataContext="{DynamicResource VsImages}"
-                    Source="{Binding Loading}" />
-
+                <!-- Show the Publish destination (Name) -->
                 <TextBlock
-                    Margin="6 0 0 0"
-                    VerticalAlignment="Center"
-                    FontWeight="Bold"
-                    Text="Loading system requirements..." />
-            </StackPanel>
+                    DataContext="{Binding PublishDestination}"
+                    TextWrapping="Wrap"
+                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                    FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}"
+                    d:Text="Target Name is shown here"
+                    Text="{Binding Name}" />
 
-            <!-- Show Missing System Dependencies : Actual Warning -->
-            <Border
-                Margin="0 12 0 0"
-                Visibility="{Binding SystemCapabilities, Converter={StaticResource HasItemsVisibilityConverter}}"
-                BorderThickness="1"
-                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}">
-                <Grid Margin="9">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <StackPanel
-                        Grid.Row="0" Grid.Column="0"
-                        Orientation="Horizontal">
-                        <images:VsImage
-                            VerticalAlignment="Top"
-                            DataContext="{DynamicResource VsImages}"
-                            Source="{Binding StatusError}" />
-
-                        <TextBlock
-                            Margin="6 0 0 0"
-                            VerticalAlignment="Top"
-                            FontWeight="Bold"
-                            Text="Missing system requirements" />
-                    </StackPanel>
-
-                    <ItemsControl
-                        Grid.Row="1" Grid.Column="0"
-                        HorizontalContentAlignment="Stretch"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ItemTemplate="{StaticResource SystemCapabilityTemplate}"
-                        ItemsSource="{Binding SystemCapabilities}" />
-
-                </Grid>
-            </Border>
-
-            <!-- Application Name (Artifact ID), shown when applicable -->
-            <StackPanel
-                Margin="0 12 0 0"
-                Orientation="Vertical"
-                Visibility="{Binding IsApplicationNameRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock>
-                    <Run
-                        BaselineAlignment="Top"
-                        Text="Application name" />
+                <!-- Show Missing System Dependencies : Loading -->
+                <StackPanel
+                    Margin="0 12 0 0"
+                    Orientation="Horizontal"
+                    Visibility="{Binding LoadingSystemCapabilities, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <images:VsImage
-                        Margin="3 0 0 0"
                         VerticalAlignment="Center"
-                        Width="16"
                         Height="16"
-                        ToolTip="{StaticResource ApplicationNameToolTip}"
-                        Source="{Binding Source={StaticResource VsImages}, Path=StatusInformationOutline}" />
-                </TextBlock>
+                        Width="16"
+                        DataContext="{DynamicResource VsImages}"
+                        Source="{Binding Loading}" />
 
-                <TextBox
-                    Name="tbApplicationName" x:FieldModifier="private"
-                    Margin="0 3 0 0"
-                    Text="{Binding PublishStackName, Delay=500, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnNotifyDataErrors=True}" />
+                    <TextBlock
+                        Margin="6 0 0 0"
+                        VerticalAlignment="Center"
+                        FontWeight="Bold"
+                        Text="Loading system requirements..." />
+                </StackPanel>
 
-                <!-- Show a validation message for Application Name directly below the TextBox, when there is a validation error -->
-                <ContentPresenter 
-                    Content="{Binding ElementName=tbApplicationName, Path=(Validation.Errors).CurrentItem}" 
-                    Visibility="{Binding ElementName=tbApplicationName, Path=(Validation.Errors), Converter={StaticResource HasItemsVisibilityConverter}}"
-                    ContentTemplate="{StaticResource ValidationErrorTemplate}"
-                    />
+                <!-- Show Missing System Dependencies : Actual Warning -->
+                <Border
+                    Margin="0 12 0 0"
+                    Visibility="{Binding SystemCapabilities, Converter={StaticResource HasItemsVisibilityConverter}}"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}">
+                    <Grid Margin="9">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel
+                            Grid.Row="0" Grid.Column="0"
+                            Orientation="Horizontal">
+                            <images:VsImage
+                                VerticalAlignment="Top"
+                                DataContext="{DynamicResource VsImages}"
+                                Source="{Binding StatusError}" />
+
+                            <TextBlock
+                                Margin="6 0 0 0"
+                                VerticalAlignment="Top"
+                                FontWeight="Bold"
+                                Text="Missing system requirements" />
+                        </StackPanel>
+
+                        <ItemsControl
+                            Grid.Row="1" Grid.Column="0"
+                            HorizontalContentAlignment="Stretch"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ItemTemplate="{StaticResource SystemCapabilityTemplate}"
+                            ItemsSource="{Binding SystemCapabilities}" />
+
+                    </Grid>
+                </Border>
+
+                <!-- Application Name (Artifact ID), shown when applicable -->
+                <StackPanel
+                    Margin="0 12 0 0"
+                    Orientation="Vertical"
+                    Visibility="{Binding IsApplicationNameRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock>
+                        <Run
+                            BaselineAlignment="Top"
+                            Text="Application name" />
+                        <images:VsImage
+                            Margin="3 0 0 0"
+                            VerticalAlignment="Center"
+                            Width="16"
+                            Height="16"
+                            ToolTip="{StaticResource ApplicationNameToolTip}"
+                            Source="{Binding Source={StaticResource VsImages}, Path=StatusInformationOutline}" />
+                    </TextBlock>
+
+                    <TextBox
+                        Name="tbApplicationName" x:FieldModifier="private"
+                        Margin="0 3 0 0"
+                        Text="{Binding PublishStackName, Delay=500, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnNotifyDataErrors=True}" />
+
+                    <!-- Show a validation message for Application Name directly below the TextBox, when there is a validation error -->
+                    <ContentPresenter 
+                        Content="{Binding ElementName=tbApplicationName, Path=(Validation.Errors).CurrentItem}" 
+                        Visibility="{Binding ElementName=tbApplicationName, Path=(Validation.Errors), Converter={StaticResource HasItemsVisibilityConverter}}"
+                        ContentTemplate="{StaticResource ValidationErrorTemplate}"
+                        />
+                </StackPanel>
+
             </StackPanel>
 
-        </StackPanel>
-
-        <!-- Footing -->
-        <Grid
-            DockPanel.Dock="Bottom"
-            Background="{DynamicResource {x:Static platformUi:ThemedDialogColors.WizardFooterBrushKey}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <StackPanel
-                Margin="0 6 0 6"
-                Grid.Row="0"
-                Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button
-                    Command="{Binding PublishToAwsCommand}"
-                    IsDefault="True"
-                    Content="Publish"
-                    d:DesignHeight="23" MinWidth="75" />
-            </StackPanel>
-        </Grid>
-
-        <!-- Main -->
-        <Grid
-            Margin="0 12 0 0"
-            Visibility="{Binding SystemCapabilities, Converter={StaticResource MeetsSystemRequirementsVisibility}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-
-            <!-- Show Settings -->
-            <StackPanel
-                Grid.Row="0" Grid.Column="0"
-                Orientation="Vertical"
-                Visibility="{Binding PublishSummary, Converter={StaticResource HasValueVisibilityConverter}}">
-
-                <TextBlock
-                    VerticalAlignment="Top"
-                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
-                    FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontWeightKey}}"
-                    Text="Publish details" />
-
-                <StackPanel Orientation="Horizontal">
+            <!-- Footing -->
+            <Grid
+                DockPanel.Dock="Bottom"
+                Background="{DynamicResource {x:Static platformUi:ThemedDialogColors.WizardFooterBrushKey}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel
+                    Margin="0 6 0 6"
+                    Grid.Row="0"
+                    Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button
-                        Margin="0 6 0 0"
-                        Command="{Binding ConfigTargetCommand}"
-                        Content="Edit settings"
+                        Command="{Binding PublishToAwsCommand}"
+                        IsDefault="True"
+                        Content="Publish"
                         d:DesignHeight="23" MinWidth="75" />
                 </StackPanel>
-            </StackPanel>
+            </Grid>
 
-            <ScrollViewer
-                Grid.Row="1" Grid.Column="0"
-                Margin="0 6 0 0"
-                VerticalScrollBarVisibility="Auto"
-                HorizontalScrollBarVisibility="Disabled">
-                <TextBlock
-                    TextWrapping="Wrap"
-                    Text="{Binding PublishSummary}" />
-            </ScrollViewer>
+            <!-- Main -->
+            <Grid
+                Margin="0 0 0 0"
+                Visibility="{Binding SystemCapabilities, Converter={StaticResource MeetsSystemRequirementsVisibility}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-        </Grid>
 
-    </DockPanel>
+                <!-- Show Settings -->
+                <StackPanel
+                    Grid.Row="0" Grid.Column="0"
+                    Margin="6"
+                    Orientation="Vertical"
+                    Visibility="{Binding PublishSummary, Converter={StaticResource HasValueVisibilityConverter}}">
+
+                    <TextBlock
+                        VerticalAlignment="Top"
+                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                        FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontWeightKey}}"
+                        Text="Publish details" />
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            Margin="0 6 0 0"
+                            Command="{Binding ConfigTargetCommand}"
+                            Content="Edit settings"
+                            d:DesignHeight="23" MinWidth="75" />
+                    </StackPanel>
+                </StackPanel>
+
+                <ScrollViewer
+                    Grid.Row="1" Grid.Column="0"
+                    Margin="6 0 0 0"
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled">
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="{Binding PublishSummary}" />
+                </ScrollViewer>
+
+            </Grid>
+
+        </DockPanel>
+    </Border>
 </UserControl>

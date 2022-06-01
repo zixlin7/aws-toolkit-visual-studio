@@ -20,6 +20,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LogEventsViewerControl));
         public static readonly string TimeZone = TimeZoneInfo.Local.Id;
+        public static readonly string DefaultHintText = "Filter events";
 
         private LogEventsViewModel _viewModel;
 

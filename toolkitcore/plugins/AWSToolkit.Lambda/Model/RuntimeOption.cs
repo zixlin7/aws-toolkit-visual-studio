@@ -4,12 +4,9 @@ namespace Amazon.AWSToolkit.Lambda.Model
 {
     public class RuntimeOption
     {
-        // Using string "dotnet6" instead of Runtime.Dotnet6 because the AWS SDK for .NET hasn't been updated yet with the new value.
-        public const string ManagedRuntimeDotNet6 = "dotnet6";
-
         public static readonly RuntimeOption NodeJS_v12_X = new RuntimeOption(Amazon.Lambda.Runtime.Nodejs12X.Value, "Node.js v12");
 
-        public static readonly RuntimeOption DotNet6 = new RuntimeOption(ManagedRuntimeDotNet6, ".NET 6")
+        public static readonly RuntimeOption DotNet6 = new RuntimeOption(Amazon.Lambda.Runtime.Dotnet6.Value, ".NET 6")
         {
             IsDotNet = true,
         };

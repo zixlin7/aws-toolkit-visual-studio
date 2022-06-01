@@ -15,16 +15,5 @@ namespace Amazon.AWSToolkit.Publish.Views
         {
             InitializeComponent();
         }
-
-        private void OnVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (((UIElement) sender).Visibility == Visibility.Visible)
-            {
-                if (!(DataContext is PublishToAwsDocumentViewModel viewModel))
-                {
-                    return;
-                }
-            }
-        }
     }
 }

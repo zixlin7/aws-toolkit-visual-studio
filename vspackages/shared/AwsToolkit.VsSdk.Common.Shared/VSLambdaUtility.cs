@@ -5,14 +5,18 @@ using EnvDTE;
 
 using log4net;
 
+using Microsoft.VisualStudio.Shell;
+
 namespace Amazon.AwsToolkit.VsSdk.Common
 {
     public static class VSLambdaUtility
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(VSLambdaUtility));
+        static readonly ILog Logger = LogManager.GetLogger(typeof(VSLambdaUtility));
 
         public static IDictionary<string, IList<string>> SearchForLambdaFunctionSuggestions(Project project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             IDictionary<string, IList<string>> suggestedMethods = new Dictionary<string, IList<string>>();
             try
             {
@@ -20,7 +24,7 @@ namespace Amazon.AwsToolkit.VsSdk.Common
             }
             catch(Exception e)
             {
-                LOGGER.Error("Error getting possibe lambda function suggestions", e);
+                Logger.Error("Error getting possible lambda function suggestions", e);
             }
 
             return suggestedMethods;
@@ -31,6 +35,8 @@ namespace Amazon.AwsToolkit.VsSdk.Common
         {
             if (projectItems == null)
                 return;
+
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             foreach (ProjectItem projectItem in projectItems)
             {
@@ -54,6 +60,8 @@ namespace Amazon.AwsToolkit.VsSdk.Common
         {
             if (elements == null)
                 return;
+
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             foreach (CodeElement element in elements)
             {
@@ -92,6 +100,8 @@ namespace Amazon.AwsToolkit.VsSdk.Common
 
         private static void SearchForMethods(CodeClass codeClass, List<string> classMethods, out bool hasDefaultConstructor)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             hasDefaultConstructor = false;
             if (codeClass == null)
                 return;
@@ -114,6 +124,8 @@ namespace Amazon.AwsToolkit.VsSdk.Common
 
         private static void SearchForMethods(CodeElements elements, List<string> classMethods, out bool hasDefaultConstructor)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             hasDefaultConstructor = false;
             if (elements == null)
                 return;
@@ -149,6 +161,8 @@ namespace Amazon.AwsToolkit.VsSdk.Common
 
         private static int GetParameterCount(CodeElement methodElement)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (methodElement.Children == null)
                 return 0;
 

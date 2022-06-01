@@ -1,4 +1,7 @@
-﻿using Amazon.AWSToolkit.Publish;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
@@ -10,23 +13,23 @@ namespace Amazon.AWSToolkit.Tests.Publishing
     public class PublishDocumentViewModelChangeHandlerTests
     {
         [Fact]
-        public void ShouldRefreshTarget_Republish()
+        public async Task ShouldRefreshTarget_Republish()
         {
             //arrange
             var viewModel = CreateViewModel();
-            viewModel.IsRepublish = true;
+            await viewModel.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, CancellationToken.None);
             viewModel.PublishDestination = CreateRepublishTarget();
-            ShouldRefresh(viewModel, true);
+            AssertIsTargetRefreshNeeded(viewModel, true);
         }
 
         [Fact]
-        public void ShouldRefreshTarget_NewPublish()
+        public async Task ShouldRefreshTarget_NewPublish()
         {
             //arrange
             var viewModel = CreateViewModel();
-            viewModel.IsRepublish = false;
+            await viewModel.SetTargetSelectionModeAsync(TargetSelectionMode.NewTargets, CancellationToken.None);
             viewModel.PublishDestination = CreateNewPublishTarget();
-            ShouldRefresh(viewModel, true);
+            AssertIsTargetRefreshNeeded(viewModel, true);
         }
 
         private PublishToAwsDocumentViewModel CreateViewModel() => new PublishToAwsDocumentViewModel(new PublishApplicationContext(new PublishContextFixture().PublishContext));
@@ -35,22 +38,22 @@ namespace Amazon.AWSToolkit.Tests.Publishing
 
         private PublishRecommendation CreateNewPublishTarget() => new PublishRecommendation( null);
 
-        private static void ShouldRefresh(PublishToAwsDocumentViewModel viewModel, bool expected)
+        private static void AssertIsTargetRefreshNeeded(PublishToAwsDocumentViewModel viewModel, bool expected)
         {
             //act
-            var shouldRefresh = new PublishDocumentViewModelChangeHandler().ShouldRefreshTarget(viewModel);
+            var shouldRefresh = new PublishDocumentViewModelChangeHandler().IsTargetRefreshNeeded(viewModel);
             //assert
             Assert.Equal(expected, shouldRefresh);
         }
 
         [Fact]
-        public void ShouldNotRefreshIfTargetIsNull()
+        public async Task ShouldNotRefreshIfTargetIsNull()
         {
             //arrange
             var viewModel = CreateViewModel();
-            viewModel.IsRepublish = false;
+            await viewModel.SetTargetSelectionModeAsync(TargetSelectionMode.NewTargets, CancellationToken.None);
             viewModel.PublishDestination = null;
-            ShouldRefresh(viewModel, false);
+            AssertIsTargetRefreshNeeded(viewModel, false);
         }
     }
 }

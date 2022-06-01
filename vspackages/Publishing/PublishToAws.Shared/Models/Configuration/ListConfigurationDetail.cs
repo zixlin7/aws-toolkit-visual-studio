@@ -166,5 +166,12 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
                 Value = value;
             }
         }
+
+        public override string GetSummaryValue()
+        {
+            if (SelectedItems == null) { return string.Empty; }
+
+            return string.Join($",{Environment.NewLine}", SelectedItems.Select(x => x.DisplayName));
+        }
     }
 }

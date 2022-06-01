@@ -2,10 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
                     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit" 
+                    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
                     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
                     xmlns:properties="clr-namespace:Amazon.AWSToolkit.Publish.Views.Properties"
-                    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls;assembly=AWSToolkit">
+                    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls;assembly=AWSToolkit"
+                    xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.Publish.ViewModels"
+                    xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit">
     <!-- 
         This file defines the "editors" used for each data type used by Publish configuration details. 
         Everything is tied together by PropertyTemplateSelector, which is used in the Configuration View to 
@@ -14,7 +16,7 @@
 
     <commonUi:VsImages x:Key="VsImages" />
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+    <converters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
 
     <Style x:Key="ConfigDetailItemStyle">
         <!-- This line below gives the property the full width of the parent control to work with -->
@@ -24,43 +26,79 @@
 
     <!-- ValidationErrorTemplate decorates a control, showing a validation message on the screen -->
     <ControlTemplate x:Key="ValidationErrorTemplate">
-        <Grid MaxWidth="{Binding ElementName=AdornedElement, Path=ActualWidth}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical">
 
-            <Border 
-                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                BorderBrush="Red" BorderThickness="1">
-                <AdornedElementPlaceholder Name="AdornedElement"  />
-            </Border>
-            <Border
-                Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" BorderThickness="1"
-                Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
-                />
-            <Image 
-                Grid.Row="1" Grid.Column="0"
-                Height="16" Width="16" 
-                Margin="9 9 9 9"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                DataContext="{DynamicResource VsImages}"
-                Source="{Binding StatusWarning}" />
-            <TextBlock 
-                Grid.Row="1" Grid.Column="1"
-                Margin="0 9 9 9" 
-                TextWrapping="Wrap"
-                MaxWidth="{Binding ElementName=Q, Path=ActualWidth}"
-                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                Text="{Binding /ErrorContent}" />
-        </Grid>
+            <Grid Width="{Binding ElementName=AdornedElement, Path=ActualWidth}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Place Border and adorned element in the same grid cells.
+                Placing the adorned element within the border causes the border to get clipped on the left. -->
+                <Border
+                    Grid.Row="0" Grid.Column="0"
+                    BorderBrush="Red" BorderThickness="1" />
+                <AdornedElementPlaceholder
+                    Grid.Row="0" Grid.Column="0"
+                    Name="AdornedElement" />
+            </Grid>
+
+            <Grid Width="{Binding ElementName=AdornedElement, Path=ActualWidth}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                    BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+                    BorderThickness="1"
+                    Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}" />
+
+                <images:VsImage
+                    Grid.Row="0" Grid.Column="0"
+                    Height="16" Width="16"
+                    Margin="9 9 9 9"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    DataContext="{DynamicResource VsImages}"
+                    Source="{Binding StatusWarning}" />
+                <TextBlock
+                    Grid.Row="0" Grid.Column="1"
+                    Margin="0 9 9 9"
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                    Text="{Binding /ErrorContent}" />
+            </Grid>
+        </StackPanel>
     </ControlTemplate>
+
+    <DataTemplate x:Key="CategoryTemplate" DataType="{x:Type viewModels:ConfigurationDetailGrouping}">
+        <StackPanel 
+            Orientation="Vertical"
+            Visibility="{Binding ConfigurationDetails, Converter={StaticResource HasItemsVisibilityConverter}}"
+            >
+            <TextBlock 
+                Margin="0 9 0 0"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                FontWeight="Bold"
+                Text="{Binding Category.DisplayName}" />
+
+            <ItemsControl
+                Margin="0 12 0 12"
+                Grid.IsSharedSizeScope="True"
+                ItemsSource="{Binding ConfigurationDetails}"
+                ItemTemplate="{DynamicResource ConfigDetailDataTemplate}"
+                ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}"
+                />
+        </StackPanel>
+    </DataTemplate>
 
     <DataTemplate x:Key="ConfigDetailDataTemplate" DataType="{x:Type models:ConfigurationDetail}">
         <!-- UI for a Configuration Detail and its children -->
@@ -68,9 +106,6 @@
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsChecked, ElementName=ConfigCheckbox}" Value="False">
-                            <Setter Property="Visibility" Value="{Binding Advanced, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
-                        </DataTrigger>
                         <DataTrigger Binding="{Binding Visible}" Value="false">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
@@ -94,16 +129,17 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock 
-                Grid.Row="0" Grid.Column="0" 
+            <TextBlock
+                Grid.Row="0" Grid.Column="0"
                 VerticalAlignment="Center"
-                FontWeight="Bold"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontWeightKey}}"
                 Text="{Binding FullDisplayName}" />
 
             <TextBlock
-                Grid.Row="1" 
+                Grid.Row="1"
                 Grid.Column="0"
-                Margin="0 6 10 3" 
+                Margin="0 6 0 6" 
                 TextWrapping="WrapWithOverflow"
                 Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
                 Text="{Binding Description}">
@@ -122,9 +158,8 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <ContentControl 
+            <ContentControl
                 Grid.Row="2" Grid.Column="0"
-                Margin="0 6 10 3" 
                 HorizontalContentAlignment="Stretch"
                 Content="{Binding .}" ContentTemplateSelector="{DynamicResource PropertyTemplateSelector}" />
         </Grid>
@@ -143,45 +178,43 @@
 
     <DataTemplate x:Key="EnumEditor" DataType="{x:Type models:ConfigurationDetail}">
         <ComboBox
-            Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+            Validation.ErrorTemplate="{DynamicResource ValidationErrorTemplate}"
             IsEditable="False"
             DisplayMemberPath="Value"
             SelectedValuePath="Key"
             ItemsSource="{Binding ValueMappings}"
-            SelectedValue="{Binding Value, ValidatesOnDataErrors=True}"
-            />
+            SelectedValue="{Binding Value, ValidatesOnDataErrors=True}" />
     </DataTemplate>
     <DataTemplate x:Key="TextEditor" DataType="{x:Type models:ConfigurationDetail}">
-        <TextBox 
+        <TextBox
             Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
             Text="{Binding Value, ValidatesOnDataErrors=True}" />
     </DataTemplate>
 
     <DataTemplate x:Key="NumericEditor" DataType="{x:Type models:ConfigurationDetail}">
-        <TextBox 
-            Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+        <TextBox
+            Validation.ErrorTemplate="{DynamicResource ValidationErrorTemplate}"
             Text="{Binding Value, ValidatesOnDataErrors=True}" />
     </DataTemplate>
 
     <DataTemplate x:Key="BooleanEditor" DataType="{x:Type models:ConfigurationDetail}">
         <CheckBox
-            Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-            IsChecked="{Binding Value, ValidatesOnDataErrors=True}" 
+            Validation.ErrorTemplate="{DynamicResource ValidationErrorTemplate}"
+            IsChecked="{Binding Value, ValidatesOnDataErrors=True}"
             Content="{Binding Name}" />
     </DataTemplate>
 
     <DataTemplate x:Key="UnsupportedTypeEditor" DataType="{x:Type models:ConfigurationDetail}">
         <StackPanel
             Orientation="Vertical"
-            HorizontalAlignment="Stretch"
-            >
+            HorizontalAlignment="Stretch">
             <TextBlock>
                 <Run Text="This version of the Toolkit is unable to show or modify this property -" />
                 <Run Text="Id: " FontWeight="Bold" />
                 <Run Text="{Binding Id}" />
             </TextBlock>
             <TextBlock>
-                <commonUi:BrowserHyperLink 
+                <commonUi:BrowserHyperLink
                     NavigateUri="{x:Static models:PublishUrls.PublishToAwsIssuesUri}"
                     ToolTip="{x:Static models:PublishUrls.PublishToAwsIssuesUrl}">
                     <Run Text="Request support" />
@@ -190,19 +223,18 @@
             </TextBlock>
             <TextBlock>
                 <Run Text="Check" />
-                <commonUi:BrowserHyperLink 
+                <commonUi:BrowserHyperLink
                     NavigateUri="{x:Static urls:GitHubUrls.ReleaseNotesUri}"
                     ToolTip="{x:Static urls:GitHubUrls.ReleaseNotesUrl}">
                     <Run Text="release notes" />
                 </commonUi:BrowserHyperLink>
                 <Run Text="to see if a newer Toolkit version supports it" />
             </TextBlock>
-            <TextBlock 
+            <TextBlock
                 TextWrapping="Wrap"
                 Visibility="{Binding HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
-                Text="{Binding ValidationMessage}"
-                />
+                Text="{Binding ValidationMessage}" />
         </StackPanel>
     </DataTemplate>
 
@@ -234,8 +266,8 @@
         <properties:FilePathTypeControl />
     </DataTemplate>
 
-    <models:PropertyTemplateSelector 
-        x:Key="PropertyTemplateSelector" 
+    <models:PropertyTemplateSelector
+        x:Key="PropertyTemplateSelector"
         ParentEditor="{StaticResource ParentEditor}"
         TextEditor="{StaticResource TextEditor}"
         NumericEditor="{StaticResource NumericEditor}"
@@ -248,7 +280,6 @@
         EcrRepositoryEditor="{StaticResource EcrRepositoryEditor}"
         KeyValuesTypeEditor="{StaticResource KeyValuesTypeEditor}"
         ListEditor="{StaticResource ListEditor}"
-        FilePathEditor="{StaticResource FilePathEditor}"
-        />
+        FilePathEditor="{StaticResource FilePathEditor}" />
 
 </ResourceDictionary>

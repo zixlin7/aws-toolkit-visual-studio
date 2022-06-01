@@ -43,5 +43,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             _sut.SetKeyValues(SampleKeyValues);
             Assert.Equal(SampleJson, _sut.Value);
         }
+
+        [Fact]
+        public void GetSummaryValue()
+        {
+            _sut.SetKeyValues(SampleKeyValues);
+            var summary = _sut.GetSummaryValue();
+
+            Assert.Equal("hello: world,\r\nfoo: bar", summary);
+        }
     }
 }

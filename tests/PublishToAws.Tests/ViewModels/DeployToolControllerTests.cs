@@ -555,7 +555,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
                 });
         }
 
-        public static IEnumerable<object[]> TypeHintUnsupportedConfigs = new List<object[]>
+        public static IEnumerable<object[]> UnsupportedDetailTypeConfigs = new List<object[]>
         {
             new object[] { ConfigurationDetailBuilder.Create().Build() },
             new object[] { ConfigurationDetailBuilder.Create().WithType(DetailType.String).Build() },
@@ -564,7 +564,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         };
 
         [Theory]
-        [MemberData(nameof(TypeHintUnsupportedConfigs))]
+        [MemberData(nameof(UnsupportedDetailTypeConfigs))]
         public async Task RetrieveConfigSettingResources_NoTypeHint(ConfigurationDetail detail)
         {
             var configurationDetails = SetupResourcesForConfigDetail(detail);
@@ -577,7 +577,30 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _restClient.Verify(
                 mock => mock.GetConfigSettingResourcesAsync(_sessionId, updatedSetting.GetLeafId(), _cancelToken),
                 Times.Never);
+        }
 
+        public static IEnumerable<object[]> UnsupportedTypeHintConfigs()
+        {
+            return DeployToolController.TypeHintLoadingExclusions.Select(typeHint => new object[]
+            {
+                ConfigurationDetailBuilder.Create().WithType(DetailType.String).WithTypeHint(typeHint).Build()
+            }).ToList();
+        }
+
+        [Theory]
+        [MemberData(nameof(UnsupportedTypeHintConfigs))]
+        public async Task RetrieveConfigSettingResources_UnsupportedTypeHint(ConfigurationDetail detail)
+        {
+            var configurationDetails = SetupResourcesForConfigDetail(detail);
+
+            var configResources =
+                await _deployToolController.UpdateConfigSettingValuesAsync(_sessionId, configurationDetails, _cancelToken);
+
+            var updatedSetting = configResources.Single();
+            Assert.Empty(updatedSetting.ValueMappings);
+            _restClient.Verify(
+                mock => mock.GetConfigSettingResourcesAsync(_sessionId, It.IsAny<string>(), _cancelToken),
+                Times.Never);
         }
 
         [Fact]
@@ -611,6 +634,40 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             // assert.
             Assert.Equal(expectedConfiguration, actualInput.UpdatedSettings);
             Assert.False(validation.HasErrors());
+        }
+
+        [Fact]
+        public async Task ApplyConfigSettingsForConfigurationDetails_WithReadOnlyDetail()
+        {
+            // arrange.
+            var configurationDetails = _optionSettingItemSummaries.Take(2)
+                .Select(_configurationDetailFactory.CreateFrom)
+                .ToList();
+
+            var readOnlyDetail = configurationDetails[0];
+            readOnlyDetail.ReadOnly = true;
+            var writableDetail = configurationDetails[1];
+
+            ApplyConfigSettingsInput actualInput = null;
+
+            Func<string, ApplyConfigSettingsInput, CancellationToken, ApplyConfigSettingsOutput> applyConfigSettingsFunc = (sessionId, input, token) => {
+                actualInput = input;
+                return new ApplyConfigSettingsOutput();
+            };
+
+            _restClient.Setup(mock => mock.ApplyConfigSettingsAsync(It.IsAny<string>(), It.IsAny<ApplyConfigSettingsInput>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(applyConfigSettingsFunc);
+
+            // act.
+            await _deployToolController.ApplyConfigSettingsAsync(_sessionId, configurationDetails, _cancelToken);
+
+            // assert.
+            Assert.False(actualInput.UpdatedSettings.ContainsKey(readOnlyDetail.GetLeafId()));
+            var expectedIdsTransmitted = writableDetail.GetSelfAndDescendants()
+                .Where(x => x.IsLeaf())
+                .Select(x => x.GetLeafId())
+                .ToList();
+            Assert.Equal(expectedIdsTransmitted, actualInput.UpdatedSettings.Keys);
         }
 
         [Fact]

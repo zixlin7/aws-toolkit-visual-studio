@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Publish.Util;
+﻿using System.Linq;
+
+using Amazon.AWSToolkit.Publish.Util;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -28,6 +30,13 @@ namespace Amazon.AWSToolkit.Publish.Models
             IsGenerated = deploymentStack?.IsPersistedDeploymentProject ?? false;
             ShortDescription = deploymentStack?.ShortDescription;
             ExistingDeploymentId = deploymentStack?.ExistingDeploymentId;
+
+            if (deploymentStack?.SettingsCategories != null)
+            {
+                ConfigurationCategories.AddRange(deploymentStack.SettingsCategories
+                    .Select(categorySummary => categorySummary.AsCategory())
+                    .OrderBy(category => category));
+            }
         }
 
         public string GetCategory()

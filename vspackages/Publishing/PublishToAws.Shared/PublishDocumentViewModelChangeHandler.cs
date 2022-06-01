@@ -5,11 +5,12 @@ namespace Amazon.AWSToolkit.Publish
 {
     public class PublishDocumentViewModelChangeHandler
     {
-        public bool ShouldRefreshTarget(PublishToAwsDocumentViewModel viewModel)
+        public bool IsTargetRefreshNeeded(PublishToAwsDocumentViewModel viewModel)
         {
-            return viewModel.IsRepublish
-                ? viewModel.PublishDestination is RepublishTarget
-                : viewModel.PublishDestination is PublishRecommendation;
+            var mode = viewModel.GetTargetSelectionMode();
+
+            return (mode == TargetSelectionMode.NewTargets && viewModel.PublishDestination is PublishRecommendation) ||
+                   (mode == TargetSelectionMode.ExistingTargets && viewModel.PublishDestination is RepublishTarget);
         }
     }
 }

@@ -91,6 +91,10 @@
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
     <Compile Include="CommonUI\Converters\ToolkitRegionConverter.cs" />
+    <Compile Include="CommonUI\DualListBox.cs" />
+    <Compile Include="CommonUI\HintTextBox.xaml.cs">
+      <DependentUpon>HintTextBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />
@@ -547,6 +551,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="CommonUI\HintTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CommonUI\Images\VsImage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -640,6 +648,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Default\DesignTimeFonts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\DualListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -786,6 +798,7 @@
     <EmbeddedResource Include="Resources\ResourceIcons\CloudFormation-Template.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\CloudFront-Download-Distribution.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\CloudFront-Streaming-Distribution.png" />
+    <EmbeddedResource Include="Resources\ResourceIcons\CloudWatch-Log-Groups.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\CodeArtifact-Repository.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\CodeCommit-Repository.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\DynamoDB-Table.png" />

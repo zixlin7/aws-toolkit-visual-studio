@@ -86,6 +86,14 @@ namespace Amazon.AWSToolkit.Publish
     }
 
     /// <summary>
+    /// An Exception indicating there is no deployment session when one was expected
+    /// </summary>
+    public class NoDeploymentSessionException : Exception
+    {
+        public NoDeploymentSessionException(string message) : base(message) { }
+    }
+
+    /// <summary>
     /// An Exception indicating a problem from the DeployTool.
     /// </summary>
     public class DeployToolException : Exception

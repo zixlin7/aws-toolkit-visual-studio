@@ -24,7 +24,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
             string msg = buildConfirmMessage(wrappers);
             if (!ToolkitFactory.Instance.ShellProvider.Confirm(this.Action, string.Format(msg)))
             {
-                return new ActionResults().WithSuccess(false);
+                return new ActionResults()
+                    .WithCancelled(true)
+                    .WithSuccess(false);
             }
 
             Dictionary<T, Exception> failures = new Dictionary<T, Exception>();

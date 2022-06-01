@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Publish.Commands;
+﻿using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
 
@@ -18,52 +20,52 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         }
 
         [Fact]
-        public void ExecuteCommand_NewPublish()
+        public async Task ExecuteCommand_NewPublish()
         {
-            _commandFixture.SetupNewPublish();
+            await _commandFixture.SetupNewPublishAsync();
             _sut.Execute(null);
 
             Assert.Equal(PublishViewStage.Configure, ViewModel.ViewStage);
         }
 
         [Fact]
-        public void ExecuteCommand_Republish()
+        public async Task ExecuteCommand_Republish()
         {
-            _commandFixture.SetupRepublish();
+            await _commandFixture.SetupRepublishAsync();
             _sut.Execute(null);
 
             Assert.Equal(PublishViewStage.Configure, ViewModel.ViewStage);
         }
 
         [Fact]
-        public void CanExecute_Republish()
+        public async Task CanExecute_Republish()
         {
-            _commandFixture.SetupRepublish();
+            await _commandFixture.SetupRepublishAsync();
 
             Assert.True(_sut.CanExecute(null));
         }
 
         [Fact]
-        public void CanExecute_NewPublish()
+        public async Task CanExecute_NewPublish()
         {
-            _commandFixture.SetupNewPublish();
+            await _commandFixture.SetupNewPublishAsync();
 
             Assert.True(_sut.CanExecute(null));
         }
 
         [Fact]
-        public void CanExecute_IsLoading()
+        public async Task CanExecute_IsLoading()
         {
-            _commandFixture.SetupNewPublish();
+            await _commandFixture.SetupNewPublishAsync();
             _commandFixture.ViewModel.IsLoading = true;
 
             Assert.False(_sut.CanExecute(null));
         }
 
         [Fact]
-        public void CanExecute_MissingRequirement()
+        public async Task CanExecute_MissingRequirement()
         {
-            _commandFixture.SetupNewPublish();
+            await _commandFixture.SetupNewPublishAsync();
             _commandFixture.AddMissingRequirement("some-requirement");
 
             Assert.False(_sut.CanExecute(null));

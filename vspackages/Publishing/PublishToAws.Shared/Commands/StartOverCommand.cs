@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
                 if (PublishDocumentViewModel.PublishProjectViewModel.ProgressStatus == ProgressStatus.Success)
                 {
                     // The new deployment was successful, so take users to the redeployment list, and select the corresponding entry
-                    await PublishDocumentViewModel.SetIsRepublishAsync(true, cancellationToken).ConfigureAwait(false);
+                    await PublishDocumentViewModel.SetTargetSelectionModeAsync(TargetSelectionMode.ExistingTargets, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {

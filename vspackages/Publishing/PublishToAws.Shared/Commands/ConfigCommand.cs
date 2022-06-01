@@ -14,6 +14,8 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
         protected override async Task ExecuteCommandAsync()
         {
+            await PublishDocumentViewModel.UpdateConfigurationViewModelAsync().ConfigureAwait(false);
+
             await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
             PublishDocumentViewModel.ViewStage = PublishViewStage.Configure;
         }

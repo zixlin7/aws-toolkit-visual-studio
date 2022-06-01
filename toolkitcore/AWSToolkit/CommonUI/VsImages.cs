@@ -31,7 +31,9 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource DeleteListItem => _imageProvider?.GetImage(VsKnownImages.DeleteListItem, 16);
         public BitmapSource Edit => _imageProvider?.GetImage(VsKnownImages.Edit, 16);
         public BitmapSource FeedbackFrown => _imageProvider?.GetImage(VsKnownImages.FeedbackFrown, 16);
+        public BitmapSource FeedbackFrown32 => _imageProvider?.GetImage(VsKnownImages.FeedbackFrown, 32);
         public BitmapSource FeedbackSmile => _imageProvider?.GetImage(VsKnownImages.FeedbackSmile, 16);
+        public BitmapSource FeedbackSmile32 => _imageProvider?.GetImage(VsKnownImages.FeedbackSmile, 32);
         public BitmapSource Loading => _imageProvider?.GetImage(VsKnownImages.Loading, 16);
         public BitmapSource Refresh => _imageProvider?.GetImage(VsKnownImages.Refresh, 16);
         public BitmapSource Remove => _imageProvider?.GetImage(VsKnownImages.Remove, 16);

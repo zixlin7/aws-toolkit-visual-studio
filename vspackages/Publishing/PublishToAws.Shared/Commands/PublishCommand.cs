@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
@@ -62,9 +64,12 @@ namespace Amazon.AWSToolkit.Publish.Commands
                     return;
                 }
 
+                // This case should not happen if the DeployTool is working correctly, but it was identified in IDE-7656 that it can occur if the DeployTool is altered
+                // in an unexpected way.  This is just a safety net to give the user a clear indication what is wrong in case they missed the message in the output
+                // window.
                 if (!await PublishDocumentViewModel.ValidateTargetConfigurationsAsync())
                 {
-                    throw new Exception("One or more configuration settings are invalid.");
+                    ShowValidationErrors();
                 }
 
                 await PublishDocumentViewModel.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -88,6 +93,23 @@ namespace Amazon.AWSToolkit.Publish.Commands
             {
                 _shellProvider.OutputError(new Exception($"Publish to AWS failed: {e.Message}", e), Logger);
             }
+        }
+
+        private void ShowValidationErrors()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("One or more publish settings are not valid. Adjust the configuration and try again.");
+            sb.AppendLine();
+
+            foreach (var detail in PublishDocumentViewModel.ConfigurationDetails.GetDetailAndDescendants()
+                         .Where(x => x.HasErrors))
+            {
+                sb.AppendLine(detail.Name);
+            }
+
+            var errmsg = sb.ToString();
+            _shellProvider.ShowMessage("Publish to AWS failed", errmsg);
+            throw new Exception(errmsg);
         }
 
         private async Task<bool> PromptToPublishAsync()

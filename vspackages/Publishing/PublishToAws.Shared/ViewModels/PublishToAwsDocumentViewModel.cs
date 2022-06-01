@@ -73,7 +73,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private string _errorMessage = string.Empty;
         private bool _publishTargetsLoaded;
         private bool _isOptionsBannerEnabled;
-        private bool _isRepublish;
+        private TargetSelectionViewModel _currentSelectionViewModel;
+        private readonly List<TargetSelectionViewModel> _targetSelectionViewModels = new List<TargetSelectionViewModel>();
         private bool _isDefaultConfig = true;
         private string _projectPath;
         private Guid _projectGuid;
@@ -91,17 +92,13 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private string _targetRecipe;
         private ICollectionView _republishCollectionView;
 
+        private readonly ConfigurationViewModel _configurationViewModel;
         private readonly PublishProjectViewModel _publishProjectViewModel;
 
         /// <summary>
         /// Holds the currently selected publishing target
         /// </summary>
         private PublishDestinationBase _publishDestination;
-
-        /// <summary>
-        /// Holds the previously selected target when toggling between New/Existing deployments (<see cref="IsRepublish"/>)
-        /// </summary>
-        private PublishDestinationBase _publishDestinationCache;
 
         private string _stackName;
 
@@ -140,7 +137,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 publishContext.ConnectionManager,
                 publishContext.PublishPackage.JoinableTaskFactory);
 
+            _configurationViewModel = new ConfigurationViewModel(_publishContext);
             _publishProjectViewModel = new PublishProjectViewModel(_publishContext);
+
+            _targetSelectionViewModels.Add(new NewPublishTargetsViewModel());
+            _targetSelectionViewModels.Add(new ExistingPublishTargetsViewModel());
+            _currentSelectionViewModel = _targetSelectionViewModels.First();
         }
 
         public void LoadPublishSettings()
@@ -155,6 +157,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public JoinableTaskFactory JoinableTaskFactory => _publishContext.PublishPackage.JoinableTaskFactory;
         public PublishConnectionViewModel Connection => _publishConnection;
 
+        public ConfigurationViewModel ConfigurationViewModel => _configurationViewModel;
         public PublishProjectViewModel PublishProjectViewModel => _publishProjectViewModel;
 
         /// <summary>
@@ -201,60 +204,36 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Indicates whether or not the application is being re-published to an existing target
+        /// All possible operations that user can choose from
         /// </summary>
-        public bool IsRepublish
-        {
-            get => _isRepublish;
-            set => SetProperty(ref _isRepublish, value);
-        }
+        public IEnumerable<TargetSelectionViewModel> TargetSelectionViewModels => _targetSelectionViewModels;
 
         /// <summary>
-        /// Swaps <see cref="_publishDestination"/> and <see cref="_publishDestinationCache"/> if
-        /// <see cref="IsRepublish"/> does not align with the currently selected target type.
-        /// 
-        /// Intended to be called after toggling <see cref="IsRepublish"/>
+        /// The current user-selected operation (eg: new publish, existing publish)
         /// </summary>
-        public void CyclePublishDestination()
+        public TargetSelectionViewModel CurrentSelectionViewModel
         {
-            if (!ShouldCyclePublishDestination())
+            get => _currentSelectionViewModel;
+            set
             {
-                return;
+                SetProperty(ref _currentSelectionViewModel, value);
+                PublishDestination = GetPublishDestinationOrFallback(_currentSelectionViewModel);
             }
-
-            PublishDestinationBase toCache = PublishDestination;
-            PublishDestinationBase toRestore = GetPublishDestinationToRestore();
-
-            _publishContext.ToolkitShellProvider.ExecuteOnUIThread(() =>
-            {
-                SetCachedPublishDestination(toCache);
-                PublishDestination = toRestore;
-            });
         }
 
-        protected void SetCachedPublishDestination(PublishDestinationBase publishDestination)
+        private PublishDestinationBase GetPublishDestinationOrFallback(TargetSelectionViewModel targetSelectionViewModel)
         {
-            _publishDestinationCache = publishDestination;
-        }
-
-        private bool ShouldCyclePublishDestination()
-        {
-            if (IsRepublish)
+            if (targetSelectionViewModel?.TargetSelectionMode == TargetSelectionMode.NewTargets)
             {
-                return !(PublishDestination is RepublishTarget);
+                return GetRecommendationOrFallback(targetSelectionViewModel.SelectedTarget as PublishRecommendation);
             }
 
-            return !(PublishDestination is PublishRecommendation);
-        }
-
-        private PublishDestinationBase GetPublishDestinationToRestore()
-        {
-            if (IsRepublish)
+            if (targetSelectionViewModel?.TargetSelectionMode == TargetSelectionMode.ExistingTargets)
             {
-                return GetRepublishTargetOrFallback(_publishDestinationCache as RepublishTarget);
+                return GetRepublishTargetOrFallback(targetSelectionViewModel.SelectedTarget as RepublishTarget);
             }
 
-            return GetRecommendationOrFallback(_publishDestinationCache as PublishRecommendation);
+            return null;
         }
 
         public PublishRecommendation GetRecommendationOrFallback(PublishRecommendation recommendation)
@@ -468,6 +447,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set
             {
                 SetProperty(ref _publishDestination, value);
+                _currentSelectionViewModel.SelectedTarget = value;
                 NotifyPropertyChanged(nameof(IsApplicationNameRequired));
             }
         }
@@ -605,7 +585,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             ErrorMessage = string.Empty;
             PublishDestination = null;
-            SetCachedPublishDestination(null);
             SystemCapabilities?.Clear();
             TargetDescription = string.Empty;
             PublishSummary = string.Empty;
@@ -637,7 +616,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new SessionException($"Unable to start a deployment session:{Environment.NewLine}{GetExceptionInnerMessage(e)}", e);
+                throw new SessionException($"Unable to start a deployment session:{Environment.NewLine}{e.GetExceptionInnerMessage()}", e);
             }
         }
 
@@ -693,7 +672,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 throw new PublishException(
                     $"Failure loading deployment recommendations:{Environment.NewLine}" +
-                    $"{GetExceptionInnerMessage(e)}{Environment.NewLine}" +
+                    $"{e.GetExceptionInnerMessage()}{Environment.NewLine}" +
                     "You might need to reload the publish experience.", e);
             }
             finally
@@ -727,7 +706,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 throw new PublishException(
                     $"Failure loading re-deployment targets:{Environment.NewLine}" +
-                    $"{GetExceptionInnerMessage(e)}{Environment.NewLine}" +
+                    $"{e.GetExceptionInnerMessage()}{Environment.NewLine}" +
                     "You might need to reload the publish experience.", e);
             }
             finally
@@ -764,7 +743,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
             catch (Exception e)
             {
-                throw new PublishException($"Error getting system requirements: {GetExceptionInnerMessage(e)}", e);
+                throw new PublishException($"Error getting system requirements: {e.GetExceptionInnerMessage()}", e);
             }
             finally
             {
@@ -833,58 +812,60 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         }
 
         /// <summary>
-        /// Loads the list of configuration settings for the selected target <see cref="PublishDestination"/>
-        /// <see cref="ConfigurationDetails"/> is populated with any loaded configuration details
-        /// A selected target needs to be defined prior to making this call.
+        /// Populates <see cref="ConfigurationDetails"/> with configuration settings for the
+        /// selected target (<see cref="PublishDestination"/>).
+        /// 
+        /// Settings that may offer a selection of values (<see cref="ConfigurationDetail.ValueMappings"/>) are also loaded.
         /// </summary>
         public async Task RefreshTargetConfigurationsAsync(CancellationToken cancellationToken)
         {
-            IList<ConfigurationDetail> configSettings = new List<ConfigurationDetail>();
-            var recipeId = string.Empty;
-
             try
             {
                 ThrowIfSessionIsNotCreated();
-                recipeId = PublishDestination?.RecipeId;
 
-                configSettings = await DeployToolController.GetConfigSettingsAsync(SessionId, cancellationToken);
+                if (PublishDestination == null)
+                {
+                    await ClearConfigurationDetailsAsync();
+                    return;
+                }
+
+                var recipeId = PublishDestination?.RecipeId;
+
+                var configurationDetails =
+                    (await LoadConfigurationDetailsAsync(SessionId, cancellationToken).ConfigureAwait(false))
+                    .ToList();
+
+                await SetConfigurationDetailsAsync(configurationDetails);
+                UpdateUnsupportedSetting(recipeId, configurationDetails);
             }
-            catch (Exception e)
+            catch (ApiException e)
             {
-                throw new PublishException($"Unable to retrieve configuration details: {GetExceptionInnerMessage(e)}", e);
+                await ClearConfigurationDetailsAsync();
+                throw new PublishException($"Unable to retrieve configuration details: {e.GetExceptionInnerMessage()}", e);
             }
-            finally
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-                UpdateUnsupportedSetting(recipeId, configSettings);
-                ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(configSettings);
-            }
+        }
+
+        public async Task<IEnumerable<ConfigurationDetail>> LoadConfigurationDetailsAsync(string sessionId, CancellationToken cancellationToken)
+        {
+            var configurationDetails = await DeployToolController.GetConfigSettingsAsync(sessionId, cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            return await DeployToolController.UpdateConfigSettingValuesAsync(sessionId, configurationDetails, cancellationToken);
+        }
+
+        public async Task ClearConfigurationDetailsAsync()
+        {
+            await SetConfigurationDetailsAsync(Enumerable.Empty<ConfigurationDetail>());
+        }
+
+        public async Task SetConfigurationDetailsAsync(IEnumerable<ConfigurationDetail> configurationDetails)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(configurationDetails);
         }
 
         private void UpdateUnsupportedSetting(string recipeId, IList<ConfigurationDetail> configurationDetails)
         {
             UnsupportedSettingTypes.Update(recipeId, configurationDetails);
-        }
-
-        /// <summary>
-        /// Loads possible values associated with the configuration details for the selected target
-        /// <see cref="ConfigurationDetails"/> is re-populated with updated configuration details
-        /// Configuration details must be initially retrieved prior to making this call.
-        /// </summary>
-        public async Task RefreshConfigurationSettingValuesAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                ThrowIfSessionIsNotCreated();
-                var configSettings = await DeployToolController.UpdateConfigSettingValuesAsync(SessionId, ConfigurationDetails.ToList(), cancellationToken);
-
-                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-                ConfigurationDetails = new ObservableCollection<ConfigurationDetail>(configSettings);
-            }
-            catch (Exception ex)
-            {
-                throw new PublishException($"Unable to update configuration detail values: {GetExceptionInnerMessage(ex)}", ex);
-            }
         }
 
         /// <summary>
@@ -973,7 +954,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             try
             {
-                return ConfigurationDetails.GenerateSummary(IsRepublish);
+                return ConfigurationDetails.GenerateSummary(GetTargetSelectionMode() == TargetSelectionMode.ExistingTargets);
             }
             catch (Exception e)
             {
@@ -996,13 +977,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 ThrowIfSessionIsNotCreated();
 
-                if (IsRepublish)
+                var mode = GetTargetSelectionMode();
+                switch (mode)
                 {
-                    await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as RepublishTarget, cancellationToken);
-                }
-                else
-                {
-                    await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as PublishRecommendation, StackName, cancellationToken);
+                    case TargetSelectionMode.ExistingTargets:
+                        await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as RepublishTarget, cancellationToken);
+                        break;
+                    case TargetSelectionMode.NewTargets:
+                        await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as PublishRecommendation, StackName, cancellationToken);
+                        break;
+                    default:
+                        throw new NotSupportedException($"Unsupported mode: {mode}");
                 }
 
                 await UpdatePublishStackNameValidationAsync(string.Empty);
@@ -1024,6 +1009,16 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             _errors[nameof(PublishStackName)] = validationMessage;
             await RaiseErrorsChangedAsync(nameof(PublishStackName)).ConfigureAwait(false);
+        }
+
+        public async Task UpdateConfigurationViewModelAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            ConfigurationViewModel.PublishDestination = PublishDestination;
+            ConfigurationViewModel.SetConfigurationDetails(ConfigurationDetails?.ToList() ?? new List<ConfigurationDetail>());
+
+            await ConfigurationViewModel.RecreateGroupsAsync();
         }
 
         public async Task UpdatePublishProjectViewModelAsync()
@@ -1063,10 +1058,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 result = await publishProjectAsyncFunc().ConfigureAwait(false);
 
                 var metricResult = result.IsSuccess ? Result.Succeeded : Result.Failed;
+                bool isNewPublish = GetTargetSelectionMode() == TargetSelectionMode.NewTargets;
                 RecordPublishDeployMetric(metricResult,
                     publishDuration.Elapsed.TotalMilliseconds,
                     result.ErrorCode,
-                    result.ErrorMessage);
+                    result.ErrorMessage,
+                    isNewPublish);
             }
 
             return result;
@@ -1189,17 +1186,15 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
         }
 
-        public async Task SetIsRepublishAsync(bool value, CancellationToken cancelToken)
+        public TargetSelectionMode GetTargetSelectionMode()
         {
-            try
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync(cancelToken);
-                IsRepublish = value;
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Error setting is republish", e);
-            }
+            return _currentSelectionViewModel.TargetSelectionMode;
+        }
+
+        public async Task SetTargetSelectionModeAsync(TargetSelectionMode mode, CancellationToken cancelToken)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancelToken);
+            CurrentSelectionViewModel = _targetSelectionViewModels.Single(t => t.TargetSelectionMode == mode);
         }
 
         public async Task InitializePublishTargetsAsync(CancellationToken cancelToken)
@@ -1311,7 +1306,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             if (!IsSessionEstablished)
             {
-                throw new Exception("No deployment session available");
+                throw new NoDeploymentSessionException("No deployment session available");
             }
         }
 
@@ -1448,7 +1443,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             return capabilityMetrics;
         }
 
-        private void RecordPublishDeployMetric(Result result, double elapsedMs, string errorCode, string errorMessage)
+        private void RecordPublishDeployMetric(Result result, double elapsedMs, string errorCode, string errorMessage, bool isNewPublish)
         {
             var payload = new PublishDeploy()
             {
@@ -1456,7 +1451,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 AwsRegion = _publishContext.ConnectionManager.ActiveRegion?.Id ?? MetadataValue.NotSet,
                 Result = result,
                 Duration = elapsedMs,
-                InitialPublish = !IsRepublish,
+                InitialPublish = isNewPublish,
                 DefaultConfiguration = IsDefaultConfig,
                 RecipeId = PublishDestination?.BaseRecipeId ?? PublishDestination?.RecipeId,
                 IsGeneratedProject = PublishDestination?.IsGenerated,
@@ -1481,16 +1476,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 return metricDatum;
             });
-        }
-
-        private string GetExceptionInnerMessage(Exception e)
-        {
-            if (e is ApiException apiException)
-            {
-                return apiException.Response;
-            }
-
-            return e.Message;
         }
 
         #region INotifyDataErrorInfo

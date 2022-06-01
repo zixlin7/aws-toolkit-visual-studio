@@ -1,13 +1,14 @@
 ﻿<UserControl x:Class="Amazon.AWSToolkit.Publish.Views.ConfigureTargetView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
-             xmlns:publishconverters="clr-namespace:Amazon.AWSToolkit.Publish.Converters"
+             xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.Publish.ViewModels"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -15,98 +16,152 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source=".\Properties\PropertyEditors.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
-            <publishconverters:ConfigurationDetailsToVisibilityConverter x:Key="ConfigurationDetailsToVisibilityConverter" />
-
-            <Style x:Key="NoEditableSettingsStyle" TargetType="TextBlock">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsChecked, ElementName=ConfigCheckbox}" Value="True">
-                        <Setter Property="Text" Value="There are no editable settings."></Setter>
-                        <Setter Property="Visibility" Value="{Binding ConfigurationDetails, Converter={StaticResource ConfigurationDetailsToVisibilityConverter}, ConverterParameter=False}"></Setter>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding IsChecked, ElementName=ConfigCheckbox}" Value="False">
-                        <Setter Property="Text" Value="There are no editable settings. Try toggling the advanced settings."></Setter>
-                        <Setter Property="Visibility" Value="{Binding ConfigurationDetails, Converter={StaticResource ConfigurationDetailsToVisibilityConverter}, ConverterParameter=True}"></Setter>
-                    </DataTrigger>
-                    <DataTrigger></DataTrigger>
-                </Style.Triggers>
-            </Style>
-
-            <ControlTemplate x:Key="CategoryGroup" TargetType="{x:Type GroupItem}">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock 
-                        Margin="0 9 0 0"
-                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
-                        FontWeight="Bold"
-                        Text="{Binding Name}">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Name}" Value="">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Name}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                    <ItemsPresenter />
-                </StackPanel>
-            </ControlTemplate>
+            <commonUi:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <converters:ConverterPipeline x:Key="VisibleWhenEmpty">
+                <converters:HasItemsVisibilityConverter />
+                <converters:InverseVisibilityConverter />
+            </converters:ConverterPipeline>
 
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="6 0 0 0">
+    <Grid Margin="1 0 0 0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Heading: Target -->
+        <StackPanel 
             Grid.Row="0"
-            Margin="0 6 0 0"
-            FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontSizeKey}}"
-            FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontWeightKey}}"
-            Text="{Binding TargetRecipe}"
-            />
-        <CheckBox 
-            Name="ConfigCheckbox" x:FieldModifier="private"
-            Grid.Row="1" 
-            Margin="0 9 0 0" 
-            Content="Show advanced settings" 
-            />
-
-        <TextBlock
-            Grid.Row="2"
-            Margin="0  12 0 0"
-            Style="{DynamicResource NoEditableSettingsStyle}"/>
-        
-        <ScrollViewer
-            Grid.Row="3"
-            Margin="0 9 0 0"
-            VerticalScrollBarVisibility="Auto">
-            <ItemsControl
-                Grid.IsSharedSizeScope="True"
-                Margin="0 9 0 50"
-                ItemsSource="{Binding ConfigurationDetails}"
-                ItemTemplate="{DynamicResource ConfigDetailDataTemplate}"
-                ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}"
+            Orientation="Horizontal">
+            <TextBlock 
+                Margin="0 0 0 0"
+                VerticalAlignment="Center"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontSizeKey}}"
+                FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontWeightKey}}"
+                d:Text="Target Recipe Name shown here"
+                Text="{Binding TargetRecipe}"
+                />
+            <TextBlock 
+                Margin="12 0 0 0"
+                VerticalAlignment="Center"
+                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
                 >
-                <ItemsControl.GroupStyle>
-                    <!-- Render the Category and properties associated with it -->
-                    <GroupStyle>
-                        <GroupStyle.ContainerStyle>
-                            <Style TargetType="{x:Type GroupItem}">
-                                <Setter Property="Template" Value="{StaticResource CategoryGroup}" />
-                            </Style>
-                        </GroupStyle.ContainerStyle>
-                    </GroupStyle>
-                </ItemsControl.GroupStyle>
-            </ItemsControl>
+                <Hyperlink 
+                    ToolTip="Select a different publish target"
+                    Command="{Binding BackToTargetCommand}">Modify</Hyperlink>
+            </TextBlock>
+        </StackPanel>
 
-        </ScrollViewer>
+        <!-- Conditional Heading: "There are no Settings" -->
+        <TextBlock
+            Grid.Row="1"
+            Margin="0 12 0 0"
+            Visibility="{Binding ConfigurationViewModel.GroupedSettings, Converter={StaticResource VisibleWhenEmpty}}"
+            FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+            FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}"
+            Text="There are no editable settings." />
+
+        <!-- Main display: Categories as a sidebar, settings in a list -->
+        <DockPanel
+            Margin="0 12 0 0"
+            Grid.Row="2"
+            LastChildFill="True">
+
+            <!-- Sidebar: Publish button -->
+            <StackPanel
+                Margin="12 0 0 0"
+                DockPanel.Dock="Right"
+                Orientation="Horizontal"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right">
+                <Button
+                    Content="Publish"
+                    d:DesignHeight="23" MinWidth="75"
+                    Margin="6,0,0,0"
+                    Command="{Binding PublishToAwsCommand}" />
+            </StackPanel>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MaxWidth="175" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Category navigation bar -->
+                <Border
+                    Grid.Row="0" Grid.Column="0"
+                    Margin="0 0 0 0"
+                    BorderThickness="0">
+                    <ScrollViewer
+                        VerticalScrollBarVisibility="Auto">
+                        <ListView
+                            x:Name="CategoryNavigator" x:FieldModifier="private"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            BorderThickness="0"
+                            ItemsSource="{Binding ConfigurationViewModel.GroupedSettings}"
+                            SelectedItem="{Binding ConfigurationViewModel.CurrentCategory}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="Category_OnMouseDown" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <!-- Render the Category and properties associated with it -->
+                                <DataTemplate DataType="{x:Type viewModels:ConfigurationDetailGrouping}">
+                                    <TextBlock
+                                        Margin="0 3 0 3"
+                                        VerticalAlignment="Center"
+                                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                                        FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}"
+                                        TextWrapping="Wrap"
+                                        Text="{Binding Category.DisplayName}">
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- Vertical bar separator -->
+                <StackPanel
+                    Grid.Row="0" Grid.Column="1"
+                    Orientation="Horizontal"
+                    Margin="24 0 24 0">
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                </StackPanel>
+
+                <!-- List of ConfigurationDetail objects -->
+                <Border
+                    Grid.Row="0" Grid.Column="2"
+                    MaxWidth="600"
+                    BorderThickness="0"
+                    BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+                    HorizontalAlignment="Left">
+                    <ScrollViewer
+                        x:Name="SettingsListScrollViewer" x:FieldModifier="private"
+                        ScrollChanged="SettingsListScrollViewer_OnScrollChanged"
+                        VerticalScrollBarVisibility="Auto">
+                        <ItemsControl
+                            x:Name="SettingsList" x:FieldModifier="private"
+                            Grid.IsSharedSizeScope="True"
+                            Margin="0 0 12 50"
+                            IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"
+                            ItemsSource="{Binding ConfigurationViewModel.GroupedSettings}"
+                            ItemTemplate="{DynamicResource CategoryTemplate}"
+                            ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}" />
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </DockPanel>
     </Grid>
 </UserControl>

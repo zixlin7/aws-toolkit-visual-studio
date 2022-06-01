@@ -1,9 +1,7 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows.Input;
 
-using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
 
 namespace Amazon.AWSToolkit.Publish.Views
@@ -14,78 +12,63 @@ namespace Amazon.AWSToolkit.Publish.Views
     /// </summary>
     public partial class ConfigureTargetView : UserControl
     {
-        private PublishToAwsDocumentViewModel _viewModel;
-
         public ConfigureTargetView()
         {
             InitializeComponent();
-
-            Loaded += OnLoaded;
-            Unloaded += OnUnloaded;
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            Loaded -= OnLoaded;
-            _viewModel = DataContext as PublishToAwsDocumentViewModel;
-
-            if (_viewModel != null)
-            {
-                _viewModel.PropertyChanged += ViewModelOnPropertyChanged;
-                InitializeConfigurationDetailsView();
-            }
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            if (_viewModel != null)
-            {
-                _viewModel.PropertyChanged -= ViewModelOnPropertyChanged;
-            }
-
-            Loaded -= OnLoaded;
-            Unloaded -= OnUnloaded;
-        }
-
-        private void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(PublishToAwsDocumentViewModel.ConfigurationDetails))
-            {
-                InitializeConfigurationDetailsView();
-            }
         }
 
         /// <summary>
-        /// Defines Grouping and Sorting for how the configuration properties are presented
+        /// When user clicks on a category, scroll the settings list if necessary to make that category
+        /// the top-most visible category.
         /// </summary>
-        private void InitializeConfigurationDetailsView()
+        private void Category_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var configurationDetails = _viewModel?.ConfigurationDetails;
-            if (configurationDetails != null)
-            {
-                var collectionView = CollectionViewSource.GetDefaultView(configurationDetails);
+            if (!(sender is FrameworkElement senderElement)) { return; }
 
-                collectionView.GroupDescriptions.Clear();
-                collectionView.GroupDescriptions.Add(
-                    new PropertyGroupDescription(nameof(ConfigurationDetail.Category)));
+            var categoryGrouping = senderElement.DataContext;
+            if (categoryGrouping == null) { return; }
 
-                collectionView.SortDescriptions.Clear();
-                collectionView.SortDescriptions.Add(new SortDescription(nameof(ConfigurationDetail.Category),
-                    ListSortDirection.Ascending));
-                collectionView.SortDescriptions.Add(new SortDescription(nameof(ConfigurationDetail.Name),
-                    ListSortDirection.Ascending));
+            var categoryElement = SettingsList.ItemContainerGenerator.ContainerFromItem(categoryGrouping) as FrameworkElement;
+            if (categoryElement == null)  { return; }
 
-                collectionView.Filter = ConfigurationDetailsFilter;
-            }
+            // Scroll so that categoryElement is displayed as high in the list as possible
+            var offset = categoryElement.TranslatePoint(new Point(), SettingsListScrollViewer);
+            SettingsListScrollViewer.ScrollToVerticalOffset(SettingsListScrollViewer.VerticalOffset + offset.Y);
         }
 
         /// <summary>
-        /// Determines which <see cref="ConfigurationDetail"/> objects to show in the view
+        /// When the settings list is scrolled, make the top-most visible category the visually "selected" one
+        /// in the navigation bar.
         /// </summary>
-        private bool ConfigurationDetailsFilter(object obj)
+        private void SettingsListScrollViewer_OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            // Show configuration details flagged as visible
-            return obj is ConfigurationDetail detail && detail.Visible;
+            if (!(sender is ScrollViewer scrollViewer)) { return; }
+
+            FrameworkElement settingGroupElement = GetFirstVisibleSettingGroupElement(scrollViewer);
+            if (settingGroupElement != null)
+            {
+                CategoryNavigator.SelectedItem = settingGroupElement.DataContext;
+            }
+        }
+
+        private FrameworkElement GetFirstVisibleSettingGroupElement(ScrollViewer scrollViewer)
+        {
+            foreach (var item in SettingsList.Items)
+            {
+                if (!(SettingsList.ItemContainerGenerator.ContainerFromItem(item) is FrameworkElement settingsElement)) { continue; }
+                if (settingsElement.DataContext == null) { continue; }
+                
+                var scrolledOffset = settingsElement.TranslatePoint(new Point(0, settingsElement.ActualHeight), scrollViewer);
+
+                // The first visible item will have a positive Y-offset
+                // (Previous items will have a negative offset, because they are "above" what is displayed in the scroll viewer).
+                if (scrolledOffset.Y > 0)
+                {
+                    return settingsElement;
+                }
+            }
+
+            return null;
         }
     }
 }

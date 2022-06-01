@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         private string GenerateSummaryForLeaf(ConfigurationDetail detail, int nodeLevel)
         {
-            return $"{CreateIndent(nodeLevel)}{AsSummary(detail)}{Environment.NewLine}";
+            return $"{CreateIndent(nodeLevel)}{AsSummary(detail, nodeLevel)}{Environment.NewLine}";
         }
 
         private string GenerateSummaryForParent(ConfigurationDetail detail, int nodeLevel)
@@ -73,14 +73,27 @@ namespace Amazon.AWSToolkit.Publish.Models
             return string.Concat(Enumerable.Repeat("    ", level));
         }
 
-        private  string AsSummary(ConfigurationDetail detail)
+        private string AsSummary(ConfigurationDetail detail, int nodeLevel)
         {
             if (detail.Type == DetailType.Boolean && detail.Value.Equals(true))
             {
                 return detail.Name;
             }
 
-            return $"{detail.Name}: {detail.Value}";
+            var summaryValue = detail.GetSummaryValue();
+
+            // Exclude this detail from the summary if it has no value
+            if (string.IsNullOrWhiteSpace(summaryValue)) { return string.Empty; }
+
+            // If text is multiline, start it on the next line, and indent each line
+            if (summaryValue.Contains(Environment.NewLine))
+            {
+                var newLineIndent = Environment.NewLine + CreateIndent(nodeLevel + 1);
+                summaryValue = newLineIndent +
+                               summaryValue.Replace(Environment.NewLine, $"{newLineIndent}");
+            }
+
+            return $"{detail.Name}: {summaryValue}";
         }
     }
 }

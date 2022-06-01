@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public PublishCommandTests()
         {
             _sut = new PublishCommand(ViewModel, _commandFixture.ShellProvider.Object, _ => _confirmationDialog);
-            _commandFixture.SetupNewPublish();
+            _commandFixture.JoinableTaskFactory.Run(async () => await _commandFixture.SetupNewPublishAsync());
 
             SetupInitialPublish();
             SetupApplyConfigSettingsAsync(new ValidationResult());
@@ -127,7 +127,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
 
             await _sut.ExecuteAsync(null);
 
-            ShellProvider.Verify(x => x.OutputToHostConsole(It.Is<string>(s => s.Contains("One or more configuration settings")), true), Times.Once);
+            ShellProvider.Verify(x => x.OutputToHostConsole(It.Is<string>(s => s.Contains("One or more publish settings")), true), Times.Once);
             
             Assert.NotEqual(PublishViewStage.Publish, ViewModel.ViewStage);
         }

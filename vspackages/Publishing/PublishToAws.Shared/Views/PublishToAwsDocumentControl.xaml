@@ -31,7 +31,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -44,13 +43,14 @@
                 Visibility="{Binding IsOptionsBannerEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                 />
             
-            <Label
+            <TextBlock
                 Grid.Row="1" Grid.Column="0"
-                Margin="0 0 9 0"
+                Margin="1 0 9 0"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
                 FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontWeightKey}}"
-                Content="{Binding ProjectName}"
-                ContentStringFormat="Publish to AWS: {0}" />
+                Text="{Binding ProjectName, StringFormat=Publish to AWS: {0}}"
+                d:Text="Publish to AWS: Some Project Name"
+                />
 
             <ProgressBar 
                 Grid.Row="1" Grid.Column="1" 
@@ -159,23 +159,6 @@
                 </ContentPresenter.Style>
             </ContentPresenter>
 
-            <!-- Footer containing actions relevant to the Configure view -->
-            <views:PublishDocumentFooter 
-                Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"
-                Margin="0 18 0 0">
-                <views:PublishDocumentFooter.Style>
-                    <Style TargetType="{x:Type views:PublishDocumentFooter}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ViewStage}" Value="{x:Static viewModels:PublishViewStage.Target}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewStage}" Value="{x:Static viewModels:PublishViewStage.Publish}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </views:PublishDocumentFooter.Style>
-            </views:PublishDocumentFooter>
         </Grid>
     </DockPanel>
 </commonUi:BaseAWSControl>
