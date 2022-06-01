@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fix issue in Publish to AWS where Docker and Build settings were not used during the publish."
-}

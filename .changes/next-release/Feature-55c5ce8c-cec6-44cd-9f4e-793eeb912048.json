@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Updated the Publish to AWS view where deployment settings can be edited. Settings are grouped by category, and a side-bar allows for quick navigation to a category. The width of this view has also been constrained, so that it is easier to work with on systems with a wider display."
-}
