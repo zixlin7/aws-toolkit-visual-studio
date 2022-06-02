@@ -1,8 +1,8 @@
-## 1.29.0.0 (2022-05-16)
+## 1.30.0.0 (2022-06-01)
 
 ### Changelog
-- **Bug Fix** - Fix DynamoDB Local connection failure when using a non-basic default credentials profile (SSO or MFA for example)
-- **Bug Fix** - Configuring the Lambda publish wizard to remove all VPC subnets and security groups from an existing Lambda will now do this when publishing to Lambda. Previously, the Lambda function would be updated, but the function's VPC settings would not be adjusted.
-- **Feature** - The Publish to AWS experience now indicates if the Application Name is not valid, and prevents a deployment from starting.
-- **Feature** - Add support for configuring VPC Connectors when publishing to App Runner through the Publish to AWS experience.
-- **Feature** - When configuring roles in the Publish to AWS experience, if the publish target requires a service principal, the role selection dialog will only show roles that reference the service principal.
+- **Bug Fix** - Fix issue where clicking different targets in the Publish to AWS experience could show the configuration for an older selection
+- **Bug Fix** - Fix issue in Publish to AWS where Docker and Build settings were not used during the publish.
+- **Feature** - Add Publish to AWS validation check for scenario where a new deployment would re-use the name of an existing deployment.
+- **Feature** - Updated the Publish to AWS view where deployment targets are listed, so that more of the list can be displayed on the screen.
+- **Feature** - Updated the Publish to AWS view where deployment settings can be edited. Settings are grouped by category, and a side-bar allows for quick navigation to a category. The width of this view has also been constrained, so that it is easier to work with on systems with a wider display.

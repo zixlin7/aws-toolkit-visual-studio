@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Add Publish to AWS validation check for scenario where a new deployment would re-use the name of an existing deployment."
-}
