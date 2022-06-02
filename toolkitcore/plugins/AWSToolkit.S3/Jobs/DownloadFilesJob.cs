@@ -78,8 +78,8 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
         protected override void ExecuteJob()
         {
-            long successCount = 0;
-            long failCount = 0;
+            int successCount = 0;
+            int failCount = 0;
 
             this.CurrentStatus = "Generating list of keys to download";
             this._keysToBeDownloaded = this._controller.GetListOfKeys(this._childItems, false);
@@ -122,14 +122,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
                 this.ProgressValue++;
             }
 
-            if (successCount != 0)
-            {
-                this._controller.RecordDownloadObjectsMetric(successCount, Result.Succeeded);
-            }
-            if (failCount != 0)
-            {
-                this._controller.RecordDownloadObjectsMetric(failCount, Result.Failed);
-            }
+            this._controller.RecordDownloadObjectMetric(successCount, failCount);
         }
 
         private string downloadLocation(string key)

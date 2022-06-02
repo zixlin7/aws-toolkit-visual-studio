@@ -72,8 +72,8 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
         protected override void ExecuteJob()
         {
-            long successCount = 0;
-            long failCount = 0;
+            int successCount = 0;
+            int failCount = 0;
             try
             {
                 TransferUtilityConfig config = new TransferUtilityConfig();
@@ -110,14 +110,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
             {
                 this.IsComplete = true;
                 this._controller.AddChildItemsToModel(this._newChildItems);
-                if (successCount != 0)
-                {
-                    this._controller.RecordUploadObjectsMetric(successCount, Result.Succeeded);
-                }
-                if (failCount != 0)
-                {
-                    this._controller.RecordUploadObjectsMetric(failCount, Result.Failed);
-                }
+                this._controller.RecordUploadObjectMetric(successCount, failCount);
             }
         }
 

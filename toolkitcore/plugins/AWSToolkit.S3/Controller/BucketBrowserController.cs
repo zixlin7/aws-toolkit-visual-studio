@@ -446,16 +446,17 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public void RecordDownloadObjectsMetric(long count, Result result)
+        public void RecordDownloadObjectMetric(int successCount, int failedCount)
         {
             try
             {
-                this._toolkitContext.TelemetryLogger.RecordS3DownloadObjects(new S3DownloadObjects()
+                this._toolkitContext.TelemetryLogger.RecordS3DownloadObject(new S3DownloadObject()
                 {
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
-                    Result = result,
-                    Value = count,
+                    Result = failedCount > 0 ? Result.Failed : Result.Succeeded,
+                    SuccessCount = successCount,
+                    FailedCount = failedCount
                 });
             }
             catch (Exception e)
@@ -464,16 +465,17 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public void RecordUploadObjectsMetric(long count, Result result)
+        public void RecordUploadObjectMetric(int successCount, int failedCount)
         {
             try
             {
-                this._toolkitContext.TelemetryLogger.RecordS3UploadObjects(new S3UploadObjects()
+                this._toolkitContext.TelemetryLogger.RecordS3UploadObject(new S3UploadObject()
                 {
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
-                    Result = result,
-                    Value = count,
+                    Result = failedCount > 0 ? Result.Failed : Result.Succeeded,
+                    SuccessCount = successCount,
+                    FailedCount = failedCount
                 });
             }
             catch (Exception e)
@@ -482,7 +484,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public void RecordDeleteObjectMetric(int successCount, int failedCount, Result result)
+        public void RecordDeleteObjectMetric(int successCount, int failedCount)
         {
             try
             {
@@ -490,7 +492,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                 {
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
-                    Result = result,
+                    Result = failedCount > 0 ? Result.Failed : Result.Succeeded,
                     SuccessCount = successCount,
                     FailedCount = failedCount
                 });
