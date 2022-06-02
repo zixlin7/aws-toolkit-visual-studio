@@ -65,9 +65,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(BuildRoot)\thirdparty\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
     </Reference>
@@ -356,8 +353,8 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\thirdparty\Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="$(OutputRoot)\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>Newtonsoft.Json.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
@@ -497,25 +494,23 @@
       <Version>9.0.21023</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>15.0.1</Version>
+      <Version>16.0.206</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>16.10.1055</Version>
+      <Version>16.11.63</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework">
-      <Version>15.0.26606</Version>
+      <Version>16.0.28729</Version>
     </PackageReference>
     <PackageReference Include="NuGet.VisualStudio">
       <Version>4.9.4</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Json">
       <Version>5.0.2</Version>
-    </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="..\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems" Label="Shared" />

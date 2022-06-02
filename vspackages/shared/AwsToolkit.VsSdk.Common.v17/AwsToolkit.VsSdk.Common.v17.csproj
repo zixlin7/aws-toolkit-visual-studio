@@ -80,8 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>17.0.31902.203</Version>
+      <Version>17.0.32112.339</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
   <Import Project="..\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems" Label="Shared" />
