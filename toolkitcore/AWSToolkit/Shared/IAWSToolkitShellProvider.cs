@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Solutions;
@@ -252,6 +253,12 @@ namespace Amazon.AWSToolkit.Shared
         /// Caller is responsible for disposing.
         /// </summary>
         Task<IProgressDialog> CreateProgressDialog();
+
+        /// <summary>
+        /// Create an object that abstracts the Visual Studio Task Status Center Service.
+        /// Used with long running tasks.
+        /// </summary>
+        Task<ITaskStatusNotifier> CreateTaskStatusNotifier();
 
         /// <summary>
         /// Get the factory responsible for creating Toolkit dialogs

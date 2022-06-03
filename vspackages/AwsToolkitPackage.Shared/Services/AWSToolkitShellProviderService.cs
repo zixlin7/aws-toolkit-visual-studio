@@ -9,6 +9,7 @@ using System.Windows.Interop;
 using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Shared;
@@ -26,6 +27,7 @@ using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TaskStatusCenter;
 
 using Task = System.Threading.Tasks.Task;
 
@@ -570,6 +572,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     typeof(SVsThreadedWaitDialogFactory)) as IVsThreadedWaitDialogFactory;
             var dialog = new ProgressDialog(dialogFactory);
             return dialog;
+        }
+
+        public async Task<ITaskStatusNotifier> CreateTaskStatusNotifier()
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var taskStatusCenter =
+                await _hostPackage.GetServiceAsync(typeof(SVsTaskStatusCenterService)) as IVsTaskStatusCenterService;
+            var notifier = new TaskStatusNotifier(taskStatusCenter);
+
+            return notifier;
         }
 
         public IDialogFactory GetDialogFactory()
