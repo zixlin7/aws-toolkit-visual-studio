@@ -112,6 +112,12 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Util
             return this;
         }
 
+        public OptionSettingItemSummaryBuilder WithValidation(OptionSettingValidation validation)
+        {
+            _itemSummary.Validation = validation;
+            return this;
+        }
+
         public OptionSettingItemSummaryBuilder WithSummaryDisplayable()
         {
             _itemSummary.SummaryDisplayable = true;

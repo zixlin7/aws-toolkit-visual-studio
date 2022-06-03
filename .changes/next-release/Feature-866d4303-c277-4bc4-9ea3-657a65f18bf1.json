@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Add Publish to AWS validations to check that references to existing IAM Roles are not left empty"
+}

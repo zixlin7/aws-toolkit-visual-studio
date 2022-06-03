@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix scenario in Publish to AWS where invalid setting values would revert to a previous valid value while the settings were still being edited."
+}
