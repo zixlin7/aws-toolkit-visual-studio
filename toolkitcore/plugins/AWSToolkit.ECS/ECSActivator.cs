@@ -76,11 +76,8 @@ namespace Amazon.AWSToolkit.ECS
 
         void setupECSContextMenuHooks(RootViewMetaNode rootNode)
         {
-            rootNode.OnLaunch = new CommandInstantiator<LaunchClusterController>().Execute;
-
             // cluster hierarchy
             var clustersRootNode = rootNode.FindChild<ClustersRootViewMetaNode>();
-            clustersRootNode.OnLaunchCluster = new CommandInstantiator<LaunchClusterController>().Execute;
             var clusterNode = clustersRootNode.FindChild<ClusterViewMetaNode>();
             clusterNode.OnView = new ContextCommandExecutor(() => new ViewClusterController(ToolkitContext)).Execute;
 
