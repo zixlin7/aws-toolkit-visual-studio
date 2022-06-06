@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.CloudWatch.Views;
@@ -7,7 +8,6 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
 
 using log4net;
 
@@ -16,33 +16,34 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
     /// <summary>
     /// Command that creates/displays a log groups explorer in a tool window
     /// </summary>
-    public class ViewLogGroupsCommand : BaseContextCommand
+    public class ViewLogGroupsCommand : BaseConnectionContextCommand
     {
-        static ILog Logger = LogManager.GetLogger(typeof(ViewLogGroupsCommand));
+        static readonly ILog Logger = LogManager.GetLogger(typeof(ViewLogGroupsCommand));
 
-        private readonly ToolkitContext _toolkitContext;
-        private LogGroupsRootViewModel _rootModel;
-
-        public ViewLogGroupsCommand(ToolkitContext context)
+        public ViewLogGroupsCommand(ToolkitContext context, AwsConnectionSettings connectionSettings)
+            : base(context, connectionSettings)
         {
-            _toolkitContext = context;
         }
 
-        public override ActionResults Execute(IViewModel model)
+        public override ActionResults Execute()
         {
-            _rootModel = model as LogGroupsRootViewModel;
-            if (_rootModel == null)
-            {
-                return new ActionResults().WithSuccess(false);
-            }
+            ActionResults result = ViewLogGroups();
 
+            EmitMetric(result);
+
+            return result;
+        }
+
+        private ActionResults ViewLogGroups()
+        {
             try
             {
                 CreateLogGroupsViewer();
             }
             catch (Exception ex)
             {
-                Logger.Error("Error viewing log groups", ex);
+                Logger.Error("Error viewing CloudWatch log groups", ex);
+                _toolkitContext.ToolkitHost.OutputToHostConsole($"Unable to view CloudWatch log groups: {ex.Message}", true);
                 return new ActionResults().WithSuccess(false);
             }
 
@@ -74,15 +75,21 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
                 throw new Exception("Unable to load CloudWatch log groups data source");
             }
 
-            var awsConnectionSetting = new AwsConnectionSettings(_rootModel.AccountViewModel?.Identifier, _rootModel.Region);
             var cwLogsRepository =
-                repositoryFactory.CreateCloudWatchLogsRepository(awsConnectionSetting);
+                repositoryFactory.CreateCloudWatchLogsRepository(ConnectionSettings);
 
             var viewModel = new LogGroupsViewModel(cwLogsRepository, _toolkitContext);
             viewModel.RefreshCommand = RefreshLogsCommand.Create(viewModel);
             viewModel.ViewCommand = ViewLogStreamsCommand.Create(_toolkitContext, cwLogsRepository.ConnectionSettings);
             viewModel.DeleteCommand = DeleteLogGroupCommand.Create(viewModel, _toolkitContext.ToolkitHost);
             return viewModel;
+        }
+
+        private void EmitMetric(ActionResults result)
+        {
+            Result metricsResult = result.Success ? Result.Succeeded : Result.Failed;
+
+            // todo : emit "Open Logs" metric, as a function of metricsResult and ConnectionSettings
         }
     }
 }

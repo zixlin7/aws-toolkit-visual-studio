@@ -4,7 +4,12 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudWatch.Commands;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Nodes;
+using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.CloudWatch
 {
@@ -13,6 +18,8 @@ namespace Amazon.AWSToolkit.CloudWatch
     /// </summary>
     public class CloudWatchActivator : AbstractPluginActivator
     {
+        static readonly ILog Logger = LogManager.GetLogger(typeof(CloudWatchActivator));
+
         public override string PluginName => "CloudWatch";
 
         public override void RegisterMetaNodes()
@@ -39,8 +46,28 @@ namespace Amazon.AWSToolkit.CloudWatch
 
         private void SetupContextHooks(CloudWatchRootViewMetaNode rootNode)
         {
-            rootNode.FindChild<LogGroupsRootViewMetaNode>().OnView =
-                new ContextCommandExecutor(() => new ViewLogGroupsCommand(ToolkitContext)).Execute;
+            rootNode.FindChild<LogGroupsRootViewMetaNode>().OnView = OnViewLogGroups;
+        }
+
+        private ActionResults OnViewLogGroups(IViewModel viewModel)
+        {
+            IConnectionContextCommand CreateCommand()
+            {
+                if (!(viewModel is LogGroupsRootViewModel logGroups))
+                {
+                    Logger.Error($"Did not receive {nameof(LogGroupsRootViewModel)} when trying to view CloudWatch Logs.");
+                    Logger.Error($"Received: {viewModel?.GetType().Name ?? "null"}");
+
+                    throw new InvalidOperationException("AWS Explorer command for viewing CloudWatch Logs was unable to get CloudWatch Logs node.");
+                }
+                
+                var awsConnectionSetting = new AwsConnectionSettings(logGroups.AccountViewModel?.Identifier, logGroups.Region);
+
+                return new ViewLogGroupsCommand(ToolkitContext, awsConnectionSetting);
+            }
+
+            return new ConnectionContextCommandExecutor(CreateCommand, ToolkitContext.ToolkitHost).Execute();
+
         }
     }
 }
