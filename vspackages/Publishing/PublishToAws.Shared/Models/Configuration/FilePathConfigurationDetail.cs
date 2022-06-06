@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Amazon.AWSToolkit.Publish.Models.Configuration
 {
-    public class FilePathConfigurationDetail : ConfigurationDetail, IDataErrorInfo
+    public class FilePathConfigurationDetail : ConfigurationDetail
     {
         public static class TypeHintDataKeys
         {
@@ -48,43 +43,6 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
         {
             get => _title;
             set => SetProperty(ref _title, value);
-        }
-
-        #region IDataErrorInfo
-
-        private readonly IDictionary<string, string> _errors = new Dictionary<string, string>();
-
-        string IDataErrorInfo.this[string columnName] => _errors.TryGetValue(columnName, out string value) ? value : string.Empty;
-
-        string IDataErrorInfo.Error => _errors.Values.FirstOrDefault() ?? string.Empty;
-
-        private static readonly StringConverter StringConverter = new StringConverter();
-
-        private void ValidateProperty(string propertyName)
-        {
-            string valueKey = nameof(Value);
-            string valueAsString = StringConverter.ConvertToString(Value);
-
-            if (propertyName == valueKey)
-            {
-                _errors.Remove(valueKey);
-                if (CheckFileExists && !String.IsNullOrWhiteSpace(valueAsString) && !File.Exists(valueAsString))
-                {
-                    _errors[valueKey] = "File must exist.";
-                }
-            }
-        }
-
-        #endregion
-
-        public FilePathConfigurationDetail()
-        {
-            PropertyChanged += FilePathConfigurationDetail_PropertyChanged;
-        }
-
-        private void FilePathConfigurationDetail_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            ValidateProperty(e.PropertyName);
         }
     }
 }

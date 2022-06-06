@@ -127,20 +127,18 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return detail;
             }
 
-            // TODO When https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and that version of the Deploy CLI is merged into the
-            // VSTK then uncomment this code to support FilePath TypeHints.
-            //if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.FilePath)
-            //{
-            //    var detail = new FilePathConfigurationDetail()
-            //    {
-            //        CheckFileExists = GetTypeHintData<bool>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.CheckFileExists),
-            //        Filter = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Filter),
-            //        Title = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Title)
-            //    };
-            //    detail.BrowseCommand = OpenFileSelectionCommandFactory.Create(detail, _dialogFactory);
-            //
-            //    return detail;
-            //}
+            if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.FilePath)
+            {
+                var detail = new FilePathConfigurationDetail()
+                {
+                    CheckFileExists = GetTypeHintData<bool>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.CheckFileExists),
+                    Filter = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Filter),
+                    Title = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Title)
+                };
+                detail.BrowseCommand = OpenFileSelectionCommandFactory.Create(detail, _dialogFactory);
+
+                return detail;
+            }
 
             if (itemSummary.Type == ItemSummaryTypes.KeyValue)
             {
