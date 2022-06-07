@@ -151,7 +151,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             AssertPropertiesMatch(configurationDetail, itemSummary);
         }
 
-        [Fact (Skip = "Until https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and available in VSTK.")]
+        [Fact]
         public void CreateFrom_WithFilePath()
         {
             var itemSummary = OptionSettingItemSummaryBuilder.Create()
