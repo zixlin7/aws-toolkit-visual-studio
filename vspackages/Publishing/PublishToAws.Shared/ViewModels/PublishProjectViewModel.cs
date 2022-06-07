@@ -191,8 +191,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             if (_currentMessageGroup == null)
             {
-                // If there was no group created before the first message arrived, make one
-                CreateMessageGroup("Publish to AWS", "");
+                throw new Exception("There is no message group to add a deployment message to");
             }
 
             _currentMessageGroup.AppendLine(text);
@@ -212,6 +211,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             };
 
             DeploymentMessages.Add(_currentMessageGroup);
+        }
+
+        /// <summary>
+        /// Have message groups notify if their messages have been changed
+        /// </summary>
+        public void RefreshMessages()
+        {
+            foreach (var messageGroup in DeploymentMessages)
+            {
+                messageGroup.RefreshMessage();
+            }
         }
 
         public void Clear()
