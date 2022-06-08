@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Adds a Browse button to the Publish to AWS targets that allow for Dockerfile paths. This opens a file dialog to allow the user to browse to and select the Dockerfile to be used in the deployment."
-}

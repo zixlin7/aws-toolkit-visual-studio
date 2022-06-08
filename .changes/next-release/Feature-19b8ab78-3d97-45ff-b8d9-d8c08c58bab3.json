@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Add Publish to AWS validation checks for scenarios where a deployment could conflict with existing account resources."
-}
