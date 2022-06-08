@@ -66,6 +66,42 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         }
 
         [Fact]
+        public void CreateFrom_WithInvalidStatus()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithType(ConfigurationDetailFactory.ItemSummaryTypes.Int)
+                .WithValue("80zzz")
+                .WithValidation(new OptionSettingValidation()
+                {
+                    ValidationStatus = ValidationStatus.Invalid,
+                    InvalidValue = "80zzz",
+                    ValidationMessage = "This is not a number",
+                })
+                .Build();
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+        }
+
+        [Fact]
+        public void CreateFrom_AppliesValueFromInvalidStatus()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithType(ConfigurationDetailFactory.ItemSummaryTypes.Int)
+                .WithValue("80") // simulates server retaining last valid value
+                .WithValidation(new OptionSettingValidation()
+                {
+                    ValidationStatus = ValidationStatus.Invalid,
+                    InvalidValue = "80zzz", // simulates what was set in the Toolkit
+                    ValidationMessage = "This is not a number",
+                })
+                .Build();
+            var configurationDetail = _sut.CreateFrom(itemSummary);
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+        }
+
+        [Fact]
         public void CreateFrom_WithList()
         {
             var itemSummary = OptionSettingItemSummaryBuilder.Create()
@@ -115,7 +151,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             AssertPropertiesMatch(configurationDetail, itemSummary);
         }
 
-        [Fact (Skip = "Until https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and available in VSTK.")]
+        [Fact]
         public void CreateFrom_WithFilePath()
         {
             var itemSummary = OptionSettingItemSummaryBuilder.Create()
@@ -226,6 +262,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.Equal(expectedProperties.Visible, configurationDetail.Visible);
             Assert.Equal(expectedProperties.SummaryDisplayable, configurationDetail.SummaryDisplayable);
 
+            AssertValidationMessage(expectedProperties, configurationDetail);
+
             AssertValueMappingProperties(expectedProperties, configurationDetail.ValueMappings);
 
             Assert.Equal(expectedProperties.ChildOptionSettings?.Count ?? 0, configurationDetail.Children.Count);
@@ -243,6 +281,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
 
         private object GetExpectedValue(OptionSettingItemSummary expectedProperties)
         {
+            if (expectedProperties.Validation?.ValidationStatus == ValidationStatus.Invalid)
+            {
+                return expectedProperties.Validation.InvalidValue;
+            }
+
             if (expectedProperties.HasValueMapping() || expectedProperties.HasAllowedValues())
             {
                 return Convert.ToString(expectedProperties.Value, CultureInfo.InvariantCulture);
@@ -258,6 +301,22 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             }
 
             return expectedProperties.Category;
+        }
+
+        private void AssertValidationMessage(OptionSettingItemSummary expectedProperties, ConfigurationDetail configurationDetail)
+        {
+            if (expectedProperties.Validation == null || expectedProperties.Validation.ValidationStatus == ValidationStatus.Valid)
+            {
+                Assert.True(string.IsNullOrEmpty(configurationDetail.ValidationMessage));
+            }
+            else if (expectedProperties.Validation.ValidationStatus == ValidationStatus.Invalid)
+            {
+                Assert.Equal(expectedProperties.Validation.ValidationMessage, configurationDetail.ValidationMessage);
+            }
+            else
+            {
+                Assert.True(false, "Unexpected state");
+            }
         }
 
         private void AssertValueMappingProperties(OptionSettingItemSummary expectedProperties, IDictionary<string, string> valueMappings)

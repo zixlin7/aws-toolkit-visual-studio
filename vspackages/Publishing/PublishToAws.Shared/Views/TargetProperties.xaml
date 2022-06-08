@@ -13,6 +13,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source=".\CommonStyles.xaml"></ResourceDictionary>
                 <ResourceDictionary Source=".\SystemCapabilityTemplate.xaml"></ResourceDictionary>
                 <ResourceDictionary Source=".\TargetsDictionary.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
@@ -146,14 +147,14 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel
-                    Margin="0 6 0 6"
+                    Margin="0 8 0 8"
                     Grid.Row="0"
                     Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button
+                        Style="{StaticResource PublishButtonStyle}"
                         Command="{Binding PublishToAwsCommand}"
                         IsDefault="True"
-                        Content="Publish"
-                        d:DesignHeight="23" MinWidth="75" />
+                        d:DesignHeight="23" />
                 </StackPanel>
             </Grid>
 

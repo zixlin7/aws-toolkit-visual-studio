@@ -115,7 +115,6 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
             public void Execute()
             {
-                Result result = Result.Failed;
                 int numberOfFailedKeys = 0;
                 try
                 {
@@ -142,7 +141,6 @@ namespace Amazon.AWSToolkit.S3.Jobs
                             this._job._keysToSelectedChildItems[deletedObjects.Key] = null;
                         }
                     }
-                    result = Result.Succeeded;
                 }
                 catch (Exception e)
                 {
@@ -150,7 +148,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
                 }
                 finally
                 {
-                    this._job._controller.RecordDeleteObjectMetric(this._job._numberOfDeletedKeys, numberOfFailedKeys, result);
+                    this._job._controller.RecordDeleteObjectMetric(this._job._numberOfDeletedKeys, numberOfFailedKeys);
                 }
             }
         }

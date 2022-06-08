@@ -46,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notifications\TaskStatusNotifier.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsHierarchyHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSLambdaUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSUtility.cs" />

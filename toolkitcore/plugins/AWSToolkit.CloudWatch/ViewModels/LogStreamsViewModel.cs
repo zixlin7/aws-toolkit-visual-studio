@@ -27,6 +27,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private ICollectionView _logStreamsView;
         private OrderBy _orderBy = OrderBy.LastEventTime;
         private ICommand _viewCommand;
+        private ICommand _exportCommand;
 
         private ObservableCollection<LogStream> _logStreams =
             new ObservableCollection<LogStream>();
@@ -84,6 +85,11 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _viewCommand, value);
         }
 
+        public ICommand ExportStreamCommand
+        {
+            get => _exportCommand;
+            set => SetProperty(ref _exportCommand, value);
+        }
         public override string GetLogTypeDisplayName() => "log streams";
 
         public override async Task RefreshAsync()

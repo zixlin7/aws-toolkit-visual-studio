@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.Publish.Models
             public const string VpcConnector = "VPCConnector";
         }
 
-        private static class ItemSummaryTypes
+        public static class ItemSummaryTypes
         {
             public const string String = "String";
             public const string Int = "Int";
@@ -65,6 +65,8 @@ namespace Amazon.AWSToolkit.Publish.Models
 
             configurationDetail.ValueMappings = GetValueMappings(itemSummary);
             configurationDetail.Value = GetValue(itemSummary, configurationDetail);
+
+            configurationDetail.ValidationMessage = GetValidationMessage(itemSummary, configurationDetail);
 
             // Recurse all child data
             if (itemSummary.Type.Equals("Object"))
@@ -125,20 +127,18 @@ namespace Amazon.AWSToolkit.Publish.Models
                 return detail;
             }
 
-            // TODO When https://github.com/aws/aws-dotnet-deploy/pull/509 is merged and that version of the Deploy CLI is merged into the
-            // VSTK then uncomment this code to support FilePath TypeHints.
-            //if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.FilePath)
-            //{
-            //    var detail = new FilePathConfigurationDetail()
-            //    {
-            //        CheckFileExists = GetTypeHintData<bool>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.CheckFileExists),
-            //        Filter = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Filter),
-            //        Title = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Title)
-            //    };
-            //    detail.BrowseCommand = OpenFileSelectionCommandFactory.Create(detail, _dialogFactory);
-            //
-            //    return detail;
-            //}
+            if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.FilePath)
+            {
+                var detail = new FilePathConfigurationDetail()
+                {
+                    CheckFileExists = GetTypeHintData<bool>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.CheckFileExists),
+                    Filter = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Filter),
+                    Title = GetTypeHintData<string>(itemSummary, FilePathConfigurationDetail.TypeHintDataKeys.Title)
+                };
+                detail.BrowseCommand = OpenFileSelectionCommandFactory.Create(detail, _dialogFactory);
+
+                return detail;
+            }
 
             if (itemSummary.Type == ItemSummaryTypes.KeyValue)
             {
@@ -203,11 +203,26 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         private static object GetValue(OptionSettingItemSummary optionSettingItem, ConfigurationDetail detail)
         {
+            object value = optionSettingItem.Validation?.ValidationStatus == ValidationStatus.Invalid ? 
+                optionSettingItem.Validation.InvalidValue : optionSettingItem.Value;
+
             if (detail.HasValueMappings())
             {
-                return Convert.ToString(optionSettingItem.Value, CultureInfo.InvariantCulture);
+                return Convert.ToString(value, CultureInfo.InvariantCulture);
             }
-            return optionSettingItem.Value;
+            return value;
+        }
+
+        private static string GetValidationMessage(OptionSettingItemSummary optionSettingItem,
+            ConfigurationDetail configurationDetail)
+        {
+            if (optionSettingItem.Validation?.ValidationStatus != ValidationStatus.Invalid)
+            {
+                // Fall back to any validation message that the Toolkit may have applied through derived ConfigurationDetail types.
+                return configurationDetail.ValidationMessage;
+            }
+
+            return optionSettingItem.Validation.ValidationMessage;
         }
 
         private static IDictionary<string, string> GetValueMappings(OptionSettingItemSummary optionSettingItem)

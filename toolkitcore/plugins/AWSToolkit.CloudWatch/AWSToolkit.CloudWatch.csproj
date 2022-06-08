@@ -49,6 +49,7 @@
     <Compile Include="CloudWatchActivator.cs" />
     <Compile Include="Commands\CopyArnCommand.cs" />
     <Compile Include="Commands\DeleteLogGroupCommand.cs" />
+    <Compile Include="Commands\ExportStreamCommand.cs" />
     <Compile Include="Commands\RefreshLogsCommand.cs" />
     <Compile Include="Commands\ViewLogEventsCommand.cs" />
     <Compile Include="Commands\ViewLogGroupsCommand.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Core\ICloudWatchLogsRepository.cs" />
     <Compile Include="Core\IRepositoryFactory.cs" />
     <Compile Include="Core\RepositoryFactory.cs" />
+    <Compile Include="Models\ExportResult.cs" />
     <Compile Include="Models\GetLogEventsRequest.cs" />
     <Compile Include="Models\GetLogGroupsRequest.cs" />
     <Compile Include="Models\GetLogStreamsRequest.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="Nodes\CloudWatchRootViewMetaNode.cs" />
     <Compile Include="Nodes\LogGroupsRootViewMetaNode.cs" />
     <Compile Include="Util\CloudWatchLogsExtensionMethods.cs" />
+    <Compile Include="Util\ExportStreamHandler.cs" />
     <Compile Include="ViewModels\BaseLogsViewModel.cs" />
     <Compile Include="ViewModels\CloudWatchRootViewModel.cs" />
     <Compile Include="ViewModels\LogEventsViewModel.cs" />

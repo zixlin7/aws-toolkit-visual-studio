@@ -14,6 +14,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source=".\CommonStyles.xaml"></ResourceDictionary>
                 <ResourceDictionary Source=".\Properties\PropertyEditors.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <commonUi:InverseBooleanConverter x:Key="InverseBooleanConverter" />
@@ -67,101 +68,97 @@
             Text="There are no editable settings." />
 
         <!-- Main display: Categories as a sidebar, settings in a list -->
-        <DockPanel
+        <Grid
             Margin="0 12 0 0"
-            Grid.Row="2"
-            LastChildFill="True">
+            Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="175" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" MaxWidth="600" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-            <!-- Sidebar: Publish button -->
+            <!-- Category navigation bar -->
+            <Border
+                Grid.Row="0" Grid.Column="0"
+                Margin="0 0 0 0"
+                BorderThickness="0">
+                <ScrollViewer
+                    VerticalScrollBarVisibility="Auto">
+                    <ListView
+                        x:Name="CategoryNavigator" x:FieldModifier="private"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        BorderThickness="0"
+                        ItemsSource="{Binding ConfigurationViewModel.GroupedSettings}"
+                        SelectedItem="{Binding ConfigurationViewModel.CurrentCategory}">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="Category_OnMouseDown" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <!-- Render the Category and properties associated with it -->
+                            <DataTemplate DataType="{x:Type viewModels:ConfigurationDetailGrouping}">
+                                <TextBlock
+                                    Margin="0 3 0 3"
+                                    VerticalAlignment="Center"
+                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                                    FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}"
+                                    TextWrapping="Wrap"
+                                    Text="{Binding Category.DisplayName}">
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Vertical bar separator -->
             <StackPanel
-                Margin="12 0 0 0"
-                DockPanel.Dock="Right"
+                Grid.Row="0" Grid.Column="1"
                 Orientation="Horizontal"
-                VerticalAlignment="Bottom"
-                HorizontalAlignment="Right">
-                <Button
-                    Content="Publish"
-                    d:DesignHeight="23" MinWidth="75"
-                    Margin="6,0,0,0"
-                    Command="{Binding PublishToAwsCommand}" />
+                Margin="24 0 24 0">
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
             </StackPanel>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition MaxWidth="175" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <!-- List of ConfigurationDetail objects -->
+            <Border
+                Grid.Row="0" Grid.Column="2"
+                MaxWidth="600"
+                BorderThickness="0"
+                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+                HorizontalAlignment="Left">
+                <ScrollViewer
+                    x:Name="SettingsListScrollViewer" x:FieldModifier="private"
+                    ScrollChanged="SettingsListScrollViewer_OnScrollChanged"
+                    VerticalScrollBarVisibility="Auto">
+                    <ItemsControl
+                        x:Name="SettingsList" x:FieldModifier="private"
+                        Grid.IsSharedSizeScope="True"
+                        Margin="0 0 12 50"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"
+                        ItemsSource="{Binding ConfigurationViewModel.GroupedSettings}"
+                        ItemTemplate="{DynamicResource CategoryTemplate}"
+                        ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}" />
+                </ScrollViewer>
+            </Border>
 
-                <!-- Category navigation bar -->
-                <Border
-                    Grid.Row="0" Grid.Column="0"
-                    Margin="0 0 0 0"
-                    BorderThickness="0">
-                    <ScrollViewer
-                        VerticalScrollBarVisibility="Auto">
-                        <ListView
-                            x:Name="CategoryNavigator" x:FieldModifier="private"
-                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                            BorderThickness="0"
-                            ItemsSource="{Binding ConfigurationViewModel.GroupedSettings}"
-                            SelectedItem="{Binding ConfigurationViewModel.CurrentCategory}">
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="Category_OnMouseDown" />
-                                </Style>
-                            </ListView.ItemContainerStyle>
-                            <ListView.ItemTemplate>
-                                <!-- Render the Category and properties associated with it -->
-                                <DataTemplate DataType="{x:Type viewModels:ConfigurationDetailGrouping}">
-                                    <TextBlock
-                                        Margin="0 3 0 3"
-                                        VerticalAlignment="Center"
-                                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
-                                        FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}"
-                                        TextWrapping="Wrap"
-                                        Text="{Binding Category.DisplayName}">
-                                    </TextBlock>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </ScrollViewer>
-                </Border>
-
-                <!-- Vertical bar separator -->
-                <StackPanel
-                    Grid.Row="0" Grid.Column="1"
-                    Orientation="Horizontal"
-                    Margin="24 0 24 0">
-                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
-                </StackPanel>
-
-                <!-- List of ConfigurationDetail objects -->
-                <Border
-                    Grid.Row="0" Grid.Column="2"
-                    MaxWidth="600"
-                    BorderThickness="0"
-                    BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
-                    HorizontalAlignment="Left">
-                    <ScrollViewer
-                        x:Name="SettingsListScrollViewer" x:FieldModifier="private"
-                        ScrollChanged="SettingsListScrollViewer_OnScrollChanged"
-                        VerticalScrollBarVisibility="Auto">
-                        <ItemsControl
-                            x:Name="SettingsList" x:FieldModifier="private"
-                            Grid.IsSharedSizeScope="True"
-                            Margin="0 0 12 50"
-                            IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"
-                            ItemsSource="{Binding ConfigurationViewModel.GroupedSettings}"
-                            ItemTemplate="{DynamicResource CategoryTemplate}"
-                            ItemContainerStyle="{DynamicResource ConfigDetailItemStyle}" />
-                    </ScrollViewer>
-                </Border>
-            </Grid>
-        </DockPanel>
+            <!-- Publish button -->
+            <StackPanel
+                Grid.Row="0" Grid.Column="3"
+                Margin="24 0 0 0"
+                Orientation="Horizontal"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Left">
+                <Button
+                    Style="{StaticResource PublishButtonStyle}"
+                    d:DesignHeight="23"
+                    Command="{Binding PublishToAwsCommand}" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

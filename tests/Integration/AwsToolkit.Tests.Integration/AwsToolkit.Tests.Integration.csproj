@@ -72,9 +72,6 @@
     <PackageReference Include="AWSSDK.ECR">
       <Version>3.7.4.16</Version>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.1</Version>
-    </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.17.2</Version>
     </PackageReference>

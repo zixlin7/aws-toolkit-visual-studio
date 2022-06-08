@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Shared;
@@ -180,6 +181,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         }
 
         public Task<IProgressDialog> CreateProgressDialog()
+        {
+            return null;
+        }
+
+        public Task<ITaskStatusNotifier> CreateTaskStatusNotifier()
         {
             return null;
         }
