@@ -67,6 +67,7 @@
                             </StackPanel>
                         </Expander.Header>
                         <Expander.Content>
+                            <!-- This output message is updated once per frame in the code-behind file -->
                             <TextBox
                                 BorderThickness="0"
                                 HorizontalScrollBarVisibility="Auto"

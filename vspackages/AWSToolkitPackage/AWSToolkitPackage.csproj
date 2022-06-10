@@ -474,10 +474,10 @@
       <Version>3.7.2.51</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.45</Version>
+      <Version>1.0.50</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.45</Version>
+      <Version>1.0.50</Version>
     </PackageReference>
     <!-- Community.VisualStudio.Toolkit - This package is versioned based on the major version of 
       Visual Studio that it supports.

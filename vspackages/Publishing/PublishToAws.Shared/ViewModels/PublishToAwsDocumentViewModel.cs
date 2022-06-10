@@ -804,11 +804,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// </summary>
         private void OnDeploymentClientReceiveLog(string text)
         {
-            JoinableTaskFactory.Run(async () =>
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync();
-                await UpdateDeploymentProgressAsync(text);
-            });
+            UpdateDeploymentProgress(text);
         }
 
         /// <summary>
@@ -1142,9 +1138,18 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// <summary>
         /// Updates deployment progress status in the Publish in Progress View
         /// </summary>
-        private async Task UpdateDeploymentProgressAsync(string text)
+        private void UpdateDeploymentProgress(string text)
         {
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            // If there was no group created before the first message arrived, make one
+            if (!_publishProjectViewModel.DeploymentMessages.Any())
+            {
+                JoinableTaskFactory.Run(async () =>
+                {
+                    await JoinableTaskFactory.SwitchToMainThreadAsync();
+                    _publishProjectViewModel.CreateMessageGroup("Publish to AWS", "");
+                });
+            }
+
             _publishProjectViewModel.AppendLineDeploymentMessage(text);
         }
 
@@ -1261,7 +1266,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 ProgressStatus status = publishResult.IsSuccess ? ProgressStatus.Success : ProgressStatus.Fail;
 
                 await SetProgressStatusAsync(status);
-                await UpdateDeploymentProgressAsync(statusMessage);
+                UpdateDeploymentProgress(statusMessage);
                 _publishContext.ToolkitShellProvider.OutputToHostConsole(statusMessage,
                     true);
 

@@ -58,6 +58,7 @@
     <Compile Include="Core\ICloudWatchLogsRepository.cs" />
     <Compile Include="Core\IRepositoryFactory.cs" />
     <Compile Include="Core\RepositoryFactory.cs" />
+    <Compile Include="Models\MetricSources.cs" />
     <Compile Include="Models\ExportResult.cs" />
     <Compile Include="Models\GetLogEventsRequest.cs" />
     <Compile Include="Models\GetLogGroupsRequest.cs" />

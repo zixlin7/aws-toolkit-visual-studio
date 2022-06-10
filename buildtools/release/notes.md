@@ -1,8 +1,7 @@
-## 1.30.0.0 (2022-06-01)
+## 1.31.0.0 (2022-06-07)
 
 ### Changelog
-- **Bug Fix** - Fix issue where clicking different targets in the Publish to AWS experience could show the configuration for an older selection
-- **Bug Fix** - Fix issue in Publish to AWS where Docker and Build settings were not used during the publish.
-- **Feature** - Add Publish to AWS validation check for scenario where a new deployment would re-use the name of an existing deployment.
-- **Feature** - Updated the Publish to AWS view where deployment targets are listed, so that more of the list can be displayed on the screen.
-- **Feature** - Updated the Publish to AWS view where deployment settings can be edited. Settings are grouped by category, and a side-bar allows for quick navigation to a category. The width of this view has also been constrained, so that it is easier to work with on systems with a wider display.
+- **Bug Fix** - Fix scenario in Publish to AWS where invalid setting values would revert to a previous valid value while the settings were still being edited.
+- **Feature** - Adds a Browse button to the Publish to AWS targets that allow for Dockerfile paths. This opens a file dialog to allow the user to browse to and select the Dockerfile to be used in the deployment.
+- **Feature** - Add Publish to AWS validation checks for scenarios where a deployment could conflict with existing account resources.
+- **Feature** - Add Publish to AWS validations to check that references to existing IAM Roles are not left empty

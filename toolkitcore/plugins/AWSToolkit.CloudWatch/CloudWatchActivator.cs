@@ -3,6 +3,7 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudWatch.Commands;
 using Amazon.AWSToolkit.CloudWatch.Core;
+using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.Nodes;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.Credentials.Core;
@@ -63,7 +64,7 @@ namespace Amazon.AWSToolkit.CloudWatch
                 
                 var awsConnectionSetting = new AwsConnectionSettings(logGroups.AccountViewModel?.Identifier, logGroups.Region);
 
-                return new ViewLogGroupsCommand(ToolkitContext, awsConnectionSetting);
+                return new ViewLogGroupsCommand(AwsExplorerMetricSource.CloudWatchLogsNode, ToolkitContext, awsConnectionSetting);
             }
 
             return new ConnectionContextCommandExecutor(CreateCommand, ToolkitContext.ToolkitHost).Execute();

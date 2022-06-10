@@ -58,11 +58,18 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         [Fact]
         public void AppendLineDeploymentMessage()
         {
+            _sut.CreateMessageGroup("hello", "world");
             _sut.AppendLineDeploymentMessage("hello");
             _sut.AppendLineDeploymentMessage("world");
 
             var deploymentMessage = Assert.Single(_sut.DeploymentMessages);
             Assert.Equal(string.Format("hello{0}world{0}", Environment.NewLine), deploymentMessage.Message);
+        }
+
+        [Fact]
+        public void AppendLineDeploymentMessage_WithoutMessageGroup()
+        {
+            Assert.Throws<Exception>(() => _sut.AppendLineDeploymentMessage("hello"));
         }
 
         [Fact]
