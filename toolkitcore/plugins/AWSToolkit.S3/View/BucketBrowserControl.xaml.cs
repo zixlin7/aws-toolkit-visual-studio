@@ -186,19 +186,7 @@ namespace Amazon.AWSToolkit.S3.View
 
         private void UpdateBreadCrumb(string breadCrumbPath)
         {
-            breadCrumbPath = breadCrumbPath.Substring(breadCrumbPath.IndexOf('-') + 1);
-
-            if (breadCrumbPath.EndsWith("/"))
-            {
-                breadCrumbPath = breadCrumbPath.Substring(0, breadCrumbPath.Length - 1);
-            }
-
-            if (breadCrumbPath.StartsWith("/"))
-            {
-                breadCrumbPath = breadCrumbPath.Substring(1);
-            }
-
-            _model.Path = breadCrumbPath;
+            _model.Path = breadCrumbPath.Substring(breadCrumbPath.IndexOf('-') + 1).Trim('/');
         }
 
         private TextBlock CreateBreadCrumbTextBlock(string breadCrumbPath, string title)
@@ -337,17 +325,9 @@ namespace Amazon.AWSToolkit.S3.View
 
                 Metadata.GetMetadataAndHeaders(settingsController.Model.MetadataEntries, out var nvcMetadata, out var nvcHeader);
 
-                var tags = new List<Tag>();
-                if (settingsController.Model.Tags != null)
-                {
-                    foreach (var tag in settingsController.Model.Tags)
-                    {
-                        tags.Add(tag);
-                    }
-                }
-
                 if (filenames.Length > 0)
                 {
+                    var tags = settingsController.Model.Tags?.ToList() ?? new List<Tag>();
                     _ctlJobTracker.AddJob(new UploadMultipleFilesJob(_controller, settingsController.Model, filenames, localRoot, s3RootFolder,
                             accessList, nvcMetadata, nvcHeader, tags));
                 }
@@ -851,7 +831,7 @@ namespace Amazon.AWSToolkit.S3.View
                     childItems.Add(childItem);
                 }
 
-                var confirmMsg = $"Are you sure you want to permanently delete \"{(childItems.Count == 1 ? childItems[0].Title : childItems.Count + " items")}\"?";
+                var confirmMsg = $"Are you sure you want to permanently delete \"{(childItems.Count == 1 ? childItems[0].Title : $"{childItems.Count} items")}\"?";
                 if (ToolkitFactory.Instance.ShellProvider.Confirm("Delete Items?", confirmMsg))
                 {
                     _ctlJobTracker.AddJob(new DeleteFilesJob(_controller, childItems));
@@ -919,27 +899,25 @@ namespace Amazon.AWSToolkit.S3.View
                 return;
             }
 
-            if (_controller.ClipboardContainer.Clipboard == null)
+            if (_controller.ClipboardContainer.Clipboard != null)
             {
-                return;
-            }
-
-            try
-            {
-                var job = new PasteFilesJob(_controller, _controller.ClipboardContainer.Clipboard,
-                    sender is MenuItem item ? item.Uid : _controller.Model.Path);
-
-                if (_controller.ClipboardContainer.Clipboard.Mode == S3Clipboard.ClipboardMode.Cut)
+                try
                 {
-                    _controller.ClipboardContainer.Clipboard = null;
-                }
+                    var job = new PasteFilesJob(_controller, _controller.ClipboardContainer.Clipboard,
+                        sender is MenuItem item ? item.Uid : _controller.Model.Path);
 
-                _ctlJobTracker.AddJob(job);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Error pasting", ex);
-                ToolkitFactory.Instance.ShellProvider.ShowError($"Error pasting: {ex.Message}");
+                    if (_controller.ClipboardContainer.Clipboard.Mode == S3Clipboard.ClipboardMode.Cut)
+                    {
+                        _controller.ClipboardContainer.Clipboard = null;
+                    }
+
+                    _ctlJobTracker.AddJob(job);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error pasting", ex);
+                    ToolkitFactory.Instance.ShellProvider.ShowError($"Error pasting: {ex.Message}");
+                }
             }
         }
 
@@ -991,10 +969,7 @@ namespace Amazon.AWSToolkit.S3.View
                     }
                     else if (Directory.Exists(dataItem))
                     {
-                        foreach (var filename in Directory.GetFiles(dataItem, "*", SearchOption.AllDirectories))
-                        {
-                            files.Add(filename);
-                        }
+                        files.AddRange(Directory.GetFiles(dataItem, "*", SearchOption.AllDirectories));
                     }
                 }
 
@@ -1129,7 +1104,7 @@ namespace Amazon.AWSToolkit.S3.View
                 return;
             }
 
-            // Subtract 3 from the end for the current label, angle bracket and image.
+            // Besides 1 for parent, subtract an additional 3 from the end for the current label, angle bracket, and image.
             var previous = _ctlBreadCrumbPanel.Children[_ctlBreadCrumbPanel.Children.Count - 4];
             UpdateBreadCrumb(previous.Uid);
         }
