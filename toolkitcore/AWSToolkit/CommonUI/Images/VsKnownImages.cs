@@ -17,6 +17,7 @@
         Add,
         AddLink,
         AddUser,
+        Calendar,
         Cancel,
         Cloud,
         Copy,

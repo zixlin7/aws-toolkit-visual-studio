@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.CommonUI.DateTimeRangePicker.DateTimeRangePicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.DateTimeRangePicker"
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+             themes:ToolkitThemes.UseToolkitTheme="True"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border Padding="5"
+            BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+            BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="From:"
+                       FontWeight="SemiBold" />
+                <DatePicker Grid.Column="1"
+                            Name="StartPicker"
+                            Height="33"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            SelectedDate="{Binding StartDate, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedDateFormat="Short" />
+                <local:TimeInputControl Grid.Column="2"
+                                        Height="33"
+                                        MinWidth="100"
+                                        DataContext="{Binding StartTimeModel}" />
+            </Grid>
+            <Grid Grid.Column="1" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="To:"
+                       FontWeight="SemiBold" />
+                <DatePicker Grid.Column="1"
+                            Height="33"
+                            VerticalContentAlignment="Center"
+                            Name="EndPicker"
+                            SelectedDate="{Binding EndDate, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedDateFormat="Short" />
+                <local:TimeInputControl Grid.Column="2" 
+                                        Height="33"
+                                        MinWidth="100" 
+                                        DataContext="{Binding EndTimeModel}" />
+            </Grid>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="0 0 3 0"
+                TextWrapping="Wrap"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right">
+                <Hyperlink Command="{Binding RemoveCommand}">
+                    Remove filter
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Margin="6 3 3 3"
+                       Visibility="{Binding HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Text="Start time must be earlier than end time."
+                       Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}" />
+        </Grid>
+    </Border>
+</UserControl>

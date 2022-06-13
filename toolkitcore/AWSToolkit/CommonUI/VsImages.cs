@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource Add => _imageProvider?.GetImage(VsKnownImages.Add, 16);
         public BitmapSource AddLink => _imageProvider?.GetImage(VsKnownImages.AddLink, 16);
         public BitmapSource AddUser => _imageProvider?.GetImage(VsKnownImages.AddUser, 16);
+        public BitmapSource Calendar => _imageProvider?.GetImage(VsKnownImages.Calendar, 16);
         public BitmapSource Cancel => _imageProvider?.GetImage(VsKnownImages.Cancel, 16);
         public BitmapSource Cloud => _imageProvider?.GetImage(VsKnownImages.Cloud, 16);
         public BitmapSource Cloud32 => _imageProvider?.GetImage(VsKnownImages.Cloud, 32);

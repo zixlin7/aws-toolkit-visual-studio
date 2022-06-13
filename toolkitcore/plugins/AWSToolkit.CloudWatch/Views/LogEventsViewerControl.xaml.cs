@@ -44,6 +44,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             if (_viewModel != null)
             {
                 _viewModel.PropertyChanged -= ViewModel_OnPropertyChanged;
+                _viewModel.DateTimeRange.RangeChanged -= DateTimeRange_RangeChanged;
             }
 
             _viewModel = viewModel;
@@ -52,8 +53,14 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             if (_viewModel != null)
             {
                 _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
+                _viewModel.DateTimeRange.RangeChanged += DateTimeRange_RangeChanged;
                 LoadData();
             }
+        }
+
+        private void DateTimeRange_RangeChanged(object sender, EventArgs e)
+        {
+           Refresh();
         }
 
         public override string Title => $"Stream: {_viewModel?.LogStream}";
@@ -156,6 +163,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             if (_viewModel != null)
             {
                 _viewModel.PropertyChanged -= ViewModel_OnPropertyChanged;
+                _viewModel.DateTimeRange.RangeChanged -= DateTimeRange_RangeChanged;
                 _viewModel.Dispose();
             }
         }

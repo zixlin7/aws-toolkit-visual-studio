@@ -8,6 +8,7 @@
                          xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
                          xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+                         xmlns:dateRangePicker="clr-namespace:Amazon.AWSToolkit.CommonUI.DateTimeRangePicker;assembly=AWSToolkit"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -58,6 +59,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -131,6 +133,15 @@
                         Height="16"
                         Source="{Binding Source={StaticResource VsImages}, Path=WordWrap}" />
                 </ToggleButton>
+                <ToggleButton Margin="3"
+                              x:Name="FilterByTimeButton"
+                              x:FieldModifier="private"
+                              ToolTip="Filter events by time">
+                    <images:VsImage
+                        Width="16"
+                        Height="16"
+                        Source="{Binding Source={StaticResource VsImages}, Path=Calendar}" />
+                </ToggleButton>
             </ToolBar>
             <local:SearchBar DockPanel.Dock="Left" 
                              FilterText="{Binding FilterText}"
@@ -138,15 +149,19 @@
             
         </DockPanel>
 
+        <dateRangePicker:DateTimeRangePicker Grid.Row="2"
+                                         DataContext="{Binding DateTimeRange}"
+                                         Visibility="{Binding ElementName=FilterByTimeButton, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
         <!-- Indicates status of results eg. no results found, error message -->
-        <local:ResultsStatus Grid.Row="2"
+        <local:ResultsStatus Grid.Row="3"
                              Margin="11"
                              ErrorMessage="{Binding ErrorMessage}"
                              LoadingLogs="{Binding LoadingLogs}"
                              Visibility="{Binding Visibility, ElementName=LogEventsList, Converter={StaticResource InverseVisibilityConverter}}" />
 
 
-        <commonUi:ToolkitDataGridWrapper Grid.Row="3"
+        <commonUi:ToolkitDataGridWrapper Grid.Row="4"
                                          x:Name="LogEventsList"
                                          x:FieldModifier="private"
                                          AutoGenerateColumns="False"
@@ -194,6 +209,6 @@
             </commonUi:ToolkitDataGridWrapper.Style>
         </commonUi:ToolkitDataGridWrapper>
 
-        <local:ConnectionStatus Grid.Row="4" ConnectionSettings="{Binding ConnectionSettings}" />
+        <local:ConnectionStatus Grid.Row="5" ConnectionSettings="{Binding ConnectionSettings}" />
     </Grid>
 </commonUi:BaseAWSControl>

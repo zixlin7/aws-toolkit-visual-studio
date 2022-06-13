@@ -15,8 +15,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Models
 
         public string FilterText { get; set; } = string.Empty;
 
-        public DateTime StartTime { get; set; }
+        public DateTime? StartTime { get; set; }
 
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
     }
 }

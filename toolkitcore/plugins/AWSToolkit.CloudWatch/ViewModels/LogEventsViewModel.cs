@@ -8,6 +8,7 @@ using System.Windows.Data;
 
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.CommonUI.DateTimeRangePicker;
 using Amazon.AWSToolkit.Context;
 
 using log4net;
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private LogEvent _logEvent;
         private ICollectionView _logEventsView;
         private bool _isWrapped = false;
-
+        private readonly DateTimeRangePickerViewModel _dateTimeRange = new DateTimeRangePickerViewModel(null , null);
         private ObservableCollection<LogEvent> _logEvents =
             new ObservableCollection<LogEvent>();
 
@@ -33,6 +34,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             repository, toolkitContext)
         {
         }
+
+        public DateTimeRangePickerViewModel DateTimeRange => _dateTimeRange;
 
         public ObservableCollection<LogEvent> LogEvents
         {
@@ -72,6 +75,10 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             get => _isWrapped;
             set => SetProperty(ref _isWrapped, value);
         }
+
+        public DateTime? StartTime => _dateTimeRange.GetFullStartTime();
+
+        public DateTime? EndTime => _dateTimeRange.GetFullEndTime();
 
         public override string GetLogTypeDisplayName() => "log events";
 
@@ -144,7 +151,10 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private GetLogEventsRequest CreateGetRequest()
         {
-            var request = new GetLogEventsRequest { LogGroup = LogGroup, LogStream = LogStream };
+            var request = new GetLogEventsRequest
+            {
+                LogGroup = LogGroup, LogStream = LogStream, StartTime = StartTime, EndTime = EndTime
+            };
             if (_isInitialized)
             {
                 request.NextToken = NextToken;
