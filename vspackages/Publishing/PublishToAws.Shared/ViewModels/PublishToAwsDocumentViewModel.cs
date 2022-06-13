@@ -837,7 +837,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             catch (ApiException e)
             {
                 await ClearConfigurationDetailsAsync();
-                throw new PublishException($"Unable to retrieve configuration details: {e.GetExceptionInnerMessage()}", e);
+
+                var innerMessage = e.GetExceptionInnerMessage();
+                _publishContext.ToolkitShellProvider.OutputToHostConsole(
+                    $"Publish to AWS error: {innerMessage}",
+                    true);
+                throw new PublishException($"Unable to retrieve configuration details: {innerMessage}", e);
             }
         }
 
@@ -851,6 +856,10 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         public async Task ClearConfigurationDetailsAsync()
         {
             await SetConfigurationDetailsAsync(Enumerable.Empty<ConfigurationDetail>());
+            if (ViewStage == PublishViewStage.Configure)
+            {
+                await UpdateConfigurationViewModelAsync();
+            }
         }
 
         public async Task SetConfigurationDetailsAsync(IEnumerable<ConfigurationDetail> configurationDetails)
