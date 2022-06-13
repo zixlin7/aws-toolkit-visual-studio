@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,6 +39,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         {
             InitializeComponent();
             DataContextChanged += OnDataContextChanged;
+            Loaded += OnLoaded;
         }
 
         /// <summary>
@@ -62,6 +64,15 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             if (_viewModel != null)
             {
                 _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
+                LoadData();
+            }
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            // Switching tabs fires Loaded. Only load if we haven't previously loaded something
+            if (_viewModel?.LogStreams?.Any() == false)
+            {
                 LoadData();
             }
         }
@@ -159,6 +170,12 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
 
         private void LoadData()
         {
+            // Defer loading until the control is loaded
+            if (!IsLoaded || _viewModel == null)
+            {
+                return;
+            }
+
             Task.Run(async () =>
             {
                 await LoadAsync().ConfigureAwait(false);
