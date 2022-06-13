@@ -15,7 +15,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Models
 
     public class CloudWatchLogsMetricSource : BaseMetricSource
     {
-        // todo : define entries for opening stream, group
+        public static readonly BaseMetricSource LogGroupsView = new CloudWatchLogsMetricSource("groupsView");
+        public static readonly BaseMetricSource LogGroupView = new CloudWatchLogsMetricSource("groupView");
 
         private CloudWatchLogsMetricSource(string location) : base(ServiceNames.CloudWatchLogs, location)
         {
