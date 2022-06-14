@@ -139,7 +139,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = null;
-                LogStreams.Clear();
+                LogStreams = new ObservableCollection<LogStream>();
                 LogStream = null;
                 _isInitialized = false;
                 ErrorMessage = string.Empty;

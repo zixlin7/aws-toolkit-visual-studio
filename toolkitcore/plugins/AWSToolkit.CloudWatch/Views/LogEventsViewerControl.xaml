@@ -131,7 +131,7 @@
                     <images:VsImage
                         Width="16"
                         Height="16"
-                        Source="{Binding Source={StaticResource VsImages}, Path=WordWrap}" />
+                        Source="{Binding Source={StaticResource VsImages}, Path=WordWrap32}" />
                 </ToggleButton>
                 <ToggleButton Margin="3"
                               x:Name="FilterByTimeButton"
@@ -171,15 +171,16 @@
                                          SelectedItem="{Binding LogEvent}"
                                          ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
                                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                         EnableRowVirtualization="True"
+                                         VirtualizingStackPanel.VirtualizationMode="Standard"
                                          themes:ToolkitThemes.UseToolkitTheme="True"
                                          GridLinesVisibility="None"
-                                         SelectionMode="Single"
+                                         SelectionMode="Extended"
                                          IsReadOnly="True"
                                          HeadersVisibility="Column">
             <commonUi:ToolkitDataGridWrapper.Columns>
                 <DataGridTextColumn Header="Timestamp"
                                     Binding="{Binding Path=Timestamp}"
-                                    Width="Auto"
                                     FontFamily="Consolas"
                                     HeaderTemplate="{StaticResource EventTimeHeaderTemplate}"
                                     ElementStyle="{StaticResource TimeColumnStyle}">

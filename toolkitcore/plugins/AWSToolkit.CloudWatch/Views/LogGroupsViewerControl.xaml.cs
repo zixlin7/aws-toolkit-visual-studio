@@ -101,11 +101,25 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             ScrollViewer scrollViewer = border.Child as ScrollViewer;
             if (scrollViewer == null) return;
 
-            //load more entries if close to bottom
-            if (IsCloseToBottom(scrollViewer))
+            // if scrollbar is not visible due to less entries in first page and there are more pages left, load more data
+            if (scrollViewer.ComputedVerticalScrollBarVisibility != Visibility.Visible && HasMorePages())
             {
                 LoadData();
             }
+            // load more entries if close to bottom
+            else if (IsCloseToBottom(scrollViewer))
+            {
+                LoadData();
+            }
+        }
+
+        /// <summary>
+        /// Checks if there is no error and there are more entries/pages(next token is present) to be loaded
+        /// </summary>
+        private bool HasMorePages()
+        {
+            return !string.IsNullOrWhiteSpace(_viewModel.NextToken) &&
+                   string.IsNullOrWhiteSpace(_viewModel.ErrorMessage);
         }
 
         private bool IsCloseToBottom(ScrollViewer scrollViewer)

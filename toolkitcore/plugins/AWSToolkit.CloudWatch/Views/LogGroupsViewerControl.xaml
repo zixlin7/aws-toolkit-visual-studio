@@ -37,7 +37,8 @@
                 themes:ToolkitThemes.UseToolkitTheme="True"
                 Background="{StaticResource {x:Static themes:ToolkitThemes.ToolBarBackgroundBrushKey}}">
                 <Button ToolTip="Refresh"
-                        Command="{Binding RefreshCommand}">
+                        Command="{Binding RefreshCommand}"
+                        Focusable="False">
                     <images:VsImage
                         Width="16"
                         Height="16"
@@ -59,8 +60,9 @@
                  x:FieldModifier="private"
                  ItemsSource="{Binding LogGroups}"
                  SelectedItem="{Binding LogGroup}"
+                 VirtualizingStackPanel.VirtualizationMode="Standard"
                  ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
-                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                  themes:ToolkitThemes.UseToolkitTheme="True">
             <ListBox.ItemTemplate>
                 <DataTemplate>

@@ -87,7 +87,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = null;
-                LogGroups.Clear();
+                LogGroups = new ObservableCollection<LogGroup>();
                 LogGroup = null;
                 _isInitialized = false;
                 ErrorMessage = string.Empty;
