@@ -20,6 +20,7 @@
         Calendar,
         Cancel,
         Cloud,
+        CloudRun,
         Copy,
         DeleteListItem,
         DownloadLog,
@@ -30,12 +31,14 @@
         Refresh,
         Remove,
         RemoveLink,
+        Save,
         Search,
         StatusError,
         StatusInformation,
         StatusInformationOutline,
         StatusOK,
         StatusWarning,
+        Upload,
         WordWrap
     }
 }
