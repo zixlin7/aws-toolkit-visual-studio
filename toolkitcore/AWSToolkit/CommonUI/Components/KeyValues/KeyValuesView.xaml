@@ -73,7 +73,9 @@
             HorizontalScrollBarVisibility="Disabled"
             HorizontalContentAlignment="Stretch"
             >
-            <ItemsControl ItemsSource="{Binding Collection}" />
+            <ItemsControl 
+                IsTabStop="False"
+                ItemsSource="{Binding Collection}" />
         </ScrollViewer>
     </Grid>
 </UserControl>

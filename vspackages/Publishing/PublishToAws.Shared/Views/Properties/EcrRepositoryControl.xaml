@@ -24,6 +24,7 @@
             Command="{Binding SelectRepo}"
             />
         <ContentControl 
+            IsTabStop="False"
             Content="{Binding .}"
             ContentTemplate="{StaticResource TextEditor}"
             />

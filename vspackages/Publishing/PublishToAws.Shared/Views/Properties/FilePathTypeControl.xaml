@@ -26,6 +26,7 @@
         />
         <ContentControl 
             IsEnabled="true"
+            IsTabStop="False"
             Content="{Binding}"
             ContentTemplate="{StaticResource TextEditor}"
         />
