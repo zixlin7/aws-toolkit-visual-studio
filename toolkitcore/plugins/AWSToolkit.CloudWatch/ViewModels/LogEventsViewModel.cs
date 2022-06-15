@@ -27,6 +27,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private LogEvent _logEvent;
         private ICollectionView _logEventsView;
         private bool _isWrapped = false;
+        private bool _IsTimeFilterEnabled = false;
         private readonly DateTimeRangePickerViewModel _dateTimeRange = new DateTimeRangePickerViewModel(null , null);
         private ObservableCollection<LogEvent> _logEvents =
             new ObservableCollection<LogEvent>();
@@ -75,6 +76,12 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         {
             get => _isWrapped;
             set => SetProperty(ref _isWrapped, value);
+        }
+
+        public bool IsTimeFilterEnabled
+        {
+            get => _IsTimeFilterEnabled;
+            set => SetProperty(ref _IsTimeFilterEnabled, value);
         }
 
         public DateTime? StartTime => _dateTimeRange.GetFullStartTime();
@@ -156,8 +163,9 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         {
             var request = new GetLogEventsRequest
             {
-                LogGroup = LogGroup, LogStream = LogStream, StartTime = StartTime, EndTime = EndTime
+                LogGroup = LogGroup, LogStream = LogStream
             };
+            
             if (_isInitialized)
             {
                 request.NextToken = NextToken;
@@ -166,6 +174,12 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             if (!string.IsNullOrWhiteSpace(FilterText))
             {
                 request.FilterText = FilterText;
+            }
+
+            if (_IsTimeFilterEnabled)
+            {
+                request.StartTime = StartTime;
+                request.EndTime = EndTime;
             }
 
             return request;

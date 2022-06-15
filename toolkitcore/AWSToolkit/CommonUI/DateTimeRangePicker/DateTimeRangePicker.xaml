@@ -46,6 +46,7 @@
                 <local:TimeInputControl Grid.Column="2"
                                         Height="33"
                                         MinWidth="100"
+                                        MaxWidth="200"
                                         DataContext="{Binding StartTimeModel}" />
             </Grid>
             <Grid Grid.Column="1" Grid.Row="0">
@@ -66,6 +67,7 @@
                 <local:TimeInputControl Grid.Column="2" 
                                         Height="33"
                                         MinWidth="100" 
+                                        MaxWidth="200"
                                         DataContext="{Binding EndTimeModel}" />
             </Grid>
             <TextBlock

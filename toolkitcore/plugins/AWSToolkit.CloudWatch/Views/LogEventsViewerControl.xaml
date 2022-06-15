@@ -136,12 +136,13 @@
                 <ToggleButton Margin="3"
                               x:Name="FilterByTimeButton"
                               x:FieldModifier="private"
-                              ToolTip="Filter events by time">
+                              ToolTip="Filter events by time"
+                              IsChecked="{Binding IsTimeFilterEnabled}">
                     <images:VsImage
                         Width="16"
                         Height="16"
                         Source="{Binding Source={StaticResource VsImages}, Path=Calendar}" />
-                </ToggleButton>
+                    </ToggleButton>
             </ToolBar>
             <local:SearchBar DockPanel.Dock="Left" 
                              FilterText="{Binding FilterText}"

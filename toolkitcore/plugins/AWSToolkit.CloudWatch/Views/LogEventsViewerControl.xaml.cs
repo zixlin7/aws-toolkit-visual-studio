@@ -60,7 +60,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
 
         private void DateTimeRange_RangeChanged(object sender, EventArgs e)
         {
-           Refresh();
+            Refresh();
         }
 
         public override string Title => $"Stream: {_viewModel?.LogStream}";
@@ -72,6 +72,15 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             if (e.PropertyName == nameof(LogEventsViewModel.FilterText))
             {
                 Refresh();
+            }
+
+            if (e.PropertyName == nameof(LogEventsViewModel.IsTimeFilterEnabled))
+            {
+                //if there is an active filter selection, refresh when filter button is toggled on/off
+                if (_viewModel.StartTime != null || _viewModel.EndTime != null)
+                {
+                    Refresh();
+                }
             }
         }
 

@@ -23,6 +23,7 @@
             VerticalAlignment="Top"
             LostFocus="OnLostFocus"
             HintText="{Binding Format}"
+            KeyDown="OnKeyDown"
             Text="{Binding TimeInput, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"/>
     </Grid>

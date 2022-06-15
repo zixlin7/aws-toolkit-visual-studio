@@ -23,7 +23,7 @@
         <TextBox x:Name="InputTextBox"
                  Background="Transparent"
                  Text="{Binding Text, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                 AcceptsReturn="True" />
+                 AcceptsReturn="{Binding AcceptsReturn, RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
         <TextBlock HorizontalAlignment="Left"
                    Padding="6 8 6 8"
