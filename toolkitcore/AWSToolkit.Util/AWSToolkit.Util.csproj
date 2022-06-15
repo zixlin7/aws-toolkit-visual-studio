@@ -110,6 +110,7 @@
     <Compile Include="Telemetry\IMetricsOutputWindow.cs" />
     <Compile Include="Telemetry\Internal\ITelemetryClient.cs" />
     <Compile Include="Telemetry\Internal\ITelemetryPublisher.cs" />
+    <Compile Include="Telemetry\MetricsMetadata.cs" />
     <Compile Include="Telemetry\ModelExtensionMethods.cs" />
     <Compile Include="Telemetry\Model\BaseMetricSource.cs" />
     <Compile Include="Telemetry\Model\MetadataKeys.cs" />

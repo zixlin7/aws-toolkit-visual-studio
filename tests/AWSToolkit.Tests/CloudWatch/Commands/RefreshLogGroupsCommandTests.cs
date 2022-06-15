@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Commands;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
@@ -19,7 +20,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
         private readonly LogGroupsViewModel _viewModel;
         private readonly LogGroupsViewModelFixture _groupsFixture = new LogGroupsViewModelFixture();
         private readonly ICommand _command;
-        
+
         public RefreshLogGroupsCommandTests()
         {
             _viewModel = _groupsFixture.CreateViewModel();
@@ -36,6 +37,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             Assert.Equal(_groupsFixture.SampleToken, _viewModel.NextToken);
             Assert.Equal(_groupsFixture.SampleLogGroups, _viewModel.LogGroups);
             Assert.Empty(_viewModel.ErrorMessage);
+            _groupsFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsRefresh(CloudWatchResourceType.LogGroupList);
         }
 
         [Fact]
@@ -49,6 +51,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
 
             var logType = _viewModel.GetLogTypeDisplayName();
             Assert.Contains($"Error refreshing {logType}", _viewModel.ErrorMessage);
+            _groupsFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsRefresh(CloudWatchResourceType.LogGroupList);
         }
     }
 }

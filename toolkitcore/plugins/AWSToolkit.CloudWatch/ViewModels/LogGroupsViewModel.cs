@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 
@@ -63,6 +64,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             ResetState();
             await LoadAsync().ConfigureAwait(false);
         }
+
+        public override CloudWatchResourceType GetCloudWatchResourceType() => CloudWatchResourceType.LogGroupList;
 
         public override async Task LoadAsync()
         {

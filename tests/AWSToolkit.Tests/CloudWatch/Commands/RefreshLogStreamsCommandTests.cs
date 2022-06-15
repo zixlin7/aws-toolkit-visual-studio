@@ -5,6 +5,8 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.CloudWatch.Commands;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using AWSToolkit.Tests.CloudWatch.Fixtures;
 
@@ -36,6 +38,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             Assert.Equal(_streamsFixture.SampleToken, _viewModel.NextToken);
             Assert.Equal(_streamsFixture.SampleLogStreams, _viewModel.LogStreams);
             Assert.Empty(_viewModel.ErrorMessage);
+            _streamsFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsRefresh(CloudWatchResourceType.LogGroup);
         }
 
         [Fact]
@@ -49,6 +52,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
 
             var logType = _viewModel.GetLogTypeDisplayName();
             Assert.Contains($"Error refreshing {logType}", _viewModel.ErrorMessage);
+            _streamsFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsRefresh(CloudWatchResourceType.LogGroup);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Moq;
@@ -14,23 +15,27 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
 {
     public class LogEventsViewModelFixture
     {
-        private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
+        public readonly ToolkitContextFixture ContextFixture = new ToolkitContextFixture();
         public Mock<ICloudWatchLogsRepository> Repository { get; } = new Mock<ICloudWatchLogsRepository>();
         public List<LogEvent> SampleLogEvents { get; }
         public string SampleToken => "sample-token";
         public LogGroup SampleLogGroup { get; } = new LogGroup() { Name = "lg", Arn = "lg-arn" };
         public LogStream SampleLogStream { get; } = new LogStream() { Name = "ls", Arn = "ls-arn" };
+        public AwsConnectionSettings AwsConnectionSettings;
 
         public LogEventsViewModelFixture()
         {
-            _contextFixture.SetupExecuteOnUIThread();
+            AwsConnectionSettings = new AwsConnectionSettings(null, null);
+
+            ContextFixture.SetupExecuteOnUIThread();
             SampleLogEvents = CreateSampleLogEvents();
             StubGetLogEventsToReturn(SampleToken, SampleLogEvents);
+            SetupRepository();
         }
 
         public LogEventsViewModel CreateViewModel()
         {
-            var viewModel = new LogEventsViewModel(Repository.Object, _contextFixture.ToolkitContext)
+            var viewModel = new LogEventsViewModel(Repository.Object, ContextFixture.ToolkitContext)
             {
                 LogGroup = SampleLogGroup.Name, LogStream = SampleLogStream.Name
             };
@@ -52,6 +57,11 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
             Repository.Setup(mock =>
                     mock.GetLogEventsAsync(It.IsAny<GetLogEventsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
+        }
+
+        private void SetupRepository()
+        {
+            Repository.SetupGet(m => m.ConnectionSettings).Returns(() => AwsConnectionSettings);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Moq;
@@ -14,22 +15,26 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
 {
     public class LogStreamsFixture
     {
-        private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
+        public readonly ToolkitContextFixture ContextFixture = new ToolkitContextFixture();
         public Mock<ICloudWatchLogsRepository> Repository { get; } = new Mock<ICloudWatchLogsRepository>();
         public List<LogStream> SampleLogStreams { get; }
         public string SampleToken => "sample-token";
         public LogGroup SampleLogGroup { get; } = new LogGroup() { Name = "lg", Arn = "lg-arn" };
+        public AwsConnectionSettings AwsConnectionSettings;
 
         public LogStreamsFixture()
         {
-            _contextFixture.SetupExecuteOnUIThread();
+            AwsConnectionSettings = new AwsConnectionSettings(null, null);
+
+            ContextFixture.SetupExecuteOnUIThread();
             SampleLogStreams = CreateSampleLogStreams();
             StubGetLogStreamsToReturn(SampleToken, SampleLogStreams);
+            SetupRepository();
         }
 
         public LogStreamsViewModel CreateViewModel()
         {
-            var viewModel = new LogStreamsViewModel(Repository.Object, _contextFixture.ToolkitContext)
+            var viewModel = new LogStreamsViewModel(Repository.Object, ContextFixture.ToolkitContext)
             {
                 LogGroup = SampleLogGroup
             };
@@ -51,6 +56,11 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
             Repository.Setup(mock =>
                     mock.GetLogStreamsAsync(It.IsAny<GetLogStreamsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
+        }
+
+        private void SetupRepository()
+        {
+            Repository.SetupGet(m => m.ConnectionSettings).Returns(() => AwsConnectionSettings);
         }
     }
 }

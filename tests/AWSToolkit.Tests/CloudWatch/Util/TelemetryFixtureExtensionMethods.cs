@@ -19,5 +19,15 @@ namespace AWSToolkit.Tests.CloudWatch
             Assert.Equal(expectedResult.ToString(), metric.Metadata["result"]);
             Assert.Equal(expectedResourceType.ToString(), metric.Metadata["cloudWatchResourceType"]);
         }
+
+        public static void VerifyRecordCloudWatchLogsRefresh(this TelemetryFixture telemetryFixture,
+            CloudWatchResourceType expectedResourceType)
+        {
+            var metric = telemetryFixture.LoggedMetrics
+                .SelectMany(m => m.Data)
+                .Single(datum => datum.MetricName == "cloudwatchlogs_refresh");
+
+            Assert.Equal(expectedResourceType.ToString(), metric.Metadata["cloudWatchResourceType"]);
+        }
     }
 }

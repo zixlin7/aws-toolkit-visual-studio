@@ -17,7 +17,13 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
 
         public static IAsyncCommand Create(BaseLogsViewModel viewModel)
         {
-            return new AsyncRelayCommand(_ => RefreshAsync(viewModel));
+            return new AsyncRelayCommand(_ => ExecuteAsync(viewModel));
+        }
+
+        private static async Task ExecuteAsync(BaseLogsViewModel viewModel)
+        {
+            await RefreshAsync(viewModel);
+            viewModel.RecordRefreshMetric();
         }
 
         private static async Task RefreshAsync(BaseLogsViewModel viewModel)

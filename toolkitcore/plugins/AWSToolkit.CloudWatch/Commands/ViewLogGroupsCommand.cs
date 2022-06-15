@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Telemetry.Model;
 
 using log4net;
@@ -96,8 +97,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
 
             _toolkitContext.TelemetryLogger.RecordCloudwatchlogsOpen(new CloudwatchlogsOpen()
             {
-                AwsAccount = ConnectionSettings.GetAccountId(_toolkitContext.ServiceClientManager) ?? MetadataValue.NotSet,
-                AwsRegion = ConnectionSettings.Region?.Id ?? MetadataValue.NotSet,
+                AwsAccount = MetricsMetadata.AccountIdOrDefault(ConnectionSettings.GetAccountId(_toolkitContext.ServiceClientManager)),
+                AwsRegion = MetricsMetadata.RegionOrDefault(ConnectionSettings.Region),
                 CloudWatchLogsPresentation = CloudWatchLogsPresentation.Ui,
                 CloudWatchResourceType = CloudWatchResourceType.LogGroupList,
                 Result = metricsResult,
