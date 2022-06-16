@@ -156,6 +156,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         public void Dispose()
         {
             CancelExistingToken();
+            Repository?.Dispose();
         }
     }
 }

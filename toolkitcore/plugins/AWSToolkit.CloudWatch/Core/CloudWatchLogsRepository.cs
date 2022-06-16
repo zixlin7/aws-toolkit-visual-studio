@@ -188,5 +188,10 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
                     $"{logStream} is an invalid log stream name.");
             }
         }
+
+        public void Dispose()
+        {
+            _client?.Dispose();
+        }
     }
 }

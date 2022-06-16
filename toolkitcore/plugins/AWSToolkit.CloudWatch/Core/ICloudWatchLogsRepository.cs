@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CloudWatch.Models;
@@ -9,7 +10,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
     /// <summary>
     /// A toolkit encapsulation to interact/communicate with AWS SDK (AWS CloudWatch Logs SDK) 
     /// </summary>
-    public interface ICloudWatchLogsRepository
+    public interface ICloudWatchLogsRepository : IDisposable
     {
         AwsConnectionSettings ConnectionSettings { get; }
 

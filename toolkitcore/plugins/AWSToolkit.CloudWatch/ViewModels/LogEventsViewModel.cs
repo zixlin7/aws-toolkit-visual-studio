@@ -126,7 +126,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 {
                     return;
                 }
-
+                
                 var selectedLogEvent = LogEvent?.Message;
 
                 using (CreateLoadingLogsScope())
