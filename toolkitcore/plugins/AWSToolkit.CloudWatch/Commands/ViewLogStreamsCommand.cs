@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
@@ -9,8 +10,6 @@ using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Telemetry;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry.Model;
 
 using log4net;
@@ -78,7 +77,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
             var viewModel = new LogStreamsViewModel(cwLogsRepository, toolkitContext);
             viewModel.RefreshCommand = RefreshLogsCommand.Create(viewModel);
             viewModel.ViewCommand = ViewLogEventsCommand.Create(toolkitContext, cwLogsRepository.ConnectionSettings);
-            viewModel.ExportStreamCommand = ExportStreamCommand.Create(toolkitContext, cwLogsRepository);
+            viewModel.ExportStreamCommand = ExportStreamCommand.Create(cwLogsRepository, toolkitContext);
             return viewModel;
         }
 

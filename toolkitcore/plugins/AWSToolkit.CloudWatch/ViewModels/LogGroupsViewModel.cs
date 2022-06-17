@@ -5,13 +5,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.CloudWatch.Util;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Shared;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Telemetry;
 
 using log4net;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 {
@@ -147,6 +150,17 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 request.NextToken = NextToken;
             }
             return request;
+        }
+
+        public void RecordDeleteMetric(TaskStatus deleteResult)
+        {
+            ToolkitContext.TelemetryLogger.RecordCloudwatchlogsDelete(new CloudwatchlogsDelete()
+            {
+                AwsAccount = MetricsMetadata.AccountIdOrDefault(ConnectionSettings.GetAccountId(ToolkitContext.ServiceClientManager)),
+                AwsRegion = MetricsMetadata.RegionOrDefault(ConnectionSettings.Region),
+                CloudWatchResourceType = CloudWatchResourceType.LogGroup,
+                Result = deleteResult.AsMetricsResult(),
+            });
         }
     }
 }

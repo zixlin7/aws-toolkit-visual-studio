@@ -24,15 +24,18 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
         private readonly string _logStream;
         private readonly string _logGroup;
         private readonly string _fileName;
+        private readonly Action<TaskStatus, long> _recordMetric;
+        private long _charactersLogged;
 
         public ExportStreamHandler(string logStream, string logGroup, string fileName, ToolkitContext toolkitContext,
-            ICloudWatchLogsRepository repository)
+            ICloudWatchLogsRepository repository, Action<TaskStatus, long> recordMetric)
         {
             _logStream = logStream;
             _logGroup = logGroup;
             _fileName = fileName;
             _toolkitContext = toolkitContext;
             _repository = repository;
+            _recordMetric = recordMetric;
         }
 
 
@@ -41,6 +44,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             var result = await ExportAsync(notifier);
 
             ApplyExportResultToUi(result);
+            ApplyExportResultToMetrics(result);
 
             if (result.Status != TaskStatus.Success)
             {
@@ -53,6 +57,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             var exportResult = new ExportResult();
             try
             {
+                _charactersLogged = 0;
                 var nextToken = string.Empty;
                 do
                 {
@@ -125,8 +130,14 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
                 logEvents.ToList().ForEach(x =>
                 {
                     writer.WriteLine(x.Message);
+                    _charactersLogged += x.Message.Length;
                 });
             }
+        }
+
+        private void ApplyExportResultToMetrics(ExportResult exportResult)
+        {
+            _recordMetric(exportResult.Status, _charactersLogged);
         }
 
         private GetLogEventsRequest CreateGetRequest(string nextToken)

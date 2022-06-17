@@ -82,7 +82,18 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private ICommand CreateCopyArnCommand()
         {
-            return Commands.CopyArnCommand.Create(GetLogTypeDisplayName(), ToolkitContext.ToolkitHost);
+            return Commands.CopyArnCommand.Create(this, ToolkitContext.ToolkitHost);
+        }
+
+        public void RecordCopyArnMetric(bool copyResult, CloudWatchResourceType resourceType)
+        {
+            ToolkitContext.TelemetryLogger.RecordCloudwatchlogsCopyArn(new CloudwatchlogsCopyArn()
+            {
+                AwsAccount = MetricsMetadata.AccountIdOrDefault(ConnectionSettings.GetAccountId(ToolkitContext.ServiceClientManager)),
+                AwsRegion = MetricsMetadata.RegionOrDefault(ConnectionSettings.Region),
+                CloudWatchResourceType = resourceType,
+                Result = copyResult ? Result.Succeeded : Result.Failed,
+            });
         }
 
         public AwsConnectionSettings ConnectionSettings => Repository?.ConnectionSettings;

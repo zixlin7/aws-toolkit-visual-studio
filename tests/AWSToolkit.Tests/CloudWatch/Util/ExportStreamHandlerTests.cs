@@ -16,6 +16,8 @@ using Moq;
 
 using Xunit;
 
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
+
 namespace AWSToolkit.Tests.CloudWatch.Util
 {
     public class ExportStreamHandlerTests : IDisposable
@@ -33,12 +35,20 @@ namespace AWSToolkit.Tests.CloudWatch.Util
 
         private List<LogEvent> _sampleLogEvents;
         private readonly ExportStreamHandler _handler;
+        private TaskStatus _metricExportResult;
+        private long _metricCharactersLogged;
 
         public ExportStreamHandlerTests()
         {
             Setup();
             _handler = new ExportStreamHandler(_sampleLogStream, _sampleLogGroup, _sampleFileName,
-                _contextFixture.ToolkitContext, _repository.Object);
+                _contextFixture.ToolkitContext, _repository.Object, OnRecordExportMetric);
+        }
+
+        private void OnRecordExportMetric(TaskStatus exportResult, long charactersLogged)
+        {
+            _metricExportResult = exportResult;
+            _metricCharactersLogged = charactersLogged;
         }
 
         [Fact]
@@ -47,6 +57,8 @@ namespace AWSToolkit.Tests.CloudWatch.Util
             await _handler.RunAsync(_taskNotifier.Object);
 
             Assert.True(File.Exists(_sampleFileName));
+            Assert.Equal(TaskStatus.Success, _metricExportResult);
+            Assert.True(_metricCharactersLogged > 0);
 
             VerifyToolkitHostDownloadReports("CloudWatch Logs downloaded", "Success");
         }
@@ -63,6 +75,8 @@ namespace AWSToolkit.Tests.CloudWatch.Util
             });
 
             Assert.False(File.Exists(_sampleFileName));
+            Assert.Equal(TaskStatus.Cancel, _metricExportResult);
+            Assert.Equal(0, _metricCharactersLogged);
 
             VerifyToolkitHostDownloadReports("CloudWatch Logs download cancelled", "Cancel");
         }
@@ -81,6 +95,8 @@ namespace AWSToolkit.Tests.CloudWatch.Util
             });
 
             Assert.False(File.Exists(_sampleFileName));
+            Assert.Equal(TaskStatus.Fail, _metricExportResult);
+            Assert.Equal(0, _metricCharactersLogged);
 
             _contextFixture.ToolkitHost.Verify(
                 mock => mock.UpdateStatus(It.Is<string>(s => s.Contains("Fail"))),

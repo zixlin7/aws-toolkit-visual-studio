@@ -3,6 +3,8 @@ using System.Windows.Input;
 
 using Amazon.AWSToolkit.CloudWatch.Commands;
 using Amazon.AWSToolkit.CloudWatch.Core;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Moq;
@@ -20,7 +22,10 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
 
         public ExportStreamCommandTests()
         {
-            _command = ExportStreamCommand.Create(_contextFixture.ToolkitContext, _repository.Object);
+            var awsConnectionSettings = new AwsConnectionSettings(null, null);
+            _repository.SetupGet(m => m.ConnectionSettings).Returns(awsConnectionSettings);
+
+            _command = ExportStreamCommand.Create(_repository.Object, _contextFixture.ToolkitContext);
         }
 
         public static IEnumerable<object[]> InvalidParameterTypes = new List<object[]>
@@ -40,6 +45,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             _contextFixture.ToolkitHost.Verify(
                 mock => mock.ShowError(It.Is<string>(msg => msg.Contains("Parameters are not of expected type"))),
                 Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsDownload(Result.Failed);
         }
 
         public static IEnumerable<object[]> InvalidParameters = new List<object[]>
@@ -58,6 +64,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             _contextFixture.ToolkitHost.Verify(
                 mock => mock.ShowError(It.Is<string>(msg => msg.Contains("Expected parameters: 2"))),
                 Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsDownload(Result.Failed);
         }
     }
 }
