@@ -61,8 +61,8 @@
 
             <!-- Style the TabControl (items) to look like heading labels instead of tabs -->
             <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-                <Setter Property="FontSize" Value="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}" />
-                <Setter Property="FontWeight" Value="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontWeightKey}}" />
+                <Setter Property="FontSize" Value="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontSizeKey}}" />
+                <Setter Property="FontWeight" Value="{DynamicResource {x:Static themes:ToolkitThemes.Heading2FontWeightKey}}" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUi:CommonControlsColors.TextBoxTextBrushKey}}" />
 
                 <Setter Property="Template" >

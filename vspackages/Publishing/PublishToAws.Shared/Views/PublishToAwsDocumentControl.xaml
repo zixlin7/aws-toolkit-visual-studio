@@ -62,6 +62,7 @@
             <views:PublishOptions Grid.Row="1" Grid.Column="2"/>
 
             <views:CredentialsRegionControl 
+                Margin="0 3 0 0"
                 DataContext="{Binding Connection}"
                 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                 d:Visibility="Visible"
