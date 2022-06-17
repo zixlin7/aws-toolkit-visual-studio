@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Publish to AWS has been updated to use v0.47.26 of the AWS .NET deploy tool. It contains new validation checks to help prevent deployment failures - https://github.com/aws/aws-dotnet-deploy/releases/tag/0.47.26"
+}
