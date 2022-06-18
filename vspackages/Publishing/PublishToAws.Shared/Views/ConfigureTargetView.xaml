@@ -134,10 +134,12 @@
                 HorizontalAlignment="Left">
                 <ScrollViewer
                     x:Name="SettingsListScrollViewer" x:FieldModifier="private"
+                    IsTabStop="False"
                     ScrollChanged="SettingsListScrollViewer_OnScrollChanged"
                     VerticalScrollBarVisibility="Auto">
                     <ItemsControl
                         x:Name="SettingsList" x:FieldModifier="private"
+                        IsTabStop="False"
                         Grid.IsSharedSizeScope="True"
                         Margin="0 0 12 50"
                         IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"

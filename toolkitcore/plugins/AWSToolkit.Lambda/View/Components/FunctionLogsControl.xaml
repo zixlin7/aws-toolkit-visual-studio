@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="700">
 
@@ -12,6 +13,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <commonui:VsImages x:Key="VsImages" />
 
             <ControlTemplate TargetType="ListBox" x:Key="LogControlTemplate">
                 <ScrollViewer HorizontalScrollBarVisibility="Hidden"
@@ -63,7 +66,6 @@
 
             <Style x:Key="LogLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource awsLabelBaseStyle}">
                 <Setter Property="VerticalAlignment" Value="Bottom" />
-                <Setter Property="Foreground" Value="#050505" />
                 <Setter Property="FontWeight" Value="Bold" />
                 <Setter Property="Margin" Value="0"/>
                 <Setter Property="HorizontalAlignment" Value="Left" />
@@ -93,10 +95,11 @@
                             ToolTip="Downloads the log stream"
                             Click="GetLogStream_OnClick"
                             Tag="{Binding Path=ID}">
-                        <Image Width="16" Height="16" 
-                               DataContext="{DynamicResource CommonIcons}" 
-                               Source="{Binding DownloadIcon}"
-                               />
+                        <images:VsImage 
+                            Width="16" 
+                            Height="16" 
+                            Source="{Binding Source={StaticResource VsImages}, Path=DownloadLog}"
+                            />
                     </Button>
 
                     <Button VerticalAlignment="Center" 
@@ -107,10 +110,11 @@
                             ToolTip="Deletes the log stream"
                             Click="DeleteLogStream_OnClick"
                             Tag="{Binding Path=ID}">
-                        <Image Width="16" Height="16" 
-                               DataContext="{DynamicResource CommonIcons}" 
-                               Source="{Binding RemoveIcon}"
-                               />
+                        <images:VsImage 
+                            Width="16" 
+                            Height="16" 
+                            Source="{Binding Source={StaticResource VsImages}, Path=Cancel}"
+                            />
                     </Button>
 
 

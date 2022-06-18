@@ -153,14 +153,14 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
                 FilterPattern = logEventsRequest.FilterText,
             };
 
-            if (logEventsRequest.StartTime != default(DateTime))
+            if (logEventsRequest.StartTime.HasValue)
             {
-                request.StartTime = logEventsRequest.StartTime.AsUnixMilliseconds();
+                request.StartTime = logEventsRequest.StartTime.Value.AsUnixMilliseconds();
             }
 
-            if (logEventsRequest.EndTime != default(DateTime))
+            if (logEventsRequest.EndTime.HasValue) 
             {
-                request.EndTime = logEventsRequest.EndTime.AsUnixMilliseconds();
+                request.EndTime = logEventsRequest.EndTime.Value.AsUnixMilliseconds();
             }
 
             if (!string.IsNullOrEmpty(logEventsRequest.NextToken))
@@ -187,6 +187,11 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
                 throw new InvalidParameterException(
                     $"{logStream} is an invalid log stream name.");
             }
+        }
+
+        public void Dispose()
+        {
+            _client?.Dispose();
         }
     }
 }

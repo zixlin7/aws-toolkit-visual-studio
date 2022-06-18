@@ -6,6 +6,7 @@ using System.Threading;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
@@ -15,22 +16,26 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
 {
     public class LogGroupsViewModelFixture
     {
-        private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
+        public readonly ToolkitContextFixture ContextFixture = new ToolkitContextFixture();
         public Mock<ICloudWatchLogsRepository> Repository { get; } = new Mock<ICloudWatchLogsRepository>();
         public List<LogGroup> SampleLogGroups { get; }
         public string SampleToken => "sample-token";
-        public Mock<IAWSToolkitShellProvider> ToolkitHost => _contextFixture.ToolkitHost;
+        public Mock<IAWSToolkitShellProvider> ToolkitHost => ContextFixture.ToolkitHost;
+        public AwsConnectionSettings AwsConnectionSettings;
 
         public LogGroupsViewModelFixture()
         {
-            _contextFixture.SetupExecuteOnUIThread();
+            AwsConnectionSettings = new AwsConnectionSettings(null, null);
+
+            ContextFixture.SetupExecuteOnUIThread();
             SampleLogGroups = CreateSampleLogGroups();
             StubGetLogGroupsToReturn(SampleToken, SampleLogGroups);
+            SetupRepository();
         }
 
         public LogGroupsViewModel CreateViewModel()
         {
-            return new LogGroupsViewModel(Repository.Object, _contextFixture.ToolkitContext);
+            return new LogGroupsViewModel(Repository.Object, ContextFixture.ToolkitContext);
         }
 
         public List<LogGroup> CreateSampleLogGroups()
@@ -54,6 +59,11 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
         {
             ToolkitHost.Setup(mock => mock.Confirm(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(result);
+        }
+
+        private void SetupRepository()
+        {
+            Repository.SetupGet(m => m.ConnectionSettings).Returns(() => AwsConnectionSettings);
         }
     }
 }

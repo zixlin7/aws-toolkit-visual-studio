@@ -96,6 +96,7 @@
             Grid.Row="4"
             VerticalAlignment="Stretch"
             HintText="[Optional]"
+            AcceptsReturn="True"
             Text="{Binding FeedbackComment, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
              />
 

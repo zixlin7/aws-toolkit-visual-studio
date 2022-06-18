@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:designData="clr-namespace:Amazon.AWSToolkit.Lambda.View.DesignData"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance designData:EventSourcesMock, IsDesignTimeCreatable=True}"
              d:DesignHeight="300" d:DesignWidth="700">
@@ -14,6 +15,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <commonui:VsImages x:Key="VsImages" />
 
             <ControlTemplate TargetType="ListBox" x:Key="EventSourceControlTemplate">
                 <ScrollViewer HorizontalScrollBarVisibility="Hidden"
@@ -65,7 +68,6 @@
 
             <Style x:Key="EventSourceLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource awsLabelBaseStyle}">
                 <Setter Property="VerticalAlignment" Value="Bottom" />
-                <Setter Property="Foreground" Value="#050505" />
                 <Setter Property="FontWeight" Value="Bold" />
                 <Setter Property="Margin" Value="0"/>
                 <Setter Property="HorizontalAlignment" Value="Left" />
@@ -98,8 +100,7 @@
                             Click="EventSourceDelete_OnClick"
                             Tag="{Binding Path=ID}">
                         <Image Width="16" Height="16" 
-                               DataContext="{DynamicResource CommonIcons}" 
-                               Source="{Binding RemoveIcon}"
+                               Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" 
                                />
                     </Button>
 
@@ -166,7 +167,10 @@
                 Click="AddEventSource_Click"
                 Margin="4,8,4,4">
             <WrapPanel>
-                <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}"/>
+                <Image
+                    Width="16" 
+                    Height="16" 
+                    Source="{Binding Source={StaticResource VsImages}, Path=Add}" />
                 <TextBlock Margin="4,0,4,0" VerticalAlignment="Center">Add</TextBlock>
             </WrapPanel>
         </Button>

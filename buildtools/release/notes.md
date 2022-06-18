@@ -1,7 +1,4 @@
-## 1.31.0.0 (2022-06-07)
+## 1.32.0.0 (2022-06-17)
 
 ### Changelog
-- **Bug Fix** - Fix scenario in Publish to AWS where invalid setting values would revert to a previous valid value while the settings were still being edited.
-- **Feature** - Adds a Browse button to the Publish to AWS targets that allow for Dockerfile paths. This opens a file dialog to allow the user to browse to and select the Dockerfile to be used in the deployment.
-- **Feature** - Add Publish to AWS validation checks for scenarios where a deployment could conflict with existing account resources.
-- **Feature** - Add Publish to AWS validations to check that references to existing IAM Roles are not left empty
+- **Feature** - Publish to AWS has been updated to use v0.47.26 of the AWS .NET deploy tool. It contains new validation checks to help prevent deployment failures - https://github.com/aws/aws-dotnet-deploy/releases/tag/0.47.26

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+             themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -15,44 +16,52 @@
 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-            <Style TargetType="Label" BasedOn="{StaticResource awsLabelBaseStyle}" />
             <Style TargetType="Button" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
                 <Setter Property="MinWidth" Value="75" />
                 <Setter Property="Height" Value="23" />
-                <Setter Property="Margin" Value="0 0 5 0"></Setter>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Border 
-        Background="{DynamicResource awsFieldRequiredBackgroundBrushKey}" 
         Padding="5" 
+        BorderThickness="1"
+        BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" 
+        Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
         Visibility="{Binding ShowBanner, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
 
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="12" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <Label 
-                    Style="{DynamicResource awsLabelBoldStyle}" 
+                <Label
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                    FontWeight="Bold"
                     Content="NEW: Preview the re-imagined AWS Publishing experience" />
 
-                <Label Content="We've streamlined the steps for publishing your applications to AWS.&#10;Try it out and let us know what you think!" />
+                <Label 
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                    Content="We've streamlined the steps for publishing your applications to AWS.&#10;Try it out and let us know what you think!" />
             </StackPanel>
 
-            <Button 
-                Grid.Column="1" 
-                Content="Learn more" 
-                Command="{Binding LearnMoreCommand}" />
-
-            <Button 
-                Grid.Column="2" 
-                Content="Try new experience"
-                Command="{Binding SwitchToNewExperienceCommand}"/>
+            <StackPanel 
+                Grid.Column="2"
+                Margin="0 0 12 0"
+                Orientation="Vertical"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                >
+                <TextBlock Margin="0 0 0 9" HorizontalAlignment="Center">
+                    <Hyperlink Command="{Binding LearnMoreCommand}">Learn more</Hyperlink>
+                </TextBlock>
+                <TextBlock HorizontalAlignment="Center">
+                    <Hyperlink Command="{Binding SwitchToNewExperienceCommand}">Try new experience</Hyperlink>
+                </TextBlock>
+            </StackPanel>
 
         </Grid>
     </Border>

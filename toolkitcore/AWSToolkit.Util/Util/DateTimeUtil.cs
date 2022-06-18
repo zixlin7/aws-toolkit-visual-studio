@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Amazon.AWSToolkit.Util
 {
@@ -15,6 +16,11 @@ namespace Amazon.AWSToolkit.Util
         {
             var offset = new DateTimeOffset(currentTime);
             return offset.ToUnixTimeMilliseconds();
+        }
+
+        public static DateTimeFormatInfo GetLocalSystemFormat()
+        {
+            return CultureInfo.CurrentCulture.DateTimeFormat;
         }
     }
 }

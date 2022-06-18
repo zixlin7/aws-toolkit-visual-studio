@@ -8,6 +8,8 @@ using Amazon.AWSToolkit.Shared;
 
 using log4net;
 
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
+
 namespace Amazon.AWSToolkit.CloudWatch.Commands
 {
     public class DeleteLogGroupCommand
@@ -16,10 +18,17 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
 
         public static IAsyncCommand Create(LogGroupsViewModel viewModel, IAWSToolkitShellProvider toolkitHost)
         {
-            return new AsyncRelayCommand(parameter => Delete(viewModel, toolkitHost, parameter));
+            return new AsyncRelayCommand(parameter => ExecuteAsync(parameter, viewModel, toolkitHost));
         }
 
-        private static async Task Delete(LogGroupsViewModel viewModel, IAWSToolkitShellProvider toolkitHost, object parameter)
+        private static async Task ExecuteAsync(object parameter, LogGroupsViewModel viewModel, IAWSToolkitShellProvider toolkitHost)
+        {
+            var result = await DeleteAsync(parameter, viewModel, toolkitHost);
+            viewModel.RecordDeleteMetric(result);
+        }
+
+        private static async Task<TaskStatus> DeleteAsync(object parameter, LogGroupsViewModel viewModel,
+            IAWSToolkitShellProvider toolkitHost)
         {
             try
             {
@@ -32,7 +41,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
                     $"Are you sure you want to delete the following log group?{Environment.NewLine}{logGroup.Name}";
                 if (!toolkitHost.Confirm("Delete Log Group", message))
                 {
-                    return;
+                    return TaskStatus.Cancel;
                 }
 
                 var result = await viewModel.DeleteAsync(logGroup).ConfigureAwait(false);
@@ -40,11 +49,15 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
                 {
                     Refresh(viewModel);
                 }
+
+                return TaskStatus.Success;
             }
             catch (Exception e)
             {
                 Logger.Error("Error deleting log group", e);
                 toolkitHost.ShowError("Error deleting log group", "Error deleting log group: " + e.Message);
+
+                return TaskStatus.Fail;
             }
         }
 

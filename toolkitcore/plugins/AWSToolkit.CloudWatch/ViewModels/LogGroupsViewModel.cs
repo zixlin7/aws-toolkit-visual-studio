@@ -5,12 +5,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.CloudWatch.Util;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Telemetry;
 
 using log4net;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 {
@@ -64,6 +68,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             await LoadAsync().ConfigureAwait(false);
         }
 
+        public override CloudWatchResourceType GetCloudWatchResourceType() => CloudWatchResourceType.LogGroupList;
+
         public override async Task LoadAsync()
         {
             await GetLogGroupsAsync(CancellationToken).ConfigureAwait(false);
@@ -87,7 +93,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = null;
-                LogGroups.Clear();
+                LogGroups = new ObservableCollection<LogGroup>();
                 LogGroup = null;
                 _isInitialized = false;
                 ErrorMessage = string.Empty;
@@ -144,6 +150,17 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 request.NextToken = NextToken;
             }
             return request;
+        }
+
+        public void RecordDeleteMetric(TaskStatus deleteResult)
+        {
+            ToolkitContext.TelemetryLogger.RecordCloudwatchlogsDelete(new CloudwatchlogsDelete()
+            {
+                AwsAccount = MetricsMetadata.AccountIdOrDefault(ConnectionSettings.GetAccountId(ToolkitContext.ServiceClientManager)),
+                AwsRegion = MetricsMetadata.RegionOrDefault(ConnectionSettings.Region),
+                CloudWatchResourceType = CloudWatchResourceType.LogGroup,
+                Result = deleteResult.AsMetricsResult(),
+            });
         }
     }
 }

@@ -24,9 +24,12 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource Add => _imageProvider?.GetImage(VsKnownImages.Add, 16);
         public BitmapSource AddLink => _imageProvider?.GetImage(VsKnownImages.AddLink, 16);
         public BitmapSource AddUser => _imageProvider?.GetImage(VsKnownImages.AddUser, 16);
+        public BitmapSource Calendar => _imageProvider?.GetImage(VsKnownImages.Calendar, 16);
+        public BitmapSource Calendar32 => _imageProvider?.GetImage(VsKnownImages.Calendar, 32);
         public BitmapSource Cancel => _imageProvider?.GetImage(VsKnownImages.Cancel, 16);
         public BitmapSource Cloud => _imageProvider?.GetImage(VsKnownImages.Cloud, 16);
         public BitmapSource Cloud32 => _imageProvider?.GetImage(VsKnownImages.Cloud, 32);
+        public BitmapSource CloudRun => _imageProvider?.GetImage(VsKnownImages.CloudRun, 16);
         public BitmapSource Copy => _imageProvider?.GetImage(VsKnownImages.Copy, 16);
         public BitmapSource DeleteListItem => _imageProvider?.GetImage(VsKnownImages.DeleteListItem, 16);
         public BitmapSource DownloadLog => _imageProvider?.GetImage(VsKnownImages.DownloadLog, 16);
@@ -40,6 +43,7 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource Remove => _imageProvider?.GetImage(VsKnownImages.Remove, 16);
         public BitmapSource RemoveLink => _imageProvider?.GetImage(VsKnownImages.RemoveLink, 16);
         public BitmapSource Search => _imageProvider?.GetImage(VsKnownImages.Search, 16);
+        public BitmapSource Save => _imageProvider?.GetImage(VsKnownImages.Save, 16);
         public BitmapSource StatusError => _imageProvider?.GetImage(VsKnownImages.StatusError, 16);
         public BitmapSource StatusError32 => _imageProvider?.GetImage(VsKnownImages.StatusError, 32);
         public BitmapSource StatusInformation => _imageProvider?.GetImage(VsKnownImages.StatusInformation, 16);
@@ -49,6 +53,8 @@ namespace Amazon.AWSToolkit.CommonUI
         public BitmapSource StatusOK32 => _imageProvider?.GetImage(VsKnownImages.StatusOK, 32);
         public BitmapSource StatusWarning => _imageProvider?.GetImage(VsKnownImages.StatusWarning, 16);
         public BitmapSource StatusWarning32 => _imageProvider?.GetImage(VsKnownImages.StatusWarning, 32);
+        public BitmapSource Upload => _imageProvider?.GetImage(VsKnownImages.Upload, 16);
         public BitmapSource WordWrap => _imageProvider?.GetImage(VsKnownImages.WordWrap, 16);
+        public BitmapSource WordWrap32 => _imageProvider?.GetImage(VsKnownImages.WordWrap, 32);
     }
 }

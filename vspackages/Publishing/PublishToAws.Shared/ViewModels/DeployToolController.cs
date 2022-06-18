@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
+using Amazon.AWSToolkit.Shared;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -79,11 +80,14 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             ConfigurationDetail.TypeHints.InstanceType,
         };
 
+        private readonly IAWSToolkitShellProvider _toolkitShell;
         private readonly IRestAPIClient _client;
         private readonly ConfigurationDetailFactory _configurationDetailFactory;
 
-        public DeployToolController(IRestAPIClient client, ConfigurationDetailFactory configurationDetailFactory)
+        public DeployToolController(IRestAPIClient client, ConfigurationDetailFactory configurationDetailFactory,
+            IAWSToolkitShellProvider toolkitShell)
         {
+            _toolkitShell = toolkitShell;
             _client = client;
             _configurationDetailFactory = configurationDetailFactory;
         }
@@ -214,17 +218,36 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
             await Task.WhenAll(detailsToUpdate.Select(async detail =>
                 {
-                    var updatedValueMappings = await GetConfigSettingValuesAsync(
-                        sessionId, detail.GetLeafId(), token).ConfigureAwait(false);
-
-                    token.ThrowIfCancellationRequested();
-                    detail.ValueMappings = updatedValueMappings;
-
-                    return Task.CompletedTask;
+                    await GetValueMappingsAsync(detail, sessionId, token);
                 }))
                 .ConfigureAwait(false);
 
             return configurationDetails;
+        }
+
+        private async Task GetValueMappingsAsync(ConfigurationDetail detail, string sessionId, CancellationToken token)
+        {
+            try
+            {
+                var updatedValueMappings = await GetConfigSettingValuesAsync(
+                    sessionId, detail.GetLeafId(), token).ConfigureAwait(false);
+
+                token.ThrowIfCancellationRequested();
+                detail.ValueMappings = updatedValueMappings;
+            }
+            catch (ApiException e)
+            {
+                var innerMessage = e.GetExceptionInnerMessage();
+                if (innerMessage.Contains("No such host is known"))
+                {
+                    innerMessage = $"Service may not be available in this region. {innerMessage}";
+                }
+
+                _toolkitShell.OutputToHostConsole(
+                    $"Unable to fetch values for {detail.FullDisplayName}: {innerMessage}",
+                    true);
+            }
+
         }
 
         private readonly IEnumerable<DetailType> _supportedTypeHints = new HashSet<DetailType>() { DetailType.List, DetailType.String };

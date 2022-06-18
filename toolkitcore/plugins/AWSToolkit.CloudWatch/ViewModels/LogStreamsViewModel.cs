@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 
@@ -98,6 +99,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             await LoadAsync().ConfigureAwait(false);
         }
 
+        public override CloudWatchResourceType GetCloudWatchResourceType() => CloudWatchResourceType.LogGroup;
+
         public override async Task LoadAsync()
         {
             await GetLogStreamsAsync(CancellationToken).ConfigureAwait(false);
@@ -139,7 +142,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = null;
-                LogStreams.Clear();
+                LogStreams = new ObservableCollection<LogStream>();
                 LogStream = null;
                 _isInitialized = false;
                 ErrorMessage = string.Empty;

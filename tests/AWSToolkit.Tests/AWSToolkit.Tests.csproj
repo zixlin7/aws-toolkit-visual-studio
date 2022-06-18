@@ -63,6 +63,7 @@
     <Compile Include="CloudWatch\Util\CloudWatchLogsExtensionMethodTests.cs" />
     <Compile Include="CloudWatch\Core\CloudWatchLogsRepositoryTests.cs" />
     <Compile Include="CloudWatch\Util\ExportStreamHandlerTests.cs" />
+    <Compile Include="CloudWatch\Util\TelemetryFixtureExtensionMethods.cs" />
     <Compile Include="CloudWatch\ViewModels\CloudWatchRootViewModelTests.cs" />
     <Compile Include="CloudWatch\Fixtures\LogGroupsViewModelFixture.cs" />
     <Compile Include="CloudWatch\ViewModels\LogEventsViewModelTests.cs" />
@@ -89,6 +90,8 @@
     <Compile Include="CommonUI\ConverterPipelineTests.cs" />
     <Compile Include="CommonUI\CredentialIdentifierConverterTests.cs" />
     <Compile Include="CommonUI\CredentialIdentifierGroupConverterTests.cs" />
+    <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePickerViewModelTests.cs" />
+    <Compile Include="CommonUI\DateTimeRangePicker\TimeInputViewModelTests.cs" />
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
     <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />

@@ -41,6 +41,7 @@
                 Command="{Binding SelectRoleArn}"
                 />
             <ContentControl 
+                IsTabStop="False"
                 IsEnabled="{Binding CreateNewRole, Converter={StaticResource InverseBooleanConverter}}"
                 Content="{Binding RoleArnDetail}"
                 ContentTemplate="{StaticResource TextEditor}"

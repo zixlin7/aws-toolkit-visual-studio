@@ -149,6 +149,23 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
             Assert.Equal(newLogEvents.First(), _viewModel.LogEvent);
         }
 
+        [Theory]
+        [InlineData(true, 1)]
+        [InlineData(false, 0)]
+        public async Task IsTimeFilterEnabled(bool isTimeFilterEnabled, int expectedTimesCalled)
+        {
+            _viewModel.DateTimeRange.StartDate = new DateTime(2022, 05, 04);
+            _viewModel.DateTimeRange.EndDate = new DateTime(2022, 05, 05);
+
+            _viewModel.IsTimeFilterEnabled = isTimeFilterEnabled;
+            await _viewModel.LoadAsync();
+
+            Repository.Verify(
+                mock => mock.GetLogEventsAsync(It.Is<GetLogEventsRequest>(s => (s.EndTime!=null && s.StartTime!=null)), It.IsAny<CancellationToken>()),
+                Times.Exactly(expectedTimesCalled));
+
+        }
+
         /// <summary>
         /// Sets up an initial load with the specified properties
         /// </summary>

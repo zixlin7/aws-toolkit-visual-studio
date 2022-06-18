@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
         protected async Task<DeployToolController> CreateDeployToolController()
         {
             var restClient = await CreateRestClient();
-            return new DeployToolController(restClient, ConfigurationDetailFactory);
+            return new DeployToolController(restClient, ConfigurationDetailFactory, _toolkitHost);
         }
 
         protected async Task<IRestAPIClient> CreateRestClient()

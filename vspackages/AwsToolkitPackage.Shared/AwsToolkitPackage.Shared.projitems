@@ -65,6 +65,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)NativeMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NuGet\CodeArtifactNuGetCredentialProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PkgCmdID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfoAwsSdkReferences.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfoPackageReferences.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Registration\AWSCommandLineRegistrationAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources.Designer.cs">

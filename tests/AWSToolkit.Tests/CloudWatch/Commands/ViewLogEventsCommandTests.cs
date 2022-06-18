@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Commands;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Views;
@@ -29,7 +29,8 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
         public ViewLogEventsCommandTests()
         {
             Setup();
-            _command = ViewLogEventsCommand.Create(_contextFixture.ToolkitContext, null);
+            var awsConnectionSettings = new AwsConnectionSettings(null, null);
+            _command = ViewLogEventsCommand.Create(_contextFixture.ToolkitContext, awsConnectionSettings);
         }
 
         public static IEnumerable<object[]> InvalidParameterTypes = new List<object[]>
@@ -49,6 +50,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             ToolkitHost.Verify(
                 mock => mock.ShowError(It.Is<string>(msg => msg.Contains("Parameters are not of expected type"))),
                 Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Failed, CloudWatchResourceType.LogStream);
         }
 
         public static IEnumerable<object[]> InvalidParameters = new List<object[]>
@@ -67,6 +69,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             ToolkitHost.Verify(
                 mock => mock.ShowError(It.Is<string>(msg => msg.Contains("Expected parameters: 2"))),
                 Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Failed, CloudWatchResourceType.LogStream);
         }
 
         [Fact]
@@ -79,6 +82,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
 
             ToolkitHost.Verify(mock => mock.ShowError(It.Is<string>(msg => msg.Contains("Unable to load CloudWatch"))),
                 Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Failed, CloudWatchResourceType.LogStream);
         }
 
         [StaFact]
@@ -89,6 +93,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             ToolkitHost.Verify(
                 mock => mock.OpenInEditor(It.Is<IAWSToolkitControl>(control =>
                     control.GetType() == typeof(LogEventsViewerControl))), Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Succeeded, CloudWatchResourceType.LogStream);
         }
 
         private void Setup()

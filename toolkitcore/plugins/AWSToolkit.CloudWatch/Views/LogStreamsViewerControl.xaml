@@ -126,6 +126,8 @@
                                          ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
                                          ScrollViewer.VerticalScrollBarVisibility="Visible"
                                          themes:ToolkitThemes.UseToolkitTheme="True"
+                                         EnableRowVirtualization="True"
+                                         VirtualizingStackPanel.VirtualizationMode="Standard"
                                          GridLinesVisibility="None"
                                          AreRowDetailsFrozen="True"
                                          SelectionMode="Single"

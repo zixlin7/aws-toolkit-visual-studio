@@ -21,6 +21,11 @@ namespace Amazon.AWSToolkit.CommonUI
             DependencyProperty.Register(
                 nameof(HintText), typeof(string), typeof(HintTextBox));
 
+        public static readonly DependencyProperty AcceptsReturnProperty =
+            DependencyProperty.Register(
+                nameof(AcceptsReturn), typeof(bool), typeof(HintTextBox),
+                new PropertyMetadata(false));
+
         public string Text
         {
             get => (string) GetValue(TextProperty);
@@ -31,6 +36,12 @@ namespace Amazon.AWSToolkit.CommonUI
         {
             get => (string) GetValue(HintTextProperty);
             set => SetValue(HintTextProperty, value);
+        }
+
+        public bool AcceptsReturn
+        {
+            get => (bool) GetValue(AcceptsReturnProperty);
+            set => SetValue(AcceptsReturnProperty, value);
         }
     }
 }

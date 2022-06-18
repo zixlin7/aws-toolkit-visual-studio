@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Publish.ViewModels;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
 using Amazon.AWSToolkit.Tests.Publishing.Util;
 
@@ -22,6 +23,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
 {
     public class DeployToolControllerTests
     {
+        private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
         private readonly Mock<IRestAPIClient> _restClient = new Mock<IRestAPIClient>();
         private readonly Mock<IPublishToAwsProperties> _publishProperties = new Mock<IPublishToAwsProperties>();
         private readonly Mock<IDialogFactory> _dialogFactory = new Mock<IDialogFactory>();
@@ -47,7 +49,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
             _newPublishTarget = new PublishRecommendation(new RecommendationSummary() { RecipeId = _recipeId });
 
             _configurationDetailFactory = new ConfigurationDetailFactory(_publishProperties.Object, _dialogFactory.Object);
-            _deployToolController = new DeployToolController(_restClient.Object, _configurationDetailFactory);
+            _deployToolController = new DeployToolController(_restClient.Object, _configurationDetailFactory, _toolkitContextFixture.ToolkitHost.Object);
             _sampleResourcesOutput = new GetConfigSettingResourcesOutput()
             {
                 Resources = new List<TypeHintResourceSummary>()

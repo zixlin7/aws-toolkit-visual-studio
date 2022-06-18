@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
@@ -8,6 +9,8 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 using log4net;
 
@@ -18,11 +21,14 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
     /// </summary>
     public class ViewLogGroupsCommand : BaseConnectionContextCommand
     {
-        static readonly ILog Logger = LogManager.GetLogger(typeof(ViewLogGroupsCommand));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ViewLogGroupsCommand));
+        private readonly BaseMetricSource _metricSource;
 
-        public ViewLogGroupsCommand(ToolkitContext context, AwsConnectionSettings connectionSettings)
+        public ViewLogGroupsCommand(BaseMetricSource metricSource,
+            ToolkitContext context, AwsConnectionSettings connectionSettings)
             : base(context, connectionSettings)
         {
+            _metricSource = metricSource;
         }
 
         public override ActionResults Execute()
@@ -89,7 +95,16 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
         {
             Result metricsResult = result.Success ? Result.Succeeded : Result.Failed;
 
-            // todo : emit "Open Logs" metric, as a function of metricsResult and ConnectionSettings
+            _toolkitContext.TelemetryLogger.RecordCloudwatchlogsOpen(new CloudwatchlogsOpen()
+            {
+                AwsAccount = MetricsMetadata.AccountIdOrDefault(ConnectionSettings.GetAccountId(_toolkitContext.ServiceClientManager)),
+                AwsRegion = MetricsMetadata.RegionOrDefault(ConnectionSettings.Region),
+                CloudWatchLogsPresentation = CloudWatchLogsPresentation.Ui,
+                CloudWatchResourceType = CloudWatchResourceType.LogGroupList,
+                Result = metricsResult,
+                ServiceType = _metricSource.Service,
+                Source = _metricSource.Location,
+            });
         }
     }
 }

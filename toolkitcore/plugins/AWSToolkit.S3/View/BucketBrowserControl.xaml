@@ -26,7 +26,7 @@
 
         <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True" Margin="0,0,0,0">
             <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
-                <Button Click="uploadFileClick">
+                <Button Click="UploadFileClick">
                     <Button.Content>
                         <WrapPanel>
                             <Image Width="16" Height="16" Source="..\Resources\Images\file_up.png"/>
@@ -34,7 +34,7 @@
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-                <Button Click="uploadDirectoryClick">
+                <Button Click="UploadDirectoryClick">
                     <Button.Content>
                         <WrapPanel>
                             <Image Width="16" Height="16" Source="..\Resources\Images\folder_up.png"/>
@@ -42,7 +42,7 @@
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-                <Button Click="onCreateFolderClick">
+                <Button Click="OnCreateFolderClick">
                     <Button.Content>
                         <WrapPanel>
                             <Image Width="16" Height="16" Source="..\Resources\Images\create-folder.png"/>
@@ -50,7 +50,7 @@
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-                <Button Click="refreshClick">
+                <Button Click="RefreshClick">
                     <Button.Content>
                         <WrapPanel>
                             <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
@@ -93,7 +93,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Margin="5,5,5,5" Grid.Column="0" Style="{StaticResource awsTextBlockBaseStyle}">Filter:</TextBlock>
                 <TextBox  Margin="5,5,5,5" Grid.Column="1" Text="{Binding TextFilter,UpdateSourceTrigger=PropertyChanged}" 
-                          TextChanged="onTextFilterChange"
+                          TextChanged="OnTextFilterChange"
                           Style="{StaticResource awsTextBoxStyle}"/>
             </Grid>
             <ToolBar DockPanel.Dock="Bottom" ToolBarTray.IsLocked="True" >
@@ -111,12 +111,12 @@
                                              CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top" 
                                              CellStyle="{DynamicResource awsDataGridCellCentering}" 
                                              GridLinesVisibility="None" MouseDoubleClick="RowMouseDoubleClick"
-                                             ContextMenuOpening="onGridContextMenu"
-                                             DragEnter="onFileDragEnter" Drop="onFileDrop" AllowDrop="True"
+                                             ContextMenuOpening="OnGridContextMenu"
+                                             DragEnter="OnFileDragEnter" Drop="OnFileDrop" AllowDrop="True"
                                              Sorting="SortHandler"
-                                             PreviewKeyDown="onGridKeyDown"                              
-                                             MouseMove="onDataGridMouseMove"
-                                             PreviewMouseLeftButtonDown="onDataGridMouseDown"                                                   
+                                             PreviewKeyDown="OnGridKeyDown"                              
+                                             MouseMove="OnDataGridMouseMove"
+                                             PreviewMouseLeftButtonDown="OnDataGridMouseDown"                                                   
                                              SelectedItem="{Binding SelectedItem}"
                                              HorizontalAlignment="Stretch" HeadersVisibility="Column"
                                              >

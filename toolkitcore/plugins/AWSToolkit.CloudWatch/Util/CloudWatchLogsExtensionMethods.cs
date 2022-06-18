@@ -1,6 +1,8 @@
 ﻿using System;
 
 using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.CommonUI.Notifications;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 using Amazon.CloudWatchLogs.Model;
 
@@ -39,6 +41,21 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
                 Message = cloudWatchLogEvent.Message.Trim(),
                 Timestamp = DateTimeUtil.ConvertUnixToDateTime(cloudWatchLogEvent.Timestamp, TimeZoneInfo.Local)
             };
+        }
+
+        public static Result AsMetricsResult(this TaskStatus taskStatus)
+        {
+            switch (taskStatus)
+            {
+                case TaskStatus.Cancel:
+                    return Result.Cancelled;
+                case TaskStatus.Fail:
+                    return Result.Failed;
+                case TaskStatus.Success:
+                    return Result.Succeeded;
+                default:
+                    throw new NotSupportedException($"Unsupported task status: {taskStatus}");
+            }
         }
     }
 }

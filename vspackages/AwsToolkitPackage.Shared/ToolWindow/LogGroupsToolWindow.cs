@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -22,7 +23,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     [Guid(GuidList.LogGroupsToolWindowGuidString)]
     public class LogGroupsToolWindow : ToolWindowPane
     {
-        private readonly LogGroupsToolWindowControl _toolWindowControl;
+        private LogGroupsToolWindowControl _toolWindowControl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogGroupsToolWindow"/> class.
@@ -40,6 +41,29 @@ namespace Amazon.AWSToolkit.VisualStudio
         public void SetChildControl(BaseAWSControl control, Func<BaseAWSControl, bool> canUpdateHostedControl)
         {
             _toolWindowControl.SetChildControl(control, canUpdateHostedControl);
+        }
+
+        /// <summary>
+        /// Release resources managed by the tool window
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_toolWindowControl != null)
+                {
+                    try
+                    {
+                        _toolWindowControl.Dispose();
+                        _toolWindowControl = null;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Fail($"Failed to dispose {GetType().FullName} controls.{Environment.NewLine}{e.Message}");
+                    }
+                }
+            }
+            base.Dispose(disposing);
         }
     }
 }

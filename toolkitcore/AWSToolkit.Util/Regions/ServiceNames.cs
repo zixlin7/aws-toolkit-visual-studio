@@ -11,6 +11,8 @@ namespace Amazon.AWSToolkit.Regions
     /// </summary>
     public static class ServiceNames
     {
+        // CloudWatchLogs - AmazonCloudWatchLogsConfig.RegionEndpointServiceName
+        public const string CloudWatchLogs = "logs";
         public const string Xray = "xray";
     }
 }

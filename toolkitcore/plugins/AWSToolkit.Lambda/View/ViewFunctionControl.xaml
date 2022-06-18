@@ -10,6 +10,7 @@
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
     xmlns:util="clr-namespace:Amazon.AWSToolkit.Lambda.Util"
     xmlns:lambda="clr-namespace:Amazon.Lambda;assembly=AWSSDK.Lambda"
+    xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
     Width="800"
     Height="300"
     mc:Ignorable="d">
@@ -19,6 +20,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <commonui:VsImages x:Key="VsImages" />
 
             <!--  style is referenced through codebehind, so don't delete  -->
             <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
@@ -68,11 +71,10 @@
                 <Button Click="onApplyChangesClick" IsEnabled="{Binding IsDirty}">
                     <Button.Content>
                         <WrapPanel>
-                            <Image
+                            <images:VsImage
                                 Width="16"
                                 Height="16"
-                                DataContext="{DynamicResource CommonIcons}"
-                                Source="{Binding SaveIcon}" />
+                                Source="{Binding Source={StaticResource VsImages}, Path=Save}" />
                             <TextBlock VerticalAlignment="Center">Apply Changes</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -80,10 +82,10 @@
                 <Button Click="onUploadChangesClick" Visibility="{Binding UploadSourceVisibility, FallbackValue={x:Static Visibility.Collapsed}}">
                     <Button.Content>
                         <WrapPanel>
-                            <Image
+                            <images:VsImage
                                 Width="16"
                                 Height="16"
-                                Source="..\Resources\Images\upload.png" />
+                                Source="{Binding Source={StaticResource VsImages}, Path=Upload}" />
                             <TextBlock VerticalAlignment="Center">Upload new Source</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -92,11 +94,10 @@
                 <Button Click="onRefreshClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image
+                            <images:VsImage
                                 Width="16"
                                 Height="16"
-                                DataContext="{DynamicResource CommonIcons}"
-                                Source="{Binding RefreshIcon}" />
+                                Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
                             <TextBlock VerticalAlignment="Center">Refresh</TextBlock>
                         </WrapPanel>
                     </Button.Content>

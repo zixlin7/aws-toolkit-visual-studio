@@ -1,7 +1,9 @@
 ﻿using System;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Commands;
 using Amazon.AWSToolkit.CloudWatch.Core;
+using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Credentials.Core;
@@ -29,7 +31,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             var awsConnectionSettings = new AwsConnectionSettings(null, null);
 
             Setup();
-            _command = new ViewLogGroupsCommand(_contextFixture.ToolkitContext, awsConnectionSettings);
+            _command = new ViewLogGroupsCommand(AwsExplorerMetricSource.CloudWatchLogsNode, _contextFixture.ToolkitContext, awsConnectionSettings);
         }
 
         [Fact]
@@ -39,6 +41,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
                 .Throws(new InvalidOperationException());
             var result = _command.Execute();
             Assert.False(result.Success);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Failed, CloudWatchResourceType.LogGroupList);
         }
 
         [StaFact]
@@ -49,6 +52,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
 
             ToolkitHost.Verify(host => host.GetToolWindowFactory(), Times.Once);
             _toolWindowFactory.Verify(mock => mock.ShowLogGroupsToolWindow(It.IsAny<BaseAWSControl>(), It.IsAny<Func<BaseAWSControl, bool>>()), Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Succeeded, CloudWatchResourceType.LogGroupList);
         }
 
         private void Setup()

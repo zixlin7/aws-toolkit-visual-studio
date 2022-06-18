@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Commands;
 using Amazon.AWSToolkit.CloudWatch.Models;
 
@@ -39,6 +40,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
                 mock => mock.ShowError(It.IsAny<string>(),
                     It.Is<string>(msg => msg.Contains("Parameter is not of expected type"))),
                 Times.Once);
+            _groupsFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsDelete(Result.Failed, CloudWatchResourceType.LogGroup);
         }
 
         [Fact]
@@ -50,6 +52,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
 
             _groupsFixture.Repository.Verify(
                 mock => mock.DeleteLogGroupAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+            _groupsFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsDelete(Result.Cancelled, CloudWatchResourceType.LogGroup);
         }
 
         [Fact]
@@ -64,6 +67,7 @@ namespace AWSToolkit.Tests.CloudWatch.Commands
             _groupsFixture.Repository.Verify(
                 mock => mock.GetLogGroupsAsync(It.IsAny<GetLogGroupsRequest>(), It.IsAny<CancellationToken>()),
                 Times.Once);
+            _groupsFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsDelete(Result.Succeeded, CloudWatchResourceType.LogGroup);
         }
 
         private void Setup()

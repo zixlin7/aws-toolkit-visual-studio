@@ -7,6 +7,8 @@ using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.CloudWatch.ViewModels
@@ -65,11 +67,33 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _refreshCommand, value);
         }
 
+        public void RecordRefreshMetric()
+        {
+            ToolkitContext.TelemetryLogger.RecordCloudwatchlogsRefresh(new CloudwatchlogsRefresh()
+            {
+                AwsAccount = MetricsMetadata.AccountIdOrDefault(
+                    ConnectionSettings.GetAccountId(ToolkitContext.ServiceClientManager)),
+                AwsRegion = MetricsMetadata.RegionOrDefault(ConnectionSettings.Region),
+                CloudWatchResourceType = GetCloudWatchResourceType(),
+            });
+        }
+
         public ICommand CopyArnCommand => _copyArnCommand ?? (_copyArnCommand = CreateCopyArnCommand());
 
         private ICommand CreateCopyArnCommand()
         {
-            return Commands.CopyArnCommand.Create(GetLogTypeDisplayName(), ToolkitContext.ToolkitHost);
+            return Commands.CopyArnCommand.Create(this, ToolkitContext.ToolkitHost);
+        }
+
+        public void RecordCopyArnMetric(bool copyResult, CloudWatchResourceType resourceType)
+        {
+            ToolkitContext.TelemetryLogger.RecordCloudwatchlogsCopyArn(new CloudwatchlogsCopyArn()
+            {
+                AwsAccount = MetricsMetadata.AccountIdOrDefault(ConnectionSettings.GetAccountId(ToolkitContext.ServiceClientManager)),
+                AwsRegion = MetricsMetadata.RegionOrDefault(ConnectionSettings.Region),
+                CloudWatchResourceType = resourceType,
+                Result = copyResult ? Result.Succeeded : Result.Failed,
+            });
         }
 
         public AwsConnectionSettings ConnectionSettings => Repository?.ConnectionSettings;
@@ -79,6 +103,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         public virtual string GetLogTypeDisplayName() => "log resources";
 
         public abstract Task RefreshAsync();
+
+        public abstract CloudWatchResourceType GetCloudWatchResourceType();
 
         public abstract Task LoadAsync();
 
@@ -141,6 +167,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         public void Dispose()
         {
             CancelExistingToken();
+            Repository?.Dispose();
         }
     }
 }

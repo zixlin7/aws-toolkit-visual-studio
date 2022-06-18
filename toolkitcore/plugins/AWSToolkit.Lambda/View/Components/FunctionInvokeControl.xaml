@@ -5,6 +5,8 @@
                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                              xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.View.Components"
                              xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+                             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+                             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
                              mc:Ignorable="d"
                              d:DesignHeight="300" d:DesignWidth="500">
 
@@ -13,6 +15,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <commonui:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </commonui:BaseAWSUserControl.Resources>
 
@@ -70,8 +74,10 @@
                         ToolTip="{Binding InvokeWarningTooltip}"
                         ToolTipService.ShowOnDisabled="True">
                         <WrapPanel>
-                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}"
-                                   Source="{Binding ExecuteIcon}" />
+                            <Image
+                                Width="16" 
+                                Height="16"
+                                Source="{Binding Source={StaticResource VsImages}, Path=CloudRun}" />
                             <TextBlock Margin="4,0,4,0">Invoke</TextBlock>
                         </WrapPanel>
                     </Button>

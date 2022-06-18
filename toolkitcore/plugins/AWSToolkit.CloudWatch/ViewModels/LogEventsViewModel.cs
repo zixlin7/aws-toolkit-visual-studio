@@ -8,7 +8,9 @@ using System.Windows.Data;
 
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.CommonUI.DateTimeRangePicker;
 using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 
@@ -25,7 +27,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private LogEvent _logEvent;
         private ICollectionView _logEventsView;
         private bool _isWrapped = false;
-
+        private bool _IsTimeFilterEnabled = false;
+        private readonly DateTimeRangePickerViewModel _dateTimeRange = new DateTimeRangePickerViewModel(null , null);
         private ObservableCollection<LogEvent> _logEvents =
             new ObservableCollection<LogEvent>();
 
@@ -33,6 +36,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             repository, toolkitContext)
         {
         }
+
+        public DateTimeRangePickerViewModel DateTimeRange => _dateTimeRange;
 
         public ObservableCollection<LogEvent> LogEvents
         {
@@ -73,6 +78,16 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _isWrapped, value);
         }
 
+        public bool IsTimeFilterEnabled
+        {
+            get => _IsTimeFilterEnabled;
+            set => SetProperty(ref _IsTimeFilterEnabled, value);
+        }
+
+        public DateTime? StartTime => _dateTimeRange.GetFullStartTime();
+
+        public DateTime? EndTime => _dateTimeRange.GetFullEndTime();
+
         public override string GetLogTypeDisplayName() => "log events";
 
         public override async Task RefreshAsync()
@@ -80,6 +95,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             ResetState();
             await LoadAsync().ConfigureAwait(false);
         }
+
+        public override CloudWatchResourceType GetCloudWatchResourceType() => CloudWatchResourceType.LogStream;
 
         public override async Task LoadAsync()
         {
@@ -91,7 +108,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
                 NextToken = null;
-                LogEvents.Clear();
+                LogEvents = new ObservableCollection<LogEvent>();
                 LogEvent = null;
                 _isInitialized = false;
                 ErrorMessage = string.Empty;
@@ -109,7 +126,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 {
                     return;
                 }
-
+                
                 var selectedLogEvent = LogEvent?.Message;
 
                 using (CreateLoadingLogsScope())
@@ -144,7 +161,11 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private GetLogEventsRequest CreateGetRequest()
         {
-            var request = new GetLogEventsRequest { LogGroup = LogGroup, LogStream = LogStream };
+            var request = new GetLogEventsRequest
+            {
+                LogGroup = LogGroup, LogStream = LogStream
+            };
+            
             if (_isInitialized)
             {
                 request.NextToken = NextToken;
@@ -153,6 +174,12 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             if (!string.IsNullOrWhiteSpace(FilterText))
             {
                 request.FilterText = FilterText;
+            }
+
+            if (_IsTimeFilterEnabled)
+            {
+                request.StartTime = StartTime;
+                request.EndTime = EndTime;
             }
 
             return request;
