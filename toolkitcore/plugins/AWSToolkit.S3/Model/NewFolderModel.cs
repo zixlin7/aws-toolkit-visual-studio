@@ -1,31 +1,30 @@
 ﻿using Amazon.AWSToolkit.CommonUI;
+using Amazon.S3.IO;
 
 
 namespace Amazon.AWSToolkit.S3.Model
 {
     public class NewFolderModel : BaseModel
     {
-        string _bucketName;
-        string _parentPath;
         string _newFolderName;
 
         public NewFolderModel(string bucketName, string parentPath)
         {
-            this._bucketName = bucketName;
-            this._parentPath = parentPath;
+            BucketName = bucketName;
+            ParentPath = parentPath;
         }
 
-        public string BucketName => this._bucketName;
+        public string BucketName { get; }
 
-        public string ParentPath => this._parentPath;
+        public string ParentPath { get; }
 
         public string NewFolderName
         {
-            get => this._newFolderName;
+            get => _newFolderName;
             set
             {
-                this._newFolderName = value;
-                this.NotifyPropertyChanged("NewFolderName");
+                _newFolderName = value.Replace(S3Path.DefaultDirectorySeparator, string.Empty);
+                NotifyPropertyChanged("NewFolderName");
             }
         }
     }

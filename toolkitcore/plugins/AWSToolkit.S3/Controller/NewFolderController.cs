@@ -1,41 +1,38 @@
-﻿using Amazon.S3;
-using Amazon.S3.IO;
-
-using Amazon.AWSToolkit.S3.Model;
+﻿using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.View;
+using Amazon.S3;
+using Amazon.S3.IO;
 
 namespace Amazon.AWSToolkit.S3.Controller
 {
     public class NewFolderController
     {
-        IAmazonS3 _s3Client;
-        NewFolderModel _model;
+        private readonly IAmazonS3 _s3Client;
 
-       public NewFolderController(IAmazonS3 s3Client, string bucketName, string parentPath)
+        public NewFolderController(IAmazonS3 s3Client, string bucketName, string parentPath)
             : this(s3Client, new NewFolderModel(bucketName, parentPath))
         {
         }
 
-       public NewFolderController(IAmazonS3 s3Client, NewFolderModel model)
+        public NewFolderController(IAmazonS3 s3Client, NewFolderModel model)
         {
-            this._s3Client = s3Client;
-            this._model = model;
+            _s3Client = s3Client;
+            Model = model;
         }
 
-       public NewFolderModel Model => this._model;
+        public NewFolderModel Model { get; }
 
-       public bool Execute()
+        public bool Execute()
         {
-            NewFolderControl control = new NewFolderControl(this);
-            return ToolkitFactory.Instance.ShellProvider.ShowModal(control);
+            return ToolkitFactory.Instance.ShellProvider.ShowModal(new NewFolderControl(this));
         }
 
         public void Persist()
         {
             S3Directory.CreateDirectory(
-                this._s3Client, 
-                this._model.BucketName, 
-                this._model.ParentPath + "/" + this._model.NewFolderName);
+                _s3Client,
+                Model.BucketName,
+                S3Path.Combine(Model.ParentPath, S3Path.ToDirectory(Model.NewFolderName)));
         }
     }
 }

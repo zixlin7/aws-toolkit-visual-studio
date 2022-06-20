@@ -1,7 +1,8 @@
 ﻿using System.Windows;
+
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
+using Amazon.AWSToolkit.S3.Model;
 
 
 namespace Amazon.AWSToolkit.S3.View
@@ -11,40 +12,37 @@ namespace Amazon.AWSToolkit.S3.View
     /// </summary>
     public partial class NewFolderControl : BaseAWSControl
     {
-        NewFolderController _controller;
+        private readonly NewFolderController _controller;
 
         public NewFolderControl()
-            : this(null)
-        {
-        }
+            : this(null) { }
 
         public NewFolderControl(NewFolderController controller)
         {
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            _controller = controller;
+            DataContext = _controller.Model;
             InitializeComponent();
         }
 
-        public NewFolderModel Model => this._controller.Model;
+        public NewFolderModel Model => _controller.Model;
 
         public override string Title => "New Folder";
 
         public override bool OnCommit()
         {
-            string newName = this.Model.NewFolderName == null ? string.Empty : this.Model.NewFolderName;
-            if (newName.Trim().Equals(string.Empty))
+            if (string.IsNullOrWhiteSpace(Model.NewFolderName))
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("New name is required.");
+                ToolkitFactory.Instance.ShellProvider.ShowError("New folder name is required.");
                 return false;
             }
 
-            this._controller.Persist();
+            _controller.Persist();
             return true;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            this._ctlNewFolderName.Focus();
+            _ctlNewFolderName.Focus();
         }
     }
 }

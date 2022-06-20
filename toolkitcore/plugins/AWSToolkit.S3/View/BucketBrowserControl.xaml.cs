@@ -21,12 +21,12 @@ using Amazon.S3.Model;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Images;
-using Amazon.AWSToolkit.CommonUI.JobTracker;
 using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Jobs;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.S3.IO;
 
 namespace Amazon.AWSToolkit.S3.View
 {
@@ -143,7 +143,7 @@ namespace Amazon.AWSToolkit.S3.View
             try
             {
                 // Clear out existing breadcrumb
-                _ctlBreadCrumbPanel.Children.RemoveRange(0, _ctlBreadCrumbPanel.Children.Count);
+                _ctlBreadCrumbPanel.Children.Clear();
 
                 string currentPath = "";
 
@@ -151,15 +151,14 @@ namespace Amazon.AWSToolkit.S3.View
                 _ctlBreadCrumbPanel.Children.Add(CreateS3BucketBreadCrumbImage());
                 _ctlBreadCrumbPanel.Children.Add(CreateBreadCrumbTextBlock(currentPath, _model.BucketName));
 
-                string[] pathItems = _model.Path.Split('/');
-                foreach (string item in pathItems)
+                foreach (string item in S3Path.GetPathComponents(_model.Path))
                 {
                     if (string.IsNullOrEmpty(item))
                     {
                         continue;
                     }
 
-                    currentPath = $"{currentPath}{item}/";
+                    currentPath = $"{currentPath}{item}";
                     TextBlock separator = new TextBlock
                     {
                         Text = " > "
@@ -186,7 +185,7 @@ namespace Amazon.AWSToolkit.S3.View
 
         private void UpdateBreadCrumb(string breadCrumbPath)
         {
-            _model.Path = breadCrumbPath.Substring(breadCrumbPath.IndexOf('-') + 1).Trim('/');
+            _model.Path = breadCrumbPath.Substring(breadCrumbPath.IndexOf('-') + 1);
         }
 
         private TextBlock CreateBreadCrumbTextBlock(string breadCrumbPath, string title)
@@ -305,13 +304,9 @@ namespace Amazon.AWSToolkit.S3.View
         {
             try
             {
-                var s3RootFolder = Model.Path;
-                if (s3RootFolder.Length > 0 && !s3RootFolder.EndsWith("/"))
-                {
-                    s3RootFolder += "/";
-                }
-
+                var s3RootFolder = S3Path.ToDirectory(Model.Path);
                 var settingsController = new NewUploadSettingsController();
+
                 if (!settingsController.Execute())
                 {
                     return;
@@ -817,15 +812,6 @@ namespace Amazon.AWSToolkit.S3.View
                     if (childItem.ChildType == BucketBrowserModel.ChildType.LinkToParent)
                     {
                         continue;
-                    }
-
-                    // Not sure how we are getting folders with empty names but 
-                    // when we delete them it deletes all the data.  For now just blocking
-                    // on these deletes.
-                    if (childItem.Title.Equals(""))
-                    {
-                        ToolkitFactory.Instance.ShellProvider.ShowError("Can not delete items with no names");
-                        return;
                     }
 
                     childItems.Add(childItem);

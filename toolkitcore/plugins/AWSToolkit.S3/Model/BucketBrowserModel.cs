@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.S3;
+using Amazon.S3.IO;
 
 namespace Amazon.AWSToolkit.S3.Model
 {
@@ -242,47 +243,48 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public class ChildItem : BaseModel
         {
-            string _title;
-            string _fullPath;
-            long _size;
-            DateTime? _lastModifiedDate;
-            ChildType _childType;
-            S3StorageClass _storageClass;
+            private string _fullPath;
+            private long _size;
+            private DateTime? _lastModifiedDate;
+            private S3StorageClass _storageClass;
 
             public ChildItem(string fullPath, ChildType childType)
             {
-                this._fullPath = fullPath;
-                this._childType = childType;
+                FullPath = fullPath;
+                ChildType = childType;
             }
 
             public ChildItem(string fullPath, ChildType childType, long size, DateTime? lastModifiedDate, S3StorageClass storageClass)
                 : this(fullPath, size, lastModifiedDate.GetValueOrDefault(), storageClass)
             {
-                this._childType = childType;
+                ChildType = childType;
             }
 
             public ChildItem(string fullPath, long size, string lastModifiedDate, S3StorageClass storageClass)
             {
-                DateTime dt;
-                if(DateTime.TryParse(lastModifiedDate, out dt))
-                    initializeFile(fullPath, size, dt, storageClass);
+                if (DateTime.TryParse(lastModifiedDate, out var dt))
+                {
+                    InitializeFile(fullPath, size, dt, storageClass);
+                }
                 else
-                    initializeFile(fullPath, size, null, storageClass);
+                {
+                    InitializeFile(fullPath, size, null, storageClass);
+                }
             }
 
             public ChildItem(string fullPath, long size, DateTime lastModifiedDate, S3StorageClass storageClass)
             {
-                initializeFile(fullPath, size, lastModifiedDate, storageClass);
+                InitializeFile(fullPath, size, lastModifiedDate, storageClass);
             }
 
-            void initializeFile(string fullPath, long size, DateTime? lastModifiedDate, S3StorageClass storageClass)
+            private void InitializeFile(string fullPath, long size, DateTime? lastModifiedDate, S3StorageClass storageClass)
             {
-                this._fullPath = fullPath;
-                this._size = size;
+                FullPath = fullPath;
+                Size = size;
 
-                this._lastModifiedDate = lastModifiedDate;
-                this.StorageClass = storageClass;
-                this._childType = ChildType.File;
+                LastModifiedDate = lastModifiedDate;
+                StorageClass = storageClass;
+                ChildType = ChildType.File;
             }
 
             public static ChildItem CreateLinkToParent()
@@ -290,154 +292,105 @@ namespace Amazon.AWSToolkit.S3.Model
                 return new ChildItem("..", ChildType.LinkToParent);
             }
 
-            public string Title
-            {
-                get 
-                {
-                    if (this._title == null)
-                    {
-                        int pos = this._fullPath.LastIndexOf('/', this._fullPath.Length - 1);
-                        if (pos > 0)
-                            this._title = this._fullPath.Substring(pos + 1);
-                        else
-                            this._title = this._fullPath;
-                    }
-                    return this._title; 
-                }
-            }
-
             public string FullPath
             {
-                get => this._fullPath;
+                get => _fullPath;
                 set
                 {
-                    this._title = null;
-                    this._fullPath = value;
-                    this.NotifyPropertyChanged("FullPath");
-                    this.NotifyPropertyChanged("Title");
-                    this.NotifyPropertyChanged("Icon");
+                    _fullPath = value;
+                    Title = S3Path.GetLastPathComponent(_fullPath);
+                    ParentPath = S3Path.GetParentPath(_fullPath);
+                    NotifyPropertyChanged(nameof(FullPath));
+                    NotifyPropertyChanged(nameof(Title));
+                    NotifyPropertyChanged(nameof(ParentPath));
+                    NotifyPropertyChanged(nameof(Icon));
                 }
             }
 
-            public string ParentPath
-            {
-                get
-                {
-                    int pos = this.FullPath.LastIndexOf('/');
-                    if (pos <= 0)
-                        return string.Empty;
+            public string Title { get; private set; }
 
-                    return this.FullPath.Substring(0, pos);
-                }
-            }
+            public string ParentPath { get; private set; }
 
             public S3StorageClass StorageClass
             {
-                get => this._storageClass;
+                get => _storageClass;
                 set
                 {
-                    this._storageClass = value;
-                    this.NotifyPropertyChanged("StorageClass");
-                    this.NotifyPropertyChanged("FormattedStorageClass");
+                    _storageClass = value;
+                    NotifyPropertyChanged(nameof(StorageClass));
+                    NotifyPropertyChanged(nameof(FormattedStorageClass));
                 }
             }
 
-            public string FormattedStorageClass
-            {
-                get 
-                {
-                    if (this._storageClass == null)
-                        return "";
+            public string FormattedStorageClass => _storageClass?.ToString() ?? string.Empty;
 
-                    return this._storageClass.ToString(); 
-                }
-            }
-
-            public ChildType ChildType => this._childType;
+            public ChildType ChildType { get; private set; }
 
             public object Icon
             {
                 get
                 {
                     Image image;
-                    if (this._childType == ChildType.Folder)
+                    if (ChildType == ChildType.Folder)
                     {
-                        image = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.folder.png");
+                        image = IconHelper.GetIcon(GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.folder.png");
                     }
-                    else if (this._childType == ChildType.LinkToParent)
+                    else if (ChildType == ChildType.LinkToParent)
                     {
-                        image = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.LinkToParentDirectory.png");
+                        image = IconHelper.GetIcon(GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.LinkToParentDirectory.png");
                     }
                     else
-                        image = IconHelper.GetIconByExtension(this.FullPath);
+                    {
+                        image = IconHelper.GetIconByExtension(FullPath);
+                    }
 
-                    if(image == null)
+                    if (image == null)
+                    {
                         image = IconHelper.GetIcon("Amazon.AWSToolkit.Resources.generic-file.png");
+                    }
 
                     return image.Source;
                 }
             }
 
-            public string FormattedSize
-            {
-                get
-                {
-                    if (this._childType == ChildType.File)
-                        return this._size.ToString("#,0") + " bytes";
+            public string FormattedSize => ChildType == ChildType.File ? Size.ToString("#,0") + " bytes" : "--";
 
-                    return "--"; 
-                }
-            }
-
-            public DateTime? FormattedLastModifiedDate
-            {
-                get
-                {
-                    if (this._childType == ChildType.File)
-                        return this._lastModifiedDate;
-
-                    return null;
-                }
-            }
+            public DateTime? FormattedLastModifiedDate => ChildType == ChildType.File ? LastModifiedDate : null;
 
             public long Size
             {
-                get => this._size;
+                get => _size;
                 set
                 {
-                    this._size = value;
-                    this.NotifyPropertyChanged("Size");
-                    this.NotifyPropertyChanged("FormattedSize");
+                    _size = value;
+                    NotifyPropertyChanged(nameof(Size));
+                    NotifyPropertyChanged(nameof(FormattedSize));
                 }
             }
 
             public DateTime? LastModifiedDate
             {
-                get => this._lastModifiedDate;
+                get => _lastModifiedDate;
                 set
                 {
-                    this._lastModifiedDate = value;
-                    this.NotifyPropertyChanged("LastModifiedDate");
-                    this.NotifyPropertyChanged("FormattedLastModifiedDate");
+                    _lastModifiedDate = value;
+                    NotifyPropertyChanged(nameof(LastModifiedDate));
+                    NotifyPropertyChanged(nameof(FormattedLastModifiedDate));
                 }
             }
 
             public bool PassClientFilter(string filter)
             {
-                if (!string.IsNullOrEmpty(filter))
+                if (string.IsNullOrEmpty(filter))
                 {
-                    string textFilter = filter.ToLower();
-                    if (this.Title.ToString().ToLower().Contains(textFilter))
-                        return true;
-                    if (this.FormattedLastModifiedDate.ToString().ToLower().Contains(textFilter))
-                        return true;
-                    if (this.FormattedSize.ToString().ToLower().Contains(textFilter))
-                        return true;
-
-                    return false;
+                    return true;
                 }
 
-                return true;
+                string textFilter = filter.ToLower();
+                return
+                    Title.ToLower().Contains(textFilter) ||
+                    FormattedLastModifiedDate.ToString().ToLower().Contains(textFilter) ||
+                    FormattedSize.ToLower().Contains(textFilter);
             }
         }
    }

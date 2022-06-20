@@ -19,12 +19,15 @@ namespace Amazon.S3.IO
 
             var getACLResponse = s3Client.GetACL(getACLRequest);
 
+            // Workaround for issue reported in https://github.com/aws/aws-sdk-net/issues/1720
+            // CopyObjectRequestMarshaller in AWS SDK for .NET trims the first leading / from both the source and destination keys
+            // If the path has an empty folder at the root, it requires a leading /.  Workaround is to pad a leading / on both keys.
             s3Client.CopyObject(new CopyObjectRequest()
             {
                 SourceBucket = sourceBucket,
-                SourceKey = sourcePath,
+                SourceKey = $"{S3Path.DefaultDirectorySeparator}{sourcePath}",
                 DestinationBucket = destinationBucket,
-                DestinationKey = destinationPath,
+                DestinationKey = $"{S3Path.DefaultDirectorySeparator}{destinationPath}",
                 MetadataDirective = S3MetadataDirective.COPY
             });
 
@@ -43,20 +46,14 @@ namespace Amazon.S3.IO
             if (sourceBucket == destinationBucket && sourcePath == destinationPath)
                 return;
 
+            // TODO If bucket doesn't have ACL (see line 31 above), copy will fail and DeleteObject
+            // will not be executed.  Bucket ACL handling needs to be improved.  See IDE-7806
             Copy(s3Client, sourceBucket, sourcePath, destinationBucket, destinationPath);
             s3Client.DeleteObject(new DeleteObjectRequest()
             {
                 BucketName = sourceBucket,
                 Key = sourcePath
             });
-        }
-
-        public static string GetName(string fullpath)
-        {
-            int pos = fullpath.LastIndexOf('/');
-            if (pos < 0)
-                return fullpath;
-            return fullpath.Substring(pos + 1);
         }
     }
 }
