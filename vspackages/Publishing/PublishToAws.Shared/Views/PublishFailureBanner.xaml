@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls;assembly=AWSToolkit"
+             xmlns:models="clr-namespace:Amazon.AWSToolkit.Publish.Models"
              mc:Ignorable="d"
              themes:ToolkitThemes.UseToolkitTheme="True">
     <UserControl.Resources>
@@ -37,8 +39,18 @@
                     Margin="0 3 0 0"
                     TextWrapping="Wrap">
                     <commonUi:BrowserHyperLink
-                        NavigateUri="https://github.com/aws/aws-toolkit-visual-studio/issues/new/choose"
-                        ToolTip="https://github.com/aws/aws-toolkit-visual-studio/issues/new/choose">
+                        NavigateUri="{x:Static models:PublishUrls.TroubleshootingGuideUri}"
+                        ToolTip="{x:Static models:PublishUrls.TroubleshootingGuideUrl}">
+                        <Run Text="Check out the Troubleshooting Guide." />
+                    </commonUi:BrowserHyperLink>
+                </TextBlock>
+
+                <TextBlock
+                    Margin="0 3 0 0"
+                    TextWrapping="Wrap">
+                    <commonUi:BrowserHyperLink
+                        NavigateUri="{x:Static urls:GitHubUrls.CreateNewIssueUri}"
+                        ToolTip="{x:Static urls:GitHubUrls.CreateNewIssueUrl}">
                         <Run Text="Open an issue on Github" />
                     </commonUi:BrowserHyperLink>
                     <TextBlock>and describe your deployment.</TextBlock>

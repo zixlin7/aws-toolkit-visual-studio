@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "A link to the Troubleshooting Guide is now shown in the Publish to AWS experience when a deployment fails."
+}
