@@ -1,37 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
-using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Moq;
 
 namespace AWSToolkit.Tests.CloudWatch.Fixtures
 {
-    public class LogEventsViewModelFixture
+    public class LogEventsViewModelFixture : BaseLogsViewModelFixture
     {
-        public readonly ToolkitContextFixture ContextFixture = new ToolkitContextFixture();
-        public Mock<ICloudWatchLogsRepository> Repository { get; } = new Mock<ICloudWatchLogsRepository>();
-        public List<LogEvent> SampleLogEvents { get; }
-        public string SampleToken => "sample-token";
-        public LogGroup SampleLogGroup { get; } = new LogGroup() { Name = "lg", Arn = "lg-arn" };
-        public LogStream SampleLogStream { get; } = new LogStream() { Name = "ls", Arn = "ls-arn" };
-        public AwsConnectionSettings AwsConnectionSettings;
+        public LogGroup SampleLogGroup => SampleLogGroups.First();
+        public LogStream SampleLogStream => SampleLogStreams.First();
 
-        public LogEventsViewModelFixture()
+        public LogEventsViewModelFixture() : base()
         {
-            AwsConnectionSettings = new AwsConnectionSettings(null, null);
-
-            ContextFixture.SetupExecuteOnUIThread();
-            SampleLogEvents = CreateSampleLogEvents();
             StubGetLogEventsToReturn(SampleToken, SampleLogEvents);
             StubFilterLogEventsToReturn(SampleToken, SampleLogEvents);
-            SetupRepository();
         }
 
         public LogEventsViewModel CreateViewModel()
@@ -41,15 +27,6 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
                 LogGroup = SampleLogGroup.Name, LogStream = SampleLogStream.Name
             };
             return viewModel;
-        }
-
-        public List<LogEvent> CreateSampleLogEvents()
-        {
-            return Enumerable.Range(1, 3).Select(i =>
-            {
-                var guid = Guid.NewGuid().ToString();
-                return new LogEvent() { Message = $"sample-message-{guid}", Timestamp = DateTime.Now };
-            }).ToList();
         }
 
         public void StubGetLogEventsToReturn(string nextToken, List<LogEvent> logEvents)
@@ -66,11 +43,6 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
             Repository.Setup(mock =>
                     mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
-        }
-
-        private void SetupRepository()
-        {
-            Repository.SetupGet(m => m.ConnectionSettings).Returns(() => AwsConnectionSettings);
         }
     }
 }

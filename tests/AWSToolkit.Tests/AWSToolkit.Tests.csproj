@@ -59,11 +59,13 @@
     <Compile Include="CloudWatch\Commands\ExportStreamCommandTests.cs" />
     <Compile Include="CloudWatch\Commands\RefreshLogEventsCommandTests.cs" />
     <Compile Include="CloudWatch\Commands\ViewLogEventsCommandTests.cs" />
+    <Compile Include="CloudWatch\Fixtures\BaseLogsViewModelFixture.cs" />
     <Compile Include="CloudWatch\Fixtures\LogEventsViewModelFixture.cs" />
     <Compile Include="CloudWatch\Util\CloudWatchLogsExtensionMethodTests.cs" />
     <Compile Include="CloudWatch\Core\CloudWatchLogsRepositoryTests.cs" />
     <Compile Include="CloudWatch\Util\ExportStreamHandlerTests.cs" />
     <Compile Include="CloudWatch\Util\TelemetryFixtureExtensionMethods.cs" />
+    <Compile Include="CloudWatch\ViewModels\BaseLogEntityViewModelTests.cs" />
     <Compile Include="CloudWatch\ViewModels\CloudWatchRootViewModelTests.cs" />
     <Compile Include="CloudWatch\Fixtures\LogGroupsViewModelFixture.cs" />
     <Compile Include="CloudWatch\ViewModels\LogEventsViewModelTests.cs" />

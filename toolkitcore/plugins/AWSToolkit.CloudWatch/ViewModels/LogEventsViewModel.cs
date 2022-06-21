@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -13,9 +14,13 @@ using Amazon.AWSToolkit.CommonUI.DateTimeRangePicker;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 {
@@ -140,6 +145,25 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private async Task GetLogEventsAsync(CancellationToken cancelToken)
         {
+            TaskStatus status = TaskStatus.Fail;
+
+            async Task Load()
+            {
+                status = await GetNextLogEventsPageAsync(cancelToken);
+            }
+
+            void Record(ITelemetryLogger logger)
+            {
+                var filterByText = IsFilteredByText();
+                var filterByTime = IsFilteredByTime();
+                RecordFilterMetric(filterByText, filterByTime, status, logger);
+            }
+
+            await ToolkitContext.TelemetryLogger.InvokeAndRecordAsync(Load, Record);
+        }
+
+        private async Task<TaskStatus> GetNextLogEventsPageAsync(CancellationToken cancelToken)
+        {
             try
             {
                 cancelToken.ThrowIfCancellationRequested();
@@ -147,7 +171,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 //if no more entries(last page retrieved), do not make additional calls
                 if (IsLastPageLoaded())
                 {
-                    return;
+                    return TaskStatus.Success;
                 }
 
                 var selectedLogEvent = LogEvent?.Message;
@@ -159,11 +183,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                         ? await RetrieveFilteredLogEventsAsync(cancelToken)
                         : await RetrieveLogEventsAsync(cancelToken);
                     UpdateLogEventProperties(response, selectedLogEvent);
+                    return TaskStatus.Success;
                 }
             }
             catch (OperationCanceledException e)
             {
                 Logger.Error("Operation to load log events was cancelled", e);
+                return TaskStatus.Cancel;
             }
         }
 
@@ -352,6 +378,27 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             }
 
             return request;
+        }
+
+        protected override int CreateFilterHash()
+        {
+            if (!IsFiltered())
+            {
+                return base.CreateFilterHash();
+            }
+
+            var filterComponents = new List<string>
+            {
+                FilterText 
+            };
+
+            if (_isTimeFilterEnabled)
+            {
+                filterComponents.Add(StartTime?.ToString() ?? string.Empty);
+                filterComponents.Add(EndTime?.ToString() ?? string.Empty);
+            }
+
+            return string.Join("|", filterComponents).GetHashCode();
         }
     }
 }

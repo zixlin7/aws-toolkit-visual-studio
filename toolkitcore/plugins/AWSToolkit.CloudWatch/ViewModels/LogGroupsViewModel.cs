@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
@@ -102,14 +103,31 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private async Task GetLogGroupsAsync(CancellationToken cancelToken)
         {
+            TaskStatus status = TaskStatus.Fail;
+
+            async Task Load()
+            {
+                status = await GetNextLogGroupsPageAsync(cancelToken);
+            }
+
+            void Record(ITelemetryLogger logger)
+            {
+                RecordFilterMetric(filterByText: true, filterByTime: false, status, logger);
+            }
+
+            await ToolkitContext.TelemetryLogger.InvokeAndRecordAsync(Load, Record);
+        }
+
+        private async Task<TaskStatus> GetNextLogGroupsPageAsync(CancellationToken cancelToken)
+        {
             try
             {
                 cancelToken.ThrowIfCancellationRequested();
-                
+
                 //if no more entries(last page retrieved), do not make additional calls
                 if (IsLastPageLoaded())
                 {
-                    return;
+                    return TaskStatus.Success;
                 }
 
                 var selectedLogGroup = LogGroup?.Arn;
@@ -119,11 +137,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                     var response = await Repository.GetLogGroupsAsync(request, cancelToken).ConfigureAwait(false);
 
                     UpdateLogGroupProperties(response, selectedLogGroup);
+                    return TaskStatus.Success;
                 }
             }
             catch (OperationCanceledException e)
             {
                 Logger.Error("Operation to load log groups was cancelled", e);
+                return TaskStatus.Cancel;
             }
         }
 

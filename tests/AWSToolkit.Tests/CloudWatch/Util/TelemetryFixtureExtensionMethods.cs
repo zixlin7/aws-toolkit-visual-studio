@@ -31,6 +31,21 @@ namespace AWSToolkit.Tests.CloudWatch
             Assert.Equal(CloudWatchResourceType.LogStream.ToString(), metric.Metadata["cloudWatchResourceType"]);
         }
 
+        public static void VerifyRecordCloudWatchLogsFilter(this TelemetryFixture telemetryFixture,
+            CloudWatchResourceType expectedResourceType,
+            int expectedFilterByTextCount,
+            int expectedFilterByTimeCount)
+        {
+            var metrics = telemetryFixture.LoggedMetrics
+                .SelectMany(m => m.Data)
+                .Where(datum => datum.MetricName == "cloudwatchlogs_filter")
+                .Where(datum => datum.Metadata.TryGetValue("cloudWatchResourceType", out string resourceType) && resourceType == expectedResourceType.ToString())
+                .ToList();
+
+            Assert.Equal(expectedFilterByTextCount, metrics.Count(m => m.Metadata.TryGetValue("hasTextFilter", out string hasTextFilter) && hasTextFilter == "true"));
+            Assert.Equal(expectedFilterByTimeCount, metrics.Count(m => m.Metadata.TryGetValue("hasTimeFilter", out string hasTimeFilter) && hasTimeFilter == "true"));
+        }
+        
         public static void VerifyRecordCloudWatchLogsOpen(this TelemetryFixture telemetryFixture,
             Result expectedResult, CloudWatchResourceType expectedResourceType)
         {

@@ -10,9 +10,13 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 {
@@ -151,6 +155,23 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         private async Task GetLogStreamsAsync(CancellationToken cancelToken)
         {
+            TaskStatus status = TaskStatus.Fail;
+
+            async Task Load()
+            {
+                status = await GetNextLogStreamsPageAsync(cancelToken);
+            }
+
+            void Record(ITelemetryLogger logger)
+            {
+                RecordFilterMetric(filterByText: true, filterByTime: false, status, logger);
+            }
+
+            await ToolkitContext.TelemetryLogger.InvokeAndRecordAsync(Load, Record);
+        }
+
+        private async Task<TaskStatus> GetNextLogStreamsPageAsync(CancellationToken cancelToken)
+        {
             try
             {
                 cancelToken.ThrowIfCancellationRequested();
@@ -158,7 +179,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 //if no more entries(last page retrieved), do not make additional calls
                 if (IsLastPageLoaded())
                 {
-                    return;
+                    return TaskStatus.Success;
                 }
 
                 var selectedLogStream = LogStream?.Arn;
@@ -168,11 +189,13 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                     var response = await Repository.GetLogStreamsAsync(request, cancelToken).ConfigureAwait(false);
 
                     UpdateLogStreamProperties(response, selectedLogStream);
+                    return TaskStatus.Success;
                 }
             }
             catch (OperationCanceledException e)
             {
                 Logger.Error("Operation to load log groups was cancelled", e);
+                return TaskStatus.Cancel;
             }
         }
 

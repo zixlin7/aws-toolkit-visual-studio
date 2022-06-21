@@ -30,49 +30,24 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         }
     }
 
-    public class LogEventsViewModelTests
+    public class LogEventsViewModelTests : BaseLogEntityViewModelTests<LogEventsViewModel>
     {
-        private readonly LogEventsViewModel _viewModel;
         private readonly LogEventsViewModelFixture _eventsFixture = new LogEventsViewModelFixture();
-        private string SampleToken => _eventsFixture.SampleToken;
-        private List<LogEvent> SampleLogEvents => _eventsFixture.SampleLogEvents;
-        private Mock<ICloudWatchLogsRepository> Repository => _eventsFixture.Repository;
 
         public LogEventsViewModelTests()
         {
-            _viewModel = _eventsFixture.CreateViewModel();
+            ViewModelFixture = _eventsFixture;
+            ViewModel = _eventsFixture.CreateViewModel();
         }
 
         [Fact]
         public async Task LoadAsync_WhenInitial()
         {
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(SampleLogEvents, _viewModel.LogEvents);
-            Assert.Equal(SampleLogEvents.First(), _viewModel.LogEvent);
-        }
-
-        [Fact]
-        public async Task LoadAsync_AdjustsLoadingLogs()
-        {
-            var loadingAdjustments= new List<bool>();
-
-            _viewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(_viewModel.LoadingLogs))
-                {
-                    loadingAdjustments.Add(_viewModel.LoadingLogs);
-                }
-            };
-
-            Assert.False(_viewModel.LoadingLogs);
-
-            await _viewModel.LoadAsync();
-
-            Assert.Equal(2, loadingAdjustments.Count);
-            Assert.True(loadingAdjustments[0]);
-            Assert.False(loadingAdjustments[1]);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(SampleLogEvents, ViewModel.LogEvents);
+            Assert.Equal(SampleLogEvents.First(), ViewModel.LogEvent);
         }
 
         [Fact]
@@ -85,11 +60,11 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _eventsFixture.StubGetLogEventsToReturn(SampleToken, SampleLogEvents);
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(expectedLogEvents, _viewModel.LogEvents);
-            Assert.Equal(expectedLogEvents.First(), _viewModel.LogEvent);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(expectedLogEvents, ViewModel.LogEvents);
+            Assert.Equal(expectedLogEvents.First(), ViewModel.LogEvent);
         }
 
         [Fact]
@@ -102,12 +77,12 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _eventsFixture.StubGetLogEventsToReturn(SampleToken, SampleLogEvents);
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
             //for getlogevents, next token remains same when last page is retrieved
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(expectedLogEvents, _viewModel.LogEvents);
-            Assert.Equal(expectedLogEvents.First(), _viewModel.LogEvent);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(expectedLogEvents, ViewModel.LogEvents);
+            Assert.Equal(expectedLogEvents.First(), ViewModel.LogEvent);
 
             Repository.Verify(
                 mock => mock.GetLogEventsAsync(It.IsAny<GetLogEventsRequest>(), It.IsAny<CancellationToken>()),
@@ -122,11 +97,11 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _eventsFixture.StubGetLogEventsToReturn("abc-token", new List<LogEvent>());
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
             //for getlogevents, next token remains same when last page is retrieved
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(SampleLogEvents, _viewModel.LogEvents);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(SampleLogEvents, ViewModel.LogEvents);
 
             Repository.Verify(
                 mock => mock.GetLogEventsAsync(It.IsAny<GetLogEventsRequest>(), It.IsAny<CancellationToken>()),
@@ -143,25 +118,139 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
             {
-                await _viewModel.LoadAsync();
+                await ViewModel.LoadAsync();
             });
 
-            Assert.Empty(_viewModel.LogEvents);
-            Assert.Null(_viewModel.NextToken);
+            Assert.Empty(ViewModel.LogEvents);
+            Assert.Null(ViewModel.NextToken);
+        }
+
+        [Fact]
+        public async Task LoadAsync_TextAndTimeFilter_EmitMetric()
+        {
+            ApplyTextAndDateTimeFilter();
+            await LoadAndVerifyMetric(1, 1);
+        }
+
+        [Fact]
+        public async Task LoadAsync_TextAndNoTimeFilter_EmitMetric()
+        {
+            ViewModel.FilterText = "some-filter";
+            ViewModel.IsTimeFilterEnabled = true;
+            ViewModel.DateTimeRange.StartDate = null;
+            ViewModel.DateTimeRange.EndDate = null;
+            await LoadAndVerifyMetric(1, 0);
+        }
+
+        [Fact]
+        public async Task LoadAsync_TextAndDisabledTimeFilter_EmitMetric()
+        {
+            ApplyTextAndDateTimeFilter();
+            ViewModel.IsTimeFilterEnabled = false;
+            await LoadAndVerifyMetric(1, 0);
+        }
+
+        [Fact]
+        public async Task LoadAsync_NoTextAndTimeFilter_EmitMetric()
+        {
+            ApplyTextAndDateTimeFilter();
+            ViewModel.FilterText = string.Empty;
+            await LoadAndVerifyMetric(0, 1);
+        }
+
+        [Fact]
+        public async Task LoadAsync_NoTextAndNoTimeFilter_EmitMetric()
+        {
+            ViewModel.FilterText = string.Empty;
+            ViewModel.IsTimeFilterEnabled = true;
+            ViewModel.DateTimeRange.StartDate = null;
+            ViewModel.DateTimeRange.EndDate = null;
+            await LoadAndVerifyMetric(0, 0);
+        }
+
+        [Fact]
+        public async Task LoadAsync_NoTextAndDisabledTimeFilter_EmitMetric()
+        {
+            ViewModel.FilterText = string.Empty;
+            ViewModel.IsTimeFilterEnabled = false;
+            ViewModel.DateTimeRange.StartDate = DateTime.Now.AddDays(-10);
+            ViewModel.DateTimeRange.EndDate = DateTime.Now;
+            await LoadAndVerifyMetric(0, 0);
+        }
+
+        [Fact]
+        public async Task LoadAsyncChangeStartDayFilter_EmitMetric()
+        {
+            ApplyTextAndDateTimeFilter();
+            await LoadAndVerifyMetric(1, 1);
+
+            ViewModel.DateTimeRange.StartDate = DateTime.Now.AddDays(-5);
+            await LoadAndVerifyMetric(2, 2);
+        }
+
+        [Fact]
+        public async Task LoadAsyncChangeStartTimeFilter_EmitMetric()
+        {
+            ApplyTextAndDateTimeFilter();
+            await LoadAndVerifyMetric(1, 1);
+
+            ViewModel.DateTimeRange.StartTimeModel.SetTimeInput((DateTime.MinValue + DateTime.Now.TimeOfDay).AddMinutes(10));
+            ViewModel.DateTimeRange.StartTimeModel.SetTime();
+            await LoadAndVerifyMetric(2, 2);
+        }
+
+        [Fact]
+        public async Task LoadAsyncChangeEndDayFilter_EmitMetric()
+        {
+            ApplyTextAndDateTimeFilter();
+            await LoadAndVerifyMetric(1, 1);
+
+            ViewModel.DateTimeRange.EndDate = DateTime.Now.AddDays(-5);
+            await LoadAndVerifyMetric(2, 2);
+        }
+
+        [Fact]
+        public async Task LoadAsyncChangeEndTimeFilter_EmitMetric()
+        {
+            ApplyTextAndDateTimeFilter();
+            await LoadAndVerifyMetric(1, 1);
+
+            ViewModel.DateTimeRange.EndTimeModel.SetTimeInput((DateTime.MinValue + DateTime.Now.TimeOfDay).AddMinutes(10));
+            ViewModel.DateTimeRange.EndTimeModel.SetTime();
+            await LoadAndVerifyMetric(2, 2);
+        }
+
+        private void ApplyTextAndDateTimeFilter()
+        {
+            ViewModel.FilterText = "some-filter";
+            ViewModel.IsTimeFilterEnabled = true;
+
+            ViewModel.DateTimeRange.StartDate = DateTime.Now.AddDays(-10);
+            ViewModel.DateTimeRange.StartTimeModel.SetTimeInput(DateTime.MinValue + DateTime.Now.TimeOfDay);
+
+            ViewModel.DateTimeRange.EndDate = DateTime.Now;
+            ViewModel.DateTimeRange.EndTimeModel.SetTimeInput(DateTime.MinValue + DateTime.Now.TimeOfDay);
+        }
+
+        async Task LoadAndVerifyMetric(int expectedPrefixMetrics, int expectedTimeMetrics)
+        {
+            await ViewModel.LoadAsync();
+            ViewModelFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsFilter(
+                ViewModel.GetCloudWatchResourceType(), expectedPrefixMetrics, expectedTimeMetrics);
         }
 
         [Fact]
         public async Task LoadFilteredAsync_WhenNoMorePages()
         {
-            _viewModel.FilterText = "sample-filter";
+            ViewModel.FilterText = "sample-filter";
             await SetupFilteredWithInitialLoad(null, SampleLogEvents);
 
             _eventsFixture.StubFilterLogEventsToReturn(SampleToken, new List<LogEvent>());
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Null(_viewModel.NextToken);
-            Assert.Equal(SampleLogEvents, _viewModel.LogEvents);
+            Assert.Null(ViewModel.NextToken);
+            Assert.Equal(SampleLogEvents, ViewModel.LogEvents);
 
             Repository.Verify(
                 mock => mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()),
@@ -171,31 +260,31 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         [Fact]
         public async Task LoadFilteredAsync_WithNoPaginatedLoading()
         {
-            _viewModel.FilterText = "sample-filter";
+            ViewModel.FilterText = "sample-filter";
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(SampleLogEvents, _viewModel.LogEvents);
-            Assert.Equal(SampleLogEvents.First(), _viewModel.LogEvent);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(SampleLogEvents, ViewModel.LogEvents);
+            Assert.Equal(SampleLogEvents.First(), ViewModel.LogEvent);
 
-            Assert.Equal(PaginatedLoadingStatus.None, _viewModel.PaginatedLoadingStatus);
+            Assert.Equal(PaginatedLoadingStatus.None, ViewModel.PaginatedLoadingStatus);
         }
 
         [Fact]
         public async Task LoadFilteredAsync_WithPaginatedLoadingPrompt()
         {
-            _viewModel.FilterText = "sample-filter";
+            ViewModel.FilterText = "sample-filter";
 
             await SetupFilteredWithInitialLoad(SampleToken, new List<LogEvent>());
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Empty( _viewModel.LogEvents);
-            Assert.Null(_viewModel.LogEvent);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Empty( ViewModel.LogEvents);
+            Assert.Null(ViewModel.LogEvent);
 
-            Assert.Equal(PaginatedLoadingStatus.Prompt, _viewModel.PaginatedLoadingStatus);
+            Assert.Equal(PaginatedLoadingStatus.Prompt, ViewModel.PaginatedLoadingStatus);
         }
 
         [Fact]
@@ -296,12 +385,12 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
             var newLogEvents = _eventsFixture.CreateSampleLogEvents();
             _eventsFixture.StubGetLogEventsToReturn("refresh-token", newLogEvents);
 
-            await _viewModel.RefreshAsync();
+            await ViewModel.RefreshAsync();
 
-            Assert.Equal("refresh-token", _viewModel.NextToken);
-            Assert.Equal(newLogEvents, _viewModel.LogEvents);
+            Assert.Equal("refresh-token", ViewModel.NextToken);
+            Assert.Equal(newLogEvents, ViewModel.LogEvents);
 
-            Assert.Equal(newLogEvents.First(), _viewModel.LogEvent);
+            Assert.Equal(newLogEvents.First(), ViewModel.LogEvent);
         }
 
         [Theory]
@@ -309,11 +398,11 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         [InlineData(false, 0)]
         public async Task IsTimeFilterEnabled(bool isTimeFilterEnabled, int expectedTimesCalled)
         {
-            _viewModel.DateTimeRange.StartDate = new DateTime(2022, 05, 04);
-            _viewModel.DateTimeRange.EndDate = new DateTime(2022, 05, 05);
+            ViewModel.DateTimeRange.StartDate = new DateTime(2022, 05, 04);
+            ViewModel.DateTimeRange.EndDate = new DateTime(2022, 05, 05);
 
-            _viewModel.IsTimeFilterEnabled = isTimeFilterEnabled;
-            await _viewModel.LoadAsync();
+            ViewModel.IsTimeFilterEnabled = isTimeFilterEnabled;
+            await ViewModel.LoadAsync();
 
             Repository.Verify(
                 mock => mock.GetLogEventsAsync(It.Is<GetLogEventsRequest>(s => (s.EndTime!=null && s.StartTime!=null)), It.IsAny<CancellationToken>()),
@@ -328,7 +417,7 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         {
             _eventsFixture.StubGetLogEventsToReturn(token, logEvents);
             _eventsFixture.StubGetLogEventsToReturn(token, logEvents);
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
         }
 
 
@@ -338,7 +427,7 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         private async Task SetupFilteredWithInitialLoad(string token, List<LogEvent> logEvents)
         {
             _eventsFixture.StubFilterLogEventsToReturn(token, logEvents);
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
         }
 
 

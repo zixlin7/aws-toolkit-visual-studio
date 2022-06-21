@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 
@@ -16,50 +15,25 @@ using Xunit;
 
 namespace AWSToolkit.Tests.CloudWatch.ViewModels
 {
-    public class LogGroupsViewModelTests
+    public class LogGroupsViewModelTests : BaseLogEntityViewModelTests<LogGroupsViewModel>
     {
-        private readonly LogGroupsViewModel _viewModel;
         private readonly LogGroupsViewModelFixture _groupsFixture = new LogGroupsViewModelFixture();
-        private string SampleToken => _groupsFixture.SampleToken;
-        private List<LogGroup> SampleLogGroups => _groupsFixture.SampleLogGroups;
-        private Mock<ICloudWatchLogsRepository> Repository => _groupsFixture.Repository;
 
         public LogGroupsViewModelTests()
         {
-            _viewModel = _groupsFixture.CreateViewModel();
+            ViewModelFixture = _groupsFixture;
+            ViewModel = _groupsFixture.CreateViewModel();
         }
 
         [Fact]
         public async Task LoadAsync_WhenInitial()
         {
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(SampleLogGroups, _viewModel.LogGroups);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(SampleLogGroups, ViewModel.LogGroups);
             //first log group is selected
-            Assert.Equal(SampleLogGroups.First(), _viewModel.LogGroup);
-        }
-
-        [Fact]
-        public async Task LoadAsync_AdjustsLoadingLogs()
-        {
-            var loadingAdjustments = new List<bool>();
-
-            _viewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(_viewModel.LoadingLogs))
-                {
-                    loadingAdjustments.Add(_viewModel.LoadingLogs);
-                }
-            };
-
-            Assert.False(_viewModel.LoadingLogs);
-
-            await _viewModel.LoadAsync();
-
-            Assert.Equal(2, loadingAdjustments.Count);
-            Assert.True(loadingAdjustments[0]);
-            Assert.False(loadingAdjustments[1]);
+            Assert.Equal(SampleLogGroups.First(), ViewModel.LogGroup);
         }
 
         [Fact]
@@ -72,12 +46,12 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _groupsFixture.StubGetLogGroupsToReturn(SampleToken, SampleLogGroups);
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(expectedLogGroups, _viewModel.LogGroups);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(expectedLogGroups, ViewModel.LogGroups);
             //first log group is selected
-            Assert.Equal(expectedLogGroups.First(), _viewModel.LogGroup);
+            Assert.Equal(expectedLogGroups.First(), ViewModel.LogGroup);
         }
 
         [Fact]
@@ -90,13 +64,13 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _groupsFixture.StubGetLogGroupsToReturn(null, SampleLogGroups);
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Null(_viewModel.NextToken);
-            Assert.Equal(expectedLogGroups, _viewModel.LogGroups);
+            Assert.Null(ViewModel.NextToken);
+            Assert.Equal(expectedLogGroups, ViewModel.LogGroups);
 
             //first log group is selected
-            Assert.Equal(expectedLogGroups.First(), _viewModel.LogGroup);
+            Assert.Equal(expectedLogGroups.First(), ViewModel.LogGroup);
 
             Repository.Verify(
                 mock => mock.GetLogGroupsAsync(It.IsAny<GetLogGroupsRequest>(), It.IsAny<CancellationToken>()),
@@ -110,10 +84,10 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _groupsFixture.StubGetLogGroupsToReturn(SampleToken, new List<LogGroup>());
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Null(_viewModel.NextToken);
-            Assert.Equal(SampleLogGroups, _viewModel.LogGroups);
+            Assert.Null(ViewModel.NextToken);
+            Assert.Equal(SampleLogGroups, ViewModel.LogGroups);
 
             Repository.Verify(
                 mock => mock.GetLogGroupsAsync(It.IsAny<GetLogGroupsRequest>(), It.IsAny<CancellationToken>()),
@@ -130,11 +104,11 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
             {
-                await _viewModel.LoadAsync();
+                await ViewModel.LoadAsync();
             });
 
-            Assert.Empty(_viewModel.LogGroups);
-            Assert.Null(_viewModel.NextToken);
+            Assert.Empty(ViewModel.LogGroups);
+            Assert.Null(ViewModel.NextToken);
         }
 
         [Fact]
@@ -145,12 +119,12 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
             var newLogGroups = _groupsFixture.CreateSampleLogGroups();
             _groupsFixture.StubGetLogGroupsToReturn("refresh-token", newLogGroups);
 
-            await _viewModel.RefreshAsync();
+            await ViewModel.RefreshAsync();
 
-            Assert.Equal("refresh-token", _viewModel.NextToken);
-            Assert.Equal(newLogGroups, _viewModel.LogGroups);
+            Assert.Equal("refresh-token", ViewModel.NextToken);
+            Assert.Equal(newLogGroups, ViewModel.LogGroups);
             //first log group is selected
-            Assert.Equal(newLogGroups.First(), _viewModel.LogGroup);
+            Assert.Equal(newLogGroups.First(), ViewModel.LogGroup);
         }
 
         /// <summary>
@@ -159,7 +133,7 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         private async Task SetupWithInitialLoad(string token, List<LogGroup> logGroups)
         {
             _groupsFixture.StubGetLogGroupsToReturn(token, logGroups);
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 
@@ -16,51 +15,25 @@ using Xunit;
 
 namespace AWSToolkit.Tests.CloudWatch.ViewModels
 {
-    public class LogStreamsViewModelTests
+    public class LogStreamsViewModelTests : BaseLogEntityViewModelTests<LogStreamsViewModel>
     {
-        private readonly LogStreamsViewModel _viewModel;
-
         private readonly LogStreamsFixture _streamsFixture = new LogStreamsFixture();
-        private string SampleToken => _streamsFixture.SampleToken;
-        private List<LogStream> SampleLogStreams => _streamsFixture.SampleLogStreams;
-        private Mock<ICloudWatchLogsRepository> Repository => _streamsFixture.Repository;
 
         public LogStreamsViewModelTests()
         {
-            _viewModel = _streamsFixture.CreateViewModel();
+            ViewModelFixture = _streamsFixture;
+            ViewModel = _streamsFixture.CreateViewModel();
         }
 
         [Fact]
         public async Task LoadAsync_WhenInitial()
         {
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(SampleLogStreams, _viewModel.LogStreams);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(SampleLogStreams, ViewModel.LogStreams);
             //first log stream is selected
-            Assert.Equal(SampleLogStreams.First(), _viewModel.LogStream);
-        }
-
-        [Fact]
-        public async Task LoadAsync_AdjustsLoadingLogs()
-        {
-            var loadingAdjustments = new List<bool>();
-
-            _viewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(_viewModel.LoadingLogs))
-                {
-                    loadingAdjustments.Add(_viewModel.LoadingLogs);
-                }
-            };
-
-            Assert.False(_viewModel.LoadingLogs);
-
-            await _viewModel.LoadAsync();
-
-            Assert.Equal(2, loadingAdjustments.Count);
-            Assert.True(loadingAdjustments[0]);
-            Assert.False(loadingAdjustments[1]);
+            Assert.Equal(SampleLogStreams.First(), ViewModel.LogStream);
         }
 
         [Fact]
@@ -73,12 +46,12 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _streamsFixture.StubGetLogStreamsToReturn(SampleToken, SampleLogStreams);
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Equal(SampleToken, _viewModel.NextToken);
-            Assert.Equal(expectedLogStreams, _viewModel.LogStreams);
+            Assert.Equal(SampleToken, ViewModel.NextToken);
+            Assert.Equal(expectedLogStreams, ViewModel.LogStreams);
             //first log stream is selected
-            Assert.Equal(expectedLogStreams.First(), _viewModel.LogStream);
+            Assert.Equal(expectedLogStreams.First(), ViewModel.LogStream);
         }
 
 
@@ -92,13 +65,13 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _streamsFixture.StubGetLogStreamsToReturn(null, SampleLogStreams);
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Null(_viewModel.NextToken);
-            Assert.Equal(expectedLogStreams, _viewModel.LogStreams);
+            Assert.Null(ViewModel.NextToken);
+            Assert.Equal(expectedLogStreams, ViewModel.LogStreams);
 
             //first log stream is selected
-            Assert.Equal(expectedLogStreams.First(), _viewModel.LogStream);
+            Assert.Equal(expectedLogStreams.First(), ViewModel.LogStream);
 
             Repository.Verify(
                 mock => mock.GetLogStreamsAsync(It.IsAny<GetLogStreamsRequest>(), It.IsAny<CancellationToken>()),
@@ -112,10 +85,10 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             _streamsFixture.StubGetLogStreamsToReturn(SampleToken, new List<LogStream>());
 
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
 
-            Assert.Null(_viewModel.NextToken);
-            Assert.Equal(SampleLogStreams, _viewModel.LogStreams);
+            Assert.Null(ViewModel.NextToken);
+            Assert.Equal(SampleLogStreams, ViewModel.LogStreams);
 
             Repository.Verify(
                 mock => mock.GetLogStreamsAsync(It.IsAny<GetLogStreamsRequest>(), It.IsAny<CancellationToken>()),
@@ -132,11 +105,11 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
 
             await Assert.ThrowsAsync<NullReferenceException>(async () =>
             {
-                await _viewModel.LoadAsync();
+                await ViewModel.LoadAsync();
             });
 
-            Assert.Empty(_viewModel.LogStreams);
-            Assert.Null(_viewModel.NextToken);
+            Assert.Empty(ViewModel.LogStreams);
+            Assert.Null(ViewModel.NextToken);
         }
 
         [Fact]
@@ -147,12 +120,12 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
             var newLogStreams = _streamsFixture.CreateSampleLogStreams();
             _streamsFixture.StubGetLogStreamsToReturn("refresh-token", newLogStreams);
 
-            await _viewModel.RefreshAsync();
+            await ViewModel.RefreshAsync();
 
-            Assert.Equal("refresh-token", _viewModel.NextToken);
-            Assert.Equal(newLogStreams, _viewModel.LogStreams);
+            Assert.Equal("refresh-token", ViewModel.NextToken);
+            Assert.Equal(newLogStreams, ViewModel.LogStreams);
             //first log stream is selected
-            Assert.Equal(newLogStreams.First(), _viewModel.LogStream);
+            Assert.Equal(newLogStreams.First(), ViewModel.LogStream);
         }
 
 
@@ -167,11 +140,11 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         [MemberData(nameof(FilterToOrderData))]
         public void UpdateOrderBy(string filterText, OrderBy expectedOrder, bool expectedResult)
         {
-            _viewModel.FilterText = filterText;
+            ViewModel.FilterText = filterText;
 
-            var actualResult = _viewModel.UpdateOrderBy();
+            var actualResult = ViewModel.UpdateOrderBy();
 
-            Assert.Equal(expectedOrder, _viewModel.OrderBy);
+            Assert.Equal(expectedOrder, ViewModel.OrderBy);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -180,11 +153,11 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         [InlineData(false, true)]
         public void UpdateIsDescendingToDefault(bool initialValue, bool expectedResult)
         {
-            _viewModel.IsDescending = initialValue;
+            ViewModel.IsDescending = initialValue;
 
-            var actualResult = _viewModel.UpdateIsDescendingToDefault();
+            var actualResult = ViewModel.UpdateIsDescendingToDefault();
 
-            Assert.True(_viewModel.IsDescending);
+            Assert.True(ViewModel.IsDescending);
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -194,7 +167,7 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         private async Task SetupWithInitialLoad(string token, List<LogStream> logStreams)
         {
             _streamsFixture.StubGetLogStreamsToReturn(token, logStreams);
-            await _viewModel.LoadAsync();
+            await ViewModel.LoadAsync();
         }
     }
 }

@@ -21,6 +21,19 @@ namespace Amazon.AWSToolkit.Telemetry
             }
         }
       
+        public static async Task InvokeAndRecordAsync(this ITelemetryLogger telemetryLogger, Func<Task> work,
+            Action<ITelemetryLogger> recordMetric)
+        {
+            try
+            {
+                await work();
+            }
+            finally
+            {
+                recordMetric(telemetryLogger);
+            }
+        }
+      
         public static async Task TimeAndRecord(this ITelemetryLogger telemetryLogger, Func<Task> work,
             Action<ITelemetryLogger, long> recordMetric)
         {
