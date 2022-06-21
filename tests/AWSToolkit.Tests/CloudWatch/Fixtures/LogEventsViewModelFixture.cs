@@ -30,6 +30,7 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
             ContextFixture.SetupExecuteOnUIThread();
             SampleLogEvents = CreateSampleLogEvents();
             StubGetLogEventsToReturn(SampleToken, SampleLogEvents);
+            StubFilterLogEventsToReturn(SampleToken, SampleLogEvents);
             SetupRepository();
         }
 
@@ -56,6 +57,14 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
             var response = new PaginatedLogResponse<LogEvent>(nextToken, logEvents);
             Repository.Setup(mock =>
                     mock.GetLogEventsAsync(It.IsAny<GetLogEventsRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(response);
+        }
+
+        public void StubFilterLogEventsToReturn(string nextToken, List<LogEvent> logEvents)
+        {
+            var response = new PaginatedLogResponse<LogEvent>(nextToken, logEvents);
+            Repository.Setup(mock =>
+                    mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
         }
 

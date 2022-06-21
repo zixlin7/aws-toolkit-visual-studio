@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Tasks;
 
 using AWSToolkit.Tests.CloudWatch.Fixtures;
 
@@ -16,6 +18,18 @@ using Xunit;
 
 namespace AWSToolkit.Tests.CloudWatch.ViewModels
 {
+    public class TestLogEventsViewModel : LogEventsViewModel
+    {
+        public TestLogEventsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext) : base(repository, toolkitContext)
+        {
+        }
+
+        protected override void ExecuteOnBackgroundThread(Func<Task> function)
+        {
+            function().LogExceptionAndForget();
+        }
+    }
+
     public class LogEventsViewModelTests
     {
         private readonly LogEventsViewModel _viewModel;
@@ -84,13 +98,14 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
             var initialPageLogEvents = _eventsFixture.CreateSampleLogEvents();
             var expectedLogEvents = initialPageLogEvents.Concat(SampleLogEvents).ToList();
 
-            await SetupWithInitialLoad(SampleToken, initialPageLogEvents);
+            await SetupWithInitialLoad("abc-token", initialPageLogEvents);
 
-            _eventsFixture.StubGetLogEventsToReturn(null, SampleLogEvents);
+            _eventsFixture.StubGetLogEventsToReturn(SampleToken, SampleLogEvents);
 
             await _viewModel.LoadAsync();
 
-            Assert.Null(_viewModel.NextToken);
+            //for getlogevents, next token remains same when last page is retrieved
+            Assert.Equal(SampleToken, _viewModel.NextToken);
             Assert.Equal(expectedLogEvents, _viewModel.LogEvents);
             Assert.Equal(expectedLogEvents.First(), _viewModel.LogEvent);
 
@@ -102,18 +117,20 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         [Fact]
         public async Task LoadAsync_WhenNoMorePages()
         {
-            await SetupWithInitialLoad(null, SampleLogEvents);
+            await SetupWithInitialLoad(SampleToken, SampleLogEvents);
+            await SetupWithInitialLoad(SampleToken, new List<LogEvent>());
 
-            _eventsFixture.StubGetLogEventsToReturn(SampleToken, new List<LogEvent>());
+            _eventsFixture.StubGetLogEventsToReturn("abc-token", new List<LogEvent>());
 
             await _viewModel.LoadAsync();
 
-            Assert.Null(_viewModel.NextToken);
+            //for getlogevents, next token remains same when last page is retrieved
+            Assert.Equal(SampleToken, _viewModel.NextToken);
             Assert.Equal(SampleLogEvents, _viewModel.LogEvents);
 
             Repository.Verify(
                 mock => mock.GetLogEventsAsync(It.IsAny<GetLogEventsRequest>(), It.IsAny<CancellationToken>()),
-                Times.Once);
+                Times.Exactly(2));
         }
 
 
@@ -132,6 +149,144 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
             Assert.Empty(_viewModel.LogEvents);
             Assert.Null(_viewModel.NextToken);
         }
+
+        [Fact]
+        public async Task LoadFilteredAsync_WhenNoMorePages()
+        {
+            _viewModel.FilterText = "sample-filter";
+            await SetupFilteredWithInitialLoad(null, SampleLogEvents);
+
+            _eventsFixture.StubFilterLogEventsToReturn(SampleToken, new List<LogEvent>());
+
+            await _viewModel.LoadAsync();
+
+            Assert.Null(_viewModel.NextToken);
+            Assert.Equal(SampleLogEvents, _viewModel.LogEvents);
+
+            Repository.Verify(
+                mock => mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task LoadFilteredAsync_WithNoPaginatedLoading()
+        {
+            _viewModel.FilterText = "sample-filter";
+
+            await _viewModel.LoadAsync();
+
+            Assert.Equal(SampleToken, _viewModel.NextToken);
+            Assert.Equal(SampleLogEvents, _viewModel.LogEvents);
+            Assert.Equal(SampleLogEvents.First(), _viewModel.LogEvent);
+
+            Assert.Equal(PaginatedLoadingStatus.None, _viewModel.PaginatedLoadingStatus);
+        }
+
+        [Fact]
+        public async Task LoadFilteredAsync_WithPaginatedLoadingPrompt()
+        {
+            _viewModel.FilterText = "sample-filter";
+
+            await SetupFilteredWithInitialLoad(SampleToken, new List<LogEvent>());
+
+            await _viewModel.LoadAsync();
+
+            Assert.Equal(SampleToken, _viewModel.NextToken);
+            Assert.Empty( _viewModel.LogEvents);
+            Assert.Null(_viewModel.LogEvent);
+
+            Assert.Equal(PaginatedLoadingStatus.Prompt, _viewModel.PaginatedLoadingStatus);
+        }
+
+        [Fact]
+        public void PaginatedLoadingContinueCommand_Execute()
+        {
+            var testViewModel = CreateTestViewModel();
+            testViewModel.FilterText = "sample-filter";
+            var paginatedLoadingStatus = new List<PaginatedLoadingStatus>();
+
+            testViewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(testViewModel.PaginatedLoadingStatus))
+                {
+                    paginatedLoadingStatus.Add(testViewModel.PaginatedLoadingStatus);
+                }
+            };
+
+            _eventsFixture.StubFilterLogEventsToReturn(SampleToken, SampleLogEvents);
+
+            testViewModel.ContinueLoadingCommand.Execute(null);
+
+            Assert.Equal(SampleToken, testViewModel.NextToken);
+            Assert.Equal(SampleLogEvents, testViewModel.LogEvents);
+            Assert.Equal(SampleLogEvents.First(), testViewModel.LogEvent);
+
+            Assert.Equal(2, paginatedLoadingStatus.Count);
+            Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
+            Assert.Equal(PaginatedLoadingStatus.None, paginatedLoadingStatus[1]);
+        }
+
+
+        [Fact]
+        public void PaginatedLoadingContinueCommand_ExecuteCancelled()
+        {
+            var testViewModel = CreateTestViewModel();
+            testViewModel.FilterText = "sample-filter";
+            var paginatedLoadingStatus = new List<PaginatedLoadingStatus>();
+
+            testViewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(testViewModel.PaginatedLoadingStatus))
+                {
+                    paginatedLoadingStatus.Add(testViewModel.PaginatedLoadingStatus);
+                }
+            };
+
+            Repository.Setup(mock =>
+                    mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new OperationCanceledException());
+
+            testViewModel.ContinueLoadingCommand.Execute(null);
+
+            Assert.Null(testViewModel.NextToken);
+            Assert.Empty( testViewModel.LogEvents);
+
+            Assert.Equal(2, paginatedLoadingStatus.Count);
+            Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
+            Assert.Equal(PaginatedLoadingStatus.Prompt, paginatedLoadingStatus[1]);
+            Assert.Empty(testViewModel.ErrorMessage);
+        }
+
+        [Fact]
+        public void PaginatedLoadingContinueCommand_ExecuteException()
+        {
+            var testViewModel = CreateTestViewModel();
+            testViewModel.FilterText = "sample-filter";
+            var paginatedLoadingStatus = new List<PaginatedLoadingStatus>();
+
+            testViewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(testViewModel.PaginatedLoadingStatus))
+                {
+                    paginatedLoadingStatus.Add(testViewModel.PaginatedLoadingStatus);
+                }
+            };
+
+            Repository.Setup(mock =>
+                    mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new NullReferenceException());
+
+            testViewModel.ContinueLoadingCommand.Execute(null);
+
+            Assert.Null(testViewModel.NextToken);
+            Assert.Empty(testViewModel.LogEvents);
+
+            Assert.Equal(2, paginatedLoadingStatus.Count);
+            Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
+            Assert.Equal(PaginatedLoadingStatus.None, paginatedLoadingStatus[1]);
+            Assert.NotEmpty(testViewModel.ErrorMessage);
+        }
+
 
         [Fact]
         public async Task RefreshAsync()
@@ -167,12 +322,34 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         }
 
         /// <summary>
-        /// Sets up an initial load with the specified properties
+        /// Sets up an initial get load with the specified properties
         /// </summary>
         private async Task SetupWithInitialLoad(string token, List<LogEvent> logEvents)
         {
             _eventsFixture.StubGetLogEventsToReturn(token, logEvents);
+            _eventsFixture.StubGetLogEventsToReturn(token, logEvents);
             await _viewModel.LoadAsync();
+        }
+
+
+        /// <summary>
+        /// Sets up an initial filtered load with the specified properties
+        /// </summary>
+        private async Task SetupFilteredWithInitialLoad(string token, List<LogEvent> logEvents)
+        {
+            _eventsFixture.StubFilterLogEventsToReturn(token, logEvents);
+            await _viewModel.LoadAsync();
+        }
+
+
+        public TestLogEventsViewModel CreateTestViewModel()
+        {
+            var viewModel = new TestLogEventsViewModel(Repository.Object, _eventsFixture.ContextFixture.ToolkitContext)
+            {
+                LogGroup = _eventsFixture.SampleLogGroup.Name,
+                LogStream = _eventsFixture.SampleLogStream.Name
+            };
+            return viewModel;
         }
     }
 }

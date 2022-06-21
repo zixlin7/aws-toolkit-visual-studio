@@ -58,6 +58,7 @@
     <Compile Include="Core\ICloudWatchLogsRepository.cs" />
     <Compile Include="Core\IRepositoryFactory.cs" />
     <Compile Include="Core\RepositoryFactory.cs" />
+    <Compile Include="Models\FilterLogEventsRequest.cs" />
     <Compile Include="Models\MetricSources.cs" />
     <Compile Include="Models\ExportResult.cs" />
     <Compile Include="Models\GetLogEventsRequest.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Models\LogGroup.cs" />
     <Compile Include="Models\LogStream.cs" />
     <Compile Include="Models\OrderBy.cs" />
+    <Compile Include="Models\PaginatedLoadingStatus.cs" />
     <Compile Include="Models\PaginatedLogResponse.cs" />
     <Compile Include="Nodes\CloudWatchRootViewMetaNode.cs" />
     <Compile Include="Nodes\LogGroupsRootViewMetaNode.cs" />

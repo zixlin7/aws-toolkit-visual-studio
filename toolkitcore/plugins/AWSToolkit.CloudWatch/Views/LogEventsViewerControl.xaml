@@ -9,6 +9,7 @@
                          xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
                          xmlns:dateRangePicker="clr-namespace:Amazon.AWSToolkit.CommonUI.DateTimeRangePicker;assembly=AWSToolkit"
+                         xmlns:models="clr-namespace:Amazon.AWSToolkit.CloudWatch.Models"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -53,12 +54,17 @@
                         Text="{Binding Source={x:Static local:LogEventsViewerControl.TimeZone}, StringFormat={}({0})}" />
                 </StackPanel>
             </DataTemplate>
+
+            <Style x:Key="CancelButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"  >
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
+            </Style>
         </ResourceDictionary>
 
     </commonUi:BaseAWSControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -159,10 +165,77 @@
                              Margin="11"
                              ErrorMessage="{Binding ErrorMessage}"
                              LoadingLogs="{Binding LoadingLogs}"
-                             Visibility="{Binding Visibility, ElementName=LogEventsList, Converter={StaticResource InverseVisibilityConverter}}" />
+                           >
+            <local:ResultsStatus.Style>
+                <Style TargetType="{x:Type local:ResultsStatus}">
+                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Visibility, ElementName=LogEventsList}" Value="Collapsed"/>
+                                <Condition Binding="{Binding PaginatedLoadingStatus}" Value="{x:Static models:PaginatedLoadingStatus.None}"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </local:ResultsStatus.Style>
+        </local:ResultsStatus>
 
 
-        <commonUi:ToolkitDataGridWrapper Grid.Row="4"
+        <!--Shows query status for retrieving time consuming filtered events -->
+
+        <ContentControl Grid.Row="4" 
+                        Margin="9 6 6 6" 
+                        Content="{Binding}">
+            <ContentControl.Resources>
+                <DataTemplate x:Key="Loading">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" 
+                                   Text="Loading..." />
+                        <ProgressBar Grid.Column="1"
+                                     Height="8" 
+                                     Margin="3"
+                                     VerticalAlignment="Center"
+                                     IsIndeterminate="True"/>
+                        <Button Grid.Column="2" 
+                                Margin="3 0 0 0" 
+                                Width="Auto" 
+                                Content="&#x2715;"
+                                Style="{StaticResource CancelButtonStyle}"
+                                Command="{Binding CancelLoadingCommand}" />
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate x:Key="Prompt">
+                    <TextBlock>
+                        <Run Text="The log stream contains more entries to load. This may take a while."/>
+                        <Hyperlink Command="{Binding ContinueLoadingCommand}">Continue loading logs</Hyperlink>
+                    </TextBlock>
+                </DataTemplate>
+            </ContentControl.Resources>
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding PaginatedLoadingStatus}" Value="{x:Static models:PaginatedLoadingStatus.Prompt}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource Prompt}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding PaginatedLoadingStatus}" Value="{x:Static models:PaginatedLoadingStatus.Loading}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource Loading}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding PaginatedLoadingStatus}" Value="{x:Static models:PaginatedLoadingStatus.None}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+
+        <commonUi:ToolkitDataGridWrapper Grid.Row="5"
                                          x:Name="LogEventsList"
                                          x:FieldModifier="private"
                                          AutoGenerateColumns="False"
@@ -211,6 +284,6 @@
             </commonUi:ToolkitDataGridWrapper.Style>
         </commonUi:ToolkitDataGridWrapper>
 
-        <local:ConnectionStatus Grid.Row="5" ConnectionSettings="{Binding ConnectionSettings}" />
+        <local:ConnectionStatus Grid.Row="6" ConnectionSettings="{Binding ConnectionSettings}" />
     </Grid>
 </commonUi:BaseAWSControl>

@@ -23,7 +23,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
         Task<PaginatedLogResponse<LogEvent>> GetLogEventsAsync(GetLogEventsRequest logEventsRequest,
             CancellationToken cancelToken);
 
-        Task<bool> DeleteLogGroupAsync(string logGroup,
+        Task<PaginatedLogResponse<LogEvent>> FilterLogEventsAsync(FilterLogEventsRequest logEventsRequest,
             CancellationToken cancelToken);
+
+        Task<bool> DeleteLogGroupAsync(string logGroup, CancellationToken cancelToken);
     }
 }

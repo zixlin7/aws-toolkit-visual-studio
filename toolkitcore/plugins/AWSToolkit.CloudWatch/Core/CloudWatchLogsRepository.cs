@@ -12,11 +12,12 @@ using Amazon.AWSToolkit.Util;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 
-using GetLogEventsRequest = Amazon.AWSToolkit.CloudWatch.Models.GetLogEventsRequest;
 using LogGroup = Amazon.AWSToolkit.CloudWatch.Models.LogGroup;
 using LogStream = Amazon.AWSToolkit.CloudWatch.Models.LogStream;
 using OrderBy = Amazon.AWSToolkit.CloudWatch.Models.OrderBy;
 using CloudWatchOrderBy = Amazon.CloudWatchLogs.OrderBy;
+using FilterLogEventsRequest = Amazon.CloudWatchLogs.Model.FilterLogEventsRequest;
+using GetLogEventsRequest = Amazon.CloudWatchLogs.Model.GetLogEventsRequest;
 
 namespace Amazon.AWSToolkit.CloudWatch.Core
 {
@@ -55,7 +56,21 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             return new PaginatedLogResponse<LogStream>(response.NextToken, logStreams);
         }
 
-        public async Task<PaginatedLogResponse<LogEvent>> GetLogEventsAsync(GetLogEventsRequest logEventsRequest,
+        public async Task<PaginatedLogResponse<LogEvent>> GetLogEventsAsync(Models.GetLogEventsRequest logEventsRequest,
+            CancellationToken cancelToken)
+        {
+            VerifyLogGroupIsValid(logEventsRequest.LogGroup);
+            VerifyLogStreamIsValid(logEventsRequest.LogStream);
+
+            var request = CreateGetLogEventsRequest(logEventsRequest);
+            var response = await _client.GetLogEventsAsync(request, cancelToken);
+
+            var logEvents = response.Events.Select(logEvent => logEvent.ToLogEvent()).ToList();
+            return new PaginatedLogResponse<LogEvent>(response.NextForwardToken, logEvents);
+        }
+
+
+        public async Task<PaginatedLogResponse<LogEvent>> FilterLogEventsAsync(Models.FilterLogEventsRequest logEventsRequest,
             CancellationToken cancelToken)
         {
             VerifyLogGroupIsValid(logEventsRequest.LogGroup);
@@ -144,15 +159,47 @@ namespace Amazon.AWSToolkit.CloudWatch.Core
             return request;
         }
 
-        private FilterLogEventsRequest CreateFilterLogEventsRequest(GetLogEventsRequest logEventsRequest)
+        private GetLogEventsRequest CreateGetLogEventsRequest(Models.GetLogEventsRequest logEventsRequest)
+        {
+            var request = new GetLogEventsRequest
+            {
+                LogGroupName = logEventsRequest.LogGroup,
+                LogStreamName = logEventsRequest.LogStream ,
+                StartFromHead = true
+            };
+
+            if (logEventsRequest.StartTime.HasValue)
+            {
+                request.StartTime = logEventsRequest.StartTime.Value;
+            }
+
+            if (logEventsRequest.EndTime.HasValue)
+            {
+                request.EndTime = logEventsRequest.EndTime.Value;
+            }
+
+            if (!string.IsNullOrEmpty(logEventsRequest.NextToken))
+            {
+                request.NextToken = logEventsRequest.NextToken;
+            }
+
+            return request;
+        }
+
+
+        private FilterLogEventsRequest CreateFilterLogEventsRequest(Models.FilterLogEventsRequest logEventsRequest)
         {
             var request = new FilterLogEventsRequest
             {
                 LogGroupName = logEventsRequest.LogGroup,
-                LogStreamNames = new List<string> { logEventsRequest.LogStream },
-                FilterPattern = logEventsRequest.FilterText,
+                LogStreamNames = new List<string>{logEventsRequest.LogStream},
             };
 
+            if (!string.IsNullOrWhiteSpace(logEventsRequest.FilterText))
+            {
+                request.FilterPattern = logEventsRequest.FilterText;
+            }
+            
             if (logEventsRequest.StartTime.HasValue)
             {
                 request.StartTime = logEventsRequest.StartTime.Value.AsUnixMilliseconds();

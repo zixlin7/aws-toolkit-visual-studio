@@ -108,7 +108,7 @@ namespace AWSToolkit.Tests.CloudWatch.Util
             _sampleLogEvents = CreateSampleLogEvents();
             _taskNotifier.Setup(x => x.CancellationToken).Returns(_tokenSource.Token);
             _sampleFileName = Path.Combine(_testLocation.TestFolder, _sampleLogStream);
-            StubGetLogEventsToReturn(null, _sampleLogEvents);
+            StubGetLogEventsToReturn("abc", _sampleLogEvents);
         }
 
         private List<LogEvent> CreateSampleLogEvents()

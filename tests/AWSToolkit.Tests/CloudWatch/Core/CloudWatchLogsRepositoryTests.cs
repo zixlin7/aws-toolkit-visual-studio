@@ -15,6 +15,7 @@ using Moq;
 
 using Xunit;
 
+using FilterLogEventsRequest = Amazon.AWSToolkit.CloudWatch.Models.FilterLogEventsRequest;
 using GetLogEventsRequest = Amazon.AWSToolkit.CloudWatch.Models.GetLogEventsRequest;
 using LogGroup = Amazon.CloudWatchLogs.Model.LogGroup;
 using LogStream = Amazon.CloudWatchLogs.Model.LogStream;
@@ -32,6 +33,7 @@ namespace AWSToolkit.Tests.CloudWatch.Core
         private readonly GetLogGroupsRequest _sampleLogGroupRequest = new GetLogGroupsRequest();
         private readonly GetLogStreamsRequest _sampleLogStreamsRequest = new GetLogStreamsRequest{ OrderBy = OrderBy.LogStreamName };
         private readonly GetLogEventsRequest _sampleLogEventsRequest = new GetLogEventsRequest();
+        private readonly FilterLogEventsRequest _sampleFilterLogEventsRequest = new FilterLogEventsRequest();
         private readonly string _nextToken = "sample-token";
         private readonly string _sampleLogGroup = "sample-log-group";
         private readonly string _sampleLogStream = "sample-log-stream";
@@ -86,7 +88,6 @@ namespace AWSToolkit.Tests.CloudWatch.Core
             await Assert.ThrowsAsync<InvalidParameterException>(async () =>
                 await _repository.GetLogStreamsAsync(_sampleLogStreamsRequest, _cancelToken));
         }
-
 
         [Fact]
         public async Task GetLogStreamsAsync()
@@ -146,11 +147,63 @@ namespace AWSToolkit.Tests.CloudWatch.Core
             _sampleLogEventsRequest.LogStream = _sampleLogStream;
 
             var sampleSdkLogEvents = CreateSampleSdkLogEvents();
-            var output = new FilterLogEventsResponse() { NextToken = _nextToken, Events = sampleSdkLogEvents };
-            SetupFilterLogEvents(output);
+            var output = new GetLogEventsResponse { NextForwardToken = _nextToken, Events = sampleSdkLogEvents };
+            SetupGetLogEvents(output);
 
             var response = await _repository.GetLogEventsAsync(_sampleLogEventsRequest, _cancelToken);
             var expectedLogEvents = CreateSampleLogEvents();
+
+            Assert.Equal(_nextToken, response.NextToken);
+            Assert.Equal(3, response.Values.Count());
+            Assert.Equal(expectedLogEvents, response.Values);
+        }
+
+        [Fact]
+        public async Task FilterLogEventsAsync_ThrowsNull()
+        {
+            _sampleFilterLogEventsRequest.LogGroup = _sampleLogGroup;
+            _sampleFilterLogEventsRequest.LogStream = _sampleLogStream;
+            SetupFilterLogEvents((FilterLogEventsResponse) null);
+
+            await Assert.ThrowsAsync<NullReferenceException>(async () =>
+                await _repository.FilterLogEventsAsync(_sampleFilterLogEventsRequest, _cancelToken));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task FilterLogEventsAsync_InvalidLogGroup(string logGroup)
+        {
+            _sampleFilterLogEventsRequest.LogGroup = logGroup;
+            var exception = await Assert.ThrowsAsync<InvalidParameterException>(async () =>
+                await _repository.FilterLogEventsAsync(_sampleFilterLogEventsRequest, _cancelToken));
+            Assert.Contains("is an invalid log group name.", exception.Message);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task FilterLogEventsAsync_InvalidLogStream(string logStream)
+        {
+            _sampleFilterLogEventsRequest.LogGroup = _sampleLogGroup;
+            _sampleFilterLogEventsRequest.LogStream = logStream;
+            var exception = await Assert.ThrowsAsync<InvalidParameterException>(async () =>
+                await _repository.FilterLogEventsAsync(_sampleFilterLogEventsRequest, _cancelToken));
+            Assert.Contains("is an invalid log stream name.", exception.Message);
+        }
+
+        [Fact]
+        public async Task FilterLogEventsAsync()
+        {
+            _sampleFilterLogEventsRequest.LogGroup = _sampleLogGroup;
+            _sampleFilterLogEventsRequest.LogStream = _sampleLogStream;
+
+            var sampleSdkLogEvents = CreateSampleFilteredSdkLogEvents();
+            var output = new FilterLogEventsResponse() { NextToken = _nextToken, Events = sampleSdkLogEvents };
+            SetupFilterLogEvents(output);
+
+            var response = await _repository.FilterLogEventsAsync(_sampleFilterLogEventsRequest, _cancelToken);
+            var expectedLogEvents = CreateSampleFilteredLogEvents();
 
             Assert.Equal(_nextToken, response.NextToken);
             Assert.Equal(3, response.Values.Count());
@@ -211,7 +264,13 @@ namespace AWSToolkit.Tests.CloudWatch.Core
 
         private void SetupFilterLogEvents(FilterLogEventsResponse response)
         {
-            _cwlClient.Setup(mock => mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), _cancelToken))
+            _cwlClient.Setup(mock => mock.FilterLogEventsAsync(It.IsAny<Amazon.CloudWatchLogs.Model.FilterLogEventsRequest>(), _cancelToken))
+                .ReturnsAsync(response);
+        }
+
+        private void SetupGetLogEvents(GetLogEventsResponse response)
+        {
+            _cwlClient.Setup(mock => mock.GetLogEventsAsync(It.IsAny<Amazon.CloudWatchLogs.Model.GetLogEventsRequest>(), _cancelToken))
                 .ReturnsAsync(response);
         }
 
@@ -247,7 +306,7 @@ namespace AWSToolkit.Tests.CloudWatch.Core
             return sdkLogStreams.Select(x => x.ToLogStream()).ToList();
         }
 
-        private static List<FilteredLogEvent> CreateSampleSdkLogEvents()
+        private static List<FilteredLogEvent> CreateSampleFilteredSdkLogEvents()
         {
             return Enumerable.Range(1, 3).Select(i => new FilteredLogEvent()
             {
@@ -255,9 +314,24 @@ namespace AWSToolkit.Tests.CloudWatch.Core
             }).ToList();
         }
 
+        private static List<OutputLogEvent> CreateSampleSdkLogEvents()
+        {
+            return Enumerable.Range(1, 3).Select(i => new OutputLogEvent()
+            {
+                Message = $"le-message-{i}",
+                Timestamp = new DateTime(2022, 01, 01)
+            }).ToList();
+        }
+
         private static List<ToolkitLogEvent> CreateSampleLogEvents()
         {
             var sdkLogEvents = CreateSampleSdkLogEvents();
+            return sdkLogEvents.Select(x => x.ToLogEvent()).ToList();
+        }
+
+        private static List<ToolkitLogEvent> CreateSampleFilteredLogEvents()
+        {
+            var sdkLogEvents = CreateSampleFilteredSdkLogEvents();
             return sdkLogEvents.Select(x => x.ToLogEvent()).ToList();
         }
     }

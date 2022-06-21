@@ -124,6 +124,15 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 SetLoadingLogs(false);
             });
         }
+        protected bool IsFilteredByText()
+        {
+            return !string.IsNullOrWhiteSpace(FilterText);
+        }
+
+        protected virtual bool IsFiltered()
+        {
+            return IsFilteredByText();
+        }
 
         private void SetLoadingLogs(bool value)
         {
@@ -141,7 +150,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         /// <summary>
         /// Indicates if the last page of log groups has already been loaded/retrieved
         /// </summary>
-        protected bool IsLastPageLoaded()
+        protected virtual bool IsLastPageLoaded()
         {
             return _isInitialized && string.IsNullOrEmpty(NextToken);
         }
@@ -154,7 +163,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             }
         }
 
-        private void CancelExistingToken()
+        protected void CancelExistingToken()
         {
             if (_tokenSource != null)
             {

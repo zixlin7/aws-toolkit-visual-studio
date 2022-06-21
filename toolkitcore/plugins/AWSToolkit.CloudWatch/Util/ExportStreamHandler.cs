@@ -57,8 +57,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             var exportResult = new ExportResult();
             try
             {
+                string previousToken = null;
+                string nextToken = null;
                 _charactersLogged = 0;
-                var nextToken = string.Empty;
                 do
                 {
                     if (notifier.CancellationToken.IsCancellationRequested)
@@ -68,6 +69,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
 
                     _toolkitContext.ToolkitHost.UpdateStatus("Downloading");
 
+                    previousToken = nextToken;
                     var request = CreateGetRequest(nextToken);
                     var response = await _repository.GetLogEventsAsync(request, notifier.CancellationToken)
                         .ConfigureAwait(false);
@@ -77,7 +79,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
                     nextToken = response.NextToken;
                     exportResult.Count += response.Values.Count();
                     notifier.ProgressText = $"Downloaded events: {exportResult.Count}";
-                } while (!string.IsNullOrWhiteSpace(nextToken));
+                } while (!string.Equals(nextToken, previousToken));
 
                 exportResult.Status = TaskStatus.Success;
             }
