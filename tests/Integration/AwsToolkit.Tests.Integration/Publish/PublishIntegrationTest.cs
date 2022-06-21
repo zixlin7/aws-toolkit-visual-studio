@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -148,6 +149,19 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
                 }
             });
             await waitTask;
+        }
+
+        protected void AssertDockerIsRunning()
+        {
+            using (var docker = new Process())
+            {
+                docker.StartInfo.FileName = "docker.exe";
+                docker.StartInfo.Arguments = "info";
+                docker.Start();
+                docker.WaitForExit(10_000);
+
+                Assert.True(docker.ExitCode == 0, "Docker must be installed and running to run publishing integration tests.");
+            }
         }
 
         protected async Task AssertProjectWasDeployed()

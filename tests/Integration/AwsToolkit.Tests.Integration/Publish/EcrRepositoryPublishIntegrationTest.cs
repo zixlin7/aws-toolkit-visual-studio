@@ -37,6 +37,8 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
         [Fact]
         public async Task ShouldPublish()
         {
+            AssertDockerIsRunning();
+
             // setup
             DeleteStackOnCleanup = false;
 

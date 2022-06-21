@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Plugins\S3\S3IntegrationTest.cs" />
     <Compile Include="Publish\SetDeploymentTargetAsyncTest.cs" />
     <Compile Include="Publish\EcrRepositoryPublishIntegrationTest.cs" />
     <Compile Include="Publish\AppRunnerPublishIntegrationTest.cs" />
@@ -72,6 +73,9 @@
     <PackageReference Include="AWSSDK.ECR">
       <Version>3.7.4.16</Version>
     </PackageReference>
+    <PackageReference Include="AWSSDK.S3">
+      <Version>3.7.8.27</Version>
+    </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.17.2</Version>
     </PackageReference>
@@ -91,6 +95,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
+      <Name>AWSSDK.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
       <Name>AWSToolkit.Util</Name>
@@ -111,6 +119,7 @@
   <ItemGroup>
     <None Include="Publish\README.md" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
