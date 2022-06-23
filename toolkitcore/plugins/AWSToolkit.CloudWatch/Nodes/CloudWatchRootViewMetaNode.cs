@@ -1,6 +1,10 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.CloudWatch;
@@ -67,5 +71,17 @@ namespace Amazon.AWSToolkit.CloudWatch.Nodes
         }
 
         public override string MarketingWebSite => "https://aws.amazon.com/cloudwatch/";
+
+        public ActionHandlerWrapper.ActionHandler OnViewLogGroups { get; set; }
+
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("View Log Groups",
+                    OnViewLogGroups,
+                    null,
+                    true,
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.CloudWatchLogGroups.Path)
+            );
     }
 }

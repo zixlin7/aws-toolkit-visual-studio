@@ -47,7 +47,28 @@ namespace Amazon.AWSToolkit.CloudWatch
 
         private void SetupContextHooks(CloudWatchRootViewMetaNode rootNode)
         {
+            rootNode.OnViewLogGroups = OnViewLogGroupsFromRoot;
             rootNode.FindChild<LogGroupsRootViewMetaNode>().OnView = OnViewLogGroups;
+        }
+
+        private ActionResults OnViewLogGroupsFromRoot(IViewModel viewModel)
+        {
+            IConnectionContextCommand CreateCommand()
+            {
+                if (!(viewModel is CloudWatchRootViewModel rootModel))
+                {
+                    Logger.Error($"Did not receive {nameof(CloudWatchRootViewModel)} when trying to view CloudWatch Logs.");
+                    Logger.Error($"Received: {viewModel?.GetType().Name ?? "null"}");
+
+                    throw new InvalidOperationException("AWS Explorer command for viewing CloudWatch Logs was unable to get CloudWatch Logs node.");
+                }
+
+                var awsConnectionSetting = new AwsConnectionSettings(rootModel.Identifier, rootModel.Region);
+
+                return new ViewLogGroupsCommand(AwsExplorerMetricSource.CloudWatchLogsNode, ToolkitContext, awsConnectionSetting);
+            }
+
+            return new ConnectionContextCommandExecutor(CreateCommand, ToolkitContext.ToolkitHost).Execute();
         }
 
         private ActionResults OnViewLogGroups(IViewModel viewModel)
@@ -59,7 +80,7 @@ namespace Amazon.AWSToolkit.CloudWatch
                     Logger.Error($"Did not receive {nameof(LogGroupsRootViewModel)} when trying to view CloudWatch Logs.");
                     Logger.Error($"Received: {viewModel?.GetType().Name ?? "null"}");
 
-                    throw new InvalidOperationException("AWS Explorer command for viewing CloudWatch Logs was unable to get CloudWatch Logs node.");
+                    throw new InvalidOperationException("AWS Explorer command for viewing CloudWatch Logs was unable to get CloudWatch Log Groups node.");
                 }
                 
                 var awsConnectionSetting = new AwsConnectionSettings(logGroups.AccountViewModel?.Identifier, logGroups.Region);

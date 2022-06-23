@@ -15,7 +15,7 @@ namespace Amazon.AWSToolkit.CommonUI.DateTimeRangePicker
         private DateTime? _endDate;
         private readonly TimeInputViewModel _startTimeViewModel;
         private readonly TimeInputViewModel _endTimeViewModel;
-        private ICommand _removeCommand;
+        private ICommand _clearCommand;
         private bool _hasErrors = false;
         public event EventHandler<EventArgs> RangeChanged;
 
@@ -35,9 +35,9 @@ namespace Amazon.AWSToolkit.CommonUI.DateTimeRangePicker
         public TimeInputViewModel StartTimeModel => _startTimeViewModel;
         public TimeInputViewModel EndTimeModel => _endTimeViewModel;
 
-        public ICommand RemoveCommand => _removeCommand ?? (_removeCommand = CreateRemoveCommand());
+        public ICommand ClearCommand => _clearCommand ?? (_clearCommand = CreateClearCommand());
 
-        private ICommand CreateRemoveCommand()
+        private ICommand CreateClearCommand()
         {
             return new RelayCommand(CanExecuteClear, Clear);
         }

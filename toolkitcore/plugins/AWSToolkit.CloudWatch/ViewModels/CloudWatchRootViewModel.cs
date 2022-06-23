@@ -38,6 +38,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         public IAmazonCloudWatchLogs CloudWatchLogsClient => _cloudWatchLogsClient.Value;
 
+        public ICredentialIdentifier Identifier => _identifier;
+
         protected override void LoadChildren()
         {
             try
