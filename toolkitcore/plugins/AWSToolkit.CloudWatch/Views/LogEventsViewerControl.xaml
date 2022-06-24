@@ -10,6 +10,7 @@
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
                          xmlns:dateRangePicker="clr-namespace:Amazon.AWSToolkit.CommonUI.DateTimeRangePicker;assembly=AWSToolkit"
                          xmlns:models="clr-namespace:Amazon.AWSToolkit.CloudWatch.Models"
+                         xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.CloudWatch.ViewModels"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -284,6 +285,9 @@
             </commonUi:ToolkitDataGridWrapper.Style>
         </commonUi:ToolkitDataGridWrapper>
 
-        <local:ConnectionStatus Grid.Row="6" ConnectionSettings="{Binding ConnectionSettings}" />
+        <local:ConnectionStatus Grid.Row="6" 
+                                ConnectionSettings="{Binding ConnectionSettings}"
+                                FeedbackSource="{Binding Source={x:Static viewModels:BaseLogsViewModel.FeedbackSource}}"
+                                FeedbackCommand="{Binding FeedbackCommand}"/>
     </Grid>
 </commonUi:BaseAWSControl>

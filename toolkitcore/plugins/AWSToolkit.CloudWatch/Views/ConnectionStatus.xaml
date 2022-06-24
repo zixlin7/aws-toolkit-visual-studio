@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -12,6 +14,7 @@
         <ResourceDictionary>
             <converters:CredentialIdentifierConverter x:Key="CredentialIdentifierConverter" />
             <converters:ToolkitRegionConverter x:Key="ToolkitRegionConverter" />
+            <commonUi:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -31,6 +34,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
@@ -51,6 +55,24 @@
             <Separator Grid.Column="3" />
             <StatusBarItem Grid.Column="4">
                 <!-- Currently this is a spacer -->
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="5">
+                <Button
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                    Command="{Binding FeedbackCommand}"
+                    CommandParameter="{Binding FeedbackSource, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <images:VsImage
+                        Width="16"
+                        Height="16"
+                        Source="{Binding Source={StaticResource VsImages}, Path=Feedback}" />
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <TextBlock
+                                Text="{Binding FeedbackSource, RelativeSource={RelativeSource AncestorType=UserControl}, StringFormat={}Share {0} feedback}">
+                            </TextBlock>
+                        </ToolTip>
+                    </Button.ToolTip>
+                </Button>
             </StatusBarItem>
         </StatusBar>
     </Grid>

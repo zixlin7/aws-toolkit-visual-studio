@@ -8,6 +8,7 @@
                          xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
                          xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+                         xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.CloudWatch.ViewModels"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -111,7 +112,10 @@
             </ListBox.ContextMenu>
         </ListBox>
 
-        <local:ConnectionStatus Grid.Row="4" ConnectionSettings="{Binding ConnectionSettings}"/>
+        <local:ConnectionStatus Grid.Row="4"
+                                ConnectionSettings="{Binding ConnectionSettings}"
+                                FeedbackSource="{Binding Source={x:Static viewModels:BaseLogsViewModel.FeedbackSource}}"
+                                FeedbackCommand="{Binding FeedbackCommand}"/>
 
     </Grid>
 </commonUi:BaseAWSControl>

@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.CloudWatch.Util;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -22,6 +23,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
     /// </summary>
     public abstract class BaseLogsViewModel : BaseModel, IDisposable
     {
+        public static readonly string FeedbackSource = "CloudWatch Logs";
         protected readonly ToolkitContext ToolkitContext;
         protected readonly ICloudWatchLogsRepository Repository;
 
@@ -34,6 +36,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private string _errorMessage = string.Empty;
         private ICommand _refreshCommand;
         private ICommand _copyArnCommand;
+        private ICommand _feedbackCommand;
         private int _lastFilterHash;
 
         protected BaseLogsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext)
@@ -84,6 +87,11 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         }
 
         public ICommand CopyArnCommand => _copyArnCommand ?? (_copyArnCommand = CreateCopyArnCommand());
+
+        /// <summary>
+        /// Command that shows the feedback panel for the CloudWatch Logs integration
+        /// </summary>
+        public ICommand FeedbackCommand => _feedbackCommand ?? (_feedbackCommand = new SendFeedbackCommand(ToolkitContext));
 
         private ICommand CreateCopyArnCommand()
         {

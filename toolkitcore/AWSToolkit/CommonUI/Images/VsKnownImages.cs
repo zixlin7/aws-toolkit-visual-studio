@@ -25,6 +25,7 @@
         DeleteListItem,
         DownloadLog,
         Edit,
+        Feedback,
         FeedbackFrown,
         FeedbackSmile,
         Loading,
