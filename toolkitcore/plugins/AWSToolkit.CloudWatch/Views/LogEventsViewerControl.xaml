@@ -109,10 +109,11 @@
         <DockPanel Grid.Row="1" LastChildFill="True">
            
             <TextBlock DockPanel.Dock="Top" 
-                       Margin="9 6 6 6"
+                       Margin="9 6 6 6" 
+                       TextWrapping="WrapWithOverflow"
                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}">
-                <Run Text="Search for and match terms, phrases, or values in your log events."/>
-                <commonUi:BrowserHyperLink 
+                <Run Text="Case-sensitive search for terms in your log events. Enclose exact phrases in double quotation marks (&quot;&quot;)."/>
+                <commonUi:BrowserHyperLink
                     NavigateUri="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#matching-terms-events">
                     <Run Text="Learn more about filter patterns." />
                 </commonUi:BrowserHyperLink>
@@ -269,6 +270,16 @@
                 </DataGridTextColumn>
 
             </commonUi:ToolkitDataGridWrapper.Columns>
+            <commonUi:ToolkitDataGridWrapper.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Command="Copy">
+                        <MenuItem.Icon>
+                            <Image Height="16" Width="16"
+                                   Source="{Binding Source={StaticResource VsImages}, Path=Copy}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </commonUi:ToolkitDataGridWrapper.ContextMenu>
             <commonUi:ToolkitDataGridWrapper.Style>
                 <!-- Do not show the DataGrid when there are no matching results or if an error occurred -->
                 <Style TargetType="{x:Type commonUi:ToolkitDataGridWrapper}">

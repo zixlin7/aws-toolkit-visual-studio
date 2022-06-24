@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Amazon.AWSToolkit.Util
@@ -88,6 +89,11 @@ namespace Amazon.AWSToolkit.Util
             }
 
             return sb.ToString();
+        }
+
+        public static string SanitizeFilename(string fileName)
+        {
+            return string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
         }
     }
 }
