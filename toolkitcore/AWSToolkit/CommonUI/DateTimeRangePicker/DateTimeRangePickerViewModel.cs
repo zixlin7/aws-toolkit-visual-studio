@@ -110,7 +110,7 @@ namespace Amazon.AWSToolkit.CommonUI.DateTimeRangePicker
         {
             var startFullTime = GetFullStartTime();
             var endFullTime = GetFullEndTime();
-            var result = startFullTime != null && endFullTime != null && startFullTime > endFullTime;
+            var result = startFullTime != null && endFullTime != null && startFullTime >= endFullTime;
 
             HasErrors = result;
             return !result;

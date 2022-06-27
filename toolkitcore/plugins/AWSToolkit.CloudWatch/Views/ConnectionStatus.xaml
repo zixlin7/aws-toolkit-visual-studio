@@ -60,18 +60,12 @@
                 <Button
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                     Command="{Binding FeedbackCommand}"
+                    ToolTip="Share CloudWatch Logs Feedback"
                     CommandParameter="{Binding FeedbackSource, RelativeSource={RelativeSource AncestorType=UserControl}}">
                     <images:VsImage
                         Width="16"
                         Height="16"
                         Source="{Binding Source={StaticResource VsImages}, Path=Feedback}" />
-                    <Button.ToolTip>
-                        <ToolTip>
-                            <TextBlock
-                                Text="{Binding FeedbackSource, RelativeSource={RelativeSource AncestorType=UserControl}, StringFormat={}Share {0} feedback}">
-                            </TextBlock>
-                        </ToolTip>
-                    </Button.ToolTip>
                 </Button>
             </StatusBarItem>
         </StatusBar>

@@ -22,6 +22,7 @@
         </Grid.RowDefinitions>
         <TextBox x:Name="InputTextBox"
                  Background="Transparent"
+                 themes:ToolkitThemes.UseToolkitTheme="True"
                  Text="{Binding Text, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=UserControl}}"
                  AcceptsReturn="{Binding AcceptsReturn, RelativeSource={RelativeSource AncestorType=UserControl}}" />
 

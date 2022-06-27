@@ -52,6 +52,11 @@ namespace AWSToolkit.Tests.CommonUI.DateTimeRangePicker
                 new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"),
                 new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:29 PM"), true
             },
+            new object[]
+            {
+                new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"),
+                new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"), true
+            },
             new object[] { null, null,
                 new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"), false },
             new object[] { new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"),

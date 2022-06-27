@@ -31,15 +31,17 @@
         </Grid.RowDefinitions>
 
         <ToolBarTray Grid.Row="0"
-                     Background="{StaticResource {x:Static themes:ToolkitThemes.ToolBarBackgroundBrushKey}}">
+                     ToolBar.OverflowMode="Never"
+                     Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolBarBackgroundBrushKey}}">
             <ToolBar
                 ToolBarTray.IsLocked="True"
                 OverflowMode="Never"
                 themes:ToolkitThemes.UseToolkitTheme="True"
-                Background="{StaticResource {x:Static themes:ToolkitThemes.ToolBarBackgroundBrushKey}}">
+                Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolBarBackgroundBrushKey}}">
                 <Button ToolTip="Refresh"
                         Command="{Binding RefreshCommand}"
-                        Focusable="False">
+                        Focusable="False"
+                        ToolBar.OverflowMode="Never">
                     <images:VsImage
                         Width="16"
                         Height="16"
@@ -94,18 +96,18 @@
                 <ContextMenu>
                     <MenuItem Header="View Log Group" Command="{Binding ViewCommand}" CommandParameter="{Binding LogGroup}">
                         <MenuItem.Icon>
-                            <Image Source="{Binding Source={StaticResource VsImages}, Path=Search}" />
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Search}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Copy Arn" Command="{Binding CopyArnCommand}" CommandParameter="{Binding LogGroup.Arn}">
                         <MenuItem.Icon>
-                            <Image Source="{Binding Source={StaticResource VsImages}, Path=Copy}" />
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Copy}" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="Delete Log Group" Command="{Binding DeleteCommand}" CommandParameter="{Binding LogGroup}">
                         <MenuItem.Icon>
-                            <Image Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" />
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" />
                         </MenuItem.Icon>
                     </MenuItem>
                 </ContextMenu>
