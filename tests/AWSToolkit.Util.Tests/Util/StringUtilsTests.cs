@@ -24,5 +24,27 @@ namespace Amazon.AWSToolkit.Util.Tests.Util
 
             Assert.Equal(expectedFileName, sanitizedFileName);
         }
+
+
+
+        public static IEnumerable<object[]> NormalizeLineEndingData = new List<object[]>
+        {
+            new object[] { "", "" },
+            new object[] { "hello\\", "hello\\" },
+            new object[] { "hello\t", "hello\t" },
+            new object[] { "hello\r", "hello\r" },
+            new object[] { "hello\r\n", "hello"},
+            new object[] { "hello\n", "hello"},
+            new object[] { "hello", "hello" },
+        };
+
+        [Theory]
+        [MemberData(nameof(NormalizeLineEndingData))]
+        public void NormalizeLineEnding(string inputText, string expectedText)
+        {
+            var normalizedText = StringUtils.NormalizeLineEnding(inputText);
+
+            Assert.Equal(expectedText, normalizedText);
+        }
     }
 }

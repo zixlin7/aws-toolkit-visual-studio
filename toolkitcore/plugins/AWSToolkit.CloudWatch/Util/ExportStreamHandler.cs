@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Util;
 
 using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
@@ -131,8 +132,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             {
                 logEvents.ToList().ForEach(x =>
                 {
-                    writer.WriteLine(x.Message);
-                    _charactersLogged += x.Message.Length;
+                    var msg = StringUtils.NormalizeLineEnding(x.Message);
+                    writer.WriteLine(msg);
+                    _charactersLogged += msg.Length;
                 });
             }
         }
