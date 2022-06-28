@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.CloudWatchLogs;
 
 using AWSToolkit.Tests.CloudWatch.Fixtures;
 
@@ -288,7 +289,7 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
         }
 
         [Fact]
-        public void PaginatedLoadingContinueCommand_Execute()
+        public async Task PaginatedLoadingContinueCommand_Execute()
         {
             var testViewModel = CreateTestViewModel();
             testViewModel.FilterText = "sample-filter";
@@ -305,6 +306,8 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
             _eventsFixture.StubFilterLogEventsToReturn(SampleToken, SampleLogEvents);
 
             testViewModel.ContinueLoadingCommand.Execute(null);
+            // Give the process some time to execute
+            await Task.Delay(1500);
 
             Assert.Equal(SampleToken, testViewModel.NextToken);
             Assert.Equal(SampleLogEvents, testViewModel.LogEvents);
@@ -374,6 +377,36 @@ namespace AWSToolkit.Tests.CloudWatch.ViewModels
             Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
             Assert.Equal(PaginatedLoadingStatus.None, paginatedLoadingStatus[1]);
             Assert.NotEmpty(testViewModel.ErrorMessage);
+        }
+
+
+        [Fact]
+        public void PaginatedLoadingContinueCommand_ExecuteThrottled()
+        {
+            var testViewModel = CreateTestViewModel();
+            testViewModel.FilterText = "sample-filter";
+            var paginatedLoadingStatus = new List<PaginatedLoadingStatus>();
+
+            testViewModel.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(testViewModel.PaginatedLoadingStatus))
+                {
+                    paginatedLoadingStatus.Add(testViewModel.PaginatedLoadingStatus);
+                }
+            };
+
+            Repository.Setup(mock =>
+                    mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new AmazonCloudWatchLogsException("throttled"){ErrorCode = "ThrottlingException"});
+
+            testViewModel.ContinueLoadingCommand.Execute(null);
+
+            Assert.Null(testViewModel.NextToken);
+            Assert.Empty(testViewModel.LogEvents);
+
+            Assert.Equal(2, paginatedLoadingStatus.Count);
+            Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
+            Assert.Equal(PaginatedLoadingStatus.Retry, paginatedLoadingStatus[1]);
         }
 
 

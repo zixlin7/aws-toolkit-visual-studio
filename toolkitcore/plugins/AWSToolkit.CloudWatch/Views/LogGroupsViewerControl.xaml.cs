@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AWSToolkit.Util;
 
 using log4net;
 
@@ -21,7 +22,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
     public partial class LogGroupsViewerControl : BaseAWSControl, IDisposable
     {
         public static readonly ILog Logger = LogManager.GetLogger(typeof(LogGroupsViewerControl));
-
+        private const double ScrollViewChangeDebounceInterval = 500;
+        private readonly DebounceDispatcher _scrollViewChangedDispatcher = new DebounceDispatcher();
         private LogGroupsViewModel _viewModel;
 
         public LogGroupsViewerControl()
@@ -52,7 +54,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             if (_viewModel != null)
             {
                 _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
-                LoadData();
+                DebounceAndLoadData();
             }
         }
 
@@ -104,12 +106,12 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             // if scrollbar is not visible due to less entries in first page and there are more pages left, load more data
             if (scrollViewer.ComputedVerticalScrollBarVisibility != Visibility.Visible && HasMorePages())
             {
-                LoadData();
+               DebounceAndLoadData();
             }
             // load more entries if close to bottom
             else if (IsCloseToBottom(scrollViewer))
             {
-                LoadData();
+               DebounceAndLoadData();
             }
         }
 
@@ -120,6 +122,11 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         {
             return !string.IsNullOrWhiteSpace(_viewModel.NextToken) &&
                    string.IsNullOrWhiteSpace(_viewModel.ErrorMessage);
+        }
+
+        private void DebounceAndLoadData()
+        {
+            _scrollViewChangedDispatcher.Debounce(ScrollViewChangeDebounceInterval, _ => LoadData());
         }
 
         private bool IsCloseToBottom(ScrollViewer scrollViewer)

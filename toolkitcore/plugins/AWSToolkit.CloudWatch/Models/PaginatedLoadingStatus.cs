@@ -7,6 +7,7 @@
     {
         Prompt,
         Loading,
-        None
+        None,
+        Retry
     }
 }

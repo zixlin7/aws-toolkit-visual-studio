@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.CloudWatchLogs;
 
 using log4net;
 
@@ -203,6 +204,17 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             return _isInitialized && string.Equals(_previousLoadingToken, NextToken);
         }
 
+        /// <summary>
+        /// Determines whether there are more pages left depending on the request
+        /// </summary>
+        /// <returns></returns>
+        public bool HasMorePages()
+        {
+            return IsFilteredByText()
+                ? !string.IsNullOrWhiteSpace(NextToken)
+                : !string.Equals(_previousLoadingToken, NextToken);
+        }
+
         protected override bool IsFiltered()
         {
             return base.IsFiltered() || IsFilteredByTime();
@@ -296,6 +308,10 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                     {
                         response = await FilterLogEventsAsync(CancellationToken);
                         NextToken = response.NextToken;
+                        // add delay to rate limit number of requests
+                        // GetLogEvents has a minimum limit of 5 requests per second in some regions. See https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html 
+                        // To avoid throttling, a 1 request per second rate is applied here in addition to surfacing a retry options, on the occasion it does occur
+                        await Task.Delay(1000, CancellationToken);
                     } while (HasPendingLogEvents(response));
 
                     UpdateLogEventProperties(response, selectedLogEvent);
@@ -309,6 +325,15 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                     Logger.Error("Operation to load log events was cancelled", e);
                     //if cancelled, prompt user to continue querying again
                     SetPaginatedLoadingStatus(PaginatedLoadingStatus.Prompt);
+                }
+                else if (e is AmazonCloudWatchLogsException ex)
+                {
+                    if (string.Equals(ex.ErrorCode, "ThrottlingException"))
+                    {
+                        Logger.Error("Operation to load log events was throttled", e);
+                        //if throttled, present retry option to user
+                        SetPaginatedLoadingStatus(PaginatedLoadingStatus.Retry);
+                    }
                 }
                 else
                 {

@@ -250,6 +250,12 @@
                         <Hyperlink Command="{Binding ContinueLoadingCommand}">Continue loading logs</Hyperlink>
                     </TextBlock>
                 </DataTemplate>
+                <DataTemplate x:Key="Retry">
+                    <TextBlock>
+                        <Run Text="Unable to load log events for this log stream."/>
+                        <Hyperlink Command="{Binding ContinueLoadingCommand}">Retry</Hyperlink>
+                    </TextBlock>
+                </DataTemplate>
             </ContentControl.Resources>
             <ContentControl.Style>
                 <Style TargetType="ContentControl">
@@ -259,6 +265,9 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding PaginatedLoadingStatus}" Value="{x:Static models:PaginatedLoadingStatus.Loading}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Loading}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding PaginatedLoadingStatus}" Value="{x:Static models:PaginatedLoadingStatus.Retry}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource Retry}" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding PaginatedLoadingStatus}" Value="{x:Static models:PaginatedLoadingStatus.None}">
                             <Setter Property="Visibility" Value="Collapsed" />
