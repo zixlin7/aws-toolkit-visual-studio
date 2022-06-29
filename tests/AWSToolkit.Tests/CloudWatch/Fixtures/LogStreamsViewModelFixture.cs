@@ -11,7 +11,7 @@ namespace AWSToolkit.Tests.CloudWatch.Fixtures
 {
     public class LogStreamsFixture : BaseLogsViewModelFixture
     {
-        public LogGroup SampleLogGroup => SampleLogGroups.First();
+        public string SampleLogGroup => SampleLogGroups.First().Name;
 
         public LogStreamsFixture() : base()
         {

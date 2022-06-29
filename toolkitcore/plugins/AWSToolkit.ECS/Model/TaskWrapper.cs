@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Task = Amazon.ECS.Model.Task;
 using Amazon.AWSToolkit.CommonUI;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Amazon.AWSToolkit.ECS.Model
 {
     public class TaskWrapper : PropertiesModel
     {
         Task _nativeTask;
-
+        private IDictionary<string, LogProperties> _containerToLogs = new Dictionary<string, LogProperties>();
+        private ICommand _viewLogsCommand;
         public TaskWrapper(Task nativeTask)
         {
             this._nativeTask = nativeTask;
@@ -33,6 +37,39 @@ namespace Amazon.AWSToolkit.ECS.Model
                 var name = this._nativeTask.TaskDefinitionArn.Substring(this._nativeTask.TaskDefinitionArn.LastIndexOf('/') + 1);
                 return name;
             }
+        }
+
+        /// <summary>
+        /// Represents a mapping of task's containers to its logs properties/details
+        /// </summary>
+        public IDictionary<string, LogProperties> ContainerToLogs
+        {
+            get => _containerToLogs;
+            set
+            {
+                _containerToLogs = value;
+                base.NotifyPropertyChanged(nameof(ContainerToLogs));
+                base.NotifyPropertyChanged(nameof(ContainerToLogsKeys));
+            }
+        }
+
+        /// <summary>
+        /// Workaround to trigger visibility of `View Logs` link
+        /// based on if containertologs collection is empty of not
+        /// </summary>
+        public IList<string> ContainerToLogsKeys => ContainerToLogs.Keys.ToList(); 
+
+        /// <summary>
+        /// Represents the view logs command
+        /// </summary>
+        public ICommand ViewLogsCommand
+        {
+            get => _viewLogsCommand;
+            set
+            {
+                _viewLogsCommand = value;
+                base.NotifyPropertyChanged(nameof(ViewLogsCommand));
+            } 
         }
 
         public string LaunchType => this._nativeTask.LaunchType;

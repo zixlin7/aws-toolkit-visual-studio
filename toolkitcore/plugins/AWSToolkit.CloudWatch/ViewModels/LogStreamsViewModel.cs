@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
     {
         public static readonly ILog Logger = LogManager.GetLogger(typeof(LogStreamsViewModel));
         private bool _isDescending = true;
-        private LogGroup _logGroup;
+        private string _logGroup;
         private LogStream _logStream;
         private ICollectionView _logStreamsView;
         private OrderBy _orderBy = OrderBy.LastEventTime;
@@ -57,7 +57,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             set => SetProperty(ref _logStreamsView, value);
         }
 
-        public LogGroup LogGroup
+        public string LogGroup
         {
             get => _logGroup;
             set => SetProperty(ref _logGroup, value);
@@ -219,7 +219,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         {
             var request = new GetLogStreamsRequest()
             {
-                LogGroup = LogGroup.Name, OrderBy = OrderBy, IsDescending = IsDescending
+                LogGroup = LogGroup, OrderBy = OrderBy, IsDescending = IsDescending
             };
             if (_isInitialized)
             {

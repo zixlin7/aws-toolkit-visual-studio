@@ -80,9 +80,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             }
         }
 
-        public override string Title => $"Group: {_viewModel?.LogGroup.Name}";
+        public override string Title => $"Group: {_viewModel?.LogGroup}";
 
-        public override string UniqueId => $"Logs:Group:{_viewModel?.LogGroup.Name}";
+        public override string UniqueId => $"Logs:Group:{_viewModel?.LogGroup}";
 
         private void ViewModel_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -284,7 +284,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 return;
             }
 
-            var parameters = new object[] {_viewModel.LogGroup.Name, selectedLogStream.Name };
+            var parameters = new object[] {_viewModel.LogGroup, selectedLogStream.Name };
             if (_viewModel.ViewCommand.CanExecute(parameters))
             {
                 _viewModel.ViewCommand.Execute(parameters);

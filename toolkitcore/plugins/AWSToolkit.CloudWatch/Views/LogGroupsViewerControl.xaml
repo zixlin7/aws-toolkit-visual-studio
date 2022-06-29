@@ -94,7 +94,7 @@
             </ListBox.Style>
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="View Log Group" Command="{Binding ViewCommand}" CommandParameter="{Binding LogGroup}">
+                    <MenuItem Header="View Log Group" Command="{Binding ViewCommand}" CommandParameter="{Binding LogGroup.Name}">
                         <MenuItem.Icon>
                             <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Search}" />
                         </MenuItem.Icon>

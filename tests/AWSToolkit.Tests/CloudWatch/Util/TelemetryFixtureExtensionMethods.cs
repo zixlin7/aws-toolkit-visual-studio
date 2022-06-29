@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Xunit;
@@ -55,6 +56,19 @@ namespace AWSToolkit.Tests.CloudWatch
 
             Assert.Equal(expectedResult.ToString(), metric.Metadata["result"]);
             Assert.Equal(expectedResourceType.ToString(), metric.Metadata["cloudWatchResourceType"]);
+        }
+
+        public static void VerifyRecordCloudWatchLogsOpen(this TelemetryFixture telemetryFixture,
+            Result expectedResult, CloudWatchResourceType expectedResourceType, BaseMetricSource expectedMetricSource)
+        {
+            var metric = telemetryFixture.LoggedMetrics
+                .SelectMany(m => m.Data)
+                .Single(datum => datum.MetricName == "cloudwatchlogs_open");
+
+            Assert.Equal(expectedResult.ToString(), metric.Metadata["result"]);
+            Assert.Equal(expectedResourceType.ToString(), metric.Metadata["cloudWatchResourceType"]);
+            Assert.Equal(expectedMetricSource.Service, metric.Metadata["serviceType"]);
+            Assert.Equal(expectedMetricSource.Location, metric.Metadata["source"]);
         }
 
         public static void VerifyRecordCloudWatchLogsRefresh(this TelemetryFixture telemetryFixture,

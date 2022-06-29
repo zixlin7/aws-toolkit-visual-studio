@@ -21,7 +21,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Nodes
     {
         static ILog Logger = LogManager.GetLogger(typeof(CloudWatchRootViewMetaNode));
 
-        private const bool IsEnabled = false;
         private readonly ToolkitContext _toolkitContext;
 
         private static readonly string CloudWatchServiceName = new AmazonCloudWatchConfig().RegionEndpointServiceName;
@@ -45,12 +44,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Nodes
 
         public override bool CanSupportRegion(ToolkitRegion region, IRegionProvider regionProvider)
         {
-            // TODO: Remove flag when ready to enable this service in the explorer
-            if (!IsEnabled)
-            {
-                return false;
-            }
-
             var cloudWatchServiceAvailable = regionProvider.IsServiceAvailable(CloudWatchServiceName, region.Id);
 
             if (!cloudWatchServiceAvailable)

@@ -420,9 +420,6 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
-        ObservableCollection<LogStreamWrapper> _logs = new ObservableCollection<LogStreamWrapper>();
-        public ObservableCollection<LogStreamWrapper> Logs => this._logs;
-
         ObservableCollection<EnvironmentVariable> _environmentVariables =
             new ObservableCollection<EnvironmentVariable>();
 

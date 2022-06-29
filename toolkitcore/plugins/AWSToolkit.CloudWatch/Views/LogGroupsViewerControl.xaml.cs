@@ -171,9 +171,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 return;
             }
 
-            if (_viewModel.ViewCommand.CanExecute(selectedLogGroup))
+            if (_viewModel.ViewCommand.CanExecute(selectedLogGroup.Name))
             {
-                _viewModel.ViewCommand.Execute(selectedLogGroup);
+                _viewModel.ViewCommand.Execute(selectedLogGroup.Name);
             }
         }
 

@@ -42,6 +42,16 @@ namespace Amazon.AWSToolkit.CloudWatch
                 return new RepositoryFactory(ToolkitContext);
             }
 
+            if (serviceType == typeof(ILogStreamsViewer))
+            {
+                return new LogStreamsViewer(ToolkitContext);
+            }
+
+            if (serviceType == typeof(ILogEventsViewer))
+            {
+                return new LogEventsViewer(ToolkitContext);
+            }
+
             return null;
         }
 

@@ -21,6 +21,12 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
             set;
         }
 
+        public ActionHandlerWrapper.ActionHandler OnViewLogs
+        {
+            get;
+            set;
+        }
+
         private void OnDeleteResponse(IViewModel focus, ActionResults results)
         {
             var functionModel = focus as LambdaFunctionViewModel;
@@ -31,8 +37,15 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
             BuildActionHandlerList(
                 new ActionHandlerWrapper("View Function", OnOpen, null, true, typeof(AwsImageResourcePath).Assembly,
                     AwsImageResourcePath.Lambda.Path),
+                new ActionHandlerWrapper("View Logs",
+                    OnViewLogs,
+                    null,
+                    false,
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.CloudWatchLogGroups.Path),
                 null,
-                new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
+                new ActionHandlerWrapper("Delete", OnDelete,
+                    new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
             );
     }
 }

@@ -61,6 +61,8 @@
     <Compile Include="CloudWatch\Commands\ViewLogEventsCommandTests.cs" />
     <Compile Include="CloudWatch\Fixtures\BaseLogsViewModelFixture.cs" />
     <Compile Include="CloudWatch\Fixtures\LogEventsViewModelFixture.cs" />
+    <Compile Include="CloudWatch\LogEventsViewerTests.cs" />
+    <Compile Include="CloudWatch\LogStreamViewerTests.cs" />
     <Compile Include="CloudWatch\Util\CloudWatchLogsExtensionMethodTests.cs" />
     <Compile Include="CloudWatch\Core\CloudWatchLogsRepositoryTests.cs" />
     <Compile Include="CloudWatch\Util\ExportStreamHandlerTests.cs" />
@@ -153,6 +155,8 @@
     <Compile Include="ECS\DeployTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsTelemetryUtilsTests.cs" />
     <Compile Include="ECS\EcsWizardUtilsTests.cs" />
+    <Compile Include="ECS\ViewClusterControllerTests.cs" />
+    <Compile Include="ECS\ViewLogsCommandTests.cs" />
     <Compile Include="ElasticBeanstalk\AWSOptionsPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkEnvironmentViewerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkWizardTests.cs" />
@@ -166,6 +170,7 @@
     <Compile Include="Iam\IamEntityRepositoryTests.cs" />
     <Compile Include="Lambda\LambdaStateWaiterTests.cs" />
     <Compile Include="Lambda\UploadFunctionViewModelIsValidConfigurationTests.cs" />
+    <Compile Include="Lambda\ViewLogStreamsCommandTests.cs" />
     <Compile Include="Models\KeyValueConversionTests.cs" />
     <Compile Include="Models\KeyValueTests.cs" />
     <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />

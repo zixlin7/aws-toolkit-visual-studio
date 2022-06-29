@@ -73,7 +73,7 @@
                 BorderThickness="0"
                 Background="Transparent"
                 HorizontalContentAlignment="Left"
-                Text="{Binding LogGroup.Name, StringFormat=Log Group: {0}}"/>
+                Text="{Binding LogGroup, StringFormat=Log Group: {0}}"/>
 
 
             <Grid x:Name="LoadingIndicator"
@@ -199,7 +199,7 @@
                         </MenuItem.Icon>
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource ParameterPassThroughConverter}">
-                                <Binding Path="LogGroup.Name" />
+                                <Binding Path="LogGroup" />
                                 <Binding Path="LogStream.Name" />
                             </MultiBinding>
                         </MenuItem.CommandParameter>
@@ -217,7 +217,7 @@
                         </MenuItem.Icon>
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource ParameterPassThroughConverter}">
-                                <Binding Path="LogGroup.Name" />
+                                <Binding Path="LogGroup" />
                                 <Binding Path="LogStream.Name" />
                             </MultiBinding>
                         </MenuItem.CommandParameter>
