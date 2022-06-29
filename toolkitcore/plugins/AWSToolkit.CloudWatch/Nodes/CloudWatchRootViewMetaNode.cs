@@ -1,6 +1,10 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
+using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.CloudWatch;
@@ -17,7 +21,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Nodes
     {
         static ILog Logger = LogManager.GetLogger(typeof(CloudWatchRootViewMetaNode));
 
-        private const bool IsEnabled = false;
         private readonly ToolkitContext _toolkitContext;
 
         private static readonly string CloudWatchServiceName = new AmazonCloudWatchConfig().RegionEndpointServiceName;
@@ -41,12 +44,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Nodes
 
         public override bool CanSupportRegion(ToolkitRegion region, IRegionProvider regionProvider)
         {
-            // TODO: Remove flag when ready to enable this service in the explorer
-            if (!IsEnabled)
-            {
-                return false;
-            }
-
             var cloudWatchServiceAvailable = regionProvider.IsServiceAvailable(CloudWatchServiceName, region.Id);
 
             if (!cloudWatchServiceAvailable)
@@ -67,5 +64,17 @@ namespace Amazon.AWSToolkit.CloudWatch.Nodes
         }
 
         public override string MarketingWebSite => "https://aws.amazon.com/cloudwatch/";
+
+        public ActionHandlerWrapper.ActionHandler OnViewLogGroups { get; set; }
+
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("View Log Groups",
+                    OnViewLogGroups,
+                    null,
+                    true,
+                    typeof(AwsImageResourcePath).Assembly,
+                    AwsImageResourcePath.CloudWatchLogGroups.Path)
+            );
     }
 }

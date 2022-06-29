@@ -140,24 +140,9 @@ namespace Amazon.AWSToolkit.S3.Jobs
                 this._job.addCompletedKey(childItem);
             }
 
-            string createTranslateKeyToNewLocation(string key)
+            string createTranslateKeyToNewLocation(string sourceKey)
             {
-                string destinationKey = this._job._folderPathToPasteTo;
-                if (destinationKey.Length > 0 && !destinationKey.EndsWith("/"))
-                    destinationKey += "/";
-
-
-                if (key.StartsWith(this._job._clipboard.SourceRootFolder))
-                {
-                    string relativePath = key.Substring(this._job._clipboard.SourceRootFolder.Length);
-                    if (relativePath.StartsWith("/"))
-                        relativePath = relativePath.Substring(1);
-                    destinationKey += relativePath;
-                }
-                else
-                    destinationKey += S3File.GetName(key);
-
-                return destinationKey;
+                return S3Path.Combine(_job._folderPathToPasteTo, S3Path.GetLastPathComponent(sourceKey));
             }
         }
 

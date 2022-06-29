@@ -52,6 +52,11 @@ namespace AWSToolkit.Tests.CommonUI.DateTimeRangePicker
                 new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"),
                 new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:29 PM"), true
             },
+            new object[]
+            {
+                new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"),
+                new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"), true
+            },
             new object[] { null, null,
                 new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"), false },
             new object[] { new DateTime(2022, 05, 04), GetTimeInLocalFormat("11:20:30 PM"),
@@ -121,34 +126,34 @@ namespace AWSToolkit.Tests.CommonUI.DateTimeRangePicker
         }
 
         [Fact]
-        public void RemoveCommand_CannotExecute()
+        public void ClearCommand_CannotExecute()
         {
-            Assert.False(_viewModel.RemoveCommand.CanExecute(null));
+            Assert.False(_viewModel.ClearCommand.CanExecute(null));
         }
 
-        public static readonly IEnumerable<object[]> RemoveCanExecuteData = new[]
+        public static readonly IEnumerable<object[]> ClearCanExecuteData = new[]
         {
             new object[] { new DateTime(2022, 05, 04), null },
             new object[] { null, new DateTime(2022, 05, 04) }
         };
 
         [Theory]
-        [MemberData(nameof(RemoveCanExecuteData))]
-        public void RemoveCommand_CanExecute(DateTime? startDate, DateTime? endDate)
+        [MemberData(nameof(ClearCanExecuteData))]
+        public void ClearCommand_CanExecute(DateTime? startDate, DateTime? endDate)
         {
             _viewModel.StartDate = startDate;
             _viewModel.EndDate = endDate;
 
-            Assert.True(_viewModel.RemoveCommand.CanExecute(null));
+            Assert.True(_viewModel.ClearCommand.CanExecute(null));
         }
 
         [Fact]
-        public void RemoveCommand_Execute()
+        public void ClearCommand_Execute()
         {
             _viewModel.StartDate = new DateTime(2022, 05, 04);
             _viewModel.EndDate = new DateTime(2022, 05, 06);
 
-            _viewModel.RemoveCommand.Execute(null);
+            _viewModel.ClearCommand.Execute(null);
 
             Assert.Null(_viewModel.StartDate);
             Assert.Null(_viewModel.EndDate);

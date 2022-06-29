@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.CloudWatch.Core;
 using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Util;
 
 using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
@@ -57,8 +58,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             var exportResult = new ExportResult();
             try
             {
+                string previousToken = null;
+                string nextToken = null;
                 _charactersLogged = 0;
-                var nextToken = string.Empty;
                 do
                 {
                     if (notifier.CancellationToken.IsCancellationRequested)
@@ -68,6 +70,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
 
                     _toolkitContext.ToolkitHost.UpdateStatus("Downloading");
 
+                    previousToken = nextToken;
                     var request = CreateGetRequest(nextToken);
                     var response = await _repository.GetLogEventsAsync(request, notifier.CancellationToken)
                         .ConfigureAwait(false);
@@ -77,7 +80,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
                     nextToken = response.NextToken;
                     exportResult.Count += response.Values.Count();
                     notifier.ProgressText = $"Downloaded events: {exportResult.Count}";
-                } while (!string.IsNullOrWhiteSpace(nextToken));
+                } while (!string.Equals(nextToken, previousToken));
 
                 exportResult.Status = TaskStatus.Success;
             }
@@ -129,8 +132,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             {
                 logEvents.ToList().ForEach(x =>
                 {
-                    writer.WriteLine(x.Message);
-                    _charactersLogged += x.Message.Length;
+                    var msg = StringUtils.NormalizeLineEnding(x.Message);
+                    writer.WriteLine(msg);
+                    _charactersLogged += msg.Length;
                 });
             }
         }

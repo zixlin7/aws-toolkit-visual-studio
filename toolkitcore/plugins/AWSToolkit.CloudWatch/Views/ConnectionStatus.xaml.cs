@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+
 using Amazon.AWSToolkit.Credentials.Core;
 
 namespace Amazon.AWSToolkit.CloudWatch.Views
@@ -23,6 +25,27 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         {
             get => (AwsConnectionSettings) GetValue(ConnectionSettingsProperty);
             set => SetValue(ConnectionSettingsProperty, value);
+        }
+
+        public static readonly DependencyProperty FeedbackSourceProperty =
+            DependencyProperty.Register(
+                nameof(FeedbackSource), typeof(string), typeof(ConnectionStatus),
+                new PropertyMetadata(""));
+
+        public string FeedbackSource
+        {
+            get => (string) GetValue(FeedbackSourceProperty);
+            set => SetValue(FeedbackSourceProperty, value);
+        }
+
+        public static readonly DependencyProperty FeedbackCommandProperty =
+            DependencyProperty.Register(
+                nameof(FeedbackCommand), typeof(ICommand), typeof(ConnectionStatus));
+
+        public ICommand FeedbackCommand
+        {
+            get => (ICommand) GetValue(FeedbackCommandProperty);
+            set => SetValue(FeedbackCommandProperty, value);
         }
     }
 }

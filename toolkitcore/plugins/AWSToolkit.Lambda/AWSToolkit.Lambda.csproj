@@ -59,10 +59,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command\ViewLogStreamsCommand.cs" />
     <Compile Include="Controller\AddEventSourceController.cs" />
     <Compile Include="DeploymentWorkers\BaseUploadWorker.cs" />
     <Compile Include="Controller\DeleteFunctionController.cs" />
     <Compile Include="DeploymentWorkers\ILambdaFunctionUploadHelpers.cs" />
+    <Compile Include="Model\MetricSources.cs" />
     <Compile Include="Util\LambdaStateWaiter.cs" />
     <Compile Include="DeploymentWorkers\PublishServerlessApplicationWorker.cs" />
     <Compile Include="Controller\UploadFunctionController.cs" />
@@ -74,7 +76,6 @@
     <Compile Include="Model\EventSourceWrapper.cs" />
     <Compile Include="Model\KeyAndAliasWrapper.cs" />
     <Compile Include="Model\LambdaArchitecture.cs" />
-    <Compile Include="Model\LogStreamWrapper.cs" />
     <Compile Include="Model\RuntimeOption.cs" />
     <Compile Include="Model\SampleEvent.cs" />
     <Compile Include="Model\ViewControllerModel.cs" />
@@ -299,10 +300,7 @@
     <PackageReference Include="AWSSDK.CloudWatchEvents">
       <Version>3.7.4.99</Version>
     </PackageReference>
-    <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.7.2.48</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.DynamoDBv2">
+	  <PackageReference Include="AWSSDK.DynamoDBv2">
       <Version>3.7.3.30</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">

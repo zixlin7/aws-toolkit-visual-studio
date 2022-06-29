@@ -87,6 +87,9 @@
     <Compile Include="Clients\AwsServiceClientManager.cs" />
     <Compile Include="Clients\IAwsServiceClientManager.cs" />
     <Compile Include="Clients\ServiceClientCreator.cs" />
+    <Compile Include="CloudWatch\CloudWatchTelemetry.cs" />
+    <Compile Include="CloudWatch\ILogEventsViewer.cs" />
+    <Compile Include="CloudWatch\ILogStreamsViewer.cs" />
     <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />

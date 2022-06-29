@@ -59,9 +59,6 @@ To locally test hosted files changes, copy the hostedfiles folder to a temporary
 
 ### Known Issues
 
-- After compiling within VS 2017 or 2019, the Output tab will report `Build: 62 succeeded, 0 failed, 0 up-to-date, 0 skipped` but the Error List tab will show four errors with the text "AWSToolkit.CodeCommitTeamExplorer.v16 is not compatible with net46".
-  - You can still run and debug the Toolkit
-  - This is caused by the CodeCommit integration, which leverages TeamExplorer. Each version of Visual Studio uses a specific version of TeamExplorer, and the version for VS 2019 (TeamExplorer 16) targets .NET 4.7.2. The project responsible for producing the Toolkit VSIX targets .NET 4.6 (required for VS 2017), which results in this error.
 - In VS 2019, you might get an error around `IAsyncQuickInfoBroker` or `Microsoft.VisualStudio.Language`. The above issue may prevent VS from fully downloading NuGet packages. If this happens, open a VS 2019 Developer Command Prompt and run `msbuild buildtools\build.proj /t:restore` to download the NuGet packages.
 
 ## Hosted Files
@@ -89,6 +86,34 @@ The following files are no longer referenced by the Toolkit, but were used in pr
 ## AWS SDK Package References
 
 The AWS .NET SDK’s NuGet packages are referenced from multiple locations across to repo. To help keep the referenced versions in alignment, an msbuild task automates the process of updating the package references. The task is called `update-awssdk` and resides in `build.proj`.
+
+## Publish to AWS 
+
+### Updating the referenced Deploy Tool version
+
+The Publish to AWS experience is powered by the [dotnet deploy tool](https://github.com/aws/aws-dotnet-deploy). We currently hardcode the Toolkit to use a specific vesrion of the Tool, which is downloaded at runtime. A client package ["AWS.Deploy.ServerMode.Client"](https://www.nuget.org/packages/AWS.Deploy.ServerMode.Client/) contains an API and wrapper code that interacts with the deploy tool's server mode. Both of these versions must remain in sync, otherwise the overall experience could fail to compile or could be unstable.
+
+To integrate a new verion of the Deploy Tool:
+- releases are posted on https://github.com/aws/aws-dotnet-deploy/releases. Determine the version of the deploy tool to use.
+- update [InstallOptionsFactory.cs](/vspackages/Publishing/PublishToAws.Shared/Install/InstallOptionsFactory.cs) (VersionRange) with the new version
+- download the corresponding version of the client package from https://www.nuget.org/packages/AWS.Deploy.ServerMode.Client/
+- extract the downloaded package (it is a zip file)
+- from the extracted contents, copy "lib\netstandard2.0\AWS.Deploy.ServerMode.Client.dll" into [\thirdparty](/thirdparty), overwriting the existing dll
+- compile the Toolkit. If there were breaking changes in the API, you may have to made additional changes in order to successfully compile
+- run the integration tests. From the Visual Studio test runner, run the tests associated with the `AwsToolkit.Tests.Integration` project
+  - you will need to have a [default profile defined](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where), and you will need to have docker desktop running
+  - these tests will run for 30+ minutes. They are performing deployments.
+- run the Publish to AWS experience, and try things out. Make sure functionality hasn't disappeared or regressed.
+  - examples of previous regressions
+    - configuration validations fail to appear
+    - publishing a project would succeed, but the list of resulting resources would not populate
+  - if you have detected a regression
+    - if the cause appears to be caused by the Toolkit, work towards a mitigation
+    - if the cause appears to be caused by the deploy tool, report it to the deploy tool team
+    - create an integration test to catch this scenario moving forward
+- look through the deploy tool's release notes. Create Toolkit changelog entries for all customer affecting changes, and word them from the user's perspective, and how they are affected by the change.
+- If things look good, you're ready to PR your changes into the main branch.
+  - If you found blocking problems or regressions, this release cannot be merged into the main branch. You can abandon this release (and your local changes), or, if you plan to work on other changes that build on this release, it is reasonable to bring these changes into a "vnext" feature branch. A subsequent release of the deploy tool that fixes the identified problems is required before promoting the changes into the main branch.
 
 ## Reporting Bugs/Feature Requests
 

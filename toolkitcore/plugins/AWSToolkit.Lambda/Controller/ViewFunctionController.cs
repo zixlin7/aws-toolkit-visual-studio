@@ -12,13 +12,15 @@ using Amazon.AWSToolkit.Lambda.View;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Nodes;
 using Amazon.Auth.AccessControlPolicy;
+using Amazon.AWSToolkit.CloudWatch;
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.EC2;
 using Amazon.EC2.Model;
-using Amazon.CloudWatchLogs;
-using Amazon.CloudWatchLogs.Model;
+
 using log4net;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.SimpleWorkers;
@@ -27,16 +29,15 @@ using Amazon.KeyManagementService;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
     public class ViewFunctionController : BaseContextCommand
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(ViewFunctionController));
+        private static ILog LOGGER = LogManager.GetLogger(typeof(ViewFunctionController));
 
-        private static readonly string CloudWatchLogsServiceName =
-            new AmazonCloudWatchLogsConfig().RegionEndpointServiceName;
         private static readonly string Ec2ServiceName =
             new AmazonEC2Config().RegionEndpointServiceName;
         private static readonly string KmsServiceName =
@@ -46,6 +47,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         private static readonly string SqsServiceName =
             new AmazonSQSConfig().RegionEndpointServiceName;
 
+        private static readonly BaseMetricSource ViewLogsMetricSource = MetricSources.CloudWatchLogsMetricSource.LambdaView;
         private readonly ToolkitContext _toolkitContext;
 
         ViewFunctionModel _model;
@@ -60,8 +62,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         AccountViewModel _account;
         ToolkitRegion _region;
-
-        AmazonCloudWatchLogsClient _logsClient;
+        private AwsConnectionSettings _connectionSettings;
 
         public ViewFunctionController(ToolkitContext toolkitContext)
         {
@@ -71,32 +72,37 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         /// <summary>
         /// Test only constructor initializing a ViewFunctionModel
         /// </summary>
+        /// <param name="toolkitContext">toolkit context</param>
+        /// <param name="connectionSettings">connection settings to be used with telemetry calls</param>
         /// <param name="functionName">function name for view function model</param>
         /// <param name="functionArn">function arn for view function model</param>
-        public ViewFunctionController(string functionName, string functionArn)
+        public ViewFunctionController(string functionName, string functionArn,
+            ToolkitContext toolkitContext, AwsConnectionSettings connectionSettings) : this(toolkitContext)
         {
-            this._model =new ViewFunctionModel(functionName, functionArn);
+            _connectionSettings = connectionSettings;
+            this._model = new ViewFunctionModel(functionName, functionArn);
         }
 
         public override ActionResults Execute(IViewModel model)
         {
-            this._viewModel = model as LambdaFunctionViewModel;
-            if (this._viewModel == null)
+            _viewModel = model as LambdaFunctionViewModel;
+            if (_viewModel == null)
                 return new ActionResults().WithSuccess(false);
 
 
-            this._lambdaClient = this._viewModel.LambdaClient;
-            this._model = new ViewFunctionModel(this._viewModel.FunctionName, this._viewModel.FunctionArn);
-            this._control = new ViewFunctionControl(this);
+            _lambdaClient = this._viewModel.LambdaClient;
+            _model = new ViewFunctionModel(this._viewModel.FunctionName, this._viewModel.FunctionArn);
+            _account = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.AccountViewModel;
+            _region = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.Region;
+            _connectionSettings = new AwsConnectionSettings(_account?.Identifier, _region);
 
-            this._control.PropertyChanged += _control_PropertyChanged;
+            _control = new ViewFunctionControl(this);
 
-            this._account = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.AccountViewModel;
-            this._region = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.Region;
+            _control.PropertyChanged += _control_PropertyChanged;
 
             ConstructClients();
 
-            ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
+            _toolkitContext.ToolkitHost.OpenInEditor(this._control);
 
             return new ActionResults()
                 .WithSuccess(true);
@@ -227,10 +233,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         void ConstructClients()
         {
-            if (_toolkitContext.RegionProvider.IsServiceAvailable(CloudWatchLogsServiceName, _region.Id))
-            {
-                _logsClient = _account.CreateServiceClient<AmazonCloudWatchLogsClient>(_region);
-            }
 
             if (_toolkitContext.RegionProvider.IsServiceAvailable(Ec2ServiceName, _region.Id))
             {
@@ -272,7 +274,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             RefreshFunctionConfiguration();
             RefreshAdvancedSettings();
             RefreshEventSources();
-            RefreshLogs();
         }
 
         public void RefreshFunctionConfiguration()
@@ -529,100 +530,40 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         private string CloudWatchLogGroup => string.Format("/aws/lambda/{0}", this._model.FunctionName);
 
-        public void RefreshLogs()
+        public BaseAWSControl GetLogStreamsView()
         {
-            this._model.Logs.Clear();
-            if (this._logsClient == null)
-                return;
+            var view =  CreateLogStreamsView();
+            var result = view != null;
+            CloudWatchTelemetry.RecordOpenLogGroup(result, ViewLogsMetricSource,
+                _connectionSettings, _toolkitContext);
+            return view;
+        }
 
-            var request = new DescribeLogStreamsRequest
-            {
-                LogGroupName = this.CloudWatchLogGroup,
-                OrderBy = OrderBy.LastEventTime,
-                Descending = true
-            };
-
+        private BaseAWSControl CreateLogStreamsView()
+        {
             try
             {
-                this._logsClient.DescribeLogStreamsAsync(request).ContinueWith(task =>
+                var logStreamsViewer =
+                    _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(ILogStreamsViewer)) as
+                        ILogStreamsViewer;
+                if (logStreamsViewer == null)
                 {
-                    if (task.Exception == null)
-                    {
-                        var response = task.Result;
-                        ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
-                        {
-                            foreach (var stream in response.LogStreams)
-                            {
-                                this._model.Logs.Add(new LogStreamWrapper(stream));
-                            }
-                        });
-                    }
-                    else
-                    {
-                        // Most likely lambda doesn't have permission to write logs.
-                        LOGGER.Info("DescribeLogStreamsAsync: error getting cloudwatch logs", task.Exception);
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                // Most likely lambda doesn't have permission to write logs.
-                LOGGER.Info("Error getting cloudwatch logs for " + request.LogGroupName, e);
-            }
-        }
-
-        public void DownloadLog(string logStream)
-        {
-            var fileName = Path.GetTempFileName() + ".txt";
-
-            using (var writer = new StreamWriter(fileName))
-            {
-                var request = new GetLogEventsRequest
-                {
-                    LogGroupName = this.CloudWatchLogGroup,
-                    LogStreamName = logStream
-                };
-
-                var response = this._logsClient.GetLogEvents(request);
-                foreach (var evnt in response.Events)
-                {
-                    string message = NormalizeLineEnding(evnt.Message);
-                    writer.Write("{0:yyyy-MM-dd HH:mm:ss}: {1}", evnt.Timestamp.ToLocalTime(), message);
+                    throw new Exception("Unable to load CloudWatch log group data source");
                 }
+
+                return logStreamsViewer.GetViewer(CloudWatchLogGroup, _connectionSettings);
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error($"Error viewing CloudWatch log streams for lambda function {this._model.FunctionName}",
+                    ex);
+                _toolkitContext.ToolkitHost.ShowError(
+                    $"Error viewing log group for lambda function {this._model.FunctionName}: {ex.Message}");
             }
 
-            var process = new Process();
-            process.StartInfo.FileName = fileName;
-            process.StartInfo.Verb = "Open";
-            process.Start();
+            return null;
         }
 
-        private static string NormalizeLineEnding(string text)
-        {
-            if (text.EndsWith("\r\n"))
-            {
-                return text.Remove(text.Length - 2) + System.Environment.NewLine;
-            }
-
-            if (text.EndsWith("\n"))
-            {
-                return text.Remove(text.Length - 1) + System.Environment.NewLine;
-            }
-
-            return text;
-        }
-
-        public void DeleteLog(LogStreamWrapper logStream)
-        {
-            var request = new DeleteLogStreamRequest
-            {
-                LogGroupName = this.CloudWatchLogGroup,
-                LogStreamName = logStream.LogStreamName
-            };
-
-            this._logsClient.DeleteLogStream(request);
-            this._model.Logs.Remove(logStream);
-        }
 
         public void UpdateConfiguration()
         {

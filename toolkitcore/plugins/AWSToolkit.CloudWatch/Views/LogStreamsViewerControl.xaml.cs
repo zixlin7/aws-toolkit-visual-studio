@@ -13,6 +13,7 @@ using Amazon.AWSToolkit.CloudWatch.Models;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AWSToolkit.Util;
 
 using log4net;
 
@@ -27,6 +28,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         public static readonly string StreamNameHeader = "Log Stream";
         public static readonly string EventTimeHeader = "Last Event Time";
         public static readonly string TimeZone = TimeZoneInfo.Local.Id;
+        private const double ScrollViewChangeDebounceInterval = 500;
+        private readonly DebounceDispatcher _scrollViewChangedDispatcher = new DebounceDispatcher();
 
         private readonly Dictionary<string, OrderBy> _orderByColumnMap = new Dictionary<string, OrderBy>
         {
@@ -77,9 +80,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             }
         }
 
-        public override string Title => $"Group: {_viewModel?.LogGroup.Name}";
+        public override string Title => $"Group: {_viewModel?.LogGroup}";
 
-        public override string UniqueId => $"Logs:Group:{_viewModel?.LogGroup.Name}";
+        public override string UniqueId => $"Logs:Group:{_viewModel?.LogGroup}";
 
         private void ViewModel_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -176,6 +179,16 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 return;
             }
 
+            DebounceAndLoadData();
+        }
+
+        private void DebounceAndLoadData()
+        {
+            _scrollViewChangedDispatcher.Debounce(ScrollViewChangeDebounceInterval, _ => LoadDataInBackground());
+        }
+
+        private void LoadDataInBackground()
+        {
             Task.Run(async () =>
             {
                 await LoadAsync().ConfigureAwait(false);
@@ -271,7 +284,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 return;
             }
 
-            var parameters = new object[] {_viewModel.LogGroup.Name, selectedLogStream.Name };
+            var parameters = new object[] {_viewModel.LogGroup, selectedLogStream.Name };
             if (_viewModel.ViewCommand.CanExecute(parameters))
             {
                 _viewModel.ViewCommand.Execute(parameters);

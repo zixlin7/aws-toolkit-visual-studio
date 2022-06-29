@@ -17,6 +17,8 @@ namespace Amazon.AWSToolkit.Tests.Integration.Publish
         [Fact]
         public async void ShouldPublish()
         {
+            AssertDockerIsRunning();
+
             // act
             await SetDeploymentTargetToAppRunner();
 

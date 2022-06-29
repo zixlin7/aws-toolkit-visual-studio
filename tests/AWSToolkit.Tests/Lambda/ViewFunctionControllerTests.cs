@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Amazon.AWSToolkit.CloudWatch;
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.AWSToolkit.Shared;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
+
+using AWSToolkit.Tests.CloudWatch;
 
 using Moq;
 
@@ -27,6 +35,10 @@ namespace AWSToolkit.Tests.Lambda
         private readonly GetFunctionConfigurationResponse _getInitialResponse;
         private readonly GetFunctionConfigurationResponse _packageTypeImageResponse;
         private readonly UpdateFunctionConfigurationResponse _updateProgressResponse;
+        private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
+        private readonly Mock<ILogStreamsViewer> _logStreamsViewer = new Mock<ILogStreamsViewer>();
+
+        private Mock<IAWSToolkitShellProvider> ToolkitHost => _contextFixture.ToolkitHost;
 
         public static IEnumerable<object[]> ArchitectureData = new List<object[]>
         {
@@ -38,7 +50,8 @@ namespace AWSToolkit.Tests.Lambda
 
         public ViewFunctionControllerTests()
         {
-            _controller = new ViewFunctionController("mockFunctionName", "mockFunctionArn");
+            var connectionSettings = new AwsConnectionSettings(null, null);
+            _controller = new ViewFunctionController("mockFunctionName", "mockFunctionArn", _contextFixture.ToolkitContext, connectionSettings);
             _getPendingResponse = new GetFunctionConfigurationResponse
             {
                 State = State.Pending,
@@ -259,6 +272,41 @@ namespace AWSToolkit.Tests.Lambda
             list = new List<string>() {" aaa ", "", " bbb ", " ccc "};
             AssertJoinByComma(list, " aaa ,, bbb , ccc ");
         }
+
+        [Fact]
+        public void GetLogStreamsView_InvalidViewer()
+        {
+            ToolkitHost.Setup(mock => mock.QueryAWSToolkitPluginService(typeof(ILogStreamsViewer)))
+                .Returns(null);
+
+            var view = _controller.GetLogStreamsView();
+
+            Assert.Null(view);
+            ToolkitHost.Verify(
+                mock => mock.ShowError(
+                    It.Is<string>(msg => msg.Contains("Error viewing log group for lambda function"))),
+                Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Failed,
+                CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaView);
+        }
+
+        [StaFact]
+        public void GetLogStreamsView()
+        {
+            ToolkitHost.Setup(mock => mock.QueryAWSToolkitPluginService(typeof(ILogStreamsViewer)))
+                .Returns(_logStreamsViewer.Object);
+            _logStreamsViewer.Setup(mock => mock.GetViewer(It.IsAny<string>(), It.IsAny<AwsConnectionSettings>()))
+                .Returns(new BaseAWSControl());
+
+            var view = _controller.GetLogStreamsView();
+
+            Assert.IsType<BaseAWSControl>(view);
+            _logStreamsViewer.Verify(
+                mock => mock.GetViewer(It.IsAny<string>(), It.IsAny<AwsConnectionSettings>()), Times.Once);
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Succeeded,
+                CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaView);
+        }
+
 
         private void AssertJoinByComma(List<string> strings, string expectedText)
         {

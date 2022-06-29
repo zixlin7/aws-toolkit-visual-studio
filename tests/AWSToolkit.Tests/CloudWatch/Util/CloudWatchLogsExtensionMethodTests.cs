@@ -46,6 +46,22 @@ namespace AWSToolkit.Tests.CloudWatch.Util
         [InlineData(" sample-event-message ")]
         public void ToLogEvent(string message)
         {
+            var cloudWatchLogEvent = new OutputLogEvent() { Message = message, Timestamp = new DateTime(2022, 01, 01) };
+            var expected = new LogEvent
+            {
+                Message = "sample-event-message",
+                Timestamp = new DateTime(2022, 01, 01, 00, 00, 00, DateTimeKind.Utc).ToLocalTime()
+            };
+            Assert.Equal(expected, cloudWatchLogEvent.ToLogEvent());
+        }
+
+        [Theory]
+        [InlineData("sample-event-message")]
+        [InlineData("    sample-event-message")]
+        [InlineData("sample-event-message     ")]
+        [InlineData(" sample-event-message ")]
+        public void ToLogEvent_Filtered(string message)
+        {
             var cloudWatchLogEvent = new FilteredLogEvent() { Message = message, Timestamp = 1640995200000 };
             var expected = new LogEvent
             {

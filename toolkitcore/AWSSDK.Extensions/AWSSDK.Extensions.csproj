@@ -60,6 +60,7 @@
     <Compile Include="Amazon.S3\AmazonS3ClientExt.cs" />
     <Compile Include="Amazon.S3\IO\S3Directory.cs" />
     <Compile Include="Amazon.S3\IO\S3File.cs" />
+    <Compile Include="Amazon.S3\IO\S3Path.cs" />
     <Compile Include="Amazon.SimpleNotificationService\AmazonSimpleNotificationServiceClientExt.cs" />
     <Compile Include="Amazon.SimpleNotificationService\Model\GetTopicAttributesResultExt.cs" />
     <Compile Include="Amazon.SQS\AmazonSQSClientExt.cs" />

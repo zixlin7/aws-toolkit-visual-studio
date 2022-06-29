@@ -98,6 +98,7 @@
     <Compile Include="Util\DisposingActionTests.cs" />
     <Compile Include="Util\FrameworkNameHelperTests.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
+    <Compile Include="Util\StringUtilsTests.cs" />
     <Compile Include="Util\ZipUtilTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -130,10 +131,10 @@
       <Version>3.7.10.15</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.50</Version>
+      <Version>1.0.55</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.50</Version>
+      <Version>1.0.55</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.14</Version>

@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AWSToolkit.Util;
 
 using log4net;
 
@@ -20,7 +21,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LogEventsViewerControl));
         public static readonly string TimeZone = TimeZoneInfo.Local.Id;
-        public static readonly string DefaultHintText = "Filter events";
+        public static readonly string DefaultHintText = "Filter events e.g. Error, \"BUILD FAILED\", \"$event\" ";
+        private const double ScrollViewChangeDebounceInterval = 500;
+        private readonly DebounceDispatcher _scrollViewChangedDispatcher = new DebounceDispatcher();
 
         private LogEventsViewModel _viewModel;
 
@@ -54,7 +57,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
             {
                 _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
                 _viewModel.DateTimeRange.RangeChanged += DateTimeRange_RangeChanged;
-                LoadData();
+                DebounceAndLoadData();
             }
         }
 
@@ -128,11 +131,31 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 return;
             }
 
-            // load more when close to bottom
-            if (IsCloseToBottom(scrollViewer))
+            // if scrollbar is not visible due to less entries in first page and there are more pages left, load more data
+            if (scrollViewer.ComputedVerticalScrollBarVisibility != Visibility.Visible && HasMorePages())
             {
-                LoadData();
+                DebounceAndLoadData();
             }
+
+            // load more entries if close to bottom
+            else if(IsCloseToBottom(scrollViewer))
+            {
+                DebounceAndLoadData();
+            }
+        }
+
+        private void DebounceAndLoadData()
+        {
+            _scrollViewChangedDispatcher.Debounce(ScrollViewChangeDebounceInterval, _ => LoadData());
+        }
+
+        /// <summary>
+        /// Checks if there is no error and there are more entries/pages(next token is present) to be loaded
+        /// </summary>
+        private bool HasMorePages()
+        {
+            return _viewModel.HasMorePages() &&
+                   string.IsNullOrWhiteSpace(_viewModel.ErrorMessage);
         }
 
         private bool IsCloseToBottom(ScrollViewer scrollViewer)

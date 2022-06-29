@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.ECS.View;
@@ -12,6 +13,7 @@ using log4net;
 
 using Amazon.CloudWatchEvents;
 using Amazon.EC2;
+using Amazon.ECS;
 using Amazon.ElasticLoadBalancingV2;
 using Amazon.ElasticLoadBalancingV2.Model;
 
@@ -28,6 +30,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
         IAmazonEC2 _ec2Client;
         string _clusterArn;
 
+        private AwsConnectionSettings _connectionSettings;
         public ToolkitContext ToolkitContext;
 
         public ViewClusterController(ToolkitContext toolkitContext)
@@ -37,6 +40,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         protected override void DisplayView()
         {
+            _connectionSettings = new AwsConnectionSettings(Account?.Identifier, Region);
             this._control = new ViewClusterControl(this);
             ToolkitContext.ToolkitHost.OpenInEditor(this._control);
         }
@@ -360,6 +364,11 @@ namespace Amazon.AWSToolkit.ECS.Controller
                         tasksToLookupENI[networkInterfaceId] = taskWrapper;
                     }
 
+                    //retrieve task's containers and associated log details
+                    var containerToLogs = GetContainersToLogsDetails(this.ECSClient, nativeTask);
+                    taskWrapper.ContainerToLogs = containerToLogs;
+                    taskWrapper.ViewLogsCommand = ViewLogsCommand.Create(ToolkitContext, _connectionSettings);
+
                     this.Model.Tasks.Add(taskWrapper);
                 }
 
@@ -438,6 +447,49 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 });
                 ToolkitContext.ToolkitHost.UpdateStatus("Deleted rule " + task.NativeRule.Name);
             }
+        }
+
+        /// <summary>
+        /// Retrieves a mapping of given task's containers to their associated log details/properties
+        /// </summary>
+        public IDictionary<string, LogProperties> GetContainersToLogsDetails(IAmazonECS ecsClient, Task task)
+        {
+            var containerToLogs = new Dictionary<string, LogProperties>();
+            var taskDefinition = ecsClient.DescribeTaskDefinition(new DescribeTaskDefinitionRequest()
+            {
+                TaskDefinition = task.TaskDefinitionArn,
+            }).TaskDefinition;
+
+            // Only log configurations with log drives as `Awslogs` log to CloudWatch
+            // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html
+            var containers = taskDefinition.ContainerDefinitions?.Where(con =>
+                con.LogConfiguration.LogDriver == LogDriver.Awslogs).ToList();
+
+            if (containers?.Any() ?? false)
+            {
+                containers.ForEach(container =>
+                {
+                    var options = container.LogConfiguration.Options;
+                    options.TryGetValue("awslogs-group", out var logGroup);
+
+                    var result = options.TryGetValue("awslogs-stream-prefix", out var prefix);
+
+                    if (result)
+                    {
+                        var logStream = CreateLogStream(task, prefix, container.Name);
+                        var logProperties = new LogProperties() { LogGroup = logGroup, LogStream = logStream };
+                        containerToLogs.Add(container.Name, logProperties);
+                    }
+                });
+            }
+            return containerToLogs;
+        }
+
+        public string CreateLogStream(Task task, string prefix, string containerName)
+        {
+            var taskId = task.TaskArn.Substring(task.TaskArn.LastIndexOf('/') + 1);
+            var logStream = $"{prefix}/{containerName}/{taskId}";
+            return logStream;
         }
     }
 }

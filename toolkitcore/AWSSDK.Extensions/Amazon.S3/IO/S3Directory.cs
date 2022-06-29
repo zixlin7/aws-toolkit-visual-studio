@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Amazon.S3.Model;
-using Amazon.S3.Util;
 
 namespace Amazon.S3.IO
 {
@@ -9,48 +8,11 @@ namespace Amazon.S3.IO
     {
         private const string FOLDER_POSTFIX = "$folder$";
 
-        public static string[] GetDirectories(IAmazonS3 s3Client, string bucketName, string path)
-        {
-            var directories = new List<string>();
-            iterateListObjects(s3Client, bucketName, path, SearchOption.TopDirectoryOnly, false, directories, null, null, null);
-            return directories.ToArray(); ;
-        }
-
-        public static string[] GetFiles(IAmazonS3 s3Client, string bucketName, string path)
-        {
-            return GetFiles(s3Client, bucketName, path, SearchOption.TopDirectoryOnly);
-        }
-
-        public static string[] GetFiles(IAmazonS3 s3Client, string bucketName, string path, SearchOption searchOption)
-        {
-            var files = new List<string>();
-            iterateListObjects(s3Client, bucketName, path, searchOption, false, null, files, null, null);
-            return files.ToArray();
-        }
-
         public static string[] GetFiles(IAmazonS3 s3Client, string bucketName, string path, SearchOption searchOption, bool includeFolderFiles, HashSet<S3StorageClass> validStorageClasses)
         {
             var files = new List<string>();
             iterateListObjects(s3Client, bucketName, path, searchOption, includeFolderFiles, null, files, null, validStorageClasses);
             return files.ToArray();
-        }
-
-        public static void GetDirectoriesAndFiles(IAmazonS3 s3Client, string bucketName, string path, out string[] directories, out string[] files)
-        {
-            var listDirectories = new List<string>();
-            var listFiles = new List<string>();
-            iterateListObjects(s3Client, bucketName, path, SearchOption.TopDirectoryOnly, false, listDirectories, listFiles, null, null);
-            directories = listDirectories.ToArray();
-            files = listFiles.ToArray();
-        }
-
-        public static void GetDirectoriesAndFiles(IAmazonS3 s3Client, string bucketName, string path, out string[] directories, out S3Object[] files)
-        {
-            var listDirectories = new List<string>();
-            var listFiles = new List<S3Object>();
-            iterateListObjects(s3Client, bucketName, path, SearchOption.TopDirectoryOnly, false, listDirectories, null, listFiles, null);
-            directories = listDirectories.ToArray();
-            files = listFiles.ToArray();
         }
 
         public static void GetDirectoriesAndFiles(IAmazonS3 s3Client, string bucketName, string path, out string[] directories, out S3Object[] files, ref string nextMarker)
@@ -70,15 +32,12 @@ namespace Amazon.S3.IO
                 nextMarker = iterateListObjects(s3Client, bucketName, path, searchOption, includeFolderFiles, directories, files, s3os, nextMarker, validStorageClasses);
             } while (!string.IsNullOrEmpty(nextMarker));
 
-            if(directories != null)
-                directories.Sort();
-            if(files != null)
-                files.Sort();
+            directories?.Sort();
+            files?.Sort();
         }
 
         private static string iterateListObjects(IAmazonS3 s3Client, string bucketName, string path, SearchOption searchOption, bool includeFolderFiles, List<string> directories, List<string> files, List<S3Object> s3os, string nextMarker, HashSet<S3StorageClass> validStorageClasses)
         {
-            path = cleanPath(path);
             ListObjectsRequest listRequest = new ListObjectsRequest()
             {
                 BucketName = bucketName,
@@ -87,18 +46,17 @@ namespace Amazon.S3.IO
             };
 
             if (searchOption == SearchOption.TopDirectoryOnly)
-                listRequest.Delimiter = "/";
+            {
+                listRequest.Delimiter = S3Path.DefaultDirectorySeparator;
+            }
 
             var response = s3Client.ListObjects(listRequest);
-
 
             if (directories != null)
             {
                 foreach (string dir in response.CommonPrefixes)
                 {
-                    // remove trailing slash
-                    string cleanD = dir.Substring(0, dir.Length - 1);
-                    directories.Add(cleanD);
+                    directories.Add(dir);
                 }
             }
 
@@ -106,67 +64,35 @@ namespace Amazon.S3.IO
             {
                 foreach (var s3Object in response.S3Objects)
                 {
-                    if (!includeFolderFiles && (s3Object.Key.EndsWith(FOLDER_POSTFIX) || s3Object.Key.EndsWith("/")))
+                    if (!includeFolderFiles && (s3Object.Key.EndsWith(FOLDER_POSTFIX) || S3Path.IsDirectory(s3Object.Key)))
+                    {
                         continue;
+                    }
 
                     if (validStorageClasses != null && !validStorageClasses.Contains(s3Object.StorageClass))
+                    {
                         continue;
+                    }
 
-                    if (files != null)
-                        files.Add(s3Object.Key);
-                    if (s3os != null)
-                        s3os.Add(s3Object);
+                    files?.Add(s3Object.Key);
+                    s3os?.Add(s3Object);
                 }
             }
 
-            if (!response.IsTruncated)
-                return null;
-
-            return response.NextMarker;
-        }
-
-        private static string cleanPath(string path)
-        {
-            if (path.Equals("/"))
-                path = "";
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
-            if (path.Length > 0 && !path.EndsWith("/"))
-                path = string.Format("{0}/", path);
-
-            return path;
+            return response.IsTruncated ? response.NextMarker : null;
         }
 
         public static void CreateDirectory(IAmazonS3 s3Client, string bucketName, string path)
         {
-            path = path.Replace(@"\", "/");
-            if (path.StartsWith("/"))
-                path = path.Substring(1);
-            if (!path.EndsWith("/"))
-                path += "/";
+            var folderFilename = S3Path.TrimEndingDirectorySeparator(S3Path.GetLastPathComponent(path));
+            path = S3Path.Combine(path, $"{folderFilename}_{FOLDER_POSTFIX}");
 
-            string lastName = path;
-            int pos = path.LastIndexOf("/", path.Length - 2);
-            if (pos >= 0)
-            {
-                lastName = path.Substring(pos + 1);                
-            }
-
-            if(lastName.EndsWith("/"))
-            {
-                lastName = lastName.Substring(0, lastName.Length - 1);
-            }
-
-            path += string.Format("{0}_{1}", lastName, FOLDER_POSTFIX);
-
-            var request = new PutObjectRequest()
+            s3Client.PutObject(new PutObjectRequest()
             {
                 BucketName = bucketName,
-                Key = path
-            };
-            request.InputStream = new MemoryStream();
-
-            s3Client.PutObject(request);
+                Key = path,
+                InputStream = new MemoryStream()
+            });
         }
     }
 }

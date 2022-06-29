@@ -30,6 +30,7 @@
         <TextBox x:Name="SearchTermTextBox"
                  Text="{Binding FilterText , UpdateSourceTrigger=PropertyChanged, Delay=500}"
                  Background="Transparent"
+                 themes:ToolkitThemes.UseToolkitTheme="True"
                  HorizontalAlignment="Stretch" />
 
         <DockPanel Style="{StaticResource SearchBoxStyle}">

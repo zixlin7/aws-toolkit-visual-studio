@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -11,6 +12,7 @@ using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 
 using log4net;
 
@@ -95,7 +97,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Commands
             var dlg = new SaveFileDialog
             {
                 // Default file name
-                FileName = logStream,
+                FileName = StringUtils.SanitizeFilename(logStream),
                 DefaultExt = ".txt",
                 Title = "Export to a text file",
                 Filter = "Text Files (*.txt) | *.txt | All Files (*.*) | *.*"

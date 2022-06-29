@@ -43,6 +43,15 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             };
         }
 
+        public static LogEvent ToLogEvent(this OutputLogEvent cloudWatchLogEvent)
+        {
+            return new LogEvent
+            {
+                Message = cloudWatchLogEvent.Message.Trim(),
+                Timestamp = cloudWatchLogEvent.Timestamp.ToLocalTime()
+            };
+        }
+        
         public static Result AsMetricsResult(this TaskStatus taskStatus)
         {
             switch (taskStatus)

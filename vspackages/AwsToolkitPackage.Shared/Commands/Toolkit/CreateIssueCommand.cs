@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Urls;
 
 using log4net;
 
@@ -17,8 +18,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
     public class CreateIssueCommand : BaseCommand<CreateIssueCommand>
     {
         static readonly ILog Logger = LogManager.GetLogger(typeof(CreateIssueCommand));
-
-        public const string CreateIssueUrl = "https://github.com/aws/aws-toolkit-visual-studio/issues/new/choose";
 
         private readonly IAWSToolkitShellProvider _toolkitShell;
         private readonly ToolkitContext _toolkitContext;
@@ -45,7 +44,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
         {
             try
             {
-                _toolkitShell.OpenInBrowser(CreateIssueUrl, preferInternalBrowser: false);
+                _toolkitShell.OpenInBrowser(GitHubUrls.CreateNewIssueUrl, preferInternalBrowser: false);
                 _toolkitContext.TelemetryLogger.RecordAwsReportPluginIssue(new AwsReportPluginIssue()
                 {
                     AwsAccount = _toolkitContext.ConnectionManager.ActiveAccountId,

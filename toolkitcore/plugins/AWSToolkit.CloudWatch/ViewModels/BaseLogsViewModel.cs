@@ -4,12 +4,17 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.CloudWatch.Core;
+using Amazon.AWSToolkit.CloudWatch.Util;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 {
@@ -18,6 +23,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
     /// </summary>
     public abstract class BaseLogsViewModel : BaseModel, IDisposable
     {
+        public static readonly string FeedbackSource = "CloudWatch Logs";
         protected readonly ToolkitContext ToolkitContext;
         protected readonly ICloudWatchLogsRepository Repository;
 
@@ -30,6 +36,8 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         private string _errorMessage = string.Empty;
         private ICommand _refreshCommand;
         private ICommand _copyArnCommand;
+        private ICommand _feedbackCommand;
+        private int _lastFilterHash;
 
         protected BaseLogsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext)
         {
@@ -80,6 +88,11 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
 
         public ICommand CopyArnCommand => _copyArnCommand ?? (_copyArnCommand = CreateCopyArnCommand());
 
+        /// <summary>
+        /// Command that shows the feedback panel for the CloudWatch Logs integration
+        /// </summary>
+        public ICommand FeedbackCommand => _feedbackCommand ?? (_feedbackCommand = new SendFeedbackCommand(ToolkitContext));
+
         private ICommand CreateCopyArnCommand()
         {
             return Commands.CopyArnCommand.Create(this, ToolkitContext.ToolkitHost);
@@ -124,6 +137,15 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
                 SetLoadingLogs(false);
             });
         }
+        protected bool IsFilteredByText()
+        {
+            return !string.IsNullOrWhiteSpace(FilterText);
+        }
+
+        protected virtual bool IsFiltered()
+        {
+            return IsFilteredByText();
+        }
 
         private void SetLoadingLogs(bool value)
         {
@@ -141,7 +163,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         /// <summary>
         /// Indicates if the last page of log groups has already been loaded/retrieved
         /// </summary>
-        protected bool IsLastPageLoaded()
+        protected virtual bool IsLastPageLoaded()
         {
             return _isInitialized && string.IsNullOrEmpty(NextToken);
         }
@@ -154,7 +176,7 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
             }
         }
 
-        private void CancelExistingToken()
+        protected void CancelExistingToken()
         {
             if (_tokenSource != null)
             {
@@ -168,6 +190,56 @@ namespace Amazon.AWSToolkit.CloudWatch.ViewModels
         {
             CancelExistingToken();
             Repository?.Dispose();
+        }
+
+        protected void RecordFilterMetric(bool filterByText, bool filterByTime, TaskStatus taskStatus,
+            ITelemetryLogger telemetryLogger)
+        {
+            // Only emit metric if the filter has changed since last time
+            var filterHash = CreateFilterHash();
+            if (filterHash == _lastFilterHash)
+            {
+                return; 
+            }
+
+            _lastFilterHash = filterHash;
+            if (!IsFiltered())
+            {
+                return; 
+            }
+
+            RecordFilterMetricInternal(filterByText, filterByTime, taskStatus, telemetryLogger);
+        }
+
+        protected virtual int CreateFilterHash()
+        {
+            return FilterText?.GetHashCode() ?? 0;
+        }
+
+        private void RecordFilterMetricInternal(bool filterByText, bool filterByTime,
+            TaskStatus taskStatus,
+            ITelemetryLogger telemetryLogger)
+        {
+            CloudwatchlogsFilter metric = new CloudwatchlogsFilter()
+            {
+                AwsAccount = MetricsMetadata.AccountIdOrDefault(
+                    ConnectionSettings.GetAccountId(ToolkitContext.ServiceClientManager)),
+                AwsRegion = MetricsMetadata.RegionOrDefault(ConnectionSettings.Region),
+                CloudWatchResourceType = GetCloudWatchResourceType(),
+                Result = taskStatus.AsMetricsResult(),
+            };
+
+            if (filterByText)
+            {
+                metric.HasTextFilter = true;
+            }
+
+            if (filterByTime)
+            {
+                metric.HasTimeFilter = true;
+            }
+
+            telemetryLogger.RecordCloudwatchlogsFilter(metric);
         }
     }
 }

@@ -19,7 +19,6 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.S3.Util;
 using Amazon.S3.IO;
 using Amazon.CloudFront.Model;
 
@@ -39,7 +38,6 @@ namespace Amazon.AWSToolkit.S3.Controller
         BucketBrowserControl _control;
         BucketBrowserModel _browserModel;
         S3BucketViewModel _bucketViewModel;
-        Dispatcher _uiDispatcher;
         IS3ClipboardContainer _clipboardContainer = new DefaultS3ClipboardContainer();
         Thread _loadingThread;
 
@@ -76,7 +74,6 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._browserModel.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(onBrowserModelPropertyChanged);
 
             this._control = new BucketBrowserControl(this, this._browserModel);
-            this._uiDispatcher = this._control.Dispatcher;
 
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
 
@@ -297,18 +294,15 @@ namespace Amazon.AWSToolkit.S3.Controller
 
         public void CreateFolder()
         {
-            NewFolderController controller = new NewFolderController(this.S3Client,
-                this.BucketName, this._browserModel.Path);
+            var controller = new NewFolderController(S3Client, BucketName, _browserModel.Path);
+
             if (controller.Execute())
             {
-                string folderPath;
-                if (string.IsNullOrEmpty(this._browserModel.Path))
-                    folderPath = controller.Model.NewFolderName;
-                else
-                    folderPath = this._browserModel.Path + "/" + controller.Model.NewFolderName;
-
+                var folderPath = S3Path.Combine(_browserModel.Path ?? S3Path.Root, S3Path.ToDirectory(controller.Model.NewFolderName));
                 var childItem = new BucketBrowserModel.ChildItem(folderPath, BucketBrowserModel.ChildType.Folder);
-                this._browserModel.ChildItems.Add(childItem);
+
+                _browserModel.ChildItems.Add(childItem);
+
                 RecordCreateFolderMetric(Result.Succeeded);
             }
             else
@@ -381,10 +375,14 @@ namespace Amazon.AWSToolkit.S3.Controller
                 foreach(var key in keys)
                 {
                     string item;
-                    if (key.StartsWith("/"))
+                    if (key.StartsWith(S3Path.DefaultDirectorySeparator))
+                    {
                         item = key;
+                    }
                     else
-                        item = "/" + key;
+                    {
+                        item = S3Path.DefaultDirectorySeparator + key;
+                    }
 
                     postRequest.InvalidationBatch.Paths.Items.Add(item);
                 }
