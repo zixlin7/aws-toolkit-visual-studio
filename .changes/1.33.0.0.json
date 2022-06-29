@@ -1,0 +1,22 @@
+{
+  "Date": "2022-06-29",
+  "Version": "1.33.0.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixes issues with navigating, copying, and pasting to/from S3 paths that contain no-name directories.  See https://github.com/aws/aws-toolkit-visual-studio/issues/248"
+    },
+    {
+      "Type": "Feature",
+      "Description": "A link to the Troubleshooting Guide is now shown in the Publish to AWS experience when a deployment fails."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Amazon CloudWatch Logs Support: View, filter and store CloudWatch Logs resources from the AWS Explorer."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added support to view CloudWatch Logs for Lambda functions and ECS Tasks."
+    }
+  ]
+}

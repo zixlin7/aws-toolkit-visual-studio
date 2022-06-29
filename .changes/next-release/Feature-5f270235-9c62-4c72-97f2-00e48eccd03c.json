@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Added support to view CloudWatch Logs for Lambda functions and ECS Tasks."
-}
