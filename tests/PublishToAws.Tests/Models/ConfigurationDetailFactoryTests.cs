@@ -134,6 +134,22 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         }
 
         [Fact]
+        public void CreateFrom_WithExistingSecurityGroupsList()
+        {
+            var itemSummary = OptionSettingItemSummaryBuilder.Create()
+                .UseSampleData()
+                .WithId(ConfigurationDetailFactory.ItemSummaryIds.AdditionalEcsServiceSecurityGroups)
+                .WithType(ConfigurationDetailFactory.ItemSummaryTypes.List)
+                .WithTypeHint(ConfigurationDetail.TypeHints.ExistingSecurityGroups)
+                .WithValue("[]")
+                .Build();
+
+            var configurationDetail = _sut.CreateFrom(itemSummary) as ListConfigurationDetail;
+            AssertPropertiesMatch(configurationDetail, itemSummary);
+            Assert.True(string.IsNullOrWhiteSpace(configurationDetail.ValidationMessage), "No validation message expected");
+        }
+
+        [Fact]
         public void CreateFrom_WithVpcConnectorExistingVpcId()
         {
             var itemSummary = OptionSettingItemSummaryBuilder.Create()

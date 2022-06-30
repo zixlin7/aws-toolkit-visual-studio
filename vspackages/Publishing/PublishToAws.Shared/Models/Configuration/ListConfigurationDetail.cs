@@ -6,10 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 
-using Amazon.AWSToolkit.Models;
-
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Amazon.AWSToolkit.Publish.Models.Configuration
 {
@@ -24,10 +21,18 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
 
         private ICollection<ListItem> _selectedItems;
 
+        private bool _allowEmptyList = false;
+
         public ICommand EditCommand
         {
             get => _editCommand;
             set => SetProperty(ref _editCommand, value);
+        }
+
+        public bool AllowEmptyList
+        {
+            get => _allowEmptyList;
+            set => SetProperty(ref _allowEmptyList, value);
         }
 
         public ICollection<ListItem> Items
@@ -52,6 +57,9 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
             switch (e.PropertyName)
             {
                 case nameof(Visible):
+                    UpdateValidationMessage();
+                    break;
+                case nameof(AllowEmptyList):
                     UpdateValidationMessage();
                     break;
                 case nameof(Value):
@@ -96,7 +104,7 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
         private void UpdateValidationMessage()
         {
             // TODO This is temporary logic assuming that any TypeHint = List will require at least one selection.  Deploy Tool will revisit recipe data provided later.
-            if (Visible && (_selectedItems == null || !_selectedItems.Any()))
+            if (!AllowEmptyList && Visible && (_selectedItems == null || !_selectedItems.Any()))
             {
                 ValidationMessage = $"Must select at least one of the {Name?.ToLower()}.";
                 return;
