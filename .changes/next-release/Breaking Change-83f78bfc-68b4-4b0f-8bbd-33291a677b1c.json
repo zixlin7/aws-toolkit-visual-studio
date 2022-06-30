@@ -1,4 +1,0 @@
-{
-  "Type": "Breaking Change",
-  "Description": "Publish to AWS now requires a minimum NodeJs version of 14. Previously, this was 10."
-}

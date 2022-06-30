@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Add workaround for Publish to AWS when running on a system that has a space in the user profile's path. See https://aws.github.io/aws-dotnet-deploy/docs/getting-started/custom-workspace/ for details"
-}
