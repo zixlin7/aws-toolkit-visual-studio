@@ -26,6 +26,7 @@ namespace Amazon.AWSToolkit.Publish.Models
             public const string DotnetPublishAdditionalBuildArguments = "DotnetPublishAdditionalBuildArguments";
             public const string EcrRepository = "ECRRepository";
             public const string ExistingIamRole = "ExistingIAMRole";
+            public const string ExistingSecurityGroups = "ExistingSecurityGroups";
             public const string FilePath = "FilePath";
             public const string IamRole = "IAMRole";
             public const string InstanceType = "InstanceType";

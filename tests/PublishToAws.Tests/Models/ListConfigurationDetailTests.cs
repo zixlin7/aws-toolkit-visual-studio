@@ -79,6 +79,14 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         }
 
         [Fact]
+        public void SuppressEmptyListValidationMessage()
+        {
+            _sut.AllowEmptyList = true;
+            _sut.Value = "[]";
+            Assert.True(string.IsNullOrWhiteSpace(_sut.ValidationMessage), "No validation message expected");
+        }
+
+        [Fact]
         public void GetSummaryValue()
         {
             _sut.SelectedItems = SelectedItems;

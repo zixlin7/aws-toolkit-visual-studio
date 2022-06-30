@@ -17,6 +17,7 @@ namespace Amazon.AWSToolkit.Publish.Models
     {
         public static class ItemSummaryIds
         {
+            public const string AdditionalEcsServiceSecurityGroups = "AdditionalECSServiceSecurityGroups";
             public const string VpcId = "VpcId";
             public const string VpcConnector = "VPCConnector";
         }
@@ -158,6 +159,12 @@ namespace Amazon.AWSToolkit.Publish.Models
                     detail,
                     $"Edit {itemSummary.Name}",
                     _dialogFactory);
+
+                if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.ExistingSecurityGroups &&
+                    itemSummary.Id == ItemSummaryIds.AdditionalEcsServiceSecurityGroups)
+                {
+                    detail.AllowEmptyList = true;
+                }
 
                 return detail;
             }
