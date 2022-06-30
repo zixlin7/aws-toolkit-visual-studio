@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
+using System.Reflection;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using EnvDTE;
@@ -86,6 +87,8 @@ using Microsoft.VisualStudio.PlatformUI;
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
 using Amazon.AWSToolkit.VisualStudio.SupportedVersion;
+
+using Debugger = System.Diagnostics.Debugger;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -586,6 +589,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                 await InitializeImageProviderAsync();
                 await InitializeVsImageAsync();
 
+                // Ensure AWS SSO related assemblies are loaded before starting the credentials system.
+                // For some reason, these DLLs do not get loaded properly before an SSO related profile needs to use the callback handler.
+                LoadSsoAssemblies();
+
                 _toolkitCredentialInitializer = new ToolkitCredentialInitializer(_telemetryManager.TelemetryLogger, _regionProvider, ToolkitShellProviderService);
                 _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged += AwsConnectionManager_ConnectionStateChanged;
 
@@ -646,6 +653,30 @@ namespace Amazon.AWSToolkit.VisualStudio
             finally
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
+            }
+        }
+
+        private void LoadSsoAssemblies()
+        {
+            try
+            {
+                // Visual Studio knows where to locate the AWS SDK DLLs when a symbol needs to be resolved, 
+                // due to the declarations in AssemblyInfoAwsSdkReferences.cs. The SDK is more dynamic about
+                // using SSO related DLLs when handling SSO based credentials and providing a callback.
+                // We need the Toolkit to pre-load these assemblies directly, so that the credentials engine
+                // is successful in working with SSO based profiles.
+                Assembly.Load(Amazon.Runtime.Internal.ServiceClientHelpers.SSO_ASSEMBLY_NAME);
+                Assembly.Load(Amazon.Runtime.Internal.ServiceClientHelpers.SSO_OIDC_ASSEMBLY_NAME);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception to keep the rest of the extension and IDE stable.
+                // This way, only users leveraging SSO credentials are affected rather than all users.
+                LOGGER.Error("Unable to load AWS SSO assemblies. The Toolkit might not work with SSO connections.", ex);
+                if (Debugger.IsAttached)
+                {
+                    Debug.Assert(false, $"Failure loading AWS SSO related DLLs: {ex.Message}");
+                }
             }
         }
 

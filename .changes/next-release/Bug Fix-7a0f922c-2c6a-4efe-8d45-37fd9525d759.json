@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix \"Assembly AWSSDK.SSOOIDC could not be found or loaded. This assembly must be available at runtime to use Amazon.Runtime.SSOAWSCredentials\" error introduced in Toolkit version 1.32.0.0. This prevented the Toolkit from working with SSO based credentials."
+}
