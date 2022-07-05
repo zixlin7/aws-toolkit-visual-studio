@@ -5,7 +5,7 @@ namespace Amazon.AWSToolkit.Publish.Install
 {
     public class InstallOptionsFactory
     {
-        private const string VersionRange = "0.50.2";
+        private const string VersionRange = "1.0.3";
 
         public static InstallOptions Create(IToolkitHostInfo toolkitHostInfo)
         {

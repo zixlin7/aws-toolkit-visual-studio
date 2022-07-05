@@ -68,6 +68,7 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.PluginServices.Publishing;
+using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Themes;
@@ -1174,6 +1175,15 @@ namespace Amazon.AWSToolkit.VisualStudio
                         return;
                     }
 
+                    if (PublishToAwsSupportsSelectedProject())
+                    {
+                        publishMenuCommand.Text = "Publish to AWS Elastic Beanstalk (Legacy)...";
+                    }
+                    else
+                    {
+                        publishMenuCommand.Text = "Publish to AWS Elastic Beanstalk...";
+                    }
+
                     publishMenuCommand.Visible = true;
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
@@ -1181,6 +1191,18 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception)
             {
             }
+        }
+
+        private static bool PublishToAwsSupportsSelectedProject()
+        {
+            var hierarchy = VSUtility.GetCurrentVSHierarchySelection(out _);
+            if (!VsHierarchyHelpers.TryGetTargetFramework(hierarchy, VSConstants.VSITEMID_ROOT,
+                    out var targetFramework))
+            {
+                return false;
+            }
+
+            return PublishableProjectSpecification.IsSatisfiedBy(targetFramework);
         }
 
         /// <summary>
@@ -1330,12 +1352,11 @@ namespace Amazon.AWSToolkit.VisualStudio
 
             try
             {
-                if (AWSECSPlugin != null)
-                {
-                    publishMenuCommand.Visible = VSUtility.IsNETCoreDockerProject;
+                if (AWSECSPlugin == null) { return; }
 
-                    publishMenuCommand.Enabled = !_performingDeployment;
-                }
+                publishMenuCommand.Text = "Publish Container to AWS (Legacy)...";
+                publishMenuCommand.Visible = VSUtility.IsNETCoreDockerProject;
+                publishMenuCommand.Enabled = !_performingDeployment;
             }
             catch (Exception)
             {

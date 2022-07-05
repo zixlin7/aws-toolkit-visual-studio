@@ -22,7 +22,6 @@ using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Regions;
-using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
@@ -31,7 +30,6 @@ using AWS.Deploy.ServerMode.Client;
 
 using log4net;
 
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
 using Task = System.Threading.Tasks.Task;
@@ -72,7 +70,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private bool _isLoading;
         private string _errorMessage = string.Empty;
         private bool _publishTargetsLoaded;
-        private bool _isOptionsBannerEnabled;
         private TargetSelectionViewModel _currentSelectionViewModel;
         private readonly List<TargetSelectionViewModel> _targetSelectionViewModels = new List<TargetSelectionViewModel>();
         private bool _isDefaultConfig = true;
@@ -85,7 +82,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private PublishCommand _publishToAwsCommand;
         private ConfigCommand _configTargetCommand;
         private TargetCommand _backToTargetCommand;
-        private ICommand _persistOptionsSettingsCommand;
         private ICommand _learnMoreCommand;
         private ICommand _feedbackCommand;
         private string _deploymentSessionId;
@@ -145,15 +141,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             _currentSelectionViewModel = _targetSelectionViewModels.First();
         }
 
-        public void LoadPublishSettings()
-        {
-            JoinableTaskFactory.RunAsync(async () =>
-            {
-                await TaskScheduler.Default;
-                await LoadOptionsButtonSettingsAsync().ConfigureAwait(false);
-            }).Task.LogExceptionAndForget();
-        }
-
         public JoinableTaskFactory JoinableTaskFactory => _publishContext.PublishPackage.JoinableTaskFactory;
         public PublishConnectionViewModel Connection => _publishConnection;
 
@@ -191,16 +178,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _publishTargetsLoaded;
             set => SetProperty(ref _publishTargetsLoaded, value);
-        }
-
-
-        /// <summary>
-        /// Whether or not the UI should show the new publish experience options banner
-        /// </summary>
-        public bool IsOptionsBannerEnabled
-        {
-            get => _isOptionsBannerEnabled;
-            set => SetProperty(ref _isOptionsBannerEnabled, value);
         }
 
         /// <summary>
@@ -352,15 +329,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         {
             get => _backToTargetCommand;
             set => SetProperty(ref _backToTargetCommand, value);
-        }
-
-        /// <summary>
-        /// Command that persists settings related to new publish options banner
-        /// </summary>
-        public ICommand PersistOptionsSettingsCommand
-        {
-            get => _persistOptionsSettingsCommand;
-            set => SetProperty(ref _persistOptionsSettingsCommand, value);
         }
 
         /// <summary>
@@ -1332,36 +1300,6 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             }
 
             return PublishStackName ?? string.Empty;
-        }
-
-        protected async Task LoadOptionsButtonSettingsAsync()
-        {
-            var showPublishBanner = true;
-            try
-            {
-                var publishSettings = await _publishContext.PublishSettingsRepository.GetAsync();
-                showPublishBanner = publishSettings.ShowPublishBanner;
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Error retrieving show publish banner settings", e);
-            }
-            finally
-            {
-                await SetOptionsButtonPropertiesAsync(showPublishBanner);
-            }
-        }
-
-
-        /// <summary>
-        /// Sets the options button related properties 
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        private async Task SetOptionsButtonPropertiesAsync(bool result)
-        {
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
-            IsOptionsBannerEnabled = result;
         }
 
         private ICommand CreateFeedbackCommand()

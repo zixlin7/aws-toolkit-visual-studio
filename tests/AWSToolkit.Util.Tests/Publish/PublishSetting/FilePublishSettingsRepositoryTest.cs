@@ -39,7 +39,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             var expectedSettings = new PublishSettings()
             {
                 DeployServer = new DeployServerSettings(new PortRange(20000, 20001)),
-                ShowPublishBanner = false,
             };
 
             // act.
@@ -80,7 +79,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             var expectedSettings = new PublishSettings()
             {
                 DeployServer = new DeployServerSettings(new PortRange(20000, 20001)),
-                ShowPublishBanner = true,
             };
 
             // act.
@@ -103,7 +101,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
                 {
                     AlternateCliPath = "mypath", AdditionalArguments = "args", LoggingEnabled = true
                 },
-                ShowPublishBanner = true,
             };
 
             // act.
@@ -141,7 +138,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             var settings = new PublishSettings()
             {
                 DeployServer = new DeployServerSettings(new PortRange(20000, 20001)),
-                ShowPublishBanner = false,
             };
 
             // act.
@@ -162,7 +158,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             var settings = new PublishSettings()
             {
                 DeployServer = new DeployServerSettings(new PortRange(20000, 20001)) { AlternateCliPath = null },
-                ShowPublishBanner = false,
             };
 
             // act.
@@ -174,7 +169,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Publish.PublishSetting
             var actualSettings = await _publishRepository.GetAsync();
             var expectedSettings = new PublishSettings()
             {
-                DeployServer = new DeployServerSettings(new PortRange(20000, 20001)), ShowPublishBanner = false,
+                DeployServer = new DeployServerSettings(new PortRange(20000, 20001)),
             };
 
             Assert.Equal(expectedSettings, actualSettings);

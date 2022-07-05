@@ -2,6 +2,7 @@
 
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Shared;
@@ -14,6 +15,7 @@ namespace Amazon.AWSToolkit.Publish.Banner
         {
             var publishBanner = CreateViewModel(toolkitContext);
 
+            publishBanner.SendFeedbackCommand = new SendFeedbackCommand(toolkitContext);
             publishBanner.LearnMoreCommand = CreateLearnMoreCommand(toolkitContext.ToolkitHost);
             publishBanner.SwitchToNewExperienceCommand = CreateSwitchToNewExperienceCommand(publishBanner);
 

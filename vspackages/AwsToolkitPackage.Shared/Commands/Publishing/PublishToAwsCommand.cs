@@ -47,7 +47,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
         protected override string GetMenuText(Project project)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            return $"Publish {project.Name} to AWS (Preview feature)...";
+            return $"Publish {project.Name} to AWS...";
         }
     }
 }

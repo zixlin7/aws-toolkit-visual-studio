@@ -101,7 +101,6 @@ namespace Amazon.AWSToolkit.Publish.Views
                 ProjectGuid = args.ProjectGuid,
                 ViewStage = PublishViewStage.Target,
             };
-            viewModel.LoadPublishSettings();
 
             var configurationDetailFactory = new ConfigurationDetailFactory(viewModel.Connection, _publishContext.ToolkitShellProvider.GetDialogFactory());
             var client = cliServer.GetRestClient(viewModel.GetCredentialsAsync);
@@ -112,7 +111,6 @@ namespace Amazon.AWSToolkit.Publish.Views
             var configCommand = new ConfigCommand(viewModel);
             var targetCommand = new TargetCommand(viewModel);
             var startOverCommand = new StartOverCommand(viewModel, this);
-            var optionsCommand = new PersistBannerVisibilityCommand(_publishContext.PublishSettingsRepository, viewModel);
             var closeFailureBannerCommand = CloseFailureBannerCommandFactory.Create(viewModel.PublishProjectViewModel, JoinableTaskFactory);
             var artifactViewerCommand = DeploymentArtifactViewerCommand.Create(viewModel);
             var copyToClipboardCommand = CopyToClipboardCommand.Create(viewModel.PublishProjectViewModel, _publishContext.ToolkitShellProvider);
@@ -127,7 +125,6 @@ namespace Amazon.AWSToolkit.Publish.Views
             viewModel.BackToTargetCommand = targetCommand;
             viewModel.Connection.SelectCredentialsCommand = SelectCredentialsCommandFactory.Create(viewModel);
             viewModel.PublishProjectViewModel.StartOverCommand = startOverCommand;
-            viewModel.PersistOptionsSettingsCommand = optionsCommand;
             viewModel.PublishProjectViewModel.CloseFailureBannerCommand = closeFailureBannerCommand;
             viewModel.PublishProjectViewModel.ViewPublishedArtifactCommand = artifactViewerCommand;
             viewModel.PublishProjectViewModel.CopyToClipboardCommand = copyToClipboardCommand;

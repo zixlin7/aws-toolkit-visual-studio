@@ -96,45 +96,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.ViewModels
         }
 
         [Fact]
-        public async Task HasOptionsButtonPropertiesEnabled_WhenDefault()
-        {
-            await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
-            Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-        }
-
-        [Fact]
-        public async Task HasOptionsButtonPropertiesEnabled_WhenNull()
-        {
-            PublishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
-                .ReturnsAsync((PublishSettings)null);
-
-           await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
-           Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-        }
-
-        [Fact]
-        public async Task HasOptionsButtonPropertiesEnabled_WhenErrorRetrievingSettings()
-        {
-            PublishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
-                .ThrowsAsync(new SettingsException("error", null));
-
-           await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
-
-            Assert.True(_exposedTestViewModel.IsOptionsBannerEnabled);
-        }
-
-        [Fact]
-        public async Task HasOptionsButtonPropertiesDisabled()
-        {
-            PublishContextFixture.PublishSettingsRepository.Setup(mock => mock.GetAsync())
-                .ReturnsAsync(new PublishSettings() {ShowPublishBanner = false});
-
-            await _exposedTestViewModel.ExposedLoadOptionsButtonSettingsAsync();
-
-            Assert.False(_exposedTestViewModel.IsOptionsBannerEnabled);
-        }
-
-        [Fact]
         public void HasValidationErrors_WithError()
         {
             _sut.ConfigurationDetails.Add(

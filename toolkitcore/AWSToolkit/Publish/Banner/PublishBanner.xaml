@@ -6,7 +6,7 @@
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="150" d:DesignWidth="800">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -15,16 +15,11 @@
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
-            <Style TargetType="Button" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
-                <Setter Property="MinWidth" Value="75" />
-                <Setter Property="Height" Value="23" />
-            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Border 
-        Padding="5" 
+        Padding="6" 
         BorderThickness="1"
         BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}" 
         Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}"
@@ -38,28 +33,43 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <Label
-                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                    FontWeight="Bold"
-                    Content="NEW: Preview the re-imagined AWS Publishing experience" />
+                <TextBlock
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}">
+                    <Run 
+                        FontWeight="Bold" 
+                        Text="Publish to AWS is now the recommended deployment experience." />
+                </TextBlock>
 
-                <Label 
-                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                    Content="We've streamlined the steps for publishing your applications to AWS.&#10;Try it out and let us know what you think!" />
+                <TextBlock
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}">
+                    <Run 
+                        Text="It supports a wider range of deployment capabilities." />
+                    <Hyperlink Command="{Binding LearnMoreCommand}">Learn more about Publish to AWS.</Hyperlink>
+                </TextBlock>
+
+                <TextBlock
+                    Margin="0 9 0 0"
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}">
+                    <Run 
+                        Text="Support for this experience is ending in a future Toolkit release." />
+                    <Hyperlink 
+                        Command="{Binding SendFeedbackCommand}"
+                        CommandParameter="Publish to AWS Migration"
+                        >Not ready to switch? Tell us why.</Hyperlink>
+                </TextBlock>
             </StackPanel>
 
             <StackPanel 
                 Grid.Column="2"
-                Margin="0 0 12 0"
                 Orientation="Vertical"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 >
-                <TextBlock Margin="0 0 0 9" HorizontalAlignment="Center">
-                    <Hyperlink Command="{Binding LearnMoreCommand}">Learn more</Hyperlink>
-                </TextBlock>
-                <TextBlock HorizontalAlignment="Center">
-                    <Hyperlink Command="{Binding SwitchToNewExperienceCommand}">Try new experience</Hyperlink>
+                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center">
+                    <Hyperlink Command="{Binding SwitchToNewExperienceCommand}">Launch Publish to AWS</Hyperlink>
                 </TextBlock>
             </StackPanel>
 

@@ -135,7 +135,7 @@ namespace AWSToolkitPackage.Tests.Publishing
             Assert.Equal(setupState.ExpectedMenuVisibility, _menuCommand.Visible);
             if (setupState.ExpectedMenuVisibility)
             {
-                Assert.Equal("Publish SomeProjectName to AWS (Preview feature)...", _menuCommand.Text);
+                Assert.Equal("Publish SomeProjectName to AWS...", _menuCommand.Text);
             }
         }
 
@@ -205,7 +205,7 @@ namespace AWSToolkitPackage.Tests.Publishing
             Assert.Equal(setupState.ExpectedMenuVisibility, _menuCommand.Visible);
             if (setupState.ExpectedMenuVisibility)
             {
-                Assert.Equal("Publish SomeProjectName to AWS (Preview feature)...", _menuCommand.Text);
+                Assert.Equal("Publish SomeProjectName to AWS...", _menuCommand.Text);
             }
         }
     }

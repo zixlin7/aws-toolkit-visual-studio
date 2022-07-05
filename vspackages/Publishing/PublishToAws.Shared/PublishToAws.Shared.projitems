@@ -14,7 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\CopyToClipboardCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\EditListCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\OpenFileSelectionCommandFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Commands\PersistBannerVisibilityCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\EditKeyValuesCommandFactory.cs" />
@@ -162,9 +161,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishOptions.xaml.cs">
       <DependentUpon>PublishOptions.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\PublishOptionsBanner.xaml.cs">
-      <DependentUpon>PublishOptionsBanner.xaml</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\PublishResources.xaml.cs">
       <DependentUpon>PublishResources.xaml</DependentUpon>
     </Compile>
@@ -248,10 +244,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\PublishOptions.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Views\PublishOptionsBanner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -13,16 +13,12 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
     {
         public DeployServerSettings DeployServer { get; set; }
 
-        [DefaultValue(true)]
-        public bool ShowPublishBanner { get; set; } = true;
-
         public List<string> SilencedPublishConfirmations { get; set; } = new List<string>();
 
         public static PublishSettings CreateDefault()
         {
             return new PublishSettings()
             {
-                ShowPublishBanner = true,
                 SilencedPublishConfirmations = new List<string>(),
                 DeployServer = DeployServerSettings.CreateDefault()
             };
@@ -41,7 +37,6 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
             unchecked
             {
                 var hashCode = (DeployServer != null ? DeployServer.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ ShowPublishBanner.GetHashCode();
                 hashCode = (hashCode * 397) ^ SilencedPublishConfirmations.GetHashCode();
                 return hashCode;
             }
@@ -53,7 +48,6 @@ namespace Amazon.AWSToolkit.Publish.PublishSetting
             if (ReferenceEquals(this, other))
                 return true;
             return Equals(DeployServer, other.DeployServer) &&
-                   ShowPublishBanner == other.ShowPublishBanner &&
                    SilencedPublishConfirmations.SequenceEqual(other.SilencedPublishConfirmations);
         }
 
