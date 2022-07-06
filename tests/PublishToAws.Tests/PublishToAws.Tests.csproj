@@ -57,7 +57,6 @@
     <Compile Include="Commands\CloseFailureBannerCommandTests.cs" />
     <Compile Include="Commands\ConfigCommandTests.cs" />
     <Compile Include="Commands\CopyToClipboardCommandTests.cs" />
-    <Compile Include="Commands\PersistPublishSettingsCommandTests.cs" />
     <Compile Include="Commands\PublishCommandTests.cs" />
     <Compile Include="Commands\BeanstalkEnvironmentViewerCommandFactoryTests.cs" />
     <Compile Include="Commands\SelectCredentialsCommandFactoryTests.cs" />

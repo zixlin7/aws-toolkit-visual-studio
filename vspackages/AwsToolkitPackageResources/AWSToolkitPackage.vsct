@@ -161,6 +161,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <CommandName>AWS.PublishContainerToAWS</CommandName>
           <ButtonText>Publish Container to AWS...</ButtonText>
@@ -173,6 +174,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <CommandName>AWS.Publish</CommandName>
           <ButtonText>Publish to AWS Elastic Beanstalk...</ButtonText>

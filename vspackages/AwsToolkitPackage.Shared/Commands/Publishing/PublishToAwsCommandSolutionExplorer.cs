@@ -41,7 +41,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Publishing
 
         protected override string GetMenuText(Project project)
         {
-            return "Publish to AWS (Preview feature)...";
+            return "Publish to AWS...";
         }
     }
 }

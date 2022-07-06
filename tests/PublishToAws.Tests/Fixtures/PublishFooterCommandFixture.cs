@@ -38,11 +38,6 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Fixtures
             get => base.SessionId;
             set => base.SessionId = value;
         }
-
-        public async Task ExposedLoadOptionsButtonSettingsAsync()
-        {
-            await base.LoadOptionsButtonSettingsAsync();
-        }
     }
 
     /// <summary>

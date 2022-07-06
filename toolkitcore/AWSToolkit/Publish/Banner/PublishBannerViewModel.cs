@@ -16,6 +16,8 @@ namespace Amazon.AWSToolkit.Publish.Banner
 
         public Project SelectedProject { get; }
 
+        public ICommand SendFeedbackCommand { get; set; }
+
         public ICommand LearnMoreCommand { get; set; }
 
         public ICommand SwitchToNewExperienceCommand { get; set; }

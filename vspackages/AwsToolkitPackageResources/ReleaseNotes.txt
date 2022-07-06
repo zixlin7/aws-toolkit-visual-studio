@@ -1,3 +1,7 @@
+v1.35.0.0 (2022-07-05)
+* The Publish to AWS experience is now generally available
+* Publish to AWS has been updated to use v1.0.3 of the AWS .NET deploy tool (https://github.com/aws/aws-dotnet-deploy/releases/tag/1.0.3). This release is also generally available, and includes validation checks for configuring Managed Platform Update times when deploying to Beanstalk.
+
 v1.34.0.0 (2022-06-30)
 * Publish to AWS now requires a minimum NodeJs version of 14. Previously, this was 10.
 * Fix "Assembly AWSSDK.SSOOIDC could not be found or loaded. This assembly must be available at runtime to use Amazon.Runtime.SSOAWSCredentials" error introduced in Toolkit version 1.32.0.0. This prevented the Toolkit from working with SSO based credentials.
