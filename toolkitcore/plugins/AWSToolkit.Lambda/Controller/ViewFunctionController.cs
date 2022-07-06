@@ -63,6 +63,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         AccountViewModel _account;
         ToolkitRegion _region;
         private AwsConnectionSettings _connectionSettings;
+        private bool _hasRecordedOpenLogGroup = false;
 
         public ViewFunctionController(ToolkitContext toolkitContext)
         {
@@ -533,9 +534,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         public BaseAWSControl GetLogStreamsView()
         {
             var view =  CreateLogStreamsView();
-            var result = view != null;
-            CloudWatchTelemetry.RecordOpenLogGroup(result, ViewLogsMetricSource,
-                _connectionSettings, _toolkitContext);
             return view;
         }
 
@@ -564,6 +562,15 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             return null;
         }
 
+        public void RecordOpenLogGroup(bool result)
+        {
+            if (!_hasRecordedOpenLogGroup)
+            {
+                CloudWatchTelemetry.RecordOpenLogGroup(result, ViewLogsMetricSource,
+                    _connectionSettings, _toolkitContext);
+                _hasRecordedOpenLogGroup = true;
+            }
+        }
 
         public void UpdateConfiguration()
         {
