@@ -4,18 +4,16 @@ namespace Amazon.S3.IO
 {
     public static class S3File
     {
-        public static void Copy(IAmazonS3 s3Client, 
+        public static void Copy(IAmazonS3 s3Client,
             string sourceBucket, string sourcePath,
             string destinationBucket, string destinationPath)
         {
             if (sourceBucket == destinationBucket && sourcePath == destinationPath)
-                return;
-
-            var getACLRequest = new GetACLRequest()
             {
-                BucketName = sourceBucket,
-                Key = sourcePath
-            };
+                return;
+            }
+
+            var getACLRequest = new GetACLRequest() {BucketName = sourceBucket, Key = sourcePath};
 
             var getACLResponse = s3Client.GetACL(getACLRequest);
 
@@ -31,12 +29,23 @@ namespace Amazon.S3.IO
                 MetadataDirective = S3MetadataDirective.COPY
             });
 
-            s3Client.PutACL(new PutACLRequest()
+            var getBucketOwnershipControlsResponse =
+                s3Client.GetBucketOwnershipControls(
+                    new GetBucketOwnershipControlsRequest() {BucketName = destinationBucket});
+
+            // IDE-7806: Change in 11/2021 allows for ACLs to be disabled on a bucket and is the default configuration for newly created
+            // buckets.  This will return an error from PutACL that will be displayed to the user.  GetACL continues to work as expected.
+            // https://aws.amazon.com/about-aws/whats-new/2021/11/amazon-s3-object-ownership-simplify-access-management-data-s3/
+            if (!getBucketOwnershipControlsResponse.OwnershipControls.Rules.Exists(rule =>
+                    rule.ObjectOwnership == ObjectOwnership.BucketOwnerEnforced))
             {
-                BucketName = destinationBucket,
-                Key = destinationPath,
-                AccessControlList = getACLResponse.AccessControlList
-            });
+                s3Client.PutACL(new PutACLRequest()
+                {
+                    BucketName = destinationBucket,
+                    Key = destinationPath,
+                    AccessControlList = getACLResponse.AccessControlList
+                });
+            }
         }
 
         public static void Move(IAmazonS3 s3Client,
@@ -44,10 +53,10 @@ namespace Amazon.S3.IO
             string destinationBucket, string destinationPath)
         {
             if (sourceBucket == destinationBucket && sourcePath == destinationPath)
+            {
                 return;
+            }
 
-            // TODO If bucket doesn't have ACL (see line 31 above), copy will fail and DeleteObject
-            // will not be executed.  Bucket ACL handling needs to be improved.  See IDE-7806
             Copy(s3Client, sourceBucket, sourcePath, destinationBucket, destinationPath);
             s3Client.DeleteObject(new DeleteObjectRequest()
             {
