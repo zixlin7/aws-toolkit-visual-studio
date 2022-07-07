@@ -27,6 +27,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
         private readonly string _fileName;
         private readonly Action<TaskStatus, long> _recordMetric;
         private long _charactersLogged;
+        private DateTime _endTime;
 
         public ExportStreamHandler(string logStream, string logGroup, string fileName, ToolkitContext toolkitContext,
             ICloudWatchLogsRepository repository, Action<TaskStatus, long> recordMetric)
@@ -58,6 +59,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
             var exportResult = new ExportResult();
             try
             {
+                _endTime = DateTime.Now;
                 string previousToken = null;
                 string nextToken = null;
                 _charactersLogged = 0;
@@ -148,7 +150,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Util
         {
             var request = new GetLogEventsRequest
             {
-                LogGroup = _logGroup, LogStream = _logStream, EndTime = DateTime.Now
+                LogGroup = _logGroup, LogStream = _logStream, EndTime = _endTime
             };
             if (!string.IsNullOrWhiteSpace(nextToken))
             {
