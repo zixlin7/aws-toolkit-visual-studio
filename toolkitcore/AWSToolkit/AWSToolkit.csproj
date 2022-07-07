@@ -108,6 +108,7 @@
     <Compile Include="CommonUI\DateTimeRangePicker\TimeInputControl.xaml.cs">
       <DependentUpon>TimeInputControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CommonUI\DataErrorInfo.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />

@@ -94,6 +94,7 @@
     <Compile Include="CommonUI\ConverterPipelineTests.cs" />
     <Compile Include="CommonUI\CredentialIdentifierConverterTests.cs" />
     <Compile Include="CommonUI\CredentialIdentifierGroupConverterTests.cs" />
+    <Compile Include="CommonUI\DataErrorInfoTests.cs" />
     <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePickerViewModelTests.cs" />
     <Compile Include="CommonUI\DateTimeRangePicker\TimeInputViewModelTests.cs" />
     <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
