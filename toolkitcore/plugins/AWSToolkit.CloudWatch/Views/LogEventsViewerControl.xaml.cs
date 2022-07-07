@@ -22,8 +22,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LogEventsViewerControl));
         public static readonly string TimeZone = TimeZoneInfo.Local.Id;
         public static readonly string DefaultHintText = "Filter events e.g. Error, \"BUILD FAILED\", \"$event\" ";
-        private const double ScrollViewChangeDebounceInterval = 500;
+        private const double DebounceInterval = 500;
         private readonly DebounceDispatcher _scrollViewChangedDispatcher = new DebounceDispatcher();
+        private readonly DebounceDispatcher _refreshDispatcher = new DebounceDispatcher();
 
         private LogEventsViewModel _viewModel;
 
@@ -63,7 +64,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
 
         private void DateTimeRange_RangeChanged(object sender, EventArgs e)
         {
-            Refresh();
+            DebounceAndRefreshData();
         }
 
         public override string Title => $"Stream: {_viewModel?.LogStream}";
@@ -74,7 +75,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
         {
             if (e.PropertyName == nameof(LogEventsViewModel.FilterText))
             {
-                Refresh();
+                DebounceAndRefreshData();
             }
 
             if (e.PropertyName == nameof(LogEventsViewModel.IsTimeFilterEnabled))
@@ -82,7 +83,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
                 //if there is an active filter selection, refresh when filter button is toggled on/off
                 if (_viewModel.StartTime != null || _viewModel.EndTime != null)
                 {
-                    Refresh();
+                    DebounceAndRefreshData();
                 }
             }
         }
@@ -146,7 +147,12 @@ namespace Amazon.AWSToolkit.CloudWatch.Views
 
         private void DebounceAndLoadData()
         {
-            _scrollViewChangedDispatcher.Debounce(ScrollViewChangeDebounceInterval, _ => LoadData());
+            _scrollViewChangedDispatcher.Debounce(DebounceInterval, _ => LoadData());
+        }
+
+        private void DebounceAndRefreshData()
+        {
+            _refreshDispatcher.Debounce(DebounceInterval, _ => Refresh());
         }
 
         /// <summary>
