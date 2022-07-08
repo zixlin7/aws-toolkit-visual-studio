@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.PluginServices.Activators;
+
 using Xunit;
+
+[assembly: PluginActivatorType(typeof(AWSToolkit.Tests.PluginActivator.SamplePluginActivator))]
 
 namespace AWSToolkit.Tests.PluginActivator
 {

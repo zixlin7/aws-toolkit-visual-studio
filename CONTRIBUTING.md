@@ -87,6 +87,16 @@ The following files are no longer referenced by the Toolkit, but were used in pr
 
 The AWS .NET SDK’s NuGet packages are referenced from multiple locations across to repo. To help keep the referenced versions in alignment, an msbuild task automates the process of updating the package references. The task is called `update-awssdk` and resides in `build.proj`.
 
+## Plugins
+
+Plugins are a way to provide the Toolkit with functionality for an AWS Service. Plugins are commonly used to add nodes into the AWS Explorer, and to provide service abstractions.
+
+(TODO: write up how to create a plugin and register it with the VSIX at a later time)
+
+To register a plugin with the Toolkit, add the assembly level attribute `PluginActivatorType` and indicate your plugin activator's type. This is typically placed in the plugin's `AssemblyInfo.cs` file. Look at any of the [existing plugins](./toolkitcore/plugins/AWSToolkit.S3/Properties/AssemblyInfo.cs) as an example.
+
+See [toolkit-architecture](./designs/toolkit-architecture/README.md#plugins) for additional details about plugins.
+
 ## Publish to AWS 
 
 ### Updating the referenced Deploy Tool version

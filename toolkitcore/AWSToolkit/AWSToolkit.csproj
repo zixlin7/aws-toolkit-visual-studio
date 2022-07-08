@@ -245,6 +245,7 @@
     <Compile Include="Navigator\NavigatorCommand.cs" />
     <Compile Include="Navigator\NavigatorViewModel.cs" />
     <Compile Include="Navigator\NavigatorControlExtensionMethods.cs" />
+    <Compile Include="PluginServices\Activators\PluginActivatorTypeAttribute.cs" />
     <Compile Include="PluginServices\Publishing\IInitializePublishToAwsPackage.cs" />
     <Compile Include="PluginServices\Publishing\IPublishToAws.cs" />
     <Compile Include="PluginServices\Publishing\PublishToAwsExtensionMethods.cs" />

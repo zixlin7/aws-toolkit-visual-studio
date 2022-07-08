@@ -1,6 +1,10 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+using Amazon.AWSToolkit;
+using Amazon.AWSToolkit.CodeCommit;
+using Amazon.AWSToolkit.PluginServices.Activators;
+
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
@@ -13,3 +17,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("9aa7dd53-7bc4-4971-bc0c-0540a391dc22")]
+
+[assembly: PluginActivatorType(typeof(CodeCommitActivator))]
