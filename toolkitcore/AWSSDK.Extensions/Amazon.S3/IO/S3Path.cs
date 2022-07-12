@@ -231,6 +231,30 @@ namespace Amazon.S3.IO
         }
 
         /// <summary>
+        /// Returns the first file or directory of the path excluding root.
+        /// </summary>
+        /// <param name="path">The path to return the first component of.</param>
+        /// <param name="directorySeparator">directory separator to use if not DefaultDirectorySeparator.</param>
+        /// <remarks>
+        /// This method should be used when only the first non-root component of a path is needed as it has better performance
+        /// than GetPathComponents()[1] does.
+        /// </remarks>
+        /// <returns>The first file or directory of the path.  Otherwise, the supplied path if it is null or root.</returns>
+        public static string GetFirstNonRootPathComponent(string path, string directorySeparator = DefaultDirectorySeparator)
+        {
+            ThrowOnInvalidDirectorySeparator(directorySeparator);
+
+            if (path == null || IsRoot(path))
+            {
+                return path;
+            }
+
+            var index = path.IndexOf(directorySeparator);
+
+            return index == -1 ? path : path.Substring(0, index + directorySeparator.Length);
+        }
+
+        /// <summary>
         /// Returns the last file or directory of the path.
         /// </summary>
         /// <param name="path">The path to return the last component of.</param>

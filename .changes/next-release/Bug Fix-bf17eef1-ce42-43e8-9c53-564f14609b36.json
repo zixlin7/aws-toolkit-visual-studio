@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixes bug where uploading a file to the root of an S3 Bucket actually uploads to a no-name folder at root."
+}

@@ -216,6 +216,32 @@ namespace AWSToolkit.Tests.S3
 
         [Theory]
         [MemberData(nameof(DirectorySeparators))]
+        public void GetFirstNonRootPathComponentWorks(string directorySeparator)
+        {
+            var ds = directorySeparator;
+
+            new PathTestExecutor(
+                ds,
+                null,
+                S3Path.Root,
+                "file",
+                ds,
+                ds,
+                $"dir1{ds}",
+                ds,
+                $"dir1{ds}",
+                ds,
+                ds,
+                ds,
+                $"dir1{ds}",
+                ds,
+                $"dir1{ds}",
+                ds
+            ).Execute(testCase => Assert.Equal(testCase.Expected, S3Path.GetFirstNonRootPathComponent(testCase.Input, ds)));
+        }
+
+        [Theory]
+        [MemberData(nameof(DirectorySeparators))]
         public void GetLastPathComponentWorks(string directorySeparator)
         {
             var ds = directorySeparator;

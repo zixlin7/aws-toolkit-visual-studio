@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
+using Amazon.AWSToolkit.Collections;
+
 namespace Amazon.AWSToolkit.CommonUI
 {
     /// <summary>
@@ -11,9 +13,7 @@ namespace Amazon.AWSToolkit.CommonUI
     /// </summary>
     /// <remarks>
     /// Supports custom error objects, multiple errors per property, cross-property errors, and entity-level errors. Cross-property errors are
-    /// errors that affect multiple properties. You can associate these errors with one or all of the affected properties, or you can treat them
-    /// as entity-level errors. Entity-level errors are errors that either affect multiple properties or affect the entire entity without
-    /// affecting a particular property.
+    /// errors that affect multiple properties. Entity-level errors are all errors registered with this object, regardless of property association.
     ///
     /// IDataErrorInfo enables data entity classes to implement custom validation rules and expose validation results to the user interface.
     /// You typically implement this interface to provide relatively simple validation logic. To provide asynchronous or server-side validation logic,
@@ -29,9 +29,9 @@ namespace Amazon.AWSToolkit.CommonUI
     /// <seealso href="https://social.technet.microsoft.com/wiki/contents/articles/19490.wpf-4-5-validating-data-in-using-the-inotifydataerrorinfo-interface.aspx"/>
     public class DataErrorInfo : INotifyDataErrorInfo, IDataErrorInfo
     {
-        private static readonly string EntityLevelErrorKey = string.Empty;
+        private readonly IDictionary<string, ISet<object>> _propertyNameToErrors = new Dictionary<string, ISet<object>>();
 
-        private readonly IDictionary<string, ISet<object>> _errorInfo = new Dictionary<string, ISet<object>>();
+        private readonly IDictionary<object, ISet<string>> _errorToPropertyNames = new Dictionary<object, ISet<string>>();
 
         private readonly object _sender;
 
@@ -46,16 +46,30 @@ namespace Amazon.AWSToolkit.CommonUI
 
         #region INotifyDataErrorInfo
 
-        public bool HasErrors => _errorInfo.Any(pair => pair.Value.Any());
+        public bool HasErrors => _errorToPropertyNames.Count > 0;
 
-        public IEnumerable GetErrors(string propertyName) => _errorInfo.TryGetValue(NormalizePropertyName(propertyName), out var error)
-            ? error : Enumerable.Empty<object>();
+        /// <summary>
+        /// Returns errors for the given property name or all errors if property name is null or an empty string.
+        /// </summary>
+        /// <param name="propertyName">Name of property to return errors for or null or empty string for all errors.</param>
+        /// <returns>Errors for the given property name or all errors if property name is null or an empty string.</returns>
+        public IEnumerable GetErrors(string propertyName)
+        {
+            return string.IsNullOrEmpty(propertyName) ?
+                _errorToPropertyNames.Keys :
+                _propertyNameToErrors.TryGetValue(propertyName, out var errors) ? errors : Enumerable.Empty<object>();
+        }
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
-        protected void RaiseErrorsChanged(string propertyName)
+        protected void OnErrorsChanged(string propertyName)
         {
-            ErrorsChanged?.Invoke(_sender, new DataErrorsChangedEventArgs(propertyName));
+            OnErrorsChanged(new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        protected virtual void OnErrorsChanged(DataErrorsChangedEventArgs e)
+        {
+            ErrorsChanged?.Invoke(_sender, e);
         }
 
         #endregion
@@ -64,11 +78,7 @@ namespace Amazon.AWSToolkit.CommonUI
 
         string IDataErrorInfo.this[string columnName] => GetErrors(columnName).OfType<object>().FirstOrDefault()?.ToString() ?? string.Empty;
 
-        string IDataErrorInfo.Error =>
-            _errorInfo.TryGetValue(EntityLevelErrorKey, out var values) && values.Any() ?
-                values.First()?.ToString() :
-                _errorInfo.Values.FirstOrDefault()?.FirstOrDefault()?.ToString()
-                ?? string.Empty;
+        string IDataErrorInfo.Error => _errorToPropertyNames.Keys.FirstOrDefault()?.ToString() ?? string.Empty;
 
         #endregion
 
@@ -79,23 +89,29 @@ namespace Amazon.AWSToolkit.CommonUI
                 return;
             }
 
-            if (propertyNames == null || !propertyNames.Any())
+            propertyNames = NormalizePropertyNames(propertyNames);
+
+            if (propertyNames.Length == 0)
             {
-                propertyNames = new[] { EntityLevelErrorKey };
+                propertyNames = new [] { string.Empty };
             }
 
-            foreach (var propertyName in propertyNames.Select(NormalizePropertyName))
+            if (!_errorToPropertyNames.TryGetValue(error, out var properties))
             {
-                if (!_errorInfo.TryGetValue(propertyName, out var errors))
-                {
-                    // Once a property is added and given an errors set, don't ever remove it to simplify code,
-                    // avoid race conditions, and be consistent with ObservableValidator.
-                    errors = new HashSet<object>();
-                    _errorInfo[propertyName] = errors;
-                }
+                properties = new HashSet<string>();
+                _errorToPropertyNames[error] = properties;
+            }
+            properties.AddAll(propertyNames);
 
+            foreach (var propertyName in propertyNames)
+            {
+                if (!_propertyNameToErrors.TryGetValue(propertyName, out var errors))
+                {
+                    errors = new HashSet<object>();
+                    _propertyNameToErrors[propertyName] = errors;
+                }
                 errors.Add(error);
-                RaiseErrorsChanged(propertyName);
+                OnErrorsChanged(propertyName);
             }
         }
 
@@ -106,32 +122,57 @@ namespace Amazon.AWSToolkit.CommonUI
                 return;
             }
 
-            foreach (var pair in _errorInfo)
+            if (_errorToPropertyNames.TryGetValue(error, out var properties))
             {
-                if (pair.Value.Remove(error))
+                _errorToPropertyNames.Remove(error);
+
+                foreach (var property in properties)
                 {
-                    RaiseErrorsChanged(pair.Key);
+                    var errors = _propertyNameToErrors[property];
+                    if (errors.Remove(error))
+                    {
+                        if (errors.Count == 0)
+                        {
+                            _propertyNameToErrors.Remove(property);
+                        }
+
+                        OnErrorsChanged(property);
+                    }
                 }
             }
         }
 
         public void ClearErrors(params string[] propertyNames)
         {
-            if (propertyNames == null || !propertyNames.Any())
+            propertyNames = NormalizePropertyNames(propertyNames);
+
+            if (propertyNames.Length == 0)
             {
-                propertyNames = _errorInfo.Keys.ToArray();
+                propertyNames = _propertyNameToErrors.Keys.ToArray();
             }
 
-            foreach (var propertyName in propertyNames.Select(NormalizePropertyName))
+            foreach (var propertyName in propertyNames)
             {
-                if (_errorInfo.TryGetValue(propertyName, out var errors) && errors.Any())
+                if (_propertyNameToErrors.TryGetValue(propertyName, out var errors))
                 {
-                    errors.Clear();
-                    RaiseErrorsChanged(propertyName);
+                    foreach (var error in errors)
+                    {
+                        var properties = _errorToPropertyNames[error];
+                        if (properties.Remove(propertyName) && properties.Count == 0)
+                        {
+                            _errorToPropertyNames.Remove(error);
+                        }
+                    }
+
+                    _propertyNameToErrors.Remove(propertyName);
+                    OnErrorsChanged(propertyName);
                 }
             }
         }
 
-        private static string NormalizePropertyName(string propertyName) => propertyName ?? EntityLevelErrorKey;
+        private static string[] NormalizePropertyNames(params string[] propertyNames)
+        {
+            return propertyNames?.Select(p => p ?? string.Empty).ToArray() ?? Array.Empty<string>();
+        }
     }
 }
