@@ -1,0 +1,397 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:platform="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    xmlns:shell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../BaseToolkitStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- The VS Theme for ListViews is not known. By default it does not show the Column Headings. A themed presentation of
+    ListViews are composed from this collection of styles -->
+
+    <!-- ListViewScrollViewerStyle - renders the column headings, and the vertical/horizontal scrollbars -->
+    <Style x:Key="ListViewScrollViewerStyle"
+           TargetType="{x:Type ScrollViewer}">
+        <Setter Property="Focusable"
+                Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Grid Background="{TemplateBinding Background}"
+                          SnapsToDevicePixels="true">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <DockPanel Margin="{TemplateBinding Padding}">
+                            <ScrollViewer DockPanel.Dock="Top"
+                                          HorizontalScrollBarVisibility="Hidden"
+                                          VerticalScrollBarVisibility="Hidden"
+                                          Focusable="false">
+                                <GridViewHeaderRowPresenter Margin="2,0,2,0"
+                                                            Columns="{Binding Path=TemplatedParent.View.Columns,RelativeSource={RelativeSource TemplatedParent}}"
+                                                            ColumnHeaderContainerStyle="{Binding Path=TemplatedParent.View.ColumnHeaderContainerStyle,RelativeSource={RelativeSource TemplatedParent}}"
+                                                            ColumnHeaderTemplate="{Binding Path=TemplatedParent.View.ColumnHeaderTemplate,RelativeSource={RelativeSource TemplatedParent}}"
+                                                            ColumnHeaderTemplateSelector="{Binding Path=TemplatedParent.View.ColumnHeaderTemplateSelector,RelativeSource={RelativeSource TemplatedParent}}"
+                                                            ColumnHeaderStringFormat="{Binding Path=TemplatedParent.View.ColumnHeaderStringFormat,RelativeSource={RelativeSource TemplatedParent}}"
+                                                            AllowsColumnReorder="{Binding Path=TemplatedParent.View.AllowsColumnReorder,RelativeSource={RelativeSource TemplatedParent}}"
+                                                            ColumnHeaderContextMenu="{Binding Path=TemplatedParent.View.ColumnHeaderContextMenu,RelativeSource={RelativeSource TemplatedParent}}"
+                                                            ColumnHeaderToolTip="{Binding Path=TemplatedParent.View.ColumnHeaderToolTip,RelativeSource={RelativeSource TemplatedParent}}"
+                                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </ScrollViewer>
+                            <ScrollContentPresenter Name="PART_ScrollContentPresenter"
+                                                    KeyboardNavigation.DirectionalNavigation="Local"
+                                                    Content="{TemplateBinding Content}"
+                                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                    CanContentScroll="{TemplateBinding CanContentScroll}"
+                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </DockPanel>
+                        <ScrollBar Name="PART_HorizontalScrollBar"
+                                   Orientation="Horizontal"
+                                   Grid.Row="1" Grid.Column="0"
+                                   Minimum="0.0"
+                                   Maximum="{TemplateBinding ScrollableWidth}"
+                                   ViewportSize="{TemplateBinding ViewportWidth}"
+                                   Value="{Binding Path=HorizontalOffset,RelativeSource={RelativeSource TemplatedParent},Mode=OneWay}"
+                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                   Cursor="Arrow" />
+                        <ScrollBar Name="PART_VerticalScrollBar"
+                                   Orientation="Vertical"
+                                   Grid.Row="0" Grid.Column="1"
+                                   Minimum="0.0"
+                                   Maximum="{TemplateBinding ScrollableHeight}"
+                                   ViewportSize="{TemplateBinding ViewportHeight}"
+                                   Value="{Binding Path=VerticalOffset,RelativeSource={RelativeSource TemplatedParent},Mode=OneWay}"
+                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                   Cursor="Arrow" />
+                        <DockPanel
+                            Grid.Row="1" Grid.Column="1"
+                            Background="{Binding Path=Background,ElementName=PART_VerticalScrollBar}"
+                            LastChildFill="false">
+                            <Rectangle DockPanel.Dock="Left"
+                                       Width="1"
+                                       Fill="{DynamicResource {x:Static shell:VsBrushes.ScrollBarThumbBorderKey}}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+                            <Rectangle DockPanel.Dock="Top"
+                                       Height="1"
+                                       Fill="{DynamicResource {x:Static shell:VsBrushes.ScrollBarThumbBorderKey}}"
+                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+                        </DockPanel>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The Toolkit's style for ListView controls  -->
+    <Style x:Key="{x:Static themes:ToolkitThemeResourceKeys.ListViewStyle}"
+           TargetType="{x:Type ListView}">
+        <!-- platform:ThemedDialogColors.ListBoxBrushKey is not available in the 16.0 referenced assembly -->
+        <Setter Property="Background"
+                Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemBackgroundBrushKey}}" />
+        <!-- platform:ThemedDialogColors.ListBoxBorderBrushKey is not available in the 16.0 referenced assembly -->
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource {x:Static platform:CommonControlsColors.TextBoxBorderBrushKey}}" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <!-- platform:ThemedDialogColors.ListBoxTextBrushKey is not available in the 16.0 referenced assembly -->
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemTextBrushKey}}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
+                Value="Auto" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
+                Value="Auto" />
+        <Setter Property="ScrollViewer.CanContentScroll"
+                Value="true" />
+        <Setter Property="ScrollViewer.PanningMode"
+                Value="Both" />
+        <Setter Property="Stylus.IsFlicksEnabled"
+                Value="False" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListView}">
+                    <Border Name="ListViewBorder"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}"
+                            SnapsToDevicePixels="true">
+                        <ScrollViewer Style="{DynamicResource ListViewScrollViewerStyle}"
+                                      Padding="{TemplateBinding Padding}">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </ScrollViewer>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled"
+                                 Value="false">
+                            <!-- Approximation: The ListItem Border is not visible -->
+                            <Setter TargetName="ListViewBorder"
+                                    Property="BorderBrush"
+                                    Value="{DynamicResource {x:Static platform:CommonControlsColors.TextBoxBorderDisabledBrushKey}}" />
+                            <!-- platform:ThemedDialogColors.ListBoxDisabledBorderBrushKey is not available in the 16.0 referenced assembly -->
+                            <Setter TargetName="ListViewBorder"
+                                    Property="Background"
+                                    Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemBackgroundUnfocusedBrushKey}}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsGrouping" Value="true" />
+                                <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The Toolkit's style for ListViewItems -->
+    <Style x:Key="{x:Static themes:ToolkitThemeResourceKeys.ListViewItemStyle}"
+           TargetType="{x:Type ListViewItem}">
+
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemTextBrushKey}}" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderBrush"
+                Value="Transparent" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Margin"
+                Value="0,0,0,1" />
+        <Setter Property="Padding"
+                Value="5,2,5,2" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                    <Border BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}"
+                            SnapsToDevicePixels="true">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <GridViewRowPresenter
+                                Grid.Row="0"
+                                Content="{TemplateBinding Content}"
+                                Columns="{TemplateBinding GridView.ColumnCollection}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="true">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemTextHoverBrushKey}}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemBackgroundHoverBrushKey}}" />
+                            <Setter Property="BorderBrush"
+                                    Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemBorderHoverBrushKey}}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected"
+                                 Value="true">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemTextSelectedBrushKey}}" />
+                            <Setter Property="Background"
+                                    Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemBackgroundSelectedBrushKey}}" />
+                            <Setter Property="BorderBrush"
+                                    Value="{DynamicResource {x:Static platform:CommonDocumentColors.ListItemBorderSelectedBrushKey}}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="false">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource {x:Static platform:ThemedDialogColors.ListItemDisabledTextBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- GridViewColumnHeaderGripper - renders the selectable "re-sizer" between column headings -->
+    <Style x:Key="GridViewColumnHeaderGripper"
+           TargetType="{x:Type Thumb}">
+        <Setter Property="Canvas.Right"
+                Value="-9" />
+        <Setter Property="Width"
+                Value="18" />
+        <Setter Property="Height"
+                Value="{Binding Path=ActualHeight,RelativeSource={RelativeSource TemplatedParent}}" />
+        <Setter Property="Padding"
+                Value="0" />
+        <Setter Property="Background"
+                Value="{DynamicResource {x:Static platform:HeaderColors.SeparatorLineBrushKey}}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border Padding="{TemplateBinding Padding}"
+                            Background="Transparent">
+                        <Rectangle HorizontalAlignment="Center"
+                                   Width="1"
+                                   Fill="{TemplateBinding Background}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The Toolkit's style for GridViewColumnHeader presentation -->
+    <Style x:Key="{x:Static themes:ToolkitThemeResourceKeys.ListViewColumnHeaderStyle}"
+           TargetType="{x:Type GridViewColumnHeader}">
+        <Setter Property="HorizontalContentAlignment"
+                Value="Left" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+        <Setter Property="Background"
+                Value="{DynamicResource {x:Static platform:HeaderColors.DefaultBrushKey}}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource {x:Static platform:HeaderColors.SeparatorLineBrushKey}}" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="Padding"
+                Value="2 0 2 0" />
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static platform:HeaderColors.DefaultTextBrushKey}}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                    <Grid SnapsToDevicePixels="true">
+                        <Border Name="HeaderBorder"
+                                BorderThickness="0 1 0 1"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Background="{TemplateBinding Background}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter Name="HeaderContent"
+                                                      Margin="0 0 0 1"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      RecognizesAccessKey="True"
+                                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Border Name="HeaderHoverBorder"
+                                BorderThickness="1,0,1,1"
+                                Margin="1,1,0,0" />
+                        <Border Name="HeaderPressBorder"
+                                BorderThickness="1,1,1,0"
+                                Margin="1,0,0,1" />
+                        <Canvas>
+                            <Thumb x:Name="PART_HeaderGripper"
+                                   Style="{StaticResource GridViewColumnHeaderGripper}" />
+                        </Canvas>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="true">
+                            <Setter TargetName="HeaderBorder"
+                                    Property="Background"
+                                    Value="{DynamicResource {x:Static platform:HeaderColors.MouseOverBrushKey}}" />
+                            <Setter TargetName="HeaderHoverBorder"
+                                    Property="BorderBrush"
+                                    Value="{DynamicResource {x:Static platform:HeaderColors.SeparatorLineBrushKey}}" />
+                            <Setter TargetName="PART_HeaderGripper"
+                                    Property="Background"
+                                    Value="Transparent" />
+                        </Trigger>
+                        <Trigger Property="IsPressed"
+                                 Value="true">
+                            <Setter TargetName="HeaderBorder"
+                                    Property="Background"
+                                    Value="{DynamicResource {x:Static platform:HeaderColors.MouseDownBrushKey}}" />
+                            <Setter TargetName="HeaderHoverBorder"
+                                    Property="BorderBrush"
+                                    Value="{DynamicResource {x:Static platform:HeaderColors.SeparatorLineBrushKey}}" />
+                            <Setter TargetName="HeaderPressBorder"
+                                    Property="BorderBrush"
+                                    Value="{DynamicResource {x:Static platform:HeaderColors.SeparatorLineBrushKey}}" />
+                            <Setter TargetName="PART_HeaderGripper"
+                                    Property="Visibility"
+                                    Value="Hidden" />
+                            <Setter TargetName="HeaderContent"
+                                    Property="Margin"
+                                    Value="1,1,0,0" />
+                        </Trigger>
+                        <Trigger Property="Height"
+                                 Value="Auto">
+                            <Setter Property="MinHeight"
+                                    Value="20" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"
+                                 Value="false">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Role"
+                     Value="Floating">
+                <Setter Property="Opacity"
+                        Value="0.4082" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                            <Canvas Name="PART_FloatingHeaderCanvas">
+                                <Rectangle Opacity="0.4697"
+                                           Fill="#FF000000"
+                                           Width="{TemplateBinding ActualWidth}"
+                                           Height="{TemplateBinding ActualHeight}" />
+                            </Canvas>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="Role"
+                     Value="Padding">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                            <Border Name="HeaderBorder"
+                                    BorderThickness="0 1 0 1"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    Background="{TemplateBinding Background}" />
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="Height"
+                                         Value="Auto">
+                                    <Setter Property="MinHeight"
+                                            Value="20" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ===== -->
+
+    <!-- Apply the Toolkit ListView Theme as the default ListView theme -->
+    <Style TargetType="GridViewColumnHeader"
+           BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ListViewColumnHeaderStyle}}" />
+    <Style TargetType="ListView" BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ListViewStyle}}" />
+    <Style TargetType="ListViewItem"
+           BasedOn="{StaticResource {x:Static themes:ToolkitThemeResourceKeys.ListViewItemStyle}}" />
+
+</ResourceDictionary>

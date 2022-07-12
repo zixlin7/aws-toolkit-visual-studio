@@ -8,6 +8,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="BaseToolkitStyles.xaml" />
         <ResourceDictionary Source="./Controls/ExpanderStyles.xaml" />
+        <ResourceDictionary Source="./Controls/ListViewStyles.xaml" />
         <ResourceDictionary Source="./Controls/ToolTipStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 

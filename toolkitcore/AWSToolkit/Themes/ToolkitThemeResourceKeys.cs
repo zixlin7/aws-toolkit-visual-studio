@@ -9,6 +9,9 @@
         public static object ButtonStyle { get; } = GenerateKeyName(nameof(ButtonStyle));
         public static object ExpanderStyle { get; } = GenerateKeyName(nameof(ExpanderStyle));
         public static object ListBoxStyle { get; } = GenerateKeyName(nameof(ListBoxStyle));
+        public static object ListViewColumnHeaderStyle { get; } = GenerateKeyName(nameof(ListViewColumnHeaderStyle));
+        public static object ListViewItemStyle { get; } = GenerateKeyName(nameof(ListViewItemStyle));
+        public static object ListViewStyle { get; } = GenerateKeyName(nameof(ListViewStyle));
         public static object ToolTipStyle { get; } = GenerateKeyName(nameof(ToolTipStyle));
 
         private static string GenerateKeyName(string baseName)
