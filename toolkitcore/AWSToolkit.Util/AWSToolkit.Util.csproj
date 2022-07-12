@@ -57,6 +57,7 @@
     <Compile Include="Exceptions\LambdaToolkitException.cs" />
     <Compile Include="Exceptions\NodeNotFoundException.cs" />
     <Compile Include="Exceptions\ToolkitException.cs" />
+    <Compile Include="Exceptions\UserCanceledException.cs" />
     <Compile Include="Frameworks.cs" />
     <Compile Include="HostedFileContentLoader.cs" />
     <Compile Include="HostedFilesSettings.cs" />

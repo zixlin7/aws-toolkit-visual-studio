@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "CodeArtifact NuGet credential provider has been improved to reduce the amount of times it falls back to a standard basic authentication dialog."
+}
