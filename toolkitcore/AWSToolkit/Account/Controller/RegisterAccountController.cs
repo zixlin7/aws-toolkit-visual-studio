@@ -42,7 +42,9 @@ namespace Amazon.AWSToolkit.Account.Controller
                 return this._results;
             }
        
-            return new ActionResults().WithSuccess(false);
+            return new ActionResults()
+                .WithCancelled(true)
+                .WithSuccess(false);
         }
 
         protected virtual void CustomizeControl(RegisterAccountControl control)

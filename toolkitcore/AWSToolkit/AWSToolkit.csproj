@@ -237,6 +237,7 @@
     <Compile Include="Models\KeyValue.cs" />
     <Compile Include="Models\KeyValueConversion.cs" />
     <Compile Include="Models\TimestampedValue.cs" />
+    <Compile Include="Navigator\ActionResultsExtensionMethods.cs" />
     <Compile Include="Navigator\BaseConnectionContextCommand.cs" />
     <Compile Include="Navigator\ConnectionContextCommandExecutor.cs" />
     <Compile Include="Navigator\IConnectionContextCommand.cs" />
