@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix bug where AWS Explorer would cause multiple AWS MFA and AWS SSO Login prompts to appear, even when cancelled"
+}

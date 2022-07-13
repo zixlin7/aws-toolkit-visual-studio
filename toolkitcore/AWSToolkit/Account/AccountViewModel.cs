@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using Amazon.AWSToolkit.Context;
@@ -19,8 +20,14 @@ namespace Amazon.AWSToolkit.Account
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(AccountViewModel));
 
+        private static readonly CredentialType[] InteractiveCredentialTypes =
+        {
+            CredentialType.SsoProfile, CredentialType.AssumeMfaRoleProfile,
+        };
+
         public static readonly ObservableCollection<IViewModel> NO_CHILDREN = new ObservableCollection<IViewModel>();
         private ICredentialIdentifier _identifier;
+        private bool _canResolveAccountId = false;
         readonly AccountViewMetaNode _metaNode;
         AWSViewModel _awsViewModel;
         string _displayName;
@@ -52,12 +59,51 @@ namespace Amazon.AWSToolkit.Account
             _cachedServiceCredentials.Clear();
         }
 
+        public bool IsInteractiveCredentials()
+        {
+            var credentialType = _toolkitContext.CredentialSettingsManager.GetCredentialType(Identifier);
+            return InteractiveCredentialTypes.Contains(credentialType);
+        }
+
+        public bool CanResolveAccountId(ToolkitRegion region)
+        {
+            if (!_canResolveAccountId)
+            {
+                var accountId = GetAccountId(region);
+
+                // We retain knowledge that these credentials work, so that we don't re-query for each user-requested refresh.
+                // If the token expires, this might continue to result in multiple SSO prompts (in NavigatorControl). For now,
+                // reduce the likelihood on initial connections.
+                _canResolveAccountId = !string.IsNullOrWhiteSpace(accountId);
+
+                if (Debugger.IsAttached)
+                {
+                    Debug.Assert(_canResolveAccountId,
+                        $"AccountViewModel {Identifier?.Id} is in a bad state that is hard to track down! Please investigate this if possible. " +
+                        "Somehow this account was allowed to load child resources, even though the credentials are not valid. " +
+                        "This likely spams the user with multiple SSO login prompts.");
+                }
+            }
+
+            return _canResolveAccountId;
+        }
+
+        private string GetAccountId(ToolkitRegion region)
+        {
+            AwsConnectionSettings awsConnectionSettings = new AwsConnectionSettings(Identifier, region);
+            return awsConnectionSettings.GetAccountId(_toolkitContext.ServiceClientManager);
+        }
+
         internal void CreateServiceChildren()
+        {
+            // TODO : make region a function parameter instead
+            CreateServiceChildren(ToolkitFactory.Instance.Navigator.SelectedRegion);
+        }
+
+        internal void CreateServiceChildren(ToolkitRegion region)
         {
             this._serviceViewModels.Clear();
             
-            // TODO : make region a function parameter instead
-            var region = ToolkitFactory.Instance.Navigator.SelectedRegion;
             if (region == null) { return; }
 
             // TODO : when region is null make the child list empty instead of preserving the
