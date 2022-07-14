@@ -136,14 +136,14 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             LOGGER.Debug("TelemetryPublisher Timer started");
         }
 
-        public async Task SendFeedback(Sentiment sentiment, string comment)
+        public async Task SendFeedback(Sentiment sentiment, string comment, IDictionary<string, string> metadata)
         {
             if (_telemetryClient == null)
             {
                 throw new Exception("Telemetry Client is not initialized");
             }
 
-            await _telemetryClient.SendFeedback(sentiment, comment);
+            await _telemetryClient.SendFeedback(sentiment, comment, metadata);
         }
 
         /// <summary>

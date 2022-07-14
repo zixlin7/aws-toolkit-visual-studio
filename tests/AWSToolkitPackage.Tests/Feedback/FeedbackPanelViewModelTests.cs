@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Feedback;
@@ -25,6 +24,7 @@ namespace AWSToolkitPackage.Tests.Feedback
         };
 
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
+        private readonly Dictionary<string, string> _metadata = new Dictionary<string, string>();
         private readonly FeedbackPanelViewModel _sut;
 
         public FeedbackPanelViewModelTests()
@@ -61,7 +61,7 @@ namespace AWSToolkitPackage.Tests.Feedback
             var result  = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext,null);
 
             Assert.Equal(Result.Succeeded, result);
-            AssertTelemetryFeedbackCall(expectedSentiment, null);
+            AssertTelemetryFeedbackCall(expectedSentiment, null, null);
             _toolkitContextFixture.ToolkitHost.Verify(host => host.OutputToHostConsole(It.Is<string>(s => s.Contains("Thanks")), It.IsAny<bool>()), Times.Once);
         }
 
@@ -70,12 +70,12 @@ namespace AWSToolkitPackage.Tests.Feedback
         {
             _sut.FeedbackSentiment = true;
             _toolkitContextFixture.TelemetryLogger
-                .Setup(mock => mock.SendFeedback(It.IsAny<Sentiment>(), It.IsAny<string>())).Throws<Exception>();
+                .Setup(mock => mock.SendFeedback(It.IsAny<Sentiment>(), It.IsAny<string>(), _metadata)).Throws<Exception>();
 
             var result = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext, null);
 
             Assert.Equal(Result.Failed, result);
-            AssertTelemetryFeedbackCall(Sentiment.Positive, null);
+            AssertTelemetryFeedbackCall(Sentiment.Positive, null, null);
             _toolkitContextFixture.ToolkitHost.Verify(host => host.ShowError(It.IsAny<string>()), Times.Once);
         }
 
@@ -88,13 +88,17 @@ namespace AWSToolkitPackage.Tests.Feedback
             var result = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext, "publish to beanstalk");
 
             Assert.Equal(Result.Succeeded, result);
-            AssertTelemetryFeedbackCall(Sentiment.Positive, $"System: publish to beanstalk{Environment.NewLine}good");
+            AssertTelemetryFeedbackCall(Sentiment.Positive, "good", "publish to beanstalk");
             _toolkitContextFixture.ToolkitHost.Verify(host => host.OutputToHostConsole(It.Is<string>(s => s.Contains("Thanks")), It.IsAny<bool>()), Times.Once);
         }
 
-        private void AssertTelemetryFeedbackCall(Sentiment sentiment, string comment)
+        private void AssertTelemetryFeedbackCall(Sentiment sentiment, string comment, string sourceMarker)
         {
-            _toolkitContextFixture.TelemetryLogger.Verify(mock => mock.SendFeedback(sentiment, comment), Times.Once);
+            if (!string.IsNullOrWhiteSpace(sourceMarker))
+            {
+                _metadata.Add(FeedbackPanelViewModel.FeedbackSource, sourceMarker);
+            }
+            _toolkitContextFixture.TelemetryLogger.Verify(mock => mock.SendFeedback(sentiment, comment, _metadata), Times.Once);
         }
     }
 }

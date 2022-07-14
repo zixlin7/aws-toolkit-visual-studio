@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -145,14 +146,14 @@ namespace Amazon.AWSToolkit.Telemetry
             _eventQueue.Enqueue(telemetryMetric);
         }
 
-        public async Task SendFeedback(Sentiment sentiment, string comment)
+        public async Task SendFeedback(Sentiment sentiment, string comment, IDictionary<string, string> metadata = null)
         {
             if (_telemetryPublisher == null)
             {
                 throw new Exception("Telemetry Publisher is not initialized");
             }
 
-            await _telemetryPublisher.SendFeedback(sentiment, comment);
+            await _telemetryPublisher.SendFeedback(sentiment, comment, metadata);
         }
 
         public ILog Logger => LOGGER;

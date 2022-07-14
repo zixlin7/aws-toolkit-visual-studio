@@ -118,7 +118,8 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
     public class TelemetryClientPostFeedbackTests : TelemetryClientTestsBase
     {
-        private readonly PostFeedbackRequest _sampleClientRequest;
+        private PostFeedbackRequest _sampleClientRequest;
+        private Dictionary<string, string> _sampleMetadata = new Dictionary<string, string> { {"abc", "def" } };
 
         public TelemetryClientPostFeedbackTests() : base()
         {
@@ -131,10 +132,31 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             ProductEnvironment.ApplyTo(_sampleClientRequest);
         }
 
-        [Fact]
-        public async Task SendFeedback()
+
+        public static IEnumerable<object[]> NoMetadataFeedback = new List<object[]>
         {
-            await TelemetryClient.SendFeedback(AwsToolkit.Telemetry.Events.Core.Sentiment.Positive, "good");
+            new object[] { null },
+            new object[] {new Dictionary<string, string>() }
+        };
+
+
+        [Theory]
+        [MemberData(nameof(NoMetadataFeedback))]
+        public async Task SendFeedback(IDictionary<string, string> metadata)
+        {
+            await TelemetryClient.SendFeedback(AwsToolkit.Telemetry.Events.Core.Sentiment.Positive, "good", metadata);
+
+            TelemetrySdk.Verify(mock => mock.PostFeedbackAsync(
+                It.Is<PostFeedbackRequest>(request => AreEqual(_sampleClientRequest, request)),
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+        }
+
+        [Fact]
+        public async Task SendFeedback_WithMetadata()
+        {
+            _sampleMetadata.ApplyTo(_sampleClientRequest);
+            await TelemetryClient.SendFeedback(AwsToolkit.Telemetry.Events.Core.Sentiment.Positive, "good", _sampleMetadata);
 
             TelemetrySdk.Verify(mock => mock.PostFeedbackAsync(
                 It.Is<PostFeedbackRequest>(request => AreEqual(_sampleClientRequest, request)),

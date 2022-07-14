@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
@@ -40,7 +41,8 @@ namespace AWSToolkitPackage.Tests.Feedback
         public void Execute_SubmitFailed()
         {
             SetupHostModalDialog(true);
-            _toolkitContextFixture.TelemetryLogger.Setup(x => x.SendFeedback(It.IsAny<Sentiment>(), It.IsAny<string>()))
+            _toolkitContextFixture.TelemetryLogger.Setup(x =>
+                    x.SendFeedback(It.IsAny<Sentiment>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
                 .Throws<Exception>();
 
             _sut.Execute(null);

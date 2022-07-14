@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.ToolkitTelemetry.Model;
+
 using Xunit;
+
+using MetadataEntry = Amazon.ToolkitTelemetry.Model.MetadataEntry;
+using MetricDatum = Amazon.AwsToolkit.Telemetry.Events.Core.MetricDatum;
 
 namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
@@ -122,6 +127,61 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             metric.Sanitize();
 
             Assert.Equal(sanitizedMetricName, metric.MetricName);
+        }
+
+        [Fact]
+        public void MetadataApplyTo()
+        {
+            var request = new PostFeedbackRequest()
+            {
+                Metadata = CreateSampleMetadataEntry()
+            };
+
+            var metadata = new Dictionary<string, string> { { "great", "bad" } };
+
+            metadata.ApplyTo(request);
+
+            Assert.Equal(3, request.Metadata.Count);
+            var matchingMetadata = request.Metadata.Where(x => x.Key.Equals("abc")).ToList();
+            Assert.Single(matchingMetadata);
+            Assert.Equal("abc", matchingMetadata.First().Key);
+            Assert.Equal("def", matchingMetadata.First().Value);
+
+        }
+
+        [Fact]
+        public void MetadataApplyTo_OverwritesDuplicates()
+        {
+            var request = new PostFeedbackRequest()
+            {
+                Metadata = CreateSampleMetadataEntry()
+            };
+
+            var metadata = new Dictionary<string, string> { { "abc", "xyz" }, { "great", "bad"} };
+
+            metadata.ApplyTo(request);
+
+            Assert.Equal(3, request.Metadata.Count);
+            var matchingMetadata = request.Metadata.Where(x => x.Key.Equals("abc")).ToList();
+            Assert.Single(matchingMetadata);
+            Assert.Equal("abc", matchingMetadata.First().Key);
+            Assert.Equal("xyz", matchingMetadata.First().Value);
+
+        }
+
+
+        private List<MetadataEntry> CreateSampleMetadataEntry()
+        {
+            return new List<MetadataEntry>()
+            {
+                CreateMetadataEntry("abc", "def"),
+                CreateMetadataEntry("hello", "world"),
+            };
+        }
+
+        private MetadataEntry CreateMetadataEntry(string key, string value)
+        {
+            return new MetadataEntry() { Key = key, Value = value };
         }
 
         private static MetricDatum CreateCleanMetricDatum()

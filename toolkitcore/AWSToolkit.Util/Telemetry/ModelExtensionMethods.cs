@@ -48,6 +48,7 @@ namespace Amazon.AWSToolkit.Telemetry
             request.ParentProduct = productEnvironment.ParentProduct;
             request.ParentProductVersion = productEnvironment.ParentProductVersion;
         }
+
         public static void ApplyTo(this ProductEnvironment productEnvironment,
             PostFeedbackRequest request)
         {
@@ -57,6 +58,21 @@ namespace Amazon.AWSToolkit.Telemetry
             request.OSVersion = productEnvironment.OperatingSystemVersion;
             request.ParentProduct = productEnvironment.ParentProduct;
             request.ParentProductVersion = productEnvironment.ParentProductVersion;
+        }
+
+        public static void ApplyTo(this IDictionary<string, string> metadata,
+            PostFeedbackRequest request)
+        {
+            if (metadata == null)
+            {
+                return;
+            }
+
+            var entries = metadata.Select(entry => new MetadataEntry() { Key = entry.Key, Value = entry.Value })
+                .ToList();
+
+            var updatedMetadata = entries.Concat(request.Metadata.Where(x => !metadata.Keys.Contains(x.Key))).ToList();
+            request.Metadata = updatedMetadata;
         }
 
         /// <summary>

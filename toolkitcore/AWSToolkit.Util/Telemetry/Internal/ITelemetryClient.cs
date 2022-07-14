@@ -31,6 +31,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         /// </summary>
         /// <param name="sentiment">feedback sentiment eg. positive/negative</param>
         /// <param name="comment">feedback comment</param>
-        Task SendFeedback(Sentiment sentiment, string comment);
+        /// <param name="metadata">additional feedback metadata</param>
+        Task SendFeedback(Sentiment sentiment, string comment, IDictionary<string, string> metadata);
     }
 }

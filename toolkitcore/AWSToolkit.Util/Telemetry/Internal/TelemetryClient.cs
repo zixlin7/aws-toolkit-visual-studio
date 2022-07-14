@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             await _telemetry.PostMetricsAsync(clientRequest, cancellationToken);
         }
 
-        public async Task SendFeedback(Sentiment sentiment, string comment)
+        public async Task SendFeedback(Sentiment sentiment, string comment, IDictionary<string, string> metadata)
         {
             var request = new PostFeedbackRequest()
             {
@@ -80,6 +80,8 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
                 Comment = comment
             };
             _productEnvironment.ApplyTo(request);
+
+            metadata.ApplyTo(request);
 
             await _telemetry.PostFeedbackAsync(request);
         }

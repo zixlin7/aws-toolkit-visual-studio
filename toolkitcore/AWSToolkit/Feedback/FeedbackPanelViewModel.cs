@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -13,10 +14,12 @@ namespace Amazon.AWSToolkit.Feedback
     /// </summary>
     public class FeedbackPanelViewModel : BaseModel
     {
+        public const string FeedbackSource = "source";
         public const int MAX_CHAR_LIMIT = 2000;
         private bool? _feedbackSentiment = null;
         private string _feedbackComment;
         private int _remainingCharacters = MAX_CHAR_LIMIT;
+        private readonly IDictionary<string, string> _metadata = new Dictionary<string, string>();
 
         public bool? FeedbackSentiment
         {
@@ -50,7 +53,8 @@ namespace Amazon.AWSToolkit.Feedback
         {
             try
             {
-                await toolkitContext.TelemetryLogger.SendFeedback(GetSentiment(), CreateFeedbackComment(sourceMarker));
+                AddSourceMetadata(sourceMarker);
+                await toolkitContext.TelemetryLogger.SendFeedback(GetSentiment(), FeedbackComment, _metadata);
 
                 toolkitContext.ToolkitHost.OutputToHostConsole("Thanks for the feedback!", true);
                 return Result.Succeeded;
@@ -62,14 +66,12 @@ namespace Amazon.AWSToolkit.Feedback
             }
         }
 
-        private string CreateFeedbackComment(string marker)
+        private void AddSourceMetadata(string sourceMarker)
         {
-            if (!string.IsNullOrWhiteSpace(marker))
+            if (!string.IsNullOrWhiteSpace(sourceMarker))
             {
-                return $"System: {marker}{Environment.NewLine}{FeedbackComment}";
+                _metadata[FeedbackSource] = sourceMarker;
             }
-
-            return FeedbackComment;
         }
 
         private Sentiment GetSentiment()

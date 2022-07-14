@@ -158,7 +158,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             await _sut.SendFeedback(Sentiment.Positive, "");
 
-            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Once);
+            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, "", null), Times.Once);
         }
 
         [Fact]
@@ -166,7 +166,18 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         {
             await Assert.ThrowsAsync<Exception>(() => _sut.SendFeedback(Sentiment.Positive, ""));
 
-            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Never);
+            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, "", null), Times.Never);
+        }
+
+        [Fact]
+        public async Task SendFeedback_WithMetadata()
+        {
+            _sut.Initialize(_clientId, _telemetryClient.Object, _telemetryPublisher.Object);
+            var metadata = new Dictionary<string, string> { { "abc", "def" } };
+
+            await _sut.SendFeedback(Sentiment.Positive, "", metadata);
+
+            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, "", metadata), Times.Once);
         }
 
         [Fact]
