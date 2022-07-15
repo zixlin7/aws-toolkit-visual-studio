@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         }
 
         public async Task PostMetrics(
-            Guid clientId,
+            ClientId clientId,
             IList<Metrics> telemetryMetrics,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -63,7 +63,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         {
             var clientRequest = new Amazon.ToolkitTelemetry.Model.PostMetricsRequest()
             {
-                ClientID = request.ClientId.ToString(),
+                ClientID = request.ClientId,
                 MetricData = request.TelemetryMetrics.AsMetricDatums().ToList(),
             };
 

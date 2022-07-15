@@ -68,18 +68,18 @@ namespace Amazon.AWSToolkit.Telemetry
         /// Sets up the service to start sending metrics.
         /// Metrics are not sent until this is called.
         /// </summary>
-        public void Initialize(AWSCredentials credentials, Guid clientId)
+        public void Initialize(AWSCredentials credentials, ClientId clientId)
         {
             var telemetryPublisher = new TelemetryPublisher(_eventQueue, clientId);
             var telemetryClient = new TelemetryClient(credentials, DefaultTelemetryEndpoint, _productEnvironment);
-            Initialize(clientId, telemetryClient, telemetryPublisher);
+            Initialize(telemetryClient, telemetryPublisher);
         }
 
         /// <summary>
         /// Sets up the service to start sending metrics.
         /// Overload - used for testing purposes.
         /// </summary>
-        public void Initialize(Guid clientId, ITelemetryClient telemetryClient, ITelemetryPublisher telemetryPublisher)
+        public void Initialize(ITelemetryClient telemetryClient, ITelemetryPublisher telemetryPublisher)
         {
             _telemetryClient = telemetryClient;
 

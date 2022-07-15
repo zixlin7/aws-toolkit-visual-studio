@@ -12,7 +12,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         /// Sends telemetry metrics
         /// </summary>
         Task PostMetrics(
-            Guid clientId,
+            ClientId clientId,
             IList<Metrics> telemetryMetrics,
             CancellationToken cancellationToken = default(CancellationToken)
         );

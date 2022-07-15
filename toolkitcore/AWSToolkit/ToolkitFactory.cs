@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
-using Amazon.AWSToolkit.Clients;
+
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PluginServices.Activators;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Telemetry;
 
 using log4net;
 
@@ -37,6 +36,7 @@ namespace Amazon.AWSToolkit
         private readonly ITelemetryLogger _telemetryLogger;
         private readonly IRegionProvider _regionProvider;
         private readonly ToolkitCredentialInitializer _toolkitCredentialInitializer;
+        private readonly ToolkitSettingsWatcher _toolkitSettingsWatcher;
         private readonly ToolkitContext _toolkitContext;
 
         private readonly AWSViewMetaNode _rootViewMetaNode = new AWSViewMetaNode();
@@ -48,16 +48,16 @@ namespace Amazon.AWSToolkit
         private ToolkitFactory(NavigatorControl navigator,
             ToolkitContext toolkitContext,
             IAWSToolkitShellProvider shellProvider,
-            ToolkitCredentialInitializer toolkitCredentialInitializer)
+            ToolkitCredentialInitializer toolkitCredentialInitializer,
+            ToolkitSettingsWatcher toolkitSettingsWatcher)
         {
-            this._toolkitContext = toolkitContext ?? throw new ArgumentNullException(nameof(toolkitContext));
-            this._navigator = navigator;
-            this._shellProvider = shellProvider;
-            this._telemetryLogger = toolkitContext.TelemetryLogger ??
-                                    throw new ArgumentNullException(nameof(toolkitContext.TelemetryLogger));
-            this._regionProvider = toolkitContext.RegionProvider ??
-                                   throw new ArgumentNullException(nameof(toolkitContext.RegionProvider));
-            this._toolkitCredentialInitializer = toolkitCredentialInitializer;
+            _toolkitContext = toolkitContext ?? throw new ArgumentNullException(nameof(toolkitContext));
+            _navigator = navigator;
+            _shellProvider = shellProvider;
+            _telemetryLogger = toolkitContext.TelemetryLogger ?? throw new ArgumentNullException(nameof(toolkitContext.TelemetryLogger));
+            _regionProvider = toolkitContext.RegionProvider ?? throw new ArgumentNullException(nameof(toolkitContext.RegionProvider));
+            _toolkitCredentialInitializer = toolkitCredentialInitializer;
+            _toolkitSettingsWatcher = toolkitSettingsWatcher;
 
             if (ServicePointManager.DefaultConnectionLimit < 100)
             {
@@ -69,22 +69,21 @@ namespace Amazon.AWSToolkit
             ToolkitContext toolkitContext,
             IAWSToolkitShellProvider shellProvider,
             ToolkitCredentialInitializer toolkitCredentialInitializer,
+            ToolkitSettingsWatcher toolkitSettingsWatcher,
             string additionalPluginPaths,
             Action initializeCompleteCallback)
         {
             if (INSTANCE != null)
                 throw new ApplicationException("Toolkit has already been initialized");
 
-            Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.HostInfo.Name, Constants.VERSION_NUMBER);
-            ProxyUtilities.ApplyCurrentProxySettings();
-
             var pluginActivators = await PluginActivatorUtilities.LoadPluginActivators(
                 typeof(ToolkitFactory).Assembly.Location,
                 additionalPluginPaths);
 
             INSTANCE = new ToolkitFactory(navigator, toolkitContext, shellProvider,
-                toolkitCredentialInitializer);
+                toolkitCredentialInitializer, toolkitSettingsWatcher);
 
+            INSTANCE.InitializeAwsSdk();
             INSTANCE.InitializePluginActivators(pluginActivators, toolkitContext);
             INSTANCE._toolkitCredentialInitializer.Initialize();
             INSTANCE.ShellProvider.ExecuteOnUIThread((Action) (() =>
@@ -120,6 +119,21 @@ namespace Amazon.AWSToolkit
 
                 LOGGER.Info("ToolkitFactory initialized");
             }));
+        }
+
+        private void InitializeAwsSdk()
+        {
+            SetAwsSdkUserAgent();
+            ProxyUtilities.ApplyCurrentProxySettings();
+
+            _toolkitSettingsWatcher.SettingsChanged += (s, e) => SetAwsSdkUserAgent();
+        }
+
+        private void SetAwsSdkUserAgent()
+        {
+            // TODO - Remove logic that determines if all zeroes should be used once telemetry supports all zeroes and clientId can be used directly.  See IDE-8105
+            var clientId = ClientId.Instance == ClientId.UnknownClientId ? "00000000-0000-0000-0000-000000000000" : ClientId.Instance;
+            Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(_shellProvider.HostInfo.Name, Constants.VERSION_NUMBER, $"ClientId/{clientId}");
         }
 
         private void InitializePluginActivators(IList<IPluginActivator> pluginActivators, ToolkitContext toolkitContext)

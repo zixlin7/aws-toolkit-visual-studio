@@ -51,6 +51,7 @@
     <Compile Include="CollectionExtensionMethodsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Regions\ServiceNamesTests.cs" />
+    <Compile Include="Telemetry\ClientIdTests.cs" />
     <Compile Include="Telemetry\MetricsMetadataTests.cs" />
     <Compile Include="Threading\ResettableCancellationTokenTests.cs" />
     <Compile Include="Util\DateTimeUtilTests.cs" />

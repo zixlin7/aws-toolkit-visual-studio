@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sampleClientRequest = new PostMetricsRequest()
             {
-                ClientId = Guid.NewGuid(),
+                ClientId = ClientId.AutomatedTestClientId,
                 TelemetryMetrics = new List<Metrics>() {telemetryMetric},
                 ProductEnvironment = ProductEnvironment
             };

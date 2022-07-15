@@ -11,6 +11,9 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Telemetry;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,7 +27,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
         private readonly ITestOutputHelper _testOutput;
 
-        private readonly Guid _clientId = Guid.NewGuid();
+        private readonly ClientId _clientId = ClientId.AutomatedTestClientId;
         private readonly ConcurrentQueue<Metrics> _eventQueue = new ConcurrentQueue<Metrics>();
         private readonly Mock<TimeProvider> _timeProvider = new Mock<TimeProvider>();
         private DateTime _currentTime = DateTime.Now;
