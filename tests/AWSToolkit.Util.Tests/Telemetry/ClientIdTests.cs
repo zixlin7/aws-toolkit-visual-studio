@@ -11,9 +11,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
         private const string TelemetryOptOutClientId = "11111111-1111-1111-1111-111111111111";
 
-        private const string UnknownClientId = "ba00fe5f-16ef-4acb-9552-3750f843fe1d";
-        // TODO - Replace UnknownClientId with nil UUID once supported in telemetry service.  See IDE-8105 for details.
-        //UnknownClientId = new ClientId("00000000-0000-0000-0000-000000000000");
+        private const string UnknownClientId = "00000000-0000-0000-0000-000000000000";
 
         [Fact]
         public void ClientIdIsAllFsWhenRunningTests()

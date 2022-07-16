@@ -131,9 +131,7 @@ namespace Amazon.AWSToolkit
 
         private void SetAwsSdkUserAgent()
         {
-            // TODO - Remove logic that determines if all zeroes should be used once telemetry supports all zeroes and clientId can be used directly.  See IDE-8105
-            var clientId = ClientId.Instance == ClientId.UnknownClientId ? "00000000-0000-0000-0000-000000000000" : ClientId.Instance;
-            Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(_shellProvider.HostInfo.Name, Constants.VERSION_NUMBER, $"ClientId/{clientId}");
+            Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(_shellProvider.HostInfo.Name, Constants.VERSION_NUMBER, $"ClientId/{ClientId.Instance}");
         }
 
         private void InitializePluginActivators(IList<IPluginActivator> pluginActivators, ToolkitContext toolkitContext)

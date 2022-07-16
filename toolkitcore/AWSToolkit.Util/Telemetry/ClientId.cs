@@ -27,9 +27,7 @@ namespace Amazon.AWSToolkit.Telemetry
         {
             AutomatedTestClientId = new ClientId("ffffffff-ffff-ffff-ffff-ffffffffffff");
             TelemetryOptOutClientId = new ClientId("11111111-1111-1111-1111-111111111111");
-            UnknownClientId = new ClientId("ba00fe5f-16ef-4acb-9552-3750f843fe1d");
-            // TODO - Replace UnknownClientId with nil UUID once supported in telemetry service.  See IDE-8105 for details.
-            //UnknownClientId = new ClientId("00000000-0000-0000-0000-000000000000");
+            UnknownClientId = new ClientId("00000000-0000-0000-0000-000000000000");
 
             Instance = new ClientId();
         }
