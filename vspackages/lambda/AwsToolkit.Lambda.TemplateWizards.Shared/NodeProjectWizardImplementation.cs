@@ -19,6 +19,7 @@ using EnvDTE80;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.TemplateWizard;
+using Microsoft.VisualStudio.Setup.Configuration;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 {
@@ -90,17 +91,12 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
             return true;
         }
 
-        private bool IsNodeJSPluginIsInstalled(object automationObject)
+        private bool IsNodeJSPluginIsInstalled()
         {
-            if (!(automationObject is DTE2 dte))
-            {
-                return true;
-            }
-
             try
             {
-                var path = dte.Solution.TemplatePath["{3af33f2e-1136-4d97-bbb7-1795711ac8b8}"];
-                return path != null;
+                return (new SetupConfiguration().GetInstanceForCurrentProcess() as ISetupInstance2)?.GetPackages()
+                    .Any(p => p.GetId() == "Microsoft.VisualStudio.Workload.Node") == true;
             }
             catch
             {
@@ -115,11 +111,11 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
             var result = Result.Failed;
             string blueprintName = null;
 
-            if (!this.IsNodeJSPluginIsInstalled(automationObject))
+            if (!IsNodeJSPluginIsInstalled())
             {
-                string msg = string.Format("Before using this project template the Node.JS Tools for Visual Studio plugin must be installed.\r\n\r\n<a href=\"{0}\">{0}</a>", "http://nodejstools.codeplex.com/");
-                ToolkitFactory.Instance.ShellProvider.ShowErrorWithLinks("Missing Node.JS Plugin", msg);
-                throw new WizardCancelledException("Missing Node.JS plugin");
+                string msg = string.Format("The Node.js development workload must be installed to use this project template.\r\n\r\n<a href=\"{0}\">{0}</a>", "https://docs.microsoft.com/en-us/visualstudio/install/modify-visual-studio");
+                ToolkitFactory.Instance.ShellProvider.ShowErrorWithLinks("Missing Node.js development workload", msg);
+                throw new WizardCancelledException("Missing Node.js development workload");
             }
 
             try
