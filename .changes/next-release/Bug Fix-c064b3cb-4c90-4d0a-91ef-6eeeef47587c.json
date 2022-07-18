@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix issue where downloading a CloudWatch log stream would occasionally never complete."
+}
