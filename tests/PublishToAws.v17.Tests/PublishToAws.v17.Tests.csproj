@@ -7,15 +7,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{93EB98DA-DC7F-47A9-B636-F738CD80165B}</ProjectGuid>
+    <ProjectGuid>{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Amazon.AWSToolkit.Tests.Publishing</RootNamespace>
-    <AssemblyName>PublishToAws.Tests</AssemblyName>
+    <AssemblyName>PublishToAws.v17.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">16.0</VisualStudioVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">17.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
@@ -88,9 +88,9 @@
       <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
       <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\Publishing\PublishToAws\PublishToAws.csproj">
-      <Project>{9a9a823b-967e-4bb5-809f-a78c1668c363}</Project>
-      <Name>PublishToAws</Name>
+    <ProjectReference Include="$(BuildRoot)\vspackages\Publishing\PublishToAws.v17\PublishToAws.v17.csproj">
+      <Project>{463eb6a0-df14-4e66-a01a-8384aaa51ab0}</Project>
+      <Name>PublishToAws.v17</Name>
     </ProjectReference>
     <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31515.178
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "buildtools", "buildtools", "{77A27C21-7B4C-4137-8959-88861F5EAE73}"
 	ProjectSection(SolutionItems) = preProject
@@ -239,30 +239,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudWatch.Inter
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeCommit", "CodeCommit", "{F3BE0165-6EDD-4F1B-888E-CCC0DD0CBAEE}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PublishToAws.Tests.Shared", "..\tests\PublishToAws.Tests.Shared\PublishToAws.Tests.Shared.shproj", "{AD7C0E6C-F570-410B-8E8A-F452CABA06C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublishToAws.v17.Tests", "..\tests\PublishToAws.v17.Tests\PublishToAws.v17.Tests.csproj", "{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{038b2cf8-0089-4ed1-beba-a7d64390190e}*SharedItemsImports = 4
-		..\vspackages\cloudformation\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems*{0588d27b-7d87-4b33-9120-4c0a9e7d6665}*SharedItemsImports = 4
-		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{0ed4af1c-27cc-4ba8-8333-f941d45246c9}*SharedItemsImports = 13
-		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{18023934-17cf-421e-87c2-61838b7498c6}*SharedItemsImports = 4
-		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{260eb803-0c5d-4000-b920-4e8af84820ca}*SharedItemsImports = 4
-		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{368a798c-38d1-4dc0-bc08-4102af381302}*SharedItemsImports = 4
-		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{3f04815a-2a4b-4b28-b683-053a46d6a076}*SharedItemsImports = 4
-		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{463eb6a0-df14-4e66-a01a-8384aaa51ab0}*SharedItemsImports = 4
-		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5739ee0e-1e8c-4ac6-9aaa-f58c7345b9a8}*SharedItemsImports = 4
-		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5a075c30-bb90-4095-98d2-508e92b3ed2d}*SharedItemsImports = 4
-		..\vspackages\cloudformation\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems*{5dcdb793-d7f9-4b59-a543-90e518769310}*SharedItemsImports = 13
-		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{783e4198-a8f1-4e74-af3e-0001b0ad516b}*SharedItemsImports = 4
-		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{81552efa-46b0-4ebe-bc29-5ba6a7628207}*SharedItemsImports = 4
-		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{820d848a-e3c5-4dac-9465-9a6b8726d419}*SharedItemsImports = 13
-		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{98fc1018-a866-4b34-90d8-c432efef5d2a}*SharedItemsImports = 13
-		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{9a9a823b-967e-4bb5-809f-a78c1668c363}*SharedItemsImports = 4
-		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{a27787ed-5a7a-455a-9e90-caeb9030f850}*SharedItemsImports = 13
-		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{b102b42b-06ec-47f9-8dc1-e5729b62172e}*SharedItemsImports = 4
-		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{c64b9bf2-2d41-4358-a7e9-7ffe42a29cbc}*SharedItemsImports = 13
-		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{cc1b2316-c330-410c-a3f3-097ca45713d8}*SharedItemsImports = 13
-		..\vspackages\cloudformation\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems*{ef567336-499a-47c6-989e-b992b01dbdc9}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -934,6 +915,14 @@ Global
 		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Release|x86.ActiveCfg = Release|Any CPU
 		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}.Release|x86.Build.0 = Release|Any CPU
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}.Debug|x86.Build.0 = Debug|Any CPU
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}.Release|x86.ActiveCfg = Release|Any CPU
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1045,8 +1034,36 @@ Global
 		{EF567336-499A-47C6-989E-B992B01DBDC9} = {63BEB71C-D666-4F32-B8D0-620763DDA61A}
 		{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB} = {62237430-5212-4823-924E-344007109D14}
 		{F3BE0165-6EDD-4F1B-888E-CCC0DD0CBAEE} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
+		{AD7C0E6C-F570-410B-8E8A-F452CABA06C6} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
+		{C58B0A78-9D5B-447F-ACF7-2C6A3DCBBF03} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{038b2cf8-0089-4ed1-beba-a7d64390190e}*SharedItemsImports = 4
+		..\vspackages\cloudformation\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems*{0588d27b-7d87-4b33-9120-4c0a9e7d6665}*SharedItemsImports = 4
+		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{0ed4af1c-27cc-4ba8-8333-f941d45246c9}*SharedItemsImports = 13
+		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{18023934-17cf-421e-87c2-61838b7498c6}*SharedItemsImports = 4
+		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{260eb803-0c5d-4000-b920-4e8af84820ca}*SharedItemsImports = 4
+		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{368a798c-38d1-4dc0-bc08-4102af381302}*SharedItemsImports = 4
+		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{3f04815a-2a4b-4b28-b683-053a46d6a076}*SharedItemsImports = 4
+		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{463eb6a0-df14-4e66-a01a-8384aaa51ab0}*SharedItemsImports = 4
+		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5739ee0e-1e8c-4ac6-9aaa-f58c7345b9a8}*SharedItemsImports = 4
+		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5a075c30-bb90-4095-98d2-508e92b3ed2d}*SharedItemsImports = 4
+		..\vspackages\cloudformation\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems*{5dcdb793-d7f9-4b59-a543-90e518769310}*SharedItemsImports = 13
+		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{783e4198-a8f1-4e74-af3e-0001b0ad516b}*SharedItemsImports = 4
+		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{81552efa-46b0-4ebe-bc29-5ba6a7628207}*SharedItemsImports = 4
+		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{820d848a-e3c5-4dac-9465-9a6b8726d419}*SharedItemsImports = 13
+		..\tests\PublishToAws.Tests.Shared\PublishToAws.Tests.Shared.projitems*{93eb98da-dc7f-47a9-b636-f738cd80165b}*SharedItemsImports = 4
+		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{98fc1018-a866-4b34-90d8-c432efef5d2a}*SharedItemsImports = 13
+		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{9a9a823b-967e-4bb5-809f-a78c1668c363}*SharedItemsImports = 4
+		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{a27787ed-5a7a-455a-9e90-caeb9030f850}*SharedItemsImports = 13
+		..\tests\PublishToAws.Tests.Shared\PublishToAws.Tests.Shared.projitems*{ad7c0e6c-f570-410b-8e8a-f452caba06c6}*SharedItemsImports = 13
+		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{b102b42b-06ec-47f9-8dc1-e5729b62172e}*SharedItemsImports = 4
+		..\tests\PublishToAws.Tests.Shared\PublishToAws.Tests.Shared.projitems*{c58b0a78-9d5b-447f-acf7-2c6a3dcbbf03}*SharedItemsImports = 4
+		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{c64b9bf2-2d41-4358-a7e9-7ffe42a29cbc}*SharedItemsImports = 13
+		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{cc1b2316-c330-410c-a3f3-097ca45713d8}*SharedItemsImports = 13
+		..\vspackages\cloudformation\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems*{ef567336-499a-47c6-989e-b992b01dbdc9}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
