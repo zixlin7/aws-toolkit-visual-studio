@@ -3,6 +3,8 @@
 using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.VisualStudio.Images;
 
+using AWSToolkit.Tests.Common.VS;
+
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -46,7 +48,9 @@ namespace AWSToolkitPackage.Tests.Images
             Assert.Null(image);
 
             _serviceProvider.Verify(mock => mock.GetService(It.IsAny<Type>()), Times.Once);
-            _imageService.Verify(mock => mock.GetImage(expectedImageMoniker, It.IsAny<ImageAttributes>()), Times.Once);
+            _imageService.Verify(mock => mock.GetImage(
+                It.Is<ImageMoniker>(moniker => moniker.ValueEquals(expectedImageMoniker)),
+                It.IsAny<ImageAttributes>()), Times.Once);
             _image.Verify(mock => mock.get_Data(out _imageGetDataObject), Times.Once);
         }
     }

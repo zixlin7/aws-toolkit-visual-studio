@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>de0f5779-ac4f-41db-afe4-40636b971b8b</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AWSToolkitPackage.Tests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\BeanstalkConfigurationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Feedback\FeedbackPanelViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Feedback\SendFeedbackCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\FirstRunControllerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Images\VsImageProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUsageEmitterTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUtilitiesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Navigator\NavigatorViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandSolutionExplorerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionInfoBarTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionStrategyTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInfoBarTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIThreadFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\DteVersionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\ProjectExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\WindowFrameNotificationControllerTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)DeploymentProcessors\expected-aws-beanstalk-configuration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)DeploymentProcessors\simple-beanstalk-configuration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

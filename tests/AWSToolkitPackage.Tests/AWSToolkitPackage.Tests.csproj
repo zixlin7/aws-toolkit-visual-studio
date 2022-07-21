@@ -45,35 +45,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeploymentProcessors\BeanstalkConfigurationTests.cs" />
-    <Compile Include="Feedback\FeedbackPanelViewModelTests.cs" />
-    <Compile Include="Feedback\SendFeedbackCommandTests.cs" />
-    <Compile Include="FirstRun\FirstRunControllerTests.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Images\VsImageProviderTests.cs" />
-    <Compile Include="Lambda\ProjectCreatorUtilitiesTests.cs" />
-    <Compile Include="Navigator\NavigatorViewModelTests.cs" />
-    <Compile Include="Publishing\PublishToAwsCommandSolutionExplorerTests.cs" />
-    <Compile Include="Publishing\PublishToAwsCommandTests.cs" />
-    <Compile Include="SupportedVersion\SupportedVersionInfoBarTests.cs" />
-    <Compile Include="SupportedVersion\SupportedVersionStrategyTests.cs" />
-    <Compile Include="Telemetry\TelemetryInfoBarTests.cs" />
-    <Compile Include="UIThreadFixture.cs" />
-    <Compile Include="Lambda\LambdaTesterUsageEmitterTests.cs" />
-    <Compile Include="Lambda\LambdaTesterUtilitiesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\DTE\DteVersionTests.cs" />
-    <Compile Include="Utilities\DTE\ProjectExtensionMethodsTests.cs" />
-    <Compile Include="Utilities\WindowFrameNotificationControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
       <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
       <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\vspackages\lambda\AWSToolkit.Lambda.TemplateWizards\AWSToolkit.Lambda.TemplateWizards.csproj">
-      <Project>{783E4198-A8F1-4E74-AF3E-0001B0AD516B}</Project>
-      <Name>AWSToolkit.Lambda.TemplateWizards</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
       <Project>{81552EFA-46B0-4EBE-BC29-5BA6A7628207}</Project>
@@ -120,12 +97,9 @@
       <Version>1.1.11</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="DeploymentProcessors\expected-aws-beanstalk-configuration.json" />
-    <None Include="DeploymentProcessors\simple-beanstalk-configuration.json" />
-  </ItemGroup>
   <ItemGroup />
   <Import Project="..\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems" Label="Shared" />
+  <Import Project="..\AWSToolkitPackage.Tests.Shared\AWSToolkitPackage.Tests.Shared.projitems" Label="Shared" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

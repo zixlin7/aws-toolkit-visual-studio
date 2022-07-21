@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Amazon.AWSToolkit.Lambda.TemplateWizards;
 using Amazon.AWSToolkit.Tests.Common.IO;
 using Amazon.AWSToolkit.Util;
+
 using Xunit;
 
-namespace AWSToolkitPackage.Tests.Lambda
+namespace AwsToolkit.Vs.Tests.Lambda.TemplateWizards
 {
     public class ProjectCreatorUtilitiesTests : IDisposable
     {

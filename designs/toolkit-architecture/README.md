@@ -161,11 +161,11 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
     - Tests related to the AWSToolkit.Util project
   - AwsToolkit.Vs.v16.Tests, AwsToolkit.Vs.v17.Tests
     - Tests related to Tolkit code and projects that leverage the VS SDK
-  - AWSToolkitPackage.Tests
+  - AWSToolkitPackage.Tests, AWSToolkitPackage.v17.Tests
     - Tests related to the AWSToolkitPackage project
   - AwsToolkit.Tests.Integration
     - Home of Integration tests for any aspect of the Toolkit
-  - PublishToAws.Tests,  PublishToAws.v17.Tests
+  - PublishToAws.Tests, PublishToAws.v17.Tests
     - Tests related to the PublishToAws project
 
 [toolkitarchitecture]: architecture.svg

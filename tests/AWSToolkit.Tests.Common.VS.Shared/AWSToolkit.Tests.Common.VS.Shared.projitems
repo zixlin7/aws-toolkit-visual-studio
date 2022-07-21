@@ -9,6 +9,7 @@
     <Import_RootNamespace>AWSToolkit.Tests.Common.VS</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\ImageMoniker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SolutionExplorer\SolutionExplorerFixture.cs" />
   </ItemGroup>
 </Project>

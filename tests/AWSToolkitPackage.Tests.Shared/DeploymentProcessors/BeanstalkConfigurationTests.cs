@@ -38,7 +38,7 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             Assert.Equal(expectedConfiguration, ConvertToDictionary(configuration.ToJson()));
         }
 
-        private readonly string simpleConfigurationFilePath = "../../DeploymentProcessors/simple-beanstalk-configuration.json";
+        private readonly string simpleConfigurationFilePath = "DeploymentProcessors/simple-beanstalk-configuration.json";
 
         [Fact]
         public void ShouldLoadExistingConfiguration()
@@ -124,7 +124,7 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
 
         private IDictionary<string, object> GetExpectedConfiguration()
         {
-            string configurationJson = File.ReadAllText("../../DeploymentProcessors/expected-aws-beanstalk-configuration.json");
+            string configurationJson = File.ReadAllText("DeploymentProcessors/expected-aws-beanstalk-configuration.json");
             return ConvertToDictionary(configurationJson);
         }
 
