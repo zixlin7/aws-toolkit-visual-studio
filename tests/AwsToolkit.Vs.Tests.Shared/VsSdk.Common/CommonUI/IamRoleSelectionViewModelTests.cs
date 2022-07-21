@@ -16,7 +16,7 @@ using Moq;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.CommonUI
+namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 {
     public class IamRoleSelectionViewModelTests
     {

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Models;
 
@@ -10,7 +7,7 @@ using CommonUI.Models;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.VsSdk.Common.CommonUI
+namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 {
     public class KeyValueEditorViewModelTests
     {

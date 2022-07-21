@@ -49,6 +49,14 @@ At this time, unit and component-level tests are available. UI Tests have not be
 
 Tests are run as part of the build steps in msbuild. You can also run tests from within Visual Studio by using the Test Explorer.
 
+#### Test coverage for code leveraging the VS SDK
+
+Toolkit code that uses the VS SDK requires different versions of the SDK for each major version of Visual Studio. There will generally be two different versions in play at a given time - for example in July 2022, SDKs supporting VS 2019 (v16) and VS 2022 (v17) are in use. This Toolkit code should be exercised with each version of the VS SDK that the Toolkit could be running with.
+
+Tests covering code (and projects) using the VS SDK must reside in shared projects, that are referenced by VS-version-specific test projects. This allows us to run the code under test with the same conditions and references as the Toolkit. It also allows us to iterate more quickly during local development using a single version of Visual Studio, by allowing us to filter out projects (and tests) by version.
+
+See tests projects listed under [toolkit-architecture](./designs/toolkit-architecture/README.md#projects-and-assemblies) for a high level description of the current test project arrangements.
+
 ### Adding Metrics
 
 Instructions for how to prototype and develop metrics specific to this Toolkit can be found on the [Toolkit Common repo](https://github.com/aws/aws-toolkit-common/tree/master/telemetry).

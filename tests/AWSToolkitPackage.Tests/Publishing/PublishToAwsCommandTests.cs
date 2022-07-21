@@ -8,8 +8,9 @@ using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Settings.Publish;
-using Amazon.AWSToolkit.Tests.Common.VisualStudio;
 using Amazon.AWSToolkit.VisualStudio.Commands.Publishing;
+
+using AWSToolkit.Tests.Common.VS.SolutionExplorer;
 
 using EnvDTE;
 

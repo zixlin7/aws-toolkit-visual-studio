@@ -1,9 +1,10 @@
 ﻿using Amazon.AwsToolkit.VsSdk.Common;
-using Amazon.AWSToolkit.Tests.Common.VisualStudio;
+
+using AWSToolkit.Tests.Common.VS.SolutionExplorer;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.VsSdk.Common
+namespace AwsToolkit.Vs.Tests.VsSdk.Common
 {
     // ReSharper disable once InconsistentNaming
     public class IVsMonitorSelectionExtensionMethodsTests

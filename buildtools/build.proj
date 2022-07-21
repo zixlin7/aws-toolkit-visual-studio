@@ -142,6 +142,8 @@
             <TestAssemblies Include="..\tests\AmazonCLIExtensions.Tests\bin\$(Configuration)\AmazonCLIExtensions.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\AWSToolkit.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
+            <TestAssemblies Condition="'$(VisualStudioVersion)' == '16.0'" Include="..\tests\AwsToolkit.Vs.v16.Tests\bin\$(Configuration)\AwsToolkit.Vs.v16.Tests.dll" />
+            <TestAssemblies Condition="'$(VisualStudioVersion)' == '17.0'" Include="..\tests\AwsToolkit.Vs.v17.Tests\bin\$(Configuration)\AwsToolkit.Vs.v17.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
             <TestAssemblies Condition="'$(VisualStudioVersion)' == '16.0'" Include="..\tests\PublishToAws.Tests\bin\$(Configuration)\PublishToAws.Tests.dll" />
             <TestAssemblies Condition="'$(VisualStudioVersion)' == '17.0'" Include="..\tests\PublishToAws.v17.Tests\bin\$(Configuration)\PublishToAws.v17.Tests.dll" />

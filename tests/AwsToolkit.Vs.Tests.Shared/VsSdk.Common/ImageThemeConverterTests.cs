@@ -8,7 +8,7 @@ using AwsToolkit.VsSdk.Common.CommonUI.Converters;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.VsSdk.Common
+namespace AwsToolkit.Vs.Tests.VsSdk.Common
 {
     public class ImageThemeConverterTests
     {

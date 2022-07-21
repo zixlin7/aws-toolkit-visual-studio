@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
   </PropertyGroup>
+  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{93EB98DA-DC7F-47A9-B636-F738CD80165B}</ProjectGuid>
+    <ProjectGuid>{54842E72-02D8-4417-8764-95BC3680D488}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Amazon.AWSToolkit.Tests.Publishing</RootNamespace>
-    <AssemblyName>PublishToAws.Tests</AssemblyName>
+    <RootNamespace>AwsToolkit.Vs.Tests</RootNamespace>
+    <AssemblyName>AwsToolkit.Vs.v16.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">16.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -40,17 +40,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <!-- TODO : TEMP!!! Reference from NuGet when it is available and remove from thirdparty -->
-    <Reference Include="AWS.Deploy.ServerMode.Client, Version=0.8.0.0, Culture=neutral, PublicKeyToken=71c852f8be1c371d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\thirdparty\AWS.Deploy.ServerMode.Client.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,37 +68,37 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
+    <ProjectReference Include="..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
       <Name>AWSToolkit.Util</Name>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
+    <ProjectReference Include="..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
-      <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
-      <Name>AWSToolkit.CloudFormation.Interface</Name>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
+      <Project>{b8c28b72-63c0-406b-b5c6-405667db1d6d}</Project>
+      <Name>AWSToolkit.EC2.Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
-      <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
-      <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
+      <Project>{e3d3dffd-6668-44be-9d8e-823f53b58f29}</Project>
+      <Name>AWSToolkit.ECS.Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\Publishing\PublishToAws\PublishToAws.csproj">
-      <Project>{9a9a823b-967e-4bb5-809f-a78c1668c363}</Project>
-      <Name>PublishToAws</Name>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj">
+      <Project>{49c00d37-5980-495f-80c6-43c5192c4a87}</Project>
+      <Name>AWSToolkit.IdentityManagement.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
+      <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
+      <Name>AwsToolkit.VsSdk.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
       <Name>AWSToolkit.Tests.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AWSToolkit.Util.Tests\AWSToolkit.Util.Tests.csproj">
-      <Project>{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}</Project>
-      <Name>AWSToolkit.Util.Tests</Name>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="..\PublishToAws.Tests.Shared\PublishToAws.Tests.Shared.projitems" Label="Shared" />
+  <Import Project="..\AwsToolkit.Vs.Tests.Shared\AwsToolkit.Vs.Tests.Shared.projitems" Label="Shared" />
+  <Import Project="..\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems" Label="Shared" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

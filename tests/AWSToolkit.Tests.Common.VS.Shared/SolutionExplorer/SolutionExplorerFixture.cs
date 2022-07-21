@@ -6,7 +6,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Moq;
 
-namespace Amazon.AWSToolkit.Tests.Common.VisualStudio
+namespace AWSToolkit.Tests.Common.VS.SolutionExplorer
 {
     /// <summary>
     /// Test fixture that helps mock code that queries the Solution Explorer's current selection

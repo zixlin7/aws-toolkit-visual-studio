@@ -10,7 +10,7 @@ using Amazon.AWSToolkit.Regions;
 
 using Moq;
 
-namespace AWSToolkit.Tests.Ecr
+namespace AwsToolkit.Vs.Tests.Ecr
 {
     public class RepositoryFactoryFixture
     {

@@ -5,7 +5,7 @@ using Amazon.AWSToolkit.CommonUI.Images;
 using Microsoft.VisualStudio.Imaging;
 using Xunit;
 
-namespace AWSToolkit.Tests.CommonUI
+namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 {
     public class VsKnownImagesTests
     {

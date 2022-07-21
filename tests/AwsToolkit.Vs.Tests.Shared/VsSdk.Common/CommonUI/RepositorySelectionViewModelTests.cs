@@ -5,7 +5,7 @@ using Amazon.AWSToolkit.ECS.Models.Ecr;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
-using AWSToolkit.Tests.Ecr;
+using AwsToolkit.Vs.Tests.Ecr;
 
 using CommonUI.Models;
 
@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Threading;
 
 using Xunit;
 
-namespace AWSToolkit.Tests.CommonUI
+namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 {
     public class RepositorySelectionViewModelTests
     {

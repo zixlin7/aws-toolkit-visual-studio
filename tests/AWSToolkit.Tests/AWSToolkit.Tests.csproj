@@ -101,18 +101,13 @@
     <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
     <Compile Include="CommonUI\HasValueVisibilityConverterTests.cs" />
-    <Compile Include="CommonUI\RepositorySelectionViewModelTests.cs" />
-    <Compile Include="CommonUI\InstanceTypeSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\ToolkitRegionConverterTests.cs" />
-    <Compile Include="CommonUI\VpcSelectionViewModelTests.cs" />
-    <Compile Include="CommonUI\IamRoleSelectionViewModelTests.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
     <Compile Include="CommonUI\InverseVisibilityConverterTests.cs" />
     <Compile Include="CommonUI\NullableInverseBooleanConverterTests.cs" />
     <Compile Include="CommonUI\ToolkitImagesTest.cs" />
     <Compile Include="CommonUI\TemplateParserTests.cs" />
     <Compile Include="CommonUI\VsImagesTests.cs" />
-    <Compile Include="CommonUI\VsKnownImagesTests.cs" />
     <Compile Include="CommonUI\WizardExtensionMethodsTests.cs" />
     <Compile Include="CommonValidators\DockerTagValidatorTests.cs" />
     <Compile Include="CommonValidators\EcsPlatformVersionValidatorTests.cs" />
@@ -148,7 +143,6 @@
     <Compile Include="Ecr\EcrViewerTests.cs" />
     <Compile Include="Ecr\RepoRepositoryTests.cs" />
     <Compile Include="Ecr\RepositoryConversionTests.cs" />
-    <Compile Include="Ecr\RepositoryFactoryFixture.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsDeployTestFixture.cs" />
@@ -202,10 +196,7 @@
     <Compile Include="S3\S3PathTests.cs" />
     <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
     <Compile Include="SNS\CreateTopicModelTests.cs" />
-    <Compile Include="VsSdk.Common\CommonUI\KeyValueEditorViewModelTests.cs" />
-    <Compile Include="VsSdk.Common\ImageThemeConverterTests.cs" />
     <Compile Include="ViewModels\KeyValuesViewModelTests.cs" />
-    <Compile Include="VsSdk.Common\IVsMonitorSelectionExtensionMethodsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeArtifact">
@@ -318,10 +309,6 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SNS\AWSToolkit.SNS.csproj">
       <Project>{fe4c0e46-0427-46e1-8cc9-4b26fb15f728}</Project>
       <Name>AWSToolkit.SNS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
-      <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
-      <Name>AwsToolkit.VsSdk.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>

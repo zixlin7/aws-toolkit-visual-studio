@@ -125,6 +125,7 @@
     <None Include="DeploymentProcessors\simple-beanstalk-configuration.json" />
   </ItemGroup>
   <ItemGroup />
+  <Import Project="..\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems" Label="Shared" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
