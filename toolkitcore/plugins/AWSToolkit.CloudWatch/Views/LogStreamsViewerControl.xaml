@@ -9,6 +9,7 @@
                          xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
                          xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.CloudWatch.ViewModels"
+                         xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -167,7 +168,7 @@
                 <DataGridTextColumn x:Name="EventTimeColumn"
                                     x:FieldModifier="private"
                                     Header="{x:Static local:LogStreamsViewerControl.EventTimeHeader}"
-                                    Binding="{Binding Path=LastEventTime}"
+                                    Binding="{Binding Path=LastEventTime, ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}"
                                     Width="Auto"
                                     FontFamily="Consolas"
                                     HeaderStyle="{StaticResource TooltipHeaderStyle}"

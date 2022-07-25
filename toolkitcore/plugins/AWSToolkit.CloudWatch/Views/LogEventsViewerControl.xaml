@@ -11,6 +11,7 @@
                          xmlns:dateRangePicker="clr-namespace:Amazon.AWSToolkit.CommonUI.DateTimeRangePicker;assembly=AWSToolkit"
                          xmlns:models="clr-namespace:Amazon.AWSToolkit.CloudWatch.Models"
                          xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.CloudWatch.ViewModels"
+                         xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -296,7 +297,7 @@
                                          HeadersVisibility="Column">
             <commonUi:ToolkitDataGridWrapper.Columns>
                 <DataGridTextColumn Header="Timestamp"
-                                    Binding="{Binding Path=Timestamp}"
+                                    Binding="{Binding Path=Timestamp, ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}"
                                     FontFamily="Consolas"
                                     HeaderTemplate="{StaticResource EventTimeHeaderTemplate}"
                                     ElementStyle="{StaticResource TimeColumnStyle}">
