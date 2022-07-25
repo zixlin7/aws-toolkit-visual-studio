@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Display error message in Publish to AWS when the Deploy Tool fails to load configuration for a target. This used to leave the Publish button enabed, but it would not do anything."
+}

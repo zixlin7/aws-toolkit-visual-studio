@@ -954,10 +954,12 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 switch (mode)
                 {
                     case TargetSelectionMode.ExistingTargets:
-                        await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as RepublishTarget, cancellationToken);
+                        await DeployToolController.SetDeploymentTargetAsync(SessionId,
+                            PublishDestination as RepublishTarget, cancellationToken);
                         break;
                     case TargetSelectionMode.NewTargets:
-                        await DeployToolController.SetDeploymentTargetAsync(SessionId, PublishDestination as PublishRecommendation, StackName, cancellationToken);
+                        await DeployToolController.SetDeploymentTargetAsync(SessionId,
+                            PublishDestination as PublishRecommendation, StackName, cancellationToken);
                         break;
                     default:
                         throw new NotSupportedException($"Unsupported mode: {mode}");
@@ -965,19 +967,24 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 await UpdatePublishStackNameValidationAsync(string.Empty);
             }
-            catch (InvalidApplicationNameException e)
+            catch (InvalidApplicationNameException ex)
             {
-                await UpdatePublishStackNameValidationAsync(e.Message);
-
+                await UpdatePublishStackNameValidationAsync(ex.Message);
                 throw;
             }
-            catch (Exception e)
+            catch (DeployToolException)
             {
-                Logger.Error("Error setting deployment target", e);
+                await UpdatePublishStackNameValidationAsync("An error occurred in the deployment tool.  If this problem persists, please report an issue  at https://github.com/aws/aws-toolkit-visual-studio/issues");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error setting deployment target", ex);
                 throw;
             }
         }
 
+        // NOTE:  This is temporarily being used for top-level error messaging until IDE-8194 is completed
         public async Task UpdatePublishStackNameValidationAsync(string validationMessage)
         {
             _errors[nameof(PublishStackName)] = validationMessage;

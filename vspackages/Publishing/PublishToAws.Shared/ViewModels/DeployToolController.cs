@@ -381,12 +381,17 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             {
                 await _client.SetDeploymentTargetAsync(sessionId, setTargetRequest, cancellationToken).ConfigureAwait(false);
             }
-            catch (ApiException<ProblemDetails> e)
+            catch (ApiException e)
             {
-                if (InvalidApplicationNameException.TryCreate(e,
+                if (InvalidApplicationNameException.TryCreate(e as ApiException<ProblemDetails>,
                         out InvalidApplicationNameException invalidApplicationNameException))
                 {
                     throw invalidApplicationNameException;
+                }
+
+                if (e.StatusCode == 500)
+                {
+                    throw new DeployToolException("Deploy Tool failed due to internal error.", e);
                 }
 
                 throw;
