@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fix Lambda project template not detecting Node.js tools properly and displaying error message."
-}
