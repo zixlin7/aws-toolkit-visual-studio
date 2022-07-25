@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fixes bug that attempted to set ACLs on S3 buckets that don't support ACLs.  This was seen in the S3 object browser as an error message from operations such as rename and copy/paste.\""
-}
