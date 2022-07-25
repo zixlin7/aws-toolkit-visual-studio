@@ -1,4 +1,6 @@
-﻿using Amazon.S3.Model;
+﻿using System;
+
+using Amazon.S3.Model;
 
 namespace Amazon.S3.IO
 {
@@ -29,15 +31,7 @@ namespace Amazon.S3.IO
                 MetadataDirective = S3MetadataDirective.COPY
             });
 
-            var getBucketOwnershipControlsResponse =
-                s3Client.GetBucketOwnershipControls(
-                    new GetBucketOwnershipControlsRequest() {BucketName = destinationBucket});
-
-            // IDE-7806: Change in 11/2021 allows for ACLs to be disabled on a bucket and is the default configuration for newly created
-            // buckets.  This will return an error from PutACL that will be displayed to the user.  GetACL continues to work as expected.
-            // https://aws.amazon.com/about-aws/whats-new/2021/11/amazon-s3-object-ownership-simplify-access-management-data-s3/
-            if (!getBucketOwnershipControlsResponse.OwnershipControls.Rules.Exists(rule =>
-                    rule.ObjectOwnership == ObjectOwnership.BucketOwnerEnforced))
+            try
             {
                 s3Client.PutACL(new PutACLRequest()
                 {
@@ -45,6 +39,13 @@ namespace Amazon.S3.IO
                     Key = destinationPath,
                     AccessControlList = getACLResponse.AccessControlList
                 });
+            }
+            catch (AmazonS3Exception ex)
+            {
+                if (ex.ErrorCode != "AccessControlListNotSupported")
+                {
+                    throw;
+                }
             }
         }
 
