@@ -157,19 +157,19 @@ namespace Amazon.AWSToolkit.PluginServices.Activators
             {
                 var assemblyName = assembly.GetName();
 
-                assembly
-                    .GetTypes()
-                    .Where(type => type.GetInterface("IPluginActivator") != null)
-                    .Where(type => !type.IsAbstract)
-                    .ToList()
-                    .ForEach(type =>
+                var pluginActivators = assembly.GetCustomAttributes(typeof(PluginActivatorTypeAttribute), false)
+                    .OfType<PluginActivatorTypeAttribute>()
+                    .ToList();
+                
+                foreach (var pluginActivator in pluginActivators)
+                {
+                    var activatorType = pluginActivator.PluginActivatorType;
+                    if (Activator.CreateInstance(activatorType) is IPluginActivator plugin)
                     {
-                        if (Activator.CreateInstance(type) is IPluginActivator plugin)
-                        {
-                            activators.Add(plugin);
-                            LOGGER.InfoFormat("Loaded plugin {0} from {1}", plugin.PluginName, assemblyName);
-                        }
-                    });
+                        activators.Add(plugin);
+                        LOGGER.InfoFormat("Loaded plugin {0} from {1}", plugin.PluginName, assemblyName);
+                    }
+                }
             }
             catch (Exception e)
             {

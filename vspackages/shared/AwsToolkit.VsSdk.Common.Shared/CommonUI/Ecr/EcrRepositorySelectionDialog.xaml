@@ -58,7 +58,6 @@
                 />
 
             <ListView
-                Style="{x:Null}"
                 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                 ItemsSource="{Binding Repositories}"
                 SelectedItem="{Binding Repository}"

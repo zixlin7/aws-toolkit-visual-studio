@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows;
 
 using Amazon.AWSToolkit.Credentials.Control;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
@@ -137,7 +138,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     control = new MfaPromptControl(viewModel);
                     if (!_toolkitShell.ShowInModalDialogWindow(control, MessageBoxButton.OKCancel))
                     {
-                        throw new InvalidOperationException("MFA Login cancelled");
+                        throw new UserCanceledException("MFA Login cancelled");
                     }
 
                     _toolkitShell.OutputToHostConsole($"MFA Login started for profile {_profile.Name}", false);

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
@@ -56,7 +57,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 if (!_toolkitShell.Confirm(title, message, MessageBoxButton.OKCancel))
                 {
                     // Throw an exception to break out of the SDK AWSCredentials.GetCredentials call
-                    throw new Exception("User declined to start SSO Login Flow");
+                    throw new UserCanceledException("User declined to start SSO Login Flow");
                 }
 
                 _toolkitShell.OutputToHostConsole($"SSO Login flow started for Credentials: {_profile.Name}", false);

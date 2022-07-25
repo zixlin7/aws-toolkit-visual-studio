@@ -142,25 +142,19 @@ namespace Amazon.AWSToolkit.S3.Model
                 // Check to see if the item being added is in a subfolder from the current path.
                 // If it is then we don't want to add the file but we do want to make
                 // sure the folder has been added.
-                if (childItem.ParentPath != this._model.Path)
+                if (childItem.ParentPath != _model.Path)
                 {
-                    if (childItem.FullPath.StartsWith(this._model.Path))
+                    if (S3Path.IsDescendant(_model.Path, childItem.ParentPath))
                     {
-                        string temp = childItem.FullPath.Substring(this._model.Path.Length);
-                        if (temp.StartsWith("/"))
-                            temp = temp.Substring(1);
+                        // Strip off _model.Path, get the first directory name, then add _model.Path back
+                        var subfolder = S3Path.Combine(
+                            _model.Path,
+                            S3Path.GetFirstNonRootPathComponent(
+                                S3Path.GetRelativePath(_model.Path, childItem.FullPath)
+                            )
+                        );
 
-                        int pos = temp.IndexOf('/');
-                        if (pos < 0)
-                        {
-                            return;
-                        }
-
-                        string foldername = temp.Substring(0, pos);
-                        if(!string.IsNullOrEmpty(this._model.Path))
-                            foldername = this._model.Path + "/" + foldername;
-                        ChildItem folder = new ChildItem(foldername, ChildType.Folder);
-                        Add(folder);
+                        Add(new ChildItem(subfolder, ChildType.Folder));
                     }
                     return;
                 }

@@ -10,7 +10,6 @@ using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 
 using Project = Amazon.AWSToolkit.Solutions.Project;
-using Window = EnvDTE.Window;
 
 namespace Amazon.AWSToolkit.Tests.Common.Context
 {
@@ -171,11 +170,6 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         }
 
         public bool ShowModal(IAWSToolkitControl hostedControl, MessageBoxButton buttons)
-        {
-            return false;
-        }
-
-        public bool ShowModal(System.Windows.Window window)
         {
             return false;
         }

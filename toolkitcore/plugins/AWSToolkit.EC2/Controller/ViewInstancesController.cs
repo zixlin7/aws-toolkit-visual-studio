@@ -224,7 +224,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 AwsAccount = AwsConnectionSettings.GetAccountId(_toolkitContext.ServiceClientManager) ?? MetadataValue.NotSet,
                 AwsRegion = AwsConnectionSettings.Region.Id,
                 Ec2InstanceState = instanceState,
-                Result = AsMetricResult(result),
+                Result = result.AsTelemetryResult(),
             });
         }
 
@@ -329,21 +329,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             var controller = new OpenSCPSessionController(_toolkitContext);
             controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
-        }
-
-        private static Result AsMetricResult(ActionResults actionResults)
-        {
-            if (actionResults == null)
-            {
-                return Result.Failed;
-            }
-
-            if (actionResults.Success)
-            {
-                return Result.Succeeded;
-            }
-
-            return actionResults.Cancelled ? Result.Cancelled : Result.Failed;
         }
     }
 }

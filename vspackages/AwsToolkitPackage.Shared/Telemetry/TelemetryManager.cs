@@ -52,7 +52,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
             {
                 LOGGER.Debug("Initializing Telemetry Service");
                 var credentials = new CognitoAWSCredentials(TELEMETRY_COGNITO_IDENTITY_POOL, RegionEndpoint.USEast1);
-                _telemetryService.Initialize(credentials, ClientId.Instance.Get());
+                _telemetryService.Initialize(credentials, ClientId.Instance);
                 LOGGER.Debug("Telemetry Service Initialized");
             }
             catch (Exception e)

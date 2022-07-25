@@ -1,12 +1,20 @@
 ﻿using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
-    public abstract class BaseModel : INotifyPropertyChanged
+    public abstract class BaseModel : INotifyPropertyChanged, INotifyDataErrorInfo
     {
+        public BaseModel()
+        {
+            DataErrorInfo = new DataErrorInfo(this);
+        }
+
+        protected DataErrorInfo DataErrorInfo { get; }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void NotifyPropertyChanged(String propertyName)
@@ -50,6 +58,19 @@ namespace Amazon.AWSToolkit.CommonUI
             {
                 NotifyPropertyChanged(memberExpression.Member.Name);
             }
+        }
+
+        IEnumerable INotifyDataErrorInfo.GetErrors(string propertyName)
+        {
+            return DataErrorInfo.GetErrors(propertyName);
+        }
+
+        bool INotifyDataErrorInfo.HasErrors => DataErrorInfo.HasErrors;
+
+        event EventHandler<DataErrorsChangedEventArgs> INotifyDataErrorInfo.ErrorsChanged
+        {
+            add => DataErrorInfo.ErrorsChanged += value;
+            remove => DataErrorInfo.ErrorsChanged -= value;
         }
     }
 }

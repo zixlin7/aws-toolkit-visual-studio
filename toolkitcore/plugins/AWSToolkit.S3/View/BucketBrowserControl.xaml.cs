@@ -304,7 +304,7 @@ namespace Amazon.AWSToolkit.S3.View
         {
             try
             {
-                var s3RootFolder = S3Path.ToDirectory(Model.Path);
+                var s3RootFolder = Model.Path;
                 var settingsController = new NewUploadSettingsController();
 
                 if (!settingsController.Execute())

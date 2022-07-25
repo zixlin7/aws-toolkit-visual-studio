@@ -151,7 +151,7 @@ namespace AWSToolkit.Tests.Lambda
 
             Assert.Equal(State.Pending.Value, _controller.Model.State);
             Assert.Equal(StateReasonCode.Creating.Value, _controller.Model.StateReasonCode);
-            Assert.Equal("The function is being created",_controller.Model.StateReason);
+            Assert.Equal("The function is being created", _controller.Model.StateReason);
             Assert.Equal(LastUpdateStatus.Successful.Value, _controller.Model.LastUpdateStatus);
             Assert.Null(_controller.Model.LastUpdateStatusReason);
             Assert.Null(_controller.Model.LastUpdateStatusReasonCode);
@@ -196,7 +196,7 @@ namespace AWSToolkit.Tests.Lambda
             _controller.UpdateConfiguration(this._lambda.Object, new UpdateFunctionConfigurationRequest());
 
             Assert.True(_controller.Model.CanInvoke);
-            Assert.Equal( Visible, _controller.Model.InvokeWarningVisibility);
+            Assert.Equal(Visible, _controller.Model.InvokeWarningVisibility);
             Assert.Contains(_controller.Model.LastUpdateStatus, _controller.Model.InvokeWarningText);
             Assert.Contains(_controller.Model.LastUpdateStatus, _controller.Model.InvokeWarningTooltip);
         }
@@ -246,7 +246,7 @@ namespace AWSToolkit.Tests.Lambda
         [InlineData(" aaa , bbb , ccc ")]
         public void SplitByComma(string text)
         {
-            var expectedList = new List<string>() {"aaa", "bbb", "ccc"};
+            var expectedList = new List<string>() { "aaa", "bbb", "ccc" };
 
             Assert.Equal(expectedList, ViewFunctionController.SplitByComma(text));
         }
@@ -263,13 +263,13 @@ namespace AWSToolkit.Tests.Lambda
         [Fact]
         public void JoinByComma()
         {
-            var list = new List<string>() {"aaa", "bbb", "ccc"};
+            var list = new List<string>() { "aaa", "bbb", "ccc" };
             AssertJoinByComma(list, "aaa,bbb,ccc");
 
-            list = new List<string>() {" aaa ", " bbb ", " ccc "};
+            list = new List<string>() { " aaa ", " bbb ", " ccc " };
             AssertJoinByComma(list, " aaa , bbb , ccc ");
 
-            list = new List<string>() {" aaa ", "", " bbb ", " ccc "};
+            list = new List<string>() { " aaa ", "", " bbb ", " ccc " };
             AssertJoinByComma(list, " aaa ,, bbb , ccc ");
         }
 
@@ -286,8 +286,6 @@ namespace AWSToolkit.Tests.Lambda
                 mock => mock.ShowError(
                     It.Is<string>(msg => msg.Contains("Error viewing log group for lambda function"))),
                 Times.Once);
-            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Failed,
-                CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaView);
         }
 
         [StaFact]
@@ -303,10 +301,33 @@ namespace AWSToolkit.Tests.Lambda
             Assert.IsType<BaseAWSControl>(view);
             _logStreamsViewer.Verify(
                 mock => mock.GetViewer(It.IsAny<string>(), It.IsAny<AwsConnectionSettings>()), Times.Once);
-            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Succeeded,
+        }
+
+        public static IEnumerable<object[]> OpenLogGroupData = new List<object[]>
+        {
+            new object[] {true, Result.Succeeded},
+            new object[] {false, Result.Failed}
+        };
+
+        [Theory]
+        [MemberData(nameof(OpenLogGroupData))]
+        public void RecordOpenLogGroup(bool result, Result expectedResult)
+        {
+            _controller.RecordOpenLogGroup(result);
+
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(expectedResult,
                 CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaView);
         }
 
+        [Fact]
+        public void RecordOpenLogGroup_OncePerSession()
+        {
+            _controller.RecordOpenLogGroup(true);
+            _controller.RecordOpenLogGroup(false);
+
+            _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Succeeded,
+             CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaView);
+        }
 
         private void AssertJoinByComma(List<string> strings, string expectedText)
         {

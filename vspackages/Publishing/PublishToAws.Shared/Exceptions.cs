@@ -31,6 +31,11 @@ namespace Amazon.AWSToolkit.Publish
 
             try
             {
+                if (apiException == null)
+                {
+                    return false;
+                }
+
                 if (apiException.StatusCode != 400)
                 {
                     return false;

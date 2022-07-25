@@ -51,6 +51,7 @@
     <Compile Include="CollectionExtensionMethodsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Regions\ServiceNamesTests.cs" />
+    <Compile Include="Telemetry\ClientIdTests.cs" />
     <Compile Include="Telemetry\MetricsMetadataTests.cs" />
     <Compile Include="Threading\ResettableCancellationTokenTests.cs" />
     <Compile Include="Util\DateTimeUtilTests.cs" />
@@ -131,10 +132,10 @@
       <Version>3.7.10.15</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.55</Version>
+      <Version>1.0.58</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.55</Version>
+      <Version>1.0.58</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.14</Version>

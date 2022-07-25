@@ -57,6 +57,7 @@
     <Compile Include="Exceptions\LambdaToolkitException.cs" />
     <Compile Include="Exceptions\NodeNotFoundException.cs" />
     <Compile Include="Exceptions\ToolkitException.cs" />
+    <Compile Include="Exceptions\UserCanceledException.cs" />
     <Compile Include="Frameworks.cs" />
     <Compile Include="HostedFileContentLoader.cs" />
     <Compile Include="HostedFilesSettings.cs" />
@@ -279,10 +280,10 @@
       <Version>3.7.9.32</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.55</Version>
+      <Version>1.0.58</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.55</Version>
+      <Version>1.0.58</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.7.0.154</Version>

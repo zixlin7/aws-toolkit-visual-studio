@@ -639,6 +639,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     _toolkitContext,
                     ToolkitShellProviderService as IAWSToolkitShellProvider,
                     _toolkitCredentialInitializer,
+                    _toolkitSettingsWatcher,
                     additionalPluginFolders,
                     () =>
                     {

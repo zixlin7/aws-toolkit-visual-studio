@@ -1,57 +1,47 @@
-﻿using Amazon.AWSToolkit.CommonUI;
+﻿using System;
+
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.S3.IO;
 
 namespace Amazon.AWSToolkit.S3.Model
 {
     public class RenameFileModel : BaseModel
     {
-        string _bucketName;
-        string _newFileName;
-        string _orignalFullPathKey;
+        private string _newFileName;
 
         public RenameFileModel(string bucketName, string fullPath)
         {
-            this._bucketName = bucketName;
-            this._orignalFullPathKey = fullPath;
+            if (S3Path.IsRoot(fullPath) || S3Path.IsDirectory(fullPath))
+            {
+                throw new ArgumentException($"Argument '{fullPath}' is invalid.  Cannot rename root or directory.", nameof(fullPath));
+            }
 
-            int pos = fullPath.LastIndexOf('/');
-            if (pos != -1 && (pos + 1) < fullPath.Length)
-                this.NewFileName = fullPath.Substring(pos + 1);
-            else
-                this.NewFileName = fullPath;
+            BucketName = bucketName;
+            OrignalFullPathKey = fullPath;
+            NewFileName = S3Path.GetFileName(fullPath);
         }
 
-        public string BucketName => this._bucketName;
+        public string BucketName { get; }
 
-        public string OrignalFullPathKey => this._orignalFullPathKey;
+        public string OrignalFullPathKey { get; }
 
         public string NewFileName
         {
-            get => this._newFileName;
+            get => _newFileName;
             set
             {
-                this._newFileName = value;
-                this.NotifyPropertyChanged("NewFileName");
-            }
-        }
+                _newFileName = value.Replace(S3Path.DefaultDirectorySeparator, string.Empty);
 
-        public string NewFullPathKey
-        {
-            get
-            {
-                int pos = this.OrignalFullPathKey.LastIndexOf('/');
-                string newKey = string.Empty;
-                if (pos > 0)
+                DataErrorInfo.ClearErrors(nameof(NewFileName));
+                if (!S3Path.IsFile(_newFileName))
                 {
-                    newKey = this.OrignalFullPathKey.Substring(0, pos + 1);
+                    DataErrorInfo.AddError("Invalid filename.", nameof(NewFileName));
                 }
 
-                string newFile = this.NewFileName;
-                if (newFile.StartsWith("/"))
-                    newFile = newFile.Substring(1);
-                newKey += newFile;
-
-                return newKey;
+                NotifyPropertyChanged(nameof(NewFileName));
             }
         }
+
+        public string NewFullPathKey => S3Path.Combine(S3Path.GetDirectoryPath(OrignalFullPathKey), NewFileName);
     }
 }

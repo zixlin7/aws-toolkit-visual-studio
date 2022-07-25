@@ -108,6 +108,7 @@
     <Compile Include="CommonUI\DateTimeRangePicker\TimeInputControl.xaml.cs">
       <DependentUpon>TimeInputControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CommonUI\DataErrorInfo.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="Models\KeyValue.cs" />
     <Compile Include="Models\KeyValueConversion.cs" />
     <Compile Include="Models\TimestampedValue.cs" />
+    <Compile Include="Navigator\ActionResultsExtensionMethods.cs" />
     <Compile Include="Navigator\BaseConnectionContextCommand.cs" />
     <Compile Include="Navigator\ConnectionContextCommandExecutor.cs" />
     <Compile Include="Navigator\IConnectionContextCommand.cs" />
@@ -244,6 +246,7 @@
     <Compile Include="Navigator\NavigatorCommand.cs" />
     <Compile Include="Navigator\NavigatorViewModel.cs" />
     <Compile Include="Navigator\NavigatorControlExtensionMethods.cs" />
+    <Compile Include="PluginServices\Activators\PluginActivatorTypeAttribute.cs" />
     <Compile Include="PluginServices\Publishing\IInitializePublishToAwsPackage.cs" />
     <Compile Include="PluginServices\Publishing\IPublishToAws.cs" />
     <Compile Include="PluginServices\Publishing\PublishToAwsExtensionMethods.cs" />

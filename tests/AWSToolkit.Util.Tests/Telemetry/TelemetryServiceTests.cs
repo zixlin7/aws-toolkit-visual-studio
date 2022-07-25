@@ -15,7 +15,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
     public class TelemetryServiceTests
     {
-        private readonly Guid _clientId = Guid.NewGuid();
+        private readonly ClientId _clientId = ClientId.AutomatedTestClientId;
         private readonly ConcurrentQueue<Metrics> _eventQueue = new ConcurrentQueue<Metrics>();
         private readonly Mock<IMetricsOutputWindow> _metricsOutputWindow = new Mock<IMetricsOutputWindow>();
         private readonly Mock<ITelemetryClient> _telemetryClient = new Mock<ITelemetryClient>();
@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         [Fact]
         public void DisableAppliesToPublisher()
         {
-            _sut.Initialize(_clientId, _telemetryClient.Object, _telemetryPublisher.Object);
+            _sut.Initialize(_telemetryClient.Object, _telemetryPublisher.Object);
 
             _sut.Disable();
 
@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         [Fact]
         public void EnableAppliesToPublisher()
         {
-            _sut.Initialize(_clientId, _telemetryClient.Object, _telemetryPublisher.Object);
+            _sut.Initialize(_telemetryClient.Object, _telemetryPublisher.Object);
 
             _sut.Enable();
 
@@ -67,7 +67,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         public void InitializeAppliesDisable()
         {
             _sut.Disable();
-            _sut.Initialize(_clientId, _telemetryClient.Object, _telemetryPublisher.Object);
+            _sut.Initialize(_telemetryClient.Object, _telemetryPublisher.Object);
             _telemetryPublisher.VerifySet(mock => mock.IsTelemetryEnabled = false);
         }
 
@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         public void InitializeAppliesEnable()
         {
             _sut.Enable();
-            _sut.Initialize(_clientId, _telemetryClient.Object, _telemetryPublisher.Object);
+            _sut.Initialize(_telemetryClient.Object, _telemetryPublisher.Object);
             _telemetryPublisher.VerifySet(mock => mock.IsTelemetryEnabled = true);
         }
 
@@ -154,11 +154,11 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         [Fact]
         public async Task SendFeedback()
         {
-            _sut.Initialize(_clientId, _telemetryClient.Object, _telemetryPublisher.Object);
+            _sut.Initialize(_telemetryClient.Object, _telemetryPublisher.Object);
 
             await _sut.SendFeedback(Sentiment.Positive, "");
 
-            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Once);
+            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, "", null), Times.Once);
         }
 
         [Fact]
@@ -166,13 +166,24 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         {
             await Assert.ThrowsAsync<Exception>(() => _sut.SendFeedback(Sentiment.Positive, ""));
 
-            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Never);
+            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, "", null), Times.Never);
+        }
+
+        [Fact]
+        public async Task SendFeedback_WithMetadata()
+        {
+            _sut.Initialize(_telemetryClient.Object, _telemetryPublisher.Object);
+            var metadata = new Dictionary<string, string> { { "abc", "def" } };
+
+            await _sut.SendFeedback(Sentiment.Positive, "", metadata);
+
+            _telemetryPublisher.Verify(mock => mock.SendFeedback(Sentiment.Positive, "", metadata), Times.Once);
         }
 
         [Fact]
         public void Dispose()
         {
-            _sut.Initialize(_clientId, _telemetryClient.Object, _telemetryPublisher.Object);
+            _sut.Initialize(_telemetryClient.Object, _telemetryPublisher.Object);
 
             _sut.Dispose();
 

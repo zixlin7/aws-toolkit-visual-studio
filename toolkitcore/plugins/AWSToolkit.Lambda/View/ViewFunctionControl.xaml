@@ -237,7 +237,7 @@
                 <TabItem Header="AWS X-Ray">
                     <components:XRaySetting x:Name="_ctlXRayComponent" />
                 </TabItem>
-                <TabItem Header="Logs">
+                <TabItem Header="Logs" Selector.Selected="OnLogsTabSelected">
                     <components:FunctionLogsControl x:Name="_ctlLogsComponent" />
                 </TabItem>
             </TabControl>

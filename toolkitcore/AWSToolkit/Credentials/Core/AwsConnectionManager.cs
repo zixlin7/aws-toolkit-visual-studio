@@ -148,7 +148,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// <returns></returns>
         public bool IsValidConnectionSettings()
         {
-            return ConnectionState is ConnectionState.ValidConnection;
+            return ConnectionState.IsValid(ConnectionState);
         }
 
         /// <summary>

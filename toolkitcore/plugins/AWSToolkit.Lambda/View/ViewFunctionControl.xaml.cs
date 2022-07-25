@@ -172,5 +172,14 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._tokenSource.Cancel();
             this.Unloaded -= this.OnUnloaded;
         }
+
+        private void OnLogsTabSelected(object sender, RoutedEventArgs e)
+        {
+            if (sender is TabItem)
+            {
+                var result = _ctlLogsComponent.LogsControl != null;
+                _controller.RecordOpenLogGroup(result);
+            }
+        }
     }
 }

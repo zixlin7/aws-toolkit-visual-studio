@@ -1,5 +1,9 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
+
+using Amazon.AWSToolkit;
+using Amazon.AWSToolkit.CloudFormation;
+using Amazon.AWSToolkit.PluginServices.Activators;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -13,3 +17,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("9a9366c1-0c1f-4bd7-bceb-183e66229ebf")]
+
+[assembly: PluginActivatorType(typeof(CloudFormationActivator))]

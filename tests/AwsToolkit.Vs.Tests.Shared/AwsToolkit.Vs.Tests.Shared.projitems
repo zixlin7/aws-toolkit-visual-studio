@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>3cfd6707-b0d4-49c0-b46b-d3c3f52a8183</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AwsToolkit.Vs.Tests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Ecr\RepositoryFactoryFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lambda.TemplateWizards\ProjectCreatorUtilitiesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\IamRoleSelectionViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\InstanceTypeSelectionViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\KeyValueEditorViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\RepositorySelectionViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\VpcSelectionViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\VsKnownImagesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\ImageThemeConverterTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\IVsMonitorSelectionExtensionMethodsTests.cs" />
+  </ItemGroup>
+</Project>

@@ -14,6 +14,11 @@ namespace Amazon.AWSToolkit.Credentials.State
     /// </summary>
     public class ConnectionState
     {
+        public static bool IsValid(ConnectionState connectionState)
+        {
+            return connectionState is ValidConnection;
+        }
+
         public string Message { get; set; }
         public bool IsTerminal { get; set; }
 

@@ -1,21 +1,21 @@
-﻿using Amazon.S3.Model;
+﻿using System;
+
+using Amazon.S3.Model;
 
 namespace Amazon.S3.IO
 {
     public static class S3File
     {
-        public static void Copy(IAmazonS3 s3Client, 
+        public static void Copy(IAmazonS3 s3Client,
             string sourceBucket, string sourcePath,
             string destinationBucket, string destinationPath)
         {
             if (sourceBucket == destinationBucket && sourcePath == destinationPath)
-                return;
-
-            var getACLRequest = new GetACLRequest()
             {
-                BucketName = sourceBucket,
-                Key = sourcePath
-            };
+                return;
+            }
+
+            var getACLRequest = new GetACLRequest() {BucketName = sourceBucket, Key = sourcePath};
 
             var getACLResponse = s3Client.GetACL(getACLRequest);
 
@@ -31,12 +31,22 @@ namespace Amazon.S3.IO
                 MetadataDirective = S3MetadataDirective.COPY
             });
 
-            s3Client.PutACL(new PutACLRequest()
+            try
             {
-                BucketName = destinationBucket,
-                Key = destinationPath,
-                AccessControlList = getACLResponse.AccessControlList
-            });
+                s3Client.PutACL(new PutACLRequest()
+                {
+                    BucketName = destinationBucket,
+                    Key = destinationPath,
+                    AccessControlList = getACLResponse.AccessControlList
+                });
+            }
+            catch (AmazonS3Exception ex)
+            {
+                if (ex.ErrorCode != "AccessControlListNotSupported")
+                {
+                    throw;
+                }
+            }
         }
 
         public static void Move(IAmazonS3 s3Client,
@@ -44,10 +54,10 @@ namespace Amazon.S3.IO
             string destinationBucket, string destinationPath)
         {
             if (sourceBucket == destinationBucket && sourcePath == destinationPath)
+            {
                 return;
+            }
 
-            // TODO If bucket doesn't have ACL (see line 31 above), copy will fail and DeleteObject
-            // will not be executed.  Bucket ACL handling needs to be improved.  See IDE-7806
             Copy(s3Client, sourceBucket, sourcePath, destinationBucket, destinationPath);
             s3Client.DeleteObject(new DeleteObjectRequest()
             {

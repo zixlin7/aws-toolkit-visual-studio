@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -78,8 +79,8 @@ namespace Amazon.AWSToolkit.Navigator
         {
             try
             {
-                _navigatorViewModel.IsConnectionValid = _toolkitContext.ConnectionManager.IsValidConnectionSettings();
-                UpdateViewModelConnectionProperties(_toolkitContext.ConnectionManager.ConnectionState);
+                _navigatorViewModel.IsConnectionValid = ConnectionState.IsValid(e.State);
+                UpdateViewModelConnectionProperties(e.State);
             }
             catch (Exception ex)
             {
@@ -148,15 +149,28 @@ namespace Amazon.AWSToolkit.Navigator
         {
             this.Dispatcher.Invoke(() =>
             {
-                if (_navigatorViewModel.IsConnectionValid)
+                _navigatorViewModel.Account?.Children?.Clear();
+
+                if (_navigatorViewModel.IsConnectionValid &&
+                    _navigatorViewModel.Account != null)
                 {
-                    _navigatorViewModel.Account?.CreateServiceChildren();
-                }
-                else
-                {
-                    _navigatorViewModel.Account?.Children?.Clear();
+                    var selectedRegion = SelectedRegion;
+
+                    // Try to prevent user from getting spammed with SSO login prompts (one per AWS Explorer service node).
+                    // We don't know why this happens on occasion, but we can reduce the likelihood of it happening until we find out.
+                    // To do this, we force an AccountId resolution, which will try to use credentials. For MFA/SSO, this will prompt once,
+                    // then exit out if the credentials are not valid.
+                    if (!_navigatorViewModel.Account.IsInteractiveCredentials() ||
+                        _navigatorViewModel.Account.CanResolveAccountId(selectedRegion))
+                    {
+                        _navigatorViewModel.Account.CreateServiceChildren(selectedRegion);
+                    }
                 }
 
+                // Assigning the AccountViewModel's Children causes the TreeView to recursively bind to
+                // IViewModel Children properties. The service node (type InstanceDataRootViewModel)
+                // Children properties perform the "list resources" operation as a side effect (by calling
+                // InstanceDataRootViewModel.Refresh).
                 this._ctlResourceTree.ItemsSource = _navigatorViewModel.Account?.Children;
             });
         }
@@ -171,9 +185,11 @@ namespace Amazon.AWSToolkit.Navigator
                 {
                     var account = _navigatorViewModel.Account;
                     this._ctlResourceTree.DataContext = account;
+
                     this._ctlEditAccount.IsEnabled = IsAccountBasic();
-                    if (!string.Equals(_toolkitContext.ConnectionManager.ActiveCredentialIdentifier?.Id, account?.Identifier.Id))
+                    if (!CredentialIdsMatch(_toolkitContext.ConnectionManager.ActiveCredentialIdentifier, account?.Identifier))
                     {
+                        this._ctlResourceTree.ItemsSource = new ObservableCollection<IViewModel>();
                         _toolkitContext.ConnectionManager.ChangeCredentialProvider(account?.Identifier);
                     }
                     // emit set region metric as passive if it is a side-effect of partition change
@@ -191,6 +207,11 @@ namespace Amazon.AWSToolkit.Navigator
                     _regionPassive = false; 
                 }
             });
+        }
+
+        private static bool CredentialIdsMatch(ICredentialIdentifier a, ICredentialIdentifier b)
+        {
+            return string.Equals(a?.Id, b?.Id);
         }
 
         private string _lastRecordedCredentialId;
@@ -253,7 +274,7 @@ namespace Amazon.AWSToolkit.Navigator
         {
             _navigatorViewModel.Account = identifier == null
                 ? null
-                : _navigatorViewModel.Accounts.FirstOrDefault(x => string.Equals(x.Identifier?.Id, identifier?.Id));
+                : _navigatorViewModel.Accounts.FirstOrDefault(x => CredentialIdsMatch(x.Identifier, identifier));
 
             _navigatorViewModel.Region = region == null
                 ? null
@@ -338,16 +359,16 @@ namespace Amazon.AWSToolkit.Navigator
         {
             RegisterAccountController command = new RegisterAccountController(_toolkitContext);
             ActionResults results = command.Execute();
-            RecordAwsModifyCredentialsMetric(results.Success, CredentialModification.Add);
+            RecordAwsModifyCredentialsMetric(results, CredentialModification.Add);
         }
 
-        private void RecordAwsModifyCredentialsMetric(bool success, CredentialModification modification)
+        private void RecordAwsModifyCredentialsMetric(ActionResults actionResults, CredentialModification modification)
         {
             _toolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
             {
                 AwsAccount = SelectedAccountId ?? MetadataValue.NotSet,
                 AwsRegion = MetadataValue.NotApplicable,
-                Result = success ? Result.Succeeded : Result.Failed,
+                Result = actionResults.AsTelemetryResult(),
                 CredentialModification = modification,
                 Source = "AwsExplorer"
             });
@@ -495,12 +516,12 @@ namespace Amazon.AWSToolkit.Navigator
             {
                 var command = new EditAccountController(_toolkitContext);
                 var results = command.Execute(viewModel);
-                RecordAwsModifyCredentialsMetric(results.Success, CredentialModification.Edit);
+                RecordAwsModifyCredentialsMetric(results, CredentialModification.Edit);
             }
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error", e.Message);
-                RecordAwsModifyCredentialsMetric(false, CredentialModification.Edit);
+                RecordAwsModifyCredentialsMetric(new ActionResults().WithSuccess(false), CredentialModification.Edit);
             }
         }
 
@@ -513,12 +534,13 @@ namespace Amazon.AWSToolkit.Navigator
             string msg = string.Format("Are you sure you want to delete the '{0}' profile?", viewModel.Name);
             if (!ToolkitFactory.Instance.ShellProvider.Confirm("Delete Account Profile", msg))
             {
+                RecordAwsModifyCredentialsMetric(new ActionResults().WithCancelled(true).WithSuccess(false), CredentialModification.Delete);
                 return;
             }
 
             var command = new UnregisterAccountController(_toolkitContext.CredentialSettingsManager);
             var results = command.Execute(viewModel);
-            RecordAwsModifyCredentialsMetric(results.Success, CredentialModification.Delete);
+            RecordAwsModifyCredentialsMetric(results, CredentialModification.Delete);
 
             if (results.Success)
             {

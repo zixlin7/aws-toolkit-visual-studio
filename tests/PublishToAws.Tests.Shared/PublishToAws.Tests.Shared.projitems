@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>ad7c0e6c-f570-410b-8e8a-f452caba06c6</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Amazon.AWSToolkit.Tests.Publishing</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\BeanstalkEnvironmentViewerCommandFactoryTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\CloseFailureBannerCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ConfigCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\CopyToClipboardCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\EcrRepoViewerCommandFactoryTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectCredentialsCommandFactoryTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEcrRepoCommandFactoryTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\StackViewerCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\StartOverCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\TargetViewCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\PublishContextFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\TargetsToVisibilityConverterTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\InvalidApplicationNameExceptionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fixtures\DeployToolControllerFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fixtures\PublishFooterCommandFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fixtures\PublishToAwsFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fixtures\SamplePublishData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\CliServerFactoryTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\GetCurrentCliVersionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\InstallOptionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Install\ProcessExitHandlerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailFactoryTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigurationDetailTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DisplayedResourceSummaryExtensionMethodTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Ec2InstanceConfigurationDetailTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\IamRoleConfigurationDetailTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\KeyValueConfigurationDetailTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\KeyValuesConversionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ListConfigurationDetailTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PropertyTemplateSelectorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishDialogStepProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PublishResourceTemplateSelectorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\TargetSystemCapabilityTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ValidationResultTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConfigurationDetailTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\VpcConnectorVpcConfigurationDetailTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Package\CliServerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Package\InitializePublishToAwsPackageTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Package\PublishToAwsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PublishDocumentViewModelChangeHandlerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\ConfigurationDetailBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\DeploymentTypesExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\ImageSourceExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\OptionSettingItemSummaryBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\RecipeServiceImageResolverTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\DeployToolControllerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MissingCapabilitiesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishConnectionViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishProjectViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PublishToAwsDocumentViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnsupportedSettingTypesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\FakeConfirmPublishDialog.cs" />
+  </ItemGroup>
+</Project>

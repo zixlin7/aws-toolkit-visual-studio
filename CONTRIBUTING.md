@@ -49,6 +49,14 @@ At this time, unit and component-level tests are available. UI Tests have not be
 
 Tests are run as part of the build steps in msbuild. You can also run tests from within Visual Studio by using the Test Explorer.
 
+#### Test coverage for code leveraging the VS SDK
+
+Toolkit code that uses the VS SDK requires different versions of the SDK for each major version of Visual Studio. There will generally be two different versions in play at a given time - for example in July 2022, SDKs supporting VS 2019 (v16) and VS 2022 (v17) are in use. This Toolkit code should be exercised with each version of the VS SDK that the Toolkit could be running with.
+
+Tests covering code (and projects) using the VS SDK must reside in shared projects, that are referenced by VS-version-specific test projects. This allows us to run the code under test with the same conditions and references as the Toolkit. It also allows us to iterate more quickly during local development using a single version of Visual Studio, by allowing us to filter out projects (and tests) by version.
+
+See tests projects listed under [toolkit-architecture](./designs/toolkit-architecture/README.md#projects-and-assemblies) for a high level description of the current test project arrangements.
+
 ### Adding Metrics
 
 Instructions for how to prototype and develop metrics specific to this Toolkit can be found on the [Toolkit Common repo](https://github.com/aws/aws-toolkit-common/tree/master/telemetry).
@@ -86,6 +94,16 @@ The following files are no longer referenced by the Toolkit, but were used in pr
 ## AWS SDK Package References
 
 The AWS .NET SDK’s NuGet packages are referenced from multiple locations across to repo. To help keep the referenced versions in alignment, an msbuild task automates the process of updating the package references. The task is called `update-awssdk` and resides in `build.proj`.
+
+## Plugins
+
+Plugins are a way to provide the Toolkit with functionality for an AWS Service. Plugins are commonly used to add nodes into the AWS Explorer, and to provide service abstractions.
+
+(TODO: write up how to create a plugin and register it with the VSIX at a later time)
+
+To register a plugin with the Toolkit, add the assembly level attribute `PluginActivatorType` and indicate your plugin activator's type. This is typically placed in the plugin's `AssemblyInfo.cs` file. Look at any of the [existing plugins](./toolkitcore/plugins/AWSToolkit.S3/Properties/AssemblyInfo.cs) as an example.
+
+See [toolkit-architecture](./designs/toolkit-architecture/README.md#plugins) for additional details about plugins.
 
 ## Publish to AWS 
 

@@ -11,6 +11,9 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Telemetry;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,7 +27,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
         private readonly ITestOutputHelper _testOutput;
 
-        private readonly Guid _clientId = Guid.NewGuid();
+        private readonly ClientId _clientId = ClientId.AutomatedTestClientId;
         private readonly ConcurrentQueue<Metrics> _eventQueue = new ConcurrentQueue<Metrics>();
         private readonly Mock<TimeProvider> _timeProvider = new Mock<TimeProvider>();
         private DateTime _currentTime = DateTime.Now;
@@ -347,17 +350,28 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         public async Task SendFeedback()
         {
             _sut.Initialize(_telemetryClient.Object);
-           await _sut.SendFeedback(Sentiment.Positive, "");
+           await _sut.SendFeedback(Sentiment.Positive, "", null);
 
-           _telemetryClient.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Once);
+           _telemetryClient.Verify(mock => mock.SendFeedback(Sentiment.Positive, "", null), Times.Once);
         }
 
         [Fact]
         public async Task SendFeedback_Throws()
         {
-            await Assert.ThrowsAsync<Exception>(() => _sut.SendFeedback(Sentiment.Positive, ""));
+            await Assert.ThrowsAsync<Exception>(() => _sut.SendFeedback(Sentiment.Positive, "", null));
 
-            _telemetryClient.Verify(mock => mock.SendFeedback(Sentiment.Positive, ""), Times.Never);
+            _telemetryClient.Verify(mock => mock.SendFeedback(Sentiment.Positive, "" , null), Times.Never);
+        }
+
+        [Fact]
+        public async Task SendFeedback_WithMetadata()
+        {
+            _sut.Initialize(_telemetryClient.Object);
+            var metadata = new Dictionary<string, string> { { "abc", "def" } };
+
+            await _sut.SendFeedback(Sentiment.Positive, "", metadata);
+
+            _telemetryClient.Verify(mock => mock.SendFeedback(Sentiment.Positive, "", metadata), Times.Once);
         }
 
         public void Dispose()

@@ -2,23 +2,20 @@
 using System.Collections.Generic;
 using System.Windows;
 
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.Runtime.Internal.Settings;
-using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit.EC2.View;
-using Amazon.AWSToolkit.EC2.ConnectionUtils;
-using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.EC2.ConnectionUtils;
+using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.EC2.View;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 using Amazon.EC2;
 using Amazon.EC2.Model;
-
-using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
+using Amazon.Runtime.Internal.Settings;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -52,7 +49,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             void Record(ITelemetryLogger telemetryLogger)
             {
-                RecordRemoteConnection(telemetryLogger, AsMetricResult(actionResults));
+                RecordRemoteConnection(telemetryLogger, actionResults.AsTelemetryResult());
             }
 
             _toolkitContext.TelemetryLogger.InvokeAndRecord(Invoke, Record);
@@ -207,21 +204,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
             _model.EnteredUsername = os[ToolkitSettingsConstants.EC2InstanceUserName];
         }
 
-        private static Result AsMetricResult(ActionResults actionResults)
-        {
-            if (actionResults == null)
-            {
-                return Result.Failed;
-            }
-
-            if (actionResults.Success)
-            {
-                return Result.Succeeded;
-            }
-
-            return actionResults.Cancelled ? Result.Cancelled : Result.Failed;
-        }
-        
         private void RecordRemoteConnection(ITelemetryLogger telemetryLogger, Result result)
         {
             var accountId = _toolkitContext.ServiceClientManager.GetAccountId(_connectionSettings) ??

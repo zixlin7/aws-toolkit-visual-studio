@@ -1,19 +1,22 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Net;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.AWSToolkit.Account;
+
 using Amazon.AWSToolkit.CodeArtifact.CredentialProvider;
 using Amazon.AWSToolkit.CodeArtifact.Utils;
-using Amazon.AWSToolkit.CodeArtifact.View;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Regions;
 using Amazon.CodeArtifact;
 using Amazon.CodeArtifact.Model;
 using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
+
 using log4net;
+
 using NuGet.VisualStudio;
 
 namespace Amazon.AWSToolkit.NuGet
@@ -21,10 +24,10 @@ namespace Amazon.AWSToolkit.NuGet
     [Export(typeof(IVsCredentialProvider))]
 
     // Reference for Credential Provider: https://docs.microsoft.com/en-us/nuget/reference/extensibility/nuget-credential-providers-for-visual-studio 
-    class CodeArtifactNuGetCredentialProvider
-    : IVsCredentialProvider
+    public class CodeArtifactNuGetCredentialProvider
+        : IVsCredentialProvider
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeArtifactNuGetCredentialProvider));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(CodeArtifactNuGetCredentialProvider));
 
         public async Task<ICredentials> GetCredentialsAsync(
             Uri uri,
@@ -42,30 +45,33 @@ namespace Amazon.AWSToolkit.NuGet
             // This credential provider doesn't handle getting proxy credentials.
             if (isProxyRequest)
             {
-                LOGGER.Warn("The request is Proxy request");
+                Logger.Warn("Provider does not handle acquiring proxy credentials");
                 return null;
             }
 
             // This credential provider does not support a relative Uri.
             if (!uri.IsAbsoluteUri)
             {
-                LOGGER.Warn("The uri is relative");
+                Logger.Warn("Provider does not support relative Uri");
                 return null;
             }
+
             if (!CodeArtifactUri.TryParse(uri, out var codeArtifactUri))
             {
+                Logger.Warn("Uri does not match the CodeArtifact Uri scheme");
                 return null;
             }
+
             try
             {
                 AWSCredentials credentials = GetAwsCredentials(codeArtifactUri);
 
-                using (var client = new AmazonCodeArtifactClient(credentials, RegionEndpoint.GetBySystemName(codeArtifactUri.Region)))
+                using (var client = new AmazonCodeArtifactClient(credentials,
+                           RegionEndpoint.GetBySystemName(codeArtifactUri.Region)))
                 {
                     var tokenRequest = new GetAuthorizationTokenRequest()
                     {
-                        Domain = codeArtifactUri.Domain,
-                        DomainOwner = codeArtifactUri.DomainOwner
+                        Domain = codeArtifactUri.Domain, DomainOwner = codeArtifactUri.DomainOwner
                     };
 
                     var tokenResponse = await client.GetAuthorizationTokenAsync(tokenRequest).ConfigureAwait(false);
@@ -79,8 +85,16 @@ namespace Amazon.AWSToolkit.NuGet
             catch (Exception e)
             {
                 // One of the cases of this exception might be that user is using wrong profile.
-                ToolkitFactory.Instance.ShellProvider.ShowError(string.Format("Failed to get authorization from CodeArtifact: {0}", e.Message));
-                LOGGER.Error("Failed to get CodeArtifact auth token", e);
+                ToolkitFactory.Instance.ShellProvider.ShowError(
+                    string.Format("Failed to get authorization from CodeArtifact: {0}", e.Message));
+                Logger.Error("Failed to get CodeArtifact auth token", e);
+
+                //if a user cancel's the process, throw the exception instead of consuming it
+                if (e is UserCanceledException)
+                {
+                    throw;
+                }
+
                 return null;
             }
         }
@@ -90,19 +104,21 @@ namespace Amazon.AWSToolkit.NuGet
             var profileName = DetermineProfileForUri(codeArtifactUri.CodeArtifactEndpoint);
             if (!string.IsNullOrEmpty(profileName))
             {
-                var account = GetAccountForProfile(profileName);
-                if (account == null)
+                var identifier = GetIdentifierForProfile(profileName);
+                if (identifier == null)
                 {
                     throw new Exception($"Failed to find profile {profileName}");
                 }
+
                 var region = RegionEndpoint.GetBySystemName(codeArtifactUri.Region);
-                return ToolkitFactory.Instance.CredentialManager.GetAwsCredentials(account.Identifier,
+                return ToolkitFactory.Instance.CredentialManager.GetAwsCredentials(identifier,
                     new ToolkitRegion
                     {
                         PartitionId = region.PartitionName, Id = region.SystemName, DisplayName = region.DisplayName
                     });
             }
-            LOGGER.Warn("Credentials were null. Using the Fallback credentials");
+
+            Logger.Warn("Credentials were null. Using the Fallback credentials");
             return FallbackCredentialsFactory.GetCredentials();
         }
 
@@ -112,17 +128,20 @@ namespace Amazon.AWSToolkit.NuGet
             var token = new SecureString();
 
             foreach (char c in accessToken)
+            {
                 token.AppendChar(c);
+            }
+
             token.MakeReadOnly();
             return new CodeArtifactAuthCredentials("aws", token);
-
         }
 
         private string DetermineProfileForUri(Uri requestUri)
         {
             var configuration = Configuration.LoadInstalledConfiguration();
 
-            if (configuration.SourceProfileOverrides != null && configuration.SourceProfileOverrides.TryGetValue(requestUri.AbsoluteUri, out var profile))
+            if (configuration.SourceProfileOverrides != null &&
+                configuration.SourceProfileOverrides.TryGetValue(requestUri.AbsoluteUri, out var profile))
             {
                 return profile;
             }
@@ -130,21 +149,12 @@ namespace Amazon.AWSToolkit.NuGet
             return configuration.DefaultProfile;
         }
 
-        private AccountViewModel GetAccountForProfile(string profileName)
+        private ICredentialIdentifier GetIdentifierForProfile(string profileName)
         {
-            var rootViewModel = ToolkitFactory.Instance.RootViewModel;
-            if (rootViewModel == null)
-            {
-                return null;
-            }
-            foreach (var account in rootViewModel.RegisteredAccounts)
-            {
-                if (account.Identifier.ProfileName == profileName)
-                {
-                    return account;
-                }
-            }
-            return null;
+            var credManager = ToolkitFactory.Instance.CredentialManager;
+
+            var identifiers = credManager?.GetCredentialIdentifiers().Where(id => id.ProfileName.Equals(profileName));
+            return identifiers?.FirstOrDefault();
         }
     }
 }

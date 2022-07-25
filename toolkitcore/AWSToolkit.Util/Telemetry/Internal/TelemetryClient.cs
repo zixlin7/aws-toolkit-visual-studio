@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         }
 
         public async Task PostMetrics(
-            Guid clientId,
+            ClientId clientId,
             IList<Metrics> telemetryMetrics,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -63,7 +63,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         {
             var clientRequest = new Amazon.ToolkitTelemetry.Model.PostMetricsRequest()
             {
-                ClientID = request.ClientId.ToString(),
+                ClientID = request.ClientId,
                 MetricData = request.TelemetryMetrics.AsMetricDatums().ToList(),
             };
 
@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             await _telemetry.PostMetricsAsync(clientRequest, cancellationToken);
         }
 
-        public async Task SendFeedback(Sentiment sentiment, string comment)
+        public async Task SendFeedback(Sentiment sentiment, string comment, IDictionary<string, string> metadata)
         {
             var request = new PostFeedbackRequest()
             {
@@ -80,6 +80,8 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
                 Comment = comment
             };
             _productEnvironment.ApplyTo(request);
+
+            metadata.ApplyTo(request);
 
             await _telemetry.PostFeedbackAsync(request);
         }

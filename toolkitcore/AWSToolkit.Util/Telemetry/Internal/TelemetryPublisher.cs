@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         private bool _disposed = false;
         private CancellationTokenSource _shutdownTokenSource = new CancellationTokenSource();
         private volatile ConcurrentQueue<Metrics> _eventQueue;
-        private readonly Guid _clientId;
+        private readonly ClientId _clientId;
         private ITelemetryClient _telemetryClient;
 
         private DateTime _lastPublishedOn;
@@ -103,7 +103,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             }
         }
 
-        public TelemetryPublisher(ConcurrentQueue<Metrics> eventQueue, Guid clientId)
+        public TelemetryPublisher(ConcurrentQueue<Metrics> eventQueue, ClientId clientId)
             : this(eventQueue, clientId, new TimeProvider())
         {
         }
@@ -111,7 +111,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         // Overload for testing purposes
         public TelemetryPublisher(
             ConcurrentQueue<Metrics> eventQueue,
-            Guid clientId,
+            ClientId clientId,
             TimeProvider timeProvider
         )
         {
@@ -136,14 +136,14 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             LOGGER.Debug("TelemetryPublisher Timer started");
         }
 
-        public async Task SendFeedback(Sentiment sentiment, string comment)
+        public async Task SendFeedback(Sentiment sentiment, string comment, IDictionary<string, string> metadata)
         {
             if (_telemetryClient == null)
             {
                 throw new Exception("Telemetry Client is not initialized");
             }
 
-            await _telemetryClient.SendFeedback(sentiment, comment);
+            await _telemetryClient.SendFeedback(sentiment, comment, metadata);
         }
 
         /// <summary>
