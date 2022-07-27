@@ -171,7 +171,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublishToAws.Tests", "..\te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{E0E38AB7-4BF7-4BF8-B2E6-2774F9349B99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsToolkit.Tests.Integration", "..\tests\Integration\AwsToolkit.Tests.Integration\AwsToolkit.Tests.Integration.csproj", "{9A41545D-CA6E-4591-9B80-64A2EE76B85A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsToolkit.Tests.v16.Integration", "..\tests\Integration\AwsToolkit.Tests.v16.Integration\AwsToolkit.Tests.v16.Integration.csproj", "{9A41545D-CA6E-4591-9B80-64A2EE76B85A}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkitPackage.Shared", "..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.shproj", "{CC1B2316-C330-410C-A3F3-097CA45713D8}"
 EndProject
@@ -254,6 +254,10 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AWSToolkitPackage.Tests.Shared", "..\tests\AWSToolkitPackage.Tests.Shared\AWSToolkitPackage.Tests.Shared.shproj", "{DE0F5779-AC4F-41DB-AFE4-40636B971B8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkitPackage.v17.Tests", "..\tests\AWSToolkitPackage.v17.Tests\AWSToolkitPackage.v17.Tests.csproj", "{964FA387-9586-472C-8EB8-8BE2E084F8C2}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkit.Tests.Integration.Shared", "..\tests\Integration\AwsToolkit.Tests.Integration.Shared\AwsToolkit.Tests.Integration.Shared.shproj", "{DDC5491A-1056-4252-9617-0E71774A2318}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsToolkit.Tests.v17.Integration", "..\tests\Integration\AwsToolkit.Tests.v17.Integration\AwsToolkit.Tests.v17.Integration.csproj", "{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -959,6 +963,14 @@ Global
 		{964FA387-9586-472C-8EB8-8BE2E084F8C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{964FA387-9586-472C-8EB8-8BE2E084F8C2}.Release|x86.ActiveCfg = Release|Any CPU
 		{964FA387-9586-472C-8EB8-8BE2E084F8C2}.Release|x86.Build.0 = Release|Any CPU
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}.Debug|x86.Build.0 = Debug|Any CPU
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}.Release|x86.ActiveCfg = Release|Any CPU
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1078,6 +1090,8 @@ Global
 		{E1E694FA-2259-466A-9B36-4D7A62186310} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
 		{DE0F5779-AC4F-41DB-AFE4-40636B971B8B} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
 		{964FA387-9586-472C-8EB8-8BE2E084F8C2} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
+		{DDC5491A-1056-4252-9617-0E71774A2318} = {E0E38AB7-4BF7-4BF8-B2E6-2774F9349B99}
+		{C23F4B82-AC7C-472A-9E3B-BF0AB85CB7C1} = {E0E38AB7-4BF7-4BF8-B2E6-2774F9349B99}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
@@ -1107,13 +1121,16 @@ Global
 		..\tests\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems*{964fa387-9586-472c-8eb8-8be2e084f8c2}*SharedItemsImports = 4
 		..\tests\AWSToolkitPackage.Tests.Shared\AWSToolkitPackage.Tests.Shared.projitems*{964fa387-9586-472c-8eb8-8be2e084f8c2}*SharedItemsImports = 4
 		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{98fc1018-a866-4b34-90d8-c432efef5d2a}*SharedItemsImports = 13
+		..\tests\Integration\AwsToolkit.Tests.Integration.Shared\AwsToolkit.Tests.Integration.Shared.projitems*{9a41545d-ca6e-4591-9b80-64a2ee76b85a}*SharedItemsImports = 4
 		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{9a9a823b-967e-4bb5-809f-a78c1668c363}*SharedItemsImports = 4
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{a27787ed-5a7a-455a-9e90-caeb9030f850}*SharedItemsImports = 13
 		..\tests\PublishToAws.Tests.Shared\PublishToAws.Tests.Shared.projitems*{ad7c0e6c-f570-410b-8e8a-f452caba06c6}*SharedItemsImports = 13
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{b102b42b-06ec-47f9-8dc1-e5729b62172e}*SharedItemsImports = 4
+		..\tests\Integration\AwsToolkit.Tests.Integration.Shared\AwsToolkit.Tests.Integration.Shared.projitems*{c23f4b82-ac7c-472a-9e3b-bf0ab85cb7c1}*SharedItemsImports = 4
 		..\tests\PublishToAws.Tests.Shared\PublishToAws.Tests.Shared.projitems*{c58b0a78-9d5b-447f-acf7-2c6a3dcbbf03}*SharedItemsImports = 4
 		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{c64b9bf2-2d41-4358-a7e9-7ffe42a29cbc}*SharedItemsImports = 13
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{cc1b2316-c330-410c-a3f3-097ca45713d8}*SharedItemsImports = 13
+		..\tests\Integration\AwsToolkit.Tests.Integration.Shared\AwsToolkit.Tests.Integration.Shared.projitems*{ddc5491a-1056-4252-9617-0e71774a2318}*SharedItemsImports = 13
 		..\tests\AWSToolkitPackage.Tests.Shared\AWSToolkitPackage.Tests.Shared.projitems*{de0f5779-ac4f-41db-afe4-40636b971b8b}*SharedItemsImports = 13
 		..\tests\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems*{e1e694fa-2259-466a-9b36-4d7a62186310}*SharedItemsImports = 4
 		..\tests\AwsToolkit.Vs.Tests.Shared\AwsToolkit.Vs.Tests.Shared.projitems*{e1e694fa-2259-466a-9b36-4d7a62186310}*SharedItemsImports = 4

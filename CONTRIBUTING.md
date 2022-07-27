@@ -31,6 +31,7 @@ Before you start, you will need the following:
 - Other handy build targets:
   - `test`: Runs the main suite of unit/component tests using the currently compiled code
   - `test-integ`: Runs the suite of integration tests using the currently compiled code
+  - both of these test targets will run tests relevant to the VS version of the developer command prompt
 
 ### Debug
 
@@ -118,7 +119,7 @@ To integrate a new verion of the Deploy Tool:
 - extract the downloaded package (it is a zip file)
 - from the extracted contents, copy "lib\netstandard2.0\AWS.Deploy.ServerMode.Client.dll" into [\thirdparty](/thirdparty), overwriting the existing dll
 - compile the Toolkit. If there were breaking changes in the API, you may have to made additional changes in order to successfully compile
-- run the integration tests. From the Visual Studio test runner, run the tests associated with the `AwsToolkit.Tests.Integration` project
+- run the integration tests. From the Visual Studio test runner, run the tests associated with the `AwsToolkit.Tests.vXX.Integration` project
   - you will need to have a [default profile defined](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where), and you will need to have docker desktop running
   - these tests will run for 30+ minutes. They are performing deployments.
 - run the Publish to AWS experience, and try things out. Make sure functionality hasn't disappeared or regressed.
