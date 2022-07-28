@@ -94,6 +94,12 @@
                         BorderThickness="0"
                         ItemsSource="{Binding ConfigurationViewModel.GroupedSettings}"
                         SelectedItem="{Binding ConfigurationViewModel.CurrentCategory}">
+                        <ListView.Resources>
+                            <!-- Avoid using the Toolkit default column heading style -->
+                            <Style TargetType="GridViewColumnHeader">
+                                <Setter Property="Template" Value="{x:Null}" />
+                            </Style>
+                        </ListView.Resources>
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
