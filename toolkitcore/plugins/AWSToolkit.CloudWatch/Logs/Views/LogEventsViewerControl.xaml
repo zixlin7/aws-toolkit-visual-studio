@@ -166,14 +166,6 @@
                         Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
                 </Button>
                 <ToggleButton Margin="3"
-                              ToolTip="Wrap events"
-                              IsChecked="{Binding IsWrapped, Mode=TwoWay}">
-                    <images:VsImage
-                        Width="16"
-                        Height="16"
-                        Source="{Binding Source={StaticResource VsImages}, Path=WordWrap32}" />
-                </ToggleButton>
-                <ToggleButton Margin="3"
                               x:Name="FilterByTimeButton"
                               x:FieldModifier="private"
                               ToolTip="Filter events by time"
@@ -182,7 +174,26 @@
                         Width="16"
                         Height="16"
                         Source="{Binding Source={StaticResource VsImages}, Path=Calendar}" />
-                    </ToggleButton>
+                </ToggleButton>
+                <ToggleButton Margin="3"
+                              IsChecked="{Binding IsWrapped, Mode=TwoWay}">
+                    <images:VsImage
+                        Width="16"
+                        Height="16"
+                        Source="{Binding Source={StaticResource VsImages}, Path=WordWrap32}" />
+                    <ToggleButton.Style>
+                        <Style TargetType="{x:Type ToggleButton}">
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="ToolTip" Value="Unwrap inline message text"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="False">
+                                    <Setter Property="ToolTip" Value="Wrap message text inline"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
             </ToolBar>
             <local:SearchBar DockPanel.Dock="Left" 
                              FilterText="{Binding FilterText}"
