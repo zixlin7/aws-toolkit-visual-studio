@@ -160,12 +160,6 @@ namespace Amazon.AWSToolkit.Publish.Models
                     $"Edit {itemSummary.Name}",
                     _dialogFactory);
 
-                if (itemSummary.TypeHint == ConfigurationDetail.TypeHints.ExistingSecurityGroups &&
-                    itemSummary.Id == ItemSummaryIds.AdditionalEcsServiceSecurityGroups)
-                {
-                    detail.AllowEmptyList = true;
-                }
-
                 return detail;
             }
 

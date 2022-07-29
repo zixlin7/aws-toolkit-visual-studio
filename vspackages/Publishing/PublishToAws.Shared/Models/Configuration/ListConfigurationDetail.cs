@@ -21,18 +21,10 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
 
         private ICollection<ListItem> _selectedItems;
 
-        private bool _allowEmptyList = false;
-
         public ICommand EditCommand
         {
             get => _editCommand;
             set => SetProperty(ref _editCommand, value);
-        }
-
-        public bool AllowEmptyList
-        {
-            get => _allowEmptyList;
-            set => SetProperty(ref _allowEmptyList, value);
         }
 
         public ICollection<ListItem> Items
@@ -56,12 +48,6 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
         {
             switch (e.PropertyName)
             {
-                case nameof(Visible):
-                    UpdateValidationMessage();
-                    break;
-                case nameof(AllowEmptyList):
-                    UpdateValidationMessage();
-                    break;
                 case nameof(Value):
                     DeserializeValue();
                     TryUpdateSelectedItems();
@@ -96,21 +82,7 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
                         SelectedItems.Add(item);
                     }
                 }
-
-                UpdateValidationMessage();
             }
-        }
-
-        private void UpdateValidationMessage()
-        {
-            // TODO This is temporary logic assuming that any TypeHint = List will require at least one selection.  Deploy Tool will revisit recipe data provided later.
-            if (!AllowEmptyList && Visible && (_selectedItems == null || !_selectedItems.Any()))
-            {
-                ValidationMessage = $"Must select at least one of the {Name?.ToLower()}.";
-                return;
-            }
-
-            ValidationMessage = string.Empty;
         }
 
         private void DeserializeValue()
@@ -128,9 +100,18 @@ namespace Amazon.AWSToolkit.Publish.Models.Configuration
             catch (Exception e)
             {
                 // Bad json. Don't log -- this can be frequently called.
+
+                // Deploy Tool should be sending a validation message to overwrite this, but in situations where
+                // that does not happen, users at least know there is a problem with this setting.
+                ValidationMessage = $"AWS Toolkit was unable to process this setting: {e.Message}";
+
+                // Assume that an empty list was received, rather than leaving the state unassigned (null).
+                // This way, users can get un-stuck instead of waiting for a deploy tool bug to get fixed.
+                _valueDeserialized = new List<string>();
+
                 Debug.Assert(!Debugger.IsAttached,
                     "Invalid publish settings json",
-                    $"The deploy CLI might be producing bad JSON - {e.Message}");
+                    $"The deploy CLI might be producing bad JSON. Toolkit will assume it received an empty list for setting: {this.Name}\n\n{e.Message}");
             }
         }
 
