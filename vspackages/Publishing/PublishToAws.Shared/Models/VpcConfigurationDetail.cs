@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         }
 
         private ConfigurationDetail _useDefaultVpc;
-        private ConfigurationDetail _createNewRole;
+        private ConfigurationDetail _createNewVpc;
         private ConfigurationDetail _vpcId;
 
         private VpcOption _vpcOption;
@@ -31,6 +31,18 @@ namespace Amazon.AWSToolkit.Publish.Models
         {
             get => _selectVpc;
             set => SetProperty(ref _selectVpc, value);
+        }
+
+        public ConfigurationDetail DefaultVpcDetail
+        {
+            get => _useDefaultVpc;
+            private set => SetProperty(ref _useDefaultVpc, value);
+        }
+
+        public ConfigurationDetail CreateVpcDetail
+        {
+            get => _createNewVpc;
+            private set => SetProperty(ref _createNewVpc, value);
         }
 
         public ConfigurationDetail VpcIdDetail
@@ -80,20 +92,20 @@ namespace Amazon.AWSToolkit.Publish.Models
         private void ApplyDefaultVpcToDetails()
         {
             _useDefaultVpc.Value = true;
-            _createNewRole.Value = false;
+            _createNewVpc.Value = false;
             ClearInvalidVpc();
         }
 
         private void ApplyNewVpcToDetails()
         {
-            _createNewRole.Value = true;
+            _createNewVpc.Value = true;
             _useDefaultVpc.Value = false;
             ClearInvalidVpc();
         }
 
         private void ApplyExistingVpcToDetails()
         {
-            _createNewRole.Value = false;
+            _createNewVpc.Value = false;
             _useDefaultVpc.Value = false;
         }
 
@@ -118,7 +130,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                     _useDefaultVpc = child;
                     break;
                 case ChildDetailIds.CreateNew:
-                    _createNewRole = child;
+                    _createNewVpc = child;
                     break;
             }
 
@@ -136,7 +148,7 @@ namespace Amazon.AWSToolkit.Publish.Models
                     _useDefaultVpc = null;
                     break;
                 case ChildDetailIds.CreateNew:
-                    _createNewRole = null;
+                    _createNewVpc = null;
                     break;
             }
 
@@ -145,13 +157,13 @@ namespace Amazon.AWSToolkit.Publish.Models
 
         private void ApplyDetailsToVpcOption()
         {
-            if (_vpcId == null || _useDefaultVpc == null || _createNewRole == null)
+            if (_vpcId == null || _useDefaultVpc == null || _createNewVpc == null)
             {
                 return;
             }
 
             _vpcOption = _useDefaultVpc.Value.Equals(true) ? VpcOption.Default :
-                _createNewRole.Value.Equals(true) ? VpcOption.New : VpcOption.Existing;
+                _createNewVpc.Value.Equals(true) ? VpcOption.New : VpcOption.Existing;
 
             NotifyPropertyChanged(nameof(VpcOption));
         }
