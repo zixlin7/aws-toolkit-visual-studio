@@ -71,7 +71,7 @@
       <Version>3.7.10.15</Version>
     </PackageReference>
     <PackageReference Include="log4net">
-      <Version>2.0.14</Version>
+      <Version>2.0.15</Version>
     </PackageReference>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.dll</HintPath>
