@@ -14,7 +14,7 @@ You might be interested in reading about the Toolkit's [architecture](./designs/
 
 Before you start, you will need the following:
 
-- Visual Studio 2017 or 2019
+- Visual Studio (2019 or 2022)
   - The following workloads need to be installed:
     - .NET desktop development
     - ASP.NET and web development
@@ -24,7 +24,7 @@ Before you start, you will need the following:
 
 ### Build
 
-- Open a Developer Command Prompt for VS 2017 or 2019
+- Open a Developer Command Prompt for VS 2019 or 2022
 - change directories to the repo root
 - Typical command: `msbuild buildtools\build.proj /t:restore;compile;test`
 - More comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;build-vstoolkit`
@@ -37,8 +37,10 @@ Before you start, you will need the following:
 
 #### Visual Studio
 
-- Open `/solutions/AWSVisualStudioToolkit.sln` in VS 2017 or 2019
-- Locate the project **AWSToolkitPackage**
+- Open the Toolkit solution in Visual Studio
+  - The main solution is `/solutions/AWSVisualStudioToolkit.sln`. This contains projects and tests for all supported major versions of Visual Studio.
+  - If you are primarily developing in one version of Visual Studio, you can load a [filtered solution](https://docs.microsoft.com/en-us/visualstudio/ide/filtered-solutions) instead. Look for the `.slnf` files in [solutions](./solutions/)
+- Locate the project **AWSToolkitPackage** (**AWSToolkitPackage.v17** for VS 2022)
   - Right click -> Set as StartUp Project
 - You can now debug the toolkit
 
