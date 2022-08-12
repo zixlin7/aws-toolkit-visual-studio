@@ -20,9 +20,9 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
     {
         public IToolkitHostInfo HostInfo { get; }
 
-        public void OpenShellWindow(ShellWindows window)
+        public Task OpenShellWindowAsync(ShellWindows window)
         {
-
+            return Task.CompletedTask;
         }
 
         public void OpenInEditor(IAWSToolkitControl editorControl)

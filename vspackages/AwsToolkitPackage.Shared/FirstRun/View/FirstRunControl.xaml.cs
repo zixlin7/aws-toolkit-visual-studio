@@ -99,14 +99,12 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             {
                 Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
                 {
-                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     if (Model.OpenAWSExplorerOnClosing)
                     {
-                        this._controller.HostPackage.ShowExplorerWindow();
+                        await _controller.ShowAwsExplorerAsync();
                     }
 
-                    var svc = this._controller.HostPackage.GetVSShellService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
-                    svc.CloseEditor(this);
+                    _controller.CloseEditor(this);
                 });
             }
 

@@ -21,7 +21,6 @@ namespace Amazon.AWSToolkit.Shared
     public enum ShellWindows
     {
         Explorer,
-        Output
     }
 
     /// <summary>
@@ -40,7 +39,7 @@ namespace Amazon.AWSToolkit.Shared
         /// 
         /// </summary>
         /// <param name="window"></param>
-        void OpenShellWindow(ShellWindows window);
+        Task OpenShellWindowAsync(ShellWindows window);
 
         /// <summary>
         /// 

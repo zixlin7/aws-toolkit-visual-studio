@@ -454,32 +454,34 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        /// <summary>
-        /// This function is called when the user clicks the menu item that shows the 
-        /// tool window. See the Initialize method to see how the menu item is associated to 
-        /// this function using the OleMenuCommandService service and the MenuCommand class.
-        /// </summary>
-        internal void ShowToolWindow(object sender, EventArgs e)
+        public override IVsAsyncToolWindowFactory GetAsyncToolWindowFactory(Guid toolWindowType)
         {
-            ShowExplorerWindow();
+            if (toolWindowType.Equals(Guid.Parse(GuidList.AWSExplorerToolWindowGuidString)))
+            {
+                return this;
+            }
+
+            return null;
         }
 
-        internal void ShowExplorerWindow()
+        protected override string GetToolWindowTitle(Type toolWindowType, int id)
         {
-            this.JoinableTaskFactory.Run(async () =>
+            if (toolWindowType == typeof(AWSNavigatorToolWindow))
             {
-                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                // Get the instance number 0 of this tool window. This window is single instance so this instance
-                // is actually the only one.
-                // The last flag is set to true so that if the tool window does not exists it will be created.
-                var window = FindToolWindow(typeof(AWSNavigatorToolWindow), 0, true);
-                if ((null == window) || (null == window.Frame))
-                {
-                    throw new NotSupportedException(Resources.CanNotCreateWindow);
-                }
-                var windowFrame = (IVsWindowFrame)window.Frame;
-                ErrorHandler.ThrowOnFailure(windowFrame.Show());
-            });
+                return Resources.AWSExplorerToolWindowTitle;
+            }
+
+            return base.GetToolWindowTitle(toolWindowType, id);
+        }
+
+        protected override Task<object> InitializeToolWindowAsync(Type toolWindowType, int id, CancellationToken cancellationToken)
+        {
+            if (toolWindowType == typeof(AWSNavigatorToolWindow))
+            {
+                return Task.FromResult<object>(new AWSNavigatorToolWindowState());
+            }
+
+            return base.InitializeToolWindowAsync(toolWindowType, id, cancellationToken);
         }
 
         internal void CodeArtifactSelectProfile(object sender, EventArgs e)
@@ -538,8 +540,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     var mcs = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
                     if (null != mcs)
                     {
-                        // Create the command for the tool window
-                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAWSNavigator, ShowToolWindow, null);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidCodeArtifactSelectProfile, CodeArtifactSelectProfile, null);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishToElasticBeanstalk, PublishToAWS, PublishMenuCommand_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdIdRepublishToAWS, RepublishToAWS, RepublishMenuCommand_BeforeQueryStatus);
@@ -617,6 +617,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
 
                 await InitializeAwsToolkitMenuCommandsAsync();
+
+                await ViewAwsExplorerCommand.InitializeAsync(
+                    GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidAWSNavigator,
+                    this);
 
                 await DeployLambdaCommand.InitializeAsync(
                     ToolkitShellProviderService,

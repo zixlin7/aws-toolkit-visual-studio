@@ -27,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Publishing\PublishToAwsCommandSolutionExplorer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Publishing\PublishToAwsCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\CreateIssueCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewAwsExplorerCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewFeedbackPanelCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewGettingStartedCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewUrlCommand.cs" />
