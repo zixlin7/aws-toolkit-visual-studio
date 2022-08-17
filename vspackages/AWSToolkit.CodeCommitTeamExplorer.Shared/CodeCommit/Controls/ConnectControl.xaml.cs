@@ -85,14 +85,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
         public AccountViewModel SelectedAccount
         {
             get => _accountSelector.SelectedAccount;
-            set
-            {
-                if (IsInitialized)
-                {
-                    _accountSelector.SelectedAccount = value;
-                }
-            }
         }
-
     }
 }

@@ -33,23 +33,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.Base
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public static DrawingBrush LoadSectionIcon(string resourceSubpath)
-        {
-            var resourceUrl = string.Format("pack://application:,,,/{0};component/{1}",
-                                            Assembly.GetExecutingAssembly().GetName().Name,
-                                            resourceSubpath);
-            var image = new BitmapImage(new Uri(resourceUrl, UriKind.Absolute));
-
-            var drawing = new DrawingGroup();
-            drawing.Children.Add(new GeometryDrawing
-            {
-                Brush = new ImageBrush(image),
-                Geometry = new RectangleGeometry(new Rect(new Size(image.Width, image.Height)))
-            });
-
-            return new DrawingBrush(drawing);
-        }
-
         public static DrawingBrush CreateDrawingBrush(ImageSource imageSource)
         {
             var drawing = new DrawingGroup();

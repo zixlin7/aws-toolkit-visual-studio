@@ -75,11 +75,6 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
             return true;
         }
 
-        private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // we'll validate uniqueness of the repo name in region when the user hits OK
-        }
-
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)
         {
             var dlg = new FolderBrowserDialog()

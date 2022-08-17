@@ -243,26 +243,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             SaveConnectionData(true);
         }
 
-        /// <summary>
-        /// Removes credentials from the OS using the target name we specified
-        /// when they were registered. The target name is a domain url to a CodeCommit
-        /// endpoint (not a repository).
-        /// </summary>
-        /// <param name="credentialsTarget"></param>
-        public void DeregisterCredentials(string credentialsTarget)
-        {
-            if (!_persistedTargets.Contains(credentialsTarget))
-            {
-                LOGGER.ErrorFormat("Received request to deregister unknown credential target {0}", credentialsTarget);
-                return;
-            }
-
-            DeleteOSCredentialTarget(credentialsTarget);
-            _persistedTargets.Remove(credentialsTarget);
-
-            SaveConnectionData(true);
-        }
-
         public static void Signin(AccountViewModel account)
         {
             ActiveConnection = new TeamExplorerConnection(account);

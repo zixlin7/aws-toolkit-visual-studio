@@ -181,36 +181,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             private set => _lastWriteTime = value;
         }
 
-        /*
-        public CredentialType Type
-        {
-            get
-            {
-                CheckNotDisposed();
-                return _type;
-            }
-            set
-            {
-                CheckNotDisposed();
-                _type = value;
-            }
-        }
-
-        public PersistenceType PersistenceType
-        {
-            get
-            {
-                CheckNotDisposed();
-                return _persistenceType;
-            }
-            set
-            {
-                CheckNotDisposed();
-                _persistenceType = value;
-            }
-        }
-        */
-
         public bool Save()
         {
             CheckNotDisposed();
@@ -237,51 +207,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             }
             LastWriteTimeUtc = DateTime.UtcNow;
             return true;
-        }
-
-        public bool Save(byte[] passwordBytes)
-        {
-            CheckNotDisposed();
-            _unmanagedCodePermission.Demand();
-
-            ValidatePasswordLength(passwordBytes);
-
-            var blob = Marshal.AllocCoTaskMem(passwordBytes.Length);
-            Marshal.Copy(passwordBytes, 0, blob, passwordBytes.Length);
-
-            var credential = new NativeMethods.CREDENTIAL
-            {
-                TargetName = Target,
-                UserName = Username,
-                CredentialBlob = blob,
-                CredentialBlobSize = passwordBytes.Length,
-                Comment = Description,
-                Type = (int)_credentialType,
-                Persist = (int)_persistenceType
-            };
-
-            var result = NativeMethods.CredWrite(ref credential, 0);
-            Marshal.FreeCoTaskMem(blob);
-            if (!result)
-            {
-                return false;
-            }
-            LastWriteTimeUtc = DateTime.UtcNow;
-            return true;
-        }
-
-        public bool Delete()
-        {
-            CheckNotDisposed();
-            _unmanagedCodePermission.Demand();
-
-            if (string.IsNullOrEmpty(Target))
-            {
-                throw new InvalidOperationException("Target must be specified to delete a credential.");
-            }
-
-            var target = string.IsNullOrEmpty(Target) ? new StringBuilder() : new StringBuilder(Target);
-            return NativeMethods.CredDelete(target, _credentialType, 0);
         }
 
         public static bool Delete(string target, CredentialType credentialType)

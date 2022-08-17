@@ -13,19 +13,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         protected int _backgroundWorkersActive = 0;
         private static readonly string CodeCommitServiceName = new AmazonCodeCommitConfig().RegionEndpointServiceName;
 
-        public bool QueryWorkersActive
-        {
-            get
-            {
-                int count;
-                lock (_syncLock)
-                {
-                    count = _backgroundWorkersActive;
-                }
-                return count != 0;
-            }
-        }
-
         public AccountViewModel Account
         {
             get => _account;
