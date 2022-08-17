@@ -66,7 +66,6 @@
                   Margin="2"
                   VerticalAlignment="Center"
                   Style="{DynamicResource awsComboBoxStyle}"
-                  SelectionChanged="OnRegionSelectionChanged"
                   ItemsSource="{Binding AvailableRegions}"
                   SelectedItem="{Binding SelectedRegion}">
             <ComboBox.ItemTemplate>

@@ -5,24 +5,25 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.CodeCommit.Controller;
 using Amazon.AWSToolkit.CodeCommit.Interface;
-using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.Util;
-using log4net;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.CodeCommit.Model;
-using Amazon.AWSToolkit.CodeCommit.Nodes;
 using Amazon.AWSToolkit.CodeCommit.Services;
 using Amazon.AWSToolkit.CodeCommit.Util;
-using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
+
 using LibGit2Sharp;
-using Amazon.AWSToolkit.Regions;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
@@ -33,26 +34,6 @@ namespace Amazon.AWSToolkit.CodeCommit
         private const string CodeCommitUrlPrefix = "git-codecommit.";
 
         public override string PluginName => "CodeCommit";
-
-        public override void RegisterMetaNodes()
-        {
-            /*
-            var rootMetaNode = new CodeCommitRootViewMetaNode();
-            var repositoryMetaNode = new CodeCommitRepositoryViewMetaNode();
-
-            rootMetaNode.Children.Add(repositoryMetaNode);
-            setupContextMenuHooks(rootMetaNode);
-
-            var accountMetaNode = ToolkitFactory.Instance.RootViewMetaNode.FindChild<AccountViewMetaNode>();
-            accountMetaNode.Children.Add(rootMetaNode);
-            */
-        }
-
-        void setupContextMenuHooks(CodeCommitRootViewMetaNode rootNode)
-        {
-            rootNode.CodeCommitRepositoryViewMetaNode.OnOpenRepositoryView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewRepositoryController>().Execute);
-        }
 
         public override object QueryPluginService(Type serviceType)
         {
@@ -92,7 +73,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                                                                ToolkitRegion region,
                                                                bool ignoreCurrent)
         {
-            ServiceSpecificCredentials svcCredentials = null;
+            ServiceSpecificCredentials svcCredentials;
 
             if (!ignoreCurrent)
             {

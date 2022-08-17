@@ -1,10 +1,10 @@
 ﻿using System;
+
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CodeCommit.View.Controls;
 using Amazon.AWSToolkit.CodeCommit.Model;
+using Amazon.AWSToolkit.CodeCommit.View.Controls;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Regions;
-using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Controller
 {
@@ -13,8 +13,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
     /// </summary>
     public class CloneRepositoryController
     {
-        private readonly ILog LOGGER = LogManager.GetLogger(typeof(CloneRepositoryController));
-
         /// <summary>
         /// Constructs a controller that will display a dialog for repository selection.
         /// </summary>
