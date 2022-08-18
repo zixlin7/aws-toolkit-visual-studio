@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 using Amazon.AWSToolkit.CloudWatch.Logs.ViewModels;
-using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Util;
@@ -76,7 +75,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.Views
         {
             if (e.PropertyName == nameof(LogEventsViewModel.FilterText))
             {
-                DebounceAndRefreshData();
+               Refresh();
             }
 
             if (e.PropertyName == nameof(LogEventsViewModel.IsTimeFilterEnabled))
@@ -133,6 +132,11 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.Views
                 return;
             }
 
+
+            if (scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible)
+            {
+                _viewModel.SetLoadingLogs(false);
+            }
             // if scrollbar is not visible due to less entries in first page and there are more pages left, load more data
             if (scrollViewer.ComputedVerticalScrollBarVisibility != Visibility.Visible && HasMorePages())
             {

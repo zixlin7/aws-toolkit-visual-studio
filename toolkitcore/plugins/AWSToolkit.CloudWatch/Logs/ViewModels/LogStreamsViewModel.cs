@@ -148,7 +148,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
                 NextToken = null;
                 LogStreams = new ObservableCollection<LogStream>();
                 LogStream = null;
-                _isInitialized = false;
+                HasInitialized = false;
                 ErrorMessage = string.Empty;
             });
         }
@@ -211,7 +211,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
                 LogStream = LogStreams.FirstOrDefault(x => x.Arn == previousLogStreamArn) ??
                             LogStreams.FirstOrDefault();
                 LogStreamsView = CollectionViewSource.GetDefaultView(LogStreams);
-                UpdateIsInitialized();
+                UpdateHasInitialized();
             });
         }
 
@@ -221,7 +221,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
             {
                 LogGroup = LogGroup, OrderBy = OrderBy, IsDescending = IsDescending
             };
-            if (_isInitialized)
+            if (HasInitialized)
             {
                 request.NextToken = NextToken;
             }

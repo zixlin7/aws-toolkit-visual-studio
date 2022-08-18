@@ -18,6 +18,7 @@
             <converters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
             <converters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
             <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </commonUi:BaseAWSControl.Resources>
 
@@ -52,10 +53,18 @@
 
         <local:SearchBar Grid.Row="1" FilterText="{Binding FilterText}" />
 
+        <ProgressBar Grid.Row="1"  
+                     VerticalAlignment="Bottom"
+                     IsIndeterminate="True" Height="6" 
+                     themes:ToolkitThemes.UseToolkitTheme="True"
+                     Visibility="{Binding LoadingLogs, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
         <!-- Indicates status of results eg. no results found, error message -->
         <local:ResultsStatus Grid.Row="2"
                              Margin="11"
+                             LoadingLogs="{Binding LoadingLogs}"
                              ErrorMessage="{Binding ErrorMessage}"
+                             HasInitialized="{Binding HasInitialized}"
                              Visibility="{Binding Visibility, ElementName=LogGroupsList, Converter={StaticResource InverseVisibilityConverter}}" />
 
         <ListBox Grid.Row="3"

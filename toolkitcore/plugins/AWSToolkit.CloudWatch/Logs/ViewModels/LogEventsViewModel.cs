@@ -127,7 +127,8 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
 
         public override async Task LoadAsync()
         {
-            await GetLogEventsAsync(CancellationToken).ConfigureAwait(false);
+            var hasFilterText = IsFilteredByText();
+            await GetLogEventsAsync(hasFilterText, CancellationToken).ConfigureAwait(false);
         }
 
         private void ResetState()
@@ -137,33 +138,33 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
                 NextToken = null;
                 LogEvents = new ObservableCollection<LogEvent>();
                 LogEvent = null;
-                _isInitialized = false;
+                HasInitialized = false;
                 ErrorMessage = string.Empty;
                 PaginatedLoadingStatus = PaginatedLoadingStatus.None;
                 _previousLoadingToken = null;
             });
         }
 
-        private async Task GetLogEventsAsync(CancellationToken cancelToken)
+        private async Task GetLogEventsAsync(bool hasFilterText, CancellationToken cancelToken)
         {
             TaskStatus status = TaskStatus.Fail;
-
+            var filterHash = CreateFilterHash();
             async Task Load()
             {
-                status = await GetNextLogEventsPageAsync(cancelToken);
+                status = await GetNextLogEventsPageAsync(hasFilterText, cancelToken);
             }
 
             void Record(ITelemetryLogger logger)
             {
-                var filterByText = IsFilteredByText();
+                var filterByText = hasFilterText;
                 var filterByTime = IsFilteredByTime();
-                RecordFilterMetric(filterByText, filterByTime, status, logger);
+                RecordFilterMetric(filterByText, filterByTime, status, logger, filterHash);
             }
 
             await ToolkitContext.TelemetryLogger.InvokeAndRecordAsync(Load, Record);
         }
 
-        private async Task<TaskStatus> GetNextLogEventsPageAsync(CancellationToken cancelToken)
+        private async Task<TaskStatus> GetNextLogEventsPageAsync(bool hasFilterText, CancellationToken cancelToken)
         {
             try
             {
@@ -175,22 +176,37 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
                     return TaskStatus.Success;
                 }
 
-                var selectedLogEvent = LogEvent?.Message;
+                _previousLoadingToken = NextToken;
+                SetLoadingLogs(true);
 
-                using (CreateLoadingLogsScope())
+                //if filtered by text, query FilterEventsAPI
+                if (hasFilterText)
                 {
-                    _previousLoadingToken = NextToken;
-                    var response = IsFilteredByText()
-                        ? await RetrieveFilteredLogEventsAsync(cancelToken)
-                        : await RetrieveLogEventsAsync(cancelToken);
-                    UpdateLogEventProperties(response, selectedLogEvent);
-                    return TaskStatus.Success;
+                    await QueryFilterEventsAsync(cancelToken);
                 }
+                else
+                {
+                    await QueryLogEventsAsync(cancelToken);
+                }
+
+                // if there are no more pages, stop loading
+                if (!HasMorePages())
+                {
+                    SetLoadingLogs(false);
+                }
+
+                return TaskStatus.Success;
             }
-            catch (OperationCanceledException e)
+            catch (Exception e)
             {
-                Logger.Error("Operation to load log events was cancelled", e);
-                return TaskStatus.Cancel;
+                SetLoadingLogs(false);
+                if (e is OperationCanceledException)
+                {
+                    Logger.Error("Operation to load log events was cancelled", e);
+                    return TaskStatus.Cancel;
+                }
+
+                throw;
             }
         }
 
@@ -201,7 +217,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
                 return base.IsLastPageLoaded();
             }
             //next token returned by GetLogEvents is same as previous one if last page is reached
-            return _isInitialized && string.Equals(_previousLoadingToken, NextToken);
+            return HasInitialized && string.Equals(_previousLoadingToken, NextToken);
         }
 
         /// <summary>
@@ -225,19 +241,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
             return _isTimeFilterEnabled && (StartTime != null || EndTime != null);
         }
 
-        private async Task<PaginatedLogResponse<LogEvent>> RetrieveFilteredLogEventsAsync(CancellationToken cancelToken)
-        {
-            var response = await FilterLogEventsAsync(cancelToken);
-
-            //if next token present but no values were returned, prompt user to continue querying
-            if (HasPendingLogEvents(response))
-            {
-                SetPaginatedLoadingStatus(PaginatedLoadingStatus.Prompt);
-            }
-
-            return response;
-        }
-
         private async Task<PaginatedLogResponse<LogEvent>> FilterLogEventsAsync(CancellationToken cancelToken)
         {
             var request = CreateFilterRequest();
@@ -250,19 +253,22 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
             return await Repository.GetLogEventsAsync(request, cancelToken).ConfigureAwait(false);
         }
 
-        private void UpdateLogEventProperties(PaginatedLogResponse<LogEvent> response, string previousLogMessage)
+        private void UpdateLogEventProperties(PaginatedLogResponse<LogEvent> response, string previousLogMessage, CancellationToken token)
         {
             var logEvents = LogEvents.ToList().Concat(response.Values).ToList();
             LogEvents = new ObservableCollection<LogEvent>(logEvents);
+            NextToken = response.NextToken;
 
             ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
-                NextToken = response.NextToken;
-
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
                 LogEvent = LogEvents.FirstOrDefault(x => x.Message == previousLogMessage) ??
                            LogEvents.FirstOrDefault();
                 LogEventsView = CollectionViewSource.GetDefaultView(LogEvents);
-                UpdateIsInitialized();
+                UpdateHasInitialized();
             });
         }
 
@@ -280,7 +286,6 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
 
         private void QueryFilterEvents(object arg)
         {
-            SetPaginatedLoadingStatus(PaginatedLoadingStatus.Loading);
             ExecuteOnBackgroundThread(QueryFilterEventsAsync);
         }
 
@@ -292,57 +297,74 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
             }).LogExceptionAndForget();
         }
 
+        private async Task QueryLogEventsAsync(CancellationToken cancelToken)
+        {
+            var selectedLogEvent = LogEvent?.Message;
+            var response = await RetrieveLogEventsAsync(cancelToken);
+            UpdateLogEventProperties(response, selectedLogEvent, cancelToken);
+        }
+
         private async Task QueryFilterEventsAsync()
         {
-            ResetCancellationToken();
             try
             {
-                CancellationToken.ThrowIfCancellationRequested();
+                ResetCancellationToken();
+                await LoadAsync().ConfigureAwait(false);
+            }
+            catch(Exception e)
+            {
+                Logger.Error("Error loading log events", e);
+                SetErrorMessage($"Error loading log events:{Environment.NewLine}{e.Message}");
+            }
+        }
 
+
+        private async Task QueryFilterEventsAsync(CancellationToken cancelToken)
+        {
+            try
+            {
                 var selectedLogEvent = LogEvent?.Message;
 
-                using (CreateLoadingLogsScope())
+                PaginatedLogResponse<LogEvent> response;
+                var request = CreateFilterRequest();
+                do
                 {
-                    PaginatedLogResponse<LogEvent> response;
-                    do
-                    {
-                        response = await FilterLogEventsAsync(CancellationToken);
-                        NextToken = response.NextToken;
-                        // add delay to rate limit number of requests
-                        // GetLogEvents has a minimum limit of 5 requests per second in some regions. See https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html 
-                        // To avoid throttling, a 1 request per second rate is applied here in addition to surfacing a retry options, on the occasion it does occur
-                        await Task.Delay(1000, CancellationToken);
-                    } while (HasPendingLogEvents(response));
+                    response = await Repository.FilterLogEventsAsync(request, cancelToken).ConfigureAwait(false);
+                    NextToken = response.NextToken;
+                    UpdateHasInitialized();
+                    request.NextToken = NextToken;
+                    // add delay to rate limit number of requests
+                    // GetLogEvents has a minimum limit of 5 requests per second in some regions. See https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html 
+                    // To avoid throttling, a 1 request per second rate is applied here in addition to surfacing a retry options, on the occasion it does occur
+                    await Task.Delay(1000, cancelToken);
+                } while (HasPendingLogEvents(response));
 
-                    UpdateLogEventProperties(response, selectedLogEvent);
-                    SetPaginatedLoadingStatus(PaginatedLoadingStatus.None);
-                }
+                UpdateLogEventProperties(response, selectedLogEvent, cancelToken);
+                SetPaginatedLoadingStatus(PaginatedLoadingStatus.None);
             }
             catch (Exception e)
             {
-                if (e is OperationCanceledException)
-                {
-                    Logger.Error("Operation to load log events was cancelled", e);
-                    //if cancelled, prompt user to continue querying again
-                    SetPaginatedLoadingStatus(PaginatedLoadingStatus.Prompt);
-                }
-                else if (e is AmazonCloudWatchLogsException ex)
-                {
-                    if (string.Equals(ex.ErrorCode, "ThrottlingException"))
-                    {
-                        Logger.Error("Operation to load log events was throttled", e);
-                        //if throttled, present retry option to user
-                        SetPaginatedLoadingStatus(PaginatedLoadingStatus.Retry);
-                    }
-                }
-                else
-                {
-                    Logger.Error("Error loading log events", e);
-                    SetErrorMessage($"Error loading log events:{Environment.NewLine}{e.Message}");
-                    // if any other exception, set status to none to show the error message
+                DeterminePaginatedLoadingStatus(e);
+                throw;
+            }
+        }
+
+        private void DeterminePaginatedLoadingStatus(Exception e)
+        {
+            switch (e)
+            {
+                case OperationCanceledException _:
+                    //if cancelled, present user option to continue querying again
+                    SetPaginatedLoadingStatus(PaginatedLoadingStatus.LoadMore);
+                    break;
+                case AmazonCloudWatchLogsException ex when string.Equals(ex.ErrorCode, "ThrottlingException"):
+                    //if throttled, present retry option to user
+                    SetPaginatedLoadingStatus(PaginatedLoadingStatus.Retry);
+                    break;
+                default:
+                    // if any other exception, set status to none
                     SetPaginatedLoadingStatus(PaginatedLoadingStatus.None);
-                }
-             
+                    break;
             }
         }
 
@@ -368,7 +390,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         {
             var request = new GetLogEventsRequest { LogGroup = LogGroup, LogStream = LogStream };
 
-            if (_isInitialized)
+            if (HasInitialized)
             {
                 request.NextToken = NextToken;
             }
@@ -386,7 +408,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         {
             var request = new FilterLogEventsRequest { LogGroup = LogGroup, LogStream = LogStream };
 
-            if (_isInitialized)
+            if (HasInitialized)
             {
                 request.NextToken = NextToken;
             }

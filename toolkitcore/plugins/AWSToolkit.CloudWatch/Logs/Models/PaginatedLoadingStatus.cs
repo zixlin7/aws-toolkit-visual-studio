@@ -5,8 +5,7 @@
     /// </summary>
     public enum PaginatedLoadingStatus
     {
-        Prompt,
-        Loading,
+        LoadMore,
         None,
         Retry
     }

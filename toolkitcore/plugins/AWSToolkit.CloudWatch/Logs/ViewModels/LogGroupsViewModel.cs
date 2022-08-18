@@ -96,7 +96,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
                 NextToken = null;
                 LogGroups = new ObservableCollection<LogGroup>();
                 LogGroup = null;
-                _isInitialized = false;
+                HasInitialized = false;
                 ErrorMessage = string.Empty;
             });
         }
@@ -158,14 +158,14 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
                 LogGroups = new ObservableCollection<LogGroup>(logGroups);
                 LogGroup = LogGroups.FirstOrDefault(x => x.Arn == previousLogGroupArn) ?? LogGroups.FirstOrDefault();
 
-                UpdateIsInitialized();
+                UpdateHasInitialized();
             });
         }
 
         private GetLogGroupsRequest CreateGetRequest()
         {
             var request = new GetLogGroupsRequest() { FilterText = FilterText };
-            if (_isInitialized)
+            if (HasInitialized)
             {
                 request.NextToken = NextToken;
             }
