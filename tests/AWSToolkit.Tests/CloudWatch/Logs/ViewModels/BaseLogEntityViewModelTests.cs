@@ -26,7 +26,7 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
         protected Mock<ICloudWatchLogsRepository> Repository => ViewModelFixture.Repository;
 
         [Fact]
-        public async Task LoadAsync_AdjustsLoadingLogs()
+        public virtual async Task LoadAsync_AdjustsLoadingLogs()
         {
             var loadingAdjustments = new List<bool>();
 
@@ -39,6 +39,7 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
             };
 
             Assert.False(ViewModel.LoadingLogs);
+            await SetupWithInitialLoad();
 
             await ViewModel.LoadAsync();
 
@@ -105,6 +106,13 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
             await ViewModel.LoadAsync();
             ViewModelFixture.ContextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsFilter(
                 ViewModel.GetCloudWatchResourceType(), 2, 0);
+        }
+
+        /// <summary>
+        /// Performs necessary setup with initial load operation
+        /// </summary>
+        protected virtual async Task SetupWithInitialLoad()
+        {
         }
     }
 }

@@ -112,6 +112,7 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
             Assert.Null(ViewModel.NextToken);
         }
 
+
         [Fact]
         public async Task RefreshAsync()
         {

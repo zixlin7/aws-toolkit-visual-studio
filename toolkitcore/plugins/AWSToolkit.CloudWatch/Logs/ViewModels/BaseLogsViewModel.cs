@@ -28,7 +28,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         protected readonly ICloudWatchLogsRepository Repository;
 
         protected bool _loadingLogs = false;
-        protected bool _isInitialized = false;
+        private bool _hasInitialized = false;
 
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
         private string _filterText;
@@ -43,6 +43,12 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         {
             ToolkitContext = toolkitContext;
             Repository = repository;
+        }
+
+        public bool HasInitialized
+        {
+            get => _hasInitialized;
+            set => SetProperty(ref _hasInitialized, value);
         }
 
         public string NextToken
@@ -147,7 +153,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
             return IsFilteredByText();
         }
 
-        private void SetLoadingLogs(bool value)
+        public void SetLoadingLogs(bool value)
         {
             ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
@@ -165,14 +171,17 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         /// </summary>
         protected virtual bool IsLastPageLoaded()
         {
-            return _isInitialized && string.IsNullOrEmpty(NextToken);
+            return HasInitialized && string.IsNullOrEmpty(NextToken);
         }
 
-        protected void UpdateIsInitialized()
+        protected void UpdateHasInitialized()
         {
-            if (!_isInitialized)
+            if (!HasInitialized)
             {
-                _isInitialized = true;
+                ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+                {
+                    HasInitialized = true;
+                });
             }
         }
 
@@ -193,19 +202,19 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         }
 
         protected void RecordFilterMetric(bool filterByText, bool filterByTime, TaskStatus taskStatus,
-            ITelemetryLogger telemetryLogger)
+          ITelemetryLogger telemetryLogger, int suppliedFilterHash = -1)
         {
             // Only emit metric if the filter has changed since last time
-            var filterHash = CreateFilterHash();
+            var filterHash = (suppliedFilterHash == -1) ?  CreateFilterHash() : suppliedFilterHash;
             if (filterHash == _lastFilterHash)
             {
-                return; 
+                return;
             }
 
             _lastFilterHash = filterHash;
             if (!IsFiltered())
             {
-                return; 
+                return;
             }
 
             RecordFilterMetricInternal(filterByText, filterByTime, taskStatus, telemetryLogger);

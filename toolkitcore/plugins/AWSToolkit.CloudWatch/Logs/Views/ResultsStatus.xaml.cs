@@ -24,6 +24,12 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.Views
                 nameof(LoadingLogs), typeof(bool), typeof(ResultsStatus),
                 new PropertyMetadata(null));
 
+        public static readonly DependencyProperty HasInitializedProperty =
+            DependencyProperty.Register(
+                nameof(HasInitialized), typeof(bool), typeof(ResultsStatus),
+                new PropertyMetadata(null));
+
+
 
         public string ErrorMessage
         {
@@ -35,6 +41,12 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.Views
         {
             get => (bool) GetValue(LoadingLogsProperty);
             set => SetValue(LoadingLogsProperty, value);
+        }
+
+        public bool HasInitialized
+        {
+            get => (bool) GetValue(HasInitializedProperty);
+            set => SetValue(HasInitializedProperty, value);
         }
     }
 }

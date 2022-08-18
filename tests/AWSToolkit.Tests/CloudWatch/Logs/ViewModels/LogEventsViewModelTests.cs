@@ -273,38 +273,15 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
             Assert.Equal(PaginatedLoadingStatus.None, ViewModel.PaginatedLoadingStatus);
         }
 
-        [Fact]
-        public async Task LoadFilteredAsync_WithPaginatedLoadingPrompt()
-        {
-            ViewModel.FilterText = "sample-filter";
-
-            await SetupFilteredWithInitialLoad(SampleToken, new List<LogEvent>());
-
-            await ViewModel.LoadAsync();
-
-            Assert.Equal(SampleToken, ViewModel.NextToken);
-            Assert.Empty( ViewModel.LogEvents);
-            Assert.Null(ViewModel.LogEvent);
-
-            Assert.Equal(PaginatedLoadingStatus.Prompt, ViewModel.PaginatedLoadingStatus);
-        }
 
         [Fact]
         public async Task PaginatedLoadingContinueCommand_Execute()
         {
             var testViewModel = CreateTestViewModel();
             testViewModel.FilterText = "sample-filter";
-            var paginatedLoadingStatus = new List<PaginatedLoadingStatus>();
-
-            testViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(testViewModel.PaginatedLoadingStatus))
-                {
-                    paginatedLoadingStatus.Add(testViewModel.PaginatedLoadingStatus);
-                }
-            };
-
+            
             _eventsFixture.StubFilterLogEventsToReturn(SampleToken, SampleLogEvents);
+            testViewModel.PaginatedLoadingStatus = PaginatedLoadingStatus.LoadMore;
 
             testViewModel.ContinueLoadingCommand.Execute(null);
             // Give the process some time to execute
@@ -314,9 +291,7 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
             Assert.Equal(SampleLogEvents, testViewModel.LogEvents);
             Assert.Equal(SampleLogEvents.First(), testViewModel.LogEvent);
 
-            Assert.Equal(2, paginatedLoadingStatus.Count);
-            Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
-            Assert.Equal(PaginatedLoadingStatus.None, paginatedLoadingStatus[1]);
+            Assert.Equal(PaginatedLoadingStatus.None, testViewModel.PaginatedLoadingStatus);
         }
 
 
@@ -325,28 +300,19 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
         {
             var testViewModel = CreateTestViewModel();
             testViewModel.FilterText = "sample-filter";
-            var paginatedLoadingStatus = new List<PaginatedLoadingStatus>();
-
-            testViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(testViewModel.PaginatedLoadingStatus))
-                {
-                    paginatedLoadingStatus.Add(testViewModel.PaginatedLoadingStatus);
-                }
-            };
+            testViewModel.PaginatedLoadingStatus = PaginatedLoadingStatus.None;
 
             Repository.Setup(mock =>
                     mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new OperationCanceledException());
+   
 
             testViewModel.ContinueLoadingCommand.Execute(null);
 
             Assert.Null(testViewModel.NextToken);
-            Assert.Empty( testViewModel.LogEvents);
+            Assert.Empty(testViewModel.LogEvents);
 
-            Assert.Equal(2, paginatedLoadingStatus.Count);
-            Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
-            Assert.Equal(PaginatedLoadingStatus.Prompt, paginatedLoadingStatus[1]);
+            Assert.Equal(PaginatedLoadingStatus.LoadMore, testViewModel.PaginatedLoadingStatus);
             Assert.Empty(testViewModel.ErrorMessage);
         }
 
@@ -355,15 +321,6 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
         {
             var testViewModel = CreateTestViewModel();
             testViewModel.FilterText = "sample-filter";
-            var paginatedLoadingStatus = new List<PaginatedLoadingStatus>();
-
-            testViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(testViewModel.PaginatedLoadingStatus))
-                {
-                    paginatedLoadingStatus.Add(testViewModel.PaginatedLoadingStatus);
-                }
-            };
 
             Repository.Setup(mock =>
                     mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()))
@@ -374,9 +331,7 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
             Assert.Null(testViewModel.NextToken);
             Assert.Empty(testViewModel.LogEvents);
 
-            Assert.Equal(2, paginatedLoadingStatus.Count);
-            Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
-            Assert.Equal(PaginatedLoadingStatus.None, paginatedLoadingStatus[1]);
+            Assert.Equal(PaginatedLoadingStatus.None, testViewModel.PaginatedLoadingStatus);
             Assert.NotEmpty(testViewModel.ErrorMessage);
         }
 
@@ -386,15 +341,8 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
         {
             var testViewModel = CreateTestViewModel();
             testViewModel.FilterText = "sample-filter";
-            var paginatedLoadingStatus = new List<PaginatedLoadingStatus>();
+            testViewModel.PaginatedLoadingStatus = PaginatedLoadingStatus.None;
 
-            testViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(testViewModel.PaginatedLoadingStatus))
-                {
-                    paginatedLoadingStatus.Add(testViewModel.PaginatedLoadingStatus);
-                }
-            };
 
             Repository.Setup(mock =>
                     mock.FilterLogEventsAsync(It.IsAny<FilterLogEventsRequest>(), It.IsAny<CancellationToken>()))
@@ -405,9 +353,8 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
             Assert.Null(testViewModel.NextToken);
             Assert.Empty(testViewModel.LogEvents);
 
-            Assert.Equal(2, paginatedLoadingStatus.Count);
-            Assert.Equal(PaginatedLoadingStatus.Loading, paginatedLoadingStatus[0]);
-            Assert.Equal(PaginatedLoadingStatus.Retry, paginatedLoadingStatus[1]);
+            Assert.Equal(PaginatedLoadingStatus.Retry, testViewModel.PaginatedLoadingStatus);
+            Assert.NotEmpty(testViewModel.ErrorMessage);
         }
 
 
@@ -442,6 +389,11 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.ViewModels
                 mock => mock.GetLogEventsAsync(It.Is<GetLogEventsRequest>(s => (s.EndTime!=null && s.StartTime!=null)), It.IsAny<CancellationToken>()),
                 Times.Exactly(expectedTimesCalled));
 
+        }
+
+        protected override async Task SetupWithInitialLoad()
+        {
+            await SetupWithInitialLoad(SampleToken, SampleLogEvents);
         }
 
         /// <summary>

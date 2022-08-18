@@ -1,0 +1,4 @@
+﻿{
+    "Type": "Feature",
+    "Description": "Searching CloudWatch log events has been improved, so that filtered events are automatically loaded. Previously, you would have to occasionally click on a link in order to retrieve the first screenful of events."
+}
