@@ -14,6 +14,8 @@ using Amazon.AWSToolkit.Publish.Services;
 using log4net;
 
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
+
 using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.Publish.Package
@@ -156,9 +158,10 @@ namespace Amazon.AWSToolkit.Publish.Package
             }
         }
 
-        private Task InitializeDeployCliInBackgroundAsync(InstallOptions installOptions, ToolkitContext toolkitContext)
+        private async Task InitializeDeployCliInBackgroundAsync(InstallOptions installOptions, ToolkitContext toolkitContext)
         {
-            return new DeployCli(installOptions, toolkitContext).InitializeAsync(DisposalToken);
+            await TaskScheduler.Default;
+            await new DeployCli(installOptions, toolkitContext).InitializeAsync(DisposalToken).ConfigureAwait(false);
         }
 
         protected override void Dispose(bool disposing)
