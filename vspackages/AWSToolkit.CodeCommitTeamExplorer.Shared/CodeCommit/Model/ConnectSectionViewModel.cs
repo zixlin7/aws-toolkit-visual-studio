@@ -172,10 +172,13 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
             var solutionCreated = false;
             try
             {
-                dte.Solution.Create(repoDir, TempSolutionName);
-                solutionCreated = true;
-
-                dte.Solution.Close(false); // Don't create a .sln file when we close.
+                ThreadHelper.JoinableTaskFactory.Run(async () =>
+                {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    dte.Solution.Create(repoDir, TempSolutionName);
+                    solutionCreated = true;
+                    dte.Solution.Close(false); // Don't create a .sln file when we close.
+                });
             }
             catch (Exception ex)
             {

@@ -182,46 +182,51 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             {
                 // As this probing could take some time, spin up a thread to add the new
                 // repos into the collection
-                ThreadPool.QueueUserWorkItem(
-                    async state => { await QueryNewlyAddedRepositoriesDataAsync(state); },
-                    reposToValidate
-                );
+                ThreadPool.QueueUserWorkItem(QueryNewlyAddedRepositoriesData, reposToValidate);
             }
         }
 
-        private async Task QueryNewlyAddedRepositoriesDataAsync(object state)
+        private void QueryNewlyAddedRepositoriesData(object state)
         {
-            LOGGER.Debug("TeamExplorerConnection: QueryNewlyAddedRepositoriesDataAsync");
-
-            if (CodeCommitPlugin == null)
+            try
             {
-                return;
-            }
+                LOGGER.Debug("TeamExplorerConnection: QueryNewlyAddedRepositoriesDataAsync");
 
-            var repoPaths = state as IEnumerable<string>;
-            if (repoPaths == null)
-            {
-                return;
-            }
-
-            var validRepos = new List<ICodeCommitRepository>();
-
-            if (IsAccountValid)
-            {
-                validRepos.AddRange(await CodeCommitPlugin.GetRepositories(Account, repoPaths));
-            }
-
-            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
-            {
-                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                Repositories.Clear();
-                foreach (var repo in validRepos)
+                if (CodeCommitPlugin == null)
                 {
-                    Repositories.Add(repo);
+                    return;
                 }
 
-                OnPropertyChanged(nameof(Repositories));
-            });
+                var repoPaths = state as IEnumerable<string>;
+                if (repoPaths == null)
+                {
+                    return;
+                }
+
+                var validRepos = new List<ICodeCommitRepository>();
+
+                Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
+                {
+                    if (IsAccountValid)
+                    {
+                        validRepos.AddRange(await CodeCommitPlugin.GetRepositories(Account, repoPaths));
+                    }
+
+                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                    Repositories.Clear();
+                    foreach (var repo in validRepos)
+                    {
+                        Repositories.Add(repo);
+                    }
+
+                    OnPropertyChanged(nameof(Repositories));
+                });
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error("Unable to query newly added repositories", ex);
+            }
         }
 
         /// <summary>

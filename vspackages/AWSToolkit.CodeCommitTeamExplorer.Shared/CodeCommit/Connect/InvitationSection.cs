@@ -86,7 +86,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
             // could negatively impact the startup performance of the IDE, especially
             // if we block for the package load here.
             // Instead, we'll poll until the Package is loaded, and gate the "Connect" label.
-            _vsShell = TeamExplorerServiceProvider.GetService(typeof(SVsShell)) as IVsShell;
+            ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                _vsShell = TeamExplorerServiceProvider.GetService(typeof(SVsShell)) as IVsShell;
+            });
             _packageLoadedTimer.Start();
 
             // Now that we've initialized, enable the Connect label.
@@ -166,7 +170,14 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
                 }
 
                 var packageGuid = GetToolkitPackageGuid();
-                var isLoaded = _vsShell.IsPackageLoaded(ref packageGuid, out var _);
+                int isLoaded = VSConstants.S_FALSE;
+
+                ThreadHelper.JoinableTaskFactory.Run(async () =>
+                {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    isLoaded = _vsShell.IsPackageLoaded(ref packageGuid, out var _);
+                });
+
                 if (isLoaded != VSConstants.S_OK)
                 {
                     restartTimer = true;
