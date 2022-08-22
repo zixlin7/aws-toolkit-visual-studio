@@ -1,5 +1,7 @@
 ﻿using System;
 using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AWSToolkit.Tasks;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
@@ -35,7 +37,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
             CodeCommitPlugin = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
             if (CodeCommitPlugin == null)
             {
-                Logger.Error("Called to clone repository but CodeCommit plugin not loaded, cannot display repository list selector");
+                Logger.Error("Called to clone repository but CodeCommit plugin not loaded, cannot display repository list selector.");
                 GitUtilities.RecordCodeCommitCloneRepoMetric(false, "codeCommitPlugin");
                 return;
             }
@@ -54,9 +56,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
                 return;
             }
 
-            // delegate the actual clone operation via an intermediary; this allows us to use either
+            // Delegate the actual clone operation via an intermediary; this allows us to use either
             // Team Explorer or CodeCommit to do the clone operation depending on the host shell.
-            GitUtilities.CloneAsync(gitCredentials, selectedRepository.RepositoryUrl, selectedRepository.LocalFolder, "clone");
+            GitUtilities.CloneAsync(gitCredentials, selectedRepository.RepositoryUrl, selectedRepository.LocalFolder, "clone").LogExceptionAndForget();
         }
     }
 }

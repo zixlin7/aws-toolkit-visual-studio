@@ -6,12 +6,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
 {
     public interface ICodeCommitGitServices
     {
-        Task CloneAsync(ServiceSpecificCredentials credentials,
-                                     string repositoryUrl,
-                                     string localFolder);
+        Task CloneAsync(ServiceSpecificCredentials credentials, string repositoryUrl, string localFolder);
 
         Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo,
-                                      bool autoCloneNewRepository,
-                                      AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback);
+                         bool autoCloneNewRepository,
+                         AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback);
     }
 }

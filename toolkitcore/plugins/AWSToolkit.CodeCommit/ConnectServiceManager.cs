@@ -4,8 +4,6 @@
     {
         public static IConnectService ConnectService { get; set; }
 
-
-
         public interface IConnectService
         {
             void OpenConnection();

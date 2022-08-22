@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
@@ -13,29 +14,18 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
     /// </summary>
     public class GitCredentials : IDisposable
     {
-        #region Private Members
-        const int maxPasswordLengthInBytes = NativeMethods.CREDUI_MAX_PASSWORD_LENGTH * 2;
+        private static readonly Encoding _passwordEncoding = Encoding.Unicode;
+        private static readonly int _maxPasswordLengthInBytes;
+        // TODO: Verify a good UX if Demand() is denied
+        private static readonly SecurityPermission _unmanagedCodePermission;
 
-        static readonly object _lockObject = new object();
-        static readonly SecurityPermission _unmanagedCodePermission;
-
-        CredentialType _credentialType;
-        string _target;
-        SecureString _password;
-        string _username;
-        string _description;
-        DateTime _lastWriteTime;
-        PersistenceType _persistenceType;
-
-        static GitCredentials()
-        {
-            lock (_lockObject)
-            {
-                _unmanagedCodePermission = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-            }
-        }
-
-        #endregion
+        private CredentialType _credentialType;
+        private string _target;
+        private SecureString _password;
+        private string _username;
+        private string _description;
+        private DateTime _lastWriteTimeUtc;
+        private PersistenceType _persistenceType;
 
         public enum PersistenceType : uint
         {
@@ -53,6 +43,14 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             DomainVisiblePassword = 4
         }
 
+        static GitCredentials()
+        {
+            // Use static ctor instead of field initialization when static methods use static fields to avoid issues with BeforeFieldInit
+            // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/static-constructors
+            _unmanagedCodePermission = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
+            _maxPasswordLengthInBytes = _passwordEncoding.GetMaxByteCount(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH);
+        }
+
         private GitCredentials()
         {
             _credentialType = CredentialType.Generic;
@@ -67,18 +65,18 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
             _credentialType = CredentialType.Generic;
             _persistenceType = PersistenceType.LocalComputer;
-            _lastWriteTime = DateTime.MinValue;
+            _lastWriteTimeUtc = DateTime.MinValue;
         }
 
-        bool _disposed;
-        void Dispose(bool disposing)
+        private bool _isDisposed;
+        private void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && !_isDisposed)
             {
-                if (_disposed) return;
                 SecurePassword.Clear();
                 SecurePassword.Dispose();
-                _disposed = true;
+
+                _isDisposed = true;
             }
         }
 
@@ -90,7 +88,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
         private void CheckNotDisposed()
         {
-            if (_disposed)
+            if (_isDisposed)
             {
                 throw new ObjectDisposedException("Credential object is already disposed.");
             }
@@ -109,7 +107,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                 _username = value;
             }
         }
-        
+
+        // TODO: Converting SecureString to String creates potentially long lived, insecure plain-text password in VS memory.  Fix this.
+        // Also, maybe just don't use SecureString at all.  https://docs.microsoft.com/en-us/dotnet/api/system.security.securestring?view=netframework-4.7.2#remarks
         public string Password
         {
             get => CreateString(SecurePassword);
@@ -119,7 +119,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                 SecurePassword = CreateSecureString(string.IsNullOrEmpty(value) ? string.Empty : value);
             }
         }
-
         
         public SecureString SecurePassword
         {
@@ -169,16 +168,18 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             }
         }
 
-        public DateTime LastWriteTime => LastWriteTimeUtc.ToLocalTime();
-
         public DateTime LastWriteTimeUtc
         {
             get
             {
                 CheckNotDisposed();
-                return _lastWriteTime;
+                return _lastWriteTimeUtc;
             }
-            private set => _lastWriteTime = value;
+            private set
+            {
+                CheckNotDisposed();
+                _lastWriteTimeUtc = value;
+            }
         }
 
         public bool Save()
@@ -186,7 +187,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             CheckNotDisposed();
             _unmanagedCodePermission.Demand();
 
-            byte[] passwordBytes = Encoding.Unicode.GetBytes(Password);
+            byte[] passwordBytes = _passwordEncoding.GetBytes(Password);
             ValidatePasswordLength(passwordBytes);
 
             var credential = new NativeMethods.CREDENTIAL
@@ -201,12 +202,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             };
 
             var result = NativeMethods.CredWrite(ref credential, 0);
-            if (!result)
+            if (result)
             {
-                return false;
+                LastWriteTimeUtc = DateTime.UtcNow;
             }
-            LastWriteTimeUtc = DateTime.UtcNow;
-            return true;
+            return result;
         }
 
         public static bool Delete(string target, CredentialType credentialType)
@@ -215,7 +215,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
             if (string.IsNullOrEmpty(target))
             {
-                throw new ArgumentException("target must be specified to delete a credential.");
+                throw new ArgumentException("Target must be specified to delete a credential.");
             }
 
             return NativeMethods.CredDelete(new StringBuilder(target), credentialType, 0);
@@ -226,8 +226,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             CheckNotDisposed();
             _unmanagedCodePermission.Demand();
 
-            IntPtr credPointer;
-            bool result = NativeMethods.CredRead(Target, _credentialType, 0, out credPointer);
+            bool result = NativeMethods.CredRead(Target, _credentialType, 0, out IntPtr credPointer);
             if (!result)
             {
                 return false;
@@ -255,11 +254,17 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             }
         }
 
-        internal void LoadInternal(NativeMethods.CREDENTIAL credential)
+        private void LoadInternal(NativeMethods.CREDENTIAL credential)
         {
             Username = credential.UserName;
             if (credential.CredentialBlobSize > 0)
             {
+                // Specifying the character length will return strings with embedded \0 in them.  Unclear
+                // if this is desired or not.  Ideally, this would marshall the byte array and use _passwordEncoding
+                // to decode.
+                //
+                // "This API reflects the Windows definition of Unicode, which is a UTF-16 2-byte encoding."
+                // https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.marshal.ptrtostringuni?view=netframework-4.7.2#system-runtime-interopservices-marshal-ptrtostringuni(system-intptr-system-int32) 
                 Password = Marshal.PtrToStringUni(credential.CredentialBlob, credential.CredentialBlobSize / 2);
             }
             Target = credential.TargetName;
@@ -269,19 +274,16 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             LastWriteTimeUtc = DateTime.FromFileTimeUtc(credential.LastWritten);
         }
 
-        static void ValidatePasswordLength(byte[] passwordBytes)
+        private static void ValidatePasswordLength(byte[] passwordBytes)
         {
-            if (passwordBytes.Length > maxPasswordLengthInBytes)
+            if (passwordBytes.Length > _maxPasswordLengthInBytes)
             {
-                var message = string.Format(CultureInfo.InvariantCulture,
-                    "The password length ({0} bytes) exceeds the maximum password length ({1} bytes).",
-                    passwordBytes.Length,
-                    maxPasswordLengthInBytes);
-                throw new ArgumentOutOfRangeException(message);
+                throw new ArgumentOutOfRangeException(
+                    $"The password length ({passwordBytes.Length} bytes) exceeds the maximum password length ({_maxPasswordLengthInBytes} bytes).");
             }
         }
 
-        internal static SecureString CreateSecureString(string plainString)
+        private static SecureString CreateSecureString(string plainString)
         {
             var str = new SecureString();
             if (!string.IsNullOrEmpty(plainString))
@@ -294,26 +296,29 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             return str;
         }
 
-        internal static string CreateString(SecureString secureString)
+        private static string CreateString(SecureString secureString)
         {
-            string str;
-            var zero = IntPtr.Zero;
             if ((secureString == null) || (secureString.Length == 0))
             {
                 return string.Empty;
             }
+
+            string str;
+            var strptr = IntPtr.Zero;
+
             try
             {
-                zero = Marshal.SecureStringToBSTR(secureString);
-                str = Marshal.PtrToStringBSTR(zero);
+                strptr = Marshal.SecureStringToBSTR(secureString);
+                str = Marshal.PtrToStringBSTR(strptr);
             }
             finally
             {
-                if (zero != IntPtr.Zero)
+                if (strptr != IntPtr.Zero)
                 {
-                    Marshal.ZeroFreeBSTR(zero);
+                    Marshal.ZeroFreeBSTR(strptr);
                 }
             }
+
             return str;
         }
     }

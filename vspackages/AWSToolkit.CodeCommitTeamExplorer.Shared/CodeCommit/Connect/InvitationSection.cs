@@ -28,21 +28,20 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class InvitationSection : TeamExplorerInvitationBase
     {
-        static InvitationSection()
-        {
-            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
-        }
-
         private readonly ILog LOGGER = LogManager.GetLogger(typeof(InvitationSection));
+
+        public const int CodeCommitInvitationSectionPriority = 150;
+        private const int TimerIntervalMs = 2000;
+        private const string _signUpUrl = "https://aws.amazon.com/";
 
         private IVsShell _vsShell = null;
         private readonly Timer _packageLoadedTimer;
         private bool _toolkitPackageLoaded = false;
 
-        public const int CodeCommitInvitationSectionPriority = 150;
-        private const int TimerIntervalMs = 2000;
-
-        private const string _signUpUrl = "https://aws.amazon.com/";
+        static InvitationSection()
+        {
+            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
+        }
 
         [ImportingConstructor]
         public InvitationSection()
@@ -157,11 +156,14 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 
         private void CheckIfToolkitLoaded(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            bool restartTimer = false;
+            var restartTimer = false;
 
             try
             {
-                if (_vsShell == null) { return; }
+                if (_vsShell == null)
+                {
+                    return;
+                }
 
                 var packageGuid = GetToolkitPackageGuid();
                 var isLoaded = _vsShell.IsPackageLoaded(ref packageGuid, out var _);
@@ -174,9 +176,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
                     _toolkitPackageLoaded = true;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Unable to determine if the Toolkit has been loaded", e);
+                LOGGER.Error("Unable to determine if the Toolkit has been loaded", ex);
                 restartTimer = true;
             }
             finally

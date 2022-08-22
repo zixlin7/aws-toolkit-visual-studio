@@ -29,8 +29,8 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
                 return new ActionResults().WithSuccess(false);
             }
 
+            // If the user has only one profile, we can just proceed
             var accounts = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts;
-            // if the user has only one profile, we can just proceed
             if (accounts.Count == 1)
             {
                 GitUtilities.RecordCodeCommitSetCredentialsMetric(true);
@@ -51,10 +51,12 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
         /// Called from the main package in response to the user selecting
         /// CodeCommit under the Manage Connections dropdown
         /// </summary>
-        public static void  OpenConnection()
+        public static void OpenConnection()
         {
             if (TeamExplorerConnection.ActiveConnection != null)
+            {
                 TeamExplorerConnection.ActiveConnection.Signout();
+            }
 
             var controller = new ConnectController();
             var results = controller.Execute();
@@ -66,7 +68,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 
         private ActionResults SelectFromExistingProfiles()
         {
-            _selectionControl = new ConnectControl(this);
+            _selectionControl = new ConnectControl();
             if (ToolkitFactory.Instance.ShellProvider.ShowModal(_selectionControl))
             {
                 SelectedAccount = _selectionControl.SelectedAccount;

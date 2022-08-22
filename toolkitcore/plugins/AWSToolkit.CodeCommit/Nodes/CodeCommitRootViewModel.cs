@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
         public CodeCommitRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
             : base(accountViewModel.MetaNode.FindChild<CodeCommitRootViewMetaNode>(), accountViewModel, "AWS CodeCommit", region)
         {
-            _metaNode = base.MetaNode as CodeCommitRootViewMetaNode;
+            _metaNode = MetaNode as CodeCommitRootViewMetaNode;
             _codeCommitClient = new Lazy<IAmazonCodeCommit>(CreateCodeCommitClient);
         }
 
@@ -36,11 +36,11 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
             var request = new ListRepositoriesRequest();
             ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
 
-            var response = this.CodeCommitClient.ListRepositories(request);
+            var response = CodeCommitClient.ListRepositories(request);
 
             foreach (var r in response.Repositories)
             {
-                var child = new CodeCommitRepositoryViewModel(this._metaNode.CodeCommitRepositoryViewMetaNode, this, r);
+                var child = new CodeCommitRepositoryViewModel(_metaNode.CodeCommitRepositoryViewMetaNode, this, r);
                 items.Add(child);
             }
 

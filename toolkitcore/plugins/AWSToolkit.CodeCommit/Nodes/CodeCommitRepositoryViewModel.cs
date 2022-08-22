@@ -13,7 +13,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
         {
             CodeCommitRootViewModel = viewModel;
             RepositoryNameAndID = repositoryNameAndID;
-            CodeCommitClient = this.CodeCommitRootViewModel.CodeCommitClient;
+            CodeCommitClient = CodeCommitRootViewModel.CodeCommitClient;
         }
 
         protected override string IconName => AwsImageResourcePath.CodeCommitRepository.Path;

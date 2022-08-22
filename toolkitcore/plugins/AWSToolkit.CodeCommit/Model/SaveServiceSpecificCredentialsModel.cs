@@ -7,8 +7,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 {
     public class SaveServiceSpecificCredentialsModel : BaseModel
     {
-        // matches what the user can download from the console
-        private readonly string[] _fileHeaders = {"User Name", "Password"};
+        // Matches what the user can download from the console
+        private readonly string[] _fileHeaders = { "User Name", "Password" };
 
         public SaveServiceSpecificCredentialsModel(ServiceSpecificCredential generatedCredentials)
         {
@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public string Filename
         {
             get => _filename;
-            set { _filename = value; NotifyPropertyChanged("Filename"); }
+            set => SetProperty(ref _filename, value);
         }
 
         public bool SaveToFile()
@@ -34,9 +34,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Failed to Save", "Failed to save the credentials to the specified file. Exception message " + e.Message);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Failed to Save", $"Failed to save the credentials to the specified file. Exception message {ex.Message}");
             }
 
             return false;

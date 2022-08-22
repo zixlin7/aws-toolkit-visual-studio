@@ -25,12 +25,12 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
             Controller = controller;
             DataContext = Controller.Model;
 
-            // trap model property changes so we can forward them onto the
+            // Trap model property changes so we can forward them onto the
             // dialog host and enable the OK button dynamically (the host
             // will call our IsValidated handler)
             Controller.Model.PropertyChanged += ModelOnPropertyChanged;
 
-            this.Loaded += CloneRepositoryControl_Loaded;
+            Loaded += (sender, e) => RefreshRepositoryList();
         }
 
         public CloneRepositoryController Controller { get; }
@@ -38,11 +38,6 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
         public override string Title => "Clone AWS CodeCommit Repository";
 
         public override bool SupportsDynamicOKEnablement => true;
-
-        private void CloneRepositoryControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            RefreshRepositoryList();
-        }
 
         private void RefreshRepositoryList()
         {
@@ -64,9 +59,11 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
         {
             var validationFailMsg = CloneRepositoryModel.IsFolderValidForRepo(Controller.Model.SelectedFolder);
             if (string.IsNullOrEmpty(validationFailMsg))
+            {
                 return true;
+            }
 
-            ToolkitFactory.Instance.ShellProvider.ShowError("Folder Error", "The selected folder cannot be used to clone into. " + validationFailMsg);
+            ToolkitFactory.Instance.ShellProvider.ShowError("Folder Error", $"The selected folder cannot be used to clone into. {validationFailMsg}");
             return false;
         }
 
@@ -76,16 +73,11 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
             _ctlQueryingResourcesOverlay.Visibility = queryActive ? Visibility.Visible : Visibility.Hidden;
         }
 
-        private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            RefreshRepositoryList();
-        }
-
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)
         {
             var dlg = new FolderBrowserDialog()
             {
-                Description = @"Select the folder to contain the repository",
+                Description = "Select the folder to contain the repository",
                 ShowNewFolderButton = true
             };
 
@@ -121,6 +113,10 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
             NotifyPropertyChanged(propertyChangedEventArgs.PropertyName);
         }
 
+        private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshRepositoryList();
+        }
 
         private void OnSelectionChangedSortBy(object sender, SelectionChangedEventArgs e)
         {

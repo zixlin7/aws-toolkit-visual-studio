@@ -7,6 +7,19 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 {
     public class CreateRepositoryModel : BaseRepositoryModel
     {
+        private string _name;
+        private string _description;
+        private string _selectedFolder;
+        private string _baseFolder;
+        private GitIgnoreOption _selectedGitIgnore;
+
+        private readonly List<GitIgnoreOption> _gitIgnoreOptions = new List<GitIgnoreOption>
+        {
+            new GitIgnoreOption { DisplayText = "Visual Studio file types", GitIgnoreType = GitIgnoreOption.OptionType.VSToolkitDefault },
+            new GitIgnoreOption { DisplayText = "Use custom...", GitIgnoreType = GitIgnoreOption.OptionType.Custom },
+            new GitIgnoreOption { DisplayText = "No .gitignore file", GitIgnoreType = GitIgnoreOption.OptionType.None }
+        };
+
         public CreateRepositoryModel()
         {
             SelectedGitIgnore = _gitIgnoreOptions.FirstOrDefault();
@@ -17,9 +30,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             get => _name;
             set
             {
-                _name = value;
-                NotifyPropertyChanged(nameof(Name));
-
+                SetProperty(ref _name, value);
                 SelectedFolder = Path.Combine(BaseFolder, _name);
             }
         }
@@ -27,7 +38,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public string Description
         {
             get => _description;
-            set { _description = value; NotifyPropertyChanged(nameof(Description)); }
+            set => SetProperty(ref _description, value);
         }
 
         /// <summary>
@@ -49,7 +60,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public string SelectedFolder
         {
             get => _selectedFolder;
-            set { _selectedFolder = value; NotifyPropertyChanged(nameof(SelectedFolder)); }
+            set => SetProperty(ref _selectedFolder, value);
         }
 
         public List<GitIgnoreOption> GitIgnoreOptions => _gitIgnoreOptions;
@@ -57,12 +68,12 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public GitIgnoreOption SelectedGitIgnore
         {
             get => _selectedGitIgnore;
-            set { _selectedGitIgnore = value; NotifyPropertyChanged(nameof(SelectedGitIgnore)); }
+            set => SetProperty(ref _selectedGitIgnore, value);
         }
 
         public INewCodeCommitRepositoryInfo GetNewRepositoryInfo()
         {
-            var info = new NewRepositoryInfo
+            return new NewRepositoryInfo
             {
                 OwnerAccount = Account,
                 Region = SelectedRegion,
@@ -71,21 +82,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                 LocalFolder = SelectedFolder,
                 GitIgnore = SelectedGitIgnore
             };
-
-            return info;
         }
-
-        private string _name;
-        private string _description;
-        private string _selectedFolder;
-        private string _baseFolder;
-        private GitIgnoreOption _selectedGitIgnore;
-
-        private readonly List<GitIgnoreOption> _gitIgnoreOptions = new List<GitIgnoreOption>
-        {
-            new GitIgnoreOption {DisplayText = "Visual Studio file types", GitIgnoreType = GitIgnoreOption.OptionType.VSToolkitDefault },
-            new GitIgnoreOption {DisplayText = "Use custom...", GitIgnoreType = GitIgnoreOption.OptionType.Custom },
-            new GitIgnoreOption {DisplayText = "No .gitignore file", GitIgnoreType = GitIgnoreOption.OptionType.None }
-        };
     }
 }
