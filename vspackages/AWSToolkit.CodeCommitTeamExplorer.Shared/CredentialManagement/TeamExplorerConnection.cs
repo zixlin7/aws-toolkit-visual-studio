@@ -19,6 +19,7 @@ using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
+
 using Microsoft.Win32;
 using ThirdParty.Json.LitJson;
 
@@ -31,22 +32,17 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
     /// </summary>
     public class TeamExplorerConnection : INotifyPropertyChanged
     {
-        #region Private data
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(TeamExplorerConnection));
 
         private const string connectedProfile = "ConnectedProfile";
         private const string targetsPropertyName = "CredentialTargets";
         private const string settingsFileFolderName = "teamexplorer";
         private const string settingsFileName = "connections.json";
 
-        private static readonly object _synclock = new object();
-
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(TeamExplorerConnection));
-
+        private static readonly object _activeConnectionLock = new object();
         private static TeamExplorerConnection _activeConnection;
 
         private readonly HashSet<string> _persistedTargets = new HashSet<string>();
-
-        #endregion
 
         public delegate void TeamExplorerBindingChanged(TeamExplorerConnection oldConnection, TeamExplorerConnection newConnection);
         public static event TeamExplorerBindingChanged OnTeamExplorerBindingChanged;
@@ -65,7 +61,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             {
                 // Don't log this getter to avoid log spam from this getter.
                 // It is frequently queried in RelayCommand CanExecute calls.
-                lock (_synclock)
+                lock (_activeConnectionLock)
                 {
                     return _activeConnection;
                 }
@@ -73,8 +69,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             private set
             {
                 LOGGER.Debug("TeamExplorerConnection: set_ActiveConnection");
+
                 TeamExplorerConnection oldConnection = null;
-                lock (_synclock)
+                lock (_activeConnectionLock)
                 {
                     oldConnection = _activeConnection;
                     _activeConnection = value;
@@ -115,8 +112,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         }
 
         public bool IsAccountValid => AwsConnectionState is ConnectionState.ValidConnection;
+
         public bool IsValidatingAccount => AwsConnectionState is ConnectionState.ValidatingConnection;
+
         public string AccountValidationMessage => AwsConnectionState?.Message ?? string.Empty;
+
         public string AccountId => _teamExplorerAwsConnectionManager?.ActiveAccountId;
 
         public void RefreshRepositories()
@@ -157,9 +157,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                                         }
                                     }
                                 }
-                                catch (Exception e)
+                                catch (Exception ex)
                                 {
-                                    LOGGER.Error("Error processing repo at registry " + subkey.Name, e);
+                                    LOGGER.Error($"Error processing repo at registry {subkey.Name}", ex);
                                 }
                             }
                         }
@@ -180,7 +180,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
             if (reposToValidate.Any())
             {
-                // as this probing could take some time, spin up a thread to add the new
+                // As this probing could take some time, spin up a thread to add the new
                 // repos into the collection
                 ThreadPool.QueueUserWorkItem(
                     async state => { await QueryNewlyAddedRepositoriesDataAsync(state); },
@@ -192,12 +192,17 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         private async Task QueryNewlyAddedRepositoriesDataAsync(object state)
         {
             LOGGER.Debug("TeamExplorerConnection: QueryNewlyAddedRepositoriesDataAsync");
+
             if (CodeCommitPlugin == null)
+            {
                 return;
+            }
 
             var repoPaths = state as IEnumerable<string>;
             if (repoPaths == null)
+            {
                 return;
+            }
 
             var validRepos = new List<ICodeCommitRepository>();
 
@@ -237,7 +242,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             credentials.Save();
 
             if (_persistedTargets.Contains(credentials.Target))
+            {
                 return;
+            }
 
             _persistedTargets.Add(credentials.Target);
             SaveConnectionData(true);
@@ -380,9 +387,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                     File.Delete(GetSettingsFilePath());
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.ErrorFormat("Exception parsing connection data", e);
+                LOGGER.Error("Exception parsing connection data", ex);
             }
 
             return null;
@@ -394,7 +401,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             var location = Path.Combine(settingsFolder, settingsFileFolderName);
 
             if (!Directory.Exists(location))
+            {
                 Directory.CreateDirectory(location);
+            }
 
             return Path.Combine(location, settingsFileName);
         }
@@ -439,7 +448,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
                 var storeFile = GetSettingsFilePath();
                 if (!File.Exists(storeFile))
+                {
                     return;
+                }
 
                 var data = File.ReadAllText(storeFile);
                 ActiveConnection = FromJson(data);
@@ -459,17 +470,12 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                 if (connection != null)
                 {
                     connection.AwsConnectionState = e.State;
-
                     connection.RefreshRepositories();
                 }
             });
         }
 
-        private TeamExplorerConnection(AccountViewModel account) : this(account, null)
-        {
-        }
-
-        private TeamExplorerConnection(AccountViewModel account, IEnumerable<string> credentialTargets)
+        private TeamExplorerConnection(AccountViewModel account, IEnumerable<string> credentialTargets = null)
         {
             Account = account;
 
@@ -477,23 +483,21 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             {
                 if (credentialTargets != null)
                 {
-                    var svcCredentials =
-                        account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
+                    var svcCredentials = account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
 
                     foreach (var target in credentialTargets)
                     {
                         _persistedTargets.Add(target);
-                        using (var gitCredentials =
-                            new GitCredentials(svcCredentials.Username, svcCredentials.Password, target))
+                        using (var gitCredentials = new GitCredentials(svcCredentials.Username, svcCredentials.Password, target))
                         {
                             gitCredentials.Save();
                         }
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error(string.Format("Failed to load service credentials for profile {0} or to register credentials with the OS", account.DisplayName), e);
+                LOGGER.Error($"Failed to load service credentials for profile {account.DisplayName} or to register credentials with the OS", ex);
             }
         }
 
@@ -508,13 +512,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             {
                 TEGitKey = @"Software\Microsoft\VisualStudio\16.0\TeamFoundation\GitSourceControl";
             }
-            else if (string.Equals(ToolkitFactory.Instance?.ShellProvider.HostInfo.Version, ToolkitHosts.Vs2017.Version))
-            {
-                TEGitKey = @"Software\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
-            }
             else
             {
-                var errorMessage = $"Error unable to determine TeamFoundation\\GitSourceControl for shell {ToolkitFactory.Instance?.ShellProvider.HostInfo.Version}";
+                var errorMessage = $@"Error unable to determine TeamFoundation\GitSourceControl for shell {ToolkitFactory.Instance?.ShellProvider.HostInfo.Version}";
                 LOGGER.Error(errorMessage);
 
 // If we are debug mode throw a fatal exception so we know to update this code when adding support for a new shell.
@@ -526,15 +526,15 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 #endif
             }
 
-            LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS {ToolkitFactory.Instance?.ShellProvider.HostInfo.Version}");
+            LOGGER.InfoFormat(@"Using regkey {0} to look for TeamFoundation\GitSourceControl for VS {1}", TEGitKey, ToolkitFactory.Instance?.ShellProvider.HostInfo.Version);
 
             try
             {
-                return Registry.CurrentUser.OpenSubKey(TEGitKey + "\\" + path, false);
+                return Registry.CurrentUser.OpenSubKey($@"{TEGitKey}\{path}", false);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Failed to open Team Explorer registry key " + TEGitKey, e);
+                LOGGER.Error($"Failed to open Team Explorer registry key {TEGitKey}", ex);
             }
 
             return null;

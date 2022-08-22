@@ -13,6 +13,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
+using Amazon.AWSToolkit.Collections;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 {
@@ -36,7 +37,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                 // seems to want only the domain host - specifying the full repo path yields a 'repo doesn't
                 // exist' exception.
                 var uri = new Uri(repoUrl);
-                var gitCredentialKey = string.Format("git:{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                var gitCredentialKey = $"git:{uri.Scheme}://{uri.DnsSafeHost}";
                 gitCredentials = new GitCredentials(credentials.Username, credentials.Password, gitCredentialKey);
 
                 TeamExplorerConnection.ActiveConnection.RegisterCredentials(gitCredentials);
@@ -62,13 +63,10 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 
                 success = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Clone using Team Explorer failed with exception", e);
-                var msg = string.Format("Failed to clone repository {0}. Error message: {1}.",
-                                        repositoryUrl,
-                                        e.Message);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Repository Clone Failed", msg);
+                LOGGER.Error("Clone using Team Explorer failed with exception", ex);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Repository Clone Failed", $"Failed to clone repository {repositoryUrl}. Error message: {ex.Message}.");
             }
             finally
             {
@@ -96,22 +94,19 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
         {
             var success = false;
             var phase = "create";
+
             try
             {
-                // delegate the repo creation to the CodeCommit plugin, then we'll take over for the
+                // Delegate the repo creation to the CodeCommit plugin, then we'll take over for the
                 // clone operation so that the new repo is recognized inside Team Explorer                
                 var codeCommitPlugin = ToolkitFactory.Instance.ShellProvider.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
 
                 var codeCommitGitServices = codeCommitPlugin.CodeCommitGitServices;
                 await codeCommitGitServices.CreateAsync(newRepositoryInfo, false, null);
 
-                var repository = codeCommitPlugin.GetRepository(newRepositoryInfo.Name,
-                                                                newRepositoryInfo.OwnerAccount,
-                                                                newRepositoryInfo.Region);
+                var repository = codeCommitPlugin.GetRepository(newRepositoryInfo.Name, newRepositoryInfo.OwnerAccount, newRepositoryInfo.Region);
 
-                var svcCredentials
-                    = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore
-                        .CodeCommitServiceName);
+                var svcCredentials = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
 
                 phase = "clone";
                 await CloneAsync(svcCredentials, repository.RepositoryUrl, newRepositoryInfo.LocalFolder, "create");
@@ -119,42 +114,32 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                 repository.LocalFolder = newRepositoryInfo.LocalFolder;
 
                 var initialCommitContent = new List<string>();
+                string target;
 
                 switch (newRepositoryInfo.GitIgnore.GitIgnoreType)
                 {
                     case GitIgnoreOption.OptionType.VSToolkitDefault:
-                        {
-                            var content = S3FileFetcher.Instance.GetFileContent("CodeCommit/vsdefault.gitignore.txt", S3FileFetcher.CacheMode.PerInstance);
-                            var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
-                            File.WriteAllText(target, content);
-                            initialCommitContent.Add(target);
-                        }
+                        var content = S3FileFetcher.Instance.GetFileContent("CodeCommit/vsdefault.gitignore.txt", S3FileFetcher.CacheMode.PerInstance);
+                        target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
+                        File.WriteAllText(target, content);
+                        initialCommitContent.Add(target);
                         break;
-
                     case GitIgnoreOption.OptionType.Custom:
-                        {
-                            var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
-                            File.Copy(newRepositoryInfo.GitIgnore.CustomFilename, target);
-                            initialCommitContent.Add(target);
-                        }
+                        target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
+                        File.Copy(newRepositoryInfo.GitIgnore.CustomFilename, target);
+                        initialCommitContent.Add(target);
                         break;
-
                     case GitIgnoreOption.OptionType.None:
                         break;
                 }
 
                 phase = "initialCommit";
-                // if content needs to be populated, make the callback
+
+                // If content needs to be populated, make the callback
                 if (contentPopulationCallback != null)
                 {
                     var contentAdded = contentPopulationCallback(repository.LocalFolder);
-                    if (contentAdded != null && contentAdded.Any())
-                    {
-                        foreach (var c in contentAdded)
-                        {
-                            initialCommitContent.Add(c);
-                        }
-                    }
+                    initialCommitContent.AddAll(contentAdded);
                 }
 
                 if (initialCommitContent.Any())
@@ -162,13 +147,13 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                     codeCommitPlugin.StageAndCommit(repository.LocalFolder, initialCommitContent, "Initial commit", svcCredentials.Username);
                     codeCommitPlugin.Push(repository.LocalFolder, svcCredentials);
                 }
+
                 success = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Failed to create repository", e);
-                var msg = string.Format("Error creating repository {0}: {1}.", newRepositoryInfo.Name, e.Message);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Repository Creation Failed", msg);
+                LOGGER.Error("Failed to create repository", ex);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Repository Creation Failed", $"Error creating repository {newRepositoryInfo.Name}: {ex.Message}.");
             }
             finally
             {

@@ -17,8 +17,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.Base
         private string _provider;
         private string _signUpLabel;
 
-        #region ITeamExplorerServiceInvitation
-
         /// <summary>
         /// Triggers the login flow
         /// </summary>
@@ -32,62 +30,60 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.Base
         public bool CanConnect
         {
             get => _canConnect;
-            set { _canConnect = value; this.RaisePropertyChanged(); }
+            set { _canConnect = value; NotifyPropertyChanged(); }
         }
 
         public bool CanSignUp
         {
             get => _canSignUp;
-            set { _canSignUp = value; this.RaisePropertyChanged(); }
+            set { _canSignUp = value; NotifyPropertyChanged(); }
         }
 
         public string ConnectLabel
         {
             get => _connectLabel;
-            set { _connectLabel = value; this.RaisePropertyChanged(); }
+            set { _connectLabel = value; NotifyPropertyChanged(); }
         }
 
         public string Description
         {
             get => _description;
-            set { _description = value; this.RaisePropertyChanged(); }
+            set { _description = value; NotifyPropertyChanged(); }
         }
 
         public object Icon
         {
             get => _icon;
-            set { _icon = value; this.RaisePropertyChanged(); }
+            set { _icon = value; NotifyPropertyChanged(); }
         }
 
         public bool IsVisible
         {
             get => _isVisible;
-            set { _isVisible = value; this.RaisePropertyChanged(); }
+            set { _isVisible = value; NotifyPropertyChanged(); }
         }
 
         public string Name
         {
             get => _name;
-            set { _name = value; this.RaisePropertyChanged(); }
+            set { _name = value; NotifyPropertyChanged(); }
         }
 
         public string Provider
         {
             get => _provider;
-            set { _provider = value; this.RaisePropertyChanged(); }
+            set { _provider = value; NotifyPropertyChanged(); }
         }
 
         public string SignUpLabel
         {
             get => _signUpLabel;
-            set { _signUpLabel = value; this.RaisePropertyChanged(); }
+            set { _signUpLabel = value; NotifyPropertyChanged(); }
         }
 
         public virtual void Initialize(IServiceProvider serviceProvider)
         {
             TeamExplorerServiceProvider = serviceProvider;
         }
-
-        #endregion
     }
 }

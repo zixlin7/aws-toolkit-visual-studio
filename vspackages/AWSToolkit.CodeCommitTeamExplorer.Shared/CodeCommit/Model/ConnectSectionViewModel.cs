@@ -3,17 +3,21 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Input;
-using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using Amazon.AWSToolkit.Commands;
+using Amazon.AWSToolkit.CommonUI;
+
 using EnvDTE;
+
 using log4net;
+
 using Microsoft.TeamFoundation.Controls;
+using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
@@ -30,10 +34,12 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
                 TeamExplorerConnection.ActiveConnection.PropertyChanged += ActiveConnectionOnPropertyChanged;
             }
 
-            _cloneCommand = new RelayCommand(CanOperateOnActiveConnection, param => OnClone());
-            _createCommand = new RelayCommand(CanOperateOnActiveConnection, param => OnCreate());
-            _signoutCommand = new CommandHandler(OnSignout, true);
+            CloneCommand = new RelayCommand(CanOperateOnActiveConnection, param => OnClone());
+            CreateCommand = new RelayCommand(CanOperateOnActiveConnection, param => OnCreate());
+            SignoutCommand = new CommandHandler(OnSignout, true);
             RefreshConnection = new RelayCommand(CanRefreshConnection, param => OnRefreshConnection());
+
+            Title = "AWS CodeCommit";
         }
 
         /// <summary>
@@ -57,19 +63,19 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
             RaisePropertyChanged(nameof(SignoutLabel));
         }
 
-        private void ActiveConnectionOnPropertyChanged(object o, PropertyChangedEventArgs propertyChangedEventArgs)
+        private void ActiveConnectionOnPropertyChanged(object o, PropertyChangedEventArgs e)
         {
-            RaisePropertyChanged(propertyChangedEventArgs.PropertyName);
+            RaisePropertyChanged(e.PropertyName);
 
-            if (propertyChangedEventArgs.PropertyName == nameof(TeamExplorerConnection.AwsConnectionState))
+            if (e.PropertyName == nameof(TeamExplorerConnection.AwsConnectionState))
             {
                 RaisePropertyChanged(nameof(IsAccountValid));
                 RaisePropertyChanged(nameof(AccountValidationMessage));
 
                 // Trigger a refresh of the enabled state of commands like Clone
-                Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
+                ThreadHelper.JoinableTaskFactory.Run(async () =>
                 {
-                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     CommandManager.InvalidateRequerySuggested();
                 });
             }
@@ -78,33 +84,26 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
         public string SignoutLabel =>
             TeamExplorerConnection.ActiveConnection == null
                 ? "Sign out"
-                : string.Concat("Sign out ", TeamExplorerConnection.ActiveConnection.Account.DisplayName);
+                : $"Sign out {TeamExplorerConnection.ActiveConnection.Account.DisplayName}";
 
-        private readonly CommandHandler _signoutCommand;
+        public ICommand SignoutCommand { get; }
 
-        public ICommand SignoutCommand => _signoutCommand;
+        public ICommand CloneCommand { get; }
 
-        private readonly ICommand _cloneCommand;
-
-        public ICommand CloneCommand => _cloneCommand;
-
-        private readonly ICommand _createCommand;
-
-        public ICommand CreateCommand => _createCommand;
+        public ICommand CreateCommand { get; }
 
         public ICommand RefreshConnection { get; }
 
-        public ObservableCollection<ICodeCommitRepository> Repositories =>
-            TeamExplorerConnection.ActiveConnection != null
-                ? TeamExplorerConnection.ActiveConnection.Repositories
-                : null;
+        public ObservableCollection<ICodeCommitRepository> Repositories => TeamExplorerConnection.ActiveConnection?.Repositories;
 
         public ICodeCommitRepository SelectedRepository { get; set; }
 
-        // enable access to the account here, so that if we ever need to support
+        // Enable access to the account here, so that if we ever need to support
         // multiple connections each panel can have its own without a larger refactor
         public AccountViewModel Account => TeamExplorerConnection.ActiveConnection?.Account;
+
         public bool IsAccountValid => TeamExplorerConnection.ActiveConnection?.IsAccountValid ?? false;
+
         public string AccountValidationMessage => TeamExplorerConnection.ActiveConnection?.AccountValidationMessage ?? string.Empty;
 
         private bool CanOperateOnActiveConnection(object o)
@@ -135,13 +134,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
 
         private bool CanRefreshConnection(object param)
         {
-            if (TeamExplorerConnection.ActiveConnection == null)
-            {
-                return false;
-            }
-
-            return !IsAccountValid &&
-                   TeamExplorerConnection.ActiveConnection.AwsConnectionState.IsTerminal;
+            return
+                !IsAccountValid
+                && (TeamExplorerConnection.ActiveConnection?.AwsConnectionState.IsTerminal ?? false);
         }
 
         private void OnRefreshConnection()
@@ -152,12 +147,13 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
         public void OpenRepository()
         {
             LOGGER.Debug("ConnectionSectionViewModel OpenRepository");
-            // there is no procedure to bind to a repo from within Team Explorer, so adopt
+
+            // There is no procedure to bind to a repo from within Team Explorer, so adopt
             // GitHub's approach of opening a transient solution in the repo, that we then
             // discard
             const string TempSolutionName = "~$AWSToolkitVSTemp$~";
 
-            // todo: if currently open repo == the one we clicked, do nothing
+            // TODO: If currently open repo == the one we clicked, do nothing
 
             var dte = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<DTE>();
             if (dte == null)
@@ -181,13 +177,13 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
 
                 dte.Solution.Close(false); // Don't create a .sln file when we close.
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Error opening repository", e);
+                LOGGER.Error("Error opening repository", ex);
             }
             finally
             {
-                // clean up any generated artifacts as a reslt of our temp solution open
+                // Clean up any generated artifacts as a reslt of our temp solution open
                 var vsTempPath = Path.Combine(repoDir, ".vs", TempSolutionName);
                 try
                 {
@@ -197,19 +193,18 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
                         Directory.Delete(vsTempPath, true);
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    LOGGER.Error("Exception attempting to clean up temp solution files", e);
+                    LOGGER.Error("Exception attempting to clean up temp solution files", ex);
                 }
             }
 
-            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
+            ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
-                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 if (solutionCreated)
                 {
-                    var teamExplorerService =
-                        ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<ITeamExplorer>();
+                    var teamExplorerService = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<ITeamExplorer>();
                     teamExplorerService?.NavigateToPage(new Guid(TeamExplorerPageIds.Home), null);
                 }
                 else

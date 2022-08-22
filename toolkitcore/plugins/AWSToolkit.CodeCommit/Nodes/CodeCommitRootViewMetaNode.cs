@@ -10,7 +10,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
     {
         private static readonly string CodeCommitServiceName = new AmazonCodeCommitConfig().RegionEndpointServiceName;
 
-        public CodeCommitRepositoryViewMetaNode CodeCommitRepositoryViewMetaNode => this.FindChild<CodeCommitRepositoryViewMetaNode>();
+        public CodeCommitRepositoryViewMetaNode CodeCommitRepositoryViewMetaNode => FindChild<CodeCommitRepositoryViewMetaNode>();
 
         public override string SdkEndpointServiceName => CodeCommitServiceName;
 

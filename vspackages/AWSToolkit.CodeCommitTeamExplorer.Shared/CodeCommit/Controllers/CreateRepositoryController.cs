@@ -1,5 +1,7 @@
 ﻿using System;
 using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AWSToolkit.Tasks;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
@@ -44,7 +46,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
             // Create the repo at the service first, then clone locally so that Team Explorer becomes
             // aware of it. We will then call an optional delegate so that external tooling/wizards
             // can populate the repo with initial content that we will then commit and push.
-            GitUtilities.CreateAsync(newRepoInfo, true, null);
+            GitUtilities.CreateAsync(newRepoInfo, true, null).LogExceptionAndForget();
         }
     }
 }
