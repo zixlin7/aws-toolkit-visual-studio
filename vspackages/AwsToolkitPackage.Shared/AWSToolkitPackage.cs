@@ -412,14 +412,14 @@ namespace Amazon.AWSToolkit.VisualStudio
             return null;
         }
 
-        void InstantiateToolkitShellProviderService(IToolkitHostInfo hostVersion)
+        void InstantiateToolkitShellProviderService(IToolkitHostInfo hostVersion, ProductEnvironment productEnvironment)
         {
             lock (this)
             {
                 if (ToolkitShellProviderService == null)
                 {
                     LOGGER.Debug("Creating SAWSToolkitShellProvider service");
-                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, hostVersion);
+                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, hostVersion, productEnvironment);
                 }
             }
         }
@@ -568,7 +568,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
-                InstantiateToolkitShellProviderService(hostInfo);
+                InstantiateToolkitShellProviderService(hostInfo, productEnvironment);
 
                 // Enable UIs to access VS-provided images
                 await InitializeImageProviderAsync();
