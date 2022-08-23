@@ -183,7 +183,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         private IAWSCloudFormation _cloudformationPlugin;
         private IAWSElasticBeanstalk _beanstalkPlugin;
-        private IAWSCodeCommit _codeCommitPlugin;
 
         internal readonly NavigatorVsUIHierarchy _navigatorVsUIHierarchy;
 
@@ -369,32 +368,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         }
 
         internal bool BeanstalkPluginAvailable => AWSBeanstalkPlugin != null;
-
-        IAWSCodeCommit CodeCommitPlugin
-        {
-            get
-            {
-                try
-                {
-                    if (_codeCommitPlugin == null)
-                    {
-                        var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
-                        if (shell != null)
-                        {
-                            _codeCommitPlugin = shell.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    LOGGER.ErrorFormat("Exception attempting to obtain IAWSCodeCommit, {0}", e);
-                }
-
-                return _codeCommitPlugin;
-            }
-        }
-
-        bool CodeCommitPluginAvailable => CodeCommitPlugin != null;
 
         private object CreateService(IServiceContainer container, Type serviceType)
         {
