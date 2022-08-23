@@ -21,6 +21,7 @@
     <RootNamespace>Amazon.AWSToolkit.CodeCommitTeamExplorer</RootNamespace>
     <AssemblyName>AWSToolkit.CodeCommitTeamExplorer.v16</AssemblyName>
     <FileAlignment>512</FileAlignment>
+  	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,7 +31,6 @@
     <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
