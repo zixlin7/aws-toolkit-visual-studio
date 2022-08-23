@@ -9,7 +9,6 @@
     <Import_RootNamespace>Amazon.AWSToolkit.CodeCommitTeamExplorer</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Base\TeamExplorerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\TeamExplorerInvitationBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Connect\ConnectionSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Connect\InvitationSection.cs" />

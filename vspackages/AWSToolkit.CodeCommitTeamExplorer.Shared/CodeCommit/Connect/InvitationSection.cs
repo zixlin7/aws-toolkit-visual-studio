@@ -89,7 +89,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
             ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                _vsShell = TeamExplorerServiceProvider.GetService(typeof(SVsShell)) as IVsShell;
+                _vsShell = ServiceProvider.GetService(typeof(SVsShell)) as IVsShell;
             });
             _packageLoadedTimer.Start();
 
@@ -110,7 +110,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
                     Environment.NewLine);
 
                 VsShellUtilities.ShowMessageBox(
-                    TeamExplorerServiceProvider,
+                    ServiceProvider,
                     message,
                     "Unable to connect to CodeCommit",
                     OLEMSGICON.OLEMSGICON_INFO,
