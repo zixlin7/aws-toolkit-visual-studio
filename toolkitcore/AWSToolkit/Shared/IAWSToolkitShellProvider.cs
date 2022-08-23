@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace Amazon.AWSToolkit.Shared
 {
@@ -34,6 +35,7 @@ namespace Amazon.AWSToolkit.Shared
         /// Describes the Shell Host of the Toolkit
         /// </summary>
         IToolkitHostInfo HostInfo { get; }
+        ProductEnvironment ProductEnvironment { get; }
 
         /// <summary>
         /// 

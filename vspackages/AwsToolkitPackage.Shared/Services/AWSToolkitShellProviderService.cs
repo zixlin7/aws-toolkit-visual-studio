@@ -14,6 +14,7 @@ using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Solutions;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.ToolWindow;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
@@ -48,15 +49,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         private readonly AWSToolkitPackage _hostPackage;
         private readonly IToolkitHostInfo _toolkitHostInfo;
 
-        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, IToolkitHostInfo hostVersion)
+        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, IToolkitHostInfo hostVersion,
+            ProductEnvironment productEnvironment)
         {
             _hostPackage = hostPackage;
             _toolkitHostInfo = hostVersion;
+            ProductEnvironment = productEnvironment;
         }
 
         #region IAWSToolkitShellProvider
 
         public IToolkitHostInfo HostInfo => _toolkitHostInfo;
+        public ProductEnvironment ProductEnvironment { get; }
 
         public async Task OpenShellWindowAsync(ShellWindows window)
         {

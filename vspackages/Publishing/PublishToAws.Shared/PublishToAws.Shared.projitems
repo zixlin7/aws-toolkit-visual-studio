@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PublishFooterCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\EditKeyValuesCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ReportExistingTargetsIssueCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectCredentialsCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEc2InstanceTypeCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SelectEcrRepoCommandFactory.cs" />

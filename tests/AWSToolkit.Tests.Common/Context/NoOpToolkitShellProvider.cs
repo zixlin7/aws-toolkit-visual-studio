@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Util;
 
 using Project = Amazon.AWSToolkit.Solutions.Project;
@@ -19,6 +20,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
     public class NoOpToolkitShellProvider : IAWSToolkitShellProvider
     {
         public IToolkitHostInfo HostInfo { get; }
+        public ProductEnvironment ProductEnvironment { get; }
 
         public Task OpenShellWindowAsync(ShellWindows window)
         {
