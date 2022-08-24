@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Publish to AWS has been updated to use v1.2.4 of the AWS .NET deploy tool. This version of the Toolkit includes the following Deploy Tool changes: https://github.com/aws/aws-dotnet-deploy/releases/tag/1.2.4 , https://github.com/aws/aws-dotnet-deploy/releases/tag/1.1.15 ."
-}
