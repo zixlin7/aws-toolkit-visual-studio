@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix issue preventing Publish to AWS from publishing to a Fargate target when working with a region that does not have a default VPC. Previously, this would log an `Unexpected character encountered while parsing value: s. Path \u0027\u0027, line 0, position 0` error (Fixed in Deploy Tool v1.2.4)"
+}
