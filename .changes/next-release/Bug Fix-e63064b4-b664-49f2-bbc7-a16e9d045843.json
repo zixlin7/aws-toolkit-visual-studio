@@ -1,4 +1,4 @@
 {
   "Type": "Bug Fix",
-  "Description": "Publish to AWS has been updated to use v1.1.15 of the AWS .NET deploy tool (https://github.com/aws/aws-dotnet-deploy/releases/tag/1.1.15). This release fixes a bug when trying to re-publish a project to an existing Fargate target, and the target was previously published using a pre-GA version of Publish to AWS. If the target was configured with multiple security groups, trying to select it would log an 'Unexpected character encountered while parsing value: s.' error. Now, you can re-publish your project to this target, after reconfiguring the security groups setting. The setting will display a validation message in the 'Edit Settings' view if reconfiguration is needed."
+  "Description": "Publish to AWS has been updated to use v1.2.4 of the AWS .NET deploy tool. This version of the Toolkit includes the following Deploy Tool changes: https://github.com/aws/aws-dotnet-deploy/releases/tag/1.2.4 , https://github.com/aws/aws-dotnet-deploy/releases/tag/1.1.15 ."
 }
