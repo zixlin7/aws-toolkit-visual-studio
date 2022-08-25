@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "A bug has been fixed in Publish to AWS when publishing a project to an existing Fargate target, where the Fargate target was previously published using a pre-GA version of Publish to AWS. If the target was configured with multiple security groups, trying to select it would log an 'Unexpected character encountered while parsing value: s.' error. Now, you can re-publish your project to this target, but you need to reconfigure the security groups setting. The setting will display a validation message in the 'Edit Settings' view if reconfiguration is needed. (Fixed in Deploy Tool v1.1.15)"
-}
