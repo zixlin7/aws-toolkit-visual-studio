@@ -66,7 +66,6 @@
     <Compile Include="Controller\CreateRepositoryController.cs" />
     <Compile Include="Controller\CloneRepositoryController.cs" />
     <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />
-    <Compile Include="Controller\ViewRepositoryController.cs" />
     <Compile Include="Util\CodeCommitClientExtensionMethods.cs" />
     <Compile Include="View\Controls\CloneRepositoryControl.xaml.cs">
       <DependentUpon>CloneRepositoryControl.xaml</DependentUpon>
@@ -77,7 +76,6 @@
     <Compile Include="Model\CloneRepositoryModel.cs" />
     <Compile Include="Model\CodeCommitRepository.cs" />
     <Compile Include="Model\SaveServiceSpecificCredentialsModel.cs" />
-    <Compile Include="Model\ViewRepositoryModel.cs" />
     <Compile Include="Nodes\CodeCommitRepositoryViewMetaNode.cs" />
     <Compile Include="Nodes\CodeCommitRepositoryViewModel.cs" />
     <Compile Include="Nodes\CodeCommitRootViewMetaNode.cs" />
@@ -89,9 +87,6 @@
     </Compile>
     <Compile Include="View\SaveServiceSpecificCredentialsControl.xaml.cs">
       <DependentUpon>SaveServiceSpecificCredentialsControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ViewRepositoryControl.xaml.cs">
-      <DependentUpon>ViewRepositoryControl.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -126,10 +121,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ViewRepositoryControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\repository-alert.png" />
@@ -155,7 +146,7 @@
       <Version>1.0.205</Version>
     </PackageReference>
     <PackageReference Include="log4net">
-      <Version>2.0.14</Version>
+      <Version>2.0.15</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

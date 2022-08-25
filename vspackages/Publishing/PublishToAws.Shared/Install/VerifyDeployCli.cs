@@ -36,10 +36,10 @@ namespace Amazon.AWSToolkit.Publish.Install
                 DotnetProcess.CreateHeadless($"nuget verify \"{_options.ToolPath}\\**\\{PublishToAwsConstants.DeployToolPackageName}.*.nupkg\" --all");
             process.Start();
 
-            var data = await RetrieveProcessDataAsync(process);
+            var data = await RetrieveProcessDataAsync(process).ConfigureAwait(false);
             RecordProcessLogs(data);
 
-            var exitCode = await process.WaitForExitAsync(cancellationToken);
+            var exitCode = await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
             HandleProcessExit(data, exitCode);
         }
 

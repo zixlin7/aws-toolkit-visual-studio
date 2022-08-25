@@ -31,7 +31,7 @@ namespace Amazon.AWSToolkit.Publish.Install
                 return InstallResult.Skipped;
             }
 
-            await _installDeployCli.ExecuteAsync(cancellationToken);
+            await _installDeployCli.ExecuteAsync(cancellationToken).ConfigureAwait(false);
             return previouslyInstalled ? InstallResult.Updated : InstallResult.Installed;
         }
 

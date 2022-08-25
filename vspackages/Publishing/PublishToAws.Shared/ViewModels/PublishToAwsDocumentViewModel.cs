@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -84,6 +85,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         private TargetCommand _backToTargetCommand;
         private ICommand _learnMoreCommand;
         private ICommand _feedbackCommand;
+        private ICommand _reportExistingTargetsIssueCommand;
         private string _deploymentSessionId;
         private string _targetRecipe;
         private ICollectionView _republishCollectionView;
@@ -340,6 +342,11 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// Command that shows the feedback panel for the Publish experience
         /// </summary>
         public ICommand FeedbackCommand => _feedbackCommand ?? (_feedbackCommand = CreateFeedbackCommand());
+
+        /// <summary>
+        /// Command that opens a pre-filled GitHub issue relating to an empty "Existing Targets" list
+        /// </summary>
+        public ICommand ReportExistingTargetsIssueCommand => _reportExistingTargetsIssueCommand ?? (_reportExistingTargetsIssueCommand = ReportExistingTargetsIssueCommandFactory.Create(_publishContext.ToolkitShellProvider));
 
         /// <summary>
         /// Stack name for the deployed application

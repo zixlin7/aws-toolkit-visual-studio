@@ -71,6 +71,7 @@ using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Themes;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.Util;
@@ -89,7 +90,10 @@ using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
 using Amazon.AWSToolkit.VisualStudio.SupportedVersion;
 
+using Microsoft.VisualStudio.Threading;
+
 using Debugger = System.Diagnostics.Debugger;
+using OutputWindow = Amazon.AwsToolkit.VsSdk.Common.OutputWindow.OutputWindow;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -169,6 +173,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         private DateTime _startInitializeOn;
         private IPublishSettingsRepository _publishSettingsRepository;
 
+        private OutputWindow _toolkitOutputWindow;
         private MetricsOutputWindow _metricsOutputWindow;
 
         internal AWSToolkitShellProviderService ToolkitShellProviderService { get; private set; }
@@ -178,15 +183,14 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         private IAWSCloudFormation _cloudformationPlugin;
         private IAWSElasticBeanstalk _beanstalkPlugin;
-        private IAWSCodeCommit _codeCommitPlugin;
 
         internal readonly NavigatorVsUIHierarchy _navigatorVsUIHierarchy;
 
         // allows us to filter out undesirable solution elements from publishing enablement
         readonly Guid _guidSolutionFolderProject = new Guid(0x2150e333, 0x8fdc, 0x42a3, 0x94, 0x74, 0x1a, 0x39, 0x56, 0xd4, 0x6d, 0xe8);
-        
-        Guid _guidAwsOutputWindowPane = new Guid(0xb1c55205, 0xa332, 0x4dcb, 0xbf, 0xa0, 0x86, 0x62, 0x7f, 0x6d, 0x4, 0x86 );
-        IVsOutputWindowPane _awsOutputWindowPane;
+
+        private const string ToolkitOutputWindowName = "Amazon Web Services";
+        private readonly Guid ToolkitOutputWindowPaneId = new Guid(0xb1c55205, 0xa332, 0x4dcb, 0xbf, 0xa0, 0x86, 0x62, 0x7f, 0x6d, 0x4, 0x86 );
 
         uint _vsShellPropertyChangeEventSinkCookie;
 
@@ -283,46 +287,23 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         internal void OutputToConsole(string message, bool forceVisible)
         {
-            JoinableTaskFactory.Run(async delegate
+            JoinableTaskFactory.Run(async () =>
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
-                if (_awsOutputWindowPane == null)
-                {
-                    try
-                    {
-                        var output = await GetServiceAsync(typeof (SVsOutputWindow)) as IVsOutputWindow;
-                        if (output != null && output.CreatePane(ref _guidAwsOutputWindowPane,
-                            "Amazon Web Services",
-                            Convert.ToInt32(true),
-                            Convert.ToInt32(true)) == VSConstants.S_OK)
-                            output.GetPane(ref _guidAwsOutputWindowPane, out _awsOutputWindowPane);
-                    }
-                    catch (Exception e)
-                    {
-                        LOGGER.ErrorFormat("Caught exception trying to get SVsOutputWindow service and/or create AWS output window pane.");
-                        LOGGER.ErrorFormat("Exception message: {0}", e.Message);
-                    }
-
-                    if (_awsOutputWindowPane == null)
-                    {
-                        LOGGER.ErrorFormat("Failed to obtain IVsOutputWindow instance and/or create AWS output window pane to show message '{0}'.", message);
-                        return;
-                    }
-                }
-                else if (forceVisible)
-                    _awsOutputWindowPane.Activate();
-
                 try
                 {
-                    _awsOutputWindowPane.OutputStringThreadSafe(string.Format("{0}\r\n", message));
+                    if (forceVisible)
+                    {
+                        _toolkitOutputWindow?.Show();
+                    }
+
+                    _toolkitOutputWindow?.WriteText(message);
                 }
                 catch (Exception e)
                 {
                     LOGGER.ErrorFormat("Caught exception calling IVsOutputWindow.OutputStringThreadSafe.");
                     LOGGER.ErrorFormat("Exception message: '{0}', original message content '{1}'", e.Message, message);
                 }
-
-                return;
             });
         }
 
@@ -388,32 +369,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         internal bool BeanstalkPluginAvailable => AWSBeanstalkPlugin != null;
 
-        IAWSCodeCommit CodeCommitPlugin
-        {
-            get
-            {
-                try
-                {
-                    if (_codeCommitPlugin == null)
-                    {
-                        var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
-                        if (shell != null)
-                        {
-                            _codeCommitPlugin = shell.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    LOGGER.ErrorFormat("Exception attempting to obtain IAWSCodeCommit, {0}", e);
-                }
-
-                return _codeCommitPlugin;
-            }
-        }
-
-        bool CodeCommitPluginAvailable => CodeCommitPlugin != null;
-
         private object CreateService(IServiceContainer container, Type serviceType)
         {
             if (typeof(SAWSToolkitShellProvider) == serviceType)
@@ -430,14 +385,14 @@ namespace Amazon.AWSToolkit.VisualStudio
             return null;
         }
 
-        void InstantiateToolkitShellProviderService(IToolkitHostInfo hostVersion)
+        void InstantiateToolkitShellProviderService(IToolkitHostInfo hostVersion, ProductEnvironment productEnvironment)
         {
             lock (this)
             {
                 if (ToolkitShellProviderService == null)
                 {
                     LOGGER.Debug("Creating SAWSToolkitShellProvider service");
-                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, hostVersion);
+                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, hostVersion, productEnvironment);
                 }
             }
         }
@@ -454,32 +409,34 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        /// <summary>
-        /// This function is called when the user clicks the menu item that shows the 
-        /// tool window. See the Initialize method to see how the menu item is associated to 
-        /// this function using the OleMenuCommandService service and the MenuCommand class.
-        /// </summary>
-        internal void ShowToolWindow(object sender, EventArgs e)
+        public override IVsAsyncToolWindowFactory GetAsyncToolWindowFactory(Guid toolWindowType)
         {
-            ShowExplorerWindow();
+            if (toolWindowType.Equals(Guid.Parse(GuidList.AWSExplorerToolWindowGuidString)))
+            {
+                return this;
+            }
+
+            return null;
         }
 
-        internal void ShowExplorerWindow()
+        protected override string GetToolWindowTitle(Type toolWindowType, int id)
         {
-            this.JoinableTaskFactory.Run(async () =>
+            if (toolWindowType == typeof(AWSNavigatorToolWindow))
             {
-                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                // Get the instance number 0 of this tool window. This window is single instance so this instance
-                // is actually the only one.
-                // The last flag is set to true so that if the tool window does not exists it will be created.
-                var window = FindToolWindow(typeof(AWSNavigatorToolWindow), 0, true);
-                if ((null == window) || (null == window.Frame))
-                {
-                    throw new NotSupportedException(Resources.CanNotCreateWindow);
-                }
-                var windowFrame = (IVsWindowFrame)window.Frame;
-                ErrorHandler.ThrowOnFailure(windowFrame.Show());
-            });
+                return Resources.AWSExplorerToolWindowTitle;
+            }
+
+            return base.GetToolWindowTitle(toolWindowType, id);
+        }
+
+        protected override Task<object> InitializeToolWindowAsync(Type toolWindowType, int id, CancellationToken cancellationToken)
+        {
+            if (toolWindowType == typeof(AWSNavigatorToolWindow))
+            {
+                return Task.FromResult<object>(new AWSNavigatorToolWindowState());
+            }
+
+            return base.InitializeToolWindowAsync(toolWindowType, id, cancellationToken);
         }
 
         internal void CodeArtifactSelectProfile(object sender, EventArgs e)
@@ -538,8 +495,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     var mcs = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
                     if (null != mcs)
                     {
-                        // Create the command for the tool window
-                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAWSNavigator, ShowToolWindow, null);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidCodeArtifactSelectProfile, CodeArtifactSelectProfile, null);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishToElasticBeanstalk, PublishToAWS, PublishMenuCommand_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdIdRepublishToAWS, RepublishToAWS, RepublishMenuCommand_BeforeQueryStatus);
@@ -567,6 +522,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 });
 
+                _toolkitOutputWindow = await CreateToolkitOutputWindowAsync();
+
                 var productEnvironment = CreateProductEnvironment();
                 OutputProductDetails(productEnvironment);
 
@@ -584,7 +541,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
-                InstantiateToolkitShellProviderService(hostInfo);
+                InstantiateToolkitShellProviderService(hostInfo, productEnvironment);
 
                 // Enable UIs to access VS-provided images
                 await InitializeImageProviderAsync();
@@ -617,6 +574,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
 
                 await InitializeAwsToolkitMenuCommandsAsync();
+
+                await ViewAwsExplorerCommand.InitializeAsync(
+                    GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidAWSNavigator,
+                    this);
 
                 await DeployLambdaCommand.InitializeAsync(
                     ToolkitShellProviderService,
@@ -716,6 +677,28 @@ namespace Amazon.AWSToolkit.VisualStudio
             OutputToConsole(builder.ToString(), false);
         }
 
+        private async Task<OutputWindow> CreateToolkitOutputWindowAsync()
+        {
+            try
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+
+                var outputWindowManager = await GetServiceAsync(typeof(SVsOutputWindow)) as IVsOutputWindow;
+                Assumes.Present(outputWindowManager);
+
+                var outputWindow = new OutputWindow(ToolkitOutputWindowPaneId, ToolkitOutputWindowName, outputWindowManager);
+
+                DeferInitializationAsync(outputWindow).LogExceptionAndForget();
+
+                return outputWindow;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Unable to set up AWS Toolkit Output window", e);
+                return null;
+            }
+        }
+
         private async Task<MetricsOutputWindow> CreateMetricsOutputWindowAsync()
         {
             try
@@ -729,7 +712,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 if (ToolkitSettings.Instance.ShowMetricsOutputWindow)
                 {
-                    await outputWindow.CreatePaneAsync();
+                    DeferInitializationAsync(outputWindow).LogExceptionAndForget();
                 }
 
                 return outputWindow;
@@ -739,6 +722,15 @@ namespace Amazon.AWSToolkit.VisualStudio
                 Logger.Error("Unable to set up Metrics Output window", e);
                 return null;
             }
+        }
+
+        private async Task DeferInitializationAsync(OutputWindow outputWindow)
+        {
+            // The first output window instantiated by an extension is more expensive for some reason.
+            // Delay Pane creation to avoid contention with the UI thread while the Toolkit is initializing.
+            await TaskScheduler.Default;
+            await Task.Delay(2000);
+            await outputWindow.InitializeAsync();
         }
 
         private TelemetryManager CreateTelemetryManager(ProductEnvironment productEnvironment)
@@ -2591,6 +2583,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryInfoBarManager?.Dispose();
             _supportedVersionBarManager?.Dispose();
             _metricsOutputWindow?.Dispose();
+            _toolkitOutputWindow?.Dispose();
 
             return Microsoft.VisualStudio.VSConstants.S_OK;
         }

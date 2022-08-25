@@ -25,10 +25,26 @@
         <RadioButton 
             IsChecked="{Binding VpcOption, Converter={StaticResource EqualityBooleanConverter}, ConverterParameter={x:Static models:VpcOption.Default}}"
             Content="Default VPC" />
+        <TextBlock
+            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+            Margin="0 3 0 0"
+            Visibility="{Binding DefaultVpcDetail.HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}"
+            TextWrapping="Wrap"
+            Text="{Binding DefaultVpcDetail.ValidationMessage}"
+            d:Text="Validation Message for Default VPC setting"
+            />
         <RadioButton 
             Margin="0 9 0 0"
             IsChecked="{Binding VpcOption, Converter={StaticResource EqualityBooleanConverter}, ConverterParameter={x:Static models:VpcOption.New}}"
             Content="New VPC" />
+        <TextBlock
+            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+            Margin="0 3 0 0"
+            Visibility="{Binding CreateVpcDetail.HasErrors, Converter={StaticResource BooleanToVisibilityConverter}}"
+            TextWrapping="Wrap"
+            Text="{Binding CreateVpcDetail.ValidationMessage}"
+            d:Text="Validation Message for New VPC setting"
+            />
         <RadioButton 
             Margin="0 9 0 0"
             IsChecked="{Binding VpcOption, Converter={StaticResource EqualityBooleanConverter}, ConverterParameter={x:Static models:VpcOption.Existing}}"

@@ -24,9 +24,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
         private CodeCommitActivator HostActivator { get; }
 
-        public Task CloneAsync(ServiceSpecificCredentials credentials, 
-                                     string repositoryUrl, 
-                                     string localFolder)
+        public Task CloneAsync(ServiceSpecificCredentials credentials, string repositoryUrl, string localFolder)
         {
             try
             {
@@ -47,14 +45,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
                 Repository.Clone(repositoryUrl, localFolder, cloneOptions);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Clone failed using libgit2sharp", e);
-
-                var msg = string.Format("Failed to clone repository {0}. Error message: {1}.",
-                    repositoryUrl,
-                    e.Message);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Repository Clone Failed", msg);
+                LOGGER.Error("Clone failed using libgit2sharp", ex);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Repository Clone Failed", $"Failed to clone repository {repositoryUrl}. Error message: {ex.Message}.");
             }
 
             return Task.FromResult<object>(null);
@@ -79,52 +73,44 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
                 newRepository = new CodeCommitRepository(response.RepositoryMetadata);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error(e);
+                LOGGER.Error(ex);
                 throw;
             }
 
-            // when called from within the VS package, local folder is not supplied so that
+            // When called from within the VS package, local folder is not supplied so that
             // we can perform the clone through Team Explorer
             if (autoCloneNewRepository)
             {
-                var svcCredentials
-                    = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
+                var svcCredentials = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
                 try
                 {
                     await CloneAsync(svcCredentials, newRepository.RepositoryUrl, newRepositoryInfo.LocalFolder);
-
                     newRepository.LocalFolder = newRepositoryInfo.LocalFolder;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    LOGGER.Error("Exception cloning new repository", e);
-                    throw new Exception("Error when attempting to clone the new repository", e);
+                    LOGGER.Error("Exception cloning new repository", ex);
+                    throw new Exception("Error when attempting to clone the new repository", ex);
                 }
 
                 var initialCommitContent = new List<string>();
+                string target;
 
                 switch (newRepositoryInfo.GitIgnore.GitIgnoreType)
                 {
                     case GitIgnoreOption.OptionType.VSToolkitDefault:
-                    {
-                        var content = S3FileFetcher.Instance.GetFileContent("CodeCommit/vsdefault.gitignore.txt",
-                            S3FileFetcher.CacheMode.PerInstance);
-                        var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
+                        var content = S3FileFetcher.Instance.GetFileContent("CodeCommit/vsdefault.gitignore.txt", S3FileFetcher.CacheMode.PerInstance);
+                        target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
                         System.IO.File.WriteAllText(target, content);
                         initialCommitContent.Add(target);
-                    }
                         break;
-
                     case GitIgnoreOption.OptionType.Custom:
-                    {
-                        var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
+                        target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
                         System.IO.File.Copy(newRepositoryInfo.GitIgnore.CustomFilename, target);
                         initialCommitContent.Add(target);
-                    }
                         break;
-
                     case GitIgnoreOption.OptionType.None:
                         break;
                 }

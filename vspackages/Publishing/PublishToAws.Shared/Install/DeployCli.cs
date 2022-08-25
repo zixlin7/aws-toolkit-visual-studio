@@ -29,8 +29,8 @@ namespace Amazon.AWSToolkit.Publish.Install
 
         public async Task InitializeAsync(CancellationToken cancellationToken)
         {
-            await InstallCliAsync(cancellationToken);
-            await VerifyCliAsync(cancellationToken);
+            await InstallCliAsync(cancellationToken).ConfigureAwait(false);
+            await VerifyCliAsync(cancellationToken).ConfigureAwait(false);
             Logger.Debug($"Finished initializing {PublishToAwsConstants.DeployToolPackageName}");
         }
 
@@ -41,7 +41,7 @@ namespace Amazon.AWSToolkit.Publish.Install
 
             async Task Install()
             {
-                installResult = await InstallDeployCliAsync(cancellationToken);
+                installResult = await InstallDeployCliAsync(cancellationToken).ConfigureAwait(false);
                 success = true;
             }
 
@@ -57,7 +57,7 @@ namespace Amazon.AWSToolkit.Publish.Install
         private async Task<InstallResult> InstallDeployCliAsync(CancellationToken cancellationToken)
         {
             var installer = DeployCliInstallerFactory.Create(_options);
-            return await installer.InstallAsync(cancellationToken);
+            return await installer.InstallAsync(cancellationToken).ConfigureAwait(false);
         }
 
         private async Task VerifyCliAsync(CancellationToken cancellationToken)
@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.Publish.Install
 
             async Task Verify()
             {
-                await VerifyDeployCliAsync(cancellationToken);
+                await VerifyDeployCliAsync(cancellationToken).ConfigureAwait(false);
                 success = true;
             }
 
@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.Publish.Install
         private async Task VerifyDeployCliAsync(CancellationToken cancellationToken)
         {
             var verifyDeployCli = new VerifyDeployCli(_options);
-            await verifyDeployCli.ExecuteAsync(cancellationToken);
+            await verifyDeployCli.ExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
 
         private static Result AsResult(bool success, CancellationToken cancellationToken)

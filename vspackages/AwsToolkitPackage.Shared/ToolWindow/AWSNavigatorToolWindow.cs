@@ -16,10 +16,13 @@ namespace Amazon.AWSToolkit.VisualStudio.ToolWindow
     public class AWSNavigatorToolWindow : ToolWindowPane
     {
         /// <summary>
-        /// Standard constructor for the tool window.
+        /// Constructor
+        /// Undocumented -- by passing at least one object through the constructor, Visual Studio
+        /// will be able to asynchronously load the ToolWindow.
+        /// Parameter is instantiated in AWSToolkitPackage.InitializeToolWindowAsync
         /// </summary>
-        public AWSNavigatorToolWindow() :
-            base(null)
+        /// <example>https://github.com/microsoft/VSSDK-Extensibility-Samples/tree/master/AsyncToolWindow</example>
+        public AWSNavigatorToolWindow(AWSNavigatorToolWindowState state) : base()
         {
             // Set the window title reading it from the resources.
             this.Caption = Resources.AWSExplorerToolWindowTitle;
@@ -36,5 +39,13 @@ namespace Amazon.AWSToolkit.VisualStudio.ToolWindow
             // the object returned by the Content property.
             base.Content = new AWSNavigatorToolControl();
         }
+    }
+
+    /// <summary>
+    /// Placeholder object used to enable async instantiation of AWSNavigatorToolWindow.
+    /// See AWSNavigatorToolWindow constructor comments for details.
+    /// </summary>
+    public class AWSNavigatorToolWindowState
+    {
     }
 }

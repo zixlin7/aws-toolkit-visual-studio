@@ -1,6 +1,7 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
+
 using Amazon.AWSToolkit.CodeCommit.Controller;
+
 using Microsoft.Win32;
 
 namespace Amazon.AWSToolkit.CodeCommit.View
@@ -20,11 +21,11 @@ namespace Amazon.AWSToolkit.CodeCommit.View
         {
             Controller = controller;
             DataContext = controller.Model;
-            Controller.Model.PropertyChanged += ModelOnPropertyChanged;
+            Controller.Model.PropertyChanged += (sender, e) => NotifyPropertyChanged(e.PropertyName);
 
-            if(!string.IsNullOrEmpty(msg))
+            if (!string.IsNullOrEmpty(msg))
             {
-                this._ctlMessage.Text = msg;
+                _ctlMessage.Text = msg;
             }
         }
 
@@ -52,15 +53,11 @@ namespace Amazon.AWSToolkit.CodeCommit.View
                 Filter = "CSV Files|*.csv|All Files|*.*",
                 OverwritePrompt = true
             };
+
             if (dlg.ShowDialog().GetValueOrDefault())
             {
                 Controller.Model.Filename = dlg.FileName;
             }
-        }
-
-        private void ModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
-        {
-            NotifyPropertyChanged(propertyChangedEventArgs.PropertyName);
         }
     }
 }

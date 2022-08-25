@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.Publish.Install
         {
             var process = DotnetProcess.CreateHeadless($"tool update --tool-path \"{_options.ToolPath}\" --version {_options.VersionRange} {PublishToAwsConstants.DeployToolPackageName}");
             process.Start();
-            await process.WaitForExitAsync(cancellationToken);
+            await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

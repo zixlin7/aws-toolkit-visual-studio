@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.Composition;
-using Microsoft.TeamFoundation.Controls;
-using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
+
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
-using log4net;
+
+using Microsoft.TeamFoundation.Controls;
+using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 {
@@ -20,63 +21,43 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class ConnectionSection : TeamExplorerSectionBase
     {
+        public const string TeamExplorerConnectionSectionId = "FF7A257A-3AFB-44AC-B0F9-EA5F8789107E";
+
+        private ConnectionSectionControl _view;
+        private ConnectSectionViewModel _viewModel;
+
         static ConnectionSection()
         {
             Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
         }
 
-        public const string TeamExplorerConnectionSectionId = "FF7A257A-3AFB-44AC-B0F9-EA5F8789107E";
-
-        private readonly ILog LOGGER = LogManager.GetLogger(typeof(ConnectionSection));
-        private ConnectionSectionControl _view;
-        private ConnectSectionViewModel _viewModel;
-
         [ImportingConstructor]
         public ConnectionSection()
         {
             Utility.ConfigureLog4Net();
-            LOGGER.Debug("Creating CodeCommit ConnectionSection");
         }
 
         protected override ITeamExplorerSection CreateViewModel(SectionInitializeEventArgs e)
         {
-            if (_viewModel == null)
-            {
-                _viewModel = new ConnectSectionViewModel
-                {
-                    Title = "AWS CodeCommit"
-                };
-            }
-
-            return _viewModel;
+            return _viewModel ?? (_viewModel = new ConnectSectionViewModel());
         }
 
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
-            LOGGER.Debug("CodeCommit Connect Initialize");
             base.Initialize(sender, e);
 
             IsVisible = TeamExplorerConnection.ActiveConnection != null;
-            TeamExplorerConnection.OnTeamExplorerBindingChanged += OnTeamExplorerBindingChanged;
+            TeamExplorerConnection.OnTeamExplorerBindingChanged += (oldConnection, newConnection) => IsVisible = newConnection != null;
         }
 
         protected override object CreateView(SectionInitializeEventArgs e)
         {
-            LOGGER.Debug("CodeCommit Connect CreateView");
             return _view ?? (_view = new ConnectionSectionControl());
         }
 
         protected override void InitializeView(SectionInitializeEventArgs e)
         {
-            LOGGER.Debug("CodeCommit Connect InitializeView");
             _view.DataContext = _viewModel;
-        }
-
-        // triggers a change of visibility of the section
-        private void OnTeamExplorerBindingChanged(TeamExplorerConnection oldConnection, TeamExplorerConnection newConnection)
-        {
-            LOGGER.Debug("CodeCommit Connect OnTeamExplorerBindingChanged");
-            IsVisible = newConnection != null;
         }
     }
 }

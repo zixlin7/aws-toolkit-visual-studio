@@ -68,22 +68,11 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             Assert.Equal(Value, _sut.Value);
         }
 
-        [Theory]
-        [InlineData(true, true)]
-        [InlineData(false, false)]
-        public void EmptySelectionHasValidationMessage(bool isVisible, bool expectedHasErrorMessage)
-        {
-            _sut.Visible = isVisible;
-            _sut.Value = "[]";
-            Assert.Equal(expectedHasErrorMessage, !string.IsNullOrWhiteSpace(_sut.ValidationMessage));
-        }
-
         [Fact]
-        public void SuppressEmptyListValidationMessage()
+        public void ShouldValidateDeserializationFailures()
         {
-            _sut.AllowEmptyList = true;
-            _sut.Value = "[]";
-            Assert.True(string.IsNullOrWhiteSpace(_sut.ValidationMessage), "No validation message expected");
+            _sut.Value = "some string,does not json deserialize";
+            Assert.False(string.IsNullOrWhiteSpace(_sut.ValidationMessage), "Toolkit should have flagged this as an error");
         }
 
         [Fact]

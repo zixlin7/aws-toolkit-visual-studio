@@ -4,20 +4,46 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.CodeCommit.Util;
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
-using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
     public class CloneRepositoryModel : BaseRepositoryModel
     {
-        private readonly ILog LOGGER = LogManager.GetLogger(typeof(CloneRepositoryModel));
-
         public const string RepoListRefreshStartingPropertyName = "RepoListRefreshStarting";
         public const string RepoListRefreshCompletedPropertyName = "RepoListRefreshCompleted";
+
+        private string _baseFolder;
+        private string _selectedFolder;
+        private CodeCommitRepository _selectedRepository;
+        private readonly RangeObservableCollection<CodeCommitRepository> _repositories = new RangeObservableCollection<CodeCommitRepository>();
+
+        private readonly SortOption _sortByRepositoryName =
+            new SortOption
+            {
+                SortBy = SortByEnum.RepositoryName,
+                DisplayText = "Repository Name",
+                SortMethod = (metadata) => metadata.RepositoryName
+            };
+
+        private readonly SortOption _sortByLastModifiedDate =
+            new SortOption
+            {
+                SortBy = SortByEnum.LastModifiedDate,
+                DisplayText = "Last Modified Date",
+                SortMethod = (metadata) => metadata.LastModifiedDate
+            };
+
+        private readonly OrderOption _orderAscending =
+            new OrderOption { Order = OrderEnum.Ascending, DisplayText = "Ascending" };
+
+        private readonly OrderOption _orderDescending =
+            new OrderOption { Order = OrderEnum.Descending, DisplayText = "Descending" };
+
 
         public CloneRepositoryModel()
         {
@@ -42,7 +68,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             get => _baseFolder;
             set
             {
-                _baseFolder = value;
+                SetProperty(ref _baseFolder, value);
                 SelectedFolder = SelectedRepository != null ? Path.Combine(_baseFolder, SelectedRepository.Name) : BaseFolder;
             }
         }
@@ -53,14 +79,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public string SelectedFolder
         {
             get => _selectedFolder;
-            set
-            {
-                if (_selectedFolder != value)
-                {
-                    _selectedFolder = value;
-                    NotifyPropertyChanged("SelectedFolder");
-                }
-            }
+            set => SetProperty(ref _selectedFolder, value);
         }
 
         /// <summary>
@@ -75,14 +94,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public CodeCommitRepository SelectedRepository
         {
             get => _selectedRepository;
-            set
-            {
-                if (_selectedRepository != value)
-                {
-                    _selectedRepository = value;
-                    NotifyPropertyChanged("SelectedRepository");
-                }
-            }
+            set => SetProperty(ref _selectedRepository, value);
         }
 
         public RangeObservableCollection<CodeCommitRepository> Repositories => _repositories;
@@ -110,18 +122,19 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public static string IsFolderValidForRepo(string folder)
         {
             if (string.IsNullOrEmpty(folder))
-                return "Folder cannot be empty.";
+            {
+                return "Folder name cannot be empty.";
+            }
 
             try
             {
                 var fullpath = Path.GetFullPath(folder); // this should throw on invalid chars etc
                 if (Directory.Exists(fullpath))
                 {
-                    var subdirs = Directory.GetDirectories(fullpath, "*.*", SearchOption.TopDirectoryOnly);
-                    var files = Directory.GetFiles(fullpath, "*.*", SearchOption.TopDirectoryOnly);
-
-                    if (subdirs.Length > 0 || files.Length > 0)
+                    if (!Directory.EnumerateFileSystemEntries(fullpath).Any())
+                    {
                         return "The folder is not empty.";
+                    }
                 }
             }
             catch (Exception)
@@ -134,7 +147,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         private void RefreshRepositoriesList(IAmazonCodeCommit codeCommitClient)
         {
-            Interlocked.Increment(ref _backgroundWorkersActive);
             NotifyPropertyChanged(RepoListRefreshStartingPropertyName);
 
             ThreadPool.QueueUserWorkItem(async x =>
@@ -147,21 +159,16 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                     _repositories.AddRange(repositoryList);
 
                     NotifyPropertyChanged(RepoListRefreshCompletedPropertyName);
-
-                    Interlocked.Decrement(ref _backgroundWorkersActive);
                 }));
             });
         }
 
-        private async Task<IList<CodeCommitRepository>> LoadRepositoryModels(IAmazonCodeCommit codeCommitClient)
+        private async Task<IEnumerable<CodeCommitRepository>> LoadRepositoryModels(IAmazonCodeCommit codeCommitClient)
         {
             var repositoryNames = await codeCommitClient.ListRepositoryNames();
-
             var repositoryMetadata = await codeCommitClient.GetRepositoryMetadata(repositoryNames);
 
-            return SortAndOrder(repositoryMetadata)
-                .Select(metadata => new CodeCommitRepository(metadata))
-                .ToList();
+            return SortAndOrder(repositoryMetadata).Select(metadata => new CodeCommitRepository(metadata));
         }
 
         /// <summary>
@@ -171,40 +178,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         /// <returns>sorted/ordered metadata enumerable</returns>
         private IEnumerable<RepositoryMetadata> SortAndOrder(IEnumerable<RepositoryMetadata> metadata)
         {
-            if (Order == _orderAscending)
-            {
-                return metadata.OrderBy(SortBy.SortMethod);
-            }
-
-            return metadata.OrderByDescending(SortBy.SortMethod);
+            return Order == _orderAscending ? 
+                metadata.OrderBy(SortBy.SortMethod) :
+                metadata.OrderByDescending(SortBy.SortMethod);
         }
-
-        private string _baseFolder;
-        private string _selectedFolder;
-        private CodeCommitRepository _selectedRepository;
-        private readonly RangeObservableCollection<CodeCommitRepository> _repositories = new RangeObservableCollection<CodeCommitRepository>();
-        
-        private readonly SortOption _sortByRepositoryName =
-            new SortOption
-            {
-                SortBy = SortByEnum.RepositoryName,
-                DisplayText = "Repository Name",
-                SortMethod = (metadata) => metadata.RepositoryName
-            };
-
-        private readonly SortOption _sortByLastModifiedDate =
-            new SortOption
-            {
-                SortBy = SortByEnum.LastModifiedDate,
-                DisplayText = "Last Modified Date",
-                SortMethod = (metadata) => metadata.LastModifiedDate
-            };
-
-        private readonly OrderOption _orderAscending =
-            new OrderOption {Order = OrderEnum.Ascending, DisplayText = "Ascending"};
-
-        private readonly OrderOption _orderDescending =
-            new OrderOption {Order = OrderEnum.Descending, DisplayText = "Descending"};
     }
 
     public class SortOption

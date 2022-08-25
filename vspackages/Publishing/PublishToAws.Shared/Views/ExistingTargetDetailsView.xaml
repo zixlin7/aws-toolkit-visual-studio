@@ -113,16 +113,23 @@
             Orientation="Horizontal" 
             >
             <images:VsImage
-                VerticalAlignment="Center"
-                Width="16" Height="16"
-                Source="{Binding Source={StaticResource VsImages}, Path=StatusInformation}" 
+                VerticalAlignment="Top"
+                Width="32" Height="32"
+                Source="{Binding Source={StaticResource VsImages}, Path=StatusInformation32}" 
                 />
 
             <TextBlock
                 Margin=" 6 0 0 0"
                 FontWeight="SemiBold"
-                Text="There are no existing targets for this application."
-                />
+                TextWrapping="Wrap"
+                >
+                <TextBlock 
+                    Text="{Binding Connection.RegionDisplayName, StringFormat='There are no existing targets in {0} for this application.'}"
+                    /><LineBreak />
+                Only targets published using Publish to AWS will be listed here.<LineBreak />
+                <LineBreak />
+                Still think your application is missing? <Hyperlink Command="{Binding ReportExistingTargetsIssueCommand}">Let us know on GitHub</Hyperlink>.
+            </TextBlock>            
 
             <StackPanel.Visibility>
                 <MultiBinding Converter="{StaticResource RepublishTargetsToVisibilityConverter}">

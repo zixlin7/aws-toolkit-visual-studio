@@ -14,7 +14,7 @@ You might be interested in reading about the Toolkit's [architecture](./designs/
 
 Before you start, you will need the following:
 
-- Visual Studio 2017 or 2019
+- Visual Studio (2019 or 2022)
   - The following workloads need to be installed:
     - .NET desktop development
     - ASP.NET and web development
@@ -24,20 +24,23 @@ Before you start, you will need the following:
 
 ### Build
 
-- Open a Developer Command Prompt for VS 2017 or 2019
+- Open a Developer Command Prompt for VS 2019 or 2022
 - change directories to the repo root
 - Typical command: `msbuild buildtools\build.proj /t:restore;compile;test`
 - More comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;build-vstoolkit`
 - Other handy build targets:
   - `test`: Runs the main suite of unit/component tests using the currently compiled code
   - `test-integ`: Runs the suite of integration tests using the currently compiled code
+  - both of these test targets will run tests relevant to the VS version of the developer command prompt
 
 ### Debug
 
 #### Visual Studio
 
-- Open `/solutions/AWSVisualStudioToolkit.sln` in VS 2017 or 2019
-- Locate the project **AWSToolkitPackage**
+- Open the Toolkit solution in Visual Studio
+  - The main solution is `/solutions/AWSVisualStudioToolkit.sln`. This contains projects and tests for all supported major versions of Visual Studio.
+  - If you are primarily developing in one version of Visual Studio, you can load a [filtered solution](https://docs.microsoft.com/en-us/visualstudio/ide/filtered-solutions) instead. Look for the `.slnf` files in [solutions](./solutions/)
+- Locate the project **AWSToolkitPackage** (**AWSToolkitPackage.v17** for VS 2022)
   - Right click -> Set as StartUp Project
 - You can now debug the toolkit
 
@@ -118,7 +121,7 @@ To integrate a new verion of the Deploy Tool:
 - extract the downloaded package (it is a zip file)
 - from the extracted contents, copy "lib\netstandard2.0\AWS.Deploy.ServerMode.Client.dll" into [\thirdparty](/thirdparty), overwriting the existing dll
 - compile the Toolkit. If there were breaking changes in the API, you may have to made additional changes in order to successfully compile
-- run the integration tests. From the Visual Studio test runner, run the tests associated with the `AwsToolkit.Tests.Integration` project
+- run the integration tests. From the Visual Studio test runner, run the tests associated with the `AwsToolkit.Tests.vXX.Integration` project
   - you will need to have a [default profile defined](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where), and you will need to have docker desktop running
   - these tests will run for 30+ minutes. They are performing deployments.
 - run the Publish to AWS experience, and try things out. Make sure functionality hasn't disappeared or regressed.

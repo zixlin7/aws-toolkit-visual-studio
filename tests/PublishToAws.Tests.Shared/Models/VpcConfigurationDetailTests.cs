@@ -64,6 +64,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             _sut.AddChild(_sampleCreateNewDetail);
 
             Assert.Equal(1, _sut.Children.Count);
+            Assert.Equal(_sampleCreateNewDetail, _sut.CreateVpcDetail);
         }
 
         [Fact]
@@ -72,6 +73,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             _sut.AddChild(_sampleUseDefaultDetail);
 
             Assert.Equal(1, _sut.Children.Count);
+            Assert.Equal(_sampleUseDefaultDetail, _sut.DefaultVpcDetail);
         }
 
         [Fact]

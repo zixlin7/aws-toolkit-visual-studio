@@ -16,7 +16,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
     /// </summary>
     internal abstract class BaseCodeCommitController
     {
-        const string TeamExplorerGitKey = @"SOFTWARE\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
+        private const string TeamExplorerGitKey = @"SOFTWARE\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
 
         protected IAWSCodeCommit CodeCommitPlugin { get; set; }
         protected AccountViewModel Account { get; set; }
@@ -65,14 +65,14 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(TeamExplorerGitKey + "\\General", true))
+                using (var key = Registry.CurrentUser.OpenSubKey($@"{TeamExplorerGitKey}\General", true))
                 {
                     clonePath = (string)key?.GetValue("DefaultRepositoryPath", string.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger?.ErrorFormat("Error loading the default cloning path from the registry '{0}'", e);
+                Logger?.Error("Error loading the default cloning path from the registry", ex);
             }
 
             if (string.IsNullOrEmpty(clonePath))

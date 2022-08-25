@@ -12,7 +12,7 @@ using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 
-using AWSToolkit.Tests.CloudWatch;
+using AWSToolkit.Tests.CloudWatch.Logs.Util;
 
 using Moq;
 

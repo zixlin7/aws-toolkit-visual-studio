@@ -1,9 +1,10 @@
 ﻿using System;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CloudWatch.Commands;
-using Amazon.AWSToolkit.CloudWatch.Core;
-using Amazon.AWSToolkit.CloudWatch.Models;
+using Amazon.AWSToolkit.CloudWatch.Logs.Commands;
+using Amazon.AWSToolkit.CloudWatch.Logs.Core;
+using Amazon.AWSToolkit.CloudWatch.Logs.Models;
+using Amazon.AWSToolkit.CloudWatch.Logs.Viewers;
 using Amazon.AWSToolkit.CloudWatch.Nodes;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.Credentials.Core;

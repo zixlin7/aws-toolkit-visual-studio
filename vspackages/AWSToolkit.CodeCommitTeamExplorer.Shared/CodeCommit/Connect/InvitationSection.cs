@@ -28,21 +28,20 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class InvitationSection : TeamExplorerInvitationBase
     {
-        static InvitationSection()
-        {
-            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
-        }
-
         private readonly ILog LOGGER = LogManager.GetLogger(typeof(InvitationSection));
+
+        public const int CodeCommitInvitationSectionPriority = 150;
+        private const int TimerIntervalMs = 2000;
+        private const string _signUpUrl = "https://aws.amazon.com/";
 
         private IVsShell _vsShell = null;
         private readonly Timer _packageLoadedTimer;
         private bool _toolkitPackageLoaded = false;
 
-        public const int CodeCommitInvitationSectionPriority = 150;
-        private const int TimerIntervalMs = 2000;
-
-        private const string _signUpUrl = "https://aws.amazon.com/";
+        static InvitationSection()
+        {
+            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
+        }
 
         [ImportingConstructor]
         public InvitationSection()
@@ -87,7 +86,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
             // could negatively impact the startup performance of the IDE, especially
             // if we block for the package load here.
             // Instead, we'll poll until the Package is loaded, and gate the "Connect" label.
-            _vsShell = TeamExplorerServiceProvider.GetService(typeof(SVsShell)) as IVsShell;
+            ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                _vsShell = ServiceProvider.GetService(typeof(SVsShell)) as IVsShell;
+            });
             _packageLoadedTimer.Start();
 
             // Now that we've initialized, enable the Connect label.
@@ -107,7 +110,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
                     Environment.NewLine);
 
                 VsShellUtilities.ShowMessageBox(
-                    TeamExplorerServiceProvider,
+                    ServiceProvider,
                     message,
                     "Unable to connect to CodeCommit",
                     OLEMSGICON.OLEMSGICON_INFO,
@@ -157,14 +160,24 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 
         private void CheckIfToolkitLoaded(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            bool restartTimer = false;
+            var restartTimer = false;
 
             try
             {
-                if (_vsShell == null) { return; }
+                if (_vsShell == null)
+                {
+                    return;
+                }
 
                 var packageGuid = GetToolkitPackageGuid();
-                var isLoaded = _vsShell.IsPackageLoaded(ref packageGuid, out var _);
+                int isLoaded = VSConstants.S_FALSE;
+
+                ThreadHelper.JoinableTaskFactory.Run(async () =>
+                {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    isLoaded = _vsShell.IsPackageLoaded(ref packageGuid, out var _);
+                });
+
                 if (isLoaded != VSConstants.S_OK)
                 {
                     restartTimer = true;
@@ -174,9 +187,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
                     _toolkitPackageLoaded = true;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Unable to determine if the Toolkit has been loaded", e);
+                LOGGER.Error("Unable to determine if the Toolkit has been loaded", ex);
                 restartTimer = true;
             }
             finally

@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         public override bool Validated()
         {
-            // deeper validation on the folder will be done (for now) when the user presses OK -
+            // Deeper validation on the folder will be done (for now) when the user presses OK -
             // this just gets the OK button enabled.
             return !string.IsNullOrEmpty(Controller.Model.Name) && !string.IsNullOrEmpty(Controller.Model.SelectedFolder);
         }
@@ -45,9 +45,10 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
         public override bool OnCommit()
         {
             var validationFailMsg = CloneRepositoryModel.IsFolderValidForRepo(Controller.Model.SelectedFolder);
+
             if (!string.IsNullOrEmpty(validationFailMsg))
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Folder Error", "The selected folder cannot be used to contain the new repository. " + validationFailMsg);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Folder Error", $"The selected folder cannot be used to contain the new repository. {validationFailMsg}");
                 return false;
             }
 
@@ -58,14 +59,11 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
                 if (response.RepositoryMetadata != null)
                 {
                     ToolkitFactory.Instance.ShellProvider.ShowError("Repository Exists Error",
-                        "A repository with name " + Controller.Model.Name + " exists in the selected region.");
+                        $"A repository with name {Controller.Model.Name} exists in the selected region.");
                     return false;
                 }
             }
-            catch (RepositoryDoesNotExistException)
-            {
-                
-            }
+            catch (RepositoryDoesNotExistException) { }
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error", "Unable to create a repository with the selected name due to error: " + e.Message);
@@ -75,16 +73,11 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
             return true;
         }
 
-        private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // we'll validate uniqueness of the repo name in region when the user hits OK
-        }
-
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)
         {
             var dlg = new FolderBrowserDialog()
             {
-                Description = @"Select the folder to clone into",
+                Description = "Select the folder to clone into",
                 ShowNewFolderButton = true
             };
 
@@ -102,7 +95,9 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
         private void OnGitIgnoreSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Controller.Model.SelectedGitIgnore == null)
+            {
                 return;
+            }
 
             var selection = Controller.Model.SelectedGitIgnore;
             if (selection.GitIgnoreType == GitIgnoreOption.OptionType.Custom)
@@ -117,7 +112,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     selection.CustomFilename = Path.GetFullPath(dlg.FileName);
-                    selection.DisplayText = string.Format("Custom [{0}]", dlg.FileName);
+                    selection.DisplayText = $"Custom [{dlg.FileName}]";
                 }
             }
         }

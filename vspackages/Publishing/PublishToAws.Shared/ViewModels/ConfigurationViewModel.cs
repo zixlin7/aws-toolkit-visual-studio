@@ -55,7 +55,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             var groupings = CreateGroupings();
 
             GroupedSettings.Clear();
-            GroupedSettings.AddAll(groupings);
+            GroupedSettings.AddAll(groupings.OrderBy(g => g.Category));
         }
 
         private IEnumerable<ConfigurationDetailGrouping> CreateGroupings()

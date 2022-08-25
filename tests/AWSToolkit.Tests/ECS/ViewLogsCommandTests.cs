@@ -12,7 +12,7 @@ using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
-using AWSToolkit.Tests.CloudWatch;
+using AWSToolkit.Tests.CloudWatch.Logs.Util;
 
 using Moq;
 

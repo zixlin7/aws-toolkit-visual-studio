@@ -3,7 +3,6 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>AWS Toolkit for Visual Studio Release Notes</title>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <style media="screen" type="text/css">
         body {
             font-family: 'Segoe UI', verdana, Arial, Helvetica, sans-serif;
@@ -14,47 +13,10 @@
             font-weight: bold;
             margin-bottom: 12px;
         }
-
-        .release {
-            color: darkcyan;
-            font-style: italic;
-        }
     </style>
 </head>
 <body>
     <div id="title">AWS Toolkit for Visual Studio Release Notes</div>
-    <H2>Toolkit v1.18.1.0 is the last version to reference this release notes page.</H2>
-    <H3>Release notes are now packaged into newer Toolkit versions, and can also be seen at <a href="https://github.com/aws/aws-toolkit-visual-studio/blob/main/CHANGELOG.md">https://github.com/aws/aws-toolkit-visual-studio/blob/main/CHANGELOG.md</a></H3>
-    <div id="versions" />
-
-    <script type="text/javascript">
-        jQuery(function ($) {
-            var baseurl = window.location.href.lastIndexOf('/');
-            var versionxmlurl = window.location.href.substr(0, baseurl) + '/VersionInfo.xml'            
-            $.get(versionxmlurl)
-                .done(function(data){
-                    var versionsSection = $('#versions');
-                    $(data)
-                        .find('version')
-                        .each(function(index, element){
-                            var field = $(element)
-                            var version = field.attr('number')
-                            var released = field.attr('release-date')
-
-                            var changeList = ""
-                            var changes = field.find('change')
-                            for (var i = 0; i < changes.length; i++) {
-                                var description = $(changes[i]).text()
-                                changeList += "<li>"+description+"</li>"
-                            }
-                            
-                            $(versionsSection).append("<div id='#"+version+"'><div class='release'>Version "+version+", released "+released+"</div><ul>"+changeList+"</ul></div>")
-                    });
-                })
-                .fail(function(){
-                    $('#versions').append("<div>Failed to obtain version data for release notes.</div>");
-                });
-        });
-    </script>
+    <H2>Release notes are now available at <a href="https://github.com/aws/aws-toolkit-visual-studio/blob/main/CHANGELOG.md">https://github.com/aws/aws-toolkit-visual-studio/blob/main/CHANGELOG.md</a></H2> 
 </body>
 </html>

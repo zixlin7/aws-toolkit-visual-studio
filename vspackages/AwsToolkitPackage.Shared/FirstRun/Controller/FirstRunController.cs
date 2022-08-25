@@ -1,16 +1,22 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.View;
+
 using log4net;
+
+using Microsoft.VisualStudio.Shell;
+
+using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 {
@@ -145,6 +151,20 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
                 Result = success ? Result.Succeeded : Result.Failed,
                 CredentialModification = modification,
                 Source = _control.UniqueId
+            });
+        }
+
+        public async Task ShowAwsExplorerAsync()
+        {
+            await _shellProvider.OpenShellWindowAsync(ShellWindows.Explorer);
+        }
+
+        public void CloseEditor(IAWSToolkitControl firstRunControl)
+        {
+            ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                _shellProvider.CloseEditor(firstRunControl);
             });
         }
     }

@@ -160,7 +160,8 @@
 
         <ItemGroup>
             <!-- Add projects to be tested with xunit here -->
-            <TestAssemblies Include="..\tests\Integration\AwsToolkit.Tests.Integration\bin\$(Configuration)\AwsToolkit.Tests.Integration.dll" />
+            <TestAssemblies Condition="'$(VisualStudioVersion)' == '16.0'" Include="..\tests\Integration\AwsToolkit.Tests.v16.Integration\bin\$(Configuration)\AwsToolkit.Tests.v16.Integration.dll" />
+            <TestAssemblies Condition="'$(VisualStudioVersion)' == '17.0'" Include="..\tests\Integration\AwsToolkit.Tests.v17.Integration\bin\$(Configuration)\AwsToolkit.Tests.v17.Integration.dll" />
         </ItemGroup>        
 
         <MakeDir Directories="$(TestResults)" />

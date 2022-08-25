@@ -7,18 +7,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
 {
     public class CodeCommitRepositoryViewMetaNode : AbstractMetaNode, ICodeCommitRepositoryViewMetaNode
     {
-
-        public ActionHandlerWrapper.ActionHandler OnOpenRepositoryView
-        {
-            get;
-            set;
-        }
-
+        public ActionHandlerWrapper.ActionHandler OnOpenRepositoryView { get; set; }
 
         public override IList<ActionHandlerWrapper> Actions =>
-            BuildActionHandlerList
-            (
-                new ActionHandlerWrapper("Open", OnOpenRepositoryView, null, true, null, null)
-            );
+            BuildActionHandlerList(new ActionHandlerWrapper("Open", OnOpenRepositoryView, null, true, null, null));
     }
 }

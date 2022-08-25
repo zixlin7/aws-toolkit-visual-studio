@@ -9,22 +9,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 {
     public abstract class BaseRepositoryModel : BaseModel
     {
-        protected readonly object _syncLock = new object();
-        protected int _backgroundWorkersActive = 0;
         private static readonly string CodeCommitServiceName = new AmazonCodeCommitConfig().RegionEndpointServiceName;
-
-        public bool QueryWorkersActive
-        {
-            get
-            {
-                int count;
-                lock (_syncLock)
-                {
-                    count = _backgroundWorkersActive;
-                }
-                return count != 0;
-            }
-        }
+        protected AccountViewModel _account;
+        protected readonly List<ToolkitRegion> _availableRegions = new List<ToolkitRegion>();
+        private readonly Dictionary<string, IAmazonCodeCommit> _codeCommitClients = new Dictionary<string, IAmazonCodeCommit>();
 
         public AccountViewModel Account
         {
@@ -58,13 +46,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         {
             _availableRegions.Clear();
 
-            if (this.Account != null)
+            if (Account != null)
             {
-                var regions = ToolkitFactory.Instance.RegionProvider.GetRegions(this.Account.PartitionId);
-                regions
-                    .Where(r => ToolkitFactory.Instance.RegionProvider.IsServiceAvailable(CodeCommitServiceName, r.Id))
-                    .ToList()
-                    .ForEach(r => _availableRegions.Add(r));
+                var rp = ToolkitFactory.Instance.RegionProvider;
+                _availableRegions.AddRange(rp.GetRegions(Account.PartitionId).Where(r => rp.IsServiceAvailable(CodeCommitServiceName, r.Id)));
             }
 
             // If SelectedRegion was referenced a different ToolkitRegion instance, "reselect"
@@ -79,7 +64,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                 SelectedRegion = _availableRegions.FirstOrDefault();
             }
         }
-
 
         public IAmazonCodeCommit GetClientForRegion(ToolkitRegion region)
         {
@@ -96,9 +80,5 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         {
             return account.CreateServiceClient<AmazonCodeCommitClient>(region);
         }
-
-        protected AccountViewModel _account;
-        protected readonly List<ToolkitRegion> _availableRegions = new List<ToolkitRegion>();
-        private readonly Dictionary<string, IAmazonCodeCommit> _codeCommitClients = new Dictionary<string, IAmazonCodeCommit>();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 
 using log4net;
 
@@ -15,17 +15,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ConnectControl));
 
-        private ConnectController _controller;
+        private ObservableCollection<AccountViewModel> _accounts;
 
         public ConnectControl()
         {
             InitializeComponent();
-        }
-
-        public ConnectControl(ConnectController controller)
-            : this()
-        {
-            _controller = controller;
             InitializeAccounts();
         }
 
@@ -33,7 +27,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
 
         public override bool Validated()
         {
-            // as we only list known profiles, we don't really have any validation to do
+            // As we only list known profiles, we don't really have any validation to do
             return true;
         }
 
@@ -45,19 +39,20 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
         private void InitializeAccounts()
         {
             RootViewModel = ToolkitFactory.Instance.RootViewModel;
-            this._accountSelector.PopulateComboBox(Accounts);
+            _accountSelector.PopulateComboBox(Accounts);
+
             if (ToolkitFactory.Instance.Navigator != null)
             {
                 var selectedAccount = ToolkitFactory.Instance.Navigator.SelectedAccount;
                 if (selectedAccount != null)
+                {
                     _accountSelector.SelectedAccount = selectedAccount;
+                }
             }
-
         }
 
         public AWSViewModel RootViewModel { get; set; }
 
-        ObservableCollection<AccountViewModel> _accounts;
         public ObservableCollection<AccountViewModel> Accounts
         {
             get
@@ -72,7 +67,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
                 {
                     _accounts = new ObservableCollection<AccountViewModel>();
 
-                    foreach (var account in this.RootViewModel.RegisteredAccounts)
+                    foreach (var account in RootViewModel.RegisteredAccounts)
                     {
                         _accounts.Add(account);
                     }
@@ -85,14 +80,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
         public AccountViewModel SelectedAccount
         {
             get => _accountSelector.SelectedAccount;
-            set
-            {
-                if (IsInitialized)
-                {
-                    _accountSelector.SelectedAccount = value;
-                }
-            }
         }
-
     }
 }
