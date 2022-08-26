@@ -13,6 +13,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
     internal class CloneRepositoryController  : BaseCodeCommitController
     {
         public CloneRepositoryController(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             Logger = LogManager.GetLogger(typeof(CloneRepositoryController));
             TeamExplorerServiceProvider = serviceProvider;

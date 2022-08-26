@@ -12,12 +12,10 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
     internal class CreateRepositoryController : BaseCodeCommitController
     {
         public CreateRepositoryController(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             Logger = LogManager.GetLogger(typeof(CreateRepositoryController));
-            ServiceProvider = serviceProvider;
         }
-
-        public IServiceProvider ServiceProvider { get; }
 
         public override void Execute()
         {
