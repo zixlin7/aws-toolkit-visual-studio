@@ -1,13 +1,16 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Win32;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
-using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Util;
+
 using log4net;
+
+using Microsoft.VisualStudio.Settings;
+using Microsoft.VisualStudio.Shell.Settings;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 {
@@ -16,18 +19,20 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
     /// </summary>
     internal abstract class BaseCodeCommitController
     {
-        private const string TeamExplorerGitKey = @"SOFTWARE\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
-
         protected IAWSCodeCommit CodeCommitPlugin { get; set; }
         protected AccountViewModel Account { get; set; }
         protected ToolkitRegion Region { get; set; }
 
         protected ILog Logger { get; set; }
 
+        protected IServiceProvider ServiceProvider { get; private set; }
+
         public abstract void Execute();
 
-        protected BaseCodeCommitController()
+        protected BaseCodeCommitController(IServiceProvider serviceProvider)
         {
+            ServiceProvider = serviceProvider;
+
             // Before commencing any work, we'll have gotten the user to supply their
             // AWS credentials so by now we have access to the account bound to Team Explorer 
             // as well as a default region from the navigator.
@@ -65,9 +70,17 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey($@"{TeamExplorerGitKey}\General", true))
+                // If you find yourself using SettingsStore (or still using the Registry) for more than just
+                // this, it's probably time to consider making a wrapper class around all this stuff.
+                SettingsManager settingsManager = new ShellSettingsManager(ServiceProvider);
+                SettingsStore userSettingsStore = settingsManager.GetReadOnlySettingsStore(SettingsScope.UserSettings);
+
+                const string collectionPath = @"TeamFoundation\GitSourceControl\General";
+                const string propertyName = "DefaultRepositoryPath";
+
+                if (userSettingsStore.PropertyExists(collectionPath, propertyName))
                 {
-                    clonePath = (string)key?.GetValue("DefaultRepositoryPath", string.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
+                    clonePath = userSettingsStore.GetString(collectionPath, propertyName);
                 }
             }
             catch (Exception ex)
