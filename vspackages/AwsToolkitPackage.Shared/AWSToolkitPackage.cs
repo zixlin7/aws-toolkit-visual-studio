@@ -94,6 +94,7 @@ using Microsoft.VisualStudio.Threading;
 
 using Debugger = System.Diagnostics.Debugger;
 using OutputWindow = Amazon.AwsToolkit.VsSdk.Common.OutputWindow.OutputWindow;
+using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -2559,9 +2560,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 
 #region Team Explorer Command
 
-        void AddTeamExplorerConnection(object sender, EventArgs e)
+        private void AddTeamExplorerConnection(object sender, EventArgs e)
         {
-            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService?.OpenConnection();
+            ConnectController.OpenConnection();
         }
 
 #endregion

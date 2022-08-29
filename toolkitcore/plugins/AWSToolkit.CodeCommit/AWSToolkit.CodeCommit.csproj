@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeCommitActivator.cs" />
-    <Compile Include="ConnectServiceManager.cs" />
     <Compile Include="Controller\CreateRepositoryController.cs" />
     <Compile Include="Controller\CloneRepositoryController.cs" />
     <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />

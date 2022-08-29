@@ -38,11 +38,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
         private readonly Timer _packageLoadedTimer;
         private bool _toolkitPackageLoaded = false;
 
-        static InvitationSection()
-        {
-            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
-        }
-
         [ImportingConstructor]
         public InvitationSection()
         {
