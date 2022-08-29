@@ -26,11 +26,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
         private ConnectionSectionControl _view;
         private ConnectSectionViewModel _viewModel;
 
-        static ConnectionSection()
-        {
-            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
-        }
-
         [ImportingConstructor]
         public ConnectionSection()
         {
