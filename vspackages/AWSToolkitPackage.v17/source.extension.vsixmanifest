@@ -10,7 +10,7 @@
         <ReleaseNotes>ReleaseNotes.txt</ReleaseNotes>
         <Icon>Resources\Package.ico</Icon>
         <PreviewImage>Resources\aws.png</PreviewImage>
-        <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CodeArtifact;CodeCommit;DynamoDB;EC2;ECR;ECS;IAM;Lambda;S3;Serverless;SNS;SQS</Tags>
+        <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CloudWatch Logs;CodeArtifact;CodeCommit;DynamoDB;EC2;ECR;ECS;IAM;Lambda;RDS;S3;Serverless;SNS;SQS</Tags>
         <Preview>false</Preview>
     </Metadata>
     <Installation AllUsers="true">
