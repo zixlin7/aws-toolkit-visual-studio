@@ -8,8 +8,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
     {
         Task CloneAsync(ServiceSpecificCredentials credentials, string repositoryUrl, string localFolder);
 
-        Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo,
-                         bool autoCloneNewRepository,
-                         AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback);
+        Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo);
     }
 }

@@ -17,13 +17,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
     {
         private readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitGitServices));
 
-        public CodeCommitGitServices(CodeCommitActivator hostActivator)
-        {
-            HostActivator = hostActivator;
-        }
-
-        private CodeCommitActivator HostActivator { get; }
-
         public Task CloneAsync(ServiceSpecificCredentials credentials, string repositoryUrl, string localFolder)
         {
             try
@@ -54,9 +47,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
             return Task.FromResult<object>(null);
         }
 
-        public async Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo, 
-                                      bool autoCloneNewRepository, 
-                                      AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback)
+        public async Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo)
         {
             CodeCommitRepository newRepository;
 
@@ -77,61 +68,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
             {
                 LOGGER.Error(ex);
                 throw;
-            }
-
-            // When called from within the VS package, local folder is not supplied so that
-            // we can perform the clone through Team Explorer
-            if (autoCloneNewRepository)
-            {
-                var svcCredentials = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
-                try
-                {
-                    await CloneAsync(svcCredentials, newRepository.RepositoryUrl, newRepositoryInfo.LocalFolder);
-                    newRepository.LocalFolder = newRepositoryInfo.LocalFolder;
-                }
-                catch (Exception ex)
-                {
-                    LOGGER.Error("Exception cloning new repository", ex);
-                    throw new Exception("Error when attempting to clone the new repository", ex);
-                }
-
-                var initialCommitContent = new List<string>();
-                string target;
-
-                switch (newRepositoryInfo.GitIgnore.GitIgnoreType)
-                {
-                    case GitIgnoreOption.OptionType.VSToolkitDefault:
-                        var content = S3FileFetcher.Instance.GetFileContent("CodeCommit/vsdefault.gitignore.txt", S3FileFetcher.CacheMode.PerInstance);
-                        target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
-                        System.IO.File.WriteAllText(target, content);
-                        initialCommitContent.Add(target);
-                        break;
-                    case GitIgnoreOption.OptionType.Custom:
-                        target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
-                        System.IO.File.Copy(newRepositoryInfo.GitIgnore.CustomFilename, target);
-                        initialCommitContent.Add(target);
-                        break;
-                    case GitIgnoreOption.OptionType.None:
-                        break;
-                }
-
-                if (contentPopulationCallback != null)
-                {
-                    var contentAdded = contentPopulationCallback(newRepository.LocalFolder);
-                    if (contentAdded != null && contentAdded.Any())
-                    {
-                        foreach (var c in contentAdded)
-                        {
-                            initialCommitContent.Add(c);
-                        }
-                    }
-                }
-
-                if (initialCommitContent.Any())
-                {
-                    HostActivator.StageAndCommit(newRepositoryInfo.LocalFolder, initialCommitContent, "Initial commit", svcCredentials.Username);
-                    HostActivator.Push(newRepositoryInfo.LocalFolder, svcCredentials);
-                }
             }
         }
     }
