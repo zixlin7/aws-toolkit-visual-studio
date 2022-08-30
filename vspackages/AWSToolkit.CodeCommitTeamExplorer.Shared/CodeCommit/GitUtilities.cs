@@ -102,7 +102,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                 var codeCommitPlugin = ToolkitFactory.Instance.ShellProvider.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
 
                 var codeCommitGitServices = codeCommitPlugin.CodeCommitGitServices;
-                await codeCommitGitServices.CreateAsync(newRepositoryInfo, false, null);
+                await codeCommitGitServices.CreateAsync(newRepositoryInfo);
 
                 var repository = codeCommitPlugin.GetRepository(newRepositoryInfo.Name, newRepositoryInfo.OwnerAccount, newRepositoryInfo.Region);
 
