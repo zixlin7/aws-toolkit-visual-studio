@@ -44,11 +44,6 @@ namespace Amazon.AWSToolkit.CodeCommit
                 return this;
             }
 
-            if (serviceType == typeof(IAWSToolkitGitServices))
-            {
-                return new CodeCommitGitServices();
-            }
-
             return null;
         }
 
