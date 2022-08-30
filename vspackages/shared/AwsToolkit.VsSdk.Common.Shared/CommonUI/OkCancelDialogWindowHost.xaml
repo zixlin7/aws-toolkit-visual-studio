@@ -23,24 +23,35 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel
+        <DockPanel
             Grid.Row="2"
             Grid.Column="0"
-            Orientation="Horizontal"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom">
+            LastChildFill="True"
+            >
             <Button
-                Name="_ctlAcceptButton"
-                Click="AcceptButton_Click"
+                DockPanel.Dock="Left"
+                Name="_ctlHelpButton"
+                Click="HelpButton_Click"
                 IsDefault="True">
-                OK
+                _Help
             </Button>
-            <Button
-                Name="_ctlRejectButton"
-                Margin="6 0 0 0"
-                IsCancel="True">
-                Cancel
-            </Button>
-        </StackPanel>
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <Button
+                    Name="_ctlAcceptButton"
+                    Click="AcceptButton_Click"
+                    IsDefault="True">
+                    OK
+                </Button>
+                <Button
+                    Name="_ctlRejectButton"
+                    Margin="6 0 0 0"
+                    IsCancel="True">
+                    Cancel
+                </Button>
+            </StackPanel>
+        </DockPanel>
     </Grid>
 </platformUi:DialogWindow>
