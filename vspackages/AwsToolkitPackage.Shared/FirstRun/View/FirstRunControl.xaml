@@ -172,7 +172,7 @@
 
                             <WrapPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="4,4,0,0">
                                 <TextBlock TextWrapping="WrapWithOverflow" Style="{DynamicResource awsTextBlockBaseStyle}"> AWS Toolkit will assume that these credentials are valid for the region us-east-1. If you are working with other regions, 
-                                    <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="OnRequestCreateDialog">
+                                    <Hyperlink RequestNavigate="OnRequestCreateDialog">
                                         <TextBlock Style="{DynamicResource awsUrlTextFieldStyle}" 
                                                    Text="click here"
                                         />

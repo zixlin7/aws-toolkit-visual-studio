@@ -41,6 +41,9 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             AddHostedControl();
             Title = _hostedControl.Title;
 
+            HasHelpButton = _hostedControl.GetHelpHandler() != null;
+            _ctlHelpButton.Visibility = HasHelpButton ? Visibility.Visible : Visibility.Collapsed;
+
             _ctlAcceptButton.IsEnabled = _hostedControl.SupportsDynamicOKEnablement 
                 ? _hostedControl.Validated() 
                 : _hostedControl.UserControl.IsEnabled;
@@ -48,6 +51,11 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             hostedControl.UserControl.IsEnabledChanged += HostedControlIsEnabledChanged;
 
             SetButtonText(buttons);
+        }
+
+        protected override void InvokeDialogHelp()
+        {
+            _hostedControl.GetHelpHandler()?.OnHelp();
         }
 
         private void SetButtonText(MessageBoxButton buttons)
@@ -94,6 +102,11 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             // Re-assess if the Ok button may be enabled.
             _ctlAcceptButton.IsEnabled = _hostedControl.Validated();
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            InvokeDialogHelp();
         }
 
         private void AcceptButton_Click(object sender, RoutedEventArgs e)

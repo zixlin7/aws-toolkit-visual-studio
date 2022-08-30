@@ -36,5 +36,10 @@ namespace Amazon.AWSToolkit.Shared
         string AcceptButtonText { get; }
 
         string RejectButtonText { get; }
+
+        /// <summary>
+        /// Returns null if the dialog doesn't have an associated Help action.
+        /// </summary>
+        IHelpHandler GetHelpHandler();
     }
 }

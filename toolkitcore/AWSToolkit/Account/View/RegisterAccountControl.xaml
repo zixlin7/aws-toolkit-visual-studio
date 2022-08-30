@@ -36,7 +36,6 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
             <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=_ctlDisplayName}" 
@@ -131,24 +130,11 @@
             <WrapPanel Grid.Column="2" Grid.Row="10" Margin="0 6 0 0" Visibility="{Binding IsPartitionEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <TextBlock>Don't see your region?</TextBlock>
                 <TextBlock Margin="6 0 0 0">
-                <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="OnRequestRegions">
+                <Hyperlink RequestNavigate="OnRequestRegions">
                     <TextBlock Text="Show more regions" />
                 </Hyperlink></TextBlock>
 
             </WrapPanel>
-
-            <WrapPanel Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="3" Margin="0 9 0 0" VerticalAlignment="Bottom">
-                <TextBlock>Account information can found at:</TextBlock>
-                <TextBlock Margin="3 0 0 0">
-                    <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
-                        <TextBlock 
-                            Name="_ctlAWSLink" 
-                            Text="https://aws.amazon.com/developers/access-keys/"
-                            />
-                    </Hyperlink>
-                </TextBlock>
-            </WrapPanel>
-
         </Grid>
     </ScrollViewer>
 </commonui:BaseAWSControl>
