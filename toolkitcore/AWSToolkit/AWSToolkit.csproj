@@ -258,6 +258,7 @@
     <Compile Include="Publish\Banner\PublishBannerViewModel.cs" />
     <Compile Include="Publish\Banner\PublishBannerViewModelFactory.cs" />
     <Compile Include="Publish\Banner\SwitchToNewExperienceCommandFactory.cs" />
+    <Compile Include="Shared\IHelpHandler.cs" />
     <Compile Include="SimpleWorkers\CloudWatchMetrics.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeBrushKeys.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeFontKeys.cs" />
@@ -286,7 +287,11 @@
     <Compile Include="Credentials\Utils\ProfilePropertyConstants.cs" />
     <Compile Include="Credentials\Utils\Profiles.cs" />
     <Compile Include="PluginServices\Activators\PluginActivatorUtilities.cs" />
-    <Compile Include="Shared\*.cs" />
+    <Compile Include="Shared\GitIgnoreOption.cs" />
+    <Compile Include="Shared\IAWSToolkitControl.cs" />
+    <Compile Include="Shared\IAWSToolkitShellProvider.cs" />
+    <Compile Include="Shared\IAWSToolkitShellThemeService.cs" />
+    <Compile Include="Shared\INewCodeCommitRepositoryInfo.cs" />
     <Compile Include="AbstractPluginActivator.cs" />
     <Compile Include="Account\Controller\EditAccountController.cs" />
     <Compile Include="Account\Controller\RegisterAccountController.cs" />
