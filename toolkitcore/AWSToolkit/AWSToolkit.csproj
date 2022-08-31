@@ -99,6 +99,7 @@
     </Compile>
     <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePickerViewModel.cs" />
     <Compile Include="CommonUI\DateTimeRangePicker\TimeInputViewModel.cs" />
+    <Compile Include="CommonUI\Dialogs\IFolderBrowserDialog.cs" />
     <Compile Include="CommonUI\DualListBox.cs" />
     <Compile Include="CommonUI\Notifications\ITaskStatusNotifier.cs" />
     <Compile Include="CommonUI\HintTextBox.xaml.cs">

@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.Telemetry.Model;
+using Amazon.AWSToolkit.CommonUI.Dialogs;
 
 namespace Amazon.AWSToolkit.Shared
 {

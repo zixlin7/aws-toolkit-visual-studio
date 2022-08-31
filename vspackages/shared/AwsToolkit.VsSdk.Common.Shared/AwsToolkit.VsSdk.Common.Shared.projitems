@@ -43,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\SelectionDialog.xaml.cs">
       <DependentUpon>SelectionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\VsFolderBrowserDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
