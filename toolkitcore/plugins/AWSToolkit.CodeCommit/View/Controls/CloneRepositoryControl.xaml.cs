@@ -75,16 +75,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)
         {
-            var dlg = new FolderBrowserDialog()
-            {
-                Description = "Select the folder to contain the repository",
-                ShowNewFolderButton = true
-            };
-
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                Controller.Model.BaseFolder = dlg.SelectedPath;
-            }
+            Controller.BrowseForBaseFolder();
         }
 
         private void OnRepositorySelectionChanged(object sender, SelectionChangedEventArgs e)

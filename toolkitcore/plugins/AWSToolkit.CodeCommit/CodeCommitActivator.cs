@@ -109,7 +109,7 @@ namespace Amazon.AWSToolkit.CodeCommit
         public ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account, ToolkitRegion initialRegion, string defaultFolderRoot)
         {
             initialRegion = initialRegion ?? GetFallbackRegion();
-            var controller = new CloneRepositoryController(account, initialRegion, defaultFolderRoot);
+            var controller = new CloneRepositoryController(account, initialRegion, defaultFolderRoot, ToolkitContext);
             return controller.Execute().Success ?
                 new CodeCommitRepository(controller.Model.SelectedRepository, controller.Model.SelectedFolder) :
                 null;
@@ -118,7 +118,7 @@ namespace Amazon.AWSToolkit.CodeCommit
         public INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account, ToolkitRegion initialRegion, string defaultFolderRoot)
         {
             initialRegion = initialRegion ?? GetFallbackRegion();
-            var controller = new CreateRepositoryController(account, initialRegion, defaultFolderRoot);
+            var controller = new CreateRepositoryController(account, initialRegion, defaultFolderRoot, ToolkitContext);
             return controller.Execute().Success ? controller.Model.GetNewRepositoryInfo() : null;
         }
 

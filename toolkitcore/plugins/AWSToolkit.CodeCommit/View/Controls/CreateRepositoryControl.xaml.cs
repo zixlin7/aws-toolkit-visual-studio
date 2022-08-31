@@ -75,16 +75,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)
         {
-            var dlg = new FolderBrowserDialog()
-            {
-                Description = "Select the folder to clone into",
-                ShowNewFolderButton = true
-            };
-
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                Controller.Model.BaseFolder = dlg.SelectedPath;
-            }
+            Controller.BrowseForBaseFolder();
         }
 
         private void ModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)

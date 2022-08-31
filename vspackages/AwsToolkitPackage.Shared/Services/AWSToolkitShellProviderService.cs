@@ -8,6 +8,7 @@ using System.Windows.Interop;
 
 using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;

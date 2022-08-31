@@ -27,6 +27,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             return new OpenFileDialog();
         }
 
+        public IFolderBrowserDialog CreateFolderBrowserDialog()
+        {
+            return new VsFolderBrowserDialog(_joinableTaskFactory);
+        }
+
         public ISelectionDialog CreateSelectionDialog()
         {
             return new SelectionDialog();
