@@ -10,6 +10,7 @@
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
                          xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
                          xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.CloudWatch.Logs.ViewModels"
+                         xmlns:generated="clr-namespace:Amazon.AwsToolkit.Telemetry.Events.Generated;assembly=Amazon.AwsToolkit.Telemetry.Events"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -139,6 +140,8 @@
                              LoadingLogs="{Binding LoadingLogs}"
                              ErrorMessage="{Binding ErrorMessage}"
                              HasInitialized="{Binding HasInitialized}"
+                             FilterText ="{Binding FilterText}"
+                             NoResultSuggestions="{Binding NoResultSuggestions}"
                              Visibility="{Binding Visibility, ElementName=LogStreamsList, Converter={StaticResource InverseVisibilityConverter}}" />
 
         <commonUi:ToolkitDataGridWrapper Grid.Row="3"

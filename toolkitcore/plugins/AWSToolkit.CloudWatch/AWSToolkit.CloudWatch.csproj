@@ -60,6 +60,7 @@
     <Compile Include="Logs\Core\RepositoryFactory.cs" />
     <Compile Include="Logs\Models\ExportResult.cs" />
     <Compile Include="Logs\Models\FilterLogEventsRequest.cs" />
+    <Compile Include="Logs\Models\LinkedTextSuggestion.cs" />
     <Compile Include="Logs\Models\MetricSources.cs" />
     <Compile Include="Logs\Models\GetLogEventsRequest.cs" />
     <Compile Include="Logs\Models\GetLogGroupsRequest.cs" />
@@ -70,6 +71,8 @@
     <Compile Include="Logs\Models\OrderBy.cs" />
     <Compile Include="Logs\Models\PaginatedLoadingStatus.cs" />
     <Compile Include="Logs\Models\PaginatedLogResponse.cs" />
+    <Compile Include="Logs\Models\Suggestion.cs" />
+    <Compile Include="Logs\Models\TextSuggestion.cs" />
     <Compile Include="Logs\Viewers\LogEventsViewer.cs" />
     <Compile Include="Logs\Viewers\LogStreamsViewer.cs" />
     <Compile Include="Logs\Views\ResultsStatus.xaml.cs">
