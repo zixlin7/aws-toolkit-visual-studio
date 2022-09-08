@@ -7,6 +7,7 @@
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+             xmlns:models="clr-namespace:Amazon.AWSToolkit.CloudWatch.Logs.Models"
              themes:ToolkitThemes.UseToolkitTheme="True"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -14,6 +15,7 @@
         <ResourceDictionary>
             <commonUi:VsImages x:Key="VsImages" />
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -22,6 +24,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -57,26 +60,84 @@
                 <Style TargetType="TextBox">
                     <Setter Property="Text" Value="{Binding ErrorMessage}" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding ErrorMessage}" Value="" >
+                        <DataTrigger Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" Value="" >
                             <Setter Property="Text" Value="No Results Found"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </TextBox.Style>
         </TextBox>
-     <Grid.Style>
-         <Style TargetType="{x:Type Grid}">
+
+        <!--Custom no search results found message for different log resources-->
+        <ItemsControl Grid.Row="1" Grid.Column="0"
+                      Grid.ColumnSpan="2"
+                      VerticalAlignment="Center" Margin="3"
+                      ItemsSource="{Binding DataContext.NoResultSuggestions, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type models:TextSuggestion}">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        TextWrapping="WrapWithOverflow"
+                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}">
+                        <BulletDecorator Margin="3">
+                            <BulletDecorator.Bullet>
+                                <Ellipse Fill="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                                         Width="6" Height="6" />
+                            </BulletDecorator.Bullet>
+                            <TextBlock Margin=" 6 0 0 0" VerticalAlignment="Center" Text="{Binding Message}" />
+                        </BulletDecorator>
+                    </TextBlock>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type models:LinkedTextSuggestion}">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        TextWrapping="WrapWithOverflow"
+                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}">
+                        <BulletDecorator Margin="3">
+                            <BulletDecorator.Bullet>
+                                <Ellipse Fill="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                                         Width="6" Height="6" />
+                            </BulletDecorator.Bullet>
+                            <TextBlock Margin="6 0 0 0"
+                                       TextWrapping="WrapWithOverflow">
+                                <Run Text="{Binding Message}" />
+                                <commonUi:BrowserHyperLink
+                                    NavigateUri="{Binding LinkUrl}">
+                                    <Run Text="{Binding LinkText}" />
+                                </commonUi:BrowserHyperLink>
+                            </TextBlock>
+                        </BulletDecorator>
+                    </TextBlock>
+                </DataTemplate>
+
+            </ItemsControl.Resources>
+            <ItemsControl.Style>
+                <Style TargetType="{x:Type ItemsControl}">
+                    <Setter Property="Visibility" Value="{Binding DataContext.FilterText, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Converter={StaticResource HasValueVisibilityConverter}}" />
+                    <Style.Triggers>
+                        <DataTrigger
+                            Binding="{Binding DataContext.ErrorMessage, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Converter={StaticResource HasValueVisibilityConverter}}"
+                            Value="Visible">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ItemsControl.Style>
+        </ItemsControl>
+
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
                 <Setter Property="Visibility" Value="{Binding LoadingLogs, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-             <Style.Triggers>
-                 <MultiDataTrigger>
+                <Style.Triggers>
+                    <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                             <Condition Binding="{Binding ErrorMessage}" Value=""/>
                             <Condition Binding="{Binding HasInitialized}" Value="False"/>
                         </MultiDataTrigger.Conditions>
-                     <Setter Property="Visibility" Value="Collapsed"/>
-                 </MultiDataTrigger>
-             </Style.Triggers>
-         </Style>
-     </Grid.Style>
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
     </Grid>
 </UserControl>

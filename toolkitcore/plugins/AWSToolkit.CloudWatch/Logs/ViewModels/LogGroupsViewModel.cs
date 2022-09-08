@@ -71,6 +71,13 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
 
         public override CloudWatchResourceType GetCloudWatchResourceType() => CloudWatchResourceType.LogGroupList;
 
+        protected override ObservableCollection<Suggestion> CreateSuggestions()
+        {
+            var suggestions = base.CreateSuggestions();
+            suggestions.Add(PrefixSearchSuggestion);
+            return suggestions;
+        }
+
         public override async Task LoadAsync()
         {
             await GetLogGroupsAsync(CancellationToken).ConfigureAwait(false);
