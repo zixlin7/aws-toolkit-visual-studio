@@ -78,7 +78,8 @@
                  VirtualizingStackPanel.VirtualizationMode="Standard"
                  ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 themes:ToolkitThemes.UseToolkitTheme="True">
+                 themes:ToolkitThemes.UseToolkitTheme="True"
+                 Visibility="{Binding LogGroups, Converter={StaticResource HasItemsVisibilityConverter}}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}"></TextBlock>
@@ -89,21 +90,6 @@
                     <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick"/>
                 </Style>
             </ListBox.ItemContainerStyle>
-            <ListBox.Style>
-                <!-- Do not show the listbox when there are no matching results or if an error occurred -->
-                <Style TargetType="ListBox">
-                    <Setter Property="Visibility"
-                            Value="{Binding LogGroups, Converter={StaticResource HasItemsVisibilityConverter}}" />
-                    <Style.Triggers>
-
-                        <DataTrigger
-                            Binding="{Binding ErrorMessage, Converter={StaticResource HasValueVisibilityConverter}}"
-                            Value="Visible">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ListBox.Style>
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="View Log Group" Command="{Binding ViewCommand}" CommandParameter="{Binding LogGroup.Name}">
@@ -129,7 +115,9 @@
         <local:ConnectionStatus Grid.Row="4"
                                 ConnectionSettings="{Binding ConnectionSettings}"
                                 FeedbackSource="{Binding Source={x:Static viewModels:BaseLogsViewModel.FeedbackSource}}"
-                                FeedbackCommand="{Binding FeedbackCommand}"/>
+                                FeedbackCommand="{Binding FeedbackCommand}"
+                                ErrorMessage="{Binding ErrorMessage}"
+                                ShowErrorCommand="{Binding ShowErrorCommand}"/>
 
     </Grid>
 </commonUi:BaseAWSControl>

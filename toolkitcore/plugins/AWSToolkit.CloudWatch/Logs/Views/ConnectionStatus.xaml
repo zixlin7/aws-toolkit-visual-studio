@@ -14,6 +14,7 @@
         <ResourceDictionary>
             <converters:CredentialIdentifierConverter x:Key="CredentialIdentifierConverter" />
             <converters:ToolkitRegionConverter x:Key="ToolkitRegionConverter" />
+            <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter"/>
             <commonUi:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </UserControl.Resources>
@@ -29,6 +30,7 @@
                 <ItemsPanelTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -53,10 +55,32 @@
                     />
             </StatusBarItem>
             <Separator Grid.Column="3" />
-            <StatusBarItem Grid.Column="4">
+            <!--Error status indicator-->
+            <StatusBarItem Grid.Column="4" Visibility="{Binding ErrorMessage, Converter={StaticResource HasValueVisibilityConverter}}">
+                <Button
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                    Command="{Binding ShowErrorCommand}"
+                    CommandParameter="{Binding ErrorMessage, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <StackPanel Orientation="Horizontal">
+                        <images:VsImage
+                            Width="16"
+                            Height="16"
+                            Source="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                        <TextBlock Margin="3 0 0 0" Text="Error"/>
+                    </StackPanel>
+                    <Button.ToolTip>
+                        <ToolTip MaxWidth="400" DataContext="{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}" >
+                            <TextBlock Text="{Binding DataContext.ErrorMessage}" TextWrapping="WrapWithOverflow" />
+                        </ToolTip>
+                    </Button.ToolTip>
+                </Button>
+            </StatusBarItem>
+       
+            <StatusBarItem Grid.Column="5">
                 <!-- Currently this is a spacer -->
             </StatusBarItem>
-            <StatusBarItem Grid.Column="5">
+
+            <StatusBarItem Grid.Column="6">
                 <Button
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                     Command="{Binding FeedbackCommand}"

@@ -17,6 +17,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 
 using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
+using Amazon.AWSToolkit.Commands;
 
 namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
 {
@@ -42,6 +43,7 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         private ICommand _refreshCommand;
         private ICommand _copyArnCommand;
         private ICommand _feedbackCommand;
+        private ICommand _showErrorCommand;
         private int _lastFilterHash;
         private ObservableCollection<Suggestion> _noResultSuggestions;
 
@@ -118,6 +120,16 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         /// Command that shows the feedback panel for the CloudWatch Logs integration
         /// </summary>
         public ICommand FeedbackCommand => _feedbackCommand ?? (_feedbackCommand = new SendFeedbackCommand(ToolkitContext));
+
+        /// <summary>
+        /// Command that shows the error message in the output window
+        /// </summary>
+        public ICommand ShowErrorCommand => _showErrorCommand ?? (_showErrorCommand = CreateShowErrorCommand());
+
+        private ICommand CreateShowErrorCommand()
+        {
+            return ShowMessageInOutputCommand.Create(ToolkitContext.ToolkitHost);
+        }
 
         private ICommand CreateCopyArnCommand()
         {
