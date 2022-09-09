@@ -277,7 +277,8 @@
                                          GridLinesVisibility="None"
                                          SelectionMode="Extended"
                                          IsReadOnly="True"
-                                         HeadersVisibility="Column">
+                                         HeadersVisibility="Column"
+                                         Visibility="{Binding LogEvents, Converter={StaticResource HasItemsVisibilityConverter}}">
             <commonUi:ToolkitDataGridWrapper.Columns>
                 <DataGridTextColumn Header="Timestamp"
                                     Binding="{Binding Path=Timestamp, ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}"
@@ -304,25 +305,13 @@
                     </MenuItem>
                 </ContextMenu>
             </commonUi:ToolkitDataGridWrapper.ContextMenu>
-            <commonUi:ToolkitDataGridWrapper.Style>
-                <!-- Do not show the DataGrid when there are no matching results or if an error occurred -->
-                <Style TargetType="{x:Type commonUi:ToolkitDataGridWrapper}">
-                    <Setter Property="Visibility"
-                            Value="{Binding LogEvents, Converter={StaticResource HasItemsVisibilityConverter}}" />
-                    <Style.Triggers>
-                        <DataTrigger
-                            Binding="{Binding ErrorMessage, Converter={StaticResource HasValueVisibilityConverter}}"
-                            Value="Visible">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </commonUi:ToolkitDataGridWrapper.Style>
         </commonUi:ToolkitDataGridWrapper>
 
         <local:ConnectionStatus Grid.Row="6" 
                                 ConnectionSettings="{Binding ConnectionSettings}"
                                 FeedbackSource="{Binding Source={x:Static viewModels:BaseLogsViewModel.FeedbackSource}}"
-                                FeedbackCommand="{Binding FeedbackCommand}"/>
+                                FeedbackCommand="{Binding FeedbackCommand}"
+                                ErrorMessage="{Binding ErrorMessage}"
+                                ShowErrorCommand="{Binding ShowErrorCommand}"/>
     </Grid>
 </commonUi:BaseAWSControl>
