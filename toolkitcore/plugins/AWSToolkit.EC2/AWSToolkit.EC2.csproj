@@ -908,10 +908,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.67.1</Version>
+      <Version>3.7.85.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.134</Version>
+      <Version>3.7.2.184</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

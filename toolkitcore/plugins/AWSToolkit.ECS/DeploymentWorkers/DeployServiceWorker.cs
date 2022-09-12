@@ -198,7 +198,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     loadBalancerArn = this._elbClient.CreateLoadBalancer(new CreateLoadBalancerRequest
                     {
                         Name = loadBalancerArn,
-                        IpAddressType = IpAddressType.Ipv4,
+                        IpAddressType = ElasticLoadBalancingV2.IpAddressType.Ipv4,
                         Scheme = LoadBalancerSchemeEnum.InternetFacing,
                         Type = LoadBalancerTypeEnum.Application,
                         SecurityGroups = new List<string> { changeTracker.SecurityGroup },
