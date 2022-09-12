@@ -21,6 +21,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         public const string SsoAccountId = "SsoAccountId";
         public const string SsoRegion = "SsoRegion";
         public const string SsoRoleName = "SsoRoleName";
+        public const string SsoSession = "SsoSession";
         public const string SsoStartUrl = "SsoStartUrl";
     }
 }

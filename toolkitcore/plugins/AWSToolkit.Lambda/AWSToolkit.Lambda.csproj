@@ -295,37 +295,37 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.9.32</Version>
+      <Version>3.7.11.26</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchEvents">
-      <Version>3.7.4.99</Version>
+      <Version>3.7.4.148</Version>
     </PackageReference>
-	  <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>3.7.3.30</Version>
+    <PackageReference Include="AWSSDK.DynamoDBv2">
+      <Version>3.7.4.10</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.67.1</Version>
+      <Version>3.7.85.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.134</Version>
+      <Version>3.7.2.184</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.KeyManagementService">
-      <Version>3.7.3.5</Version>
+      <Version>3.7.4.21</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Kinesis">
-      <Version>3.7.1.51</Version>
+      <Version>3.7.1.100</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.7.12.10</Version>
+      <Version>3.7.14.10</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.8.27</Version>
+      <Version>3.7.9.50</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.3.54</Version>
+      <Version>3.7.4.3</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.2.51</Version>
+      <Version>3.7.2.100</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
