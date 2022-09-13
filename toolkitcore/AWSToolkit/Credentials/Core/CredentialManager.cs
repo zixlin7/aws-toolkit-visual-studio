@@ -19,12 +19,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(CredentialManager));
 
-        //ConcurrentDictionary with key as ICredentialIdentifier ID(unique id for an identifier) and value as the ICredentialIdentifier
+        // Key: ICredentialIdentifier.Id, Value: ICredentialIdentifier
         private readonly ConcurrentDictionary<string, ICredentialIdentifier> _identifierIds;
 
-        //ConcurrentDictionary with key as ICredentialIdentifier ID(unique id for an identifier)
-        //and value as inner ConcurrentDictionary with key as region's partition ID and value as the AWSCredential for that partition and identifier
-        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, AWSCredentials>>
+        // Key: ICredentialIdentifier.Id, Value: Map of Partition Id to associated Credentials
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, ToolkitCredentials>>
             _awsCredentialPartitionCache;
         private readonly Dictionary<string, ICredentialProviderFactory> _providerFactoryMapping;
 
@@ -37,13 +36,13 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         public CredentialManager(Dictionary<string, ICredentialProviderFactory> factoryMapping) : this(factoryMapping,
             new ConcurrentDictionary<string, ICredentialIdentifier>(),
-            new ConcurrentDictionary<string, ConcurrentDictionary<string, AWSCredentials>>())
+            new ConcurrentDictionary<string, ConcurrentDictionary<string, ToolkitCredentials>>())
         {
         }
 
         public CredentialManager(Dictionary<string, ICredentialProviderFactory> providerFactoryMapping,
             ConcurrentDictionary<string, ICredentialIdentifier> identifierIds,
-            ConcurrentDictionary<string, ConcurrentDictionary<string, AWSCredentials>>
+            ConcurrentDictionary<string, ConcurrentDictionary<string, ToolkitCredentials>>
                 awsCredentialPartitionCache)
         {
             _providerFactoryMapping = providerFactoryMapping;
@@ -107,13 +106,20 @@ namespace Amazon.AWSToolkit.Credentials.Core
         }
 
         /// <summary>
+        /// TODO : Phase out this function in favor of <see cref="GetToolkitCredentials"/>
+        /// 
         /// Retrieves an <see cref="AWSCredentials"/> for the specified CredentialIdentifier
         /// <see cref="ICredentialIdentifier"/> and region <see cref="ToolkitRegion"/>
         /// </summary>
-        /// <param name="credentialIdentifier"></param>
-        /// <param name="region"></param>
-        /// <returns></returns>
-        public AWSCredentials GetAwsCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
+        public AWSCredentials GetAwsCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region) =>
+            GetToolkitCredentials(credentialIdentifier, region).GetAwsCredentials();
+
+        /// <summary>
+        /// Retrieves a <see cref="ToolkitCredentials"/> for the specified CredentialIdentifier
+        /// (<see cref="ICredentialIdentifier"/>) and region (<see cref="ToolkitRegion"/>).
+        /// </summary>
+        public ToolkitCredentials GetToolkitCredentials(ICredentialIdentifier credentialIdentifier,
+            ToolkitRegion region)
         {
             //validate that the identifier ID is valid and get latest identifier for it
             _identifierIds.TryGetValue(credentialIdentifier.Id, out var identifier);
@@ -125,11 +131,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
 
             //check the credential cache if credentials for this partition and identifier ID already exists, else create a new one
-            _awsCredentialPartitionCache.TryAdd(identifier.Id, new ConcurrentDictionary<string, AWSCredentials>());
+            _awsCredentialPartitionCache.TryAdd(identifier.Id, new ConcurrentDictionary<string, ToolkitCredentials>());
             _awsCredentialPartitionCache.TryGetValue(identifier.Id, out var partitionCache);
             if (!partitionCache.TryGetValue(region.PartitionId, out var credentials))
             {
-                credentials = CreateAwsCredentials(identifier, region);
+                credentials = CreateToolkitCredentials(identifier, region);
                 partitionCache[region.PartitionId] = credentials;
             }
 
@@ -176,12 +182,10 @@ namespace Amazon.AWSToolkit.Credentials.Core
         }
 
         /// <summary>
-        /// Creates an<see cref= "AWSCredentials" /> for the specified CredentialIdentifier
-        /// <see cref="ICredentialIdentifier"/> and region <see cref="ToolkitRegion"/>
+        /// Creates a <see cref= "ToolkitCredentials" /> for the specified CredentialIdentifier
+        /// (<see cref="ICredentialIdentifier"/>) and region (<see cref="ToolkitRegion"/>).
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <param name="region"></param>
-        private AWSCredentials CreateAwsCredentials(ICredentialIdentifier identifier, ToolkitRegion region)
+        private ToolkitCredentials CreateToolkitCredentials(ICredentialIdentifier identifier, ToolkitRegion region)
         {
             _providerFactoryMapping.TryGetValue(identifier.FactoryId, out var providerFactory);
             if (providerFactory == null)
@@ -190,18 +194,15 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     $"No provider factory found for identifier type: {identifier.GetType()}");
             }
 
-            AWSCredentials credentials;
             try
             {
-                credentials = providerFactory.CreateToolkitCredentials(identifier, region).GetAwsCredentials();
+                return providerFactory.CreateToolkitCredentials(identifier, region);
             }
             catch (Exception e)
             {
-                Logger.Error($"Failed to create underlying AWSCredentials: {e.Message}");
-                throw new CredentialProviderNotFoundException($"Failed to create underlying AWSCredentials: {e.Message}", e);
+                Logger.Error($"Failed to create ToolkitCredentials for Id: {identifier.Id}: {e.Message}");
+                throw new CredentialProviderNotFoundException($"Failed to create Toolkit Credentials: {e.Message}", e);
             }
-
-            return credentials;
         }
 
         public void Dispose()
