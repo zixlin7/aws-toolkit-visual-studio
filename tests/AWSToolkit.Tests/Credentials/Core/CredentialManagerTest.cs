@@ -5,6 +5,7 @@ using System.Linq;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.Runtime;
 using Moq;
 using Xunit;
@@ -24,6 +25,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         private readonly SharedCredentialIdentifier _sharedIdentifier1 = new SharedCredentialIdentifier("testshared1");
         private readonly SharedCredentialIdentifier _sharedIdentifier2 = new SharedCredentialIdentifier("testshared2");
         private readonly SDKCredentialIdentifier _sdkIdentifier1 = new SDKCredentialIdentifier("testsdk1");
+        private readonly ICredentialIdentifier _unregisteredFactoryCredentialId = FakeCredentialIdentifier.Create("foo");
         private readonly ToolkitRegion _region = new ToolkitRegion{Id = "us-west-2", PartitionId = "aws", DisplayName = "US West (Oregon)"};
        
         public CredentialManagerTest()
@@ -46,6 +48,31 @@ namespace AWSToolkit.Tests.Credentials.Core
             _sharedFactory.Setup(x => x.IsLoginRequired(identifier)).Returns(true);
             Assert.True(_credentialManager.IsLoginRequired(identifier));
             _sharedFactory.Verify(x => x.IsLoginRequired(identifier), Times.Once);
+        }
+
+        [Fact]
+        public void Supports()
+        {
+            _sharedFactory
+                .Setup(mock => mock.Supports(It.IsAny<ICredentialIdentifier>(), It.IsAny<AwsConnectionType>()))
+                .Returns(true);
+            Assert.True(_credentialManager.Supports(_sharedIdentifier1, AwsConnectionType.AwsCredentials));
+        }
+
+        [Fact]
+        public void SupportsWhenUnsupported()
+        {
+            _sharedFactory
+                .Setup(mock => mock.Supports(It.IsAny<ICredentialIdentifier>(), It.IsAny<AwsConnectionType>()))
+                .Returns(false);
+            Assert.False(_credentialManager.Supports(_sharedIdentifier1, AwsConnectionType.AwsCredentials));
+        }
+
+        [Fact]
+        public void SupportsThrowsWithUnregisteredFactory()
+        {
+            Assert.Throws<CredentialProviderNotFoundException>(() =>
+                _credentialManager.Supports(_unregisteredFactoryCredentialId, AwsConnectionType.AwsCredentials));
         }
 
         [Fact]

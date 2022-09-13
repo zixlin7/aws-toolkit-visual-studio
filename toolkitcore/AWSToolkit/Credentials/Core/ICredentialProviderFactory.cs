@@ -33,6 +33,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
         bool IsLoginRequired(ICredentialIdentifier id);
 
         /// <summary>
+        /// Checks if the given credential Id supports a connection type
+        /// </summary>
+        bool Supports(ICredentialIdentifier credentialIdentifier, AwsConnectionType connectionType);
+
+        /// <summary>
         /// Returns the ICredentialProviderFactory if it implements the <see cref="ICredentialProfileProcessor"/>, else null
         /// </summary>
         /// <returns></returns>

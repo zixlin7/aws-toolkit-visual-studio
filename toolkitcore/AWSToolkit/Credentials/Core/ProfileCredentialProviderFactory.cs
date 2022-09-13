@@ -63,6 +63,41 @@ namespace Amazon.AWSToolkit.Credentials.Core
                    IsMFACredentialType(type);
         }
 
+        public bool Supports(ICredentialIdentifier id, AwsConnectionType connectionType)
+        {
+            var profile = ProfileHolder.GetProfile(id.ProfileName);
+            if (profile == null)
+            {
+                return false;
+            }
+
+            switch (connectionType)
+            {
+                case AwsConnectionType.AwsToken:
+                    return SupportsToken(profile);
+                case AwsConnectionType.AwsCredentials:
+                    return SupportsAwsCredentials(profile);
+                default:
+                    return false;
+            }
+        }
+
+        private bool SupportsToken(CredentialProfile profile)
+        {
+            var type = CredentialProfileTypeDetector.DetectProfileType(profile.Options);
+
+            return type.Equals(CredentialProfileType.SSO)
+                   && profile.Options.ReferencesSsoSessionProfile();
+        }
+
+        private bool SupportsAwsCredentials(CredentialProfile profile)
+        {
+            var type = CredentialProfileTypeDetector.DetectProfileType(profile.Options);
+
+            return !type.Equals(CredentialProfileType.SSO)
+                   || !profile.Options.ReferencesSsoSessionProfile();
+        }
+
         public void LoadProfiles(bool initialLoad)
         {
             //create a copy to avoid referenced dictionary changes
