@@ -21,4 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\ImageThemeConverterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\IVsMonitorSelectionExtensionMethodsTests.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)SourceControl\" />
+  </ItemGroup>
 </Project>
