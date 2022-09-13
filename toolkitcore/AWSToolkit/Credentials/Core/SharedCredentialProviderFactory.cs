@@ -32,16 +32,18 @@ namespace Amazon.AWSToolkit.Credentials.Core
         {
         }
 
-        public override AWSCredentials CreateAwsCredential(ICredentialIdentifier identifierId, ToolkitRegion region)
+        public override ToolkitCredentials CreateToolkitCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
         {
-            var sharedIdentifierId = identifierId as SharedCredentialIdentifier ??
+            var sharedIdentifierId = credentialIdentifier as SharedCredentialIdentifier ??
                                      throw new ArgumentException(
-                                         $"SharedCredentialProviderFactory can only handle SharedCredentialIdentifiers, but got {identifierId.GetType()}");
+                                         $"SharedCredentialProviderFactory expected {nameof(SharedCredentialIdentifier)}, but received {credentialIdentifier.GetType()}");
             var sharedProfile = ProfileHolder.GetProfile(sharedIdentifierId.ProfileName) ??
                                 throw new InvalidOperationException(
-                                    $"Profile {sharedIdentifierId.ProfileName} looks to be removed.");
+                                    $"Profile not found: {sharedIdentifierId.ProfileName}");
 
-            return CreateAwsCredential(sharedProfile, region);
+            var awsCredentials = CreateAwsCredential(sharedProfile, region);
+
+            return new ToolkitCredentials(credentialIdentifier, awsCredentials);
         }
 
         /// <summary>

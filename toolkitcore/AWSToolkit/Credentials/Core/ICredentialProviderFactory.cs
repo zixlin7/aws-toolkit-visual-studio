@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
-using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Credentials.Core
 {
@@ -21,13 +21,10 @@ namespace Amazon.AWSToolkit.Credentials.Core
         void Initialize();
 
         /// <summary>
-        /// Creates an <see cref="AWSCredentials"/> for the specified CredentialIdentifier
-        /// <see cref="ICredentialIdentifier"/> and region <see cref="ToolkitRegion"/>
+        /// Creates a <see cref="ToolkitCredentials"/> for the specified CredentialIdentifier
+        /// (<see cref="ICredentialIdentifier"/>) and region (<see cref="ToolkitRegion"/>)
         /// </summary>
-        /// <param name="identifierId"></param>
-        /// <param name="region"></param>
-        /// TODO:add sdkhttp supplier for making calls for sso and assume role
-        AWSCredentials CreateAwsCredential(ICredentialIdentifier identifierId, ToolkitRegion region);
+        ToolkitCredentials CreateToolkitCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region);
 
         /// <summary>
         /// Checks if a user login prompt is required for the given <see cref="ICredentialIdentifier"/>.
@@ -42,7 +39,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         ICredentialProfileProcessor GetCredentialProfileProcessor();
 
         /// <summary>
-        /// Returns the list of <see cref="ICredentialIdentifiers"/> found on initial load of the factory
+        /// Returns the list of <see cref="ICredentialIdentifier"/> found on initial load of the factory
         /// </summary>
         /// <returns></returns>
         List<ICredentialIdentifier> GetCredentialIdentifiers();

@@ -178,7 +178,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             AWSCredentials credentials;
             try
             {
-                credentials = providerFactory.CreateAwsCredential(identifier, region);
+                credentials = providerFactory.CreateToolkitCredentials(identifier, region).GetAwsCredentials();
             }
             catch (Exception e)
             {

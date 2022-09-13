@@ -59,7 +59,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             throw new NotImplementedException();
         }
 
-        public override AWSCredentials CreateAwsCredential(ICredentialIdentifier identifierId, ToolkitRegion region)
+        public override ToolkitCredentials CreateToolkitCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
         {
             throw new NotImplementedException();
         }
