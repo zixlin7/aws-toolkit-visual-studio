@@ -112,6 +112,8 @@
     </Compile>
     <Compile Include="CommonUI\DataErrorInfo.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
+    <Compile Include="Credentials\Core\AwsConnectionType.cs" />
+    <Compile Include="Credentials\Core\ToolkitCredentials.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />
     <Compile Include="CloudFormation\ICloudFormationViewer.cs" />

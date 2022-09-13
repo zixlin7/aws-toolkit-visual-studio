@@ -138,7 +138,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         protected abstract void SetupProfileWatcher();
 
-        public abstract AWSCredentials CreateAwsCredential(ICredentialIdentifier identifierId, ToolkitRegion region);
+        public abstract ToolkitCredentials CreateToolkitCredentials(ICredentialIdentifier credentialIdentifier,
+            ToolkitRegion region);
 
         protected abstract ICredentialIdentifier CreateCredentialIdentifier(CredentialProfile profile);
 
@@ -159,6 +160,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
         {
             if (profile.Options.ContainsSsoProperties())
             {
+                // TODO : When we add bearer token support, SSO based profiles could return AWSCredentials or tokens depending
+                // on which properties are available
+                // We'll need to adjust some code flows in this space
                 return CreateSso(profile);
             }
 

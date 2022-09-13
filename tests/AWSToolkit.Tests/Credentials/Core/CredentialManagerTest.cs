@@ -88,23 +88,23 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void GetAwsCredential_FactoryHasMissingProfile()
         {
-            _sharedFactory.Setup(x => x.CreateAwsCredential(_sharedIdentifier1, _region))
+            _sharedFactory.Setup(x => x.CreateToolkitCredentials(_sharedIdentifier1, _region))
                 .Throws<InvalidOperationException>();
             Assert.Throws<CredentialProviderNotFoundException>(() =>
                 _credentialManager.GetAwsCredentials(_sharedIdentifier1, _region));
-            _sharedFactory.Verify(x => x.CreateAwsCredential(_sharedIdentifier1, _region), Times.Once);
+            _sharedFactory.Verify(x => x.CreateToolkitCredentials(_sharedIdentifier1, _region), Times.Once);
         }
 
         [Fact]
         public void GetAwsCredential()
         {
-            _sharedFactory.Setup(x => x.CreateAwsCredential(_sharedIdentifier2, _region))
-                .Returns(new BasicAWSCredentials("access", "secret"));
+            _sharedFactory.Setup(x => x.CreateToolkitCredentials(_sharedIdentifier2, _region))
+                .Returns(new ToolkitCredentials(_sharedIdentifier2, new BasicAWSCredentials("access", "secret")));
             var awsCredentials = _credentialManager.GetAwsCredentials(_sharedIdentifier2, _region);
             Assert.NotNull(awsCredentials);
             Assert.Equal("access", awsCredentials.GetCredentials().AccessKey);
             Assert.Equal("secret", awsCredentials.GetCredentials().SecretKey);
-            _sharedFactory.Verify(x=> x.CreateAwsCredential(_sharedIdentifier2, _region), Times.Once);
+            _sharedFactory.Verify(x=> x.CreateToolkitCredentials(_sharedIdentifier2, _region), Times.Once);
         }
     }
 }

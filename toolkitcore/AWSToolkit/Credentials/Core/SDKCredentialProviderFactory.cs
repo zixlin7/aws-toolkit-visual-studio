@@ -39,16 +39,18 @@ namespace Amazon.AWSToolkit.Credentials.Core
         {
         }
 
-        public override AWSCredentials CreateAwsCredential(ICredentialIdentifier identifierId, ToolkitRegion region)
+        public override ToolkitCredentials CreateToolkitCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
         {
-            var sdkIdentifierId = identifierId as SDKCredentialIdentifier ??
+            var sdkIdentifierId = credentialIdentifier as SDKCredentialIdentifier ??
                                   throw new ArgumentException(
-                                      $"SDKCredentialProviderFactory can only handle SDKCredentialIdentifiers, but got {identifierId.GetType()}");
+                                      $"SDKCredentialProviderFactory expected {nameof(SDKCredentialIdentifier)}, but received {credentialIdentifier.GetType()}");
             var sdkProfile = ProfileHolder.GetProfile(sdkIdentifierId.ProfileName) ??
                              throw new InvalidOperationException(
-                                 $"Profile {sdkIdentifierId.ProfileName} looks to be removed.");
+                                 $"Profile not found: {sdkIdentifierId.ProfileName}");
 
-            return CreateAwsCredential(sdkProfile, region);
+            var awsCredentials = CreateAwsCredential(sdkProfile, region);
+
+            return new ToolkitCredentials(credentialIdentifier, awsCredentials);
         }
 
         /// <summary>
