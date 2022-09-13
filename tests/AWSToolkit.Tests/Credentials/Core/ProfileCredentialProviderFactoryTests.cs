@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Amazon;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.IO;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
+
 using AWSToolkit.Tests.Credentials.IO;
+
 using Moq;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.Core
@@ -160,6 +165,43 @@ namespace AWSToolkit.Tests.Credentials.Core
             Assert.True(_factory.IsLoginRequired(identifier));
         }
 
+        // bool - Expected result from calling Supports with (ICredentialIdentifier, AwsConnectionType)
+        public static TheoryData<ICredentialIdentifier, AwsConnectionType, bool> GetSupportsInputs()
+        {
+            var theoryData = new TheoryData<ICredentialIdentifier, AwsConnectionType, bool>();
+
+            // A typical access key + secret key profile uses AWSCredentials
+            var basicCredentialsId =
+                new SharedCredentialIdentifier(CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name);
+            theoryData.Add(basicCredentialsId, AwsConnectionType.AwsCredentials, true);
+            theoryData.Add(basicCredentialsId, AwsConnectionType.AwsToken, false);
+
+            // SSO Profiles (except for sso_session) use AWSCredentials
+            var ssoCredentialsId = new SharedCredentialIdentifier(CredentialProfileTestHelper.Sso.ValidProfile.Name);
+            theoryData.Add(ssoCredentialsId, AwsConnectionType.AwsCredentials, true);
+            theoryData.Add(ssoCredentialsId, AwsConnectionType.AwsToken, false);
+
+            // SSO Session based profiles use Tokens
+            var ssoSessionCredentialsId =
+                new SharedCredentialIdentifier(CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile
+                    .Name);
+            theoryData.Add(ssoSessionCredentialsId, AwsConnectionType.AwsCredentials, false);
+            theoryData.Add(ssoSessionCredentialsId, AwsConnectionType.AwsToken, true);
+
+            var fakeId = FakeCredentialIdentifier.Create("foo");
+            theoryData.Add(fakeId, AwsConnectionType.AwsCredentials, false);
+            theoryData.Add(fakeId, AwsConnectionType.AwsToken, false);
+
+            return theoryData;
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSupportsInputs))]
+        public void Supports(ICredentialIdentifier credentialIdentifier, AwsConnectionType connectionType, bool expectedResult)
+        {
+            Assert.Equal(expectedResult, _factory.Supports(credentialIdentifier, connectionType));
+        }
+
         [Fact]
         public void VerifyCreateProfileCall()
         {
@@ -229,6 +271,8 @@ namespace AWSToolkit.Tests.Credentials.Core
                          CredentialProfileTestHelper.Mfa.Valid.MfaReference,
                          CredentialProfileTestHelper.Mfa.Valid.ExternalSession,
                          CredentialProfileTestHelper.Sso.ValidProfile,
+                         CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile,
+                         CredentialProfileTestHelper.SsoSession.Valid.SsoSessionProfile,
                          CredentialProfileTestHelper.AssumeRole.Valid.CredentialSource,
                          CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile,
                          CredentialProfileTestHelper.CredentialProcess.ValidProfile,

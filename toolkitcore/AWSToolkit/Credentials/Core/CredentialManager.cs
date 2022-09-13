@@ -92,6 +92,21 @@ namespace Amazon.AWSToolkit.Credentials.Core
         }
 
         /// <summary>
+        /// Checks if the given credential Id supports a connection type
+        /// </summary>
+        public bool Supports(ICredentialIdentifier credentialIdentifier, AwsConnectionType connectionType)
+        {
+            _providerFactoryMapping.TryGetValue(credentialIdentifier.FactoryId, out var factory);
+            if (factory == null)
+            {
+                throw new CredentialProviderNotFoundException(
+                    $"Unrecognized provider factory [{credentialIdentifier.FactoryId}] for the Credential identifier type: {credentialIdentifier.GetType()}");
+            }
+
+            return factory.Supports(credentialIdentifier, connectionType);
+        }
+
+        /// <summary>
         /// Retrieves an <see cref="AWSCredentials"/> for the specified CredentialIdentifier
         /// <see cref="ICredentialIdentifier"/> and region <see cref="ToolkitRegion"/>
         /// </summary>

@@ -126,6 +126,34 @@ namespace AWSToolkit.Tests.Credentials
             }
         }
 
+        public static class SsoSession
+        {
+            public static class Valid
+            {
+                public static readonly CredentialProfile SsoSessionReferencingProfile = new CredentialProfile("my_sso_bearer_session",
+                    new CredentialProfileOptions
+                    {
+                        SsoSession = "sso_bearer",
+                    });
+
+                public static readonly CredentialProfile SsoSessionProfile = new CredentialProfile("sso-session sso_bearer",
+                    new CredentialProfileOptions
+                    {
+                        SsoRegion = "sso-region",
+                        SsoStartUrl = "sso-url",
+                    });
+            }
+
+            public static class Invalid
+            {
+                public static readonly CredentialProfile SsoSessionReferencingProfile = new CredentialProfile("my_sso",
+                    new CredentialProfileOptions
+                    {
+                        SsoSession = "sso_session_does_not_exist",
+                    });
+            }
+        }
+
         public static class AssumeRole
         {
             public static class Valid

@@ -17,5 +17,8 @@ namespace Amazon.AWSToolkit.Credentials.Utils
 
             return false;
         }
+
+        public static bool ReferencesSsoSessionProfile(this CredentialProfileOptions profileOptions) =>
+            !string.IsNullOrWhiteSpace(profileOptions.SsoSession);
     }
 }
