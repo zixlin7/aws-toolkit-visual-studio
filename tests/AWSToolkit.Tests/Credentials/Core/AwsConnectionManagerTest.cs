@@ -98,6 +98,10 @@ namespace AWSToolkit.Tests.Credentials.Core
 
                     return _identifiers[identifierId];
                 });
+            _credentialManager.Setup(x =>
+                    x.GetToolkitCredentials(It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
+                .Returns<ICredentialIdentifier, ToolkitRegion>((credentialIdentifier, _) =>
+                    new ToolkitCredentials(credentialIdentifier, new AnonymousAWSCredentials()));
 
             _stateList = new List<ConnectionState>();
             _awsConnectionManager = CreateAwsConnectionManager();

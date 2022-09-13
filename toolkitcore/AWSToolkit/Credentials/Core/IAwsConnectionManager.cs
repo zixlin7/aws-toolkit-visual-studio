@@ -15,8 +15,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
         ConnectionState ConnectionState { get; }
         ToolkitRegion ActiveRegion { get; }
         ICredentialIdentifier ActiveCredentialIdentifier { get; }
-        AWSCredentials ActiveCredentials { get;}
+        ToolkitCredentials ActiveCredentials { get;}
         string ActiveAccountId { get; }
+        string ActiveAwsId { get; }
 
         void ChangeCredentialProvider(ICredentialIdentifier identifier);
         void ChangeRegion(ToolkitRegion region);
