@@ -11,12 +11,24 @@ namespace Amazon.AWSToolkit.Credentials.Core
     {
         public ICredentialIdentifier CredentialIdentifier { get; }
         private readonly AWSCredentials _awsCredentials;
+        private readonly IAWSTokenProvider _tokenProvider;
 
         public ToolkitCredentials(ICredentialIdentifier credentialIdentifier, AWSCredentials awsCredentials)
+            : this(credentialIdentifier, awsCredentials, null)
+        {
+        }
+
+        public ToolkitCredentials(ICredentialIdentifier credentialIdentifier, IAWSTokenProvider tokenProvider)
+            : this(credentialIdentifier, null, tokenProvider)
+        {
+        }
+
+        public ToolkitCredentials(ICredentialIdentifier credentialIdentifier, AWSCredentials awsCredentials, IAWSTokenProvider tokenProvider)
         {
             CredentialIdentifier =
                 credentialIdentifier ?? throw new ArgumentNullException(nameof(credentialIdentifier));
             _awsCredentials = awsCredentials;
+            _tokenProvider = tokenProvider;
         }
 
         public bool Supports(AwsConnectionType connectionType)
@@ -28,8 +40,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
             if (connectionType == AwsConnectionType.AwsToken)
             {
-                // todo : add token support
-                return false;
+                return _tokenProvider != null;
             }
 
             return false;
@@ -50,6 +61,19 @@ namespace Amazon.AWSToolkit.Credentials.Core
             return _awsCredentials;
         }
 
-        // todo : Add Get Token function when adding token support
+        /// <summary>
+        /// Callers are expected to know that their object works with IAWSTokenProvider
+        /// prior to using this method. Check with <see cref="Supports"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public IAWSTokenProvider GetTokenProvider()
+        {
+            if (_tokenProvider == null)
+            {
+                throw new InvalidOperationException("No IAWSTokenProvider available");
+            }
+
+            return _tokenProvider;
+        }
     }
 }
