@@ -122,6 +122,7 @@
     <Compile Include="Credentials\Core\ProfileCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\TestProfileCredentialProviderFactory.cs" />
     <Compile Include="Credentials\Core\ToolkitCredentialsTests.cs" />
+    <Compile Include="Credentials\Core\ToolkitSsoTokenManagerTests.cs" />
     <Compile Include="Credentials\CredentialProfileTestHelper.cs" />
     <Compile Include="Credentials\IO\EncryptedStoreTestFixture.cs" />
     <Compile Include="Credentials\IO\ProfileValidatorTests.cs" />
