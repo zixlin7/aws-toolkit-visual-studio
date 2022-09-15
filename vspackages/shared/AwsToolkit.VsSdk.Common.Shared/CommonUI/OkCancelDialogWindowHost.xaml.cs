@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -33,6 +34,11 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             }
 
             InitializeComponent();
+
+            Debug.Assert(hostedControl.UserControl.Height > 0 && hostedControl.UserControl.Height < double.PositiveInfinity,
+                $"HostedControl {hostedControl.GetType()} must set the Height property to be used by {GetType()}.");
+            Debug.Assert(hostedControl.UserControl.Width > 0 && hostedControl.UserControl.Width < double.PositiveInfinity,
+                $"HostedControl {hostedControl.GetType()} must set the Width property to be used by {GetType()}.");
 
             Width = (int) (hostedControl.UserControl.Width + (2 * ContentMargin));
             Height = (int)(hostedControl.UserControl.Height + (2* ContentMargin) + ButtonVerticalSpacing + ButtonHeight);
