@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Credentials.IO;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 
@@ -61,6 +62,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             {
                 AddSDKCredentialsFactory();
                 AddSharedCredentialsFactory();
+                AddSonoCredentialsFactory();
                 foreach (var factory in _factoryMap)
                 {
                     Setup(factory.Value);
@@ -143,5 +145,21 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
         }
 
+        /// <summary>
+        /// Add <see cref="SonoCredentialProviderFactory"/> to the factory map if it can be successfully created,
+        /// else log the appropriate error message
+        /// </summary>
+        private void AddSonoCredentialsFactory()
+        {
+            try
+            {
+                var factory = new SonoCredentialProviderFactory(_toolkitShell);
+                _factoryMap.Add(factory.Id, factory);
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error($"Error setting up {nameof(SonoCredentialProviderFactory)}", ex);
+            }
+        }
     }
 }
