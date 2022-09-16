@@ -76,19 +76,26 @@ namespace Amazon.AWSToolkit.Clients
                 }
                 else
                 {
+                    var toolkitCredentials = _credentialManager.GetToolkitCredentials(credentialIdentifier, region);
+                    if (toolkitCredentials == null)
+                    {
+                        throw new Exception($"Unable to get toolkit credentials for {credentialIdentifier.Id}");
+                    }
+
+                    if (toolkitCredentials.Supports(AwsConnectionType.AwsToken))
+                    {
+                        // Calling code should use the overload that accepts a ClientConfig
+                        throw new Exception($"Token provider based credentials require a service client configuration");
+                    }
+
                     var regionEndpoint = RegionEndpoint.GetBySystemName(region.Id);
                     if (regionEndpoint == null)
                     {
                         throw new Exception($"Unexpected region id: {region.Id}");
                     }
 
-                    AWSCredentials credentials = _credentialManager.GetAwsCredentials(credentialIdentifier, region);
-                    if (credentials == null)
-                    {
-                        throw new Exception($"Unable to get credentials for {credentialIdentifier.Id}");
-                    }
-
-                    return ServiceClientCreator.CreateServiceClient(serviceClientType, credentials,
+                    return ServiceClientCreator.CreateServiceClient(serviceClientType,
+                        toolkitCredentials.GetAwsCredentials(),
                         regionEndpoint) as T;
                 }
             }
@@ -118,39 +125,30 @@ namespace Amazon.AWSToolkit.Clients
 
             try
             {
-                AWSCredentials credentials = null;
-
                 if (_regionProvider.IsRegionLocal(region.Id))
                 {
-                    // Configure the Service client to use the local url
-                    var serviceUrl = _regionProvider.GetLocalEndpoint(serviceClientConfig.RegionEndpointServiceName);
-                    if (string.IsNullOrWhiteSpace(serviceUrl))
-                    {
-                        throw new Exception(
-                            $"Unable to get local endpoint for service client: {serviceClientType.Name} and service: {serviceClientConfig.RegionEndpointServiceName}");
-                    }
-
-                    serviceClientConfig.ServiceURL = serviceUrl;
-
-                    // Service client requires mock credentials to create localhost
-                    credentials = new AwsMockCredentials();
-                    return ServiceClientCreator.CreateServiceClient(serviceClientType, credentials, serviceClientConfig) as T;
+                    return CreateLocalServiceClient<T>(serviceClientConfig, serviceClientType);
                 }
                 else
                 {
-                    // Configure the Service client to use the provided region
-                    var regionEndpoint = RegionEndpoint.GetBySystemName(region.Id);
-                    if (regionEndpoint == null)
+                    var toolkitCredentials = _credentialManager.GetToolkitCredentials(credentialIdentifier, region);
+                    if (toolkitCredentials == null)
                     {
-                        throw new Exception($"Unexpected region id: {region.Id}");
+                        throw new Exception($"Unable to get toolkit credentials for {credentialIdentifier.Id}");
                     }
 
-                    serviceClientConfig.RegionEndpoint = regionEndpoint;
-
-                    credentials = _credentialManager.GetAwsCredentials(credentialIdentifier, region);
-                    if (credentials == null)
+                    AWSCredentials credentials = null;
+                    if (toolkitCredentials.Supports(AwsConnectionType.AwsToken))
                     {
-                        throw new Exception($"Unable to get credentials for {credentialIdentifier.Id}");
+                        serviceClientConfig.AWSTokenProvider = toolkitCredentials.GetTokenProvider();
+                        credentials = new AnonymousAWSCredentials();
+                    }
+                    else
+                    {
+                        // Configure the Service client to use the provided region
+                        SetRegionEndpoint<T>(region, serviceClientConfig);
+
+                        credentials = toolkitCredentials.GetAwsCredentials();
                     }
 
                     return ServiceClientCreator.CreateServiceClient(serviceClientType, credentials, serviceClientConfig) as T;
@@ -161,6 +159,34 @@ namespace Amazon.AWSToolkit.Clients
                 Logger.Error($"Error creating service client: {serviceClientType.FullName}", e);
                 return null;
             }
+        }
+
+        private T CreateLocalServiceClient<T>(ClientConfig serviceClientConfig, Type serviceClientType) where T : class
+        {
+            // Configure the Service client to use the local url
+            var serviceUrl = _regionProvider.GetLocalEndpoint(serviceClientConfig.RegionEndpointServiceName);
+            if (string.IsNullOrWhiteSpace(serviceUrl))
+            {
+                throw new Exception(
+                    $"Unable to get local endpoint for service client: {serviceClientType.Name} and service: {serviceClientConfig.RegionEndpointServiceName}");
+            }
+
+            serviceClientConfig.ServiceURL = serviceUrl;
+
+            // Service client requires mock credentials to create localhost
+            AWSCredentials credentials = new AwsMockCredentials();
+            return ServiceClientCreator.CreateServiceClient(serviceClientType, credentials, serviceClientConfig) as T;
+        }
+
+        private static void SetRegionEndpoint<T>(ToolkitRegion region, ClientConfig serviceClientConfig) where T : class
+        {
+            var regionEndpoint = RegionEndpoint.GetBySystemName(region.Id);
+            if (regionEndpoint == null)
+            {
+                throw new Exception($"Unexpected region id: {region.Id}");
+            }
+
+            serviceClientConfig.RegionEndpoint = regionEndpoint;
         }
 
         /// <summary>
