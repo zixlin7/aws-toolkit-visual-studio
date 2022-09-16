@@ -487,7 +487,7 @@ namespace Amazon.AWSToolkit.Navigator
 
             if (_navigatorViewModel.Region == null) { return; }
 
-            if (!string.Equals(_toolkitContext.ConnectionManager.ActiveRegion.Id, _navigatorViewModel.Region.Id))
+            if (!string.Equals(_toolkitContext.ConnectionManager.ActiveRegion?.Id, _navigatorViewModel.Region.Id))
             {
                 _toolkitContext.ConnectionManager.ChangeRegion(_navigatorViewModel.Region);
             }
