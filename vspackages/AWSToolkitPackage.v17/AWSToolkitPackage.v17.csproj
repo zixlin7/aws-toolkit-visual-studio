@@ -89,6 +89,12 @@
     <EmbeddedResource Include="..\AwsToolkitPackageResources\templates\basic-serverless.template">
       <Link>Resources\basic-serverless.template</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\CloudFormationTemplateNode.png">
+      <Link>Resources\CloudFormationTemplateNode.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\CloudFormationTemplateProjectNode.png">
+      <Link>Resources\CloudFormationTemplateProjectNode.png</Link>
+    </EmbeddedResource>
     <Content Include="..\AwsToolkitPackageResources\aws.png">
       <Link>Resources\aws.png</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
