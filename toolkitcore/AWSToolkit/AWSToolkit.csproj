@@ -366,7 +366,6 @@
       <DependentUpon>DeploymentReviewPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\DialogHostUtil.cs" />
-    <Compile Include="CommonUI\DirectoryBrowserDlgHelper.cs" />
     <Compile Include="CommonUI\IconHelper.cs" />
     <Compile Include="CommonUI\ImageButton.xaml.cs">
       <DependentUpon>ImageButton.xaml</DependentUpon>

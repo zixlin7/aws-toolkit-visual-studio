@@ -2,9 +2,13 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Navigation;
+
 using Amazon.AWSToolkit.Settings;
+
+using AwsToolkit.VsSdk.Common.CommonUI;
+
+using Microsoft.VisualStudio.Shell;
 
 namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
 {
@@ -66,12 +70,14 @@ namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new FolderBrowserDialog {ShowNewFolderButton = true};
-            if (!string.IsNullOrEmpty(txtFileSystemLocation.Text))
-                dlg.SelectedPath = txtFileSystemLocation.Text;
-            if (dlg.ShowDialog() == DialogResult.OK)
+            var dlg = new VsFolderBrowserDialog(ThreadHelper.JoinableTaskFactory)
             {
-                txtFileSystemLocation.Text = dlg.SelectedPath;
+                FolderPath = txtFileSystemLocation.Text, Title = "Select Toolkit Metadata location",
+            };
+
+            if (dlg.ShowModal())
+            {
+                txtFileSystemLocation.Text = dlg.FolderPath;
             }
         }
 

@@ -427,6 +427,34 @@ namespace Amazon.AWSToolkit.S3.Controller
             return list;
         }
 
+        public string GetUploadFolder()
+        {
+            var dlg = _toolkitContext.ToolkitHost.GetDialogFactory().CreateFolderBrowserDialog();
+
+            dlg.Title = "Select a folder to upload to S3";
+
+            if (dlg.ShowModal())
+            {
+                return dlg.FolderPath;
+            }
+
+            return null;
+        }
+
+        public string GetDownloadFolder()
+        {
+            var dlg = _toolkitContext.ToolkitHost.GetDialogFactory().CreateFolderBrowserDialog();
+
+            dlg.Title = "Save contents from S3 to...";
+
+            if (dlg.ShowModal())
+            {
+                return dlg.FolderPath;
+            }
+
+            return null;
+        }
+
         public void RecordOpenEditorMetric(Result result)
         {
             try

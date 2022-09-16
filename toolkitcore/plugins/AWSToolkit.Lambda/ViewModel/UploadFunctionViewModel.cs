@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -879,14 +880,20 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 
         private void BrowseSourceCodeFolder(object parameter)
         {
-            var directory = DirectoryBrowserDlgHelper.ChooseDirectory(
-                "Select a directory containing the code for the Lambda function. This directory will be zipped up and uploaded to Lambda.");
-            if (string.IsNullOrEmpty(directory))
+            var dlg = _shellProvider.GetDialogFactory()?.CreateFolderBrowserDialog();
+            if (dlg == null)
             {
+                Debug.Assert(!Debugger.IsAttached, "Unable to get the folder browser. Users will not be able to select a folder for upload.");
                 return;
             }
 
-            SourceCodeLocation = directory;
+            dlg.Title = "Select folder to zip and upload to Lambda";
+            dlg.FolderPath = SourceCodeLocation;
+
+            if (dlg.ShowModal())
+            {
+                SourceCodeLocation = dlg.FolderPath;
+            }
         }
 
         private void BrowseSourceCodeFile(object parameter)
