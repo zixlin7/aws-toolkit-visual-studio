@@ -19,7 +19,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
             Id = "sample-region",
         };
 
-        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("sono");
+        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("default");
         private static readonly ICredentialIdentifier OtherSonoCredentialId = new SonoCredentialIdentifier("other-sono");
         private static readonly ICredentialIdentifier NonSonoCredentialId = new SDKCredentialIdentifier("non-sono-sample");
         private readonly Mock<IAWSToolkitShellProvider> _toolkitShell = new Mock<IAWSToolkitShellProvider>();

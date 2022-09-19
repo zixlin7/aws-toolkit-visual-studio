@@ -14,7 +14,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
 {
     public class SonoHelpersTests
     {
-        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("sono");
+        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("default");
 
         private readonly Mock<IAWSToolkitShellProvider> _toolkitShell = new Mock<IAWSToolkitShellProvider>();
 

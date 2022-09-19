@@ -13,8 +13,8 @@ namespace Amazon.AWSToolkit.Credentials.Sono
     /// </summary>
     public class SonoCredentialProviderFactory : ICredentialProviderFactory
     {
-        public const string FactoryId = "Sono";
-        private static readonly SonoCredentialIdentifier CredentialId = new SonoCredentialIdentifier("sono");
+        public const string FactoryId = "AwsId";
+        private static readonly SonoCredentialIdentifier CredentialId = new SonoCredentialIdentifier("default");
 
         public event EventHandler<CredentialChangeEventArgs> CredentialsChanged;
 
