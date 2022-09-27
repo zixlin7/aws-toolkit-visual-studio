@@ -35,31 +35,53 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
         /// <returns></returns>
         public override void Execute()
         {
-            CodeCommitPlugin = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
-            if (CodeCommitPlugin == null)
+            var operation = "codeCommitPlugin";
+            try
             {
-                Logger.Error("Called to clone repository but CodeCommit plugin not loaded, cannot display repository list selector.");
-                GitUtilities.RecordCodeCommitCloneRepoMetric(false, "codeCommitPlugin");
-                return;
-            }
+                CodeCommitPlugin = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
+                if (CodeCommitPlugin == null)
+                {
+                    Logger.Error(
+                        "Called to clone repository but CodeCommit plugin not loaded, cannot display repository list selector.");
+                    return;
+                }
 
-            var selectedRepository = CodeCommitPlugin.PromptForRepositoryToClone(Account, Region, GetLocalClonePathFromGitProvider());
-            if (selectedRepository == null)
+                operation = "selectedRepository";
+                var selectedRepository =
+                    CodeCommitPlugin.PromptForRepositoryToClone(Account, Region, GetLocalClonePathFromGitProvider());
+                if (selectedRepository == null)
+                {
+                    return;
+                }
+
+                operation = "gitCredentials";
+                var gitCredentials = ObtainGitCredentials();
+                if (gitCredentials == null)
+                {
+                    return;
+                }
+
+                // Delegate the actual clone operation via an intermediary; this allows us to use either
+                // Team Explorer or CodeCommit to do the clone operation depending on the host shell.
+                operation = "clone";
+                GitUtilities
+                    .CloneAsync(gitCredentials, selectedRepository.RepositoryUrl, selectedRepository.LocalFolder,
+                        operation).LogExceptionAndForget();
+            }
+            catch (Exception ex)
             {
-                GitUtilities.RecordCodeCommitCloneRepoMetric(false, "selectedRepository");
-                return;
+                Logger.Error("Failed to clone repository", ex);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Repository Clone Failed", $"Error cloning repository: {ex.Message}.");
             }
-
-            var gitCredentials = ObtainGitCredentials();
-            if (gitCredentials == null)
+            finally
             {
-                GitUtilities.RecordCodeCommitCloneRepoMetric(false, "gitCredentials");
-                return;
+                // Delegated clone operation emits the clone metric
+                // Emit a false metric only if any of the previous required operations have failures
+                if (!string.Equals(operation, "clone"))
+                {
+                    GitUtilities.RecordCodeCommitCloneRepoMetric(false, operation);
+                }
             }
-
-            // Delegate the actual clone operation via an intermediary; this allows us to use either
-            // Team Explorer or CodeCommit to do the clone operation depending on the host shell.
-            GitUtilities.CloneAsync(gitCredentials, selectedRepository.RepositoryUrl, selectedRepository.LocalFolder, "clone").LogExceptionAndForget();
         }
     }
 }
