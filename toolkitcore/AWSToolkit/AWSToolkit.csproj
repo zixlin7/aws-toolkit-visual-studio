@@ -113,6 +113,8 @@
     <Compile Include="CommonUI\DataErrorInfo.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
     <Compile Include="Credentials\Core\AwsConnectionType.cs" />
+    <Compile Include="Credentials\Core\IdentityResolver.cs" />
+    <Compile Include="Credentials\Core\IIdentityResolver.cs" />
     <Compile Include="Credentials\Sono\SonoCredentialIdentifier.cs" />
     <Compile Include="Credentials\Sono\SonoCredentialProviderFactory.cs" />
     <Compile Include="Credentials\Sono\SonoHelpers.cs" />
@@ -280,6 +282,7 @@
     <Compile Include="Themes\ToolkitThemes.cs" />
     <Compile Include="Urls\AwsUrls.cs" />
     <Compile Include="Urls\GitHubUrls.cs" />
+    <Compile Include="Urls\ServiceUrls.cs" />
     <Compile Include="Util\DisposingAction.cs" />
     <Compile Include="Util\MruList.cs" />
     <Compile Include="Credentials\Utils\ProfileHolder.cs" />
@@ -975,6 +978,9 @@
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatch">
       <Version>3.7.7.10</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.Codeaws">
+      <Version>3.7.130</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.7.0.203</Version>

@@ -118,6 +118,8 @@
     <Compile Include="Credentials\Core\BaseFileCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\CredentialManagerTest.cs" />
     <Compile Include="Credentials\Core\CredentialSettingsManagerTests.cs" />
+    <Compile Include="Credentials\Core\FakeAwsTokenProvider.cs" />
+    <Compile Include="Credentials\Core\FakeIdentityResolver.cs" />
     <Compile Include="Credentials\Core\NoopToolkitSettingsRepository.cs" />
     <Compile Include="Credentials\Core\ProfileCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\TestProfileCredentialProviderFactory.cs" />

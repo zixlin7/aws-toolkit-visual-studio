@@ -222,7 +222,9 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public AwsConnectionManager CreateConnectionManager()
         {
-            return new AwsConnectionManager(AwsConnectionManager.DefaultStsClientCreator, _toolkitContext.CredentialManager, _toolkitContext.TelemetryLogger, _toolkitContext.RegionProvider, new AppDataToolkitSettingsRepository());
+            return new AwsConnectionManager(
+                _toolkitContext.CredentialManager, _toolkitContext.TelemetryLogger,
+                _toolkitContext.RegionProvider, new AppDataToolkitSettingsRepository());
         }
     }
 }

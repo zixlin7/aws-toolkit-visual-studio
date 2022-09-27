@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             _toolkitShell = toolkitShell;
             SetupFactories();
             _credentialManager = new CredentialManager(_factoryMap);
-            _awsConnectionManager = new AwsConnectionManager(Core.AwsConnectionManager.DefaultStsClientCreator,
+            _awsConnectionManager = new AwsConnectionManager(
                 _credentialManager, _telemetryLogger, regionProvider, new AppDataToolkitSettingsRepository());
             _persistConnectionSettings = new PersistConnectionSettings(_awsConnectionManager);
         }
