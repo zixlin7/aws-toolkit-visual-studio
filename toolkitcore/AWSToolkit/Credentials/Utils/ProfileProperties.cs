@@ -25,6 +25,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         public string UniqueKey { get; set; }
         public string Region { get; set; }
 
+        public string SsoSession { get; set; }
         public string SsoAccountId { get; set; }
         public string SsoRegion { get; set; }
         public string SsoRoleName { get; set; }
