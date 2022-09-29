@@ -69,7 +69,8 @@ namespace AWSToolkit.Tests.Credentials.Core
             return new SharedCredentialIdentifier(profile.Name);
         }
 
-        protected override AWSCredentials CreateSaml(CredentialProfile profile)
+        protected override ToolkitCredentials CreateSaml(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier)
         {
             throw new NotImplementedException();
         }

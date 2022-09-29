@@ -124,6 +124,7 @@
     <Compile Include="Credentials\Core\ToolkitSsoTokenManager.cs" />
     <Compile Include="Credentials\Core\ToolkitSsoTokenManagerOptions.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
+    <Compile Include="Credentials\Utils\ProfileName.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />
     <Compile Include="CloudFormation\ICloudFormationViewer.cs" />
     <Compile Include="Commands\AsyncRelayCommand.cs" />

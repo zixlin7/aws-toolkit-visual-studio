@@ -20,6 +20,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         private string _sessionName = SonoProperties.DefaultSessionName;
         private RegionEndpoint _oidcRegion = SonoProperties.DefaultOidcRegion;
         private RegionEndpoint _tokenProviderRegion = SonoProperties.DefaultTokenProviderRegion;
+        private string _startUrl = SonoProperties.StartUrl;
 
         public static SonoTokenProviderBuilder Create()
         {
@@ -49,6 +50,12 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         public SonoTokenProviderBuilder WithTokenProviderRegion(RegionEndpoint tokenProviderRegion)
         {
             _tokenProviderRegion = tokenProviderRegion;
+            return this;
+        }
+
+        public SonoTokenProviderBuilder WithStartUrl(string startUrl)
+        {
+            _startUrl = startUrl;
             return this;
         }
 
@@ -92,6 +99,11 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             if (_tokenProviderRegion == null)
             {
                 throw new InvalidOperationException("Token Provider region is missing");
+            }
+
+            if (string.IsNullOrWhiteSpace(_startUrl))
+            {
+                throw new InvalidOperationException("Start URL is missing");
             }
 
             if (_oidcRegion == null)
