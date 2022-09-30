@@ -7,7 +7,7 @@
         public const string DefaultSessionName = "aws-toolkit-visual-studio";
 
         public const string StartUrl = "https://d-9067642ac7.awsapps.com/start";
-        public static readonly string[] Scopes = { "sso:account:access" };
+        public static readonly string[] Scopes = { "sso:account:access", "codeaws:read_write" };
 
         public static readonly RegionEndpoint DefaultTokenProviderRegion = RegionEndpoint.USEast1;
         public static readonly RegionEndpoint DefaultOidcRegion = RegionEndpoint.USEast1;
