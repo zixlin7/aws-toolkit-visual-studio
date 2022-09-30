@@ -119,6 +119,7 @@
     <Compile Include="Credentials\Sono\SonoCredentialProviderFactory.cs" />
     <Compile Include="Credentials\Sono\SonoHelpers.cs" />
     <Compile Include="Credentials\Sono\SonoProperties.cs" />
+    <Compile Include="Credentials\Sono\SonoProfileProcessor.cs" />
     <Compile Include="Credentials\Sono\SonoTokenProviderBuilder.cs" />
     <Compile Include="Credentials\Core\ToolkitCredentials.cs" />
     <Compile Include="Credentials\Core\ToolkitSsoTokenManager.cs" />

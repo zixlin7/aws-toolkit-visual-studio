@@ -14,6 +14,7 @@
         AssumeMfaRoleProfile,
         AssumeSamlRoleProfile,
         SsoProfile,
+        BearerToken,
         Unknown,
     }
 }

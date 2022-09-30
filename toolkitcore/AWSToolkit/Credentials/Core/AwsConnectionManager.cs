@@ -385,6 +385,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     AwsAccount = string.IsNullOrEmpty(accountId) ? MetadataValue.NotSet : accountId,
                     AwsRegion = region.Id,
                     Result = validationResult,
+                    CredentialSourceId = CredentialSource.FromCredentialFactoryId(identifier?.FactoryId),
                     CredentialType = CredentialManager.CredentialSettingsManager
                         .GetCredentialType(identifier)
                         .AsTelemetryCredentialType(),

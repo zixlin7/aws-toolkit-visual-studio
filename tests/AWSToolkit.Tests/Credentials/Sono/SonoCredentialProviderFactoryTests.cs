@@ -2,6 +2,7 @@
 
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 
@@ -28,6 +29,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         public SonoCredentialProviderFactoryTests()
         {
             _sut = new SonoCredentialProviderFactory(_toolkitShell.Object);
+            _sut.Initialize();
         }
 
         [Fact]
@@ -83,6 +85,17 @@ namespace AWSToolkit.Tests.Credentials.Sono
             Assert.False(_sut.Supports(OtherSonoCredentialId, AwsConnectionType.AwsCredentials));
             Assert.False(_sut.Supports(NonSonoCredentialId, AwsConnectionType.AwsToken));
             Assert.False(_sut.Supports(NonSonoCredentialId, AwsConnectionType.AwsCredentials));
+        }
+
+        /// <summary>
+        /// This test checks that <see cref="ICredentialSettingsManagerExtensionMethods.GetCredentialType"/>
+        /// will produce the expected result.
+        /// </summary>
+        [Fact]
+        public void ProducesBearerTokenCredentialType()
+        {
+            Assert.Equal(CredentialType.BearerToken,
+                _sut.GetCredentialProfileProcessor().GetProfileProperties(SonoCredentialId).GetCredentialType());
         }
     }
 }

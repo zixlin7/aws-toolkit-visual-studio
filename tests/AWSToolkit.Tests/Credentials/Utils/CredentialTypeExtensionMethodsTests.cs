@@ -21,6 +21,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
                 {CredentialType.AssumeMfaRoleProfile, TelemetryCredentialType.AssumeMfaRoleProfile},
                 {CredentialType.AssumeEc2InstanceRoleProfile, TelemetryCredentialType.Ec2Metadata},
                 {CredentialType.SsoProfile, TelemetryCredentialType.SsoProfile},
+                {CredentialType.BearerToken, new TelemetryCredentialType("bearerToken")},
                 {CredentialType.AssumeSamlRoleProfile, TelemetryCredentialType.AssumeSamlRoleProfile},
                 {CredentialType.Unknown, TelemetryCredentialType.Other},
                 {CredentialType.Undefined, null},
