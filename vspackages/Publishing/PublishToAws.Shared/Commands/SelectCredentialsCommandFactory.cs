@@ -3,6 +3,7 @@ using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialSelector;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Publish.ViewModels;
 using Amazon.AWSToolkit.Shared;
 
@@ -37,6 +38,7 @@ namespace Amazon.AWSToolkit.Publish.Commands
                 using (var dialog = CreateDialog(viewModel.PublishContext.ToolkitShellProvider))
                 {
                     dialog.IncludeLocalRegions = false;
+                    dialog.ConnectionTypes.Add(AwsConnectionType.AwsCredentials);
                     dialog.CredentialIdentifier = viewModel.Connection.CredentialsId;
                     dialog.Region = viewModel.Connection.Region;
 

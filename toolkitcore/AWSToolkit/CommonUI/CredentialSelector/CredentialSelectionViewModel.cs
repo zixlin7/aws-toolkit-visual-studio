@@ -27,6 +27,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialSelector
         private readonly ToolkitContext _toolkitContext;
         private ToolkitRegion _region;
         private CredentialConnectionStatus _connectionStatus = CredentialConnectionStatus.Info;
+        private IList<AwsConnectionType> _connectionTypes = new List<AwsConnectionType>();
         private ICredentialIdentifier _credentialIdentifier;
         private string _connectionMessage;
         private string _partitionId;
@@ -76,6 +77,16 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialSelector
         /// Whether or not local regions are shown
         /// </summary>
         public bool IncludeLocalRegions = false;
+
+        /// <summary>
+        /// Filters the credentials shown in the dialog to the requested connection types.
+        /// Leaving this null or empty (default) will show all available credentials.
+        /// </summary>
+        public IList<AwsConnectionType> ConnectionTypes
+        {
+            get => _connectionTypes;
+            set => SetProperty(ref _connectionTypes, value);
+        }
 
         /// <summary>
         /// The currently selected Credential Id
@@ -251,6 +262,24 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialSelector
             {
                 return DefaultRegionId;
             }
+        }
+
+        public IEnumerable<ICredentialIdentifier> GetCredentialIdentifiers()
+        {
+            IEnumerable<ICredentialIdentifier> ids = _toolkitContext.CredentialManager.GetCredentialIdentifiers();
+
+            if (ConnectionTypes != null && ConnectionTypes.Any())
+            {
+                ids = ids.Where(SupportsConnectionType);
+            }
+
+            return ids;
+        }
+
+        private bool SupportsConnectionType(ICredentialIdentifier credentialIdentifier)
+        {
+            return ConnectionTypes.Any(connectionType =>
+                _toolkitContext.CredentialManager.Supports(credentialIdentifier, connectionType));
         }
     }
 }
