@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Generic;
+using System.Windows.Input;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CredentialSelector;
@@ -59,6 +60,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
             _dialogFactory.Setup(mock => mock.CreateCredentialsSelectionDialog())
                 .Returns(_credentialsDialog.Object);
 
+            _credentialsDialog.SetupGet(mock => mock.ConnectionTypes).Returns(() => new List<AwsConnectionType>());
             _credentialsDialog.SetupGet(mock => mock.CredentialIdentifier).Returns(SampleCredentialB);
             _credentialsDialog.SetupGet(mock => mock.Region).Returns(SampleRegionB);
             SetupShowDialogToReturn(true);

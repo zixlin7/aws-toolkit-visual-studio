@@ -153,7 +153,9 @@ namespace Amazon.AWSToolkit.NuGet
         {
             var credManager = ToolkitFactory.Instance.CredentialManager;
 
-            var identifiers = credManager?.GetCredentialIdentifiers().Where(id => id.ProfileName.Equals(profileName));
+            var identifiers = credManager?.GetCredentialIdentifiers()
+                .Where(id => (credManager?.Supports(id, AwsConnectionType.AwsCredentials) ?? false)
+                             && id.ProfileName.Equals(profileName));
             return identifiers?.FirstOrDefault();
         }
     }
