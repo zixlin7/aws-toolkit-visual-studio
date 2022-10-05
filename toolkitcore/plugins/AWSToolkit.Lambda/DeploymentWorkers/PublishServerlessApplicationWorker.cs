@@ -1,28 +1,29 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
+using Amazon.AWSToolkit.Regions;
 using Amazon.CloudFormation;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.ECR;
-using Amazon.Lambda.Tools.Commands;
-using Amazon.S3;
-using log4net;
-using System;
-using System.Collections.Generic;
-
-using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.AWSToolkit.Regions;
 using Amazon.IdentityManagement;
 using Amazon.Lambda;
+using Amazon.Lambda.Tools.Commands;
 using Amazon.Runtime;
+using Amazon.S3;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public class PublishServerlessApplicationWorker
     {
-        ILog LOGGER = LogManager.GetLogger(typeof(UploadGenericWorker));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(PublishServerlessApplicationWorker));
 
         private readonly ITelemetryLogger _telemetryLogger;
 
@@ -99,12 +100,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     }
                 }
             }
-            catch (ToolsException)
+            catch (ToolsException e)
             {
-                _telemetryLogger.RecordServerlessApplicationDeploy(
-                    Result.Failed,
-                    Settings.AccountId,
-                    Settings.Region?.Id);
+                RecordPublishFailure(e);
 
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
@@ -112,25 +110,50 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             {
                 logger.WriteLine(e.Message);
 
-                _telemetryLogger.RecordServerlessApplicationDeploy(
-                    Result.Failed,
-                    Settings.AccountId,
-                    Settings.Region?.Id);
+                RecordPublishFailure(e);
 
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
             catch (Exception e)
             {
                 logger.WriteLine(e.Message);
-                LOGGER.Error("Error publishing AWS Serverless application.", e);
+                Logger.Error("Error publishing AWS Serverless application.", e);
 
-                _telemetryLogger.RecordServerlessApplicationDeploy(
-                    Result.Failed,
-                    Settings.AccountId,
-                    Settings.Region?.Id);
+                RecordPublishFailure(e);
 
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
+        }
+
+        private void RecordPublishFailure(Exception e)
+        {
+            _telemetryLogger.RecordServerlessApplicationDeploy(
+                Result.Failed,
+                Settings.AccountId,
+                Settings.Region?.Id,
+                GetReason(e));
+        }
+
+        private string GetReason(Exception e)
+        {
+            var reasonChunks = new List<string>();
+
+            switch (e)
+            {
+                case ToolsException toolsException:
+                    reasonChunks.Add(toolsException.ServiceCode);
+                    reasonChunks.Add(toolsException.Code);
+                    break;
+                case ToolkitException toolkitException:
+                    reasonChunks.Add(toolkitException.ServiceErrorCode);
+                    reasonChunks.Add(toolkitException.ServiceStatusCode);
+                    reasonChunks.Add(toolkitException.Code);
+                    break;
+            }
+
+            string reason = string.Join("-", reasonChunks.Where(r => !string.IsNullOrWhiteSpace(r)));
+
+            return string.IsNullOrWhiteSpace(reason) ? "Unknown" : reason;
         }
     }
 
