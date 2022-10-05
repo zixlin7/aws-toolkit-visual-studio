@@ -57,10 +57,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("result", payload.Result);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -108,10 +105,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("codeartifactPackageType", payload.CodeartifactPackageType);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -159,10 +153,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("codeartifactPackageType", payload.CodeartifactPackageType);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -210,10 +201,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("source", payload.Source);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -261,10 +249,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("duration", payload.Duration);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -336,10 +321,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("reason", payload.Reason);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -396,10 +378,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("errorCode", payload.ErrorCode);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -447,10 +426,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("publishSettingType", payload.PublishSettingType);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -498,10 +474,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("reason", payload.Reason);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -549,10 +522,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("variant", payload.Variant);
 
-                if ((transformDatum != null))
-                {
-                    datum = transformDatum.Invoke(datum);
-                }
+                datum = datum.InvokeTransform(transformDatum);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
