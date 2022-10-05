@@ -2,6 +2,6 @@
 {
     public static class ServiceUrls
     {
-        public const string CodeDotAws = "https://public.api.quokka.codes";
+        public const string CodeCatalyst = "https://public.api.quokka.codes";
     }
 }

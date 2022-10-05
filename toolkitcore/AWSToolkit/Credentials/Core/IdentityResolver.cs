@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Urls;
-using Amazon.Codeaws;
-using Amazon.Codeaws.Model;
+using Amazon.CodeCatalyst;
+using Amazon.CodeCatalyst.Model;
 using Amazon.Runtime;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             // user id, we'll need to re-design a way of knowing when and how to query the user id from
             // each service. Things will likely converge with Sono. We'll use the simple approach until
             // we need a more complex one, or until we determine that Sono will be the one true source.
-            var caws = CreateCodeDotAwsClient(tokenProvider);
+            var caws = CreateCodeCatalystClient(tokenProvider);
             var session = await caws.VerifySessionAsync(new VerifySessionRequest(), cancellationToken);
 
             // TODO : If the source of AWS IDs converges on Sono, update the prefix from "caws" to something
@@ -57,15 +57,15 @@ namespace Amazon.AWSToolkit.Credentials.Core
             return $"caws;{session.Identity}";
         }
 
-        private static AmazonCodeawsClient CreateCodeDotAwsClient(IAWSTokenProvider tokenProvider)
+        private static AmazonCodeCatalystClient CreateCodeCatalystClient(IAWSTokenProvider tokenProvider)
         {
-            var config = new AmazonCodeawsConfig()
+            var config = new AmazonCodeCatalystConfig()
             {
-                ServiceURL = ServiceUrls.CodeDotAws,
+                ServiceURL = ServiceUrls.CodeCatalyst,
                 AWSTokenProvider = tokenProvider,
             };
 
-            return new AmazonCodeawsClient(config);
+            return new AmazonCodeCatalystClient(config);
         }
     }
 }

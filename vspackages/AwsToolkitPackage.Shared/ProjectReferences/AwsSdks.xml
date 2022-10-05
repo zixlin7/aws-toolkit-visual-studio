@@ -48,8 +48,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.Codeaws.dll">
-      <Link>AWSSDK.Codeaws.dll</Link>
+    <Content Include="$(OutputRoot)\AWSSDK.CodeCatalyst.dll">
+      <Link>AWSSDK.CodeCatalyst.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
