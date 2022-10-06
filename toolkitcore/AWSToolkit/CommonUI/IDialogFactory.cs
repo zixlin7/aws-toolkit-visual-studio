@@ -19,5 +19,6 @@ namespace Amazon.AWSToolkit.CommonUI
         IKeyValueEditorDialog CreateKeyValueEditorDialog();
         ICredentialSelectionDialog CreateCredentialsSelectionDialog();
         IEcrRepositorySelectionDialog CreateEcrRepositorySelectionDialog();
+        ICloneCodeCommitRepositoryDialog CreateCloneCodeCommitRepositoryDialog();
     }
 }
