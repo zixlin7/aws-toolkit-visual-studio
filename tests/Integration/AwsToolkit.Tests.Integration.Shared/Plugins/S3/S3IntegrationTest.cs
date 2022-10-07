@@ -10,15 +10,17 @@ using Amazon.S3;
 using Amazon.S3.IO;
 using Amazon.S3.Model;
 
+using AwsToolkit.Tests.Integration;
+
 using Xunit;
 
 namespace Amazon.AWSToolkit.Tests.Integration.Plugins.S3
 {
     public class S3IntegrationTest
     {
-        private static readonly string RegionId = "us-west-2";
+        private const string RegionId = "us-west-2";
 
-        private AmazonS3Client _s3Client;
+        private AmazonS3Client _s3Client = ToolkitTestUtils.GetClient<AmazonS3Client>(RegionId);
 
         // Doesn't validate all rules, but covers most bases for random names.
         // https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html
@@ -55,7 +57,7 @@ namespace Amazon.AWSToolkit.Tests.Integration.Plugins.S3
                 Assert.Contains(destinationDir, keys);
 
                 // The method to be tested
-                S3File.Copy(await GetS3Client(), bucketName, sourceFile, bucketName, destinationFile);
+                S3File.Copy(_s3Client, bucketName, sourceFile, bucketName, destinationFile);
 
                 // Ensure copy worked as expected with no lingering other directories or files
                 keys = await ListObjects(bucketName);
@@ -79,15 +81,14 @@ namespace Amazon.AWSToolkit.Tests.Integration.Plugins.S3
                 bucketName = GenerateBucketName();
             }
 
-            var s3Client = await GetS3Client();
-            s3Client.PutBucket(bucketName);
+            _s3Client.PutBucket(bucketName);
             
             return bucketName;
         }
 
         private async Task DeleteBucket(string bucketName)
         {
-            var s3Client = await GetS3Client();
+            var deleteObjectsTasks = new List<Task>();
 
             while (true)
             {
@@ -96,42 +97,40 @@ namespace Amazon.AWSToolkit.Tests.Integration.Plugins.S3
                 {
                     break;
                 }
-                DeleteObjects(bucketName, keys);
+                deleteObjectsTasks.Add(DeleteObjects(bucketName, keys));
             }
 
-            s3Client.DeleteBucket(bucketName);
+            await Task.WhenAll(deleteObjectsTasks);
+            _s3Client.DeleteBucket(bucketName);
         }
 
         private async Task PutObject(string bucketName, string key)
         {
-            var s3Client = await GetS3Client();
             var request = new PutObjectRequest()
             {
                 BucketName = bucketName,
                 Key = key
             };
 
-            s3Client.PutObject(request);
+            _s3Client.PutObject(request);
         }
 
         private async Task DeleteObjects(string bucketName, List<string> keys)
         {
-            var s3Client = await GetS3Client();
             var request = new DeleteObjectsRequest()
             {
                 BucketName = bucketName,
                 Objects = keys.Select(k => new KeyVersion() {Key = k}).ToList()
             };
 
-            s3Client.DeleteObjects(request);
+            _s3Client.DeleteObjects(request);
         }
 
         private async Task<List<string>> ListObjects(string bucketName)
         {
-            var s3Client = await GetS3Client();
             var request = new ListObjectsV2Request() { BucketName = bucketName };
 
-            var response = s3Client.ListObjectsV2(request);
+            var response = _s3Client.ListObjectsV2(request);
 
             return response.S3Objects.Select(o => o.Key).ToList();
         }
@@ -146,24 +145,6 @@ namespace Amazon.AWSToolkit.Tests.Integration.Plugins.S3
         private void AssertValidBucketName(string bucketName)
         {
             Assert.True(BucketNameRegex.IsMatch(bucketName), $"Bucket name '{bucketName}' is invalid.  See https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html");
-        }
-
-        private async Task<AmazonS3Client> GetS3Client()
-        {
-            if (_s3Client == null)
-            {
-                var credentials = await GetCredentials();
-                _s3Client = new AmazonS3Client(credentials, RegionEndpoint.GetBySystemName(RegionId));
-            }
-
-            return _s3Client;
-        }
-
-        private Task<AWSCredentials> GetCredentials()
-        {
-            var chain = new CredentialProfileStoreChain();
-            chain.TryGetAWSCredentials("default", out var awsCredentials);
-            return Task.FromResult(awsCredentials);
         }
 
         #endregion
