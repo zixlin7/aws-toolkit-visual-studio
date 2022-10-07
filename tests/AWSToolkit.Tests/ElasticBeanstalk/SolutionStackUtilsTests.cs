@@ -1,5 +1,7 @@
 ﻿using System;
+
 using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.ElasticBeanstalk
@@ -82,5 +84,27 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             Assert.Equal(expectedResult, SolutionStackUtils.SolutionStackSupportsDotNetFramework(stackName));
         }
 
+        /// <summary>
+        /// string - the stack name to process
+        /// bool - whether or not the stack name should parse into a version
+        /// version - the expected resulting version 
+        /// </summary>
+        public static TheoryData<string, bool, Version> TryGetVersionData()
+        {
+            var data = new TheoryData<string, bool, Version>();
+
+            data.Add("64bit Windows Server 2019 v2.10.4 running IIS 10.0", true, new Version(2, 10, 4));
+            data.Add("string without a version", false, null);
+
+            return data;
+        }
+
+        [Theory]
+        [MemberData(nameof(TryGetVersionData))]
+        public void TryGetVersion(string stackName, bool expectedResult, Version expectedVersion)
+        {
+            Assert.Equal(expectedResult, SolutionStackUtils.TryGetVersion(stackName, out Version version));
+            Assert.Equal(expectedVersion, version);
+        }
     }
 }

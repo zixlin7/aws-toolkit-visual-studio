@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Utils
 {
@@ -7,6 +8,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Utils
     {
         private static readonly Version MinimumNetCoreSolutionStack = new Version("1.2.0");
         private static readonly Version SolutionStackFallbackVersion = new Version("1.0.0");
+
+        /// <summary>
+        /// Regex:
+        /// version starts with a space, then a 'v', then has three numeric sections in the format "x.y.z"
+        /// the version goes into a group named "version"
+        /// </summary>
+        private static readonly Regex VersionSubstring = new Regex(".* v(?<version>\\d+\\.\\d+\\.\\d+) .*",
+            RegexOptions.Compiled, TimeSpan.FromSeconds(3));
 
         public static bool SolutionStackIsWindows(string solutionStackName)
         {
@@ -80,6 +89,27 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Utils
 
             return DotNetCorePlatformNames.Any(name =>
                 solutionStackName.IndexOf(name, StringComparison.InvariantCultureIgnoreCase) != -1);
+        }
+
+        /// <summary>
+        /// Tries to parse a Version from the Beanstalk stack names
+        /// </summary>
+        /// <example>
+        /// 64bit Windows Server Core 2019 v2.5.6 running IIS 10.0 -> (2.5.6)
+        /// </example>
+        public static bool TryGetVersion(string solutionStackName, out Version version)
+        {
+            version = null;
+
+            var regexMatch = VersionSubstring.Match(solutionStackName);
+
+            if (!regexMatch.Success)
+            {
+                return false;
+            }
+
+            var versionStr = regexMatch.Groups["version"].Value;
+            return Version.TryParse(versionStr, out version);
         }
     }
 }
