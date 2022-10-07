@@ -89,6 +89,14 @@
       <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
+      <Project>{b8cfce12-d441-46a5-a415-c763e1e2beb0}</Project>
+      <Name>AWSToolkit.CodeCommit.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj">
+      <Project>{9aa7dd53-7bc4-4971-bc0c-0540a391dc22}</Project>
+      <Name>AWSToolkit.CodeCommit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\vspackages\Publishing\PublishToAws\PublishToAws.csproj">
       <Project>{9a9a823b-967e-4bb5-809f-a78c1668c363}</Project>
       <Name>PublishToAws</Name>
