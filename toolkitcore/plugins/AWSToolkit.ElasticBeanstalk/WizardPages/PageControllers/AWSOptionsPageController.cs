@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
-using Amazon.ElasticLoadBalancingV2;
+
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2;
@@ -17,7 +16,10 @@ using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.EC2;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
+using Amazon.ElasticLoadBalancingV2;
+
 using log4net;
+
 using AWSOptionsPage = Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.AWSOptionsPage;
 using InstanceType = Amazon.AWSToolkit.EC2.InstanceType;
 
@@ -413,19 +415,34 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             if (Project.IsStandardWebProject(HostingWizard))
             {
                 stacks = stacks.Where(SolutionStackUtils.SolutionStackSupportsDotNetFramework);
-            } else if (Project.IsNetCoreWebProject(HostingWizard))
+            }
+            else if (Project.IsNetCoreWebProject(HostingWizard))
             {
                 stacks = stacks.Where(SolutionStackUtils.SolutionStackSupportsDotNetCore);
             }
 
             // HACK: We don't have a nice UX for Solution Stacks, because they are a flat string representing multiple variables
-            // Group them by OS of interest, then by reverse order, so that the newest versions appear higher.
+            // Group them by OS of interest, then by reverse version, then (if necessary) by reverse order.
+            // The intention is to show the newest versions higher in the list for each OS/image.
             // TODO : Longer term, switch away from SolutionStack, use PlatformBranches/PlatformSummaries, and 
             // provide a UX with multiple dropdowns, like the web console.
             stacks = stacks.OrderBy(stack =>
             {
                 var stackOrderPreference = SolutionStackOrder.FirstOrDefault(entry => stack.Contains(entry.Key));
-                return stackOrderPreference.Equals(default(KeyValuePair<string, int>)) ? SolutionStackOrder.Count : stackOrderPreference.Value;
+                return stackOrderPreference.Equals(default(KeyValuePair<string, int>))
+                    ? SolutionStackOrder.Count
+                    : stackOrderPreference.Value;
+            }).ThenByDescending(stack =>
+            {
+                // We are now grouped by OS image (eg: "64bit Windows Server 2019").
+                // If we can parse a version, order them from highest to lowest
+                if (SolutionStackUtils.TryGetVersion(stack, out Version version))
+                {
+                    return version;
+                }
+
+                // If we can't parse a version, rank this "last", and the alphabetical sort (next) can handle the ordering.
+                return new Version(int.MaxValue, int.MaxValue, int.MaxValue);
             }).ThenByDescending(stack => stack);
 
             return stacks;
