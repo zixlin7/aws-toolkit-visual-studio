@@ -1,4 +1,6 @@
-﻿namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
+﻿using System;
+
+namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
 {
     /// <summary>
     /// Wrapper around a CodeCommit repository. The repository may exist only
@@ -31,5 +33,10 @@
         /// The user-supplied description of the repository, if any.
         /// </summary>
         string Description { get; }
+
+        /// <summary>
+        /// The timestamp when the repository was last modified, if any.
+        /// </summary>
+        DateTime? LastModifiedDate { get; }
     }
 }
