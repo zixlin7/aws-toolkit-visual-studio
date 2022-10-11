@@ -79,7 +79,7 @@
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NuGet.Protocol">
-      <Version>5.10.0</Version>
+      <Version>5.11.3</Version>
     </PackageReference>
     <!-- Publish to AWS transient DLLs. These need to be referenced to be included in the VSIX. 
       These can be removed once we migrate to sdk-style project files. -->
