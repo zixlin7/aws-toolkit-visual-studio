@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Configuring a Lambda function to remove all Environment Variables and VPC settings from the Configuration tab of the function's view will now do this. Previously, the Lambda function would be updated, but the function's VPC settings and Environment Variables would not be adjusted."
+}
