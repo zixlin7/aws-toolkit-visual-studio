@@ -4,22 +4,22 @@ For issues or questions about this extension please open a GitHub issue at https
 
 ## Overview
 
-The AWS Toolkit provides Visual Studio project templates that you can use as starting points for AWS console and web applications. As your application runs, you can use the AWS Explorer to view the AWS resources used by the application. For example, if your application creates buckets in Amazon S3, you can use AWS Explorer to view those buckets and their contents. If you need to provision AWS resources for your application, you can create them manually using the AWS Explorer or use the CloudFormation templates included with the AWS Toolkit to provision web application environments hosted on Amazon EC2.
+[The AWS Toolkit for Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html) improves development workflows by making AWS services available directly from your Visual Studio environment. 
 
-* The AWS Explorer presents a tree view of your AWS resources such as Amazon EC2, Amazon S3, Amazon DynamoDB, AWS Lambda, AWS CloudFormation and other services as well. With the AWS Explorer you can view and edit resources within these services.
+For a current list of integrated AWS services, see the [Working with AWS Services](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/working-with-services.html) section of the official AWS Toolkit for Visual Studio user guide. 
 
-* Web Applications and Web Sites can be deployed to the AWS cloud by right clicking on the project in the Solution Explorer and selecting "Publish to AWS Elastic Beanstalk".
+The following is a selection of the most popular AWS Toolkit services and how they can improve your development experience while working from Visual Studio:
 
-* Serverless applications can be deployed to the AWS cloud by right clicking on the project in the Solution Explorer and selecting "Publish to AWS Lambda".
+* Navigate the AWS Toolkit, access AWS Services, monitor storage, and manage your resources from the [AWS Explorer](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/working-with-services.html).
 
-* Using the Amazon EC2 Instance view you can quickly create new Windows instances and Remote Desktop into them simply by right clicking the instance and selecting "Open Remote Desktop".
+* Author, deploy, and configure serverless .NET Core C# functions and serverless applications with [AWS Lambda](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/lambda-index.html).
 
-* You can browse the files stored in your S3 bucket and upload and download files. You can create pre-signed URLs to objects to pass around and change the permissions of files. If the bucket is used with Amazon CloudFront you can perform invalidation requests from within the bucket browser.
+* Create new Windows instances and work in a Remote Desktop environment with [Amazon EC2](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/tkv-ec2-ami.html).
 
-* AWS IAM users and groups can be created and users can be assigned to groups. Access keys can be generated for IAM users and access policies can created using the access policy editor for both users and groups.
+* Monitor your storage buckets, manage resources, and configure file-sharing permissions with [Amazon S3](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/tkv-s3.html).
 
-* Through the AWS Explorer, you can view, create, and delete Amazon DynamoDB tables. You can also add new items to tables, add new attributes to items, and edit attribute values. The AWS Toolkit also enables you to search your tables using Scan operations.
+* Publish your applications targeting .NET Core 3.1 (and later) with sensible defaults, publishing-target suggestions, and one-click-publishing options from the [Publish to AWS](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/publish-experience.html) experience. 
 
-* Using the editor for Amazon SQS queues you can see and edit the properties, send messages to the queue and view a sampling of the messages in the queue.
+* Configure and publish [AWS CloudFormation](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/tkv-cfn-editor.html) templates with supporting features that include: automatic JSON validation, auto-completion, code folding, syntax highlighting, and cost estimation.
 
-* Using the editor for Amazon SNS topics you can see properties, publish messages to the queue and create subscriptions to the topic.  You can also drag and drop queues onto the topic editor to create subscriptions.
+* Manage your [Amazon CloudWatch](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/cloudwatch-log.html) log groups and streams, with features including search, filter, export, and more.
