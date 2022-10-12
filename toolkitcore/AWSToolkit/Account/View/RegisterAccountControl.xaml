@@ -130,7 +130,7 @@
             <WrapPanel Grid.Column="2" Grid.Row="10" Margin="0 6 0 0" Visibility="{Binding IsPartitionEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <TextBlock>Don't see your region?</TextBlock>
                 <TextBlock Margin="6 0 0 0">
-                <Hyperlink RequestNavigate="OnRequestRegions">
+                <Hyperlink Click="OnRequestRegions">
                     <TextBlock Text="Show more regions" />
                 </Hyperlink></TextBlock>
 

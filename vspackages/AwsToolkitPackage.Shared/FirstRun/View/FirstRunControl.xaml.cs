@@ -133,7 +133,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             e.Handled = true;
         }
 
-        private void OnRequestCreateDialog(object sender, RequestNavigateEventArgs e)
+        private void OnRequestCreateDialog(object sender, RoutedEventArgs e)
         {
             var toolkitContext = this._controller.ToolkitContext;
             var command = new RegisterAccountController(toolkitContext);

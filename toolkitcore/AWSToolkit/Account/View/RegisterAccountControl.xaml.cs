@@ -74,7 +74,7 @@ namespace Amazon.AWSToolkit.Account.View
             return true;
         }
 
-        void OnRequestRegions(object sender, RequestNavigateEventArgs e)
+        void OnRequestRegions(object sender, RoutedEventArgs e)
         {
             this._controller.Model.IsPartitionEnabled = true;
         }
