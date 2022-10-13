@@ -1,8 +1,13 @@
-## 1.35.2.0 (2022-08-24)
+## 1.36.0.0 (2022-10-12)
 
 ### Changelog
-- **Bug Fix** - Categories are now ordered as intended when editing settings in Publish to AWS.
-- **Bug Fix** - Publish to AWS has been updated to use v1.2.4 of the AWS .NET deploy tool. This version of the Toolkit includes the following Deploy Tool changes: https://github.com/aws/aws-dotnet-deploy/releases/tag/1.2.4 , https://github.com/aws/aws-dotnet-deploy/releases/tag/1.1.15 .
-- **Bug Fix** - A bug has been fixed in Publish to AWS when publishing a project to an existing Fargate target, where the Fargate target was previously published using a pre-GA version of Publish to AWS. If the target was configured with multiple security groups, trying to select it would log an 'Unexpected character encountered while parsing value: s.' error. Now, you can re-publish your project to this target, but you need to reconfigure the security groups setting. The setting will display a validation message in the 'Edit Settings' view if reconfiguration is needed. (Fixed in Deploy Tool v1.1.15)
-- **Bug Fix** - Fix issue preventing Publish to AWS from publishing to a Fargate target when working with a region that does not have a default VPC. Previously, this would log an `Unexpected character encountered while parsing value: s. Path '', line 0, position 0` error (Fixed in Deploy Tool v1.2.4)
-- **Feature** - Searching CloudWatch log events has been improved, so that filtered events are automatically loaded. Previously, you would have to occasionally click on a link in order to retrieve the first screenful of events.
+- **Bug Fix** - Configuring a Lambda function to remove all Environment Variables and VPC settings from the Configuration tab of the function's view will now do this. Previously, the Lambda function would be updated, but the function's VPC settings and Environment Variables would not be adjusted.
+- **Bug Fix** - Update credentials dialog help to link to the User Guide
+- **Bug Fix** - Fixed bug so that default location, if set in Options, is used when creating or cloning CodeCommit repos rather than always defaulting to %USERPROFILE%\Source\Repos.
+- **Feature** - The "Publish to AWS" experience is now capable of publishing applications to existing Windows Beanstalk environments
+- **Feature** - Publish to AWS has been updated to use v1.5.4 of the AWS .NET deploy tool. This version of the Toolkit includes the following Deploy Tool changes:
+  - Applications can now be published to existing Windows Beanstalk environments
+  - Applications can now be published to Fargate using internet-facing load balancers
+  - BlazorWasm applications can now be published with Http3 support
+  - See https://github.com/aws/aws-dotnet-deploy/releases/tag/1.3.7, https://github.com/aws/aws-dotnet-deploy/releases/tag/1.4.10, https://github.com/aws/aws-dotnet-deploy/releases/tag/1.5.4 for more details
+- **Feature** - This release of the Toolkit includes an updated signing certificate, which can be seen when installing the extension.
