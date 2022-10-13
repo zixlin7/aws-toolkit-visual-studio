@@ -5,46 +5,32 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Regions.Manifest;
+using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 
 using log4net;
 
 namespace Amazon.AWSToolkit.Account.Model
 {
-    public class RegisterAccountModel : INotifyPropertyChanged
+    public class RegisterAccountModel : INotifyPropertyChanged, IHelpHandler
     {
-        private static ILog LOGGER = LogManager.GetLogger(typeof(RegisterAccountModel));
-        private readonly IRegionProvider _regionProvider;
+        private const string CredentialsHelpUrl = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/credentials.html";
+
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(RegisterAccountModel));
+        private readonly ToolkitContext _toolkitContext;
         private ToolkitRegion _region;
         private Partition _partition;
-        private IList<Partition> _partitions = new List<Partition>();
+        private readonly IList<Partition> _partitions;
         private ObservableCollection<ToolkitRegion> _regions = new ObservableCollection<ToolkitRegion>();
         private bool _isPartitionEnabled = false;
 
-        public RegisterAccountModel(IRegionProvider regionProvider)
+        public RegisterAccountModel(ToolkitContext toolkitContext)
         {
-            this._regionProvider = regionProvider;
-            this._partitions = this._regionProvider?.GetPartitions();
-        }
-
-        public RegisterAccountModel()
-        {
-        }
-
-        public RegisterAccountModel(string credentialId, string displayName, string accessKey, string secretKey)
-        {
-            this.CredentialId = credentialId;
-            this.DisplayName = displayName;
-            this.AccessKey = accessKey;
-        }
-
-        public RegisterAccountModel(Guid uniqueKey, string displayName, string accessKey, string secretKey)
-        {
-            this.UniqueKey = uniqueKey;
-            this.DisplayName = displayName;
-            this.AccessKey = accessKey;
+            _toolkitContext = toolkitContext;
+            _partitions = _toolkitContext.RegionProvider?.GetPartitions();
         }
 
         public Guid UniqueKey { get; set; }
@@ -190,15 +176,20 @@ namespace Amazon.AWSToolkit.Account.Model
         /// </summary>
         public void ShowRegionsForPartition(string partitionId)
         {
-            var regions = _regionProvider.GetRegions(partitionId);
+            var regions = _toolkitContext.RegionProvider.GetRegions(partitionId);
 
-            Regions = new ObservableCollection<ToolkitRegion>(regions.Where(r=> !_regionProvider.IsRegionLocal(r.Id)).OrderBy(r => r.DisplayName));
+            Regions = new ObservableCollection<ToolkitRegion>(regions.Where(r=> !_toolkitContext.RegionProvider.IsRegionLocal(r.Id)).OrderBy(r => r.DisplayName));
         }
 
         public override string ToString()
         {
             return string.Format("DisplayName: {0}, AccessKey: {1}, SecretKey {2}", this.ProfileName, this.AccessKey,
                 this.SecretKey);
+        }
+
+        public void OnHelp()
+        {
+            _toolkitContext.ToolkitHost.OpenInBrowser(CredentialsHelpUrl, false);
         }
 
         public void Validate()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +8,7 @@ using System.Windows.Navigation;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.Account.View
 {
@@ -17,7 +17,7 @@ namespace Amazon.AWSToolkit.Account.View
     /// </summary>
     public partial class RegisterAccountControl : BaseAWSControl
     {
-        RegisterAccountController _controller;
+        private readonly RegisterAccountController _controller;
 
         public RegisterAccountControl(RegisterAccountController controller)
         {
@@ -74,7 +74,7 @@ namespace Amazon.AWSToolkit.Account.View
             return true;
         }
 
-        void OnRequestRegions(object sender, RequestNavigateEventArgs e)
+        void OnRequestRegions(object sender, RoutedEventArgs e)
         {
             this._controller.Model.IsPartitionEnabled = true;
         }
@@ -83,13 +83,6 @@ namespace Amazon.AWSToolkit.Account.View
         {
             Unloaded -= OnUnloaded;
             _controller.Model.PropertyChanged -= OnPropertyChanged;
-        }
-
-        void onRequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            string url = this._ctlAWSLink.Text;
-            Process.Start(new ProcessStartInfo(url));
-            e.Handled = true;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -174,5 +167,7 @@ namespace Amazon.AWSToolkit.Account.View
         {
             this._controller.Model.AccessKey = this._ctlAccessKey.Password;
         }
+
+        public override IHelpHandler GetHelpHandler() => _controller.Model;
     }
 }

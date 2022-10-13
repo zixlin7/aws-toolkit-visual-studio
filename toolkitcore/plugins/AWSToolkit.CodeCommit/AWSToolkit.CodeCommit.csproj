@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeCommitActivator.cs" />
-    <Compile Include="ConnectServiceManager.cs" />
     <Compile Include="Controller\CreateRepositoryController.cs" />
     <Compile Include="Controller\CloneRepositoryController.cs" />
     <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />
@@ -131,13 +130,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeCommit">
-      <Version>3.7.0.154</Version>
+      <Version>3.7.0.203</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.10.15</Version>
+      <Version>3.7.13.1</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.134</Version>
+      <Version>3.7.2.184</Version>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp">
       <Version>0.24.1</Version>

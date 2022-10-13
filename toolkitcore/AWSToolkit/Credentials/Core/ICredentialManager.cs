@@ -16,6 +16,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
         ICredentialIdentifier GetCredentialIdentifierById(string id);
         List<ICredentialIdentifier> GetCredentialIdentifiers();
         bool IsLoginRequired(ICredentialIdentifier identifier);
+        bool Supports(ICredentialIdentifier credentialIdentifier, AwsConnectionType connectionType);
         AWSCredentials GetAwsCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region);
+        ToolkitCredentials GetToolkitCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region);
     }
 }

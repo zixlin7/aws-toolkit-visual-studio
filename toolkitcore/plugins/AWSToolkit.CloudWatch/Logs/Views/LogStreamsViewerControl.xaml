@@ -10,6 +10,7 @@
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
                          xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
                          xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.CloudWatch.Logs.ViewModels"
+                         xmlns:generated="clr-namespace:Amazon.AwsToolkit.Telemetry.Events.Generated;assembly=Amazon.AwsToolkit.Telemetry.Events"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -139,6 +140,8 @@
                              LoadingLogs="{Binding LoadingLogs}"
                              ErrorMessage="{Binding ErrorMessage}"
                              HasInitialized="{Binding HasInitialized}"
+                             FilterText ="{Binding FilterText}"
+                             NoResultSuggestions="{Binding NoResultSuggestions}"
                              Visibility="{Binding Visibility, ElementName=LogStreamsList, Converter={StaticResource InverseVisibilityConverter}}" />
 
         <commonUi:ToolkitDataGridWrapper Grid.Row="3"
@@ -159,7 +162,8 @@
                                          SelectionMode="Single"
                                          IsReadOnly="True"
                                          Sorting="LogStreamsList_OnSorting"
-                                         HeadersVisibility="Column">
+                                         HeadersVisibility="Column"
+                                         Visibility="{Binding LogStreams, Converter={StaticResource HasItemsVisibilityConverter}}">
             <commonUi:ToolkitDataGridWrapper.Columns>
                 <DataGridTextColumn x:Name="StreamNameColumn"
                                     x:FieldModifier="private"
@@ -183,20 +187,6 @@
                 </DataGridTextColumn>
 
             </commonUi:ToolkitDataGridWrapper.Columns>
-            <commonUi:ToolkitDataGridWrapper.Style>
-                <!-- Do not show the DataGrid when there are no matching results or if an error occurred -->
-                <Style TargetType="{x:Type commonUi:ToolkitDataGridWrapper}">
-                    <Setter Property="Visibility"
-                            Value="{Binding LogStreams, Converter={StaticResource HasItemsVisibilityConverter}}" />
-                    <Style.Triggers>
-                        <DataTrigger
-                            Binding="{Binding ErrorMessage, Converter={StaticResource HasValueVisibilityConverter}}"
-                            Value="Visible">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </commonUi:ToolkitDataGridWrapper.Style>
             <commonUi:ToolkitDataGridWrapper.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="View Log Stream" Command="{Binding ViewCommand}">
@@ -241,6 +231,8 @@
         <local:ConnectionStatus Grid.Row="4" 
                                 ConnectionSettings="{Binding ConnectionSettings}"
                                 FeedbackSource="{Binding Source={x:Static viewModels:BaseLogsViewModel.FeedbackSource}}"
-                                FeedbackCommand="{Binding FeedbackCommand}"/>
+                                FeedbackCommand="{Binding FeedbackCommand}"
+                                ErrorMessage="{Binding ErrorMessage}"
+                                ShowErrorCommand="{Binding ShowErrorCommand}"/>
     </Grid>
 </commonUi:BaseAWSControl>

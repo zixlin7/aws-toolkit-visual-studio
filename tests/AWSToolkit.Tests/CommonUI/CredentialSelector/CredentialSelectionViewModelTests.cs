@@ -49,7 +49,15 @@ namespace AWSToolkit.Tests.CommonUI.CredentialSelector
         {
             SetupGetRegions();
             SetupPartitionsWithRegions();
+            SetupCredentialIds();
             _viewModel = new CredentialSelectionViewModel(_toolkitContextFixture.ToolkitContext);
+        }
+
+        private void SetupCredentialIds()
+        {
+            _toolkitContextFixture.DefineCredentialIdentifiers(new[] { SampleCredentialId });
+            _toolkitContextFixture.SetupCredentialManagerSupports(SampleCredentialId, AwsConnectionType.AwsCredentials, true);
+            _toolkitContextFixture.SetupCredentialManagerSupports(SampleCredentialId, AwsConnectionType.AwsToken, false);
         }
 
         private void SetupPartitionsWithRegions()
@@ -214,6 +222,30 @@ namespace AWSToolkit.Tests.CommonUI.CredentialSelector
             {
                 Region = associatedRegion,
             });
+        }
+
+        [Fact]
+        public void GetCredentialIdentifiers_NoConnectionTypes()
+        {
+            Assert.Contains(SampleCredentialId, _viewModel.GetCredentialIdentifiers());
+        }
+
+        [Fact]
+        public void GetCredentialIdentifiers_SupportedConnectionTypes()
+        {
+            _viewModel.ConnectionTypes.Add(AwsConnectionType.AwsCredentials);
+            Assert.Contains(SampleCredentialId, _viewModel.GetCredentialIdentifiers());
+
+            // Test when the list contains more than one type
+            _viewModel.ConnectionTypes.Add(AwsConnectionType.AwsToken);
+            Assert.Contains(SampleCredentialId, _viewModel.GetCredentialIdentifiers());
+        }
+
+        [Fact]
+        public void GetCredentialIdentifiers_NoSupportedConnectionTypes()
+        {
+            _viewModel.ConnectionTypes.Add(AwsConnectionType.AwsToken);
+            Assert.DoesNotContain(SampleCredentialId, _viewModel.GetCredentialIdentifiers());
         }
     }
 }

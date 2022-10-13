@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Context;
@@ -74,6 +76,17 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             ServiceClientManager.Setup(mock => mock.CreateServiceClient<TServiceClient>(
                     It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
                 .Returns(client);
+        }
+
+        public void DefineCredentialIdentifiers(IEnumerable<ICredentialIdentifier> credentialIdentifiers)
+        {
+            CredentialManager.Setup(mock => mock.GetCredentialIdentifiers()).Returns(credentialIdentifiers.ToList());
+        }
+
+        public void SetupCredentialManagerSupports(ICredentialIdentifier credentialIdentifier,
+            AwsConnectionType connectionType, bool isSupported)
+        {
+            CredentialManager.Setup(mock => mock.Supports(credentialIdentifier, connectionType)).Returns(isSupported);
         }
     }
 }

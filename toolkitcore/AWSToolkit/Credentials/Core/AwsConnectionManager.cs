@@ -47,8 +47,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private readonly IToolkitSettingsRepository _toolkitSettingsRepository;
 
         public string ActiveAccountId { get; private set; }
+        public string ActiveAwsId { get; private set; }
         public ICredentialManager CredentialManager { get; }
-        public AWSCredentials ActiveCredentials { get; private set; }
+        public ToolkitCredentials ActiveCredentials { get; private set; }
 
         public ToolkitRegion ActiveRegion
         {
@@ -324,6 +325,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         {
             var validationResult = Result.Failed;
             string accountId = string.Empty;
+            string awsId = string.Empty;
 
             try
             {
@@ -332,8 +334,18 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     token.ThrowIfCancellationRequested();
                 }
 
-                var credentials = CredentialManager.GetAwsCredentials(identifier, region);
-                accountId = await GetAccountId(credentials, region, token);
+                var credentials = CredentialManager.GetToolkitCredentials(identifier, region);
+
+                if (credentials.Supports(AwsConnectionType.AwsCredentials))
+                {
+                    accountId = await GetAccountId(credentials.GetAwsCredentials(), region, token);
+                }
+
+                if (credentials.Supports(AwsConnectionType.AwsToken))
+                {
+                    awsId = await GetAwsId(credentials, region, token);
+                }
+
                 var connectionState = new ConnectionState.ValidConnection(identifier, region);
 
                 if (token.IsCancellationRequested)
@@ -341,7 +353,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     token.ThrowIfCancellationRequested();
                 }
 
-                SetValidationResults(identifier, region, connectionState, credentials, accountId, token);
+                SetValidationResults(identifier, region, connectionState, credentials, accountId, awsId, token);
 
                 validationResult = Result.Succeeded;
             }
@@ -350,14 +362,14 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 validationResult = Result.Cancelled;
                 LOGGER.Error($"Failed to switch to credentials: {identifier?.DisplayName}", e);
                 var connectionState = new ConnectionState.InvalidConnection("New connection settings chosen");
-                SetValidationResults(identifier, region, connectionState, null, string.Empty, token);
+                SetValidationResults(identifier, region, connectionState, null, string.Empty, string.Empty, token);
             }
             catch (Exception e)
             {
                 validationResult = Result.Failed;
                 LOGGER.Error($"Failed to switch to credentials: {identifier?.DisplayName}", e);
                 var connectionState = new ConnectionState.InvalidConnection(e.Message);
-                SetValidationResults(identifier, region, connectionState, null, string.Empty, token);
+                SetValidationResults(identifier, region, connectionState, null, string.Empty, string.Empty, token);
             }
             finally
             {
@@ -378,12 +390,12 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// if the state currently represents the provided Id + Region.
         /// </summary>
         private void SetValidationResults(ICredentialIdentifier credentialsId, ToolkitRegion region,
-            ConnectionState connectionState, AWSCredentials awsCredentials, string accountId, CancellationToken token)
+            ConnectionState connectionState, ToolkitCredentials credentials, string accountId, string awsId, CancellationToken token)
         {
             if (!token.IsCancellationRequested && ActiveCredentialIdentifier == credentialsId && ActiveRegion == region)
             {
                 ActiveAccountId = accountId;
-                ActiveCredentials = awsCredentials;
+                ActiveCredentials = credentials;
                 ConnectionState = connectionState;
             }
         }
@@ -411,6 +423,27 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
             var response = await stsClient.GetCallerIdentityAsync(new GetCallerIdentityRequest(), token);
             return response.Account;
+        }
+
+        /// <summary>
+        /// Token based credentials approach for looking up the AWS ID.
+        /// </summary>
+        private async Task<string> GetAwsId(ToolkitCredentials credentials, ToolkitRegion region,
+            CancellationToken token)
+        {
+            if (_regionProvider.IsRegionLocal(region.Id))
+            {
+                return string.Empty;
+            }
+
+            // TODO : Get client for looking up AwsId
+            if (token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();
+            }
+
+            // TODO : request AwsId
+            return string.Empty;
         }
 
         private void RegisterHandlers()

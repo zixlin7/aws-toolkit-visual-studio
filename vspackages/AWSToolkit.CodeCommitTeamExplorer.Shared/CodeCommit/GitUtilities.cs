@@ -4,16 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.AWSToolkit.CodeCommit.Interface;
-using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Util;
 
 using log4net;
+
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
-using Amazon.AWSToolkit.Collections;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 {
@@ -88,9 +89,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
             }
         }
 
-        public static async Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo,
-                                      bool autoCloneNewRepository,
-                                      AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback)
+        public static async Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo)
         {
             var success = false;
             var phase = "create";
@@ -102,7 +101,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                 var codeCommitPlugin = ToolkitFactory.Instance.ShellProvider.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
 
                 var codeCommitGitServices = codeCommitPlugin.CodeCommitGitServices;
-                await codeCommitGitServices.CreateAsync(newRepositoryInfo, false, null);
+                await codeCommitGitServices.CreateAsync(newRepositoryInfo);
 
                 var repository = codeCommitPlugin.GetRepository(newRepositoryInfo.Name, newRepositoryInfo.OwnerAccount, newRepositoryInfo.Region);
 
@@ -134,13 +133,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                 }
 
                 phase = "initialCommit";
-
-                // If content needs to be populated, make the callback
-                if (contentPopulationCallback != null)
-                {
-                    var contentAdded = contentPopulationCallback(repository.LocalFolder);
-                    initialCommitContent.AddAll(contentAdded);
-                }
 
                 if (initialCommitContent.Any())
                 {

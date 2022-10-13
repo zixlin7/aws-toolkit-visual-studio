@@ -9,6 +9,7 @@
                          xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
                          xmlns:viewModels="clr-namespace:Amazon.AWSToolkit.CloudWatch.Logs.ViewModels"
+                         xmlns:generated="clr-namespace:Amazon.AwsToolkit.Telemetry.Events.Generated;assembly=Amazon.AwsToolkit.Telemetry.Events"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
                          d:DesignHeight="450" d:DesignWidth="800">
@@ -58,15 +59,17 @@
                      IsIndeterminate="True" Height="6" 
                      themes:ToolkitThemes.UseToolkitTheme="True"
                      Visibility="{Binding LoadingLogs, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-        <!-- Indicates status of results eg. no results found, error message -->
+       
+            <!-- Indicates status of results eg. no results found, error message -->
         <local:ResultsStatus Grid.Row="2"
                              Margin="11"
                              LoadingLogs="{Binding LoadingLogs}"
                              ErrorMessage="{Binding ErrorMessage}"
                              HasInitialized="{Binding HasInitialized}"
-                             Visibility="{Binding Visibility, ElementName=LogGroupsList, Converter={StaticResource InverseVisibilityConverter}}" />
-
+                             FilterText ="{Binding FilterText}"
+                             NoResultSuggestions="{Binding NoResultSuggestions}"
+                             Visibility="{Binding Visibility, ElementName=LogGroupsList, Converter={StaticResource InverseVisibilityConverter}}"/>
+      
         <ListBox Grid.Row="3"
                  x:Name="LogGroupsList"
                  x:FieldModifier="private"
@@ -75,7 +78,8 @@
                  VirtualizingStackPanel.VirtualizationMode="Standard"
                  ScrollViewer.ScrollChanged="ScrollViewer_OnScrollChanged"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 themes:ToolkitThemes.UseToolkitTheme="True">
+                 themes:ToolkitThemes.UseToolkitTheme="True"
+                 Visibility="{Binding LogGroups, Converter={StaticResource HasItemsVisibilityConverter}}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}"></TextBlock>
@@ -86,21 +90,6 @@
                     <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick"/>
                 </Style>
             </ListBox.ItemContainerStyle>
-            <ListBox.Style>
-                <!-- Do not show the listbox when there are no matching results or if an error occurred -->
-                <Style TargetType="ListBox">
-                    <Setter Property="Visibility"
-                            Value="{Binding LogGroups, Converter={StaticResource HasItemsVisibilityConverter}}" />
-                    <Style.Triggers>
-
-                        <DataTrigger
-                            Binding="{Binding ErrorMessage, Converter={StaticResource HasValueVisibilityConverter}}"
-                            Value="Visible">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ListBox.Style>
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="View Log Group" Command="{Binding ViewCommand}" CommandParameter="{Binding LogGroup.Name}">
@@ -126,7 +115,9 @@
         <local:ConnectionStatus Grid.Row="4"
                                 ConnectionSettings="{Binding ConnectionSettings}"
                                 FeedbackSource="{Binding Source={x:Static viewModels:BaseLogsViewModel.FeedbackSource}}"
-                                FeedbackCommand="{Binding FeedbackCommand}"/>
+                                FeedbackCommand="{Binding FeedbackCommand}"
+                                ErrorMessage="{Binding ErrorMessage}"
+                                ShowErrorCommand="{Binding ShowErrorCommand}"/>
 
     </Grid>
 </commonUi:BaseAWSControl>

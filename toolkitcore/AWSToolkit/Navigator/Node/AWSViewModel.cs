@@ -7,6 +7,7 @@ using System.Windows;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.Runtime.Internal.Settings;
 
 using log4net;
@@ -119,7 +120,8 @@ namespace Amazon.AWSToolkit.Navigator.Node
         private void LoadProfiles()
         {
             this._accounts.Clear();
-            var allIdentifiers = _toolkitContext.CredentialManager.GetCredentialIdentifiers();
+            var allIdentifiers = _toolkitContext.CredentialManager.GetCredentialIdentifiers()
+                .Where(id => _toolkitContext.CredentialManager.Supports(id, AwsConnectionType.AwsCredentials));
             foreach (var identifier in allIdentifiers)
             {
                 var accountViewModel = new AccountViewModel(

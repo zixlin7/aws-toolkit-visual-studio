@@ -60,6 +60,7 @@
     <Compile Include="Logs\Core\RepositoryFactory.cs" />
     <Compile Include="Logs\Models\ExportResult.cs" />
     <Compile Include="Logs\Models\FilterLogEventsRequest.cs" />
+    <Compile Include="Logs\Models\LinkedTextSuggestion.cs" />
     <Compile Include="Logs\Models\MetricSources.cs" />
     <Compile Include="Logs\Models\GetLogEventsRequest.cs" />
     <Compile Include="Logs\Models\GetLogGroupsRequest.cs" />
@@ -70,6 +71,8 @@
     <Compile Include="Logs\Models\OrderBy.cs" />
     <Compile Include="Logs\Models\PaginatedLoadingStatus.cs" />
     <Compile Include="Logs\Models\PaginatedLogResponse.cs" />
+    <Compile Include="Logs\Models\Suggestion.cs" />
+    <Compile Include="Logs\Models\TextSuggestion.cs" />
     <Compile Include="Logs\Viewers\LogEventsViewer.cs" />
     <Compile Include="Logs\Viewers\LogStreamsViewer.cs" />
     <Compile Include="Logs\Views\ResultsStatus.xaml.cs">
@@ -106,13 +109,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.7.4.7</Version>
+      <Version>3.7.7.10</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.7.2.48</Version>
+      <Version>3.7.2.98</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.10.15</Version>
+      <Version>3.7.13.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

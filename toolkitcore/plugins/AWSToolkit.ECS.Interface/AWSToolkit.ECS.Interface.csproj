@@ -81,7 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.ECS">
-      <Version>3.7.5.24</Version>
+      <Version>3.7.5.74</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

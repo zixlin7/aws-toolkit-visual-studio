@@ -85,6 +85,7 @@
     <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
     <Compile Include="Commands\ShowExceptionAndForgetCommandTests.cs" />
+    <Compile Include="Commands\ShowMessageInOutputCommandTests.cs" />
     <Compile Include="CommonUI\AccountAndRegionPickerViewModelTests.cs" />
     <Compile Include="CommonUI\AccountViewModelGroupConverterTests.cs" />
     <Compile Include="CommonUI\BaseModelTests.cs" />
@@ -120,6 +121,8 @@
     <Compile Include="Credentials\Core\NoopToolkitSettingsRepository.cs" />
     <Compile Include="Credentials\Core\ProfileCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\TestProfileCredentialProviderFactory.cs" />
+    <Compile Include="Credentials\Core\ToolkitCredentialsTests.cs" />
+    <Compile Include="Credentials\Core\ToolkitSsoTokenManagerTests.cs" />
     <Compile Include="Credentials\CredentialProfileTestHelper.cs" />
     <Compile Include="Credentials\IO\EncryptedStoreTestFixture.cs" />
     <Compile Include="Credentials\IO\ProfileValidatorTests.cs" />
@@ -200,7 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeArtifact">
-      <Version>3.7.0.154</Version>
+      <Version>3.7.1.23</Version>
     </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.17.2</Version>

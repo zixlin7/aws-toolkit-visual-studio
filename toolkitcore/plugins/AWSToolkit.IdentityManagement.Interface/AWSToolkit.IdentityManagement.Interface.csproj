@@ -73,7 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.134</Version>
+      <Version>3.7.2.184</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

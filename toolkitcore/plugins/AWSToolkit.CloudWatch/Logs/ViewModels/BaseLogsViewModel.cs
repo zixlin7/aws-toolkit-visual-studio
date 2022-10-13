@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.CloudWatch.Logs.Core;
+using Amazon.AWSToolkit.CloudWatch.Logs.Models;
 using Amazon.AWSToolkit.CloudWatch.Logs.Util;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
@@ -15,6 +17,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 
 using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
+using Amazon.AWSToolkit.Commands;
 
 namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
 {
@@ -24,6 +27,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
     public abstract class BaseLogsViewModel : BaseModel, IDisposable
     {
         public static readonly string FeedbackSource = "CloudWatch Logs";
+        protected static readonly TextSuggestion PrefixSearchSuggestion =
+            new TextSuggestion { Message = "Searching is by prefix only. Check search prefix for any typos." };
+
         protected readonly ToolkitContext ToolkitContext;
         protected readonly ICloudWatchLogsRepository Repository;
 
@@ -37,7 +43,9 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         private ICommand _refreshCommand;
         private ICommand _copyArnCommand;
         private ICommand _feedbackCommand;
+        private ICommand _showErrorCommand;
         private int _lastFilterHash;
+        private ObservableCollection<Suggestion> _noResultSuggestions;
 
         protected BaseLogsViewModel(ICloudWatchLogsRepository repository, ToolkitContext toolkitContext)
         {
@@ -81,6 +89,20 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
             set => SetProperty(ref _refreshCommand, value);
         }
 
+        public ObservableCollection<Suggestion> NoResultSuggestions =>
+            _noResultSuggestions ?? (_noResultSuggestions = CreateSuggestions());
+
+        protected virtual ObservableCollection<Suggestion> CreateSuggestions()
+        {
+            var suggestions = new ObservableCollection<Suggestion>
+            {
+                new TextSuggestion
+                {
+                    Message = "Searching is case-sensitive. Try a search term that matches case."
+                }
+            };
+            return suggestions;
+        }
         public void RecordRefreshMetric()
         {
             ToolkitContext.TelemetryLogger.RecordCloudwatchlogsRefresh(new CloudwatchlogsRefresh()
@@ -98,6 +120,16 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         /// Command that shows the feedback panel for the CloudWatch Logs integration
         /// </summary>
         public ICommand FeedbackCommand => _feedbackCommand ?? (_feedbackCommand = new SendFeedbackCommand(ToolkitContext));
+
+        /// <summary>
+        /// Command that shows the error message in the output window
+        /// </summary>
+        public ICommand ShowErrorCommand => _showErrorCommand ?? (_showErrorCommand = CreateShowErrorCommand());
+
+        private ICommand CreateShowErrorCommand()
+        {
+            return ShowMessageInOutputCommand.Create(ToolkitContext.ToolkitHost);
+        }
 
         private ICommand CreateCopyArnCommand()
         {

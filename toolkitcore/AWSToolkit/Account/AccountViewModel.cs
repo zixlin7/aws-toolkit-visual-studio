@@ -53,7 +53,9 @@ namespace Amazon.AWSToolkit.Account
         public void ReloadFromPersistence(string displayName)
         {
             var identifier = _toolkitContext.CredentialManager.GetCredentialIdentifiers()
-                .FirstOrDefault(x => string.Equals(x.DisplayName, displayName));
+                .FirstOrDefault(id =>
+                    string.Equals(id.DisplayName, displayName)
+                    && _toolkitContext.CredentialManager.Supports(id, AwsConnectionType.AwsCredentials));
             this._identifier = identifier;
             this._displayName = identifier?.DisplayName;
             _cachedServiceCredentials.Clear();

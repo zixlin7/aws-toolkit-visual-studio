@@ -284,7 +284,7 @@ namespace Amazon.AWSToolkit.S3.View
         {
             try
             {
-                var directory = DirectoryBrowserDlgHelper.ChooseDirectory(this, "Select a directory to upload.");
+                var directory = _controller.GetUploadFolder();
                 if (string.IsNullOrEmpty(directory))
                 {
                     return;
@@ -834,7 +834,7 @@ namespace Amazon.AWSToolkit.S3.View
         {
             try
             {
-                var downloadLocation = DirectoryBrowserDlgHelper.ChooseDirectory(this, "Choose a folder to download files.");
+                var downloadLocation = _controller.GetDownloadFolder();
                 if (!string.IsNullOrEmpty(downloadLocation))
                 {
                     _ctlJobTracker.AddJob(new DownloadFilesJob(_controller, _controller.BucketName,

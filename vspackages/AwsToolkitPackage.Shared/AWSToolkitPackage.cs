@@ -72,6 +72,7 @@ using Amazon.AWSToolkit.Publish;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Themes;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.Util;
@@ -94,6 +95,7 @@ using Microsoft.VisualStudio.Threading;
 
 using Debugger = System.Diagnostics.Debugger;
 using OutputWindow = Amazon.AwsToolkit.VsSdk.Common.OutputWindow.OutputWindow;
+using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -163,7 +165,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         // registered VS command line param, /awsToolkitPlugins c:\path1[;c:\path2;c:\path3...]
         internal const string awsToolkitPluginsParam = "awsToolkitPlugins";
 
-        private RegionProvider _regionProvider;
         private ToolkitSettingsWatcher _toolkitSettingsWatcher;
         private ToolkitCredentialInitializer _toolkitCredentialInitializer;
         private ToolkitContext _toolkitContext;
@@ -462,6 +463,12 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 string dteVersion = null;
 
+                var productEnvironment = await CreateProductEnvironmentAsync();
+                _metricsOutputWindow = await CreateMetricsOutputWindowAsync();
+                _telemetryManager = CreateTelemetryManager(productEnvironment);
+                // Give RegionProvider a chance to load data before it is needed later in Toolkit initialization
+                var regionProviderTask = CreateRegionProviderAsync(_telemetryManager?.TelemetryLogger);
+
                 NavigatorControl navigator = null;
                 await this.JoinableTaskFactory.RunAsync(async delegate
                 {
@@ -523,8 +530,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 });
 
                 _toolkitOutputWindow = await CreateToolkitOutputWindowAsync();
-
-                var productEnvironment = CreateProductEnvironment();
                 OutputProductDetails(productEnvironment);
 
                 var hostInfo = DteVersion.AsHostInfo(dteVersion);
@@ -533,11 +538,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _publishSettingsRepository = new FilePublishSettingsRepository();
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
 
-                _metricsOutputWindow = await CreateMetricsOutputWindowAsync();
-                _telemetryManager = CreateTelemetryManager(productEnvironment);
                 S3FileFetcher.Initialize(_telemetryManager?.TelemetryLogger);
-                _regionProvider = new RegionProvider(_telemetryManager?.TelemetryLogger);
-                _regionProvider.Initialize();
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
@@ -551,19 +552,21 @@ namespace Amazon.AWSToolkit.VisualStudio
                 // For some reason, these DLLs do not get loaded properly before an SSO related profile needs to use the callback handler.
                 LoadSsoAssemblies();
 
-                _toolkitCredentialInitializer = new ToolkitCredentialInitializer(_telemetryManager.TelemetryLogger, _regionProvider, ToolkitShellProviderService);
+                var regionProvider = await regionProviderTask;
+
+                _toolkitCredentialInitializer = new ToolkitCredentialInitializer(_telemetryManager.TelemetryLogger, regionProvider, ToolkitShellProviderService);
                 _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged += AwsConnectionManager_ConnectionStateChanged;
 
                 var serviceClientManager = new AwsServiceClientManager(
                     _toolkitCredentialInitializer.CredentialManager,
-                    _regionProvider
+                    regionProvider
                 );
 
                 _toolkitContext = new ToolkitContext()
                 {
                     TelemetryLogger = _telemetryManager.TelemetryLogger,
                     ServiceClientManager = serviceClientManager,
-                    RegionProvider = _regionProvider,
+                    RegionProvider = regionProvider,
                     ConnectionManager = _toolkitCredentialInitializer.AwsConnectionManager,
                     CredentialManager = _toolkitCredentialInitializer.CredentialManager,
                     CredentialSettingsManager = _toolkitCredentialInitializer.CredentialSettingsManager,
@@ -617,6 +620,16 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        private async Task<RegionProvider> CreateRegionProviderAsync(ITelemetryLogger telemetryLogger)
+        {
+            await TaskScheduler.Default;
+
+            var regionProvider = new RegionProvider(telemetryLogger);
+            regionProvider.Initialize();
+
+            return regionProvider;
         }
 
         private void LoadSsoAssemblies()
@@ -710,10 +723,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 var outputWindow = new MetricsOutputWindow(outputWindowManager);
 
-                if (ToolkitSettings.Instance.ShowMetricsOutputWindow)
-                {
-                    DeferInitializationAsync(outputWindow).LogExceptionAndForget();
-                }
+                DeferMetricsOutputWindowInitializationAsync(outputWindow).LogExceptionAndForget();
 
                 return outputWindow;
             }
@@ -721,6 +731,16 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 Logger.Error("Unable to set up Metrics Output window", e);
                 return null;
+            }
+        }
+
+        private async Task DeferMetricsOutputWindowInitializationAsync(MetricsOutputWindow metricsOutputWindow)
+        {
+            // Access ToolkitSettings on a non-UI thread
+            await TaskScheduler.Default;
+            if (ToolkitSettings.Instance.ShowMetricsOutputWindow)
+            {
+                await DeferInitializationAsync(metricsOutputWindow);
             }
         }
 
@@ -743,24 +763,21 @@ namespace Amazon.AWSToolkit.VisualStudio
             return telemetryManager;
         }
 
-        private ProductEnvironment CreateProductEnvironment()
+        private async Task<ProductEnvironment> CreateProductEnvironmentAsync()
         {
-            return this.JoinableTaskFactory.Run(async () =>
+            await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+            try
             {
-                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                try
-                {
-                    var dte = (DTE2) await GetServiceAsync(typeof(EnvDTE.DTE));
-                    var vsAppId = (IVsAppId) await GetServiceAsync(typeof(IVsAppId));
+                var dte = (DTE2) await GetServiceAsync(typeof(EnvDTE.DTE));
+                var vsAppId = (IVsAppId) await GetServiceAsync(typeof(IVsAppId));
 
-                    return ToolkitProductEnvironment.CreateProductEnvironment(vsAppId, dte);
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error("Unable to create ProductEnvironment, using default values", e);
-                    return ProductEnvironment.Default;
-                }
-            });
+                return ToolkitProductEnvironment.CreateProductEnvironment(vsAppId, dte);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Unable to create ProductEnvironment, using default values", e);
+                return ProductEnvironment.Default;
+            }
         }
 
         /// <summary>
@@ -2559,9 +2576,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 
 #region Team Explorer Command
 
-        void AddTeamExplorerConnection(object sender, EventArgs e)
+        private void AddTeamExplorerConnection(object sender, EventArgs e)
         {
-            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService?.OpenConnection();
+            ConnectController.OpenConnection();
         }
 
 #endregion

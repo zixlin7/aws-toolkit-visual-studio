@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,6 +37,12 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             get => _viewModel.IncludeLocalRegions;
             set => _viewModel.IncludeLocalRegions = value;
+        }
+
+        public IList<AwsConnectionType> ConnectionTypes
+        {
+            get => _viewModel.ConnectionTypes;
+            set => _viewModel.ConnectionTypes = value;
         }
 
         public ICredentialIdentifier CredentialIdentifier
@@ -94,7 +101,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             await _joinableTaskFactory.SwitchToMainThreadAsync();
 
-            _viewModel.Credentials = new ObservableCollection<ICredentialIdentifier>(_toolkitContext.CredentialManager.GetCredentialIdentifiers());
+            _viewModel.Credentials = new ObservableCollection<ICredentialIdentifier>(_viewModel.GetCredentialIdentifiers());
         }
 
         private void ConnectionManager_ConnectionStateChanged(object sender, ConnectionStateChangeArgs e)

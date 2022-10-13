@@ -17,7 +17,7 @@ namespace Amazon.AWSToolkit.Account.Controller
 {
     public class RegisterAccountController
     {
-        private RegisterAccountModel _model;
+        private readonly RegisterAccountModel _model;
         protected RegisterAccountControl _control;
         protected bool DefaultProfileNameInUse;
         protected ActionResults _results;
@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.Account.Controller
         public RegisterAccountController(ToolkitContext toolkitContext)
         {
             ToolkitContext = toolkitContext;
-            this._model = new RegisterAccountModel(ToolkitContext.RegionProvider);
+            this._model = new RegisterAccountModel(toolkitContext);
         }
 
         public RegisterAccountModel Model => this._model;

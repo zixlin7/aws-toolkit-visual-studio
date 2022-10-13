@@ -97,6 +97,13 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
         }
         public override string GetLogTypeDisplayName() => "log streams";
 
+        protected override ObservableCollection<Suggestion> CreateSuggestions()
+        {
+            var suggestions = base.CreateSuggestions();
+            suggestions.Add(PrefixSearchSuggestion);
+            return suggestions;
+        }
+
         public override async Task RefreshAsync()
         {
             ResetState();

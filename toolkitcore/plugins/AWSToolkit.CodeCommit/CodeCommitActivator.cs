@@ -44,17 +44,12 @@ namespace Amazon.AWSToolkit.CodeCommit
                 return this;
             }
 
-            if (serviceType == typeof(IAWSToolkitGitServices))
-            {
-                return new CodeCommitGitServices(this);
-            }
-
             return null;
         }
 
         #region IAWSCodeCommit Members
 
-        public ICodeCommitGitServices CodeCommitGitServices => new CodeCommitGitServices(this);
+        public ICodeCommitGitServices CodeCommitGitServices => new CodeCommitGitServices();
 
         public void AssociateCredentialsWithProfile(string profileArtifactsId, string userName, string password)
         {
@@ -114,7 +109,7 @@ namespace Amazon.AWSToolkit.CodeCommit
         public ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account, ToolkitRegion initialRegion, string defaultFolderRoot)
         {
             initialRegion = initialRegion ?? GetFallbackRegion();
-            var controller = new CloneRepositoryController(account, initialRegion, defaultFolderRoot);
+            var controller = new CloneRepositoryController(account, initialRegion, defaultFolderRoot, ToolkitContext);
             return controller.Execute().Success ?
                 new CodeCommitRepository(controller.Model.SelectedRepository, controller.Model.SelectedFolder) :
                 null;
@@ -123,7 +118,7 @@ namespace Amazon.AWSToolkit.CodeCommit
         public INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account, ToolkitRegion initialRegion, string defaultFolderRoot)
         {
             initialRegion = initialRegion ?? GetFallbackRegion();
-            var controller = new CreateRepositoryController(account, initialRegion, defaultFolderRoot);
+            var controller = new CreateRepositoryController(account, initialRegion, defaultFolderRoot, ToolkitContext);
             return controller.Execute().Success ? controller.Model.GetNewRepositoryInfo() : null;
         }
 

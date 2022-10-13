@@ -47,5 +47,26 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.Views
             get => (ICommand) GetValue(FeedbackCommandProperty);
             set => SetValue(FeedbackCommandProperty, value);
         }
+
+        public static readonly DependencyProperty ErrorMessageProperty =
+    DependencyProperty.Register(
+        nameof(ErrorMessage), typeof(string), typeof(ConnectionStatus),
+        new PropertyMetadata(""));
+
+        public string ErrorMessage
+        {
+            get => (string) GetValue(ErrorMessageProperty);
+            set => SetValue(ErrorMessageProperty, value);
+        }
+
+        public static readonly DependencyProperty ShowErrorCommandProperty =
+            DependencyProperty.Register(
+                nameof(ShowErrorCommand), typeof(ICommand), typeof(ConnectionStatus));
+
+        public ICommand ShowErrorCommand
+        {
+            get => (ICommand) GetValue(ShowErrorCommandProperty);
+            set => SetValue(ShowErrorCommandProperty, value);
+        }
     }
 }

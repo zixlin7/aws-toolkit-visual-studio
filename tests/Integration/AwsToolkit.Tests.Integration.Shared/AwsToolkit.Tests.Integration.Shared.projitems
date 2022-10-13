@@ -27,8 +27,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Publish\StartDeployCliTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publish\TestProjects.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publish\UniqueStackName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ToolkitTestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Publish\README.md" />
   </ItemGroup>
 </Project>
+

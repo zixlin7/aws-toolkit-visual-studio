@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
+using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+
 using Moq;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.Core
@@ -31,151 +35,182 @@ namespace AWSToolkit.Tests.Credentials.Core
         protected abstract ProfileCredentialProviderFactory GetFactory();
         protected abstract ICredentialIdentifier CreateCredentialIdentifier(string profileName);
 
-        public static IEnumerable<object[]> GetBasicValidProfileNames()
-        {
-            yield return new object[] { CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name };
-            yield return new object[] { CredentialProfileTestHelper.Basic.Valid.Token.Name };
-        }
+        public static TheoryData<string> GetBasicValidProfileNames() =>
+            new TheoryData<string>()
+            {
+                CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name,
+                CredentialProfileTestHelper.Basic.Valid.Token.Name,
+            };
 
         [Theory]
         [MemberData(nameof(GetBasicValidProfileNames))]
-        public void CreateAwsCredentials(string profileName)
+        public void CreateToolkitCredentials_BasicProfiles(string profileName)
         {
             var identifier = CreateCredentialIdentifier(profileName);
-            Assert.NotNull(GetFactory().CreateAwsCredential(identifier, null));
+            Assert.NotNull(GetFactory().CreateToolkitCredentials(identifier, null));
         }
 
         [Fact]
-        public void CreateAwsCredentials_AssumeRole_SourceProfile()
+        public void CreateToolkitCredentials_AssumeRole_SourceProfile()
         {
             var profile = CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile;
             var identifier = CreateCredentialIdentifier(profile.Name);
-            var credentials = GetFactory().CreateAwsCredential(identifier, SampleRegion);
+            var toolkitCredentials = GetFactory().CreateToolkitCredentials(identifier, SampleRegion);
 
-            Assert.NotNull(credentials);
-            var assumeRoleAwsCredentials = Assert.IsType<ToolkitAssumeRoleAwsCredentials>(credentials);
-            Assert.Equal(SampleRegion.Id, assumeRoleAwsCredentials.Options.Region);
-            Assert.Equal(profile.Options.ExternalID, assumeRoleAwsCredentials.Options.ExternalId);
-            Assert.Equal(profile.Options.RoleArn, assumeRoleAwsCredentials.RoleArn);
-            Assert.Equal(profile.Options.RoleSessionName, assumeRoleAwsCredentials.RoleSessionName);
+            AssertSourceProfileAssumeRoleCredentials(toolkitCredentials.GetAwsCredentials(), profile, SampleRegion.Id);
+        }
+
+        private static void AssertSourceProfileAssumeRoleCredentials(AWSCredentials awsCredentials,
+            CredentialProfile expectedProfile, string expectedRegionId)
+        {
+            var assumeRoleAwsCredentials = Assert.IsType<ToolkitAssumeRoleAwsCredentials>(awsCredentials);
+            Assert.Equal(expectedRegionId, assumeRoleAwsCredentials.Options.Region);
+            Assert.Equal(expectedProfile.Options.ExternalID, assumeRoleAwsCredentials.Options.ExternalId);
+            Assert.Equal(expectedProfile.Options.RoleArn, assumeRoleAwsCredentials.RoleArn);
+            Assert.Equal(expectedProfile.Options.RoleSessionName, assumeRoleAwsCredentials.RoleSessionName);
         }
 
         [Fact]
-        public void CreateAwsCredentials_AssumeRole_CredentialSource()
+        public void CreateToolkitCredentials_AssumeRole_CredentialSource()
         {
             var profile = CredentialProfileTestHelper.AssumeRole.Valid.CredentialSource;
             var identifier = CreateCredentialIdentifier(profile.Name);
-            var credentials = GetFactory().CreateAwsCredential(identifier, SampleRegion);
+            var toolkitCredentials = GetFactory().CreateToolkitCredentials(identifier, SampleRegion);
 
-            Assert.NotNull(credentials);
+            AssertEc2CredentialSourceAssumeRoleCredentials(toolkitCredentials.GetAwsCredentials(), profile, SampleRegion.Id);
+        }
+
+        private static void AssertEc2CredentialSourceAssumeRoleCredentials(AWSCredentials credentials,
+            CredentialProfile expectedProfile, string expectedRegionId)
+        {
             var assumeRoleAwsCredentials = Assert.IsType<ToolkitAssumeRoleAwsCredentials>(credentials);
-            Assert.Equal(SampleRegion.Id, assumeRoleAwsCredentials.Options.Region);
-            Assert.Equal(profile.Options.RoleArn, assumeRoleAwsCredentials.RoleArn);
+            Assert.Equal(expectedRegionId, assumeRoleAwsCredentials.Options.Region);
+            Assert.Equal(expectedProfile.Options.RoleArn, assumeRoleAwsCredentials.RoleArn);
             Assert.IsType<ToolkitDefaultEc2InstanceCredentials>(assumeRoleAwsCredentials.SourceCredentials);
         }
 
         [Fact]
-        public void CreateAwsCredentials_AssumeMFARole()
+        public void CreateToolkitCredentials_AssumeMFARole()
         {
             var identifier = CreateCredentialIdentifier(CredentialProfileTestHelper.Mfa.Valid.MfaReference.Name);
-            var credentials = GetFactory().CreateAwsCredential(identifier, SampleRegion);
+            var toolkitCredentials = GetFactory().CreateToolkitCredentials(identifier, SampleRegion);
 
-            Assert.NotNull(credentials);
+            AssertMfaCredentials(toolkitCredentials.GetAwsCredentials(), SampleRegion.Id);
+        }
+
+        private static void AssertMfaCredentials(AWSCredentials credentials, string expectedRegionId)
+        {
             var assumeMfaRoleAwsCredentials = Assert.IsType<ToolkitAssumeRoleAwsCredentials>(credentials);
-            Assert.Equal(SampleRegion.Id, assumeMfaRoleAwsCredentials.Options.Region);
-            Assert.Equal(CredentialProfileTestHelper.Mfa.Valid.MfaReference.Options.RoleArn, assumeMfaRoleAwsCredentials.RoleArn);
-            Assert.Equal(CredentialProfileTestHelper.Mfa.Valid.MfaReference.Options.MfaSerial, assumeMfaRoleAwsCredentials.Options.MfaSerialNumber);
+            Assert.Equal(expectedRegionId, assumeMfaRoleAwsCredentials.Options.Region);
+            Assert.Equal(CredentialProfileTestHelper.Mfa.Valid.MfaReference.Options.RoleArn,
+                assumeMfaRoleAwsCredentials.RoleArn);
+            Assert.Equal(CredentialProfileTestHelper.Mfa.Valid.MfaReference.Options.MfaSerial,
+                assumeMfaRoleAwsCredentials.Options.MfaSerialNumber);
         }
 
         [Fact]
-        public void CreateAwsCredentials_AssumeRole_NullRegion()
+        public void CreateToolkitCredentials_AssumeRole_NullRegion()
         {
             var identifier = CreateCredentialIdentifier(CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile.Name);
 
-            Assert.Throws<ArgumentNullException>(() => GetFactory().CreateAwsCredential(identifier, null));
+            Assert.Throws<ArgumentNullException>(() => GetFactory().CreateToolkitCredentials(identifier, null));
         }
 
         [Fact]
-        public void CreateAwsCredentials_AssumeRole_DefaultSessionName()
+        public void CreateToolkitCredentials_AssumeRole_DefaultSessionName()
+        {
+            var profileName = RegisterAssumeRoleProfileWithNoSessionName();
+
+            var identifier = CreateCredentialIdentifier(profileName);
+            var toolkitCredentials = GetFactory().CreateToolkitCredentials(identifier, SampleRegion);
+
+            AssertAssumeRoleWithToolkitSessionName(toolkitCredentials.GetAwsCredentials());
+        }
+
+        private string RegisterAssumeRoleProfileWithNoSessionName()
         {
             string profileName = Guid.NewGuid().ToString();
             var sampleProfile = CredentialProfileTestHelper.AssumeRole.CreateSampleProfile(profileName);
             sampleProfile.Options.RoleSessionName = string.Empty;
             SampleProfiles.Add(sampleProfile);
+            return profileName;
+        }
 
-            var identifier = CreateCredentialIdentifier(profileName);
-            var credentials = GetFactory().CreateAwsCredential(identifier, SampleRegion);
-
-            Assert.NotNull(credentials);
+        private static void AssertAssumeRoleWithToolkitSessionName(AWSCredentials credentials)
+        {
             var assumeRoleAwsCredentials = Assert.IsType<ToolkitAssumeRoleAwsCredentials>(credentials);
             Assert.Contains("aws-toolkit-visualstudio-", assumeRoleAwsCredentials.RoleSessionName);
         }
 
-        public static IEnumerable<object[]> GetUnsupportedIdentifierProfileNames()
-        {
-            yield return new object[] { CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name };
-            yield return new object[] { CredentialProfileTestHelper.Basic.Valid.Token.Name };
-            yield return new object[] { CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile.Name };
-            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name };
-        }
+        public static TheoryData<string> GetUnsupportedIdentifierProfileNames() =>
+            new TheoryData<string>()
+            {
+                CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.Name,
+                CredentialProfileTestHelper.Basic.Valid.Token.Name,
+                CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile.Name,
+                CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name,
+            };
 
         [Theory]
         [MemberData(nameof(GetUnsupportedIdentifierProfileNames))]
-        public void CreateAwsCredential_UnsupportedIdentifier(string profileName)
+        public void CreateToolkitCredentials_UnsupportedIdentifier(string profileName)
         {
             var identifier = FakeCredentialIdentifier.Create(profileName);
-            Assert.Throws<ArgumentException>(() => GetFactory().CreateAwsCredential(identifier, null));
+            Assert.Throws<ArgumentException>(() => GetFactory().CreateToolkitCredentials(identifier, null));
         }
 
-        public static IEnumerable<object[]> GetMissingProfileNames()
-        {
-            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.MissingAccessKey.Name };
-            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.MissingSecretKey.Name };
-            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name };
-            yield return new object[] { CredentialProfileTestHelper.CredentialProcess.ValidProfile.Name };
-            yield return new object[] { CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile.Name };
-        }
+        public static TheoryData<string> GetMissingProfileNames() =>
+            new TheoryData<string>()
+            {
+                CredentialProfileTestHelper.Basic.Invalid.MissingAccessKey.Name,
+                CredentialProfileTestHelper.Basic.Invalid.MissingSecretKey.Name,
+                CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name,
+                CredentialProfileTestHelper.CredentialProcess.ValidProfile.Name,
+                CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile.Name,
+            };
 
         [Theory]
         [MemberData(nameof(GetMissingProfileNames))]
-        public void CreateAwsCredential_MissingProfile(string profileName)
+        public void CreateToolkitCredentials_MissingProfile(string profileName)
         {
             ProfileHolder.Setup(x => x.GetProfile(profileName)).Returns((CredentialProfile) null);
 
             var identifier = CreateCredentialIdentifier(profileName);
-            Assert.Throws<InvalidOperationException>(() => GetFactory().CreateAwsCredential(identifier, null));
+            Assert.Throws<InvalidOperationException>(() => GetFactory().CreateToolkitCredentials(identifier, null));
         }
 
-        public static IEnumerable<object[]> GetInvalidProfileNames()
-        {
-            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.MissingAccessKey.Name };
-            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.MissingSecretKey.Name };
-            yield return new object[] { CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name };
-            yield return new object[] { CredentialProfileTestHelper.CredentialProcess.InvalidProfile.Name };
-        }
+        public static TheoryData<string> GetInvalidProfileNames() =>
+            new TheoryData<string>()
+            {
+                CredentialProfileTestHelper.Basic.Invalid.MissingAccessKey.Name,
+                CredentialProfileTestHelper.Basic.Invalid.MissingSecretKey.Name,
+                CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name,
+                CredentialProfileTestHelper.CredentialProcess.InvalidProfile.Name,
+            };
 
         [Theory]
         [MemberData(nameof(GetInvalidProfileNames))]
-        public void CreateAwsCredential_InvalidProfile(string profileName)
+        public void CreateToolkitCredentials_InvalidProfile(string profileName)
         {
             var identifier = CreateCredentialIdentifier(profileName);
-            Assert.Throws<ArgumentException>(() => GetFactory().CreateAwsCredential(identifier, null));
+            Assert.Throws<ArgumentException>(() => GetFactory().CreateToolkitCredentials(identifier, null));
         }
 
-        public static IEnumerable<object[]> GetInvalidAssumeRoleProfileNames()
-        {
-            yield return new object[] { CredentialProfileTestHelper.AssumeRole.Invalid.SourceProfile.BadReference.Name };
-            yield return new object[] { CredentialProfileTestHelper.AssumeRole.Invalid.SourceProfile.Missing.Name };
-            yield return new object[] { CredentialProfileTestHelper.AssumeRole.Invalid.CredentialSource.InvalidValue.Name };
-            yield return new object[] { CredentialProfileTestHelper.AssumeRole.Invalid.CredentialSource.Unsupported.Name };
-        }
+        public static TheoryData<string> GetInvalidAssumeRoleProfileNames() =>
+            new TheoryData<string>()
+            {
+                CredentialProfileTestHelper.AssumeRole.Invalid.SourceProfile.BadReference.Name,
+                CredentialProfileTestHelper.AssumeRole.Invalid.SourceProfile.Missing.Name,
+                CredentialProfileTestHelper.AssumeRole.Invalid.CredentialSource.InvalidValue.Name,
+                CredentialProfileTestHelper.AssumeRole.Invalid.CredentialSource.Unsupported.Name,
+            };
 
         [Theory]
         [MemberData(nameof(GetInvalidAssumeRoleProfileNames))]
-        public void CreateAwsCredential_InvalidSourceProfileReferences(string profileName)
+        public void CreateToolkitCredentials_InvalidSourceProfileReferences(string profileName)
         {
             var identifier = CreateCredentialIdentifier(profileName);
-            Assert.Throws<ArgumentException>(() => GetFactory().CreateAwsCredential(identifier, SampleRegion));
+            Assert.Throws<ArgumentException>(() => GetFactory().CreateToolkitCredentials(identifier, SampleRegion));
         }
 
         private void SetupSampleProfiles()

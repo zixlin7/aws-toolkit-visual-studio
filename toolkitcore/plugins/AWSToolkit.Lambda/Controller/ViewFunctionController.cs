@@ -610,13 +610,14 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             request.DeadLetterConfig = new DeadLetterConfig
                 {TargetArn = this._control.SelectedDLQTargetArn ?? string.Empty};
 
-            if (this._model.EnvironmentVariables.Any())
+            if (this._model.EnvironmentVariables != null)
             {
                 foreach (var envvar in this._model.EnvironmentVariables)
                 {
                     if (!string.IsNullOrWhiteSpace(envvar.Variable))
                         request.Environment.Variables.Add(envvar.Variable, envvar.Value);
                 }
+                request.Environment.IsVariablesSet = true;
             }
 
             var kmsKey = this._control.SelectedKMSKey;
@@ -627,7 +628,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             var subnets = this._control.SelectedSubnets;
             var groups = this._control.SelectedSecurityGroups;
-            if (subnets != null && subnets.Any() && groups != null && groups.Any())
+            if (subnets != null && groups != null)
             {
                 var subnetIds = new List<string>();
                 foreach (var subnet in subnets)
@@ -644,7 +645,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 request.VpcConfig = new VpcConfig
                 {
                     SubnetIds = subnetIds,
-                    SecurityGroupIds = groupIds
+                    SecurityGroupIds = groupIds,
+                    IsSubnetIdsSet = true,
+                    IsSecurityGroupIdsSet = true
                 };
             }
 

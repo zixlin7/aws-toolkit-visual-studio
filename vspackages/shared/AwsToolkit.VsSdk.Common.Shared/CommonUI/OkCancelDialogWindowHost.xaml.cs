@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -34,12 +35,20 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
             InitializeComponent();
 
+            Debug.Assert(hostedControl.UserControl.Height > 0 && hostedControl.UserControl.Height < double.PositiveInfinity,
+                $"HostedControl {hostedControl.GetType()} must set the Height property to be used by {GetType()}.");
+            Debug.Assert(hostedControl.UserControl.Width > 0 && hostedControl.UserControl.Width < double.PositiveInfinity,
+                $"HostedControl {hostedControl.GetType()} must set the Width property to be used by {GetType()}.");
+
             Width = (int) (hostedControl.UserControl.Width + (2 * ContentMargin));
             Height = (int)(hostedControl.UserControl.Height + (2* ContentMargin) + ButtonVerticalSpacing + ButtonHeight);
             MinWidth = Width;
             MinHeight = Height;
             AddHostedControl();
             Title = _hostedControl.Title;
+
+            HasHelpButton = _hostedControl.GetHelpHandler() != null;
+            _ctlHelpButton.Visibility = HasHelpButton ? Visibility.Visible : Visibility.Collapsed;
 
             _ctlAcceptButton.IsEnabled = _hostedControl.SupportsDynamicOKEnablement 
                 ? _hostedControl.Validated() 
@@ -48,6 +57,11 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             hostedControl.UserControl.IsEnabledChanged += HostedControlIsEnabledChanged;
 
             SetButtonText(buttons);
+        }
+
+        protected override void InvokeDialogHelp()
+        {
+            _hostedControl.GetHelpHandler()?.OnHelp();
         }
 
         private void SetButtonText(MessageBoxButton buttons)
@@ -94,6 +108,11 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             // Re-assess if the Ok button may be enabled.
             _ctlAcceptButton.IsEnabled = _hostedControl.Validated();
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            InvokeDialogHelp();
         }
 
         private void AcceptButton_Click(object sender, RoutedEventArgs e)

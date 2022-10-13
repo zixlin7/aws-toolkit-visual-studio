@@ -539,7 +539,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
         /// </summary>
         public Task<AWSCredentials> GetCredentialsAsync()
         {
-            return Task.FromResult(_publishContext.ConnectionManager.ActiveCredentials);
+            return Task.FromResult(_publishContext.ConnectionManager.ActiveCredentials.GetAwsCredentials());
         }
 
         public async Task RestartDeploymentSessionAsync(CancellationToken cancellationToken)

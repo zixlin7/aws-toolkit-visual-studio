@@ -1,5 +1,4 @@
-﻿using log4net;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Lambda;
 
@@ -37,14 +36,23 @@ namespace Amazon.AWSToolkit.Lambda.Util
             });
         }
 
-        public static void RecordServerlessApplicationDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, string accountId, string regionId)
+        public static void RecordServerlessApplicationDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, string accountId, string regionId, string reason = null)
         {
-            telemetryLogger.RecordServerlessapplicationDeploy(new ServerlessapplicationDeploy()
-            {
-                AwsAccount = accountId ?? MetadataValue.Invalid,
-                AwsRegion = regionId ?? MetadataValue.NotSet,
-                Result = deployResult
-            });
+            telemetryLogger.RecordServerlessapplicationDeploy(
+                new ServerlessapplicationDeploy()
+                {
+                    AwsAccount = accountId ?? MetadataValue.Invalid,
+                    AwsRegion = regionId ?? MetadataValue.NotSet,
+                    Result = deployResult
+                }, metricDatum =>
+                {
+                    if (!string.IsNullOrWhiteSpace(reason))
+                    {
+                        metricDatum.Metadata["reason"] = reason;
+                    }
+
+                    return metricDatum;
+                });
         }
 
         public static void RecordLambdaIamRoleCleanup(this ITelemetryLogger telemetryLogger, Result result, string reason, string accountId, string regionId)

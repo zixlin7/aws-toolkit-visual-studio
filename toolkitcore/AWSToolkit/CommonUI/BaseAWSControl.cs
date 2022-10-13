@@ -89,6 +89,8 @@ namespace Amazon.AWSToolkit.CommonUI
             return true;
         }
 
+        public virtual IHelpHandler GetHelpHandler() => null;
+
         public virtual void RefreshInitialData(object initialData)
         {
         }

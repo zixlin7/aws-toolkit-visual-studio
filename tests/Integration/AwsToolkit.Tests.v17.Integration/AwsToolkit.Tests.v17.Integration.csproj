@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.ECR">
-      <Version>3.7.4.16</Version>
+      <Version>3.7.4.65</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.0.32112.339</Version>
@@ -88,6 +88,14 @@
     <ProjectReference Include="..\..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
       <Name>AWSToolkit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
+      <Project>{B8CFCE12-D441-46A5-A415-C763E1E2BEB0}</Project>
+      <Name>AWSToolkit.CodeCommit.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj">
+      <Project>{9AA7DD53-7BC4-4971-BC0C-0540A391DC22}</Project>
+      <Name>AWSToolkit.CodeCommit</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\vspackages\Publishing\PublishToAws.v17\PublishToAws.v17.csproj">
       <Project>{463eb6a0-df14-4e66-a01a-8384aaa51ab0}</Project>

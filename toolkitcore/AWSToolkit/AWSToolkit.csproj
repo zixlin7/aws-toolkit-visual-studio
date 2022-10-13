@@ -90,6 +90,7 @@
     <Compile Include="CloudWatch\CloudWatchTelemetry.cs" />
     <Compile Include="CloudWatch\ILogEventsViewer.cs" />
     <Compile Include="CloudWatch\ILogStreamsViewer.cs" />
+    <Compile Include="Commands\ShowMessageInOutputCommand.cs" />
     <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
@@ -99,6 +100,7 @@
     </Compile>
     <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePickerViewModel.cs" />
     <Compile Include="CommonUI\DateTimeRangePicker\TimeInputViewModel.cs" />
+    <Compile Include="CommonUI\Dialogs\IFolderBrowserDialog.cs" />
     <Compile Include="CommonUI\DualListBox.cs" />
     <Compile Include="CommonUI\Notifications\ITaskStatusNotifier.cs" />
     <Compile Include="CommonUI\HintTextBox.xaml.cs">
@@ -110,6 +112,10 @@
     </Compile>
     <Compile Include="CommonUI\DataErrorInfo.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
+    <Compile Include="Credentials\Core\AwsConnectionType.cs" />
+    <Compile Include="Credentials\Core\ToolkitCredentials.cs" />
+    <Compile Include="Credentials\Core\ToolkitSsoTokenManager.cs" />
+    <Compile Include="Credentials\Core\ToolkitSsoTokenManagerOptions.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />
     <Compile Include="CloudFormation\ICloudFormationViewer.cs" />
@@ -258,6 +264,7 @@
     <Compile Include="Publish\Banner\PublishBannerViewModel.cs" />
     <Compile Include="Publish\Banner\PublishBannerViewModelFactory.cs" />
     <Compile Include="Publish\Banner\SwitchToNewExperienceCommandFactory.cs" />
+    <Compile Include="Shared\IHelpHandler.cs" />
     <Compile Include="SimpleWorkers\CloudWatchMetrics.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeBrushKeys.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeFontKeys.cs" />
@@ -286,7 +293,11 @@
     <Compile Include="Credentials\Utils\ProfilePropertyConstants.cs" />
     <Compile Include="Credentials\Utils\Profiles.cs" />
     <Compile Include="PluginServices\Activators\PluginActivatorUtilities.cs" />
-    <Compile Include="Shared\*.cs" />
+    <Compile Include="Shared\GitIgnoreOption.cs" />
+    <Compile Include="Shared\IAWSToolkitControl.cs" />
+    <Compile Include="Shared\IAWSToolkitShellProvider.cs" />
+    <Compile Include="Shared\IAWSToolkitShellThemeService.cs" />
+    <Compile Include="Shared\INewCodeCommitRepositoryInfo.cs" />
     <Compile Include="AbstractPluginActivator.cs" />
     <Compile Include="Account\Controller\EditAccountController.cs" />
     <Compile Include="Account\Controller\RegisterAccountController.cs" />
@@ -355,7 +366,6 @@
       <DependentUpon>DeploymentReviewPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\DialogHostUtil.cs" />
-    <Compile Include="CommonUI\DirectoryBrowserDlgHelper.cs" />
     <Compile Include="CommonUI\IconHelper.cs" />
     <Compile Include="CommonUI\ImageButton.xaml.cs">
       <DependentUpon>ImageButton.xaml</DependentUpon>
@@ -956,51 +966,51 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.9.32</Version>
+      <Version>3.7.11.26</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.7.4.7</Version>
+      <Version>3.7.7.10</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
-      <Version>3.7.0.154</Version>
+      <Version>3.7.0.203</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoSync">
-      <Version>3.7.1.150</Version>
+      <Version>3.7.1.199</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.67.1</Version>
+      <Version>3.7.85.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticBeanstalk">
-      <Version>3.7.0.154</Version>
+      <Version>3.7.0.203</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancingV2">
-      <Version>3.7.3.73</Version>
+      <Version>3.7.3.122</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.134</Version>
+      <Version>3.7.2.184</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.KeyManagementService">
-      <Version>3.7.3.5</Version>
+      <Version>3.7.4.21</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.7.12.10</Version>
+      <Version>3.7.14.10</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SecurityToken">
-      <Version>3.7.1.146</Version>
+      <Version>3.7.1.196</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.3.54</Version>
+      <Version>3.7.4.3</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.2.51</Version>
+      <Version>3.7.2.100</Version>
     </PackageReference>
     <!-- SSO and SSOOIDC are required for the AWS .NET SDK credentials system to resolve SSO based profiles -->
     <PackageReference Include="AWSSDK.SSO">
-      <Version>3.7.0.154</Version>
+      <Version>3.7.0.204</Version>
     </PackageReference>
     <!-- SSO and SSOOIDC are required for the AWS .NET SDK credentials system to resolve SSO based profiles -->
     <PackageReference Include="AWSSDK.SSOOIDC">
-      <Version>3.7.0.154</Version>
+      <Version>3.7.1.7</Version>
     </PackageReference>
     <PackageReference Include="LiveCharts.Wpf">
       <Version>0.9.7</Version>

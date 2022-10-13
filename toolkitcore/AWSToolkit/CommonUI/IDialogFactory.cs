@@ -11,6 +11,7 @@ namespace Amazon.AWSToolkit.CommonUI
     public interface IDialogFactory
     {
         OpenFileDialog CreateOpenFileDialog();
+        IFolderBrowserDialog CreateFolderBrowserDialog();
         ISelectionDialog CreateSelectionDialog();
         IIamRoleSelectionDialog CreateIamRoleSelectionDialog();
         IVpcSelectionDialog CreateVpcSelectionDialog();

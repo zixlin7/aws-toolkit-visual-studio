@@ -148,6 +148,16 @@ namespace AWSToolkit.Tests.Credentials.Utils
         }
 
         [Fact]
+        public void AsProfileProperties_SsoSession()
+        {
+            var profile = CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile;
+            var properties = profile.AsProfileProperties();
+
+            Assert.NotNull(properties);
+            Assert.Equal(profile.Options.SsoSession, properties.SsoSession);
+        }
+
+        [Fact]
         public void AsProfileProperties_Saml()
         {
             var profile = CredentialProfileTestHelper.Saml.ValidProfile;

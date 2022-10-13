@@ -117,6 +117,18 @@ namespace Amazon.AWSToolkit.CloudWatch.Logs.ViewModels
 
         public override string GetLogTypeDisplayName() => "log events";
 
+        protected override ObservableCollection<Suggestion> CreateSuggestions()
+        {
+            var suggestions = base.CreateSuggestions();
+            suggestions.Add(new LinkedTextSuggestion
+            {
+                Message = "Need more help with search?",
+                LinkText = "Learn more about filter patterns.",
+                LinkUrl =
+                    "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html#matching-terms-events"
+            });
+            return suggestions;
+        }
         public override async Task RefreshAsync()
         {
             ResetState();
