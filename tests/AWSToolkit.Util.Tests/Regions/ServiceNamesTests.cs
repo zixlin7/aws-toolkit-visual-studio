@@ -1,5 +1,6 @@
 ﻿using Amazon.AWSToolkit.Regions;
 using Amazon.CloudWatchLogs;
+using Amazon.CodeCommit;
 using Amazon.ECS;
 using Amazon.Lambda;
 
@@ -19,6 +20,12 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         public void Lambda()
         {
             Assert.Equal(new AmazonLambdaConfig().RegionEndpointServiceName, ServiceNames.Lambda);
+        }
+
+        [Fact]
+        public void CodeCommit()
+        {
+            Assert.Equal(new AmazonCodeCommitConfig().RegionEndpointServiceName, ServiceNames.CodeCommit);
         }
 
         [Fact]

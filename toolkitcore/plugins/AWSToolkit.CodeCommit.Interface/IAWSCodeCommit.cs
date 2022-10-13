@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.Regions;
@@ -112,9 +113,20 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// Collection of wrappers around the found repositories. Repositories we failed to
         /// process are dropped on the floor.
         /// </returns>
-        Task<IEnumerable<ICodeCommitRepository>> GetRepositories(
+        Task<IEnumerable<ICodeCommitRepository>> GetRepositoriesAsync(
             AccountViewModel account,
             IEnumerable<string> pathsToRepositories);
+
+        /// <summary>
+        /// Queries for and wraps an ICodeCommitRespository instance around respositories found on
+        /// region that belong to the supplied account.
+        /// </summary>
+        /// <param name="account">The account for which to retrieve repositories.</param>
+        /// <param name="region">The region for which to retrieve repositories.</param>
+        /// <returns>Enumberable of wrappers around the found respositories.</returns>
+        Task<IEnumerable<ICodeCommitRepository>> GetRemoteRepositoriesAsync(
+            AccountViewModel account,
+            ToolkitRegion region);
 
         /// <summary>
         /// Returns the wrapped metadata for a CodeCommit repository.

@@ -77,6 +77,10 @@
       <Project>{49C00D37-5980-495F-80C6-43C5192C4A87}</Project>
       <Name>AWSToolkit.IdentityManagement.Interface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
+      <Project>{b8cfce12-d441-46a5-a415-c763e1e2beb0}</Project>
+      <Name>AWSToolkit.CodeCommit.Interface</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.SDK">

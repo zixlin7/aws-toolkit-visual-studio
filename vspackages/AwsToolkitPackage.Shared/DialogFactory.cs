@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Amazon.AWSToolkit.CodeCommit.View;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
@@ -8,6 +9,7 @@ using Amazon.AWSToolkit.Context;
 using AwsToolkit.VsSdk.Common.CommonUI;
 using AwsToolkit.VsSdk.Common.CommonUI.Ecr;
 
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.Win32;
 
@@ -71,8 +73,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public ICloneCodeCommitRepositoryDialog CreateCloneCodeCommitRepositoryDialog()
         {
-            // TODO return new CloneCodeCommitRepositoryDialog(_toolkitContext, _joinableTaskFactory);
-            throw new NotImplementedException();
+            return new CloneCodeCommitRepositoryDialog(_toolkitContext, _joinableTaskFactory);
         }
     }
 }

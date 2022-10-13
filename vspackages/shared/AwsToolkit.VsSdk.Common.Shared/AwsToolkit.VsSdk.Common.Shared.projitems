@@ -9,6 +9,9 @@
     <Import_RootNamespace>AwsToolkit.VsSdk.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CloneCodeCommitRepositoryDialog.xaml.cs">
+      <DependentUpon>CloneCodeCommitRepositoryDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Converters\ImageThemeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CredentialSelectionDialog.xaml.cs">
       <DependentUpon>CredentialSelectionDialog.xaml</DependentUpon>
@@ -26,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\KeyValueEditorDialog.xaml.cs">
       <DependentUpon>KeyValueEditorDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\CloneCodeCommitRepositoryViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\Ecr\RepositorySelectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\KeyValueEditorViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\InstanceTypeSelectionViewModel.cs" />
@@ -55,6 +59,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)VSWebProjectInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\CloneCodeCommitRepositoryDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\CredentialSelectionDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -13,6 +13,7 @@ namespace Amazon.AWSToolkit.Regions
     {
         // CloudWatchLogs - AmazonCloudWatchLogsConfig.RegionEndpointServiceName
         public const string CloudWatchLogs = "logs";
+        public const string CodeCommit = "codecommit";
         public const string Ecs = "ecs";
         public const string Lambda = "lambda";
         public const string Xray = "xray";

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
-using Amazon.AWSToolkit.CodeCommit.Util;
+
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit;
 
@@ -112,7 +112,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         {
             SelectedRepository = null;
             SelectedFolder = BaseFolder;
-            RefreshRepositoriesList(GetClientForRegion(SelectedRegion));
+            RefreshRepositoriesList();
         }
 
         /// <summary>
@@ -146,30 +146,30 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             return null;
         }
 
-        private void RefreshRepositoriesList(IAmazonCodeCommit codeCommitClient)
+        private void RefreshRepositoriesList()
         {
             NotifyPropertyChanged(RepoListRefreshStartingPropertyName);
 
             ThreadPool.QueueUserWorkItem(async x =>
             {
-                var repositoryList = await LoadRepositoryModels(codeCommitClient);
+                var repositoryList = await LoadRepositoryModels();
 
-                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread(() =>
                 {
                     _repositories.Clear();
                     _repositories.AddRange(repositoryList);
 
                     NotifyPropertyChanged(RepoListRefreshCompletedPropertyName);
-                }));
+                });
             });
         }
 
-        private async Task<IEnumerable<ICodeCommitRepository>> LoadRepositoryModels(IAmazonCodeCommit codeCommitClient)
+        private async Task<IEnumerable<ICodeCommitRepository>> LoadRepositoryModels()
         {
-            var repositoryNames = await codeCommitClient.ListRepositoryNames();
-            var repositoryMetadata = await codeCommitClient.GetRepositoryMetadata(repositoryNames);
+            var awsCodeCommit = ToolkitFactory.Instance.ShellProvider.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
+            var codeCommitRepositories = await awsCodeCommit.GetRemoteRepositoriesAsync(Account, SelectedRegion);
 
-            return SortAndOrder(repositoryMetadata.Select(metadata => new CodeCommitRepository(metadata)));
+            return SortAndOrder(codeCommitRepositories);
         }
 
         /// <summary>

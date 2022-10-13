@@ -211,7 +211,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                 {
                     if (IsAccountValid)
                     {
-                        validRepos.AddRange(await CodeCommitPlugin.GetRepositories(Account, repoPaths));
+                        validRepos.AddRange(await CodeCommitPlugin.GetRepositoriesAsync(Account, repoPaths));
                     }
 
                     await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();

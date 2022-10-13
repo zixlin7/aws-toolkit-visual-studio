@@ -18,6 +18,7 @@ using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
+using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
@@ -155,7 +156,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             return region;
         }
 
-        public async Task<IEnumerable<ICodeCommitRepository>> GetRepositories(AccountViewModel account, IEnumerable<string> pathsToRepositories)
+        public async Task<IEnumerable<ICodeCommitRepository>> GetRepositoriesAsync(AccountViewModel account, IEnumerable<string> pathsToRepositories)
         {
             if (account == null)
             {
@@ -186,6 +187,15 @@ namespace Amazon.AWSToolkit.CodeCommit
             return validRepositories
                 .OrderBy(x => x.Name)
                 .ThenBy(x => x.LocalFolder);
+        }
+
+        public async Task<IEnumerable<ICodeCommitRepository>> GetRemoteRepositoriesAsync(AccountViewModel account, ToolkitRegion region)
+        {
+            var client = account.CreateServiceClient<AmazonCodeCommitClient>(region);
+            var names = await client.ListRepositoryNames();
+            var metadata = await client.GetRepositoryMetadata(names);
+
+            return metadata.Select(md => new CodeCommitRepository(md));
         }
 
         private static async Task<IList<ICodeCommitRepository>> LoadLocalReposForRegion(
