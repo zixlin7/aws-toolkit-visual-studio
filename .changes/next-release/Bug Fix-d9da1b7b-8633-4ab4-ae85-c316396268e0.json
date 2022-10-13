@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fixed bug so that default location, if set in Options, is used when creating or cloning CodeCommit repos rather than always defaulting to %USERPROFILE%\\Source\\Repos."
-}
