@@ -364,7 +364,7 @@
     <PackageReference Include="AWSSDK.CloudWatchLogs">
       <Version>3.7.2.98</Version>
     </PackageReference>
-     <!-- TODO_FIX_BEFORE_CAWS_RELEASE: Replace with public build of CodeCatalyst NuGet package when available -->
+    <!-- TODO_FIX_BEFORE_CAWS_RELEASE: Replace with public build of CodeCatalyst NuGet package when available -->
     <PackageReference Include="AWSSDK.CodeCatalyst">
       <Version>3.7.130.0</Version>
     </PackageReference>

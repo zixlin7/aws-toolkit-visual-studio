@@ -157,7 +157,7 @@
 
             <TextBox 
                 Grid.Column="0"
-                Text="{Binding RepositoryPath}"
+                Text="{Binding LocalPath}"
                 Style="{DynamicResource awsTextBoxStyle}" />
             <Button 
                 Grid.Column="1"
@@ -179,13 +179,12 @@
             Grid.Column="2"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
-        <Button>
-            Clone
-        </Button>
-
-        <Button>
-            Cancel
-        </Button>
+            <Button
+                IsDefault="True"
+                Command="{Binding SubmitDialogCommand}">
+                Clone
+            </Button>
+            <Button IsCancel="True">Cancel</Button>
         </StackPanel>
 
     </Grid>

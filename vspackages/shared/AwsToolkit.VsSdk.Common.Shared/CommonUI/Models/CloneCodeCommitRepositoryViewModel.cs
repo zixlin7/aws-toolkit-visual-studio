@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
@@ -52,17 +53,19 @@ namespace CommonUI.Models
 
         public ObservableCollection<ICodeCommitRepository> Repositories { get; }
 
-        private string _repositoryPath;
+        private string _localPath;
 
-        public string RepositoryPath
+        public string LocalPath
         {
-            get => _repositoryPath;
-            set => SetProperty(ref _repositoryPath, value);
+            get => _localPath;
+            set => SetProperty(ref _localPath, value);  // TODO - Shore up path validation (on each change, not leaving control) and handling in IDE-8848
         }
 
         public ICommand BrowseForRepositoryPathCommand { get; }
 
-        public CloneCodeCommitRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory)
+        public ICommand SubmitDialogCommand { get; }
+
+        public CloneCodeCommitRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory, Action<object> executeSubmitDialogCommand)
         {
             _toolkitContext = toolkitContext;
             _joinableTaskFactory = joinableTaskFactory;
@@ -76,6 +79,7 @@ namespace CommonUI.Models
             RefreshAccounts();
 
             BrowseForRepositoryPathCommand = new RelayCommand(ExecuteBrowseForRepositoryPathCommand);
+            SubmitDialogCommand = new RelayCommand(CanExecuteSubmitDialogCommand, executeSubmitDialogCommand);
         }
 
         private void CloneCodeCommitRepositoryViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -95,12 +99,17 @@ namespace CommonUI.Models
         {
             var dlg = _toolkitContext.ToolkitHost.GetDialogFactory().CreateFolderBrowserDialog();
             dlg.Title = "Select folder to clone repository to";
-            dlg.FolderPath = RepositoryPath;
+            dlg.FolderPath = LocalPath;
 
             if (dlg.ShowModal())
             {
-                RepositoryPath = dlg.FolderPath;
+                LocalPath = dlg.FolderPath;
             }
+        }
+
+        private bool CanExecuteSubmitDialogCommand(object parameter)
+        {
+            return !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
         }
 
         private void RefreshAccounts()

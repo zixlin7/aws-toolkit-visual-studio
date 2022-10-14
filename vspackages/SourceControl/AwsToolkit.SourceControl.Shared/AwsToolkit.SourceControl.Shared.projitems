@@ -8,4 +8,9 @@
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>Amazon.AwsToolkit.SourceControl</Import_RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeContainerProviders\BaseGitCodeContainerProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeContainerProviders\CodeCommitCodeContainerProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Git.cs" />
+  </ItemGroup>
 </Project>

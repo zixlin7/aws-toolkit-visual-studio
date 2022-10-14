@@ -44,7 +44,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                 TeamExplorerConnection.ActiveConnection.RegisterCredentials(gitCredentials);
 
                 // note that in 2017, this service is also directly obtainable from HostPackage.GetVSShellService
-                var gitExt = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IGitActionsExt>();
+                var gitExt = await ToolkitFactory.Instance.ShellProvider.QueryShellProviderServiceAsync<IGitActionsExt>();
                 var progress = new Progress<Microsoft.VisualStudio.Shell.ServiceProgressData>();
 
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
