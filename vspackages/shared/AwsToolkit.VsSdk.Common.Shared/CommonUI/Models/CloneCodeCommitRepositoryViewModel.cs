@@ -21,6 +21,9 @@ namespace CommonUI.Models
 {
     internal class CloneCodeCommitRepositoryViewModel : BaseModel
     {
+        // TODO - Update to appropriate help page once written, see IDE-8830
+        private const string HelpUri = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/using-aws-codecommit-with-team-explorer.html";
+
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
 
@@ -65,6 +68,8 @@ namespace CommonUI.Models
 
         public ICommand SubmitDialogCommand { get; }
 
+        public ICommand HelpCommand { get; }
+
         public CloneCodeCommitRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory, Action<object> executeSubmitDialogCommand)
         {
             _toolkitContext = toolkitContext;
@@ -80,6 +85,7 @@ namespace CommonUI.Models
 
             BrowseForRepositoryPathCommand = new RelayCommand(ExecuteBrowseForRepositoryPathCommand);
             SubmitDialogCommand = new RelayCommand(CanExecuteSubmitDialogCommand, executeSubmitDialogCommand);
+            HelpCommand = new RelayCommand(ExecuteHelpCommand);
         }
 
         private void CloneCodeCommitRepositoryViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -110,6 +116,11 @@ namespace CommonUI.Models
         private bool CanExecuteSubmitDialogCommand(object parameter)
         {
             return !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
+        }
+
+        public void ExecuteHelpCommand(object parameter)
+        {
+            _toolkitContext.ToolkitHost.OpenInBrowser(HelpUri, false);
         }
 
         private void RefreshAccounts()

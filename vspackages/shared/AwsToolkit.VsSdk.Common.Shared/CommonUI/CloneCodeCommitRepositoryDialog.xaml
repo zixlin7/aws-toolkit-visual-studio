@@ -59,9 +59,10 @@
         <TextBlock 
             Grid.Row="1" 
             Grid.ColumnSpan="3">
-            <commonUi:BrowserHyperLink>
+            <commonUi:BrowserHyperLink
+                NavigateUri="https://aws.amazon.com/codecommit/">
                 <Run Text="Learn more about AWS CodeCommit" />
-            </commonUi:BrowserHyperLink>
+            </commonUi:BrowserHyperLink>            
         </TextBlock>
 
         <Label
@@ -170,7 +171,8 @@
         <Button
             Grid.Row="10"
             Grid.Column="0"
-            HorizontalAlignment="Left">
+            HorizontalAlignment="Left"
+            Command="{Binding HelpCommand}">
             Help
         </Button>
 
