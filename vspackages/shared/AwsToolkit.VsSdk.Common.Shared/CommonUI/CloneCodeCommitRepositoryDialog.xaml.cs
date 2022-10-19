@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Windows;
+using System.Windows.Input;
 
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.CodeCommit.Interface;
-using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
 
@@ -28,8 +27,18 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
             InitializeComponent();
 
+            // No window chrome, have to support moving the window ourselves
+            MouseDown += (sender, e) =>
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    DragMove();
+                }
+            };
+
             DataContext = _viewModel;
 
+            // This is needed for CredentialsSelector until it is replaced with a modern approach (see CredentialIdentitySelector)
             ThemeUtil.UpdateDictionariesForTheme(Resources);
         }
 
@@ -41,7 +50,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
         public new bool Show()
         {
-            if (ShowDialog() != true)
+            if (ShowModal() != true)
             {
                 return false;
             }
@@ -57,8 +66,9 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             RepositoryName = _viewModel.SelectedRepository.Name;
             RemoteUri = new UriBuilder(_viewModel.SelectedRepository.RepositoryUrl)
             {
-                UserName = gitCreds.Username,
-                Password = gitCreds.Password
+                // See https://github.com/dotnet/runtime/issues/74662 for why we Uri.EscapeDataString username/password
+                UserName = Uri.EscapeDataString(gitCreds.Username),
+                Password = Uri.EscapeDataString(gitCreds.Password)
             }.Uri;
 
             return true;
