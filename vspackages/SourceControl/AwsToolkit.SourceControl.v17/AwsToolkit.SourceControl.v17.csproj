@@ -73,9 +73,9 @@
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeDotAws.Interface\AWSToolkit.CodeDotAws.Interface.csproj">
+    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj">
       <Project>{dbdb8299-3efb-4a02-a34e-7bfb98ce3169}</Project>
-      <Name>AWSToolkit.CodeDotAws.Interface</Name>
+      <Name>AWSToolkit.CodeCatalyst.Interface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\AwsToolkit.SourceControl.Shared\AwsToolkit.SourceControl.Shared.projitems" Label="Shared" />

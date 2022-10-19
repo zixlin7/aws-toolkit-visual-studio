@@ -11,8 +11,8 @@
     <ProjectGuid>{5465C047-5A2E-424F-9961-3CA4DEC2C2CC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Amazon.AWSToolkit.CodeDotAws</RootNamespace>
-    <AssemblyName>AWSToolkit.CodeDotAws</AssemblyName>
+    <RootNamespace>Amazon.AWSToolkit.CodeCatalyst</RootNamespace>
+    <AssemblyName>AWSToolkit.CodeCatalyst</AssemblyName>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,9 +57,9 @@
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AWSToolkit.CodeDotAws.Interface\AWSToolkit.CodeDotAws.Interface.csproj">
+    <ProjectReference Include="..\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj">
       <Project>{dbdb8299-3efb-4a02-a34e-7bfb98ce3169}</Project>
-      <Name>AWSToolkit.CodeDotAws.Interface</Name>
+      <Name>AWSToolkit.CodeCatalyst.Interface</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

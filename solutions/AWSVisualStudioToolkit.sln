@@ -28,9 +28,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFront.Interface", "..\toolkitcore\plugins\AWSToolkit.CloudFront.Interface\AWSToolkit.CloudFront.Interface.csproj", "{C4042C0E-20B3-40C3-9CD1-D4FB2CA84FD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeDotAws.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeDotAws.Interface\AWSToolkit.CodeDotAws.Interface.csproj", "{DBDB8299-3EFB-4A02-A34E-7BFB98CE3169}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCatalyst.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj", "{DBDB8299-3EFB-4A02-A34E-7BFB98CE3169}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeDotAws", "..\toolkitcore\plugins\AWSToolkit.CodeDotAws\AWSToolkit.CodeDotAws.csproj", "{5465C047-5A2E-424F-9961-3CA4DEC2C2CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCatalyst", "..\toolkitcore\plugins\AWSToolkit.CodeCatalyst\AWSToolkit.CodeCatalyst.csproj", "{5465C047-5A2E-424F-9961-3CA4DEC2C2CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.DynamoDB.Interface", "..\toolkitcore\plugins\AWSToolkit.DynamoDB.Interface\AWSToolkit.DynamoDB.Interface.csproj", "{59D6F9BE-5344-496A-9E03-A2A0020DAAC4}"
 EndProject
