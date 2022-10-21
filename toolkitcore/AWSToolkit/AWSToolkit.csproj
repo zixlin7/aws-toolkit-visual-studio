@@ -100,6 +100,7 @@
     </Compile>
     <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePickerViewModel.cs" />
     <Compile Include="CommonUI\DateTimeRangePicker\TimeInputViewModel.cs" />
+    <Compile Include="CommonUI\Dialogs\ICloneCodeCatalystRepositoryDialog.cs" />
     <Compile Include="CommonUI\Dialogs\ICloneCodeCommitRepositoryDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IFolderBrowserDialog.cs" />
     <Compile Include="CommonUI\DualListBox.cs" />

@@ -140,6 +140,9 @@
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
       <Version>1.0.76</Version>
     </PackageReference>
+    <PackageReference Include="AWSSDK.XRay">
+      <Version>3.7.0.203</Version>
+    </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
     </PackageReference>
