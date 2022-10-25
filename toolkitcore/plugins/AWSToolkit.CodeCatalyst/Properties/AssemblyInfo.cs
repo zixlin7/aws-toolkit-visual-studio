@@ -1,5 +1,10 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+using Amazon.AWSToolkit;
+using Amazon.AWSToolkit.CodeCatalyst;
+using Amazon.AWSToolkit.PluginServices.Activators;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -13,3 +18,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("5465c047-5a2e-424f-9961-3ca4dec2c2cc")]
+
+[assembly: InternalsVisibleTo("AWSToolkit.Tests, PublicKey=" + ToolkitGlobalConstants.StrongNamePublicKey)]
+
+[assembly: PluginActivatorType(typeof(CodeCatalystPluginActivator))]

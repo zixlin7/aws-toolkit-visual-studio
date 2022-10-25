@@ -27,5 +27,10 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         {
             return new ToolkitRegion { Id = "us-west-2", DisplayName = "US West (Oregon)", PartitionId = "aws" };
         }
+
+        public static AwsConnectionSettings CreateAwsConnectionSettings()
+        {
+            return new AwsConnectionSettings(CreateCredentialIdentifier(), CreateUsWestRegion());
+        }
     }
 }

@@ -84,6 +84,11 @@
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
     <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
+    <Compile Include="CodeCatalyst\CodeCatalystPluginServiceTests.cs" />
+    <Compile Include="CodeCatalyst\Models\CodeCatalystAccessTokenTests.cs" />
+    <Compile Include="CodeCatalyst\Models\CodeCatalystProjectTests.cs" />
+    <Compile Include="CodeCatalyst\Models\CodeCatalystRepositoryTests.cs" />
+    <Compile Include="CodeCatalyst\Models\CodeCatalystSpaceTests.cs" />
     <Compile Include="Commands\ShowExceptionAndForgetCommandTests.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommandTests.cs" />
     <Compile Include="CommonUI\AccountAndRegionPickerViewModelTests.cs" />
@@ -264,6 +269,14 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
       <Project>{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}</Project>
       <Name>AWSToolkit.CodeArtifact</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj">
+      <Project>{dbdb8299-3efb-4a02-a34e-7bfb98ce3169}</Project>
+      <Name>AWSToolkit.CodeCatalyst.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst\AWSToolkit.CodeCatalyst.csproj">
+      <Project>{5465c047-5a2e-424f-9961-3ca4dec2c2cc}</Project>
+      <Name>AWSToolkit.CodeCatalyst</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
       <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>

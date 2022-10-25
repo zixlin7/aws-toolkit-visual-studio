@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Moq;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Tests.Common.Context
 {
@@ -74,8 +75,19 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public void SetupCreateServiceClient<TServiceClient>(TServiceClient client) where TServiceClient : class
         {
             ServiceClientManager.Setup(mock => mock.CreateServiceClient<TServiceClient>(
-                    It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
+                It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
                 .Returns(client);
+
+            ServiceClientManager.Setup(mock => mock.CreateServiceClient<TServiceClient>(
+                It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>(), It.IsAny<ClientConfig>()))
+                .Returns(client);
+        }
+
+        public void SetupGetToolkitCredentials(ToolkitCredentials credentials)
+        {
+            CredentialManager.Setup(
+                mock => mock.GetToolkitCredentials(It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
+                .Returns<ICredentialIdentifier, ToolkitRegion>((credentialId, region) => credentials);
         }
 
         public void DefineCredentialIdentifiers(IEnumerable<ICredentialIdentifier> credentialIdentifiers)

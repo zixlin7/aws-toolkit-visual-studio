@@ -36,6 +36,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="IAWSCodeCatalyst.cs" />
+    <Compile Include="Models\ICodeCatalystAccessToken.cs" />
+    <Compile Include="Models\ICodeCatalystRepository.cs" />
+    <Compile Include="Models\ICodeCatalystSpace.cs" />
+    <Compile Include="Models\ICodeCatalystProject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
