@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using Amazon.AWSToolkit;
+
 using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.PluginServices.Activators;
 
@@ -20,5 +21,7 @@ using Amazon.AWSToolkit.PluginServices.Activators;
 [assembly: Guid("5465c047-5a2e-424f-9961-3ca4dec2c2cc")]
 
 [assembly: InternalsVisibleTo("AWSToolkit.Tests, PublicKey=" + ToolkitGlobalConstants.StrongNamePublicKey)]
+[assembly: InternalsVisibleTo("AwsToolkit.Vs.v16.Tests, PublicKey=" + ToolkitGlobalConstants.StrongNamePublicKey)]
+[assembly: InternalsVisibleTo("AwsToolkit.Vs.v17.Tests, PublicKey=" + ToolkitGlobalConstants.StrongNamePublicKey)]
 
 [assembly: PluginActivatorType(typeof(CodeCatalystPluginActivator))]

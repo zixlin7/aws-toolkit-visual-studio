@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ecr\RepositoryFactoryFixture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lambda.TemplateWizards\ProjectCreatorUtilitiesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\CloneCodeCatalystRepositoryViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\IamRoleSelectionViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\InstanceTypeSelectionViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\KeyValueEditorViewModelTests.cs" />
@@ -20,8 +21,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\VsKnownImagesTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\ImageThemeConverterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\IVsMonitorSelectionExtensionMethodsTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)SourceControl\" />
   </ItemGroup>
 </Project>
