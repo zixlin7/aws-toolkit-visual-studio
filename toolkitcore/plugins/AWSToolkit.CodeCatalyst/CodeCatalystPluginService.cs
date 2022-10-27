@@ -114,7 +114,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             //};
             //var patRes = await client.CreateAccessTokenAsync(patReq);
 
-            return Task.FromResult((new List<ICodeCatalystAccessToken>() { new CodeCatalystAccessToken(null, "xxxxx", DateTime.Now) }).AsEnumerable());
+            return Task.FromResult((new List<ICodeCatalystAccessToken>() { new CodeCatalystAccessToken("awsId:default", "replace me with a PAT for testing until IDE-8983", DateTime.Now) }).AsEnumerable());
         }
 
         private async Task<CloneUrls> GetCloneUrlsAsync(string spaceName, string projectName, string repoName, AwsConnectionSettings settings)

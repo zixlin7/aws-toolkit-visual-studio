@@ -18,7 +18,6 @@ using Amazon.AWSToolkit.Tasks;
 
 using Microsoft.VisualStudio.Threading;
 
-// PR??? - None of the models in the Models folder have the AwsToolkit.VsSdk.Common prefix on the namespace.  Do we want to fix this in a subsequent PR?
 namespace CommonUI.Models
 {
     internal class CloneCodeCatalystRepositoryViewModel : BaseModel

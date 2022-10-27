@@ -185,11 +185,19 @@ This software includes third party software subject to the following copyrights:
   </data>
   <data name="200" xml:space="preserve">
     <value>AWS CodeCommit</value>
-    <comment>Git clone repository provider name</comment>
+    <comment>Git clone repository provider name for CodeCommit</comment>
   </data>
   <data name="201" xml:space="preserve">
     <value>Securely host highly scalable private Git repositories. Collaborate on code.</value>
-    <comment>Git clone repository provider tooltip</comment>
+    <comment>Git clone repository provider tooltip for CodeCommit</comment>
+  </data>
+  <data name="210" xml:space="preserve">
+    <value>Amazon CodeCatalyst</value>
+    <comment>Git clone repository provider name for CodeCatalyst</comment>
+  </data>
+  <data name="211" xml:space="preserve">
+    <value>Put Catalyst tag line here.</value>
+    <comment>Git clone repository provider tooltip for CodeCatalyst</comment>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="301" type="System.Resources.ResXFileRef, System.Windows.Forms">

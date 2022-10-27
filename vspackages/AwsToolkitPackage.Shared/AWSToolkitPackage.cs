@@ -160,6 +160,14 @@ namespace Amazon.AWSToolkit.VisualStudio
         displayNameResourceId: "#200", // See AWSToolkitPackage.resx
         displayDetailResourceId: "#201", // See AWSToolkitPackage.resx
         typeof(CodeCommitCodeContainerProvider))]
+    [ProvideCodeContainerProvider(
+        registeredName: nameof(CodeCatalystCodeContainerProvider),
+        displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
+        imageMonikerGuid: GuidList.VsImageCatalog.ImageCatalogGuidString,
+        imageMonikerId: 1027, // TODO - IDE-8851
+        displayNameResourceId: "#210", // See AWSToolkitPackage.resx
+        displayDetailResourceId: "#211", // See AWSToolkitPackage.resx
+        typeof(CodeCatalystCodeContainerProvider))]
 
     public sealed class AWSToolkitPackage : ProjectAsyncPackage, 
                                             IVsInstalledProduct, 
@@ -2748,6 +2756,11 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (instance == typeof(CodeCommitCodeContainerProvider).GUID)
                 {
                     return new CodeCommitCodeContainerProvider(_toolkitContext, this);
+                }
+
+                if (instance == typeof(CodeCatalystCodeContainerProvider).GUID)
+                {
+                    return new CodeCatalystCodeContainerProvider(_toolkitContext, this);
                 }
             }
 
