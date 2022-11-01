@@ -489,7 +489,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             {
                 if (credentialTargets != null)
                 {
-                    var svcCredentials = account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
+                    var svcCredentials = account.GetCredentialsForService(ServiceNames.CodeCommit);
 
                     foreach (var target in credentialTargets)
                     {

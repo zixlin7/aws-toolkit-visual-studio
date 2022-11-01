@@ -9,6 +9,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 
@@ -105,7 +106,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 
                 var repository = codeCommitPlugin.GetRepository(newRepositoryInfo.Name, newRepositoryInfo.OwnerAccount, newRepositoryInfo.Region);
 
-                var svcCredentials = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
+                var svcCredentials = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceNames.CodeCommit);
 
                 phase = "clone";
                 await CloneAsync(svcCredentials, repository.RepositoryUrl, newRepositoryInfo.LocalFolder, "create");

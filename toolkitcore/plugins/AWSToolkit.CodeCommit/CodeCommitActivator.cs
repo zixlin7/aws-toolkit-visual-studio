@@ -57,7 +57,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             ServiceSpecificCredentialStore
                 .Instance
                 .SaveCredentialsForService(profileArtifactsId,
-                    ServiceSpecificCredentialStore.CodeCommitServiceName,
+                    ServiceNames.CodeCommit,
                     userName,
                     password);
         }
@@ -68,7 +68,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                 ServiceSpecificCredentialStore
                     .Instance
                     .GetCredentialsForService(profileArtifactsId,
-                        ServiceSpecificCredentialStore.CodeCommitServiceName);
+                        ServiceNames.CodeCommit);
         }
 
         public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account,
@@ -82,7 +82,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                 svcCredentials = ServiceSpecificCredentialStore
                                     .Instance
                                     .GetCredentialsForService(account.SettingsUniqueKey,
-                                        ServiceSpecificCredentialStore.CodeCommitServiceName);
+                                        ServiceNames.CodeCommit);
 
                 if (svcCredentials != null)
                 {
