@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Util;
 using log4net;
 
@@ -90,7 +92,7 @@ namespace Amazon.AWSToolkit.Account.Model
         {
             ServiceSpecificCredentialStore
                 .Instance
-                .SaveCredentialsForService(accountKey, ServiceSpecificCredentialStore.CodeCommitServiceName, credentials);
+                .SaveCredentialsForService(accountKey, ServiceNames.CodeCommit, credentials);
             return true;
         }
 

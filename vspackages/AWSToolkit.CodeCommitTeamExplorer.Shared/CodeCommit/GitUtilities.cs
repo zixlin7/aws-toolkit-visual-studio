@@ -9,6 +9,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 
@@ -44,7 +45,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                 TeamExplorerConnection.ActiveConnection.RegisterCredentials(gitCredentials);
 
                 // note that in 2017, this service is also directly obtainable from HostPackage.GetVSShellService
-                var gitExt = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IGitActionsExt>();
+                var gitExt = await ToolkitFactory.Instance.ShellProvider.QueryShellProviderServiceAsync<IGitActionsExt>();
                 var progress = new Progress<Microsoft.VisualStudio.Shell.ServiceProgressData>();
 
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
@@ -105,7 +106,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 
                 var repository = codeCommitPlugin.GetRepository(newRepositoryInfo.Name, newRepositoryInfo.OwnerAccount, newRepositoryInfo.Region);
 
-                var svcCredentials = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
+                var svcCredentials = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceNames.CodeCommit);
 
                 phase = "clone";
                 await CloneAsync(svcCredentials, repository.RepositoryUrl, newRepositoryInfo.LocalFolder, "create");

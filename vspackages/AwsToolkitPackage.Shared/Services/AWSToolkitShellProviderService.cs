@@ -8,7 +8,6 @@ using System.Windows.Interop;
 
 using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
@@ -418,16 +417,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public T QueryShellProviderService<T>() where T : class
         {
-            var svc = this as T;
-            if (svc != null)
-                return svc;
+            return
+                this as T ??
+                _hostPackage as T ??
+                _hostPackage.GetVSShellService(typeof(T)) as T;
+        }
 
-            var hostSvc = _hostPackage as T;
-            if (hostSvc != null)
-                return hostSvc;
-
-            // last gasp try and get from the VS shell
-            return _hostPackage.GetVSShellService(typeof(T)) as T;
+        public async Task<T> QueryShellProviderServiceAsync<T>() where T : class
+        {
+            return
+                this as T ??
+                _hostPackage as T ??
+                await _hostPackage.GetVSShellServiceAsync(typeof(T)) as T;
         }
 
         public object QueryAWSToolkitPluginService(Type pluginServiceType)

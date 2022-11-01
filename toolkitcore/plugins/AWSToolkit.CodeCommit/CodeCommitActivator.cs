@@ -18,6 +18,7 @@ using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
+using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
@@ -56,7 +57,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             ServiceSpecificCredentialStore
                 .Instance
                 .SaveCredentialsForService(profileArtifactsId,
-                    ServiceSpecificCredentialStore.CodeCommitServiceName,
+                    ServiceNames.CodeCommit,
                     userName,
                     password);
         }
@@ -67,7 +68,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                 ServiceSpecificCredentialStore
                     .Instance
                     .GetCredentialsForService(profileArtifactsId,
-                        ServiceSpecificCredentialStore.CodeCommitServiceName);
+                        ServiceNames.CodeCommit);
         }
 
         public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account,
@@ -81,7 +82,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                 svcCredentials = ServiceSpecificCredentialStore
                                     .Instance
                                     .GetCredentialsForService(account.SettingsUniqueKey,
-                                        ServiceSpecificCredentialStore.CodeCommitServiceName);
+                                        ServiceNames.CodeCommit);
 
                 if (svcCredentials != null)
                 {
@@ -155,7 +156,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             return region;
         }
 
-        public async Task<IEnumerable<ICodeCommitRepository>> GetRepositories(AccountViewModel account, IEnumerable<string> pathsToRepositories)
+        public async Task<IEnumerable<ICodeCommitRepository>> GetRepositoriesAsync(AccountViewModel account, IEnumerable<string> pathsToRepositories)
         {
             if (account == null)
             {
@@ -186,6 +187,15 @@ namespace Amazon.AWSToolkit.CodeCommit
             return validRepositories
                 .OrderBy(x => x.Name)
                 .ThenBy(x => x.LocalFolder);
+        }
+
+        public async Task<IEnumerable<ICodeCommitRepository>> GetRemoteRepositoriesAsync(AccountViewModel account, ToolkitRegion region)
+        {
+            var client = account.CreateServiceClient<AmazonCodeCommitClient>(region);
+            var names = await client.ListRepositoryNames();
+            var metadata = await client.GetRepositoryMetadata(names);
+
+            return metadata.Select(md => new CodeCommitRepository(md));
         }
 
         private static async Task<IList<ICodeCommitRepository>> LoadLocalReposForRegion(

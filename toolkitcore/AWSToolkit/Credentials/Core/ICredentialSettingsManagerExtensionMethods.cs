@@ -23,6 +23,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     return CredentialType.Undefined;
                 }
 
+                if (@this == null)
+                {
+                    return CredentialType.Unknown;
+                }
+
                 return @this.GetProfileProperties(credentialIdentifier).GetCredentialType();
             }
             catch (Exception ex)

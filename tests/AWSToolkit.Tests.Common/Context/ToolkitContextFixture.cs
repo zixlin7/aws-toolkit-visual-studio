@@ -10,6 +10,8 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Moq;
+using Amazon.Runtime;
+using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.Tests.Common.Context
 {
@@ -28,9 +30,12 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public Mock<IAwsServiceClientManager> ServiceClientManager { get; } = new Mock<IAwsServiceClientManager>();
         public Mock<ITelemetryLogger> TelemetryLogger => TelemetryFixture.TelemetryLogger;
         public Mock<IAWSToolkitShellProvider> ToolkitHost { get; } = new Mock<IAWSToolkitShellProvider>();
+        public Mock<IDialogFactory> DialogFactory { get; } = new Mock<IDialogFactory>();
 
         public ToolkitContextFixture()
         {
+            ToolkitHost.Setup(mock => mock.GetDialogFactory()).Returns(DialogFactory.Object);
+
             ToolkitContext = new ToolkitContext()
             {
                 CredentialManager = CredentialManager.Object,
@@ -74,8 +79,19 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public void SetupCreateServiceClient<TServiceClient>(TServiceClient client) where TServiceClient : class
         {
             ServiceClientManager.Setup(mock => mock.CreateServiceClient<TServiceClient>(
-                    It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
+                It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
                 .Returns(client);
+
+            ServiceClientManager.Setup(mock => mock.CreateServiceClient<TServiceClient>(
+                It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>(), It.IsAny<ClientConfig>()))
+                .Returns(client);
+        }
+
+        public void SetupGetToolkitCredentials(ToolkitCredentials credentials)
+        {
+            CredentialManager.Setup(
+                mock => mock.GetToolkitCredentials(It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
+                .Returns<ICredentialIdentifier, ToolkitRegion>((credentialId, region) => credentials);
         }
 
         public void DefineCredentialIdentifiers(IEnumerable<ICredentialIdentifier> credentialIdentifiers)

@@ -102,7 +102,28 @@ The AWS .NET SDK’s NuGet packages are referenced from multiple locations acros
 
 Plugins are a way to provide the Toolkit with functionality for an AWS Service. Plugins are commonly used to add nodes into the AWS Explorer, and to provide service abstractions.
 
-(TODO: write up how to create a plugin and register it with the VSIX at a later time)
+When creating plugins, or any new projects, try to do as much as possible through Visual Studio itself rather than directly editing files in an editor to reduce the likelihood of unintended side-effects.
+
+1. In the solution folder ToolkitCore\PluginInterfaces, create a new Class Library (.NET Framework) as AWSToolkit.[plugin name].Interface in the .\toolkitcore\plugins folder.
+1. Remove Class1.cs
+1. Edit Properties\AssemblyInfo.cs to strip out everything except AssemblyTitle, ComVisible, and Guid.
+1. Save then unload the project and open another recent plugin interface project. Compare the csproj files.  Update the new csproj file to be similar to the existing one.
+1. Save and reload the projects.  As a sanity check, compare all tabs of the project properties to look for anything that doesn't appear similar.
+1. Set the default namespace to something more inline with the other namespaces of the peer projects.  Something like Amazon.AwsToolkit.MyShinyNewPlugin.  If you're creating a shared project for any reason, open the Properties tool window and change the "Root namespace".
+
+Do the same steps above for the non-interface plugin project in the ToolkitCore\Plugins solution folder.  
+
+NOTE:  As you shouldn't directly reference your plugin project anywhere and only the interface project where needed, you may have to move the project declarations in the AWSVisualStudioToolkit.sln file above the AWSToolkit.csproj declarations to ensure they're built in time to be
+packaged in the VSIX.  This will be obvious if you `msbuild buildtools\build.proj /t:build-vstoolkit` and get an error about your plugin/interface dlls not being found.  If you check the Deployment... output path, they will be there, but they weren't there when AWSToolkitPackage*
+was being built.
+
+Update the following files with your new plugin projects:
+
+.\vspackages\AWSToolkitPackage.v17\source.extension.vsixmanifest
+.\vspackages\manifests\15.0\source.extension.vsixmanifest
+.\vspackages\AwsToolkitPackage.Shared\ProjectReferences\Plugins.xml
+
+NOTE: The VSIX Manifest Editor only works when opening the source.extension.vsixmanifest file from within a solution.  If you attempt to open this file through Windows Explorer or the File/Open File... menu item in VS, it will only load in the XML Editor.
 
 To register a plugin with the Toolkit, add the assembly level attribute `PluginActivatorType` and indicate your plugin activator's type. This is typically placed in the plugin's `AssemblyInfo.cs` file. Look at any of the [existing plugins](./toolkitcore/plugins/AWSToolkit.S3/Properties/AssemblyInfo.cs) as an example.
 

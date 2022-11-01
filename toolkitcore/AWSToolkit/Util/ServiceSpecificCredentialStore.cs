@@ -10,21 +10,23 @@ namespace Amazon.AWSToolkit.Util
     public class ServiceSpecificCredentialStore
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ServiceSpecificCredentialStore));
-        private static readonly ServiceSpecificCredentialStore _instance = new ServiceSpecificCredentialStore();
 
-        public static readonly string CodeCommitServiceName = "codecommit";
-
-        private ServiceSpecificCredentialStore()
+        static ServiceSpecificCredentialStore()
         {
+            Instance = new ServiceSpecificCredentialStore();
         }
 
-        public static ServiceSpecificCredentialStore Instance => _instance;
+        private ServiceSpecificCredentialStore() { }
+
+        public static ServiceSpecificCredentialStore Instance { get; }
 
         public ServiceSpecificCredentials GetCredentialsForService(string accountArtifactsId, string serviceName)
         {
             var fullpath = ConstructArtifactsFilePath(accountArtifactsId, serviceName, false);
             if (!File.Exists(fullpath))
+            {
                 return null;
+            }
 
             string encryptedCredentials;
             using (var reader = new StreamReader(fullpath))
@@ -36,9 +38,9 @@ namespace Amazon.AWSToolkit.Util
             {
                 return ServiceSpecificCredentials.FromJson(encryptedCredentials);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.ErrorFormat("Failed to load {0} service credentials for account {1}, exception {2}", serviceName, accountArtifactsId, e);
+                LOGGER.ErrorFormat("Failed to load {0} service credentials for account {1}, exception {2}", serviceName, accountArtifactsId, ex);
                 throw;
             }
         }
@@ -65,9 +67,9 @@ namespace Amazon.AWSToolkit.Util
                     writer.Write(encryptedCredentials);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Failed to write credentials data to settings folder", e);
+                LOGGER.Error("Failed to write credentials data to settings folder", ex);
             }
 
             return serviceCredentials;
@@ -92,8 +94,7 @@ namespace Amazon.AWSToolkit.Util
         private static string ConstructArtifactsFilePath(string accountArtifactsId, string serviceName, bool autoCreate)
         {
             var accountLocation = GetDirectory(accountArtifactsId, autoCreate);
-            var fullpath = string.Format(@"{0}\{1}.encrypted", accountLocation, serviceName);
-            return fullpath;
+            return string.Format(@"{0}\{1}.encrypted", accountLocation, serviceName);
         }
 
         private static string GetDirectory(string accountArtifactsId, bool autoCreateFolder)
@@ -102,16 +103,18 @@ namespace Amazon.AWSToolkit.Util
             var location = string.Format(@"{0}\servicecredentials\{1}", settingsFolder, accountArtifactsId);
 
             if (!Directory.Exists(location) && autoCreateFolder)
+            {
                 Directory.CreateDirectory(location);
+            }
 
             return location;
         }
     }
 
-
     public class ServiceSpecificCredentials
     {
         public string Username { get; internal set; }
+
         public string Password { get; internal set; }
 
         internal string ToJson()
@@ -148,8 +151,7 @@ namespace Amazon.AWSToolkit.Util
         // we don't expect the csv file to fail to load
         public static ServiceSpecificCredentials FromCsvFile(string csvFile)
         {
-            string username, password;
-            RegisterServiceCredentialsModel.ImportCredentialsFromCsv(csvFile, out username, out password);
+            RegisterServiceCredentialsModel.ImportCredentialsFromCsv(csvFile, out string username, out string password);
             return new ServiceSpecificCredentials
             {
                 Username = username,
@@ -166,5 +168,4 @@ namespace Amazon.AWSToolkit.Util
             };
         }
     }
-
 }

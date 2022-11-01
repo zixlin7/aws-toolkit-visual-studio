@@ -186,6 +186,9 @@ namespace AWSToolkit.Tests.Credentials.Core
                 CredentialProfileTestHelper.Basic.Invalid.MissingSecretKey.Name,
                 CredentialProfileTestHelper.Basic.Invalid.TokenMissingSecretKey.Name,
                 CredentialProfileTestHelper.CredentialProcess.InvalidProfile.Name,
+                CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceDoesNotExist.Name,
+                CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoRegion.Name,
+                CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoStartUrl.Name,
             };
 
         [Theory]
@@ -213,6 +216,20 @@ namespace AWSToolkit.Tests.Credentials.Core
             Assert.Throws<ArgumentException>(() => GetFactory().CreateToolkitCredentials(identifier, SampleRegion));
         }
 
+        [Fact]
+        public void CreateToolkitCredentials_SsoSession_Valid()
+        {
+            var credentialId =
+                CreateCredentialIdentifier(CredentialProfileTestHelper.SsoSession.Valid.SdkResolvedSsoSessionReferencingProfile
+                    .Name);
+
+            var toolkitCredentials = GetFactory().CreateToolkitCredentials(credentialId, SampleRegion);
+
+            Assert.True(toolkitCredentials.Supports(AwsConnectionType.AwsToken));
+            Assert.False(toolkitCredentials.Supports(AwsConnectionType.AwsCredentials));
+            Assert.NotNull(toolkitCredentials.GetTokenProvider());
+        }
+
         private void SetupSampleProfiles()
         {
             SampleProfiles.Add(CredentialProfileTestHelper.Basic.Invalid.MissingAccessKey);
@@ -232,6 +249,14 @@ namespace AWSToolkit.Tests.Credentials.Core
             SampleProfiles.Add(CredentialProfileTestHelper.AssumeRole.Invalid.SourceProfile.Missing);
 
             SampleProfiles.Add(CredentialProfileTestHelper.Mfa.Valid.MfaReference);
+
+            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Valid.SsoSessionProfile);
+            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Valid.SdkResolvedSsoSessionReferencingProfile);
+            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceDoesNotExist);
+            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoRegion);
+            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionProfiles.MissingSsoRegion);
+            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoStartUrl);
+            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionProfiles.MissingSsoStartUrl);
 
             // By default, ProfileHolder returns profiles defined in SampleProfiles
             ProfileHolder.Setup(mock => mock.GetProfile(It.IsAny<string>()))

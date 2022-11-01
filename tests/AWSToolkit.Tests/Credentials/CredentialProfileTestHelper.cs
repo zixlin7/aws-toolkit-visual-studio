@@ -130,6 +130,16 @@ namespace AWSToolkit.Tests.Credentials
         {
             public static class Valid
             {
+                // This sample represents what the SDK hydrates when loading a profile
+                public static readonly CredentialProfile SdkResolvedSsoSessionReferencingProfile = new CredentialProfile("my_sso_bearer_session_from_sdk",
+                    new CredentialProfileOptions
+                    {
+                        SsoSession = "sso_bearer",
+                        SsoRegion = "sso-region",
+                        SsoStartUrl = "sso-url",
+                    });
+
+                // This sample represents a raw definition as it would appear in the file
                 public static readonly CredentialProfile SsoSessionReferencingProfile = new CredentialProfile("my_sso_bearer_session",
                     new CredentialProfileOptions
                     {
@@ -146,11 +156,45 @@ namespace AWSToolkit.Tests.Credentials
 
             public static class Invalid
             {
-                public static readonly CredentialProfile SsoSessionReferencingProfile = new CredentialProfile("my_sso",
-                    new CredentialProfileOptions
-                    {
-                        SsoSession = "sso_session_does_not_exist",
-                    });
+                public static class SsoSessionReferencingProfiles
+                {
+                    public static readonly CredentialProfile ProfileHasAdditionalSsoProperties = new CredentialProfile("my_sso_bearer_session_extra_props",
+                        new CredentialProfileOptions
+                        {
+                            SsoSession = "sso_bearer",
+                            SsoRegion = "sso-region",
+                            SsoStartUrl = "sso-url",
+                        });
+
+                    public static readonly CredentialProfile ReferenceDoesNotExist = new CredentialProfile("sso_session_reference_not_exist",
+                        new CredentialProfileOptions
+                        {
+                            SsoSession = "sso_session_does_not_exist",
+                        });
+
+                    public static readonly CredentialProfile ReferenceMissingSsoRegion = new CredentialProfile("sso_session_reference_missing_region",
+                        new CredentialProfileOptions
+                        {
+                            SsoSession = "missing_region",
+                        });
+
+                    public static readonly CredentialProfile ReferenceMissingSsoStartUrl = new CredentialProfile("sso_session_reference_missing_starturl",
+                        new CredentialProfileOptions
+                        {
+                            SsoSession = "missing_starturl",
+                        });
+                }
+
+                public static class SsoSessionProfiles
+                {
+                    public static readonly CredentialProfile MissingSsoRegion = new CredentialProfile(
+                        "sso-session missing_region",
+                        new CredentialProfileOptions { SsoStartUrl = "sso-url", });
+
+                    public static readonly CredentialProfile MissingSsoStartUrl = new CredentialProfile(
+                        "sso-session missing_starturl",
+                        new CredentialProfileOptions { SsoRegion = "sso-region", });
+                }
             }
         }
 

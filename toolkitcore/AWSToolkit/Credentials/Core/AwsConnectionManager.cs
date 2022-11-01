@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.AWSToolkit.Clients;
+
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
-using Amazon.SecurityToken;
-using Amazon.SecurityToken.Model;
-using Amazon.AWSToolkit.Regions;
-using Amazon.AWSToolkit.Settings;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.Credentials.Core
@@ -23,7 +22,6 @@ namespace Amazon.AWSToolkit.Credentials.Core
     {
         public event EventHandler<ConnectionSettingsChangeArgs> ConnectionSettingsChanged;
         public event EventHandler<ConnectionStateChangeArgs> ConnectionStateChanged;
-        public delegate AmazonSecurityTokenServiceClient GetStsClient(AWSCredentials awsCredentials, RegionEndpoint regionEndpoint);
 
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(AwsConnectionManager));
         private static readonly RegionEndpoint DefaultSTSClientRegion = RegionEndpoint.USEast1;
@@ -31,7 +29,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private readonly ITelemetryLogger _telemetryLogger;
         private readonly IRegionProvider _regionProvider;
         private readonly DebounceDispatcher _connectionChangedDispatcher;
-        private readonly GetStsClient _getStsClient;
+        private readonly IIdentityResolver _identityResolver;
         private readonly MruList<string> _recentCredentialIds = new MruList<string>(MaxMruLimit);
         private readonly MruList<string> _recentRegions = new MruList<string>(MaxMruLimit);
         private readonly object _tokenCancellationSyncLock = new object();
@@ -97,22 +95,40 @@ namespace Amazon.AWSToolkit.Credentials.Core
         }
 
         /// <summary>
-        /// Constructor
+        /// Primary class Constructor intended for use by Toolkit code
         /// </summary>
-        /// <param name="fnStsClient">Factory method used to produce STS Clients</param>
         /// <param name="credentialManager">Credential retrieval</param>
         /// <param name="regionProvider">Region resolution</param>
         /// <param name="telemetryLogger">Metrics logging</param>
         /// <param name="toolkitSettingsRepository">Repository for getting ToolkitSettings</param>
-        public AwsConnectionManager(GetStsClient fnStsClient,
+        public AwsConnectionManager(
+            ICredentialManager credentialManager,
+            ITelemetryLogger telemetryLogger,
+            IRegionProvider regionProvider,
+            IToolkitSettingsRepository toolkitSettingsRepository)
+            : this(new IdentityResolver(), credentialManager, telemetryLogger, regionProvider,
+                toolkitSettingsRepository)
+        {
+        }
+
+        /// <summary>
+        /// Overloaded Constructor used by tests
+        /// </summary>
+        /// <param name="identityResolver">Abstraction for querying the user identity for credentials</param>
+        /// <param name="credentialManager">Credential retrieval</param>
+        /// <param name="regionProvider">Region resolution</param>
+        /// <param name="telemetryLogger">Metrics logging</param>
+        /// <param name="toolkitSettingsRepository">Repository for getting ToolkitSettings</param>
+        public AwsConnectionManager(
+            IIdentityResolver identityResolver,
             ICredentialManager credentialManager,
             ITelemetryLogger telemetryLogger,
             IRegionProvider regionProvider,
             IToolkitSettingsRepository toolkitSettingsRepository)
         {
+            _identityResolver = identityResolver;
             _telemetryLogger = telemetryLogger;
             _connectionChangedDispatcher = new DebounceDispatcher();
-            _getStsClient = fnStsClient;
             CredentialManager = credentialManager;
             _regionProvider = regionProvider;
             _toolkitSettingsRepository = toolkitSettingsRepository;
@@ -219,15 +235,6 @@ namespace Amazon.AWSToolkit.Credentials.Core
         public void ChangeConnectionSettings(ICredentialIdentifier identifier, ToolkitRegion region)
         {
             UpdateConnectionAndNotify(identifier, true, region, true);
-        }
-
-        public static AmazonSecurityTokenServiceClient DefaultStsClientCreator(
-            AWSCredentials credentials,
-            RegionEndpoint endpoint)
-        {
-            return ServiceClientCreator.CreateServiceClient(
-                typeof(AmazonSecurityTokenServiceClient),
-                credentials, endpoint) as AmazonSecurityTokenServiceClient;
         }
 
         private void HandleCredentialChanged(object sender, CredentialChangeEventArgs args)
@@ -343,7 +350,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
                 if (credentials.Supports(AwsConnectionType.AwsToken))
                 {
-                    awsId = await GetAwsId(credentials, region, token);
+                    awsId = await GetAwsIdAsync(credentials, region, token);
                 }
 
                 var connectionState = new ConnectionState.ValidConnection(identifier, region);
@@ -378,6 +385,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     AwsAccount = string.IsNullOrEmpty(accountId) ? MetadataValue.NotSet : accountId,
                     AwsRegion = region.Id,
                     Result = validationResult,
+                    CredentialSourceId = CredentialSource.FromCredentialFactoryId(identifier?.FactoryId),
                     CredentialType = CredentialManager.CredentialSettingsManager
                         .GetCredentialType(identifier)
                         .AsTelemetryCredentialType(),
@@ -395,6 +403,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             if (!token.IsCancellationRequested && ActiveCredentialIdentifier == credentialsId && ActiveRegion == region)
             {
                 ActiveAccountId = accountId;
+                ActiveAwsId = awsId;
                 ActiveCredentials = credentials;
                 ConnectionState = connectionState;
             }
@@ -404,8 +413,6 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// Performs the deep validation check by making a call to sts:GetCallerIdentity
         /// and returns the account id retrieved from it
         /// </summary>
-        /// <param name="credentials"></param>
-        /// <param name="region"></param>
         private async Task<string> GetAccountId(AWSCredentials credentials, ToolkitRegion region, CancellationToken token)
         {
             if (_regionProvider.IsRegionLocal(region.Id))
@@ -415,20 +422,14 @@ namespace Amazon.AWSToolkit.Credentials.Core
             var stsRegion = string.IsNullOrEmpty(region.Id)
                 ? DefaultSTSClientRegion
                 : RegionEndpoint.GetBySystemName(region.Id);
-            var stsClient = _getStsClient(credentials, stsRegion);
-            if (token.IsCancellationRequested)
-            {
-                token.ThrowIfCancellationRequested();
-            }
 
-            var response = await stsClient.GetCallerIdentityAsync(new GetCallerIdentityRequest(), token);
-            return response.Account;
+            return await _identityResolver.GetAccountIdAsync(credentials, stsRegion, token);
         }
 
         /// <summary>
-        /// Token based credentials approach for looking up the AWS ID.
+        /// Token based credentials approach for looking up an AWS ID.
         /// </summary>
-        private async Task<string> GetAwsId(ToolkitCredentials credentials, ToolkitRegion region,
+        private async Task<string> GetAwsIdAsync(ToolkitCredentials credentials, ToolkitRegion region,
             CancellationToken token)
         {
             if (_regionProvider.IsRegionLocal(region.Id))
@@ -436,14 +437,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 return string.Empty;
             }
 
-            // TODO : Get client for looking up AwsId
-            if (token.IsCancellationRequested)
-            {
-                token.ThrowIfCancellationRequested();
-            }
-
-            // TODO : request AwsId
-            return string.Empty;
+            return await _identityResolver.GetAwsIdAsync(credentials.GetTokenProvider(), token);
         }
 
         private void RegisterHandlers()
