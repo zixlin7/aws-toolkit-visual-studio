@@ -24,7 +24,6 @@ using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Telemetry;
-using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
 
 using AWS.Deploy.ServerMode.Client;

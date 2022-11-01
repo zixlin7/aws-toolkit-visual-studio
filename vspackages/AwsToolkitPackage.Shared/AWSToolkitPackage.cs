@@ -173,6 +173,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         private SupportedVersionBarManager _supportedVersionBarManager;
         private DateTime _startInitializeOn;
         private IPublishSettingsRepository _publishSettingsRepository;
+        private ISettingsRepository<LoggingSettings> _loggingSettingsRepository;
 
         private OutputWindow _toolkitOutputWindow;
         private MetricsOutputWindow _metricsOutputWindow;
@@ -244,8 +245,12 @@ namespace Amazon.AWSToolkit.VisualStudio
             _startInitializeOn = DateTime.Now;
 
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
-            Utility.ConfigureLog4Net();
+            _loggingSettingsRepository = new FileSettingsRepository<LoggingSettings>();
 
+            this.JoinableTaskFactory.Run(async () =>
+            {
+               await Utility.ConfigureLog4NetAsync(_loggingSettingsRepository);
+            });
             AppDomain.CurrentDomain.AssemblyResolve += Utility.AssemblyResolveEventHandler;
 
             ToolkitSettings.Initialize();
@@ -615,11 +620,18 @@ namespace Amazon.AWSToolkit.VisualStudio
                     });
 
                 ToolkitFactory.SignalShellInitializationComplete();
+                RunLogCleanupAsync().LogExceptionAndForget();
             }
             finally
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        private async Task RunLogCleanupAsync()
+        {
+            await TaskScheduler.Default;
+            await Utility.CleanupLogFilesAsync(_loggingSettingsRepository);
         }
 
         private async Task<RegionProvider> CreateRegionProviderAsync(ITelemetryLogger telemetryLogger)
@@ -883,6 +895,14 @@ namespace Amazon.AWSToolkit.VisualStudio
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidSubmitFeedback,
+                    this)
+            );
+
+            tasks.Add(
+                 ViewToolkitLogsCommand.InitializeAsync(
+                    _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) PkgCmdIDList.cmdidViewToolkitLogs,
                     this)
             );
 

@@ -51,9 +51,12 @@
     <Compile Include="CollectionExtensionMethodsTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Regions\ServiceNamesTests.cs" />
+    <Compile Include="Settings\FileLoggingSettingsRepositoryTests.cs" />
+    <Compile Include="Settings\LoggingSettingsTests.cs" />
     <Compile Include="Telemetry\ClientIdTests.cs" />
     <Compile Include="Telemetry\MetricsMetadataTests.cs" />
     <Compile Include="Threading\ResettableCancellationTokenTests.cs" />
+    <Compile Include="UtilityTests.cs" />
     <Compile Include="Util\DateTimeUtilTests.cs" />
     <Compile Include="Events\LogExceptionAndForgetChangedHandlerTests.cs" />
     <Compile Include="IisPathTests.cs" />
@@ -99,6 +102,7 @@
     <Compile Include="Util\DisposingActionTests.cs" />
     <Compile Include="Util\FrameworkNameHelperTests.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
+    <Compile Include="Util\NumericLog4NetConverterTests.cs" />
     <Compile Include="Util\StringUtilsTests.cs" />
     <Compile Include="Util\ZipUtilTests.cs" />
   </ItemGroup>

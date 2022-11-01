@@ -380,6 +380,19 @@
           <ButtonText>Getting Started</ButtonText>
         </Strings>
       </Button>
+      
+      <Button guid="guid_VSPackageCmdSet" id="cmdidViewToolkitLogs" priority="0x0002" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Log" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.View.Toolkit.Logs</CommandName>
+          <ButtonText>View Toolkit Logs</ButtonText>
+        </Strings>
+      </Button>
 
       <Button guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001" type="Button">
         <Icon guid="ImageCatalogGuid" id="NewBug" />
@@ -654,6 +667,10 @@
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW" />
     </CommandPlacement>
 
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidViewToolkitLogs" priority="0x0003">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW" />
+    </CommandPlacement>
+
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT" />
     </CommandPlacement>
@@ -730,6 +747,7 @@
       <IDSymbol name="cmdidViewGettingStarted" value="0x0607" />
       <IDSymbol name="cmdidLinkToDotNetOnAws" value="0x0609" />
       <IDSymbol name="cmdidLinkToDotNetOnAwsCommunity" value="0x0611" />
+      <IDSymbol name="cmdidViewToolkitLogs" value="0x0612" />
       <!-- END Commands within the "AWS Toolkit" Menu -->
 
       <IDSymbol name="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" value="0x1000" />
