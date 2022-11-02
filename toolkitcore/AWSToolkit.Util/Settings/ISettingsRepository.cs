@@ -11,7 +11,7 @@ namespace Amazon.AWSToolkit.Settings
         /// <summary>
         /// Retrieves the settings from the repository, if not found returns the default value
         /// </summary>
-        Task<T> GetAsync(T defaultValue = null);
+        Task<T> GetOrDefaultAsync(T defaultValue = null);
 
         /// <summary>
         /// Saves the settings in the repository
