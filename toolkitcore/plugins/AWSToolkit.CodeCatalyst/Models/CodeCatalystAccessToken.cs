@@ -1,11 +1,14 @@
 ﻿using System;
 
+using Amazon.AWSToolkit.Util;
 using Amazon.CodeCatalyst.Model;
 
 namespace Amazon.AWSToolkit.CodeCatalyst.Models
 {
     internal class CodeCatalystAccessToken : ICodeCatalystAccessToken
     {
+        internal const string _defaultAccountArtifactsId = "c7d59288-8df0-490f-99c8-4c07f1d219c4";
+
         public string Name { get; }
 
         public string Secret { get; }
@@ -24,6 +27,9 @@ namespace Amazon.AWSToolkit.CodeCatalyst.Models
 
         internal CodeCatalystAccessToken(CreateAccessTokenResponse response)
             : this(response.Name, response.Secret, response.ExpiresTime) { }
+
+        internal CodeCatalystAccessToken(ServiceSpecificCredentials creds)
+            : this(creds.Username, creds.Password, creds.ExpiresOn.Value) { }
 
         protected bool Equals(CodeCatalystAccessToken other)
         {

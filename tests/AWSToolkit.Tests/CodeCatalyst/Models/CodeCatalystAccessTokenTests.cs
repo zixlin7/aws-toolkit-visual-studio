@@ -1,7 +1,9 @@
 ﻿using System;
 
 using Amazon.AWSToolkit.CodeCatalyst.Models;
+using Amazon.AWSToolkit.Util;
 using Amazon.CodeCatalyst.Model;
+using Amazon.IdentityManagement.Model;
 
 using Xunit;
 
@@ -39,6 +41,18 @@ namespace AWSToolkit.Tests.CodeCatalyst.Models
             };
 
             var sut = new CodeCatalystAccessToken(createAccessTokenResponse);
+
+            Assert.Equal(_name, sut.Name);
+            Assert.Equal(_secret, sut.Secret);
+            Assert.Equal(_expiresOn, sut.ExpiresOn);
+        }
+
+        [Fact]
+        public void PropertiesReflectCtorWithServiceSpecificCredentialsArgs()
+        {
+            var creds = new ServiceSpecificCredentials(_name, _secret, _expiresOn);
+
+            var sut = new CodeCatalystAccessToken(creds);
 
             Assert.Equal(_name, sut.Name);
             Assert.Equal(_secret, sut.Secret);

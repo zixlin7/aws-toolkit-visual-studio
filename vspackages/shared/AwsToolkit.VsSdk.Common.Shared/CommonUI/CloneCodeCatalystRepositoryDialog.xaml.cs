@@ -16,6 +16,8 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 {
     public partial class CloneCodeCatalystRepositoryDialog : DialogWindow, ICloneCodeCatalystRepositoryDialog
     {
+        private const string _defaultName = "aws-toolkits-vs-token";
+
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
         private readonly CloneCodeCatalystRepositoryViewModel _viewModel;
@@ -55,8 +57,11 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
             var codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
 
-            _joinableTaskFactory.Run(async () => {
-                var pat = (await codeCatalyst.GetAccessTokensAsync(_viewModel.ConnectionSettings)).FirstOrDefault();
+            _joinableTaskFactory.Run(async () =>
+            {
+                var pat = (await codeCatalyst.GetAccessTokensAsync(_viewModel.ConnectionSettings)).FirstOrDefault() ??
+                          (await codeCatalyst.CreateAccessTokenAsync(_defaultName, null, _viewModel.ConnectionSettings));
+
                 CloneUrl = await _viewModel.SelectedRepository.GetCloneUrlAsync(CloneUrlType.Https, pat);
             });
 

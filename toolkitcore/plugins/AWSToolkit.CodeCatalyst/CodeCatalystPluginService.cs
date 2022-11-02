@@ -8,7 +8,9 @@ using Amazon.AWSToolkit.CodeCatalyst.Models;
 using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Urls;
+using Amazon.AWSToolkit.Util;
 using Amazon.CodeCatalyst;
 using Amazon.CodeCatalyst.Model;
 
@@ -19,6 +21,8 @@ namespace Amazon.AWSToolkit.CodeCatalyst
     internal class CodeCatalystPluginService : IAWSCodeCatalyst
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(CodeCatalystPluginService));
+
+        private static readonly string _serviceName = ServiceNames.CodeCatalyst;
 
         private readonly ToolkitContext _toolkitContext;
 
@@ -104,17 +108,36 @@ namespace Amazon.AWSToolkit.CodeCatalyst
         {
             Arg.NotNull(settings, nameof(settings));
 
-            // TODO IDE-8983
-            //var client = GetCodeCatalystClient(settings);
+            var store = ServiceSpecificCredentialStore.Instance;
 
-            // Write a class(es) around getting access token from ServiceSpecificCredentialStore and fetching a new one after expiration
-            //var patReq = new CreateAccessTokenRequest()
-            //{
-            //    Name = "aws-toolkits-vs-token"
-            //};
-            //var patRes = await client.CreateAccessTokenAsync(patReq);
+            return Task.FromResult(
+                store.TryGetCredentialsForService(CodeCatalystAccessToken._defaultAccountArtifactsId, _serviceName, out ServiceSpecificCredentials creds) ?
+                new List<ICodeCatalystAccessToken>() { new CodeCatalystAccessToken(creds) } :
+                Enumerable.Empty<ICodeCatalystAccessToken>());
+        }
 
-            return Task.FromResult((new List<ICodeCatalystAccessToken>() { new CodeCatalystAccessToken("awsId:default", "replace me with a PAT for testing until IDE-8983", DateTime.Now) }).AsEnumerable());
+        public async Task<ICodeCatalystAccessToken> CreateAccessTokenAsync(string name, DateTime? expiresOn, AwsConnectionSettings settings)
+        {
+            Arg.NotNull(settings, nameof(settings));
+
+            var store = ServiceSpecificCredentialStore.Instance;
+
+            using (var client = GetCodeCatalystClient(settings))
+            {
+                var req = new CreateAccessTokenRequest() { Name = name };
+                if (expiresOn.HasValue)
+                {
+                    req.ExpiresTime = expiresOn.Value;
+                }
+                var res = await client.CreateAccessTokenAsync(req);
+                // TODO Remove assignment of name to response in line below once P74543357 has been resolved.
+                res.Name = name;
+                var token = new CodeCatalystAccessToken(res);
+
+                store.SaveCredentialsForService(CodeCatalystAccessToken._defaultAccountArtifactsId, _serviceName, token.Name, token.Secret, res.ExpiresTime);
+
+                return token;
+            }
         }
 
         private async Task<CloneUrls> GetCloneUrlsAsync(string spaceName, string projectName, string repoName, AwsConnectionSettings settings)

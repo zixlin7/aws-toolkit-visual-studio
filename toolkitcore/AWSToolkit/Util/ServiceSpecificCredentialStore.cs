@@ -1,5 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Net.Sockets;
+using System.Xml.Linq;
+
 using Amazon.AWSToolkit.Account.Model;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
@@ -45,14 +49,23 @@ namespace Amazon.AWSToolkit.Util
             }
         }
 
-        public ServiceSpecificCredentials SaveCredentialsForService(string accountArtifactsId, string serviceName, string userName, string password)
+        public bool TryGetCredentialsForService(string accountArtifactsId, string serviceName, out ServiceSpecificCredentials creds)
         {
-            var serviceCredentials = new ServiceSpecificCredentials
+            try
             {
-                Username = userName,
-                Password = password
-            };
+                creds = GetCredentialsForService(accountArtifactsId, serviceName);
+            }
+            catch
+            {
+                creds = null;
+            }
 
+            return creds != null;
+        }
+
+        public ServiceSpecificCredentials SaveCredentialsForService(string accountArtifactsId, string serviceName, string userName, string password, DateTime? expiresOn = null)
+        {
+            var serviceCredentials = new ServiceSpecificCredentials(userName, password, expiresOn);
             return SaveCredentialsForService(accountArtifactsId, serviceName, serviceCredentials);
         }
 
@@ -113,9 +126,21 @@ namespace Amazon.AWSToolkit.Util
 
     public class ServiceSpecificCredentials
     {
-        public string Username { get; internal set; }
+        internal ServiceSpecificCredentials(string username, string password, DateTime? expiresOn = null)
+        {
+            Arg.NotNull(username, nameof(username));
+            Arg.NotNull(password, nameof(password));
 
-        public string Password { get; internal set; }
+            Username = username;
+            Password = password;
+            ExpiresOn = expiresOn;
+        }
+
+        public string Username { get; }
+
+        public string Password { get; }
+
+        public DateTime? ExpiresOn { get; }
 
         internal string ToJson()
         {
@@ -132,6 +157,17 @@ namespace Amazon.AWSToolkit.Util
             jsonWriter.WritePropertyName(ToolkitSettingsConstants.ServiceCredentialsPassword);
             jsonWriter.Write(UserCrypto.Encrypt(Password));
 
+            if (ExpiresOn != null)
+            {
+                var binary = ExpiresOn.Value.ToBinary();
+                var bytes = BitConverter.GetBytes(binary);
+                var base64 = Convert.ToBase64String(bytes);
+                var encrypted = UserCrypto.Encrypt(base64);
+
+                jsonWriter.WritePropertyName(ToolkitSettingsConstants.ServiceCredentialsExpiresOn);
+                jsonWriter.Write(encrypted);
+            }
+
             jsonWriter.WriteObjectEnd();
 
             return jsonWriter.ToString();
@@ -140,11 +176,22 @@ namespace Amazon.AWSToolkit.Util
         internal static ServiceSpecificCredentials FromJson(string encryptedJson)
         {
             var jdata = JsonMapper.ToObject(encryptedJson);
-            return new ServiceSpecificCredentials
+
+            var username = UserCrypto.Decrypt((string) jdata[ToolkitSettingsConstants.ServiceCredentialsUserName]);
+            var password = UserCrypto.Decrypt((string) jdata[ToolkitSettingsConstants.ServiceCredentialsPassword]);
+            DateTime? expiresOn = null;
+
+            if (jdata.PropertyNames.Contains(ToolkitSettingsConstants.ServiceCredentialsExpiresOn))
             {
-                Username = UserCrypto.Decrypt((string)jdata[ToolkitSettingsConstants.ServiceCredentialsUserName]),
-                Password = UserCrypto.Decrypt((string)jdata[ToolkitSettingsConstants.ServiceCredentialsPassword])
-            };
+                var encrypted = (string) jdata[ToolkitSettingsConstants.ServiceCredentialsExpiresOn];
+                var base64 = UserCrypto.Decrypt(encrypted);
+                var bytes = Convert.FromBase64String(base64);
+                var binary = BitConverter.ToInt64(bytes, 0);
+
+                expiresOn = DateTime.FromBinary(binary);
+            }
+
+            return new ServiceSpecificCredentials(username, password, expiresOn);
         }
 
         // Called to process a csv file created by us as we drive the user credential process, therefore
@@ -152,20 +199,52 @@ namespace Amazon.AWSToolkit.Util
         public static ServiceSpecificCredentials FromCsvFile(string csvFile)
         {
             RegisterServiceCredentialsModel.ImportCredentialsFromCsv(csvFile, out string username, out string password);
-            return new ServiceSpecificCredentials
-            {
-                Username = username,
-                Password = password
-            };
+            return new ServiceSpecificCredentials(username, password);
         }
 
         public static ServiceSpecificCredentials FromCredentials(string username, string password)
         {
-            return new ServiceSpecificCredentials
+            return new ServiceSpecificCredentials(username, password);
+        }
+
+        protected bool Equals(ServiceSpecificCredentials other)
+        {
+            return
+                Username == other.Username
+                && Password == other.Password
+                && Nullable.Equals(ExpiresOn, other.ExpiresOn);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
             {
-                Username = username,
-                Password = password
-            };
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
+            return Equals((ServiceSpecificCredentials) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Username != null ? Username.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Password != null ? Password.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ ExpiresOn.GetHashCode();
+
+                return hashCode;
+            }
         }
     }
 }

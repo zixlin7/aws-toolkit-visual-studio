@@ -212,6 +212,7 @@
     <Compile Include="S3\S3PathTests.cs" />
     <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
     <Compile Include="SNS\CreateTopicModelTests.cs" />
+    <Compile Include="Util\ServiceSpecificCredentialsTests.cs" />
     <Compile Include="ViewModels\KeyValuesViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>

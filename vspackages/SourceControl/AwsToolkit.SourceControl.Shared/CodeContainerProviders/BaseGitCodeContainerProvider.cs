@@ -83,7 +83,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
         protected virtual Task HandleCloneRepositoryFailedAsync(CloneRepositoryData cloneRepoData)
         {
-            _toolkitContext.ToolkitHost.ShowError("Clone respository failed", $"Unable to clone {cloneRepoData.RepositoryName}.");
+            _toolkitContext.ToolkitHost.ShowError("Clone repository failed", $"Unable to clone {cloneRepoData.RepositoryName}.");
             return Task.CompletedTask;
         }
 
