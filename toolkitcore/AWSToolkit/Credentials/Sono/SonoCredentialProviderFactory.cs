@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
     /// </summary>
     public class SonoCredentialProviderFactory : ICredentialProviderFactory
     {
-        public const string FactoryId = "AwsId";
+        public const string FactoryId = "AwsBuilderId";
 
         public event EventHandler<CredentialChangeEventArgs> CredentialsChanged;
 
@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
         public void Initialize()
         {
-            // Populate settings manager with the fixed AWS ID configurations that will back this factory
+            // Populate settings manager with the fixed AWS Builder ID configurations that will back this factory
 
             var defaultCredentialId = new SonoCredentialIdentifier("default");
             _profileProcessor.CreateProfile(defaultCredentialId,
@@ -58,7 +58,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             var profileProperties = _profileProcessor.GetProfileProperties(credentialIdentifier);
             if (profileProperties == null)
             {
-                throw new NotSupportedException($"Unsupported AWS ID based credential Id: {credentialIdentifier.Id}");
+                throw new NotSupportedException($"Unsupported AWS Builder ID based credential Id: {credentialIdentifier.Id}");
             }
 
             var tokenProvider = SonoTokenProviderBuilder.Create()

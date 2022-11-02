@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             var factoryId = SonoCredentialProviderFactory.FactoryId;
 
             Id = $"{factoryId}:{profileName}";
-            DisplayName = $"awsId:{profileName}";
+            DisplayName = $"awsBuilderId:{profileName}";
             ShortName = profileName;
             FactoryId = factoryId;
             ProfileName = profileName;
