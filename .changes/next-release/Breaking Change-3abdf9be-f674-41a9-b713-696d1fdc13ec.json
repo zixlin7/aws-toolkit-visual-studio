@@ -1,0 +1,4 @@
+{
+  "Type": "Breaking Change",
+  "Description": "The AWS Toolkit now produces log files for each running instance of Visual Studio. This allows concurrent running instances of Visual Studio to have their own unique Toolkit log file. Previously, the first running instance of Visual Studio would append its logs to the same log file. Log files are now produced in `%localappdata%/AWSToolkit/logs/visualstudio/(VisualStudioVersion)`, and are named based on the date and time when Visual Studio was opened."
+}

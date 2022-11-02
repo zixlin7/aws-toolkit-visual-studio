@@ -3,9 +3,11 @@
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.Settings;
 
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
+using Microsoft.VisualStudio.Shell;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 {
@@ -29,7 +31,10 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
         [ImportingConstructor]
         public ConnectionSection()
         {
-            Utility.ConfigureLog4Net();
+            ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+               await Utility.ConfigureLog4NetAsync(new FileSettingsRepository<LoggingSettings>());
+            });
         }
 
         protected override ITeamExplorerSection CreateViewModel(SectionInitializeEventArgs e)

@@ -287,7 +287,6 @@
     <Compile Include="Urls\AwsUrls.cs" />
     <Compile Include="Urls\GitHubUrls.cs" />
     <Compile Include="Urls\ServiceUrls.cs" />
-    <Compile Include="Util\DisposingAction.cs" />
     <Compile Include="Util\MruList.cs" />
     <Compile Include="Credentials\Utils\ProfileHolder.cs" />
     <Compile Include="Credentials\Core\SDKCredentialIdentifier.cs" />

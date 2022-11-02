@@ -10,7 +10,6 @@ using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Publish.Models;
-using Amazon.AWSToolkit.Util;
 
 using AWS.Deploy.ServerMode.Client;
 

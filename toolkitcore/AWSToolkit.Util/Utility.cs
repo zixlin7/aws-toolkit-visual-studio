@@ -6,15 +6,22 @@ using Microsoft.Win32;
 
 using log4net;
 using log4net.Config;
+using log4net.Util.TypeConverters;
 using ThirdParty.Json.LitJson;
 using System.Text;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit
 {
     public static class Utility
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(Utility));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(Utility));
+        public const string LogDirectoryName = "logs";
 
         public static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
         {
@@ -33,27 +40,147 @@ namespace Amazon.AWSToolkit
         }
 
         private static bool _loggingInitialized;
-        public static void ConfigureLog4Net()
+
+        public static async Task ConfigureLog4NetAsync(ISettingsRepository<LoggingSettings> loggingSettingsRepository)
         {
-            if(!_loggingInitialized)
+            if (!_loggingInitialized)
             {
                 _loggingInitialized = true;
+                //add converter for any properties that target a numeric log4net.config field
+                ConverterRegistry.AddConverter(typeof(int), new NumericLog4NetConverter());
 
-                string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string fullPath = string.Format(@"{0}\log4net.config", directory);
+                var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var fullPath = $@"{directory}\log4net.config";
+
+                var settings = await loggingSettingsRepository.GetAsync(new LoggingSettings());
+
+                GlobalContext.Properties["MaxLogFileSize"] = settings.MaxLogFileSizeMb.ToString();
+                GlobalContext.Properties["MaxFileBackups"] = settings.MaxFileBackups;
+
                 if (File.Exists(fullPath))
                 {
                     XmlConfigurator.ConfigureAndWatch(new FileInfo(fullPath));
                 }
 
+                //mark and save log settings to the file if it does not exist
+                var filePath = GetAppDataSettingsFilePath(typeof(LoggingSettings));
+                if (!File.Exists(filePath))
+                {
+                    loggingSettingsRepository.Save(settings);
+                }
             }
+        }
+
+        /// <summary>
+        /// Executes cleanup of log files based on settings found in "LoggingSettings.json"
+        /// Ensures single run of cleanup is performed by using a global mutex when multiple instances are spun up and attempt to run cleanup
+        /// </summary>
+        public static async Task CleanupLogFilesAsync(ISettingsRepository<LoggingSettings> loggingSettingsRepository)
+        {
+            var directory = ToolkitAppDataPath.Join(LogDirectoryName);
+            if (!_loggingInitialized || !Directory.Exists(directory))
+            {
+                return;
+            }
+            
+            var settings = await loggingSettingsRepository.GetAsync(new LoggingSettings());
+            try
+            {
+                using (LoggingMutex.Acquire())
+                {
+                    ExecuteLogCleanup(directory, settings);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to run logging cleanup.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Executes cleanup logic based on the specified settings
+        /// for log files found in the the specified directory
+        /// NOTE: Cleanup should be invoked only once among multiple concurrent instances
+        /// This is achieved by using the global mutex in the calling function
+        /// </summary>
+        private static void ExecuteLogCleanup(string directory, LoggingSettings settings)
+        {
+            Logger.Info("Running log cleanup");
+            var directoryInfo = new DirectoryInfo(directory);
+            var months = settings.LogFileRetentionMonths;
+            var sizeLimit = settings.MaxLogDirectorySizeMb * 1024 * 1024;
+
+            //delete files older than the specified number of months
+            DeleteOldFiles(directoryInfo, months);
+
+            // maintain max log directory size
+            MaintainDirectorySize(directoryInfo, sizeLimit);
+        }
+
+        /// <summary>
+        /// Deletes files older than the specified number of months from the directory
+        /// </summary>
+        public static void DeleteOldFiles(DirectoryInfo directoryInfo, int months)
+        {
+            GetAllFiles(directoryInfo)
+                .Where(file => file.LastWriteTime < DateTime.Now.AddMonths(months * -1))
+                .ToList()
+                .ForEach(f => f.Delete());
+        }
+
+        /// <summary>
+        /// Maintains max directory size(in bytes) specified by deleting oldest files 
+        /// </summary>
+        public static void MaintainDirectorySize(DirectoryInfo directoryInfo, long limit)
+        {
+            var size = GetDirectorySize(directoryInfo);
+
+            //check if directory size is equal to or greater than max log directory size limit(in MB)
+            if (size < limit)
+            {
+                return;
+            }
+
+            var orderedFiles = GetAllFiles(directoryInfo).OrderBy(x => x.LastWriteTime);
+
+            // delete oldest files if directory size is greater than max log directory size limit
+            foreach (var file in orderedFiles)
+            {
+                if (size < limit)
+                {
+                    break;
+                }
+
+                //delete file
+                file.Delete();
+                size = GetDirectorySize(directoryInfo);
+            }
+        }
+
+        /// <summary>
+        /// Gets file path for specified type of settings (Type) in AppData folder
+        /// </summary>
+        public static string GetAppDataSettingsFilePath(Type type)
+        {
+            //filename is the name assigned to the settings type
+            return ToolkitAppDataPath.Join($"{type.Name}.json");
+        }
+
+        private static List<FileInfo> GetAllFiles(DirectoryInfo directoryInfo)
+        {
+            return directoryInfo.GetFiles("*.*", SearchOption.AllDirectories).ToList();
+        }
+
+        private static long GetDirectorySize(DirectoryInfo directoryInfo)
+        {
+            return GetAllFiles(directoryInfo).Sum(fi => fi.Length);
         }
 
         /// <summary>
         /// Inspect the user's machine to verify that a supported version of msdeploy.exe is installed (v1 thru v3)
         /// </summary>
         /// <returns>True if msdeploy found, false otherwise</returns>
-        public static bool ProbeForMSDeploy()
+        public static bool ProbeForMSDeploy() 
         {
             bool installed = false;
             // first try a registry probe on the install settings for IIS Extensions
@@ -68,27 +195,27 @@ namespace Amazon.AWSToolkit
                     string[] versions = new string[] { "3", "2", "1" };
                     for (int i = 0; i < versions.Length && !installed; i++)
                     {
-                        LOGGER.InfoFormat("Probing for MSDeploy v{0} subkey in IIS Extensions key", versions[i]);
+                        Logger.InfoFormat("Probing for MSDeploy v{0} subkey in IIS Extensions key", versions[i]);
                         versionSubKey = msDeployIISKey.OpenSubKey(versions[i], false);
                         if (versionSubKey != null)
                         {
                             string installFolder = QueryMsDeployInstallFolder(versionSubKey);
                             if (!string.IsNullOrEmpty(installFolder))
                             {
-                                LOGGER.InfoFormat("Found key, retrieved install path as {0}", installFolder);
+                                Logger.InfoFormat("Found key, retrieved install path as {0}", installFolder);
                                 installed = true;
                             }
                         }
                         else
-                            LOGGER.InfoFormat("Failed to access msdeploy v{0} subkey in IIS Extensions key", versions[i]);
+                            Logger.InfoFormat("Failed to access msdeploy v{0} subkey in IIS Extensions key", versions[i]);
                     }
                 }
                 else
-                    LOGGER.Info("Failed to open IIS Extensions key when probing for msdeploy.exe.");
+                    Logger.Info("Failed to open IIS Extensions key when probing for msdeploy.exe.");
             }
             catch (Exception e)
             {
-                LOGGER.InfoFormat("Caught exception in registry probe for msdeploy, message = {0}", e.Message);
+                Logger.InfoFormat("Caught exception in registry probe for msdeploy, message = {0}", e.Message);
             }
             finally
             {
@@ -99,7 +226,7 @@ namespace Amazon.AWSToolkit
             }
 
             if (!installed)
-                LOGGER.Info("Declaring msdeploy.exe to not be installed.");
+                Logger.Info("Declaring msdeploy.exe to not be installed.");
 
             return installed;
         }
@@ -158,7 +285,7 @@ namespace Amazon.AWSToolkit
                 }
                 catch(Exception e)
                 {
-                    LOGGER.Error("Error combining path with \"" + path + "\" and \"" + command + "\"", e);
+                    Logger.Error("Error combining path with \"" + path + "\" and \"" + command + "\"", e);
                 }
             }
 
