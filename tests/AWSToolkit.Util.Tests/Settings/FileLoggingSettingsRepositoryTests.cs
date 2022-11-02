@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         [Fact]
         public async Task GetSettings_WhenNoDefaultValueAndFileDoesNotExist()
         {
-            var settings = await _loggingRepository.GetAsync();
+            var settings = await _loggingRepository.GetOrDefaultAsync();
 
             Assert.Null(settings);
         }
@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         [Fact]
         public async Task GetSettings_WhenDefaultValueAndFileDoesNotExist()
         {
-            var settings = await _loggingRepository.GetAsync(_defaultSettings);
+            var settings = await _loggingRepository.GetOrDefaultAsync(_defaultSettings);
 
             Assert.Equal(_defaultSettings, settings);
         }
@@ -54,7 +54,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
                 LogFileRetentionMonths = 2, MaxLogDirectorySizeMb = 200, MaxLogFileSizeMb = 5, MaxFileBackups = 3
             };
 
-            var settings = await _loggingRepository.GetAsync(_defaultSettings);
+            var settings = await _loggingRepository.GetOrDefaultAsync(_defaultSettings);
 
             Assert.Equal(expectedSettings, settings);
         }
@@ -64,7 +64,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             WriteJsonFile(@"{ ""dummy"": { ""jsonkey"": ""jsonValue"" } }");
 
-            var settings = await _loggingRepository.GetAsync(_defaultSettings);
+            var settings = await _loggingRepository.GetOrDefaultAsync(_defaultSettings);
 
             Assert.Equal(_defaultSettings, settings);
         }
@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
                 LogFileRetentionMonths = 2, MaxLogDirectorySizeMb = 200, MaxLogFileSizeMb = 10, MaxFileBackups = 10
             };
 
-            var settings = await _loggingRepository.GetAsync(_defaultSettings);
+            var settings = await _loggingRepository.GetOrDefaultAsync(_defaultSettings);
 
             Assert.Equal(expectedSettings, settings);
         }
@@ -91,7 +91,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             using (FileStream _ = CreateLockedFileStream(_filePath))
             {
-                await Assert.ThrowsAsync<SettingsException>(() => _loggingRepository.GetAsync());
+                await Assert.ThrowsAsync<SettingsException>(() => _loggingRepository.GetOrDefaultAsync());
             }
         }
 
@@ -100,7 +100,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             WriteJsonFile(@"{ ""InvalidJson"":");
 
-            await Assert.ThrowsAsync<SettingsException>(() => _loggingRepository.GetAsync());
+            await Assert.ThrowsAsync<SettingsException>(() => _loggingRepository.GetOrDefaultAsync());
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
 
             Assert.True(File.Exists(_filePath));
 
-            var actualSettings = await _loggingRepository.GetAsync();
+            var actualSettings = await _loggingRepository.GetOrDefaultAsync();
 
             Assert.Equal(settings, actualSettings);
         }

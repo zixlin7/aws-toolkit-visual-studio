@@ -43,6 +43,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         }
 
+        public void OpenInWindowsExplorer(string filePath)
+        {
+
+        }
+
         public IntPtr GetParentWindowHandle()
         {
             return IntPtr.Zero;

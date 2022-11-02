@@ -61,6 +61,13 @@ namespace Amazon.AWSToolkit.Shared
         /// <param name="fileName"></param>
         void OpenInEditor(string fileName);
 
+
+        /// <summary>
+        /// Opens the given file path in the Windows Explorer
+        /// </summary>
+        /// <param name="filePath"></param>
+        void OpenInWindowsExplorer(string filePath);
+
         /// <summary>
         /// Returns an IDE handle that can be used as a parent to extension modal dialogs
         /// </summary>

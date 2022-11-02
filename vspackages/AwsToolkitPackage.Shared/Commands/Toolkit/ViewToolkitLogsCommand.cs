@@ -55,7 +55,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
                     throw new InvalidOperationException($"Invalid log file path: {logFile}");
                 }
 
-                Process.Start("explorer.exe", "/select, " + logFile);
+                _toolkitContext.ToolkitHost.OpenInWindowsExplorer(logFile);
                 _toolkitContext.TelemetryLogger.RecordToolkitViewLogs(new ToolkitViewLogs()
                 {
                     AwsAccount = MetadataValue.NotApplicable,

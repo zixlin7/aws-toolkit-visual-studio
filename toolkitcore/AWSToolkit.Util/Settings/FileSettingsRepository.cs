@@ -22,7 +22,7 @@ namespace Amazon.AWSToolkit.Settings
             _filePath = filePath;
         }
 
-        public async Task<T> GetAsync(T defaultValue = null)
+        public async Task<T> GetOrDefaultAsync(T defaultValue = null)
         {
             if (File.Exists(_filePath))
             {
@@ -37,9 +37,9 @@ namespace Amazon.AWSToolkit.Settings
             {
                 SaveToFile(settings);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                throw new SettingsException($"Error saving to file: {_filePath}", e);
+                throw new SettingsException($"Error saving to file: {_filePath}", ex);
             }
             catch (JsonException ex)
             {
@@ -74,9 +74,9 @@ namespace Amazon.AWSToolkit.Settings
                     return await reader.ReadToEndAsync();
                 }
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                throw new SettingsException($"Could not read file: {filePath}", e);
+                throw new SettingsException($"Could not read file: {filePath}", ex);
             }
         }
 
@@ -90,9 +90,9 @@ namespace Amazon.AWSToolkit.Settings
                 };
                 return JsonConvert.DeserializeObject<T>(json, serializerSetting);
             }
-            catch (JsonException e)
+            catch (JsonException ex)
             {
-                throw new SettingsException($"Unable to parse json: {json}", e);
+                throw new SettingsException($"Unable to parse json: {json}", ex);
             }
         }
 

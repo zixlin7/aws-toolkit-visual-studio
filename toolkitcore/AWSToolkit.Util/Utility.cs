@@ -52,7 +52,7 @@ namespace Amazon.AWSToolkit
                 var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var fullPath = $@"{directory}\log4net.config";
 
-                var settings = await loggingSettingsRepository.GetAsync(new LoggingSettings());
+                var settings = await loggingSettingsRepository.GetOrDefaultAsync(new LoggingSettings());
 
                 GlobalContext.Properties["MaxLogFileSize"] = settings.MaxLogFileSizeMb.ToString();
                 GlobalContext.Properties["MaxFileBackups"] = settings.MaxFileBackups;
@@ -83,7 +83,7 @@ namespace Amazon.AWSToolkit
                 return;
             }
             
-            var settings = await loggingSettingsRepository.GetAsync(new LoggingSettings());
+            var settings = await loggingSettingsRepository.GetOrDefaultAsync(new LoggingSettings());
             try
             {
                 using (LoggingMutex.Acquire())
