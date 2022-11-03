@@ -34,6 +34,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\CloneCodeCatalystRepositoryViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\CloneCodeCommitRepositoryViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\CredentialConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\Ecr\RepositorySelectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\KeyValueEditorViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\InstanceTypeSelectionViewModel.cs" />

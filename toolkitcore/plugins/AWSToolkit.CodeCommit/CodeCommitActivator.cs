@@ -15,6 +15,7 @@ using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommit.Services;
 using Amazon.AWSToolkit.CodeCommit.Util;
 using Amazon.AWSToolkit.Collections;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
@@ -31,7 +32,7 @@ namespace Amazon.AWSToolkit.CodeCommit
 {
     public class CodeCommitActivator : AbstractPluginActivator, IAWSCodeCommit
     {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitActivator));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CodeCommitActivator));
 
         private ToolkitRegion _fallbackRegion;
         private const string CodeCommitUrlPrefix = "git-codecommit.";
@@ -75,13 +76,32 @@ namespace Amazon.AWSToolkit.CodeCommit
                                                                ToolkitRegion region,
                                                                bool ignoreCurrent)
         {
-            ServiceSpecificCredentials svcCredentials;
+            return ObtainGitCredentials(account.Identifier, region, ignoreCurrent, account.SettingsUniqueKey);
+        }
 
+        public ServiceSpecificCredentials ObtainGitCredentials(ICredentialIdentifier identifier,
+            ToolkitRegion region,
+            bool ignoreCurrent)
+        {
+            var uniqueKey = ToolkitContext.CredentialSettingsManager.GetProfileProperties(identifier)?.UniqueKey;
+            return ObtainGitCredentials(identifier, region, ignoreCurrent, uniqueKey);
+        }
+
+        private ServiceSpecificCredentials ObtainGitCredentials(ICredentialIdentifier identifier, ToolkitRegion region,
+            bool ignoreCurrent, string uniqueKey)
+        {
+            if (string.IsNullOrWhiteSpace(uniqueKey))
+            {
+                _logger.Error($"Failed to load service credentials for {identifier.DisplayName}");
+                return null;
+            }
+
+            ServiceSpecificCredentials svcCredentials;
             if (!ignoreCurrent)
             {
                 svcCredentials = ServiceSpecificCredentialStore
                                     .Instance
-                                    .GetCredentialsForService(account.SettingsUniqueKey,
+                                    .GetCredentialsForService(uniqueKey,
                                         ServiceNames.CodeCommit);
 
                 if (svcCredentials != null)
@@ -92,16 +112,16 @@ namespace Amazon.AWSToolkit.CodeCommit
 
             // Nothing local, so first see if we can create credentials for the user if they
             // haven't already done so
-            svcCredentials = ProbeIamForServiceSpecificCredentials(account, region);
+            svcCredentials = ProbeIamForServiceSpecificCredentials(identifier, region);
             if (svcCredentials != null)
             {
-                AssociateCredentialsWithProfile(account.SettingsUniqueKey, svcCredentials.Username, svcCredentials.Password);
+                AssociateCredentialsWithProfile(uniqueKey, svcCredentials.Username, svcCredentials.Password);
                 return svcCredentials;
             }
 
             // Can't autocreate due to use of root account, or no permissions, or they exist so final attempt 
             // is to get the user to perform the steps necessary to get credentials
-            var registerCredentialsController = new RegisterServiceCredentialsController(account);
+            var registerCredentialsController = new RegisterServiceCredentialsController(uniqueKey);
             var results = registerCredentialsController.Execute().Success ? registerCredentialsController.Credentials : null;
 
             return results;
@@ -142,7 +162,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception ex)
             {
-                LOGGER.Error($"Exception thrown from libgit2sharp while manipulating repository {repoPath}", ex);
+                _logger.Error($"Exception thrown from libgit2sharp while manipulating repository {repoPath}", ex);
             }
 
             return false;
@@ -191,7 +211,12 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         public async Task<IEnumerable<ICodeCommitRepository>> GetRemoteRepositoriesAsync(AccountViewModel account, ToolkitRegion region)
         {
-            var client = account.CreateServiceClient<AmazonCodeCommitClient>(region);
+            return await GetRemoteRepositoriesAsync(account.Identifier, region);
+        }
+
+        public async Task<IEnumerable<ICodeCommitRepository>> GetRemoteRepositoriesAsync(ICredentialIdentifier credentialId, ToolkitRegion region)
+        {
+            var client = ToolkitContext.ServiceClientManager.CreateServiceClient<AmazonCodeCommitClient>(credentialId, region);
             var names = await client.ListRepositoryNames();
             var metadata = await client.GetRepositoryMetadata(names);
 
@@ -220,7 +245,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception ex)
             {
-                LOGGER.Error($"Exception batch querying for repos in region {region?.Id}", ex);
+                _logger.Error($"Exception batch querying for repos in region {region?.Id}", ex);
             }
 
             return validRepositories;
@@ -236,7 +261,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception ex)
             {
-                LOGGER.Error($"Error querying for repository {repositoryName}", ex);
+                _logger.Error($"Error querying for repository {repositoryName}", ex);
             }
 
             return null;
@@ -263,7 +288,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception ex)
             {
-                LOGGER.Error($"Error attempting to form console url for repo at {repoPath}", ex);
+                _logger.Error($"Error attempting to form console url for repo at {repoPath}", ex);
             }
 
             return consoleUrl;
@@ -302,7 +327,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception ex)
             {
-                LOGGER.Error("Exception during staging and commit", ex);
+                _logger.Error("Exception during staging and commit", ex);
             }
 
             return false;
@@ -333,7 +358,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception ex)
             {
-                LOGGER.Error("Exception during push", ex);
+                _logger.Error("Exception during push", ex);
             }
 
             return false;
@@ -349,24 +374,25 @@ namespace Amazon.AWSToolkit.CodeCommit
         /// compatible, or auto-create fails, we'll display the regular dialog so they can paste in
         /// their credentials.
         /// </summary>
-        /// <returns></returns>
-        public ServiceSpecificCredentials ProbeIamForServiceSpecificCredentials(AccountViewModel account, ToolkitRegion region)
+        public ServiceSpecificCredentials ProbeIamForServiceSpecificCredentials(ICredentialIdentifier identifier, ToolkitRegion region)
         {
             const int maxServiceSpecificCredentials = 2;
 
             try
             {
-                var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
+                var iamClient =
+                    ToolkitContext.ServiceClientManager.CreateServiceClient<AmazonIdentityManagementServiceClient>(
+                        identifier, region);
 
                 // First, is the user running as an iam user or as root? If the latter, we can't help them
                 var username = iamClient.GetUser().User.UserName;
                 if (string.IsNullOrEmpty(username))
                 {
                     string confirmMsg = "Your profile is using root AWS credentials. AWS CodeCommit requires specific CodeCommit credentials from an IAM user. "
-                                            + $"The toolkit can create an IAM user with CodeCommit credentials and associate the credentials with the {account.DisplayName} Toolkit profile."
+                                            + $"The toolkit can create an IAM user with CodeCommit credentials and associate the credentials with the {identifier.DisplayName} Toolkit profile."
                                             + Environment.NewLine
                                             + Environment.NewLine
-                                            + $"Proceed to try and create an IAM user with credentials and associate with the {account.DisplayName} Toolkit profile?";
+                                            + $"Proceed to try and create an IAM user with credentials and associate with the {identifier.DisplayName} Toolkit profile?";
 
                     if (!ToolkitContext.ToolkitHost.Confirm("Auto-create Git Credentials", confirmMsg, MessageBoxButton.YesNo))
                     {
@@ -386,7 +412,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                 var credentialsExist = listCredentialsResponse.ServiceSpecificCredentials.Any(ssc => ssc.Status == StatusType.Active);
                 if (credentialsExist)
                 {
-                    LOGGER.InfoFormat("User profile {0} already has service-specific credentials for CodeCommit; user must import credentials", account.DisplayName);
+                    _logger.InfoFormat("User profile {0} already has service-specific credentials for CodeCommit; user must import credentials", identifier.DisplayName);
                     return null;
                 }
 
@@ -394,7 +420,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                 // if we already have two inactive sets, give up
                 if (listCredentialsResponse.ServiceSpecificCredentials.Count == maxServiceSpecificCredentials)
                 {
-                    LOGGER.InfoFormat("User profile {0} already has the maximum amount of service-specific credentials for CodeCommit; user will have to activate and import credentials", account.DisplayName);
+                    _logger.InfoFormat("User profile {0} already has the maximum amount of service-specific credentials for CodeCommit; user will have to activate and import credentials", identifier.DisplayName);
                     return null;
                 }
 
@@ -415,11 +441,11 @@ namespace Amazon.AWSToolkit.CodeCommit
                 };
 
                 var createCredentialsResponse = iamClient.CreateServiceSpecificCredential(createCredentialRequest);
-                
+
                 // Seen cases where we've had a 403 error from inside git, as if the creds have
                 // not propagated if the user is too quick with the dialog, so force a small delay
                 Thread.Sleep(3000);
-            
+
                 PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential);
 
                 return ServiceSpecificCredentials
@@ -428,7 +454,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception ex)
             {
-                LOGGER.Error("Exception while probing for CodeCommit credentials in IAM, user must supply manually", ex);
+                _logger.Error("Exception while probing for CodeCommit credentials in IAM, user must supply manually", ex);
             }
 
             return null;
@@ -496,7 +522,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception ex)
             {
-                LOGGER.Error("Exception while attempting to find CodeCommit remote url", ex);
+                _logger.Error("Exception while attempting to find CodeCommit remote url", ex);
             }
 
             return null;

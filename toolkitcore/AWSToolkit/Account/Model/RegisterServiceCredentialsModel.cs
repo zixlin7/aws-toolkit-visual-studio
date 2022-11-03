@@ -10,16 +10,15 @@ namespace Amazon.AWSToolkit.Account.Model
 {
     public class RegisterServiceCredentialsModel : INotifyPropertyChanged
     {
-        private static ILog LOGGER = LogManager.GetLogger(typeof(RegisterServiceCredentialsModel));
-
-        public RegisterServiceCredentialsModel(AccountViewModel account)
+        private static ILog _logger = LogManager.GetLogger(typeof(RegisterServiceCredentialsModel));
+        public RegisterServiceCredentialsModel(string uniqueKey)
         {
-            Account = account;
+            UniqueKey = uniqueKey;
         }
 
         public string IAMConsoleEndpoint => "https://console.aws.amazon.com/iam/home?region=us-east-1#/users";
 
-        public AccountViewModel Account { get; }
+        public string UniqueKey { get; }
 
         public string UserName
         {
@@ -76,7 +75,7 @@ namespace Amazon.AWSToolkit.Account.Model
             }
             catch (Exception e)
             {
-                LOGGER.Error("Invalid Git credentials file", e);
+                _logger.Error("Invalid Git credentials file", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Invalid File", e.Message);
             }
 
@@ -85,7 +84,7 @@ namespace Amazon.AWSToolkit.Account.Model
 
         public bool PersistCredentials(ServiceSpecificCredentials credentials)
         {
-            return PersistCredentials(credentials, Account.SettingsUniqueKey);
+            return PersistCredentials(credentials, UniqueKey);
         }
 
         public static bool PersistCredentials(ServiceSpecificCredentials credentials, string accountKey)

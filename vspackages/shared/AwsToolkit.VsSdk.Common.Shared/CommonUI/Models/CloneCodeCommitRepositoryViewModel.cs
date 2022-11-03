@@ -1,19 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
 using System.Windows.Input;
 
-using Amazon.AWSToolkit;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
+
+using AwsToolkit.VsSdk.Common.CommonUI.Models;
 
 using Microsoft.VisualStudio.Threading;
 
@@ -26,26 +26,6 @@ namespace CommonUI.Models
 
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
-
-        private AccountViewModel _selectedAccount;
-
-        public AccountViewModel SelectedAccount
-        {
-            get => _selectedAccount;
-            set => SetProperty(ref _selectedAccount, value);
-        }
-        public ObservableCollection<AccountViewModel> Accounts { get; }
-
-        private ToolkitRegion _selectedRegion;
-
-        public ToolkitRegion SelectedRegion
-        {
-            get => _selectedRegion;
-            set => SetProperty(ref _selectedRegion, value);
-        }
-
-        public ObservableCollection<ToolkitRegion> Regions { get; }
-
         private ICodeCommitRepository _selectedRepository;
 
         public ICodeCommitRepository SelectedRepository
@@ -75,31 +55,25 @@ namespace CommonUI.Models
             _toolkitContext = toolkitContext;
             _joinableTaskFactory = joinableTaskFactory;
 
-            PropertyChanged += CloneCodeCommitRepositoryViewModel_PropertyChanged;
-
-            Accounts = new ObservableCollection<AccountViewModel>();
-            Regions = new ObservableCollection<ToolkitRegion>();
             Repositories = new ObservableCollection<ICodeCommitRepository>();
 
-            RefreshAccounts();
+            Connection = new CredentialConnectionViewModel(_toolkitContext)
+            {
+                ConnectionTypes = new List<AwsConnectionType>() { AwsConnectionType.AwsCredentials },
+            };
 
             BrowseForRepositoryPathCommand = new RelayCommand(ExecuteBrowseForRepositoryPathCommand);
             SubmitDialogCommand = new RelayCommand(CanExecuteSubmitDialogCommand, executeSubmitDialogCommand);
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
         }
 
-        private void CloneCodeCommitRepositoryViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(SelectedAccount):
-                    RefreshRegions();
-                    break;
-                case nameof(SelectedRegion):
-                    RefreshRepositories();
-                    break;
-            }
-        }
+        public CredentialConnectionViewModel Connection { get; }
+
+        public ICredentialIdentifier Identifier => Connection.CredentialIdentifier;
+
+        public ToolkitRegion Region => Connection.Region;
+
+        public AwsConnectionManager ConnectionManager => Connection.ConnectionManager;
 
         private void ExecuteBrowseForRepositoryPathCommand(object parameter)
         {
@@ -115,7 +89,7 @@ namespace CommonUI.Models
 
         private bool CanExecuteSubmitDialogCommand(object parameter)
         {
-            return !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
+            return Connection.IsConnectionValid && !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
         }
 
         public void ExecuteHelpCommand(object parameter)
@@ -123,60 +97,11 @@ namespace CommonUI.Models
             _toolkitContext.ToolkitHost.OpenInBrowser(HelpUri, false);
         }
 
-        private void RefreshAccounts()
-        {
-            Accounts.Clear();
-
-            Accounts.AddAll(ToolkitFactory.Instance.RootViewModel.RegisteredAccounts);
-
-            if (SelectedAccount == null)
-            {
-                SelectedAccount = Accounts.FirstOrDefault();
-                return;
-            }
-
-            if (Accounts.Contains(SelectedAccount))
-            {
-                return;
-            }
-
-            SelectedAccount = Accounts.FirstOrDefault(i => i.Identifier == SelectedAccount.Identifier);
-        }
-
-        private void RefreshRegions()
-        {
-            Regions.Clear();
-
-            if (SelectedAccount == null)
-            {
-                SelectedRegion = null;
-                return;
-            }
-            
-            var provider = _toolkitContext.RegionProvider;
-            Regions.AddAll(
-                provider.GetRegions(SelectedAccount.PartitionId)
-                .Where(r => provider.IsServiceAvailable(ServiceNames.CodeCommit, r.Id)));
-
-            if (SelectedRegion == null)
-            {
-                SelectedRegion = Regions.FirstOrDefault();
-                return;
-            }
-
-            if (Regions.Contains(SelectedRegion))
-            {
-                return;
-            }
-
-            SelectedRegion = Regions.FirstOrDefault(r => r.Id == SelectedRegion.Id);
-        }
-
-        private void RefreshRepositories()
+        public void RefreshRepositories()
         {
             Repositories.Clear();
 
-            if (SelectedAccount == null || SelectedRegion == null)
+            if (Identifier == null || Region == null)
             {
                 SelectedRepository = null;
                 return;
@@ -185,7 +110,8 @@ namespace CommonUI.Models
             _joinableTaskFactory.RunAsync(async () =>
             {
                 var codeCommitSvc = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
-                var repos = await codeCommitSvc.GetRemoteRepositoriesAsync(SelectedAccount, SelectedRegion);
+                var repos = await codeCommitSvc.GetRemoteRepositoriesAsync(Identifier,
+                    Region);
 
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
                 Repositories.AddAll(repos);
