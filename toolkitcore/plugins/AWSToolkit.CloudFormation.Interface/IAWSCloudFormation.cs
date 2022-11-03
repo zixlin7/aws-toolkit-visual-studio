@@ -23,8 +23,6 @@ namespace Amazon.AWSToolkit.CloudFormation
         /// <param name="seedParameters"></param>
         /// <returns></returns>
         DeployedTemplateData DeployCloudFormationTemplate(string filepath, IDictionary<string, object> seedParameters);
-
-        DeployedTemplateData GetUrlToCostEstimate(string filepath, IDictionary<string, object> seedParameters);
     }
 
     /// <summary>

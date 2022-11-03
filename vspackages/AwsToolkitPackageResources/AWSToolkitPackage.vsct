@@ -208,19 +208,6 @@
         </Strings>
       </Button>
 
-      <Button guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostSolutionExplorer" priority="0x0000" type="Button">
-        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
-        <CommandFlag>TextChanges</CommandFlag>
-        <Strings>
-          <CommandName>AWS.EstimateCost</CommandName>
-          <ButtonText>Estimate Cost</ButtonText>
-          <ToolTipText>Launches the cost estimator using the current template as the template to be estimated</ToolTipText>
-        </Strings>
-      </Button>
-
       <Button guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateSolutionExplorer" priority="0x0000" type="Button">
         <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -244,19 +231,6 @@
           <CommandName>AWS.DeployTemplate.ActiveDocument</CommandName>
           <ButtonText>Deploy to AWS CloudFormation...</ButtonText>
           <ToolTipText>Deploys the template to AWS CloudFormation</ToolTipText>
-        </Strings>
-      </Button>
-
-      <Button guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostActiveDocument" priority="0x0000" type="Button">
-        <Icon guid="guidAwsServiceImages" id="imgCloudFormation" />
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
-        <CommandFlag>TextChanges</CommandFlag>
-        <Strings>
-          <CommandName>AWS.EstimateCost.ActiveDocument</CommandName>
-          <ButtonText>Estimate Cost</ButtonText>
-          <ToolTipText>Launches the cost estimator using the current template as the template to be estimated</ToolTipText>
         </Strings>
       </Button>
 
@@ -573,18 +547,12 @@
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidDeployTemplateSolutionExplorer" priority="0x0000">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_SOLUTION_EXPLORER" />
     </CommandPlacement>
-    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostSolutionExplorer" priority="0x0000">
-      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_SOLUTION_EXPLORER" />
-    </CommandPlacement>
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateSolutionExplorer" priority="0x0001">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_SOLUTION_EXPLORER" />
     </CommandPlacement>
 
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidDeployTemplateActiveDocument" priority="0x0000">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_ACTIVE_DOCUMENT" />
-    </CommandPlacement>
-    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostActiveDocument" priority="0x0000">
-      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_ACTIVE_DOCUMENT" />
     </CommandPlacement>
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateActiveDocument" priority="0x0001">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_ACTIVE_DOCUMENT" />
@@ -721,10 +689,8 @@
       <IDSymbol name="cmdidCodeArtifactSelectProfile" value="0x0105" />
 
       <IDSymbol name="cmdidDeployTemplateSolutionExplorer" value="0x0200" />
-      <IDSymbol name="cmdidEstimateTemplateCostSolutionExplorer" value="0x0201" />
       <IDSymbol name="cmdidFormatTemplateSolutionExplorer" value="0x0202" />
       <IDSymbol name="cmdidDeployTemplateActiveDocument" value="0x0203" />
-      <IDSymbol name="cmdidEstimateTemplateCostActiveDocument" value="0x0204" />
       <IDSymbol name="cmdidFormatTemplateActiveDocument" value="0x0205" />
       <IDSymbol name="cmdidAddCloudFormationTemplate" value="0x0206"/>
       <IDSymbol name="cmdidAddAWSServerlessTemplate" value="0x0207"/>
