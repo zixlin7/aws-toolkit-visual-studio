@@ -88,11 +88,27 @@ namespace CommonUI.Models
 
         public ICommand BrowseForRepositoryPathCommand { get; }
 
-        public ICommand SubmitDialogCommand { get; }
+        private ICommand _submitDialogCommand;
+
+        public ICommand SubmitDialogCommand
+        {
+            get => _submitDialogCommand;
+            set => SetProperty(ref _submitDialogCommand, value);
+        }
+
+        private ICommand _cancelDialogCommand;
+
+        public ICommand CancelDialogCommand
+        {
+            get => _cancelDialogCommand;
+            set => SetProperty(ref _cancelDialogCommand, value);
+        }
 
         public ICommand HelpCommand { get; }
 
-        public CloneCodeCatalystRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory, Action<object> executeSubmitDialogCommand)
+        public string Heading { get; } = "Clone an Amazon CodeCatalyst repository";
+
+        public CloneCodeCatalystRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory)
         {
             _toolkitContext = toolkitContext;
             _joinableTaskFactory = joinableTaskFactory;
@@ -105,7 +121,6 @@ namespace CommonUI.Models
             RefreshCredentials();
 
             BrowseForRepositoryPathCommand = new RelayCommand(ExecuteBrowseForRepositoryPathCommand);
-            SubmitDialogCommand = new RelayCommand(CanExecuteSubmitDialogCommand, executeSubmitDialogCommand);
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
         }
 
@@ -141,7 +156,7 @@ namespace CommonUI.Models
             }
         }
 
-        private bool CanExecuteSubmitDialogCommand(object parameter)
+        public bool CanSubmit()
         {
             return !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
         }

@@ -13,6 +13,8 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 
+using AwsToolkit.VsSdk.Common.CommonUI.Commands.CodeCommit;
+
 using CommonUI.Models;
 
 using Microsoft.VisualStudio.PlatformUI;
@@ -30,8 +32,10 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             _toolkitContext = toolkitContext;
             _joinableTaskFactory = joinableTaskFactory;
-            _viewModel = new CloneCodeCommitRepositoryViewModel(_toolkitContext, _joinableTaskFactory,
-                parameter => DialogResult = true);
+            _viewModel = new CloneCodeCommitRepositoryViewModel(_toolkitContext, _joinableTaskFactory);
+            _viewModel.CancelDialogCommand = CancelCloneDialogCommandFactory.Create(this);
+            _viewModel.SubmitDialogCommand = SubmitCloneDialogCommandFactory.Create(_viewModel, this);
+
             InitializeComponent();
 
             // No window chrome, have to support moving the window ourselves

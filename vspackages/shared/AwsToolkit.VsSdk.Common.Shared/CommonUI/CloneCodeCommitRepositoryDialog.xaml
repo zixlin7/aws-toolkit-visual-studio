@@ -18,6 +18,8 @@
     Width="800"
     MinHeight="600"
     MinWidth="800"
+    Title="{Binding Heading}"
+    ShowInTaskbar="False"
     ResizeMode="CanResizeWithGrip">
 
     <platformUi:DialogWindow.Resources>
@@ -91,11 +93,11 @@
                             DockPanel.Dock="Top"
                             Content="&#x2715;"
                             Style="{StaticResource CloseDialogButtonStyle}"
-                            IsCancel="True"
-                            Margin="0 0 6 0"
+                            Margin="0 6 6 0"
                             HorizontalAlignment="Right"
                             VerticalContentAlignment="Center"
-                            HorizontalContentAlignment="Center" />
+                            HorizontalContentAlignment="Center"
+                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.CancelDialogCommand}" />
                         <!-- https://github.com/github/VisualStudio/blob/master/src/GitHub.VisualStudio.UI/Views/Dialog/GitHubDialogWindow.xaml -->
                         <!-- DO THIS BEFORE MERGING TO MAIN
                         TOOD Microsoft.VisualStudio.Shell.ViewManager is part of VS, but not available in NuGet.  We don't want to maintain this
@@ -181,10 +183,10 @@
                 FontFamily="{DynamicResource {x:Static shell15:VsFonts.EnvironmentFontFamilyKey}}"
                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
                 FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontWeightKey}}"
+                Text="{Binding Heading}"
+                d:Text="Clone an AWS CodeCommit repository"
                 RenderOptions.ClearTypeHint="Enabled"
-                VerticalAlignment="Center">
-                Clone an AWS CodeCommit repository
-            </TextBlock>
+                VerticalAlignment="Center" />
         </StackPanel>
 
         <TextBlock
@@ -414,7 +416,8 @@
                 </Button>
                 <Button
                     IsCancel="True"
-                    Margin="6 0 0 0">
+                    Margin="6 0 0 0"
+                    Command="{Binding CancelDialogCommand}">
                     Cancel
                 </Button>
             </StackPanel>

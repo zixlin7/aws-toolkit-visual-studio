@@ -7,6 +7,8 @@ using Amazon.AWSToolkit.CodeCatalyst.Models;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
 
+using AwsToolkit.VsSdk.Common.CommonUI.Commands.CodeCatalyst;
+
 using CommonUI.Models;
 
 using Microsoft.VisualStudio.PlatformUI;
@@ -26,7 +28,9 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             _toolkitContext = toolkitContext;
             _joinableTaskFactory = joinableTaskFactory;
-            _viewModel = new CloneCodeCatalystRepositoryViewModel(_toolkitContext, _joinableTaskFactory, parameter => DialogResult = true);
+            _viewModel = new CloneCodeCatalystRepositoryViewModel(_toolkitContext, _joinableTaskFactory);
+            _viewModel.CancelDialogCommand = CancelCloneDialogCommandFactory.Create(this);
+            _viewModel.SubmitDialogCommand = SubmitCloneDialogCommandFactory.Create(_viewModel, this);
 
             InitializeComponent();
 

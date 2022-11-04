@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -69,7 +68,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             _credentialFactory = new SonoCredentialProviderFactory(null);
             _credentialFactory.Initialize();
 
-            _sut = new CloneCodeCatalystRepositoryViewModel(_toolkitContextFixture.ToolkitContext, taskContext.Factory, parameter => { });
+            _sut = new CloneCodeCatalystRepositoryViewModel(_toolkitContextFixture.ToolkitContext, taskContext.Factory);
         }
 
         [Fact]
