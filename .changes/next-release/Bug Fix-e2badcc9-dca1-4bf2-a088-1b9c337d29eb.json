@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed issue where Lambda functions could not be published to regions like GovCloud due to \"GetFunctionURLConfig does not exist in (region)\" error"
+}

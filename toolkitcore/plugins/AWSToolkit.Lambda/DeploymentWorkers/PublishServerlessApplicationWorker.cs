@@ -16,6 +16,7 @@ using Amazon.Lambda;
 using Amazon.Lambda.Tools.Commands;
 using Amazon.Runtime;
 using Amazon.S3;
+using Amazon.SecurityToken;
 
 using log4net;
 
@@ -30,18 +31,22 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         PublishServerlessApplicationWorkerSettings Settings { get; }
         ILambdaFunctionUploadHelpers Helpers { get; }
 
+        IAmazonSecurityTokenService StsClient { get; }
         IAmazonCloudFormation CloudFormationClient { get; }
         IAmazonS3 S3Client { get; }
         IAmazonECR ECRClient { get; }
         private IAmazonIdentityManagementService IamClient { get; }
         private IAmazonLambda LambdaClient { get; }
 
-        public PublishServerlessApplicationWorker(ILambdaFunctionUploadHelpers helpers, IAmazonS3 s3Client, IAmazonCloudFormation cloudFormationClient, IAmazonECR ecrClient,
+        public PublishServerlessApplicationWorker(ILambdaFunctionUploadHelpers helpers,
+            IAmazonSecurityTokenService stsClient,
+            IAmazonS3 s3Client, IAmazonCloudFormation cloudFormationClient, IAmazonECR ecrClient,
             IAmazonIdentityManagementService iamClient, IAmazonLambda lambdaClient,
             PublishServerlessApplicationWorkerSettings settings,
             ITelemetryLogger telemetryLogger)
         {
             this.Helpers = helpers;
+            this.StsClient = stsClient;
             this.S3Client = s3Client;
             this.CloudFormationClient = cloudFormationClient;
             this.ECRClient = ecrClient;
@@ -59,6 +64,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             {
                 var command = new DeployServerlessCommand(logger, Settings.SourcePath, new string[0]);
                 command.DisableInteractive = true;
+                command.STSClient = StsClient;
                 command.S3Client = S3Client;
                 command.CloudFormationClient = CloudFormationClient;
                 command.ECRClient = ECRClient;
