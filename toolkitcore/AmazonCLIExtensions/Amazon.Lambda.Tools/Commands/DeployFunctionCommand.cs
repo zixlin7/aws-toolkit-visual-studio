@@ -65,6 +65,7 @@ namespace Amazon.Lambda.Tools.Commands
             LambdaDefinedCommandOptions.ARGUMENT_APPEND_ENVIRONMENT_VARIABLES,
             LambdaDefinedCommandOptions.ARGUMENT_KMS_KEY_ARN,
             LambdaDefinedCommandOptions.ARGUMENT_APPLY_DEFAULTS_FOR_UPDATE_OBSOLETE,
+            LambdaDefinedCommandOptions.ARGUMENT_RESOLVE_S3,
             LambdaDefinedCommandOptions.ARGUMENT_S3_BUCKET,
             LambdaDefinedCommandOptions.ARGUMENT_S3_PREFIX,
             LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK,
@@ -73,7 +74,11 @@ namespace Amazon.Lambda.Tools.Commands
             CommonDefinedCommandOptions.ARGUMENT_DOCKERFILE,
             CommonDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_OPTIONS,
             CommonDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY,
-            CommonDefinedCommandOptions.ARGUMENT_HOST_BUILD_OUTPUT
+            CommonDefinedCommandOptions.ARGUMENT_HOST_BUILD_OUTPUT,
+            
+            LambdaDefinedCommandOptions.ARGUMENT_USE_CONTAINER_FOR_BUILD,
+            LambdaDefinedCommandOptions.ARGUMENT_CONTAINER_IMAGE_FOR_BUILD,
+            LambdaDefinedCommandOptions.ARGUMENT_CODE_MOUNT_DIRECTORY
         });
 
         public string Architecture { get; set; }
@@ -82,6 +87,7 @@ namespace Amazon.Lambda.Tools.Commands
         public string Package { get; set; }
         public string MSBuildParameters { get; set; }
 
+        public bool? ResolveS3 { get; set; }
         public string S3Bucket { get; set; }
         public string S3Prefix { get; set; }
 
@@ -95,6 +101,10 @@ namespace Amazon.Lambda.Tools.Commands
         public string HostBuildOutput { get; set; }
         public string LocalDockerImage { get; set; }
 
+        public bool? UseContainerForBuild { get; set; }
+
+        public string ContainerImageForBuild { get; set; }
+        public string CodeMountDirectory { get;  set; }
 
         public DeployFunctionCommand(IToolLogger logger, string workingDirectory, string[] args)
             : base(logger, workingDirectory, DeployCommandOptions, args)
@@ -121,6 +131,8 @@ namespace Amazon.Lambda.Tools.Commands
                 this.TargetFramework = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_PACKAGE.Switch)) != null)
                 this.Package = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_RESOLVE_S3.Switch)) != null)
+                this.ResolveS3 = tuple.Item2.BoolValue;
             if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_S3_BUCKET.Switch)) != null)
                 this.S3Bucket = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_S3_PREFIX.Switch)) != null)
@@ -157,14 +169,19 @@ namespace Amazon.Lambda.Tools.Commands
                 this.HostBuildOutput = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_LOCAL_DOCKER_IMAGE.Switch)) != null)
                 this.LocalDockerImage = tuple.Item2.StringValue;
-
+            if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_USE_CONTAINER_FOR_BUILD.Switch)) != null)
+                this.UseContainerForBuild = tuple.Item2.BoolValue;
+            if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_CONTAINER_IMAGE_FOR_BUILD.Switch)) != null)
+                this.ContainerImageForBuild = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_CODE_MOUNT_DIRECTORY.Switch)) != null)
+                this.CodeMountDirectory = tuple.Item2.StringValue;
         }
 
 
 
         protected override async Task<bool> PerformActionAsync()
         {
-            string projectLocation = this.GetStringValueOrDefault(this.ProjectLocation, CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION, false);
+            string projectLocation = Utilities.DetermineProjectLocation(this.WorkingDirectory, this.GetStringValueOrDefault(this.ProjectLocation, CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION, false));
             string zipArchivePath = null;
             string package = this.GetStringValueOrDefault(this.Package, LambdaDefinedCommandOptions.ARGUMENT_PACKAGE, false);
 
@@ -202,7 +219,7 @@ namespace Amazon.Lambda.Tools.Commands
                     var targetFramework = this.GetStringValueOrDefault(this.TargetFramework, CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK, false);
                     if (string.IsNullOrEmpty(targetFramework))
                     {
-                        targetFramework = Utilities.LookupTargetFrameworkFromProjectFile(Utilities.DetermineProjectLocation(this.WorkingDirectory, projectLocation));
+                        targetFramework = Utilities.LookupTargetFrameworkFromProjectFile(projectLocation);
 
                         // If we still don't know what the target framework is ask the user what targetframework to use.
                         // This is common when a project is using multi targeting.
@@ -213,12 +230,14 @@ namespace Amazon.Lambda.Tools.Commands
                     }
                     string msbuildParameters = this.GetStringValueOrDefault(this.MSBuildParameters, CommonDefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false);
 
+                    bool isNativeAot = Utilities.LookPublishAotFlag(projectLocation, this.MSBuildParameters);
+
                     ValidateTargetFrameworkAndLambdaRuntime(targetFramework);
 
                     bool disableVersionCheck = this.GetBoolValueOrDefault(this.DisableVersionCheck, LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK, false).GetValueOrDefault();
                     string publishLocation;
-                    LambdaPackager.CreateApplicationBundle(defaults: this.DefaultConfig, 
-                                                            logger: this.Logger, 
+                    LambdaPackager.CreateApplicationBundle(defaults: this.DefaultConfig,
+                                                            logger: this.Logger,
                                                             workingDirectory: this.WorkingDirectory,
                                                             projectLocation: projectLocation,
                                                             configuration: configuration,
@@ -227,7 +246,13 @@ namespace Amazon.Lambda.Tools.Commands
                                                             architecture: architecture,
                                                             disableVersionCheck: disableVersionCheck,
                                                             layerPackageInfo: layerPackageInfo,
-                                                            publishLocation: out publishLocation, zipArchivePath: ref zipArchivePath);
+                                                            isNativeAot: isNativeAot,
+                                                            useContainerForBuild: GetBoolValueOrDefault(this.UseContainerForBuild, LambdaDefinedCommandOptions.ARGUMENT_USE_CONTAINER_FOR_BUILD, false),
+                                                            containerImageForBuild: GetStringValueOrDefault(this.ContainerImageForBuild, LambdaDefinedCommandOptions.ARGUMENT_CONTAINER_IMAGE_FOR_BUILD, false),
+                                                            codeMountDirectory: GetStringValueOrDefault(this.CodeMountDirectory, LambdaDefinedCommandOptions.ARGUMENT_CODE_MOUNT_DIRECTORY, false),
+                                                            publishLocation: out publishLocation,
+                                                            zipArchivePath: ref zipArchivePath
+                                                            );
 
                     if (string.IsNullOrEmpty(zipArchivePath))
                         return false;
@@ -253,10 +278,18 @@ namespace Amazon.Lambda.Tools.Commands
             try
             {
                 var s3Bucket = this.GetStringValueOrDefault(this.S3Bucket, LambdaDefinedCommandOptions.ARGUMENT_S3_BUCKET, false);
+                bool? resolveS3 = this.GetBoolValueOrDefault(this.ResolveS3, LambdaDefinedCommandOptions.ARGUMENT_RESOLVE_S3, false);
                 string s3Key = null;
-                if (zipArchivePath != null && !string.IsNullOrEmpty(s3Bucket))
+                if (zipArchivePath != null && (resolveS3 == true || !string.IsNullOrEmpty(s3Bucket)))
                 {
-                    await Utilities.ValidateBucketRegionAsync(this.S3Client, s3Bucket);
+                    if(string.IsNullOrEmpty(s3Bucket))
+                    {
+                        s3Bucket = await LambdaUtilities.ResolveDefaultS3Bucket(this.Logger, this.S3Client, this.STSClient);
+                    }
+                    else
+                    {
+                        await Utilities.ValidateBucketRegionAsync(this.S3Client, s3Bucket);
+                    }
 
                     var functionName = this.GetStringValueOrDefault(this.FunctionName, LambdaDefinedCommandOptions.ARGUMENT_FUNCTION_NAME, true);
                     var s3Prefix = this.GetStringValueOrDefault(this.S3Prefix, LambdaDefinedCommandOptions.ARGUMENT_S3_PREFIX, false);
@@ -557,6 +590,7 @@ namespace Amazon.Lambda.Tools.Commands
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.ConfigFileKey, LambdaToolsDefaults.FormatKeyValue(this.GetKeyValuePairOrDefault(this.EnvironmentVariables, LambdaDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false)));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_APPEND_ENVIRONMENT_VARIABLES.ConfigFileKey, LambdaToolsDefaults.FormatKeyValue(this.GetKeyValuePairOrDefault(this.AppendEnvironmentVariables, LambdaDefinedCommandOptions.ARGUMENT_APPEND_ENVIRONMENT_VARIABLES, false)));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_KMS_KEY_ARN.ConfigFileKey, this.GetStringValueOrDefault(this.KMSKeyArn, LambdaDefinedCommandOptions.ARGUMENT_KMS_KEY_ARN, false));
+            data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_RESOLVE_S3.ConfigFileKey, this.GetBoolValueOrDefault(this.ResolveS3, LambdaDefinedCommandOptions.ARGUMENT_RESOLVE_S3, false));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_S3_BUCKET.ConfigFileKey, this.GetStringValueOrDefault(this.S3Bucket, LambdaDefinedCommandOptions.ARGUMENT_S3_BUCKET, false));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_S3_PREFIX.ConfigFileKey, this.GetStringValueOrDefault(this.S3Prefix, LambdaDefinedCommandOptions.ARGUMENT_S3_PREFIX, false));
 
@@ -567,7 +601,10 @@ namespace Amazon.Lambda.Tools.Commands
             data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY.ConfigFileKey, this.GetStringValueOrDefault(this.DockerBuildWorkingDirectory, CommonDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY, false));
             data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_HOST_BUILD_OUTPUT.ConfigFileKey, this.GetStringValueOrDefault(this.HostBuildOutput, CommonDefinedCommandOptions.ARGUMENT_HOST_BUILD_OUTPUT, false));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_IMAGE_TAG.ConfigFileKey, this.GetStringValueOrDefault(this.DockerImageTag, LambdaDefinedCommandOptions.ARGUMENT_IMAGE_TAG, false));
-        }
 
+            data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_USE_CONTAINER_FOR_BUILD.ConfigFileKey, this.GetBoolValueOrDefault(this.UseContainerForBuild, LambdaDefinedCommandOptions.ARGUMENT_USE_CONTAINER_FOR_BUILD, false));
+            data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_CONTAINER_IMAGE_FOR_BUILD.ConfigFileKey, this.GetStringValueOrDefault(this.ContainerImageForBuild, LambdaDefinedCommandOptions.ARGUMENT_CONTAINER_IMAGE_FOR_BUILD, false));
+            data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_CODE_MOUNT_DIRECTORY.ConfigFileKey, this.GetStringValueOrDefault(this.CodeMountDirectory, LambdaDefinedCommandOptions.ARGUMENT_CODE_MOUNT_DIRECTORY, false));
+        }
     }
 }

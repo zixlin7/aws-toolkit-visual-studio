@@ -1,24 +1,22 @@
-﻿using Amazon.ECR;
-using Amazon.Lambda;
-using Amazon.Lambda.Tools.Commands;
-
-using log4net;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Threading;
-using Amazon.AWSToolkit.Lambda.Controller;
-using System.IO;
 using System.Linq;
+using System.Threading;
 
-using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.AWSToolkit.Exceptions;
-using Amazon.AWSToolkit.Lambda.Model;
-using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Lambda.Controller;
+using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.Common.DotNetCli.Tools;
+using Amazon.ECR;
 using Amazon.IdentityManagement;
+using Amazon.Lambda;
+using Amazon.Lambda.Tools.Commands;
 using Amazon.S3;
+using Amazon.SecurityToken;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
@@ -30,9 +28,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         private readonly IAmazonIdentityManagementService _iamClient;
         private readonly IAmazonS3 _s3Client;
 
-        public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler, IAmazonLambda lambdaClient, IAmazonECR ecrClient,
+        public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler,
+            IAmazonSecurityTokenService stsClient,
+            IAmazonLambda lambdaClient, IAmazonECR ecrClient,
             IAmazonIdentityManagementService iamClient, IAmazonS3 s3Client, ITelemetryLogger telemetryLogger)
-            : base(functionHandler, lambdaClient, ecrClient)
+            : base(functionHandler, stsClient, lambdaClient, ecrClient)
         {
             _iamClient = iamClient;
             _s3Client = s3Client;
@@ -55,6 +55,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 deploymentProperties.LambdaPackageType = uploadState.Request?.PackageType;
                 var command = new DeployFunctionCommand(logger, uploadState.SourcePath, new string[0]);
                 command.DisableInteractive = true;
+                command.STSClient = this.StsClient;
                 command.LambdaClient = this.LambdaClient;
                 command.ECRClient = this.ECRClient;
                 command.IAMClient = _iamClient;

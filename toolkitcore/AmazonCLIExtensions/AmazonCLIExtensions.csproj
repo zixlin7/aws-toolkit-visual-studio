@@ -132,6 +132,9 @@
     <PackageReference Include="AWSSDK.S3">
       <Version>3.7.9.50</Version>
     </PackageReference>
+    <PackageReference Include="AWSSDK.SecurityToken">
+      <Version>3.7.1.196</Version>
+    </PackageReference>	
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>

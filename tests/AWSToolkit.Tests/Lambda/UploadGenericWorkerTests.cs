@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
@@ -58,7 +57,7 @@ namespace AWSToolkit.Tests.Lambda
         {
             SetupGetExistingConfiguration();
 
-            _sut = new UploadGenericWorker(_uploadHelpers.Object, _lambda.Object, null,
+            _sut = new UploadGenericWorker(_uploadHelpers.Object, null, _lambda.Object, null,
                 _toolkitContextFixture.ToolkitContext);
 
             _uploadFunctionState = new UploadFunctionController.UploadFunctionState()
