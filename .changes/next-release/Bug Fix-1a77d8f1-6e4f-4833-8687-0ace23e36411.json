@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Beanstalk platform versions can now be configured when deploying to existing Beanstalk targets with Publish to AWS."
+}
