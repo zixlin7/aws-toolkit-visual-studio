@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "The \"Publish to AWS\" experience is now capable of publishing .NET 7 applications to Beanstalk using self contained build. This is necessary for Beanstalk images that do not support .NET 7."
+}
