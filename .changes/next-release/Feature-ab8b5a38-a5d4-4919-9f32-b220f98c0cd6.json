@@ -1,4 +1,4 @@
 {
   "Type": "Feature",
-  "Description": "Publish to AWS has been updated to use v1.6.4 of the AWS .NET deploy tool. This version of the Toolkit includes the following Deploy Tool changes:\n - Add support for deploying .NET 7 applications to Elastic Beanstalk\n - Allow changing Elastic Beanstalk's platform version for environments\n - See https://github.com/aws/aws-dotnet-deploy/releases/tag/1.6.4 for more details."
+  "Description": "Publish to AWS has been updated to use v1.6.4 of the AWS .NET deploy tool. This version of the Toolkit includes the following Deploy Tool changes:\n  - Add support for deploying .NET 7 applications to Elastic Beanstalk\n  - Allow changing Elastic Beanstalk's platform version for environments\n  - See https://github.com/aws/aws-dotnet-deploy/releases/tag/1.6.4 for more details."
 }
