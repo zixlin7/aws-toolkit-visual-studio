@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.CommonUI;
+﻿using System;
+
+using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.ECS.Model
 {
@@ -19,14 +21,15 @@ namespace Amazon.AWSToolkit.ECS.Model
         #region Get Login Commands
         public string PowerShellGetLoginCommand => string.Format("$loginCommand = Get-ECRLoginCommand -Region {0}", _repositoryWrapper.Region);
 
-        public string AwsCliGetLoginCommand => string.Format("aws ecr get-login --no-include-email --region {0}", _repositoryWrapper.Region);
+        public string AwsCliGetLoginCommand => $"aws ecr get-login-password --region {_repositoryWrapper.Region}" +
+                                               $" | docker login --username AWS --password-stdin {GetDockerLoginUrl()}";
 
         #endregion
 
         #region Run Login Commands
         public string PowerShellRunLoginCommand => "Invoke-Expression $loginCommand.Command";
 
-        public string AwsCliRunLoginCommand => string.Format("Invoke-Expression -Command (aws ecr get-login --no-include-email --region {0})", _repositoryWrapper.Region);
+        public string AwsCliRunLoginCommand => $"Invoke-Expression -Command ({AwsCliGetLoginCommand})";
 
         #endregion
 
@@ -48,5 +51,17 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         #endregion
 
+        private string GetDockerLoginUrl()
+        {
+            var uri = Repository.RepositoryUri;
+            var slashPos = uri.IndexOf("/", StringComparison.InvariantCultureIgnoreCase);
+
+            if (slashPos != -1)
+            {
+                uri = uri.Substring(0, slashPos);
+            }
+
+            return uri;
+        }
     }
 }
