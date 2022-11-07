@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Push commands have been updated to use `get-login-password` when viewing an ECR Repository"
+}
