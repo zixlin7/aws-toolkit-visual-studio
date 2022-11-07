@@ -54,6 +54,7 @@ namespace AWSToolkitPackage.Tests.Lambda
         [InlineData("dotnet-lambda-test-tool-3.1", "dotnetcore3.1")]
         [InlineData("dotnet-lambda-test-tool-5.0", "dotnet5.0")]
         [InlineData("dotnet-lambda-test-tool-6.0", "dotnet6")]
+        [InlineData("dotnet-lambda-test-tool-7.0", "dotnet7")]
         public void EmitLambdaTestToolMetric(string processName, string expectedRuntime)
         {
             _sut.EmitIfLambdaTester(processName, 123, true);

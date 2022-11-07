@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Added local debugging support for .NET 7 Lambda projects using the Lambda Test Tool."
+}
