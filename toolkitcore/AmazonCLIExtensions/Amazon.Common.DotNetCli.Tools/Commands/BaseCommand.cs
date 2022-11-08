@@ -4,6 +4,7 @@ using Amazon.Runtime.CredentialManagement;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ using Amazon.ECR;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.S3;
-
+using Amazon.SecurityToken;
 
 namespace Amazon.Common.DotNetCli.Tools.Commands
 {
@@ -104,10 +105,21 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
         {
             var list = new List<CommandOption>();
             list.AddRange(CommonOptions);
-            if(optionCollections != null)
+            if (optionCollections != null)
             {
                 foreach (var options in optionCollections)
-                    list.AddRange(options);
+                {
+                    if (options != null)
+                    {
+                        foreach (var option in options)
+                        {
+                            if (!list.Any(x => string.Equals(x.Switch, option.Switch)))
+                            {
+                                list.Add(option);
+                            }
+                        }
+                    }
+                }
             }
 
             return list;
@@ -745,6 +757,25 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
                                           version);
         }
 
+        IAmazonSecurityTokenService _stsClient;
+        public IAmazonSecurityTokenService STSClient
+        {
+            get
+            {
+                if (this._stsClient == null)
+                {
+                    SetUserAgentString();
+
+                    var config = new AmazonSecurityTokenServiceConfig();
+                    config.RegionEndpoint = DetermineAWSRegion();
+
+                    this._stsClient = new AmazonSecurityTokenServiceClient(DetermineAWSCredentials(), config);
+                }
+                return this._stsClient;
+            }
+            set { this._stsClient = value; }
+        }
+
         IAmazonIdentityManagementService _iamClient;
         public IAmazonIdentityManagementService IAMClient
         {
@@ -859,6 +890,10 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
         protected void EnsureInProjectDirectory()
         {
             var projectLocation = Utilities.DetermineProjectLocation(this.WorkingDirectory, this.GetStringValueOrDefault(this.ProjectLocation, CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION, false));
+            if (!Directory.Exists(projectLocation))
+            {
+                throw new ToolsException($"Provided project location is not a directory.", ToolsException.CommonErrorCode.NoProjectFound);
+            }
 
             if (Directory.GetFiles(projectLocation, "*.csproj", SearchOption.TopDirectoryOnly).Length == 1 ||
                 Directory.GetFiles(projectLocation, "*.fsproj", SearchOption.TopDirectoryOnly).Length == 1 ||

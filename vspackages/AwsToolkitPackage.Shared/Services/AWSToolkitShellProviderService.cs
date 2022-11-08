@@ -179,6 +179,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             }
         }
 
+        public void OpenInWindowsExplorer(string filePath)
+        {
+            Process.Start("explorer.exe", "/select, " + filePath);
+        }
+
         public bool ShowInModalDialogWindow(IAWSToolkitControl hostedControl, MessageBoxButton buttons)
         {
             var dialogWindow = DialogWindowHost.CreateDialogHost(buttons, hostedControl, this);

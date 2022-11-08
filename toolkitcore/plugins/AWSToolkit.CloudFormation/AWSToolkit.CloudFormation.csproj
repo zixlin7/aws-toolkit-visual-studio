@@ -72,7 +72,6 @@
     <Compile Include="Controllers\DeploymentControllerBase.cs" />
     <Compile Include="Controllers\DeploymentControllerBaseObserver.cs" />
     <Compile Include="Controllers\DeployTemplateController.cs" />
-    <Compile Include="Controllers\GetUrlToCostEstimateController.cs" />
     <Compile Include="Controllers\RedeployApplicationController.cs" />
     <Compile Include="Controllers\ViewDeploymentLogController.cs" />
     <Compile Include="Controllers\ViewStackController.cs" />
@@ -152,7 +151,6 @@
     <Compile Include="Nodes\CloudFormationStackViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WizardPages\PageControllers\AppOptionsPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\CostEstimatorParametersController.cs" />
     <Compile Include="WizardPages\PageControllers\CreateStackReviewPageController.cs" />
     <Compile Include="WizardPages\PageControllers\AWSOptionsPageController.cs" />
     <Compile Include="WizardPages\PageControllers\FastTrackRepublishPageController.cs" />
@@ -160,9 +158,6 @@
     <Compile Include="WizardPages\PageControllers\SelectStackPageController.cs" />
     <Compile Include="WizardPages\PageControllers\SelectTemplateController.cs" />
     <Compile Include="WizardPages\PageControllers\TemplateParametersController.cs" />
-    <Compile Include="WizardPages\PageUI\CostEstimatorParameterPage.xaml.cs">
-      <DependentUpon>CostEstimatorParameterPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WizardPages\PageUI\CreateStackReviewPage.xaml.cs">
       <DependentUpon>CreateStackReviewPage.xaml</DependentUpon>
     </Compile>
@@ -288,10 +283,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\ViewTemplateJson.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WizardPages\PageUI\CostEstimatorParameterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

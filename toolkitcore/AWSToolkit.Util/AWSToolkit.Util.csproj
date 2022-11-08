@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Collections\CollectionExtensionMethods.cs" />
     <Compile Include="CryptoUtil.cs" />
+    <Compile Include="DisposingAction.cs" />
     <Compile Include="Events\LogExceptionAndForgetChangedHandler.cs" />
     <Compile Include="Exceptions\IamToolkitException.cs" />
     <Compile Include="Exceptions\LambdaToolkitException.cs" />
@@ -64,12 +65,16 @@
     <Compile Include="HostManagerClientRequest.cs" />
     <Compile Include="IAMUtilities.cs" />
     <Compile Include="IISPath.cs" />
+    <Compile Include="LoggingMutex.cs" />
     <Compile Include="Publish\PublishableProjectSpecification.cs" />
     <Compile Include="Publish\PublishSetting\DeployServerSettings.cs" />
     <Compile Include="Publish\PublishSetting\FilePublishSettingsRepository.cs" />
     <Compile Include="Publish\PublishSetting\IPublishSettingsRepository.cs" />
     <Compile Include="Publish\PublishSetting\PortRange.cs" />
     <Compile Include="Publish\PublishSetting\PublishSettings.cs" />
+    <Compile Include="Settings\FileSettingsRepository.cs" />
+    <Compile Include="Settings\ISettingsRepository.cs" />
+    <Compile Include="Settings\LoggingSettings.cs" />
     <Compile Include="Settings\SettingsException.cs" />
     <Compile Include="Shell\DotnetProcess.cs" />
     <Compile Include="Shell\HeadlessProcess.cs" />
@@ -135,6 +140,7 @@
     <Compile Include="Solutions\ProjectType.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Util\DateTimeUtil.cs" />
+    <Compile Include="Util\NumericLog4NetConverter.cs" />
     <Compile Include="Util\ThrottleDispatcher.cs" />
     <Compile Include="Util\DebounceDispatcher.cs" />
     <Compile Include="Util\FrameworkNameHelper.cs" />
@@ -281,10 +287,10 @@
       <Version>3.7.11.26</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.75</Version>
+      <Version>1.0.77</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.75</Version>
+      <Version>1.0.77</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.7.0.203</Version>

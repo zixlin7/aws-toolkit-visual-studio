@@ -64,8 +64,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 if (HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack] is bool isLinuxDeployment)
                 {
                     _pageUI.IsLinuxDeployment = isLinuxDeployment;
-                    _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework, _pageUI.IsLinuxDeployment);
                 }
+
+                _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework);
 
                 if (!RedeployingAppVersion)
                 {
@@ -88,7 +89,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             return _pageUI;
         }
 
-        private bool SelfContainedDefaultFor(string targetFramework, bool isLinuxDeployment) => targetFramework.MatchesFramework(Frameworks.Net60) && !isLinuxDeployment;
+        private bool SelfContainedDefaultFor(string targetFramework) => targetFramework.MatchesFramework(Frameworks.Net70);
 
         string _lastSeenAccount;
         string _lastSeenRegion;
@@ -114,9 +115,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 if (HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack] is bool isLinuxDeployment
                     && isLinuxDeployment != _pageUI.IsLinuxDeployment) {
                     _pageUI.IsLinuxDeployment = isLinuxDeployment;
-                    _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework, _pageUI.IsLinuxDeployment);
                 }
 
+                _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework);
 
                 DeploymentWizardHelper.ValidBeanstalkOptions validOptions = null;
                 var selectedAccount = HostingWizard.GetSelectedAccount();

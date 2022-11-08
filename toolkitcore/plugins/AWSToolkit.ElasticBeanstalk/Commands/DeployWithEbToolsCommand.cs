@@ -1,16 +1,18 @@
-﻿using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.Notifications;
-using Amazon.Common.DotNetCli.Tools;
-using Amazon.ElasticBeanstalk.Tools.Commands;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
 using Amazon.AWSToolkit.Regions;
+using Amazon.Common.DotNetCli.Tools;
+using Amazon.ElasticBeanstalk.Tools.Commands;
+
 using AWSDeployment;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -96,6 +98,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             command.Region = region.Id;
             deployMetric.AwsRegion = command.Region;
 
+            command.STSClient =
+                this.Account.CreateServiceClient<Amazon.SecurityToken.AmazonSecurityTokenServiceClient>(
+                    region);
             command.IAMClient =
                 this.Account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(
                     region);

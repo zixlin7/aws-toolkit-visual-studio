@@ -104,12 +104,6 @@ namespace Amazon.AWSToolkit.CloudFormation
             return controller.Execute(filepath, seedParameters, new FileInfo(filepath).Name);
         }
 
-        public DeployedTemplateData GetUrlToCostEstimate(string filepath, IDictionary<string, object> seedParameters)
-        {
-            var controller = new GetUrlToCostEstimateController(ToolkitContext);
-            return controller.Execute(File.ReadAllText(filepath), seedParameters, new FileInfo(filepath).Name);
-        }
-
         #endregion
 
         #region IAWSToolkitDeploymentService Members

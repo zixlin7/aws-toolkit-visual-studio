@@ -216,13 +216,13 @@
                             <ListItem>
                                 <Paragraph>
                                     <Run>
-                                        Retrieve the docker login command that you can use to authenticate your Docker 
+                                        Retrieve a password, and pass it to the docker login command that authenticates your Docker 
                                         client to your registry.
                                     </Run>
                                     <LineBreak/>
                                     <LineBreak/>
                                     <Run>
-                                        Note: If you receive an "Unknown options: --no-include-email" error, install the latest version of the AWS CLI.
+                                        Note: If you receive argument errors, install the latest version of the AWS CLI.
                                     </Run>
                                     <Hyperlink
                                         IsEnabled="True"
@@ -244,32 +244,6 @@
                                         </Button>
                                         <TextBox Style="{StaticResource CommandTextStyle}"
                                                  Text="{Binding AwsCliGetLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                    </Grid>
-                                </Paragraph>
-                            </ListItem>
-                            <ListItem>
-                                <Paragraph>
-                                    <Run>
-                                        Run the docker login command that was returned in the previous step.</Run>
-                                    <LineBreak/>
-                                    <LineBreak/>
-                                    <Run>Note: If you are using the AWS CLI in a Windows PowerShell command prompt, run the 
-                                        following command instead:
-                                    </Run>
-                                    <LineBreak/>
-                                    <Grid Style="{StaticResource CommandGridStyle}">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
-                                                Click="OnClick_CopyRunLoginCommand">
-                                            <Image DataContext="{DynamicResource CommonIcons}" 
-                                                   Source="{Binding CopyIcon}"
-                                            />
-                                        </Button>
-                                        <TextBox Style="{StaticResource CommandTextStyle}"
-                                                 Text="{Binding AwsCliRunLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                                     </Grid>
                                 </Paragraph>
                             </ListItem>

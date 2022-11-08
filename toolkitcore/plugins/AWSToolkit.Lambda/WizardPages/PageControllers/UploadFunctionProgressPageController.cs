@@ -27,6 +27,7 @@ using Amazon.IdentityManagement.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.S3;
+using Amazon.SecurityToken;
 
 using log4net;
 
@@ -153,6 +154,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             var region = HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
 
+            IAmazonSecurityTokenService stsClient = account.CreateServiceClient<IAmazonSecurityTokenService>(region);
             IAmazonCloudFormation cloudFormationClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
             IAmazonS3 s3Client = account.CreateServiceClient<AmazonS3Client>(region);
             IAmazonECR ecrClient = account.CreateServiceClient<AmazonECRClient>(region);
@@ -192,7 +194,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }
 
 
-            var worker = new PublishServerlessApplicationWorker(this, s3Client, cloudFormationClient, ecrClient,
+            var worker = new PublishServerlessApplicationWorker(this,
+                stsClient, s3Client, cloudFormationClient, ecrClient,
                 iamClient, lambdaClient, settings, _toolkitContext.TelemetryLogger);
 
             ThreadPool.QueueUserWorkItem(x =>
@@ -352,6 +355,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region);
                 }
 
+                IAmazonSecurityTokenService stsClient =
+                    state.Account.CreateServiceClient<IAmazonSecurityTokenService>(state.Region);
+
                 BaseUploadWorker worker;
 
                 if (DetermineDeploymentType(state.SourcePath) == DeploymentType.NETCore)
@@ -359,12 +365,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     var iamClient =
                         state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region);
                     var s3Client = state.Account.CreateServiceClient<AmazonS3Client>(state.Region);
-                    worker = new UploadNETCoreWorker(this, lambdaClient, ecrClient, iamClient, s3Client,
+                    worker = new UploadNETCoreWorker(this, stsClient, lambdaClient, ecrClient, iamClient, s3Client,
                         _toolkitContext.TelemetryLogger);
                 }
                 else
                 {
-                    worker = new UploadGenericWorker(this, lambdaClient, ecrClient, _toolkitContext);
+                    worker = new UploadGenericWorker(this, stsClient, lambdaClient, ecrClient, _toolkitContext);
                 }
 
                 ThreadPool.QueueUserWorkItem(x =>

@@ -1,0 +1,681 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"properties": {
+		"version": {
+			"type": "number",
+			"enum": [
+				0.2
+			],
+			"description": "Required mapping. Represents the buildspec version. We recommend that you use 0.2.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.version"
+		},
+		"env": {
+			"properties": {
+				"variables": {
+					"patternProperties": {
+						".*": {
+							"type": "string"
+						}
+					},
+					"type": "object"
+				},
+				"exported-variables": {
+					"items": {
+						"type": "string"
+					},
+					"type": "array",
+					"description": "Optional mapping. Used to list environment variables you want to export. Specify the name of each variable you want to export on a separate line under exported-variables. The variable you want to export must be available in your container during the build. The variable you export can be an environment variable.\n Exported environment variables are used in conjunction with AWS CodePipeline to export environment variables from the current build stage to subsequent stages in the pipeline. For more information, see Working with variables: https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-variables.html in the AWS CodePipeline User Guide.\n During a build, the value of a variable is available starting with the install phase. It can be updated between the start of the install phase and the end of the post_build phase. After the post_build phase ends, the value of exported variables cannot change. NOTE: The following cannot be exported:\n- Amazon EC2 Systems Manager Parameter Store secrets specified in the build project.\n- Secrets Manager secrets specified in the build project\n- Environment variables that start with AWS_.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.exported-variables"
+				},
+				"parameter-store": {
+					"patternProperties": {
+						".*": {
+							"type": "string"
+						}
+					},
+					"type": "object",
+					"description": "Required if env is specified, and you want to retrieve custom environment variables stored in Amazon EC2 Systems Manager Parameter Store. Contains a mapping of key/value scalars, where each mapping represents a single custom environment variable stored in Amazon EC2 Systems Manager Parameter Store. key is the name you use later in your build commands to refer to this custom environment variable, and value is the name of the custom environment variable stored in Amazon EC2 Systems Manager Parameter Store. To store sensitive values, see Systems Manager Parameter Store: https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html and Walkthrough: Create and test a String parameter (console): https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-console.html in the Amazon EC2 Systems Manager User Guide.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.parameter-store"
+				},
+				"secrets-manager": {
+					"patternProperties": {
+						".*": {
+							"type": "string"
+						}
+					},
+					"type": "object",
+					"description": "Required if you want to retrieve custom environment variables stored in AWS Secrets Manager. Specify a Secrets Manager reference-key using the following pattern:\n \u003ckey\u003e: \u003csecret-id\u003e:\u003cjson-key\u003e:\u003cversion-stage\u003e|\u003cversion-id\u003e\n  \u003ckey\u003e\n   (Required) The local environment variable name. Use this name to access the variable during the build.\n\u003csecret-id\u003e\n  (Required) The name or Amazon Resource Name (ARN) that serves as a unique identifier for the secret. To access a secret in your AWS account, simply specify the secret name. To access a secret in a different AWS account, specify the secret ARN.\n  \u003cjson-key\u003e\n (Optional) Specifies the key name of the Secrets Manager key-value pair whose value you want to retrieve. If you do not specify a json-key, CodeBuild retrieves the entire secret text.\n  \u003cversion-stage\u003e\n  (Optional) Specifies the secret version that you want to retrieve by the staging label attached to the version. Staging labels are used to keep track of different versions during the rotation process. If you use version-stage, don't specify version-id. If you don't specify a version stage or version ID, the default is to retrieve the version with the version stage value of AWSCURRENT.\n  \u003cversion-id\u003e\n  (Optional) Specifies the unique identifier of the version of the secret that you want to use. If you specify version-id, don't specify version-stage. If you don't specify a version stage or version ID, the default is to retrieve the version with the version stage value of AWSCURRENT.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager"
+				},
+				"git-credential-helper": {
+					"type": "boolean",
+					"description": "Optional mapping. Used to indicate if CodeBuild uses its Git credential helper to provide Git credentials. yes if it is used. Otherwise, no or not specified. For more information, see gitcredentials: https://git-scm.com/docs/gitcredentials on the Git website. NOTE: git-credential-helper is not supported for builds that are triggered by a webhook for a public Git repository.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.git-credential-helper"
+				},
+				"build-version": {
+					"type": "string"
+				},
+				"shell": {
+					"type": "string",
+					"description": "Optional sequence. Specifies the supported shell for Linux or Windows operating systems. \nFor Linux operating systems, supported shell tags are: \nbash\n  /bin/sh\nFor Windows operating systems, supported shell tags are:\n  powershell.exe\n  cmd.exe \n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.shell"
+				}
+			},
+			"additionalProperties": false,
+			"type": "object",
+			"description": "Optional sequence. Represents information for one or more custom environment variables.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env"
+		},
+		"proxy": {
+			"properties": {
+				"logs": {
+					"type": "boolean",
+					"description": "Optional mapping. Set to yes if you want your build in an explicit proxy server to upload artifacts. The default is no.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.proxy.upload-artifacts"
+				},
+				"upload-artifacts": {
+					"type": "boolean",
+					"description": "Optional mapping. Set to yes for your build in a explicit proxy server to create CloudWatch logs. The default is no.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.proxy.logs"
+				}
+			},
+			"additionalProperties": false,
+			"type": "object",
+			"description": "Optional sequence. Used to represent settings if you run your build in an explicit proxy server. For more information, see Run CodeBuild in an explicit proxy server: https://docs.aws.amazon.com/codebuild/latest/userguide/use-proxy-server.html#run-codebuild-in-explicit-proxy-server \n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.proxy"
+		},
+		"run-as": {
+			"type": "string",
+			"description": "Optional sequence. Available to Linux users only. Specifies a Linux user that runs commands in this buildspec file. run-as grants the specified user read and run permissions. When you specify run-as at the top of the buildspec file, it applies globally to all commands. If you don't want to specify a user for all buildspec file commands, you can specify one for commands in a phase by using run-as in one of the phases blocks. If run-as is not specified, then all commands run as the root user.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.run-as"
+		},
+		"phases": {
+			"properties": {
+				"install": {
+					"properties": {
+						"commands": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional sequence. Contains a sequence of scalars, where each scalar represents a single command that CodeBuild runs during installation. CodeBuild runs each command, one at a time, in the order listed, from beginning to end.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.install.commands"
+						},
+						"finally": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional block. Commands specified in a finally block are run after commands in the commands block. The commands in a finally block are run even if a command in the commands block fails. For example, if the commands block contains three commands and the first fails, CodeBuild skips the remaining two commands and runs any commands in the finally block. The phase is successful when all commands in the commands and the finally blocks run successfully. If any command in a phase fails, the phase fails.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.finally"
+						},
+						"run-as": {
+							"type": "string",
+							"description": "Optional sequence. Use in a build phase to specify a Linux user that runs its commands. If run-as is also specified globally for all commands at the top of the buildspec file, then the phase-level user takes precedence. For example, if globally run-as specifies User-1, and for the install phase only a run-as statement specifies User-2, then all commands in then buildspec file are run as User-1 except commands in the install phase, which are run as User-2.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.run-as"
+						},
+						"runtime-versions": {
+							"patternProperties": {
+								".*": {
+									"type": "string"
+								}
+							},
+							"type": "object",
+							"description": "Optional sequence. A runtime version is supported with the Ubuntu standard image 2.0 or later and the Amazon Linux 2 standard image 1.0 or later. If specified, at least one runtime must be included in this section. Specify a runtime using a specific version, a major version followed by .x to specify that CodeBuild uses that major version with its latest minor version, or latest to use the most recent major and minor version (for example, java: openjdk11, ruby: 2.6, nodejs: 12.x, or java: latest). You can specify the runtime using a number or an environment variable. For example, if you use the Amazon Linux 2 standard image 2.0, then the following specifies that version 8 of Java, the latest minor version of python version 3, and a version contained in an environment variable of Ruby is installed. For more information, see Docker images provided by CodeBuild: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html You can specify one or more runtimes in the runtime-versions section of your buildspec file. If your runtime is dependent upon another runtime, you can also specify its dependent runtime in the buildspec file. If you do not specify any runtimes in the buildspec file, CodeBuild chooses the default runtimes that are available in the image you use. If you specify one or more runtimes, CodeBuild uses only those runtimes. If a dependent runtime is not specified, CodeBuild attempts to choose the dependent runtime for you. \nIf two specified runtimes conflict, the build fails. For example, android: 29 and java: openjdk11 conflict, so if both are specified, the build fails. For more information about the available runtimes, see Available runtimes: https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html \nNOTE: If you specify a runtime-versions section and use an image other than Ubuntu Standard Image 2.0 or later, or the Amazon Linux 2 (AL2) standard image 1.0 or later, the build issues the warning, \"Skipping install of runtimes. Runtime version selection is not supported by this build image.\"\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.install.runtime-versions"
+						},
+						"on-failure": {
+							"type": "string",
+							"enum": [
+								"ABORT",
+								"CONTINUE"
+							],
+							"description": "Optional sequence. Specifies the action to take if a failure occurs during the phase. This can be one of the following values:\nABORT - Abort the build.\nCONTINUE - Continue to the next phase.\nIf this property is not specified, the failure process follows the transition phases as shown in Build phase transitions: https://docs.aws.amazon.com/codebuild/latest/userguide/view-build-details.html#view-build-details-phases \n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.on-failure"
+						}
+					},
+					"additionalProperties": false,
+					"type": "object"
+				},
+				"pre_build": {
+					"properties": {
+						"commands": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional sequence. Contains a sequence of scalars, where each scalar represents a single command that CodeBuild runs during installation. CodeBuild runs each command, one at a time, in the order listed, from beginning to end.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.install.commands"
+						},
+						"finally": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional block. Commands specified in a finally block are run after commands in the commands block. The commands in a finally block are run even if a command in the commands block fails. For example, if the commands block contains three commands and the first fails, CodeBuild skips the remaining two commands and runs any commands in the finally block. The phase is successful when all commands in the commands and the finally blocks run successfully. If any command in a phase fails, the phase fails.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.finally"
+						},
+						"run-as": {
+							"type": "string",
+							"description": "Optional sequence. Use in a build phase to specify a Linux user that runs its commands. If run-as is also specified globally for all commands at the top of the buildspec file, then the phase-level user takes precedence. For example, if globally run-as specifies User-1, and for the install phase only a run-as statement specifies User-2, then all commands in then buildspec file are run as User-1 except commands in the install phase, which are run as User-2.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.run-as"
+						},
+						"runtime-versions": {
+							"patternProperties": {
+								".*": {
+									"type": "string"
+								}
+							},
+							"type": "object",
+							"description": "Optional sequence. A runtime version is supported with the Ubuntu standard image 2.0 or later and the Amazon Linux 2 standard image 1.0 or later. If specified, at least one runtime must be included in this section. Specify a runtime using a specific version, a major version followed by .x to specify that CodeBuild uses that major version with its latest minor version, or latest to use the most recent major and minor version (for example, java: openjdk11, ruby: 2.6, nodejs: 12.x, or java: latest). You can specify the runtime using a number or an environment variable. For example, if you use the Amazon Linux 2 standard image 2.0, then the following specifies that version 8 of Java, the latest minor version of python version 3, and a version contained in an environment variable of Ruby is installed. For more information, see Docker images provided by CodeBuild: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html You can specify one or more runtimes in the runtime-versions section of your buildspec file. If your runtime is dependent upon another runtime, you can also specify its dependent runtime in the buildspec file. If you do not specify any runtimes in the buildspec file, CodeBuild chooses the default runtimes that are available in the image you use. If you specify one or more runtimes, CodeBuild uses only those runtimes. If a dependent runtime is not specified, CodeBuild attempts to choose the dependent runtime for you. \nIf two specified runtimes conflict, the build fails. For example, android: 29 and java: openjdk11 conflict, so if both are specified, the build fails. For more information about the available runtimes, see Available runtimes: https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html \nNOTE: If you specify a runtime-versions section and use an image other than Ubuntu Standard Image 2.0 or later, or the Amazon Linux 2 (AL2) standard image 1.0 or later, the build issues the warning, \"Skipping install of runtimes. Runtime version selection is not supported by this build image.\"\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.install.runtime-versions"
+						},
+						"on-failure": {
+							"type": "string",
+							"enum": [
+								"ABORT",
+								"CONTINUE"
+							],
+							"description": "Optional sequence. Specifies the action to take if a failure occurs during the phase. This can be one of the following values:\nABORT - Abort the build.\nCONTINUE - Continue to the next phase.\nIf this property is not specified, the failure process follows the transition phases as shown in Build phase transitions: https://docs.aws.amazon.com/codebuild/latest/userguide/view-build-details.html#view-build-details-phases \n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.on-failure"
+						}
+					},
+					"additionalProperties": false,
+					"type": "object"
+				},
+				"build": {
+					"properties": {
+						"commands": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional sequence. Contains a sequence of scalars, where each scalar represents a single command that CodeBuild runs during installation. CodeBuild runs each command, one at a time, in the order listed, from beginning to end.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.install.commands"
+						},
+						"finally": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional block. Commands specified in a finally block are run after commands in the commands block. The commands in a finally block are run even if a command in the commands block fails. For example, if the commands block contains three commands and the first fails, CodeBuild skips the remaining two commands and runs any commands in the finally block. The phase is successful when all commands in the commands and the finally blocks run successfully. If any command in a phase fails, the phase fails.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.finally"
+						},
+						"run-as": {
+							"type": "string",
+							"description": "Optional sequence. Use in a build phase to specify a Linux user that runs its commands. If run-as is also specified globally for all commands at the top of the buildspec file, then the phase-level user takes precedence. For example, if globally run-as specifies User-1, and for the install phase only a run-as statement specifies User-2, then all commands in then buildspec file are run as User-1 except commands in the install phase, which are run as User-2.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.run-as"
+						},
+						"runtime-versions": {
+							"patternProperties": {
+								".*": {
+									"type": "string"
+								}
+							},
+							"type": "object",
+							"description": "Optional sequence. A runtime version is supported with the Ubuntu standard image 2.0 or later and the Amazon Linux 2 standard image 1.0 or later. If specified, at least one runtime must be included in this section. Specify a runtime using a specific version, a major version followed by .x to specify that CodeBuild uses that major version with its latest minor version, or latest to use the most recent major and minor version (for example, java: openjdk11, ruby: 2.6, nodejs: 12.x, or java: latest). You can specify the runtime using a number or an environment variable. For example, if you use the Amazon Linux 2 standard image 2.0, then the following specifies that version 8 of Java, the latest minor version of python version 3, and a version contained in an environment variable of Ruby is installed. For more information, see Docker images provided by CodeBuild: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html You can specify one or more runtimes in the runtime-versions section of your buildspec file. If your runtime is dependent upon another runtime, you can also specify its dependent runtime in the buildspec file. If you do not specify any runtimes in the buildspec file, CodeBuild chooses the default runtimes that are available in the image you use. If you specify one or more runtimes, CodeBuild uses only those runtimes. If a dependent runtime is not specified, CodeBuild attempts to choose the dependent runtime for you. \nIf two specified runtimes conflict, the build fails. For example, android: 29 and java: openjdk11 conflict, so if both are specified, the build fails. For more information about the available runtimes, see Available runtimes: https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html \nNOTE: If you specify a runtime-versions section and use an image other than Ubuntu Standard Image 2.0 or later, or the Amazon Linux 2 (AL2) standard image 1.0 or later, the build issues the warning, \"Skipping install of runtimes. Runtime version selection is not supported by this build image.\"\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.install.runtime-versions"
+						},
+						"on-failure": {
+							"type": "string",
+							"enum": [
+								"ABORT",
+								"CONTINUE"
+							],
+							"description": "Optional sequence. Specifies the action to take if a failure occurs during the phase. This can be one of the following values:\nABORT - Abort the build.\nCONTINUE - Continue to the next phase.\nIf this property is not specified, the failure process follows the transition phases as shown in Build phase transitions: https://docs.aws.amazon.com/codebuild/latest/userguide/view-build-details.html#view-build-details-phases \n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.on-failure"
+						}
+					},
+					"additionalProperties": false,
+					"type": "object"
+				},
+				"post_build": {
+					"properties": {
+						"commands": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional sequence. Contains a sequence of scalars, where each scalar represents a single command that CodeBuild runs during installation. CodeBuild runs each command, one at a time, in the order listed, from beginning to end.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.install.commands"
+						},
+						"finally": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional block. Commands specified in a finally block are run after commands in the commands block. The commands in a finally block are run even if a command in the commands block fails. For example, if the commands block contains three commands and the first fails, CodeBuild skips the remaining two commands and runs any commands in the finally block. The phase is successful when all commands in the commands and the finally blocks run successfully. If any command in a phase fails, the phase fails.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.finally"
+						},
+						"run-as": {
+							"type": "string",
+							"description": "Optional sequence. Use in a build phase to specify a Linux user that runs its commands. If run-as is also specified globally for all commands at the top of the buildspec file, then the phase-level user takes precedence. For example, if globally run-as specifies User-1, and for the install phase only a run-as statement specifies User-2, then all commands in then buildspec file are run as User-1 except commands in the install phase, which are run as User-2.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.run-as"
+						},
+						"runtime-versions": {
+							"patternProperties": {
+								".*": {
+									"type": "string"
+								}
+							},
+							"type": "object",
+							"description": "Optional sequence. A runtime version is supported with the Ubuntu standard image 2.0 or later and the Amazon Linux 2 standard image 1.0 or later. If specified, at least one runtime must be included in this section. Specify a runtime using a specific version, a major version followed by .x to specify that CodeBuild uses that major version with its latest minor version, or latest to use the most recent major and minor version (for example, java: openjdk11, ruby: 2.6, nodejs: 12.x, or java: latest). You can specify the runtime using a number or an environment variable. For example, if you use the Amazon Linux 2 standard image 2.0, then the following specifies that version 8 of Java, the latest minor version of python version 3, and a version contained in an environment variable of Ruby is installed. For more information, see Docker images provided by CodeBuild: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html You can specify one or more runtimes in the runtime-versions section of your buildspec file. If your runtime is dependent upon another runtime, you can also specify its dependent runtime in the buildspec file. If you do not specify any runtimes in the buildspec file, CodeBuild chooses the default runtimes that are available in the image you use. If you specify one or more runtimes, CodeBuild uses only those runtimes. If a dependent runtime is not specified, CodeBuild attempts to choose the dependent runtime for you. \nIf two specified runtimes conflict, the build fails. For example, android: 29 and java: openjdk11 conflict, so if both are specified, the build fails. For more information about the available runtimes, see Available runtimes: https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html \nNOTE: If you specify a runtime-versions section and use an image other than Ubuntu Standard Image 2.0 or later, or the Amazon Linux 2 (AL2) standard image 1.0 or later, the build issues the warning, \"Skipping install of runtimes. Runtime version selection is not supported by this build image.\"\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.install.runtime-versions"
+						},
+						"on-failure": {
+							"type": "string",
+							"enum": [
+								"ABORT",
+								"CONTINUE"
+							],
+							"description": "Optional sequence. Specifies the action to take if a failure occurs during the phase. This can be one of the following values:\nABORT - Abort the build.\nCONTINUE - Continue to the next phase.\nIf this property is not specified, the failure process follows the transition phases as shown in Build phase transitions: https://docs.aws.amazon.com/codebuild/latest/userguide/view-build-details.html#view-build-details-phases \n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases.on-failure"
+						}
+					},
+					"additionalProperties": false,
+					"type": "object"
+				}
+			},
+			"additionalProperties": false,
+			"type": "object",
+			"description": "Required sequence. Represents the commands CodeBuild runs during each phase of the build. NOTE: In buildspec version 0.1, CodeBuild runs each command in a separate instance of the default shell in the build environment. This means that each command runs in isolation from all other commands. Therefore, by default, you cannot run a single command that relies on the state of any previous commands (for example, changing directories or setting environment variables). To get around this limitation, we recommend that you use version 0.2, which solves this issue. If you must use buildspec version 0.1, we recommend the approaches in Shells and commands in build environments: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-cmd.html \n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.phases"
+		},
+		"artifacts": {
+			"properties": {
+				"base-directory": {
+					"type": "string",
+					"description": "Optional mapping. Represents one or more top-level directories, relative to the original build location, that CodeBuild uses to determine which files and subdirectories to include in the build output artifact. Valid values include: \nA single top-level directory (for example, my-directory). \n'my-directory*' represents all top-level directories with names starting with my-directory. \nMatching top-level directories are not included in the build output artifact, only their files and subdirectories. \nYou can use files and discard-paths to further restrict which files and subdirectories are included.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.base-directory"
+				},
+				"discard-paths": {
+					"type": "boolean",
+					"description": "Optional. Specifies if the build artifact directories are flattened in the output. If this is not specified, or contains no, build artifacts are output with their directory structure intact. If this contains yes, all of the build artifacts are placed in the same output directory. For example, if a path to a file in the build output artifact is com/mycompany/app/HelloWorld.java"
+				},
+				"files": {
+					"items": {
+						"type": "string"
+					},
+					"type": "array"
+				},
+				"exclude-paths": {
+					"items": {
+						"type": "string"
+					},
+					"type": "array",
+					"description": "Optional mapping. Represents one or more paths, relative to base-directory, that CodeBuild will exclude from the build artifacts.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.exclude-paths"
+				},
+				"name": {
+					"type": "string",
+					"description": "Optional name. Specifies a name for your build artifact. This name is used when one of the following is true. \nYou use the CodeBuild API to create your builds and the overrideArtifactName flag is set on the ProjectArtifacts object when a project is updated, a project is created, or a build is started. \nYou use the CodeBuild console to create your builds, a name is specified in the buildspec file, and you select Enable semantic versioning when you create or update a project. For more information, see Create a build project: https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-console.html \nYou can specify a name in the buildspec file that is calculated at build time. The name specified in a buildspec file uses the Shell command language: http://pubs.opengroup.org/onlinepubs/9699919799/ For example, you can append a date and time to your artifact name so that it is always unique. Unique artifact names prevent artifacts from being overwritten. For more information, see Shell command language.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.name"
+				},
+				"auto-discover-reports": {
+					"type": "boolean"
+				},
+				"enable-symlinks": {
+					"type": "boolean",
+					"description": "Optional. If the output type is ZIP, specifies if internal symbolic links are preserved in the ZIP file. If this contains yes, all internal symbolic links in the source will be preserved in the artifacts ZIP file.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.enable-symlinks"
+				},
+				"secondary-artifacts": {
+					"patternProperties": {
+						".*": {
+							"properties": {
+								"base-directory": {
+									"type": "string",
+									"description": "Optional mapping. Represents one or more top-level directories, relative to the original build location, that CodeBuild uses to determine which files and subdirectories to include in the build output artifact. Valid values include: \nA single top-level directory (for example, my-directory). \n'my-directory*' represents all top-level directories with names starting with my-directory. \nMatching top-level directories are not included in the build output artifact, only their files and subdirectories. \nYou can use files and discard-paths to further restrict which files and subdirectories are included.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.base-directory"
+								},
+								"discard-paths": {
+									"type": "boolean",
+									"description": "Optional. Specifies if the build artifact directories are flattened in the output. If this is not specified, or contains no, build artifacts are output with their directory structure intact. If this contains yes, all of the build artifacts are placed in the same output directory. For example, if a path to a file in the build output artifact is com/mycompany/app/HelloWorld.java, specifying yes will place this file in /HelloWorld.java.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.discard-paths"
+								},
+								"files": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array"
+								},
+								"name": {
+									"type": "string",
+									"description": "Optional name. Specifies a name for your build artifact. This name is used when one of the following is true. \nYou use the CodeBuild API to create your builds and the overrideArtifactName flag is set on the ProjectArtifacts object when a project is updated, a project is created, or a build is started. \nYou use the CodeBuild console to create your builds, a name is specified in the buildspec file, and you select Enable semantic versioning when you create or update a project. For more information, see Create a build project (console). \nYou can specify a name in the buildspec file that is calculated at build time. The name specified in a buildspec file uses the Shell command language. For example, you can append a date and time to your artifact name so that it is always unique. Unique artifact names prevent artifacts from being overwritten. For more information, see Shell command language.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.name"
+								},
+								"auto-discover-reports": {
+									"type": "boolean"
+								},
+								"exclude-paths": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array",
+									"description": "Optional mapping. Represents one or more paths, relative to base-directory, that CodeBuild will exclude from the build artifacts.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.exclude-paths"
+								},
+								"enable-symlinks": {
+									"type": "boolean",
+									"description": "Optional. If the output type is ZIP, specifies if internal symbolic links are preserved in the ZIP file. If this contains yes, all internal symbolic links in the source will be preserved in the artifacts ZIP file.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.enable-symlinks"
+								},
+								"s3-prefix": {
+									"type": "string",
+									"description": "Optional. Specifies a prefix used when the artifacts are output to an Amazon S3 bucket and the namespace type is BUILD_ID. When used, the output path in the bucket is \u003cs3-prefix\u003e/\u003cbuild-id\u003e/\u003cname\u003e.zip.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.s3-prefix"
+								}
+							},
+							"additionalProperties": false,
+							"type": "object"
+						}
+					},
+					"type": "object",
+					"description": "Optional sequence. Represents one or more artifact definitions as a mapping between an artifact identifier and an artifact definition. Each artifact identifiers in this block must match an artifact defined in the secondaryArtifacts attribute of your project. Each separate definition has the same syntax as the artifacts block above. NOTE: The artifacts/files sequence is always required, even when there are only secondary artifacts defined.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.secondary-artifacts"
+				},
+				"skip-on-failure": {
+					"type": "boolean"
+				},
+				"s3-prefix": {
+					"type": "string",
+					"description": "Optional. Specifies a prefix used when the artifacts are output to an Amazon S3 bucket and the namespace type is BUILD_ID. When used, the output path in the bucket is \u003cs3-prefix\u003e/\u003cbuild-id\u003e/\u003cname\u003e.zip.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.s3-prefix"
+				}
+			},
+			"additionalProperties": false,
+			"type": "object",
+			"description": "Optional sequence. Represents information about where CodeBuild can find the build output and how CodeBuild prepares it for uploading to the S3 output bucket. This sequence is not required if, for example, you are building and pushing a Docker image to Amazon ECR, or you are running unit tests on your source code, but not building it. NOTE: Amazon S3 metadata has a CodeBuild header named x-amz-meta-codebuild-buildarn which contains the buildArn of the CodeBuild build that publishes artifacts to Amazon S3. The buildArn is added to allow source tracking for notifications and to reference which build the artifact is generated from.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts"
+		},
+		"cache": {
+			"properties": {
+				"files": {
+					"items": {
+						"type": "string"
+					},
+					"type": "array",
+					"description": "Required sequence. Represents the locations of the cache. Contains a sequence of scalars, with each scalar representing a separate location where CodeBuild can find build output artifacts, relative to the original build location or, if set, the base directory. Locations can include the following:\n A single file (for example, my-file.jar).\n A single file in a subdirectory (for example, my-subdirectory/my-file.jar or my-parent-subdirectory/my-subdirectory/my-file.jar).\n '**/*' represents all files recursively.\n my-subdirectory/* represents all files in a subdirectory named my-subdirectory.\n my-subdirectory/**/* represents all files recursively starting from a subdirectory named my-subdirectory.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.cache.paths"
+				},
+				"upload-on-failure": {
+					"type": "boolean"
+				}
+			},
+			"additionalProperties": false,
+			"type": "object",
+			"required": [
+				"files"
+			],
+			"description": "Optional sequence. Represents information about where CodeBuild can prepare the files for uploading cache to an S3 cache bucket. This sequence is not required if the cache type of the project is No Cache.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.cache"
+		},
+		"reports": {
+			"patternProperties": {
+				".*": {
+					"properties": {
+						"files": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array"
+						},
+						"exclude-paths": {
+							"items": {
+								"type": "string"
+							},
+							"type": "array",
+							"description": "Optional mapping. Represents one or more paths, relative to base-directory, that CodeBuild will exclude from the build artifacts.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.artifacts.exclude-paths"
+						},
+						"base-directory": {
+							"type": "string",
+							"description": "Optional mapping. Represents one or more top-level directories, relative to the original build location, that CodeBuild uses to determine where to find the raw test files.\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.reports.base-directory"
+						},
+						"discard-paths": {
+							"type": "boolean"
+						},
+						"file-format": {
+							"type": "string"
+						},
+						"type": {
+							"type": "string"
+						},
+						"reference-artifact": {
+							"type": "string"
+						}
+					},
+					"additionalProperties": false,
+					"type": "object"
+				}
+			},
+			"type": "object",
+			"description": "Optional sequence. Specifies the report group that the reports are sent to. A project can have a maximum of five report groups. Specify the ARN of an existing report group, or the name of a new report group. If you specify a name, CodeBuild creates a report group using your project name and the name you specify in the format \u003cproject-name\u003e-\u003creport-group-name\u003e. For more information, see Report group naming: https://docs.aws.amazon.com/codebuild/latest/userguide/test-report-group-naming.html \n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.reports"
+		},
+		"batch": {
+			"properties": {
+				"fast-fail": {
+					"type": "boolean",
+					"description": "Optional. Specifies the behavior of the batch build when one or more build tasks fail.\nfalse\n  The default value. All running builds will complete.\ntrue\n  All running builds will be stopped when one of the build tasks fails."
+				},
+				"build-list": {
+					"items": {
+						"properties": {
+							"identifier": {
+								"type": "string",
+								"description": "Required. The identifier of the task."
+							},
+							"buildspec": {
+								"type": "string",
+								"description": "Optional. The path and file name of the buildspec file to use for this task. If this parameter is not specified, the current buildspec file is used."
+							},
+							"ignore-failure": {
+								"type": "boolean",
+								"description": "Optional. A Boolean value that indicates if a failure of this build task can be ignored. \n false The default value. If this build task fails, the batch build will fail. \n true \nIf this build task fails, the batch build can still succeed."
+							},
+							"env": {
+								"properties": {
+									"type": {
+										"type": "string",
+										"description": "The identifier of the environment type to use for the task. See Environment type in Build environment compute types: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html for possible values."
+									},
+									"image": {
+										"type": "string",
+										"description": "The identifier of the image to use for the task. See Image identifier in Docker images provided by CodeBuild: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html for possible values."
+									},
+									"compute-type": {
+										"type": "string",
+										"description": "The identifier of the compute type to use for the task. See computeType in Build environment compute types: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html for possible values."
+									},
+									"privileged-mode": {
+										"type": "boolean",
+										"description": "A Boolean value that indicates whether to run the Docker daemon inside a Docker container. Set to true only if the build project is used to build Docker images. Otherwise, a build that attempts to interact with the Docker daemon fails. The default setting is false."
+									},
+									"variables": {
+										"patternProperties": {
+											".*": {
+												"type": "string"
+											}
+										},
+										"type": "object",
+										"description": "The environment variables that will be present in the build environment. See env/variables: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.variables for more information."
+									}
+								},
+								"additionalProperties": false,
+								"type": "object",
+								"description": "Optional. The build environment overrides for the task."
+							},
+							"depend-on": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array",
+								"description": "Optional. An array of task identifiers that this task depends on. This task will not run until these tasks are completed."
+							},
+							"debug-session": {
+								"type": "boolean",
+								"description": "Optional. A Boolean value that indicates whether session debugging is enabled for this batch build. For more information about session debugging, see View a running build in Session Manager: https://docs.aws.amazon.com/codebuild/latest/userguide/session-manager.html.\nfalse\n  Session debugging is disabled.\ntrue\n  Session debugging is enabled."
+							}
+						},
+						"additionalProperties": false,
+						"type": "object",
+						"required": [
+							"identifier"
+						]
+					},
+					"type": "array",
+					"description": "Defines a build list. A build list is used to define a number of tasks that run in parallel. For more information"
+				},
+				"build-matrix": {
+					"properties": {
+						"static": {
+							"properties": {
+								"identifier": {
+									"type": "string",
+									"description": "Required. The identifier of the task."
+								},
+								"buildspec": {
+									"type": "string",
+									"description": "Optional. The path and file name of the buildspec file to use for this task. If this parameter is not specified, the current buildspec file is used."
+								},
+								"ignore-failure": {
+									"type": "boolean",
+									"description": "Optional. A Boolean value that indicates if a failure of this build task can be ignored. \n false The default value. If this build task fails, the batch build will fail. \n true \nIf this build task fails, the batch build can still succeed."
+								},
+								"env": {
+									"properties": {
+										"type": {
+											"type": "string",
+											"description": "The identifier of the environment type to use for the task. See Environment type in Build environment compute types: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html for possible values."
+										},
+										"image": {
+											"type": "string",
+											"description": "The identifier of the image to use for the task. See Image identifier in Docker images provided by CodeBuild: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html for possible values."
+										},
+										"compute-type": {
+											"type": "string",
+											"description": "The identifier of the compute type to use for the task. See computeType in Build environment compute types: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html for possible values."
+										},
+										"privileged-mode": {
+											"type": "boolean",
+											"description": "A Boolean value that indicates whether to run the Docker daemon inside a Docker container. Set to true only if the build project is used to build Docker images. Otherwise, a build that attempts to interact with the Docker daemon fails. The default setting is false."
+										},
+										"variables": {
+											"patternProperties": {
+												".*": {
+													"type": "string"
+												}
+											},
+											"type": "object",
+											"description": "The environment variables that will be present in the build environment. See env/variables: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.variables for more information."
+										}
+									},
+									"additionalProperties": false,
+									"type": "object",
+									"description": "Optional. The build environment overrides for the task."
+								},
+								"depend-on": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array",
+									"description": "Optional. An array of task identifiers that this task depends on. This task will not run until these tasks are completed."
+								},
+								"debug-session": {
+									"type": "boolean",
+									"description": "Optional. A Boolean value that indicates whether session debugging is enabled for this batch build. For more information about session debugging, see View a running build in Session Manager: https://docs.aws.amazon.com/codebuild/latest/userguide/session-manager.html.\nfalse\n  Session debugging is disabled.\ntrue\n  Session debugging is enabled."
+								}
+							},
+							"additionalProperties": false,
+							"type": "object",
+							"required": [
+								"identifier"
+							],
+							"description": "The static properties apply to all build tasks."
+						},
+						"dynamic": {
+							"properties": {
+								"env": {
+									"properties": {
+										"image": {
+											"items": {
+												"type": "string"
+											},
+											"type": "array",
+											"description": "An array that contains the identifiers of the images to use for these tasks. See Image identifier in Docker images provided by CodeBuild: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html for possible values."
+										},
+										"compute-type": {
+											"items": {
+												"type": "string"
+											},
+											"type": "array",
+											"description": "An array that contains the identifiers of the compute types to use for these tasks. See computeType in Build environment compute types: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html for possible values."
+										},
+										"variables": {
+											"patternProperties": {
+												".*": {
+													"items": {
+														"type": "string"
+													},
+													"type": "array"
+												}
+											},
+											"type": "object",
+											"description": "An array that contains the environment variables that will be present in the build environments for these tasks. See env/variables: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.variables for more information."
+										}
+									},
+									"additionalProperties": false,
+									"type": "object",
+									"description": "Optional. The build environment overrides for these tasks."
+								},
+								"buildspec": {
+									"items": {
+										"type": "string"
+									},
+									"type": "array",
+									"description": "Optional. An array that contains the path and file names of the buildspec files to use for these tasks. If this parameter is not specified, the current buildspec file is used. "
+								}
+							},
+							"additionalProperties": false,
+							"type": "object",
+							"description": "The dynamic properties define the build matrix."
+						}
+					},
+					"additionalProperties": false,
+					"type": "object",
+					"description": "Defines a build matrix. A build matrix defines tasks with different configurations that run in parallel. CodeBuild creates a separate build for each possible configuration combination. For more information"
+				},
+				"build-graph": {
+					"items": {
+						"properties": {
+							"identifier": {
+								"type": "string",
+								"description": "Required. The identifier of the task."
+							},
+							"buildspec": {
+								"type": "string",
+								"description": "Optional. The path and file name of the buildspec file to use for this task. If this parameter is not specified, the current buildspec file is used."
+							},
+							"ignore-failure": {
+								"type": "boolean",
+								"description": "Optional. A Boolean value that indicates if a failure of this build task can be ignored. \n false The default value. If this build task fails, the batch build will fail. \n true \nIf this build task fails, the batch build can still succeed."
+							},
+							"env": {
+								"properties": {
+									"type": {
+										"type": "string",
+										"description": "The identifier of the environment type to use for the task. See Environment type in Build environment compute types: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html for possible values."
+									},
+									"image": {
+										"type": "string",
+										"description": "The identifier of the image to use for the task. See Image identifier in Docker images provided by CodeBuild: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html for possible values."
+									},
+									"compute-type": {
+										"type": "string",
+										"description": "The identifier of the compute type to use for the task. See computeType in Build environment compute types: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html for possible values."
+									},
+									"privileged-mode": {
+										"type": "boolean",
+										"description": "A Boolean value that indicates whether to run the Docker daemon inside a Docker container. Set to true only if the build project is used to build Docker images. Otherwise, a build that attempts to interact with the Docker daemon fails. The default setting is false."
+									},
+									"variables": {
+										"patternProperties": {
+											".*": {
+												"type": "string"
+											}
+										},
+										"type": "object",
+										"description": "The environment variables that will be present in the build environment. See env/variables: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.variables for more information."
+									}
+								},
+								"additionalProperties": false,
+								"type": "object",
+								"description": "Optional. The build environment overrides for the task."
+							},
+							"depend-on": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array",
+								"description": "Optional. An array of task identifiers that this task depends on. This task will not run until these tasks are completed."
+							},
+							"debug-session": {
+								"type": "boolean",
+								"description": "Optional. A Boolean value that indicates whether session debugging is enabled for this batch build. For more information about session debugging, see View a running build in Session Manager: https://docs.aws.amazon.com/codebuild/latest/userguide/session-manager.html.\nfalse\n  Session debugging is disabled.\ntrue\n  Session debugging is enabled."
+							}
+						},
+						"additionalProperties": false,
+						"type": "object",
+						"required": [
+							"identifier"
+						]
+					},
+					"type": "array",
+					"description": "Defines a build graph. A build graph defines a set of tasks that have dependencies on other tasks in the batch. For more information"
+				}
+			},
+			"additionalProperties": false,
+			"type": "object",
+			"description": "Optional mapping. The batch build settings for the project. By default, all batch build tasks run with the build settings such as env and phases, specified in the buildspec file. You can override the default build settings by specifying different env values or a different buildspec file in the batch/\u003cbatch-type\u003e/buildspec parameter. \nThe contents of the batch property varies based on the type of batch build being specified. The possible batch build types are:\nbatch/build-graph: https://docs.aws.amazon.com/codebuild/latest/userguide/batch-build-buildspec.html#build-spec.batch.build-graph\nbatch/build-list: https://docs.aws.amazon.com/codebuild/latest/userguide/batch-build-buildspec.html#build-spec.batch.build-list\nbatch/build-matrix: https://docs.aws.amazon.com/codebuild/latest/userguide/batch-build-buildspec.html#build-spec.batch.build-matrix\n\nDocumentation: https://docs.aws.amazon.com/codebuild/latest/userguide/batch-build-buildspec.html#build-spec.batch"
+		}
+	},
+	"additionalProperties": false,
+	"type": "object",
+	"required": [
+		"version",
+		"phases"
+	],
+	"title": "Buildspec Schema"
+}

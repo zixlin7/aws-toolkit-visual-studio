@@ -11,6 +11,7 @@ namespace Amazon.AWSToolkit
         public const string NetCoreApp31 = "netcoreapp3.1";
         public const string Net50 = "net5.0";
         public const string Net60 = "net6.0";
+        public const string Net70 = "net7.0";
 
         /// <summary>
         /// Utility method to compare against expected framework strings

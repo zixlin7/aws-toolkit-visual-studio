@@ -30,7 +30,7 @@ namespace Amazon.Lambda.Tools
             IAMAttachRole,
             IAMCreateRole,
             IAMGetRole,
-            
+
             LambdaFunctionUrlGet,
             LambdaFunctionUrlCreate,
             LambdaFunctionUrlUpdate,
@@ -71,7 +71,17 @@ namespace Amazon.Lambda.Tools
             FailedToDetectSdkVersion,
             LayerNetSdkVersionMismatch,
 
-            DisabledSupportForNET31Layers
+            FailedToResolveS3Bucket,
+
+            DisabledSupportForNET31Layers,
+
+            InvalidNativeAotTargetFramework,
+            InvalidOutputTypeForTargetFramework,
+            Net7OnArmNotSupported,
+            InvalidArchitectureProvided,
+            UnsupportedDefaultContainerBuild,
+            NativeAotOutputTypeError,
+            MismatchedNativeAotArchitectures,
         }
 
         public LambdaToolsException(string message, LambdaErrorCode code) : base(message, code.ToString(), null)

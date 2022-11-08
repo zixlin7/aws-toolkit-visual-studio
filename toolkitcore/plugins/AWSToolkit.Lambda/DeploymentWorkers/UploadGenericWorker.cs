@@ -7,7 +7,6 @@ using System.Threading;
 
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Navigator;
@@ -17,6 +16,7 @@ using Amazon.IdentityManagement.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.Runtime;
+using Amazon.SecurityToken;
 
 using log4net;
 
@@ -43,10 +43,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         private readonly ToolkitContext _toolkitContext;
 
         public UploadGenericWorker(ILambdaFunctionUploadHelpers functionUploader,
+            IAmazonSecurityTokenService stsClient,
             IAmazonLambda lambdaClient,
             IAmazonECR ecrClient,
             ToolkitContext toolkitContext)
-            : base(functionUploader, lambdaClient, ecrClient)
+            : base(functionUploader, stsClient, lambdaClient, ecrClient)
         {
             _toolkitContext = toolkitContext;
         }

@@ -55,7 +55,9 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
         }
 
         [StaTheory]
-        [InlineData(Frameworks.Net60, "Windows", true)]
+        [InlineData(Frameworks.Net70, "Linux", true)]
+        [InlineData(Frameworks.Net70, "Windows", true)]
+        [InlineData(Frameworks.Net60, "Windows", false)]
         [InlineData(Frameworks.Net60, "Linux", false)]
         [InlineData(Frameworks.Net50, "Windows", false)]
         [InlineData(Frameworks.Net50, "Linux", false)]
@@ -85,10 +87,10 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
         }
 
         [StaFact]
-        public void ShouldResetDefaultAfterInstanceSwitch()
+        public void ShouldRetainDefaultAfterInstanceSwitch()
         {
             // arrange.
-            SetRuntimeTo(Frameworks.Net60);
+            SetRuntimeTo(Frameworks.Net70);
             SetDeploymentTo("Linux");
 
             var optionsPageController = new TestableCoreCLRApplicationOptionsPageController(null)
@@ -97,7 +99,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             };
 
             var page = InitializePageFrom(optionsPageController);
-            Assert.False(page.BuildSelfContainedBundle);
+            Assert.True(page.BuildSelfContainedBundle);
 
             // act.
             SetDeploymentTo("Windows");

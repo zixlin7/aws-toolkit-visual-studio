@@ -173,6 +173,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         private SupportedVersionBarManager _supportedVersionBarManager;
         private DateTime _startInitializeOn;
         private IPublishSettingsRepository _publishSettingsRepository;
+        private ISettingsRepository<LoggingSettings> _loggingSettingsRepository;
 
         private OutputWindow _toolkitOutputWindow;
         private MetricsOutputWindow _metricsOutputWindow;
@@ -244,8 +245,12 @@ namespace Amazon.AWSToolkit.VisualStudio
             _startInitializeOn = DateTime.Now;
 
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
-            Utility.ConfigureLog4Net();
+            _loggingSettingsRepository = new FileSettingsRepository<LoggingSettings>();
 
+            this.JoinableTaskFactory.Run(async () =>
+            {
+               await Utility.ConfigureLog4NetAsync(_loggingSettingsRepository);
+            });
             AppDomain.CurrentDomain.AssemblyResolve += Utility.AssemblyResolveEventHandler;
 
             ToolkitSettings.Initialize();
@@ -509,9 +514,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployTemplateSolutionExplorer, DeployTemplateSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployTemplateActiveDocument, DeployTemplateActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
 
-                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidEstimateTemplateCostSolutionExplorer, EstimateTemplateCostSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
-                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidEstimateTemplateCostActiveDocument, EstimateTemplateCostActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
-
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidFormatTemplateSolutionExplorer, FormatTemplateSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidFormatTemplateActiveDocument, FormatTemplateActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
 
@@ -615,11 +617,18 @@ namespace Amazon.AWSToolkit.VisualStudio
                     });
 
                 ToolkitFactory.SignalShellInitializationComplete();
+                RunLogCleanupAsync().LogExceptionAndForget();
             }
             finally
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        private async Task RunLogCleanupAsync()
+        {
+            await TaskScheduler.Default;
+            await Utility.CleanupLogFilesAsync(_loggingSettingsRepository);
         }
 
         private async Task<RegionProvider> CreateRegionProviderAsync(ITelemetryLogger telemetryLogger)
@@ -883,6 +892,14 @@ namespace Amazon.AWSToolkit.VisualStudio
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidSubmitFeedback,
+                    this)
+            );
+
+            tasks.Add(
+                 ViewToolkitLogsCommand.InitializeAsync(
+                    _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) PkgCmdIDList.cmdidViewToolkitLogs,
                     this)
             );
 
@@ -2305,83 +2322,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             if (templateDeploymentData != null && node != null && node is TemplateFileNode && persistenceService != null)
             {
                 persistenceService.PersistTemplateDeployment(prjItem, templateDeploymentData);
-            }
-        }
-
-#endregion
-
-#region Estimate Template Cost Command
-
-        void EstimateTemplateCostSolutionExplorer(object sender, EventArgs e)
-        {
-            JoinableTaskFactory.Run(async () =>
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                try
-                {
-                    var prjItem = VSUtility.GetSelectedProjectItem();
-                    EstimateTemplateCost(prjItem);
-                }
-                catch { }
-            });
-        }
-
-        void EstimateTemplateCostActiveDocument(object sender, EventArgs e)
-        {
-            JoinableTaskFactory.Run(async () =>
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync();
-                try
-                {
-                    var dte = GetGlobalService(typeof(EnvDTE.DTE)) as DTE2;
-                    Assumes.Present(dte);
-                    var prjItem = dte.ActiveDocument.ProjectItem;
-                    EstimateTemplateCost(prjItem);
-                }
-                catch { }
-            });
-        }
-
-        void EstimateTemplateCost(EnvDTE.ProjectItem prjItem)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            if (prjItem == null)
-                return;
-
-            if (!prjItem.Saved)
-                prjItem.Save();
-
-            IAWSLegacyDeploymentPersistence persistenceService = GetService(typeof(SAWSLegacyDeploymentPersistence)) as IAWSLegacyDeploymentPersistence;
-            if (persistenceService == null)
-                LOGGER.Warn("Failed to obtain IAWSLegacyDeploymentPersistence instance; deployment will ignore any previously persisted data about the project.");
-
-            string fullPath = null;
-            var node = prjItem.Object as FileNode;
-            if (node != null && File.Exists(node.Url))
-                fullPath = node.Url;
-            else if (prjItem.DTE.ActiveDocument != null && prjItem.FileCount > 0 && File.Exists(prjItem.FileNames[0]))
-                fullPath = prjItem.FileNames[0];
-
-            Dictionary<string, object> initialParameters = null;
-            // Only attempt to look up and store last used values for templates files in an AWS CloudFormation project
-            if (node != null && node is TemplateFileNode && persistenceService != null)
-            {
-                var projectGuid = VSUtility.QueryProjectIDGuid(prjItem.ContainingProject);
-                var persistenceKey = persistenceService.CalcPersistenceKeyForProjectItem(prjItem);
-                initialParameters = persistenceService.SetTemplateDeploymentSeedData(projectGuid, persistenceKey);
-            }
-            var deploymentData = this.AWSCloudFormationPlugin.GetUrlToCostEstimate(fullPath, initialParameters ?? new Dictionary<string, object>());
-
-            if (deploymentData != null && !string.IsNullOrEmpty(deploymentData.CostEstimationCalculatorUrl))
-            {
-                prjItem.DTE.ItemOperations.Navigate(deploymentData.CostEstimationCalculatorUrl);
-
-                if (node != null && node is TemplateFileNode && persistenceService != null)
-                {
-                    persistenceService.PersistTemplateDeployment(prjItem, deploymentData);
-                }
             }
         }
 
