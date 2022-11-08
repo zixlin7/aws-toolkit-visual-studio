@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Added support for publishing .NET 7 AOT Lambda functions. To use this, use a Custom Runtime Lambda Project targeting .NET 7, and set the project property `PublishAot` to true"
-}
