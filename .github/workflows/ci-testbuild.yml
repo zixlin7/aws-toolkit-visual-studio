@@ -12,9 +12,9 @@ jobs:
         runs-on: windows-2019
 
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - name: Add msbuild to PATH
-              uses: microsoft/setup-msbuild@v1.0.2
+              uses: microsoft/setup-msbuild@v1.1
               with:
                   vs-version: "[16.0,17.0)"
 
@@ -33,7 +33,7 @@ jobs:
 
             - name: Build Artifact for VS 2017/19 Toolkit
               if: always()
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: Toolkit-2017-2019
                   path: |
@@ -42,7 +42,7 @@ jobs:
 
             - name: Build Artifact for VS 2022 Toolkit
               if: always()
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: Toolkit-2022
                   path: |
