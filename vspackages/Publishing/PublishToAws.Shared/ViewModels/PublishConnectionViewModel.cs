@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             set 
             {
                 SetProperty(ref _connectionStatus, value);
-                _retryConnection.Refresh();
+                _retryConnection.CanExecute();
             }
         }
 

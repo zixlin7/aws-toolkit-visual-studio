@@ -84,6 +84,7 @@
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
     <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
+    <Compile Include="Commands\CommandTests.cs" />
     <Compile Include="Commands\ShowExceptionAndForgetCommandTests.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommandTests.cs" />
     <Compile Include="CommonUI\AccountAndRegionPickerViewModelTests.cs" />
