@@ -291,6 +291,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             return GetService(serviceType);
         }
 
+        internal async Task<object> GetVSShellServiceAsync(Type serviceType)
+        {
+            return await GetServiceAsync(serviceType);
+        }
+
         internal void OutputToConsole(string message, bool forceVisible)
         {
             JoinableTaskFactory.Run(async () =>
