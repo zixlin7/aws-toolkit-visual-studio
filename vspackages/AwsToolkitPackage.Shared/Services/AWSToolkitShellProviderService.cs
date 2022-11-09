@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -64,20 +65,122 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public async Task OpenShellWindowAsync(ShellWindows window)
         {
+            // The Curse of the Switch Statement!
+            // While enums and switch statements can look bloated like this, all of the vsWindowKind*
+            // string constants are from the VSSDK.  This means that they don't work for a regular enum
+            // and while there are workarounds for that, the biggest problem is EnvDTE.Constants cannot
+            // be used by any parameter type/enum defined in the IAWSToolkitShellProvider interface as
+            // it is defined in the AWSToolkit project which cannot reference the VSSDK.
             switch (window)
             {
-                case ShellWindows.Explorer:
+                case ShellWindows.AwsExplorer:
                     await _hostPackage.ShowToolWindowAsync(
                         typeof(AWSNavigatorToolWindow),
                         0,
                         true,
                         _hostPackage.DisposalToken);
                     break;
-
+                case ShellWindows.AutoLocals:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindAutoLocals);
+                    break;
+                case ShellWindows.CallStack:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindCallStack);
+                    break;
+                case ShellWindows.ClassView:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindClassView);
+                    break;
+                case ShellWindows.CommandWindow:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindCommandWindow);
+                    break;
+                case ShellWindows.DocumentOutline:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindDocumentOutline);
+                    break;
+                case ShellWindows.DynamicHelp:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindDynamicHelp);
+                    break;
+                case ShellWindows.FindReplace:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindFindReplace);
+                    break;
+                case ShellWindows.FindResults1:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindFindResults1);
+                    break;
+                case ShellWindows.FindResults2:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindFindResults2);
+                    break;
+                case ShellWindows.FindSymbol:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindFindSymbol);
+                    break;
+                case ShellWindows.FindSymbolResults:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindFindSymbolResults);
+                    break;
+                case ShellWindows.LinkedWindowFrame:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindLinkedWindowFrame);
+                    break;
+                case ShellWindows.Locals:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindLocals);
+                    break;
+                case ShellWindows.MacroExplorer:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindMacroExplorer);
+                    break;
+                case ShellWindows.MainWindow:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindMainWindow);
+                    break;
+                case ShellWindows.ObjectBrowser:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindObjectBrowser);
+                    break;
+                case ShellWindows.Output:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindOutput);
+                    break;
+                case ShellWindows.Properties:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindProperties);
+                    break;
+                case ShellWindows.ResourceView:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindResourceView);
+                    break;
+                case ShellWindows.ServerExplorer:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindServerExplorer);
+                    break;
+                case ShellWindows.SolutionExplorer:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindSolutionExplorer);
+                    break;
+                case ShellWindows.TaskList:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindTaskList);
+                    break;
+                case ShellWindows.Thread:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindThread);
+                    break;
+                case ShellWindows.Toolbox:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindToolbox);
+                    break;
+                case ShellWindows.Watch:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindWatch);
+                    break;
+                case ShellWindows.WebBrowser:
+                    await OpenVsWindowKindAsync(EnvDTE.Constants.vsWindowKindWebBrowser);
+                    break;
                 default:
                     Debug.Assert(!Debugger.IsAttached, $"Unsupported open shell window call: {window}");
                     break;
             }
+        }
+
+        // vsWindowKind should only come from EnvDTE.Constants
+        private async Task<bool> OpenVsWindowKindAsync(string vsWindowKind)
+        {
+            await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var dte = await _hostPackage.GetVSShellServiceAsync(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+            if (dte != null)
+            {
+                var window = dte.Windows.Item(vsWindowKind);
+                if (window != null)
+                {
+                    window.Visible = true;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void OpenInEditor(IAWSToolkitControl editorControl)

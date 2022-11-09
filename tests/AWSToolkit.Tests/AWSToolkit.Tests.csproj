@@ -84,6 +84,7 @@
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
     <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
+    <Compile Include="Commands\CommandTests.cs" />
     <Compile Include="CodeCatalyst\CodeCatalystPluginServiceTests.cs" />
     <Compile Include="CodeCatalyst\Models\CodeCatalystAccessTokenTests.cs" />
     <Compile Include="CodeCatalyst\Models\CodeCatalystProjectTests.cs" />

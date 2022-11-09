@@ -114,7 +114,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                 _viewModel.IsConnectionValid = isConnectionValid;
                 _viewModel.ConnectionMessage = isConnectionValid ? "Connection is valid" : e.State.Message;
                 _viewModel.IsConnectionBad = e.State.IsTerminal && !isConnectionValid;
-                _okCommand.Refresh();
+                _okCommand.CanExecute();
             });
         }
 

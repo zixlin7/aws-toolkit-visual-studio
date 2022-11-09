@@ -21,7 +21,36 @@ namespace Amazon.AWSToolkit.Shared
 
     public enum ShellWindows
     {
-        Explorer,
+        // Toolkit
+        AwsExplorer,
+
+        // Visual Studio
+        AutoLocals,
+        CallStack,
+        ClassView,
+        CommandWindow,
+        DocumentOutline,
+        DynamicHelp,
+        FindReplace,
+        FindResults1,
+        FindResults2,
+        FindSymbol,
+        FindSymbolResults,
+        LinkedWindowFrame,
+        Locals,
+        MacroExplorer,
+        MainWindow,
+        ObjectBrowser,
+        Output,
+        Properties,
+        ResourceView,
+        ServerExplorer,
+        SolutionExplorer,
+        TaskList,
+        Thread,
+        Toolbox,
+        Watch,
+        WebBrowser
     }
 
     /// <summary>
