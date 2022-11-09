@@ -26,7 +26,7 @@ namespace AWSToolkit.Tests.CodeCatalyst.Models
         [Fact]
         public void PropertiesReflectCtorWithAwsSdkArgs()
         {
-            var spaceSummary = new OrganizationSummary()
+            var spaceSummary = new SpaceSummary()
             {
                 Name = _name,
                 DisplayName = _displayName,

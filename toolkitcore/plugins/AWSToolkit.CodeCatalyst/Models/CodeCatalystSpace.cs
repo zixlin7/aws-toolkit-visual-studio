@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst.Models
             RegionId = regionId;
         }
 
-        internal CodeCatalystSpace(OrganizationSummary summary)
+        internal CodeCatalystSpace(SpaceSummary summary)
             : this(summary.Name, summary.DisplayName, summary.Description, summary.RegionName) { }
 
         protected bool Equals(CodeCatalystSpace other)

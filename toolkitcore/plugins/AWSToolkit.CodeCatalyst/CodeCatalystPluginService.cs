@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Clients;
@@ -13,6 +14,10 @@ using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCatalyst;
 using Amazon.CodeCatalyst.Model;
+using Amazon.CodeCatalyst.Model.Internal.MarshallTransformations;
+using Amazon.Runtime;
+using Amazon.Runtime.Internal;
+using Amazon.Runtime.Internal.Transform;
 
 using log4net;
 
@@ -37,12 +42,12 @@ namespace Amazon.AWSToolkit.CodeCatalyst
 
             var client = GetCodeCatalystClient(settings);
             var spaces = new List<ICodeCatalystSpace>();
-            var res = new ListOrganizationsResponse();
+            var res = new ListSpacesResponse();
 
             do
             {
-                var req = new ListOrganizationsRequest() { NextToken = res.NextToken };
-                res = await client.ListOrganizationsAsync(req);
+                var req = new ListSpacesRequest() { NextToken = res.NextToken };
+                res = await client.ListSpacesAsync(req);
 
                 spaces.AddAll(res.Items.Select(space => new CodeCatalystSpace(space)));
 
@@ -64,7 +69,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             {
                 var req = new ListProjectsRequest()
                 {
-                    OrganizationName = spaceName,
+                    SpaceName = spaceName,
                     NextToken = res.NextToken
                 };
                 res = await client.ListProjectsAsync(req);
@@ -91,7 +96,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             {
                 var req = new ListSourceRepositoriesRequest()
                 {
-                    OrganizationName = spaceName,
+                    SpaceName = spaceName,
                     ProjectName = projectName,
                     NextToken = res.NextToken
                 };
@@ -130,6 +135,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
                     req.ExpiresTime = expiresOn.Value;
                 }
                 var res = await client.CreateAccessTokenAsync(req);
+
                 // TODO Remove assignment of name to response in line below once P74543357 has been resolved.
                 res.Name = name;
                 var token = new CodeCatalystAccessToken(res);
@@ -146,7 +152,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
 
             var req = new GetSourceRepositoryCloneUrlsRequest()
             {
-                OrganizationName = spaceName,
+                SpaceName = spaceName,
                 ProjectName = projectName,
                 SourceRepositoryName = repoName
             };

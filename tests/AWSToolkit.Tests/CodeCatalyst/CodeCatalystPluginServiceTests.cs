@@ -47,11 +47,11 @@ namespace AWSToolkit.Tests.CodeCatalyst
             var space = new CodeCatalystSpace(name, displayName, description, _regionId);
 
             _client.Setup(
-                mock => mock.ListOrganizationsAsync(It.IsAny<ListOrganizationsRequest>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new ListOrganizationsResponse()
+                mock => mock.ListSpacesAsync(It.IsAny<ListSpacesRequest>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new ListSpacesResponse()
                 {
-                    Items = new List<OrganizationSummary>() {
-                        new OrganizationSummary()
+                    Items = new List<SpaceSummary>() {
+                        new SpaceSummary()
                         {
                             Name = name,
                             DisplayName = displayName,
