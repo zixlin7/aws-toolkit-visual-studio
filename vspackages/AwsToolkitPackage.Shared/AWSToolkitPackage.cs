@@ -152,14 +152,15 @@ namespace Amazon.AWSToolkit.VisualStudio
         Transient = true,
         Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
-    [ProvideCodeContainerProvider(
-        registeredName: nameof(CodeCommitCodeContainerProvider),
-        displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
-        imageMonikerGuid: GuidList.VsImageCatalog.ImageCatalogGuidString,
-        imageMonikerId: 1027, // TODO - IDE-8851
-        displayNameResourceId: "#200", // See AWSToolkitPackage.resx
-        displayDetailResourceId: "#201", // See AWSToolkitPackage.resx
-        typeof(CodeCommitCodeContainerProvider))]
+    // TODO IDE-8906
+    //[ProvideCodeContainerProvider(
+    //    registeredName: nameof(CodeCommitCodeContainerProvider),
+    //    displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
+    //    imageMonikerGuid: GuidList.VsImageCatalog.ImageCatalogGuidString,
+    //    imageMonikerId: 1027, // TODO - IDE-8851
+    //    displayNameResourceId: "#200", // See AWSToolkitPackage.resx
+    //    displayDetailResourceId: "#201", // See AWSToolkitPackage.resx
+    //    typeof(CodeCommitCodeContainerProvider))]
     [ProvideCodeContainerProvider(
         registeredName: nameof(CodeCatalystCodeContainerProvider),
         displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
