@@ -23,8 +23,8 @@ namespace Amazon.AwsToolkit.SourceControl
             _toolkitContext = toolkitContext;
         }
 
-        public async Task<bool> CloneAsync(Uri remoteUri, string localPath, bool recurseSubmodules = false,
-            IProgress<sh.ServiceProgressData> downloadProgress = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task CloneAsync(Uri remoteUri, string localPath, bool recurseSubmodules = false,
+            IProgress<sh.ServiceProgressData> downloadProgress = null, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -35,12 +35,11 @@ namespace Amazon.AwsToolkit.SourceControl
             {
                 var gitActionsExt = await _toolkitContext.ToolkitHost.QueryShellProviderServiceAsync<IGitActionsExt>();
                 await gitActionsExt.CloneAsync(remoteUri.ToString(), localPath, recurseSubmodules, cancellationToken, downloadProgress);
-                return true;
             }
             catch (Exception ex)
             {
                 _logger.Error($"{nameof(IGitActionsExt.CloneAsync)} failed.", ex);
-                return false;
+                throw;
             }
         }
     }

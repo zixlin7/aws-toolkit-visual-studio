@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Clients;
@@ -14,10 +13,6 @@ using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCatalyst;
 using Amazon.CodeCatalyst.Model;
-using Amazon.CodeCatalyst.Model.Internal.MarshallTransformations;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Transform;
 
 using log4net;
 

@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.CodeCatalyst.Models;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 
 using AwsToolkit.VsSdk.Common.CommonUI.Commands.CodeCatalyst;
 
@@ -18,8 +19,6 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 {
     public partial class CloneCodeCatalystRepositoryDialog : DialogWindow, ICloneCodeCatalystRepositoryDialog
     {
-        private const string _defaultName = "aws-toolkits-vs-token";
-
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
         private readonly CloneCodeCatalystRepositoryViewModel _viewModel;
@@ -46,6 +45,8 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             DataContext = _viewModel;
         }
 
+        public AwsConnectionSettings ConnectionSettings { get; private set; }
+
         public string RepositoryName { get; private set; }
 
         public Uri CloneUrl { get; private set; }
@@ -59,18 +60,19 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                 return false;
             }
 
+            ConnectionSettings = _viewModel.ConnectionSettings;
+            RepositoryName = _viewModel.SelectedRepository.Name;
+            LocalPath = _viewModel.LocalPath;
+
             var codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
 
             _joinableTaskFactory.Run(async () =>
             {
                 var pat = (await codeCatalyst.GetAccessTokensAsync(_viewModel.ConnectionSettings)).FirstOrDefault() ??
-                          (await codeCatalyst.CreateAccessTokenAsync(_defaultName, null, _viewModel.ConnectionSettings));
+                          (await codeCatalyst.CreateDefaultAccessTokenAsync(null, _viewModel.ConnectionSettings));
 
                 CloneUrl = await _viewModel.SelectedRepository.GetCloneUrlAsync(CloneUrlType.Https, pat);
             });
-
-            RepositoryName = _viewModel.SelectedRepository.Name;
-            LocalPath = _viewModel.LocalPath;
 
             return true;
         }

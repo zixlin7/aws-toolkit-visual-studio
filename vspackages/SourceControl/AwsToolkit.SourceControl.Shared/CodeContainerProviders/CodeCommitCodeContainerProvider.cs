@@ -5,14 +5,15 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Context;
 
-// There are a lot of duplicated type names between these two namespaces, so use aliases for clarity
+// There are a lot of duplicated type names between these two namespaces, so use aliases for clarity.
+// If VS injects an unaliased using statement for any of these namespaces, remove it immediately.
 using ccm = Microsoft.VisualStudio.Shell.CodeContainerManagement;
 using sh = Microsoft.VisualStudio.Shell;
 
 namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 {
     [Guid(CodeCommitCodeContainerProviderId)]
-    public class CodeCommitCodeContainerProvider : BaseGitCodeContainerProvider
+    public class CodeCommitCodeContainerProvider : GitCodeContainerProvider
     {
         public const string CodeCommitCodeContainerProviderId = "c886324b-bce8-4eab-84f3-449e59f32736";
 
