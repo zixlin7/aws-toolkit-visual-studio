@@ -66,5 +66,15 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             return new EcrRepositorySelectionDialog(_toolkitContext, _joinableTaskFactory);
         }
+
+        public ICloneCodeCommitRepositoryDialog CreateCloneCodeCommitRepositoryDialog()
+        {
+            return new CloneCodeCommitRepositoryDialog(_toolkitContext, _joinableTaskFactory);
+        }
+
+        public ICloneCodeCatalystRepositoryDialog CreateCloneCodeCatalystRepositoryDialog()
+        {
+            return new CloneCodeCatalystRepositoryDialog(_toolkitContext, _joinableTaskFactory);
+        }
     }
 }

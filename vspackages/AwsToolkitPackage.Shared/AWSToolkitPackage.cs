@@ -48,7 +48,6 @@ using Amazon.AWSToolkit.Persistence.Deployment;
 using Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation;
 
 using ThirdParty.Json.LitJson;
-using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,6 +95,7 @@ using Microsoft.VisualStudio.Threading;
 using Debugger = System.Diagnostics.Debugger;
 using OutputWindow = Amazon.AwsToolkit.VsSdk.Common.OutputWindow.OutputWindow;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
+using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -152,13 +152,32 @@ namespace Amazon.AWSToolkit.VisualStudio
         Transient = true,
         Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
+    // TODO IDE-8906
+    //[ProvideCodeContainerProvider(
+    //    registeredName: nameof(CodeCommitCodeContainerProvider),
+    //    displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
+    //    imageMonikerGuid: GuidList.VsImageCatalog.ImageCatalogGuidString,
+    //    imageMonikerId: 1027, // TODO - IDE-8851
+    //    displayNameResourceId: "#200", // See AWSToolkitPackage.resx
+    //    displayDetailResourceId: "#201", // See AWSToolkitPackage.resx
+    //    typeof(CodeCommitCodeContainerProvider))]
+    [ProvideCodeContainerProvider(
+        registeredName: nameof(CodeCatalystCodeContainerProvider),
+        displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
+        imageMonikerGuid: GuidList.VsImageCatalog.ImageCatalogGuidString,
+        imageMonikerId: 1027, // TODO - IDE-8851
+        displayNameResourceId: "#210", // See AWSToolkitPackage.resx
+        displayDetailResourceId: "#211", // See AWSToolkitPackage.resx
+        typeof(CodeCatalystCodeContainerProvider))]
+
     public sealed class AWSToolkitPackage : ProjectAsyncPackage, 
                                             IVsInstalledProduct, 
                                             IAWSToolkitShellThemeService,
                                             IRegisterDataConnectionService, 
                                             IVsShellPropertyEvents, 
                                             IVsBroadcastMessageEvents,
-											IVsPackage
+											IVsPackage,
+                                            IVsPackageExtensionProvider
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(AWSToolkitPackage));
 
@@ -2667,9 +2686,31 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public object Environment375PercentFontWeightKey => ThemeFontResources.Environment375PercentFontWeightKey;
 
-#endregion
+        #endregion
 
-#region IRegisterDataConnectionService
+        #region IVsPackageExtensionProvider Members
+
+        object IVsPackageExtensionProvider.CreateExtensionInstance(ref Guid extensionPoint, ref Guid instance)
+        {
+            if (extensionPoint == typeof(Microsoft.VisualStudio.Shell.CodeContainerManagement.ICodeContainerProvider).GUID)
+            {
+                if (instance == typeof(CodeCommitCodeContainerProvider).GUID)
+                {
+                    return new CodeCommitCodeContainerProvider(_toolkitContext, this);
+                }
+
+                if (instance == typeof(CodeCatalystCodeContainerProvider).GUID)
+                {
+                    return new CodeCatalystCodeContainerProvider(_toolkitContext, this);
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region IRegisterDataConnectionService
 
         public void AddDataConnection(DatabaseTypes type, string connectionName, string connectionString)
         {

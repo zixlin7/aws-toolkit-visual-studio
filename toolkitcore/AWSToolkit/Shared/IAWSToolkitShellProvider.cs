@@ -10,7 +10,6 @@ using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.Telemetry.Model;
-using Amazon.AWSToolkit.CommonUI.Dialogs;
 
 namespace Amazon.AWSToolkit.Shared
 {
@@ -239,6 +238,13 @@ namespace Amazon.AWSToolkit.Shared
         /// <typeparam name="T">The interface of the requested service</typeparam>
         /// <returns>The service or null if unknown</returns>
         T QueryShellProviderService<T>() where T : class;
+
+        /// <summary>
+        /// Asynchronously requests a service implemented in our hosting shell.
+        /// </summary>
+        /// <typeparam name="T">The interface of the requested service</typeparam>
+        /// <returns>The service or null if unknown</returns>
+        Task<T> QueryShellProviderServiceAsync<T>() where T : class;
 
         /// <summary>
         /// Returns requested interface on a plugin loaded by the toolkit

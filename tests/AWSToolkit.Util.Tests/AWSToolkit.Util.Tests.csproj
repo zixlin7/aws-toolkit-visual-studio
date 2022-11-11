@@ -132,6 +132,9 @@
     <EmbeddedResource Include="Resources\InvalidXmlEndpointsFile.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AWSSDK.CodeCommit">
+      <Version>3.7.0.203</Version>
+    </PackageReference>
     <PackageReference Include="AWSSDK.Core">
       <Version>3.7.13.1</Version>
     </PackageReference>
@@ -140,6 +143,9 @@
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
       <Version>1.0.77</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.XRay">
+      <Version>3.7.0.203</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

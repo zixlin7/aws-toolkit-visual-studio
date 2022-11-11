@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.Credentials.Utils
@@ -13,13 +14,15 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         /// </summary>
         public static CredentialSourceId FromCredentialFactoryId(string credentialFactoryId)
         {
-            if (SharedCredentialProviderFactory.SharedProfileFactoryId.Equals(credentialFactoryId))
+            switch (credentialFactoryId)
             {
-                return CredentialSourceId.SharedCredentials;
-            }
-            else if (SDKCredentialProviderFactory.SdkProfileFactoryId.Equals(credentialFactoryId))
-            {
-                return CredentialSourceId.SdkStore;
+                case SharedCredentialProviderFactory.SharedProfileFactoryId:
+                    return CredentialSourceId.SharedCredentials;
+                case SDKCredentialProviderFactory.SdkProfileFactoryId:
+                    return CredentialSourceId.SdkStore;
+                case SonoCredentialProviderFactory.FactoryId:
+                    // TODO : Update this once Telemetry has a public definition
+                    return new CredentialSourceId("awsBuilderId");
             }
 
             // Give ourselves a hint when this function should be updated

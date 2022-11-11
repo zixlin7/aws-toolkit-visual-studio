@@ -1,31 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
 using Amazon;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.Runtime;
-using Amazon.SecurityToken;
-using Amazon.SecurityToken.Model;
+
 using Moq;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.Core
 {
     public class AwsConnectionManagerTest
     {
+        private const string SampleAccountId = "11222333444";
+        private const string SampleAwsId = "5678";
+
         private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
         private readonly Mock<ICredentialManager> _credentialManager = new Mock<ICredentialManager>();
-        private readonly Mock<AmazonSecurityTokenServiceClient> _stsClient =
-            new Mock<AmazonSecurityTokenServiceClient>();
 
         private readonly Mock<IRegionProvider> _regionProvider = new Mock<IRegionProvider>();
 
         private readonly Mock<ICredentialProviderFactory> _sharedFactory = new Mock<ICredentialProviderFactory>();
+        private readonly FakeAwsTokenProvider _tokenProvider = new FakeAwsTokenProvider();
 
         private readonly Mock<ICredentialSettingsManager> _credentialSettingsManager =
             new Mock<ICredentialSettingsManager>();
@@ -44,6 +47,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         private readonly ICredentialIdentifier _defaultSampleIdentifier = new SharedCredentialIdentifier("default");
         private readonly ICredentialIdentifier _sampleIdentifier = new SharedCredentialIdentifier("sampleMock");
         private readonly ICredentialIdentifier _sampleIdentifier2 = new SDKCredentialIdentifier("sampleMock2");
+        private readonly ICredentialIdentifier _sampleTokenBasedIdentifier = FakeCredentialIdentifier.Create("token-cred-id");
         private readonly ToolkitRegion _sampleRegion = new ToolkitRegion{Id = "region1", PartitionId = "aws", DisplayName = "SampleRegion1"};
         private readonly ToolkitRegion _sampleRegion2 = new ToolkitRegion{Id = "region2", PartitionId = "aws", DisplayName = "SampleRegion2"};
         private readonly ToolkitRegion _sampleLocalRegion = new ToolkitRegion { Id = $"{ RegionProvider.LocalRegionIdPrefix }region", PartitionId = "aws", DisplayName = "SampleLocalRegion" };
@@ -56,7 +60,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         private readonly ManualResetEvent _connectionStateIsTerminalEvent = new ManualResetEvent(false);
 
         private readonly List<ConnectionState> _stateList;
-        private readonly AwsConnectionManager.GetStsClient _fnStsClient;
+        private readonly FakeIdentityResolver _identityResolver = new FakeIdentityResolver();
         private readonly AwsConnectionManager _awsConnectionManager;
 
         public AwsConnectionManagerTest()
@@ -64,11 +68,9 @@ namespace AWSToolkit.Tests.Credentials.Core
             PopulateIdentifiers();
             PopulateRegions();
 
-            _stsClient.Setup(x =>
-                    x.GetCallerIdentityAsync(It.IsAny<GetCallerIdentityRequest>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new GetCallerIdentityResponse{Account = "11222333444"});
+            _identityResolver.AccountId = SampleAccountId;
+            _identityResolver.AwsId = SampleAwsId;
 
-            _fnStsClient = SetupStsClient;
             _credentialManager.Setup(x => x.CredentialSettingsManager).Returns((ICredentialSettingsManager)null);
             _regionProvider.Setup(x => x.GetRegion(It.IsAny<string>()))
                 .Returns<string>(regionId =>
@@ -87,7 +89,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             _regionProvider.Setup(x => x.IsRegionLocal(_sampleLocalRegion.Id)).Returns(true);
             
             _credentialManager.Setup(x => x.GetCredentialIdentifiers())
-                .Returns(_identifiers.Values.ToList());
+                .Returns(() => _identifiers.Values.ToList());
             _credentialManager.Setup(x => x.GetCredentialIdentifierById(It.IsAny<string>()))
                 .Returns<string>(identifierId =>
                 {
@@ -101,7 +103,14 @@ namespace AWSToolkit.Tests.Credentials.Core
             _credentialManager.Setup(x =>
                     x.GetToolkitCredentials(It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()))
                 .Returns<ICredentialIdentifier, ToolkitRegion>((credentialIdentifier, _) =>
-                    new ToolkitCredentials(credentialIdentifier, new AnonymousAWSCredentials()));
+                {
+                    if (credentialIdentifier == _sampleTokenBasedIdentifier)
+                    {
+                        return new ToolkitCredentials(credentialIdentifier, _tokenProvider);
+                    }
+
+                    return new ToolkitCredentials(credentialIdentifier, new AnonymousAWSCredentials());
+                });
 
             _stateList = new List<ConnectionState>();
             _awsConnectionManager = CreateAwsConnectionManager();
@@ -109,7 +118,8 @@ namespace AWSToolkit.Tests.Credentials.Core
 
         private AwsConnectionManager CreateAwsConnectionManager()
         {
-            return new AwsConnectionManager(_fnStsClient, _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object, new NoopToolkitSettingsRepository());
+            return new AwsConnectionManager(_identityResolver, _credentialManager.Object, _telemetryLogger.Object,
+                _regionProvider.Object, new NoopToolkitSettingsRepository());
         }
 
         [Fact]
@@ -175,6 +185,42 @@ namespace AWSToolkit.Tests.Credentials.Core
             Assert.IsType<ConnectionState.UserAction>(_awsConnectionManager.ConnectionState);
             Assert.Equal(_defaultSampleIdentifier.Id,
                 _awsConnectionManager.ActiveCredentialIdentifier.Id);
+        }
+
+        [Fact]
+        public void ChangeCredentialProviderShouldUpdateAccountId()
+        {
+            _identifiers.Clear();
+            _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
+            _connectionStateIsTerminalEvent.Reset();
+            _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
+            WaitUntilConnectionStateIsStable();
+
+            _connectionStateIsTerminalEvent.Reset();
+            _availableCredentials.Add(_sampleIdentifier.Id);
+            _awsConnectionManager.ChangeCredentialProvider(_sampleIdentifier);
+            WaitUntilConnectionStateIsStable();
+
+            Assert.Equal(SampleAccountId, _awsConnectionManager.ActiveAccountId);
+            Assert.True(string.IsNullOrEmpty(_awsConnectionManager.ActiveAwsId));
+        }
+
+        [Fact]
+        public void ChangeCredentialProviderShouldUpdateAwsId()
+        {
+            _identifiers.Clear();
+            _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
+            _connectionStateIsTerminalEvent.Reset();
+            _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
+            WaitUntilConnectionStateIsStable();
+
+            _connectionStateIsTerminalEvent.Reset();
+            _availableCredentials.Add(_sampleTokenBasedIdentifier.Id);
+            _awsConnectionManager.ChangeCredentialProvider(_sampleTokenBasedIdentifier);
+            WaitUntilConnectionStateIsStable();
+
+            Assert.Equal(SampleAwsId, _awsConnectionManager.ActiveAwsId);
+            Assert.True(string.IsNullOrEmpty(_awsConnectionManager.ActiveAccountId));
         }
 
         [Fact]
@@ -329,9 +375,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void InvalidConnection_WhenSelectedCredentialFailsValidation()
         {
             _availableCredentials.Add(_defaultSampleIdentifier.Id);
-            _stsClient.Setup(x =>
-                    x.GetCallerIdentityAsync(It.IsAny<GetCallerIdentityRequest>(), It.IsAny<CancellationToken>()))
-                .Throws(new ArgumentException());
+            _identityResolver.GetAccountIdAsyncThrows = true;
 
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
@@ -376,7 +420,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             WaitUntilConnectionStateIsStable();
 
             Assert.Equal(_defaultToolkitRegion.DisplayName, _awsConnectionManager.ActiveRegion.DisplayName);
-            Assert.Equal("11222333444", _awsConnectionManager.ActiveAccountId);
+            Assert.Equal(SampleAccountId, _awsConnectionManager.ActiveAccountId);
 
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.ChangeRegion(_sampleLocalRegion);
@@ -406,11 +450,6 @@ namespace AWSToolkit.Tests.Credentials.Core
                 identifier => _identifiers[identifier.Id] = identifier);
         }
 
-        private AmazonSecurityTokenServiceClient SetupStsClient(AWSCredentials credentials, RegionEndpoint endpoint)
-        {
-            return _stsClient.Object;
-        }
-
         private void CheckTerminalState(object sender, ConnectionStateChangeArgs e)
         {
             if (_awsConnectionManager.ConnectionState.IsTerminal)
@@ -426,16 +465,6 @@ namespace AWSToolkit.Tests.Credentials.Core
             var validatingIndex = _stateList.FindLastIndex(x => x is ConnectionState.ValidatingConnection);
             var validIndex = _stateList.FindLastIndex(x => x is ConnectionState.ValidConnection);
             Assert.True(validatingIndex < validIndex);
-        }
-
-        private bool HasSetCredentialsMetrics(Metrics metrics)
-        {
-            return metrics.Data.Any(metricDatum => metricDatum.MetricName == "aws_setCredentials");
-        }
-
-        private bool HasSetRegionMetrics(Metrics metrics)
-        {
-            return metrics.Data.Any(metricDatum => metricDatum.MetricName == "aws_setRegion");
         }
     }
 }

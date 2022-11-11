@@ -11,9 +11,9 @@ namespace Amazon.AWSToolkit.Account.Controller
     {
         private RegisterServiceCredentialsControl _control;
 
-        public RegisterServiceCredentialsController(AccountViewModel account)
+        public RegisterServiceCredentialsController(string uniqueKey)
         {
-            Model = new RegisterServiceCredentialsModel(account);
+            Model = new RegisterServiceCredentialsModel(uniqueKey);
             Model.PropertyChanged += ModelOnPropertyChanged;
         }
 

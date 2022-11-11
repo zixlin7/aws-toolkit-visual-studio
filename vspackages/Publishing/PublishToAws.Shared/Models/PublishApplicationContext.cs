@@ -1,10 +1,10 @@
-﻿using Amazon.AWSToolkit.Credentials.Core;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Publish.Package;
 using Amazon.AWSToolkit.Publish.PublishSetting;
 using Amazon.AWSToolkit.Regions;
-using Amazon.AWSToolkit.Shared;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.Publish.Models
 {
@@ -51,7 +51,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// </summary>
         private static IAwsConnectionManager CreateConnectionManager(PublishContext context)
         {
-            return new AwsConnectionManager(AwsConnectionManager.DefaultStsClientCreator,
+            return new AwsConnectionManager(
                 context.ToolkitContext.CredentialManager,
                 context.ToolkitContext.TelemetryLogger,
                 context.ToolkitContext.RegionProvider,

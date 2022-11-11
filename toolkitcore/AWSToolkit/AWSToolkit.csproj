@@ -101,6 +101,8 @@
     </Compile>
     <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePickerViewModel.cs" />
     <Compile Include="CommonUI\DateTimeRangePicker\TimeInputViewModel.cs" />
+    <Compile Include="CommonUI\Dialogs\ICloneCodeCatalystRepositoryDialog.cs" />
+    <Compile Include="CommonUI\Dialogs\ICloneCodeCommitRepositoryDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IFolderBrowserDialog.cs" />
     <Compile Include="CommonUI\DualListBox.cs" />
     <Compile Include="CommonUI\Notifications\ITaskStatusNotifier.cs" />
@@ -114,10 +116,19 @@
     <Compile Include="CommonUI\DataErrorInfo.cs" />
     <Compile Include="Credentials\Core\AwsConnectionSettings.cs" />
     <Compile Include="Credentials\Core\AwsConnectionType.cs" />
+    <Compile Include="Credentials\Core\IdentityResolver.cs" />
+    <Compile Include="Credentials\Core\IIdentityResolver.cs" />
+    <Compile Include="Credentials\Sono\SonoCredentialIdentifier.cs" />
+    <Compile Include="Credentials\Sono\SonoCredentialProviderFactory.cs" />
+    <Compile Include="Credentials\Sono\SonoHelpers.cs" />
+    <Compile Include="Credentials\Sono\SonoProperties.cs" />
+    <Compile Include="Credentials\Sono\SonoProfileProcessor.cs" />
+    <Compile Include="Credentials\Sono\SonoTokenProviderBuilder.cs" />
     <Compile Include="Credentials\Core\ToolkitCredentials.cs" />
     <Compile Include="Credentials\Core\ToolkitSsoTokenManager.cs" />
     <Compile Include="Credentials\Core\ToolkitSsoTokenManagerOptions.cs" />
     <Compile Include="Credentials\Utils\IAwsServiceClientManagerExtensionMethods.cs" />
+    <Compile Include="Credentials\Utils\ProfileName.cs" />
     <Compile Include="Ecr\IEcrViewer.cs" />
     <Compile Include="CloudFormation\ICloudFormationViewer.cs" />
     <Compile Include="Commands\AsyncRelayCommand.cs" />
@@ -276,6 +287,7 @@
     <Compile Include="Themes\ToolkitThemes.cs" />
     <Compile Include="Urls\AwsUrls.cs" />
     <Compile Include="Urls\GitHubUrls.cs" />
+    <Compile Include="Urls\ServiceUrls.cs" />
     <Compile Include="Util\MruList.cs" />
     <Compile Include="Credentials\Utils\ProfileHolder.cs" />
     <Compile Include="Credentials\Core\SDKCredentialIdentifier.cs" />
@@ -970,6 +982,9 @@
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatch">
       <Version>3.7.7.10</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CodeCatalyst">
+      <Version>3.7.130</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.7.0.203</Version>

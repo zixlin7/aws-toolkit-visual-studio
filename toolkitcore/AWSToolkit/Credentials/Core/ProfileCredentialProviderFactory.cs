@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.Credentials.IO;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
@@ -178,7 +179,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         protected abstract ICredentialIdentifier CreateCredentialIdentifier(CredentialProfile profile);
 
-        protected abstract AWSCredentials CreateSaml(CredentialProfile profile);
+        protected abstract ToolkitCredentials CreateSaml(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier);
 
         protected void HandleFileChangeEvent(object sender, EventArgs e)
         {
@@ -191,39 +193,42 @@ namespace Amazon.AWSToolkit.Credentials.Core
             CredentialsChanged?.Invoke(this, args);
         }
 
-        protected AWSCredentials CreateAwsCredential(CredentialProfile profile, ToolkitRegion region)
+        protected ToolkitCredentials CreateToolkitCredentials(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
         {
+            if (profile.Options.ReferencesSsoSessionProfile())
+            {
+                return CreateSsoSession(profile, credentialIdentifier);
+            }
+
             if (profile.Options.ContainsSsoProperties())
             {
-                // TODO : When we add bearer token support, SSO based profiles could return AWSCredentials or tokens depending
-                // on which properties are available
-                // We'll need to adjust some code flows in this space
-                return CreateSso(profile);
+                return CreateSso(profile, credentialIdentifier);
             }
 
             if (!string.IsNullOrWhiteSpace(profile.Options.EndpointName))
             {
-                return CreateSaml(profile);
+                return CreateSaml(profile, credentialIdentifier);
             }
 
             if (!string.IsNullOrWhiteSpace(profile.Options.RoleArn))
             {
-                return CreateAssumeRole(profile, region);
+                return CreateAssumeRole(profile, credentialIdentifier, region);
             }
 
             if (!string.IsNullOrWhiteSpace(profile.Options.Token))
             {
-                return CreateStaticSession(profile);
+                return CreateStaticSession(profile, credentialIdentifier);
             }
 
             if (!string.IsNullOrWhiteSpace(profile.Options.AccessKey))
             {
-                return CreateBasic(profile);
+                return CreateBasic(profile, credentialIdentifier);
             }
 
             if (!string.IsNullOrWhiteSpace(profile.Options.CredentialProcess))
             {
-                return CreateCredentialProcess(profile);
+                return CreateCredentialProcess(profile, credentialIdentifier);
             }
 
             throw new ArgumentException(
@@ -289,30 +294,37 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
         }
 
-        private AWSCredentials CreateBasic(CredentialProfile profile)
+        private ToolkitCredentials CreateBasic(CredentialProfile profile, ICredentialIdentifier credentialIdentifier)
         {
             ValidateRequiredProperty(profile.Options.AccessKey, ProfilePropertyConstants.AccessKey, profile.Name);
             ValidateRequiredProperty(profile.Options.SecretKey, ProfilePropertyConstants.SecretKey, profile.Name);
-            return new BasicAWSCredentials(profile.Options.AccessKey, profile.Options.SecretKey);
+            var credentials = new BasicAWSCredentials(profile.Options.AccessKey, profile.Options.SecretKey);
+            return new ToolkitCredentials(credentialIdentifier, credentials);
         }
 
-        private AWSCredentials CreateCredentialProcess(CredentialProfile profile)
+        private ToolkitCredentials CreateCredentialProcess(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier)
         {
             ValidateRequiredProperty(profile.Options.CredentialProcess, ProfilePropertyConstants.CredentialProcess,
                 profile.Name);
-            return new ProcessAWSCredentials(profile.Options.CredentialProcess);
+            var credentials = new ProcessAWSCredentials(profile.Options.CredentialProcess);
+            return new ToolkitCredentials(credentialIdentifier, credentials);
         }
 
-        private AWSCredentials CreateStaticSession(CredentialProfile profile)
+        private ToolkitCredentials CreateStaticSession(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier)
         {
             ValidateRequiredProperty(profile.Options.AccessKey, ProfilePropertyConstants.AccessKey, profile.Name);
             ValidateRequiredProperty(profile.Options.SecretKey, ProfilePropertyConstants.SecretKey, profile.Name);
             ValidateRequiredProperty(profile.Options.Token, ProfilePropertyConstants.Token, profile.Name);
-            return new SessionAWSCredentials(profile.Options.AccessKey, profile.Options.SecretKey,
+            var credentials = new SessionAWSCredentials(profile.Options.AccessKey, profile.Options.SecretKey,
                 profile.Options.Token);
+
+            return new ToolkitCredentials(credentialIdentifier, credentials);
         }
 
-        private AWSCredentials CreateAssumeRole(CredentialProfile profile, ToolkitRegion region)
+        private ToolkitCredentials CreateAssumeRole(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
         {
             if (region == null)
             {
@@ -343,7 +355,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 options,
                 ToolkitShell);
 
-            return credentials;
+            return new ToolkitCredentials(credentialIdentifier, credentials);
         }
 
         private AWSCredentials CreateAssumeRoleSourceCredentials(CredentialProfile profile, ToolkitRegion region)
@@ -381,7 +393,15 @@ namespace Amazon.AWSToolkit.Credentials.Core
                                 throw new ArgumentException(
                                     $"Source Profile not found: {sourceProfileName}, referenced by: {profile.Name}");
 
-            return CreateAwsCredential(sourceProfile, region);
+            var sourceCredentialsId = CreateCredentialIdentifier(sourceProfile);
+            var toolkitCredentials = CreateToolkitCredentials(sourceProfile, sourceCredentialsId, region);
+
+            if (!toolkitCredentials.Supports(AwsConnectionType.AwsCredentials))
+            {
+                throw new ArgumentException($"{profile.Name} references incompatible profile {sourceProfileName}");
+            }
+
+            return toolkitCredentials.GetAwsCredentials();
         }
 
         private static AWSCredentials CreateCredentialSourceCredentials(CredentialProfile profile)
@@ -402,14 +422,34 @@ namespace Amazon.AWSToolkit.Credentials.Core
             return ToolkitDefaultEc2InstanceCredentials.Instance;
         }
 
-        private AWSCredentials CreateSso(CredentialProfile profile)
+        private ToolkitCredentials CreateSsoSession(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier)
+        {
+            ValidateRequiredProperty(profile.Options.SsoRegion, ProfilePropertyConstants.SsoRegion, profile.Name);
+            ValidateRequiredProperty(profile.Options.SsoStartUrl, ProfilePropertyConstants.SsoStartUrl, profile.Name);
+
+            // Treat all profiles referenced using sso_session as Sono based credentials.
+            // If we have to handle different credential providers on a per-startUrl basis,
+            // we will need to redesign the system to handle different token provider resolution.
+            var tokenProvider = SonoTokenProviderBuilder.Create()
+                .WithCredentialIdentifier(credentialIdentifier)
+                .WithToolkitShell(ToolkitShell)
+                .WithTokenProviderRegion(RegionEndpoint.GetBySystemName(profile.Options.SsoRegion))
+                .WithStartUrl(profile.Options.SsoStartUrl)
+                .Build();
+
+            return new ToolkitCredentials(credentialIdentifier, tokenProvider);
+        }
+
+        private ToolkitCredentials CreateSso(CredentialProfile profile, ICredentialIdentifier credentialIdentifier)
         {
             ValidateRequiredProperty(profile.Options.SsoAccountId, ProfilePropertyConstants.SsoAccountId, profile.Name);
             ValidateRequiredProperty(profile.Options.SsoRegion, ProfilePropertyConstants.SsoRegion, profile.Name);
             ValidateRequiredProperty(profile.Options.SsoRoleName, ProfilePropertyConstants.SsoRoleName, profile.Name);
             ValidateRequiredProperty(profile.Options.SsoStartUrl, ProfilePropertyConstants.SsoStartUrl, profile.Name);
 
-            return new AwsSsoCredentials(profile, ToolkitShell);
+            var credentials = new AwsSsoCredentials(profile, ToolkitShell);
+            return new ToolkitCredentials(credentialIdentifier, credentials);
         }
 
         public void CreateProfile(ICredentialIdentifier identifier, ProfileProperties properties)

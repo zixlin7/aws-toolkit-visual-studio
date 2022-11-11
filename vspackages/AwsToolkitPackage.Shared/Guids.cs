@@ -61,11 +61,12 @@ namespace Amazon.AWSToolkit.VisualStudio
         // code uses 4.6.x (to support VS2017).
         // Instead, we'll place the values of interest here.
         // TODO : Get Microsoft.VisualStudio.ImageCatalog NuGet references working in-solution somehow
-#region KnownImageIds
+        #region KnownImageIds
 
         public static class VsImageCatalog
         {
-            public static readonly Guid ImageCatalogGuid = new Guid("{ae27a6b0-e345-4288-96df-5eaf394ee369}");
+            public const string ImageCatalogGuidString = "{ae27a6b0-e345-4288-96df-5eaf394ee369}";
+            public static readonly Guid ImageCatalogGuid = new Guid(ImageCatalogGuidString);
             public const int StatusInformation = 2933;
         }
 

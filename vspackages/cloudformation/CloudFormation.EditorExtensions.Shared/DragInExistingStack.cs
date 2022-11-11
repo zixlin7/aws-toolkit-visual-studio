@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
                 if (!ToolkitFactory.Instance.ShellProvider.Confirm("Replace Template", "Replace the contents of this template with the template from this existing stack?"))
                     return DragDropPointerEffects.None;
 
-                var getTemplate = dragDropInfo.Data.GetData(ToolkitGlobalContants.CloudFormationStackTemplateFetcherDnDFormat) as Func<string>;
+                var getTemplate = dragDropInfo.Data.GetData(ToolkitGlobalConstants.CloudFormationStackTemplateFetcherDnDFormat) as Func<string>;
                 if(getTemplate == null)
                     return DragDropPointerEffects.None;
 
@@ -61,10 +61,10 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 
         public bool  IsDropEnabled(DragDropInfo dragDropInfo)
         {
-            if (!dragDropInfo.Data.GetDataPresent(ToolkitGlobalContants.CloudFormationStackTemplateFetcherDnDFormat))
+            if (!dragDropInfo.Data.GetDataPresent(ToolkitGlobalConstants.CloudFormationStackTemplateFetcherDnDFormat))
                 return false;
 
-            var getTemplate = dragDropInfo.Data.GetData(ToolkitGlobalContants.CloudFormationStackTemplateFetcherDnDFormat) as Func<string>;
+            var getTemplate = dragDropInfo.Data.GetData(ToolkitGlobalConstants.CloudFormationStackTemplateFetcherDnDFormat) as Func<string>;
             if (getTemplate == null)
                 return false;
 
@@ -73,7 +73,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
     }
 
     [Export(typeof(IDropHandlerProvider))]
-    [DropFormat(ToolkitGlobalContants.CloudFormationStackTemplateFetcherDnDFormat)]
+    [DropFormat(ToolkitGlobalConstants.CloudFormationStackTemplateFetcherDnDFormat)]
     [Name("CloudFormation Stack Drop Handler")]
     [Order(Before = "DefaultFileDropHandler")]
     internal class DragInExistingStackProvider : IDropHandlerProvider

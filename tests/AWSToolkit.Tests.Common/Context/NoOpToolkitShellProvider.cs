@@ -132,6 +132,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             return null;
         }
 
+        public Task<T> QueryShellProviderServiceAsync<T>() where T : class
+        {
+            return null;
+        }
+
         public object QueryAWSToolkitPluginService(Type pluginServiceType)
         {
             return null;

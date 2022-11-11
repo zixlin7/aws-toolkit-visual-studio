@@ -17,6 +17,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         public object ErrorBorder => ThemeResourceKeys.VS2019ErrorBrushKey;
 #endif
         public object HintText => EnvironmentColors.ControlEditHintTextBrushKey;
+        public object InfoText => EnvironmentColors.SystemInfoTextBrushKey;
+        public object InfoBackground => EnvironmentColors.SystemInfoBackgroundBrushKey;
         public object ToolTipBorder => EnvironmentColors.ToolTipBorderBrushKey;
         public object ToolTipBackground => EnvironmentColors.ToolTipBrushKey;
         public object ToolTipText => EnvironmentColors.ToolTipTextBrushKey;
