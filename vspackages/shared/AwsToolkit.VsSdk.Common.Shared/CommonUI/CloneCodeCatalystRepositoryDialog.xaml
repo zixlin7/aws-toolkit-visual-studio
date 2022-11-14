@@ -12,7 +12,7 @@
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell15="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shellPf="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit" 
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     Height="700"
     Width="850"
@@ -24,30 +24,49 @@
 
     <platformUi:DialogWindow.Resources>
         <ResourceDictionary>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
-            <commonUi:VsImages x:Key="VsImages" />
+            <BooleanToVisibilityConverter
+                x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter
+                x:Key="InverseBooleanToVisibilityConverter" />
+            <commonUi:VsImages
+                x:Key="VsImages" />
             <!-- Only show an icon for warning or error states -->
-            <Style x:Key="ConnectionImage" TargetType="Image">
-                <Setter Property="Visibility" Value="Collapsed" />
+            <Style
+                x:Key="ConnectionImage"
+                TargetType="Image">
+                <Setter
+                    Property="Visibility"
+                    Value="Collapsed" />
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding Connection.ConnectionStatus}"
-                                 Value="{x:Static models:CredentialConnectionStatus.Warning}">
-                        <Setter Property="Visibility" Value="Visible" />
-                        <Setter Property="Source"
-                                Value="{Binding Source={StaticResource VsImages}, Path=StatusWarning}" />
+                    <DataTrigger
+                        Binding="{Binding Connection.ConnectionStatus}"
+                        Value="{x:Static models:CredentialConnectionStatus.Warning}">
+                        <Setter
+                            Property="Visibility"
+                            Value="Visible" />
+                        <Setter
+                            Property="Source"
+                            Value="{Binding Source={StaticResource VsImages}, Path=StatusWarning}" />
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding Connection.ConnectionStatus}"
-                                 Value="{x:Static models:CredentialConnectionStatus.Error}">
-                        <Setter Property="Visibility" Value="Visible" />
-                        <Setter Property="Source"
-                                Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                    <DataTrigger
+                        Binding="{Binding Connection.ConnectionStatus}"
+                        Value="{x:Static models:CredentialConnectionStatus.Error}">
+                        <Setter
+                            Property="Visibility"
+                            Value="Visible" />
+                        <Setter
+                            Property="Source"
+                            Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding Connection.IsConnectionValid}"
-                                 Value="True">
-                        <Setter Property="Visibility" Value="Visible" />
-                        <Setter Property="Source"
-                                Value="{Binding Source={StaticResource VsImages}, Path=StatusOK}" />
+                    <DataTrigger
+                        Binding="{Binding Connection.IsConnectionValid}"
+                        Value="True">
+                        <Setter
+                            Property="Visibility"
+                            Value="Visible" />
+                        <Setter
+                            Property="Source"
+                            Value="{Binding Source={StaticResource VsImages}, Path=StatusOK}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -61,13 +80,22 @@
                     Property="Foreground"
                     Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
             </Style>
-            <Style x:Key="ValidationBorderStyle" TargetType="{x:Type Border}">
-                <Setter Property="BorderThickness" Value="0"/>
+            <Style
+                x:Key="ValidationBorderStyle"
+                TargetType="{x:Type Border}">
+                <Setter
+                    Property="BorderThickness"
+                    Value="0" />
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding Connection.IsConnectionBad}" Value="True">
-                        <Setter Property="BorderBrush"
-                                    Value="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}" />
-                        <Setter Property="BorderThickness" Value="1"/>
+                    <DataTrigger
+                        Binding="{Binding Connection.IsConnectionBad}"
+                        Value="True">
+                        <Setter
+                            Property="BorderBrush"
+                            Value="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}" />
+                        <Setter
+                            Property="BorderThickness"
+                            Value="1" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -293,20 +321,28 @@
                     Height="6"
                     Visibility="{Binding Connection.IsConnectionBad, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                <Grid Grid.Row="3" Grid.ColumnSpan="3"
-                      themes:ToolkitThemes.UseToolkitTheme="True"
-                      Visibility="{Binding Connection.IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <Grid
+                    Grid.Row="3"
+                    Grid.ColumnSpan="3"
+                    themes:ToolkitThemes.UseToolkitTheme="True"
+                    Visibility="{Binding Connection.IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition
+                            Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.Style>
-                        <Style TargetType="Grid">
+                        <Style
+                            TargetType="Grid">
                             <Style.Triggers>
                                 <!-- Give the whole grid a "info" background color if the Connection is not valid. -->
-                                <DataTrigger Binding="{Binding Connection.IsConnectionBad}" Value="True">
-                                    <Setter Property="Background"
-                                            Value="{DynamicResource {x:Static themes:ToolkitThemes.InfoBackgroundKey}}" />
+                                <DataTrigger
+                                    Binding="{Binding Connection.IsConnectionBad}"
+                                    Value="True">
+                                    <Setter
+                                        Property="Background"
+                                        Value="{DynamicResource {x:Static themes:ToolkitThemes.InfoBackgroundKey}}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -315,7 +351,8 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         Margin="6 9 6 0 "
-                        Height="16" Width="16"
+                        Height="16"
+                        Width="16"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Style="{StaticResource ConnectionImage}" />
@@ -330,15 +367,21 @@
                         <TextBlock
                             d:Text="Validation Failure Messages go here"
                             themes:ToolkitThemes.UseToolkitTheme="True"
-                            Text="{Binding Connection.ConnectionMessage}">
+                            Text="{Binding Connection.ConnectionMessage}"
+                            TextWrapping="WrapWithOverflow">
                             <TextBlock.Style>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}" />
+                                <Style
+                                    TargetType="{x:Type TextBlock}">
+                                    <Setter
+                                        Property="Foreground"
+                                        Value="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Connection.IsConnectionBad}" Value="True">
-                                            <Setter Property="Foreground"
-                                                    Value="{DynamicResource {x:Static themes:ToolkitThemes.InfoTextBrushKey}}" />
+                                        <DataTrigger
+                                            Binding="{Binding Connection.IsConnectionBad}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Foreground"
+                                                Value="{DynamicResource {x:Static themes:ToolkitThemes.InfoTextBrushKey}}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -347,7 +390,8 @@
                         <TextBlock
                             Margin="0 3 0 0"
                             Visibility="{Binding Connection.IsConnectionBad, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Hyperlink Command="{Binding Connection.RetryCommand}">
+                            <Hyperlink
+                                Command="{Binding Connection.RetryCommand}">
                                 Retry
                             </Hyperlink>
                         </TextBlock>
