@@ -120,9 +120,9 @@
                 Orientation="Horizontal"
                 Grid.Row="0">
                 <Image
-                    Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCommit}"
-                    Width="24"
-                    Height="24"
+                    Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCatalyst}"
+                    Width="32"
+                    Height="32"
                     Margin="0 0 6 0"
                     VerticalAlignment="Center" />
                 <!-- 
