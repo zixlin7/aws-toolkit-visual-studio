@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.CodeCatalyst.Models;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
@@ -21,7 +22,7 @@ using Xunit;
 
 namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 {
-    public class CloneCodeCatalystRepositoryViewModelTests
+    public class CloneCodeCatalystRepositoryViewModelTests : IDisposable
     {
         private const string _regionId = "us-east-1";
         private const string _spaceName = "test-space-name";
@@ -29,10 +30,11 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         private const string _repoName = "test-repo-name";
 
         private readonly CloneCodeCatalystRepositoryViewModel _sut;
+        private readonly ConnectionState _sampleConnectionState;
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
         private readonly Mock<IAWSCodeCatalyst> _codeCatalyst = new Mock<IAWSCodeCatalyst>();
-        private readonly SonoCredentialProviderFactory _credentialFactory;
         private readonly Mock<IFolderBrowserDialog> _folderDialog = new Mock<IFolderBrowserDialog>();
+        private readonly ICredentialIdentifier _sampleIdentifier = new SonoCredentialIdentifier("sample");
 
         public CloneCodeCatalystRepositoryViewModelTests()
         {
@@ -65,29 +67,50 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             var taskContext = new JoinableTaskContext();
 #pragma warning restore VSSDK005
 
-            _credentialFactory = new SonoCredentialProviderFactory(null);
-            _credentialFactory.Initialize();
-
             _sut = new CloneCodeCatalystRepositoryViewModel(_toolkitContextFixture.ToolkitContext, taskContext.Factory);
+            _sampleConnectionState = new ConnectionState.ValidConnection(_sampleIdentifier, _sut.AwsIdRegion);
         }
 
         [Fact]
-        public void ConnectionSettingsIsSetWhenSelectedCredentialChanges()
+        public void UpdateConnectionSettings()
         {
             Assert.Null(_sut.ConnectionSettings);
 
-            _sut.SelectedCredential = _sut.Credentials.First();
+            _sut.Connection.CredentialIdentifier = _sampleIdentifier;
+            _sut.UpdateConnectionSettings();
 
-            Assert.True(_credentialFactory.Supports(_sut.ConnectionSettings.CredentialIdentifier, AwsConnectionType.AwsToken));
+            Assert.NotNull(_sut.ConnectionSettings);
+            Assert.Equal(_sampleIdentifier.Id, _sut.ConnectionSettings.CredentialIdentifier.Id);
             Assert.Equal(_regionId, _sut.ConnectionSettings.Region.Id);
         }
 
-        [Fact]
-        public void SelectingCredentialRefreshesSpaces()
+        public static IEnumerable<object[]> InvalidConnectionState = new List<object[]>
+        {
+            new object[] { new ConnectionState.IncompleteConfiguration(null, null)},
+            new object[] { new ConnectionState.InvalidConnection(null)},
+            new object[] { new ConnectionState.ValidatingConnection() },
+            new object[] { new ConnectionState.InitializingToolkit()},
+        };
+
+        [Theory]
+        [MemberData(nameof(InvalidConnectionState))]
+        public void UpdateSpacesForConnectionState_Invalid(ConnectionState state)
         {
             Assert.Empty(_sut.Spaces);
 
-            _sut.SelectedCredential = _sut.Credentials.First();
+             _sut.UpdateSpacesForConnectionState(state);
+
+             Assert.Empty(_sut.Spaces);
+        }
+
+        [Fact]
+        public void UpdateSpacesForConnectionState_Valid()
+        {
+            Assert.Empty(_sut.Spaces);
+
+            SetupInitialConnection();
+
+            _sut.UpdateSpacesForConnectionState(_sampleConnectionState);
 
             Assert.NotEmpty(_sut.Spaces);
         }
@@ -97,7 +120,8 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         {
             Assert.Empty(_sut.Projects);
 
-            _sut.SelectedCredential = _sut.Credentials.First();
+            SetupInitialSpaces();
+
             _sut.SelectedSpace = _sut.Spaces.First();
 
             Assert.NotEmpty(_sut.Projects);
@@ -108,7 +132,8 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         {
             Assert.Empty(_sut.Repositories);
 
-            _sut.SelectedCredential = _sut.Credentials.First();
+            SetupInitialSpaces();
+
             _sut.SelectedSpace = _sut.Spaces.First();
             _sut.SelectedProject = _sut.Projects.First();
 
@@ -145,5 +170,23 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         }
 
         // TODO IDE-8848 Be sure to add tests once LocalPath has validations
+
+        private void SetupInitialSpaces()
+        {
+            SetupInitialConnection();
+            _sut.UpdateSpacesForConnectionState(_sampleConnectionState);
+        }
+
+        private void SetupInitialConnection()
+        {
+            _sut.Connection.CredentialIdentifier = _sampleIdentifier;
+            _sut.UpdateConnectionSettings();
+            _sut.Connection.IsConnectionValid = true;
+        }
+
+        public void Dispose()
+        {
+            _sut?.Dispose();
+        }
     }
 }

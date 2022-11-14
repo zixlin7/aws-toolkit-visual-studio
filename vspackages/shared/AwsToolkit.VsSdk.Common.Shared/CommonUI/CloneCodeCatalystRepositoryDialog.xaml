@@ -6,10 +6,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    xmlns:models="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI.Models"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell15="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shellPf="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit" 
     themes:ToolkitThemes.UseToolkitTheme="True"
     Height="700"
     Width="850"
@@ -21,6 +24,33 @@
 
     <platformUi:DialogWindow.Resources>
         <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <commonUi:VsImages x:Key="VsImages" />
+            <!-- Only show an icon for warning or error states -->
+            <Style x:Key="ConnectionImage" TargetType="Image">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Connection.ConnectionStatus}"
+                                 Value="{x:Static models:CredentialConnectionStatus.Warning}">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Setter Property="Source"
+                                Value="{Binding Source={StaticResource VsImages}, Path=StatusWarning}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Connection.ConnectionStatus}"
+                                 Value="{x:Static models:CredentialConnectionStatus.Error}">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Setter Property="Source"
+                                Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Connection.IsConnectionValid}"
+                                 Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Setter Property="Source"
+                                Value="{Binding Source={StaticResource VsImages}, Path=StatusOK}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
             <commonUi:ToolkitImages
                 x:Key="ToolkitImages" />
             <Style
@@ -30,6 +60,16 @@
                 <Setter
                     Property="Foreground"
                     Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
+            </Style>
+            <Style x:Key="ValidationBorderStyle" TargetType="{x:Type Border}">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Connection.IsConnectionBad}" Value="True">
+                        <Setter Property="BorderBrush"
+                                    Value="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}" />
+                        <Setter Property="BorderThickness" Value="1"/>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </platformUi:DialogWindow.Resources>
@@ -209,6 +249,10 @@
                     <RowDefinition
                         Height="Auto" />
                     <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
                         Height="*" />
                     <RowDefinition
                         Height="Auto" />
@@ -230,36 +274,88 @@
                     Margin="0 24 0 0">
                     Credential:
                 </TextBlock>
-                <!--
-                <components:CredentialIdentitySelector
-                    Grid.Row="3"
-                    Grid.ColumnSpan="2" 
-                    Identifier="{Binding SelectedCredential, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Identifiers="{Binding Credentials}"
-                    Margin="0 6 0 0"
-                    Height="{Binding ElementName=RegionsComboBox, Path=ActualHeight}" />
-                -->
-                <ComboBox
-                    x:Name="CredentialsComboBox"
+
+                <Border
                     Grid.Row="1"
                     Grid.ColumnSpan="2"
                     Margin="0 6 0 0"
-                    VerticalAlignment="Center"
-                    ItemsSource="{Binding Credentials}"
-                    SelectedItem="{Binding SelectedCredential}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel
-                                Orientation="Horizontal">
-                                <TextBlock
-                                    Text="{Binding DisplayName}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                    Style="{StaticResource ValidationBorderStyle}">
+                    <components:CredentialIdentitySelector
+                        Identifier="{Binding Connection.CredentialIdentifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Identifiers="{Binding Connection.Credentials, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                </Border>
+
+                <!--This is intentionally left space between the connection settings and any validation error messages-->
+                <Separator
+                    Background="Transparent"
+                    Grid.Row="2"
+                    Grid.ColumnSpan="3"
+                    Height="6"
+                    Visibility="{Binding Connection.IsConnectionBad, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <Grid Grid.Row="3" Grid.ColumnSpan="3"
+                      themes:ToolkitThemes.UseToolkitTheme="True"
+                      Visibility="{Binding Connection.IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <!-- Give the whole grid a "info" background color if the Connection is not valid. -->
+                                <DataTrigger Binding="{Binding Connection.IsConnectionBad}" Value="True">
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource {x:Static themes:ToolkitThemes.InfoBackgroundKey}}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Image
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="6 9 6 0 "
+                        Height="16" Width="16"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource ConnectionImage}" />
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="0 9 0 9"
+                        HorizontalAlignment="Left"
+                        themes:ToolkitThemes.UseToolkitTheme="True"
+                        Orientation="Vertical">
+                        <TextBlock
+                            d:Text="Validation Failure Messages go here"
+                            themes:ToolkitThemes.UseToolkitTheme="True"
+                            Text="{Binding Connection.ConnectionMessage}">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Connection.IsConnectionBad}" Value="True">
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource {x:Static themes:ToolkitThemes.InfoTextBrushKey}}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock
+                            Margin="0 3 0 0"
+                            Visibility="{Binding Connection.IsConnectionBad, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Hyperlink Command="{Binding Connection.RetryCommand}">
+                                Retry
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
 
                 <TextBlock
-                    Grid.Row="2"
+                    Grid.Row="4"
                     Grid.ColumnSpan="3"
                     Margin="0 16 0 0">
                     Space:
@@ -267,38 +363,13 @@
 
                 <ComboBox
                     x:Name="SpacesComboBox"
-                    Grid.Row="3"
-                    Grid.ColumnSpan="2"
-                    Margin="0 6 0 0"
-                    VerticalAlignment="Center"
-                    ItemsSource="{Binding Spaces}"
-                    SelectedItem="{Binding SelectedSpace}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel
-                                Orientation="Horizontal">
-                                <TextBlock
-                                    Text="{Binding DisplayName}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-
-                <TextBlock
-                    Grid.Row="4"
-                    Grid.ColumnSpan="3"
-                    Margin="0 16 0 0">
-                    Project:
-                </TextBlock>
-
-                <ComboBox
-                    x:Name="ProjectsComboBox"
                     Grid.Row="5"
                     Grid.ColumnSpan="2"
                     Margin="0 6 0 0"
                     VerticalAlignment="Center"
-                    ItemsSource="{Binding Projects}"
-                    SelectedItem="{Binding SelectedProject}">
+                    IsEnabled="{Binding Connection.IsConnectionValid}"
+                    ItemsSource="{Binding Spaces}"
+                    SelectedItem="{Binding SelectedSpace}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel
@@ -314,14 +385,42 @@
                     Grid.Row="6"
                     Grid.ColumnSpan="3"
                     Margin="0 16 0 0">
+                    Project:
+                </TextBlock>
+
+                <ComboBox
+                    x:Name="ProjectsComboBox"
+                    Grid.Row="7"
+                    Grid.ColumnSpan="2"
+                    Margin="0 6 0 0"
+                    VerticalAlignment="Center"
+                    IsEnabled="{Binding Connection.IsConnectionValid}"
+                    ItemsSource="{Binding Projects}"
+                    SelectedItem="{Binding SelectedProject}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="{Binding DisplayName}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.ColumnSpan="3"
+                    Margin="0 16 0 0">
                     Repository:
                 </TextBlock>
 
                 <ListBox
-                    Grid.Row="7"
+                    Grid.Row="9"
                     Grid.ColumnSpan="3"
-                    ItemsSource="{Binding Repositories}"
                     Margin="0 6 0 0"
+                    IsEnabled="{Binding Connection.IsConnectionValid}"
+                    ItemsSource="{Binding Repositories}"
                     SelectedItem="{Binding SelectedRepository}"
                     VerticalAlignment="Stretch">
                     <ListBox.ItemTemplate>
@@ -361,15 +460,16 @@
                 </ListBox>
 
                 <TextBlock
-                    Grid.Row="8"
+                    Grid.Row="10"
                     Grid.ColumnSpan="3"
                     Margin="0 16 0 0">
                     Path:
                 </TextBlock>
 
                 <Grid
-                    Grid.Row="9"
+                    Grid.Row="11"
                     Grid.ColumnSpan="3"
+                    IsEnabled="{Binding Connection.IsConnectionValid}"
                     Margin="0 6 0 0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition

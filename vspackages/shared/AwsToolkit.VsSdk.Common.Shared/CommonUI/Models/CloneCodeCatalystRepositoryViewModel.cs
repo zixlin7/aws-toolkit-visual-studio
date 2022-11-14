@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -12,15 +13,18 @@ using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tasks;
 
+using AwsToolkit.VsSdk.Common.CommonUI.Models;
+
 using Microsoft.VisualStudio.Threading;
+
+using ConnectionState = Amazon.AWSToolkit.Credentials.State.ConnectionState;
 
 namespace CommonUI.Models
 {
-    internal class CloneCodeCatalystRepositoryViewModel : BaseModel
+    internal class CloneCodeCatalystRepositoryViewModel : BaseModel, IDisposable
     {
         // TODO - Update to appropriate help page once written, see IDE-8974
         private const string HelpUri = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/";
@@ -28,8 +32,6 @@ namespace CommonUI.Models
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
         private readonly IAWSCodeCatalyst _codeCatalyst;
-
-        private readonly ToolkitRegion _awsIdRegion;
 
         private AwsConnectionSettings _connectionSettings;
 
@@ -39,14 +41,13 @@ namespace CommonUI.Models
             private set => SetProperty(ref _connectionSettings, value);
         }
 
-        private ICredentialIdentifier _selectedCredential;
+        public ToolkitRegion AwsIdRegion { get; }
 
-        public ICredentialIdentifier SelectedCredential
-        {
-            get => _selectedCredential;
-            set => SetProperty(ref _selectedCredential, value);
-        }
-        public ObservableCollection<ICredentialIdentifier> Credentials { get; } = new ObservableCollection<ICredentialIdentifier>();
+        public CredentialConnectionViewModel Connection { get; }
+
+        public ICredentialIdentifier Identifier => Connection.CredentialIdentifier;
+
+        public AwsConnectionManager ConnectionManager => Connection.ConnectionManager;
 
         private ICodeCatalystSpace _selectedSpace;
 
@@ -114,27 +115,37 @@ namespace CommonUI.Models
             _joinableTaskFactory = joinableTaskFactory;
             _codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
 
-            _awsIdRegion = _toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
+            AwsIdRegion = _toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
+
+            Connection = new CredentialConnectionViewModel(_toolkitContext)
+            {
+                ConnectionTypes = new List<AwsConnectionType>() { AwsConnectionType.AwsToken },
+            };
 
             PropertyChanged += CloneCodeCatalystRepositoryViewModel_PropertyChanged;
-
-            RefreshCredentials();
-
             BrowseForRepositoryPathCommand = new RelayCommand(ExecuteBrowseForRepositoryPathCommand);
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
+        }
+
+        /// <summary>
+        /// Updates connection settings with identifier and region
+        /// </summary>
+        public void UpdateConnectionSettings()
+        {
+            if (ConnectionSettings == null)
+            {
+                ConnectionSettings = new AwsConnectionSettings(Identifier, AwsIdRegion);
+            }
+            else
+            {
+                Connection.CredentialIdentifier = Identifier;
+            }
         }
 
         private void CloneCodeCatalystRepositoryViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
-                case nameof(SelectedCredential):
-                    if (SelectedCredential != null)
-                    {
-                        ConnectionSettings = new AwsConnectionSettings(SelectedCredential, _awsIdRegion);
-                    }
-                    RefreshSpaces();
-                    break;
                 case nameof(SelectedSpace):
                     RefreshProjects();
                     break;
@@ -143,7 +154,7 @@ namespace CommonUI.Models
                     break;
             }
         }
-
+        
         private void ExecuteBrowseForRepositoryPathCommand(object parameter)
         {
             var dlg = _toolkitContext.ToolkitHost.GetDialogFactory().CreateFolderBrowserDialog();
@@ -158,7 +169,7 @@ namespace CommonUI.Models
 
         public bool CanSubmit()
         {
-            return !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
+            return Connection.IsConnectionValid && !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
         }
 
         public void ExecuteHelpCommand(object parameter)
@@ -168,38 +179,28 @@ namespace CommonUI.Models
 
         // TODO - Add ProgressDialog when calling APIs to load view model collections
 
-        private void RefreshCredentials()
+        /// <summary>
+        /// Update spaces for the given connection state
+        /// if connection is valid, reload spaces
+        /// else, clear the previously loaded spaces
+        /// </summary>
+        public void UpdateSpacesForConnectionState(ConnectionState connectionState)
         {
-            Credentials.Clear();
-
-            // TODO This is just temporary for testing
-            var credId = new SonoCredentialIdentifier("default");
-            Credentials.Add(credId);
-
-            // TODO Write the actual logic for this IDE-8981
-            //CredentialIdentifiers.AddAll(
-            //    _toolkitContext.CredentialManager.GetCredentialIdentifiers()
-            //    .Where(ci => _toolkitContext.CredentialManager.Supports(ci, AwsConnectionType.AwsToken)));
-
-            //if (SelectedCredentialIdentifier == null)
-            //{
-            //    SelectedCredentialIdentifier = CredentialIdentifiers.FirstOrDefault();
-            //    return;
-            //}
-
-            //if (CredentialIdentifiers.Contains(SelectedCredentialIdentifier))
-            //{
-            //    return;
-            //}
-
-            //SelectedCredentialIdentifier = CredentialIdentifiers.FirstOrDefault(i => i.Id == SelectedCredentialIdentifier.Id);
+            if (connectionState is ConnectionState.ValidConnection)
+            {
+                RefreshSpaces();
+            }
+            else
+            {
+                Spaces.Clear();
+            }
         }
 
         private void RefreshSpaces()
         {
             Spaces.Clear();
 
-            if (ConnectionSettings == null)
+            if (HasInvalidConnectionSettings())
             {
                 SelectedSpace = null;
                 return;
@@ -230,7 +231,7 @@ namespace CommonUI.Models
         {
             Projects.Clear();
 
-            if (ConnectionSettings == null || SelectedSpace == null)
+            if (HasInvalidConnectionSettings() || SelectedSpace == null)
             {
                 SelectedProject = null;
                 return;
@@ -261,7 +262,7 @@ namespace CommonUI.Models
         {
             Repositories.Clear();
 
-            if (ConnectionSettings == null || SelectedSpace == null || SelectedProject == null)
+            if (HasInvalidConnectionSettings() || SelectedSpace == null || SelectedProject == null)
             {
                 SelectedRepository = null;
                 return;
@@ -289,6 +290,16 @@ namespace CommonUI.Models
             // TODO - Is LogExceptionAndForget the right thing to do here or should we alert the user to the error?  This has happened to me when
             // my yubi token has expired and it just doens't do anything.  Users may not be using Yubikeys, but it could still be confusing if nothing happens.
             // Look into adding an error message per control or perhaps error messages in a centralized approach
+        }
+
+        private bool HasInvalidConnectionSettings()
+        {
+            return ConnectionSettings == null || ConnectionSettings.CredentialIdentifier == null || ConnectionSettings.Region == null || !Connection.IsConnectionValid;
+        }
+
+        public void Dispose()
+        {
+            Connection?.Dispose();
         }
     }
 }
