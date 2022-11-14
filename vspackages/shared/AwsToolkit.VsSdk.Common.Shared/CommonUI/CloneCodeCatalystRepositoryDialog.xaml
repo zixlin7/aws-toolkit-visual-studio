@@ -6,7 +6,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-    xmlns:components="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell15="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shellPf="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
@@ -22,9 +21,15 @@
 
     <platformUi:DialogWindow.Resources>
         <ResourceDictionary>
-            <commonUi:ToolkitImages x:Key="ToolkitImages" />
-            <Style x:Key="CloseDialogButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"  >
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
+            <commonUi:ToolkitImages
+                x:Key="ToolkitImages" />
+            <Style
+                x:Key="CloseDialogButtonStyle"
+                TargetType="{x:Type Button}"
+                BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Setter
+                    Property="Foreground"
+                    Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
             </Style>
         </ResourceDictionary>
     </platformUi:DialogWindow.Resources>
@@ -39,7 +44,7 @@
             ResizeBorderThickness="5"
             UseAeroCaptionButtons="False" />
     </shellPf:WindowChrome.WindowChrome>
-    
+
     <platformUi:DialogWindow.ContentTemplate>
         <DataTemplate>
             <Grid>
@@ -47,12 +52,13 @@
                     Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
                     BorderThickness="1"
                     BorderBrush="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowBorderBrushKey}}">
-                    <DockPanel LastChildFill="True">
-                        <Button 
+                    <DockPanel
+                        LastChildFill="True">
+                        <Button
                             DockPanel.Dock="Top"
                             Content="&#x2715;"
                             Style="{StaticResource CloseDialogButtonStyle}"
-                            Margin="0 6 6 0"
+                            Margin="0 0 6 0"
                             HorizontalAlignment="Right"
                             VerticalContentAlignment="Center"
                             HorizontalContentAlignment="Center"
@@ -91,244 +97,72 @@
                                 Data="F1M8.583,8L13,12.424 12.424,13 8,8.583 3.576,13 3,12.424 7.417,8 3,3.576 3.576,3 8,7.417 12.424,3 13,3.576z"/>
                         </shellControls:GlyphButton>
                         -->
-                        <ContentControl Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" />
+                        <ContentControl
+                            Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" />
                     </DockPanel>
                 </Border>
             </Grid>
         </DataTemplate>
     </platformUi:DialogWindow.ContentTemplate>
 
-    <Grid Margin="24 0 24 24">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <DockPanel
+        Margin="24 0 24 24">
+        <Grid
+            DockPanel.Dock="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <StackPanel 
-            Orientation="Horizontal"
-            Grid.Row="0"
-            Grid.ColumnSpan="3">
-            <Image
-               Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCommit}"
-               Width="24"
-               Height="24"
-               Margin="0 0 6 0"
-               VerticalAlignment="Center" />
-            <!-- 
-            TODO Maintain this comment in the ThemedDialog class when it is written. The ThemedDialog.HeaderText will be a DepedencyProperty
-            and this TextBlock will no longer be defined in XAML for types deriving from ThemedDialog.  
+            <StackPanel
+                Orientation="Horizontal"
+                Grid.Row="0">
+                <Image
+                    Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCommit}"
+                    Width="24"
+                    Height="24"
+                    Margin="0 0 6 0"
+                    VerticalAlignment="Center" />
+                <!-- 
+                    TODO Maintain this comment in the ThemedDialog class when it is written. The ThemedDialog.HeaderText will be a DepedencyProperty
+                    and this TextBlock will no longer be defined in XAML for types deriving from ThemedDialog.  
             
-            Per https://learn.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio?view=vs-2022
-            Themed dialogs must have the 200% header size VsFonts.Environment200PercentFontSizeKey  The ToolkitThemes.Heading1FontSizeKey
-            is set to this size, so it is safe to use here.  Should it change from 200%, FontSize here will need to be refactored.
-            -->
-            <TextBlock 
-                FontFamily="{DynamicResource {x:Static shell15:VsFonts.EnvironmentFontFamilyKey}}"
-                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
-                FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontWeightKey}}"
-                Text="{Binding Heading}"
-                d:Text="Clone an Amazon CodeCatalyst repository"
-                RenderOptions.ClearTypeHint="Enabled"
-                VerticalAlignment="Center" />
-        </StackPanel>
+                    Per https://learn.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio?view=vs-2022
+                    Themed dialogs must have the 200% header size VsFonts.Environment200PercentFontSizeKey  The ToolkitThemes.Heading1FontSizeKey
+                    is set to this size, so it is safe to use here.  Should it change from 200%, FontSize here will need to be refactored.
+                -->
+                <TextBlock
+                    FontFamily="{DynamicResource {x:Static shell15:VsFonts.EnvironmentFontFamilyKey}}"
+                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
+                    FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontWeightKey}}"
+                    Text="{Binding Heading}"
+                    d:Text="Clone an Amazon CodeCatalyst repository"
+                    RenderOptions.ClearTypeHint="Enabled"
+                    VerticalAlignment="Center" />
+            </StackPanel>
 
-        <TextBlock 
-            Grid.Row="1" 
-            Grid.ColumnSpan="3"
-            Margin="0 12 0 0">
+            <TextBlock
+                Grid.Row="1"
+                Margin="0 12 0 0">
             <!-- TODO Update this when we have the marketing page link -->
             <commonUi:BrowserHyperLink
-                NavigateUri="https://aws.amazon.com/codecatalyst/">
-                <Run Text="Learn more about Amazon CodeCatalyst" />
+                    NavigateUri="https://aws.amazon.com/codecatalyst/">
+                <Run
+                        Text="Learn more about Amazon CodeCatalyst" />
             </commonUi:BrowserHyperLink>
-        </TextBlock>
-
-        <TextBlock
-            Grid.Row="2"
-            Grid.ColumnSpan="3"
-            Margin="0 24 0 0">
-            Credential:
-        </TextBlock>
-        <!--
-        <components:CredentialIdentitySelector
-            Grid.Row="3"
-            Grid.ColumnSpan="2" 
-            Identifier="{Binding SelectedCredential, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            Identifiers="{Binding Credentials}"
-            Margin="0 6 0 0"
-            Height="{Binding ElementName=RegionsComboBox, Path=ActualHeight}" />
-        -->
-        <ComboBox 
-            x:Name="CredentialsComboBox"            
-            Grid.Row="3"
-            Grid.ColumnSpan="2"
-            Margin="0 6 0 0"
-            VerticalAlignment="Center"
-            ItemsSource="{Binding Credentials}"
-            SelectedItem="{Binding SelectedCredential}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock 
-                            Text="{Binding DisplayName}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-
-        <TextBlock
-            Grid.Row="6"
-            Grid.ColumnSpan="3"
-            Margin="0 16 0 0">
-            Space:
-        </TextBlock>
-
-        <ComboBox 
-            x:Name="SpacesComboBox"            
-            Grid.Row="7"
-            Grid.ColumnSpan="2"
-            Margin="0 6 0 0"
-            VerticalAlignment="Center"
-            ItemsSource="{Binding Spaces}"
-            SelectedItem="{Binding SelectedSpace}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock 
-                            Text="{Binding DisplayName}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-
-        <TextBlock
-            Grid.Row="8"
-            Grid.ColumnSpan="3"
-            Margin="0 16 0 0">
-            Project:
-        </TextBlock>
-
-        <ComboBox 
-            x:Name="ProjectsComboBox"            
-            Grid.Row="9"
-            Grid.ColumnSpan="2"
-            Margin="0 6 0 0"
-            VerticalAlignment="Center"
-            ItemsSource="{Binding Projects}"
-            SelectedItem="{Binding SelectedProject}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock 
-                            Text="{Binding DisplayName}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-
-        <TextBlock
-            Grid.Row="10"
-            Grid.ColumnSpan="3"
-            Margin="0 16 0 0">
-            Repository:
-        </TextBlock>
-
-        <ListBox
-            Grid.Row="11"
-            Grid.ColumnSpan="3"
-            ItemsSource="{Binding Repositories}"
-            Margin="0 6 0 0"
-            SelectedItem="{Binding SelectedRepository}"
-            VerticalAlignment="Stretch">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Rectangle 
-                            Grid.Row="0"
-                            Grid.RowSpan="2"
-                            Grid.Column="0" />
-
-                        <TextBlock 
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            FontWeight="{DynamicResource {x:Static shell15:VsFonts.EnvironmentBoldFontWeightKey}}"
-                            Text="{Binding Name}"/>
-
-                        <TextBlock 
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Text="{Binding Description}"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-
-        <TextBlock
-            Grid.Row="12"
-            Grid.ColumnSpan="3"
-            Margin="0 16 0 0">
-            Path:
-        </TextBlock>
-
-        <Grid
-            Grid.Row="13"
-            Grid.ColumnSpan="3"
-            Margin="0 6 0 0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <TextBox
-                x:Name="LocalPathTextBox"
-                Grid.Column="0"
-                Text="{Binding LocalPath}" />
-            <Button 
-                Grid.Column="1"
-                Command="{Binding BrowseForRepositoryPathCommand}"
-                Height="{Binding ElementName=LocalPathTextBox, Path=ActualHeight}"
-                Margin="6 0 0 0"
-                VerticalAlignment="Center"
-                MinWidth="23"
-                Width="{Binding ElementName=LocalPathTextBox, Path=ActualHeight}">
-                ...
-            </Button>
+            </TextBlock>
         </Grid>
 
         <Grid
-            Grid.Row="14"
-            Grid.ColumnSpan="3"
+            DockPanel.Dock="Bottom"
             Margin="0 16 0 0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition
+                    Width="*" />
+                <ColumnDefinition
+                    Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Button
@@ -337,7 +171,7 @@
                 Help
             </Button>
 
-            <StackPanel 
+            <StackPanel
                 Grid.Column="1"
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
@@ -346,7 +180,7 @@
                     Command="{Binding SubmitDialogCommand}">
                     Clone
                 </Button>
-                <Button 
+                <Button
                     IsCancel="True"
                     Margin="6 0 0 0"
                     Command="{Binding CancelDialogCommand}">
@@ -355,5 +189,211 @@
             </StackPanel>
         </Grid>
 
-    </Grid>
+        <ScrollViewer
+            VerticalScrollBarVisibility="Auto">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="*" />
+                    <ColumnDefinition
+                        Width="*" />
+                    <ColumnDefinition
+                        Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.ColumnSpan="3"
+                    Margin="0 24 0 0">
+                    Credential:
+                </TextBlock>
+                <!--
+                <components:CredentialIdentitySelector
+                    Grid.Row="3"
+                    Grid.ColumnSpan="2" 
+                    Identifier="{Binding SelectedCredential, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Identifiers="{Binding Credentials}"
+                    Margin="0 6 0 0"
+                    Height="{Binding ElementName=RegionsComboBox, Path=ActualHeight}" />
+                -->
+                <ComboBox
+                    x:Name="CredentialsComboBox"
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Margin="0 6 0 0"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding Credentials}"
+                    SelectedItem="{Binding SelectedCredential}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="{Binding DisplayName}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.ColumnSpan="3"
+                    Margin="0 16 0 0">
+                    Space:
+                </TextBlock>
+
+                <ComboBox
+                    x:Name="SpacesComboBox"
+                    Grid.Row="3"
+                    Grid.ColumnSpan="2"
+                    Margin="0 6 0 0"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding Spaces}"
+                    SelectedItem="{Binding SelectedSpace}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="{Binding DisplayName}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.ColumnSpan="3"
+                    Margin="0 16 0 0">
+                    Project:
+                </TextBlock>
+
+                <ComboBox
+                    x:Name="ProjectsComboBox"
+                    Grid.Row="5"
+                    Grid.ColumnSpan="2"
+                    Margin="0 6 0 0"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding Projects}"
+                    SelectedItem="{Binding SelectedProject}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Text="{Binding DisplayName}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.ColumnSpan="3"
+                    Margin="0 16 0 0">
+                    Repository:
+                </TextBlock>
+
+                <ListBox
+                    Grid.Row="7"
+                    Grid.ColumnSpan="3"
+                    ItemsSource="{Binding Repositories}"
+                    Margin="0 6 0 0"
+                    SelectedItem="{Binding SelectedRepository}"
+                    VerticalAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition
+                                        Height="Auto" />
+                                    <RowDefinition
+                                        Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition
+                                        Width="Auto" />
+                                    <ColumnDefinition
+                                        Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Rectangle
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="0" />
+
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    FontWeight="{DynamicResource {x:Static shell15:VsFonts.EnvironmentBoldFontWeightKey}}"
+                                    Text="{Binding Name}" />
+
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Text="{Binding Description}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.ColumnSpan="3"
+                    Margin="0 16 0 0">
+                    Path:
+                </TextBlock>
+
+                <Grid
+                    Grid.Row="9"
+                    Grid.ColumnSpan="3"
+                    Margin="0 6 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition
+                            Width="*" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        x:Name="LocalPathTextBox"
+                        Grid.Column="0"
+                        Text="{Binding LocalPath}" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding BrowseForRepositoryPathCommand}"
+                        Height="{Binding ElementName=LocalPathTextBox, Path=ActualHeight}"
+                        Margin="6 0 0 0"
+                        VerticalAlignment="Center"
+                        MinWidth="23"
+                        Width="{Binding ElementName=LocalPathTextBox, Path=ActualHeight}">
+                        ...
+                    </Button>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
 </platformUi:DialogWindow>
