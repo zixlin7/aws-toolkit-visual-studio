@@ -26,7 +26,7 @@ namespace CommonUI.Models
 {
     internal class CloneCodeCatalystRepositoryViewModel : BaseModel, IDisposable
     {
-        // TODO - Update to appropriate help page once written, see IDE-8974
+        // TODO IDE-8974 Update to appropriate help page once written
         private const string HelpUri = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/";
 
         private readonly ToolkitContext _toolkitContext;
@@ -59,6 +59,8 @@ namespace CommonUI.Models
 
         public ObservableCollection<ICodeCatalystSpace> Spaces { get; } = new ObservableCollection<ICodeCatalystSpace>();
 
+        public bool IsSpacesEnabled => Spaces.Any() && Connection.IsConnectionValid;
+
         private ICodeCatalystProject _selectedProject;
 
         public ICodeCatalystProject SelectedProject
@@ -68,6 +70,8 @@ namespace CommonUI.Models
         }
 
         public ObservableCollection<ICodeCatalystProject> Projects { get; } = new ObservableCollection<ICodeCatalystProject>();
+
+        public bool IsProjectsEnabled => SelectedSpace != null && Projects.Any() && Connection.IsConnectionValid;
 
         private ICodeCatalystRepository _selectedRepository;
 
@@ -79,6 +83,8 @@ namespace CommonUI.Models
 
         public ObservableCollection<ICodeCatalystRepository> Repositories { get; } = new ObservableCollection<ICodeCatalystRepository>();
 
+        public bool IsRepositoriesEnabled => SelectedProject != null && Repositories.Any() && Connection.IsConnectionValid;
+
         private string _localPath;
 
         public string LocalPath
@@ -88,6 +94,12 @@ namespace CommonUI.Models
         }
 
         public ICommand BrowseForRepositoryPathCommand { get; }
+
+        public ICommand RetrySpacesCommand { get; }
+
+        public ICommand RetryProjectsCommand { get; }
+
+        public ICommand RetryRepositoriesCommand { get; }
 
         private ICommand _submitDialogCommand;
 
@@ -123,7 +135,11 @@ namespace CommonUI.Models
             };
 
             PropertyChanged += CloneCodeCatalystRepositoryViewModel_PropertyChanged;
+
             BrowseForRepositoryPathCommand = new RelayCommand(ExecuteBrowseForRepositoryPathCommand);
+            RetrySpacesCommand = new RelayCommand(parameter => RefreshSpaces());
+            RetryProjectsCommand = new RelayCommand(parameter => RefreshProjects());
+            RetryRepositoriesCommand = new RelayCommand(parameter => RefreshRepositories());
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
         }
 
@@ -177,8 +193,6 @@ namespace CommonUI.Models
             _toolkitContext.ToolkitHost.OpenInBrowser(HelpUri, false);
         }
 
-        // TODO - Add ProgressDialog when calling APIs to load view model collections
-
         /// <summary>
         /// Update spaces for the given connection state
         /// if connection is valid, reload spaces
@@ -196,11 +210,14 @@ namespace CommonUI.Models
             }
         }
 
+        // TODO - IDE-8904 Add ProgressDialog when calling APIs to load view model collections
+
         private void RefreshSpaces()
         {
             Spaces.Clear();
+            DataErrorInfo.ClearErrors(nameof(Spaces));
 
-            if (HasInvalidConnectionSettings())
+            if (!Connection.IsConnectionValid)
             {
                 SelectedSpace = null;
                 return;
@@ -208,30 +225,40 @@ namespace CommonUI.Models
 
             _joinableTaskFactory.RunAsync(async () =>
             {
-                var spaces = await _codeCatalyst.GetSpacesAsync(ConnectionSettings);
+                IEnumerable<ICodeCatalystSpace> spaces;
+
+                try
+                {
+                    spaces = await _codeCatalyst.GetSpacesAsync(ConnectionSettings);
+                }
+                catch (Exception ex)
+                {
+                    DataErrorInfo.AddError(ex, nameof(Spaces));
+                    return;
+                }
+
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
                 Spaces.AddAll(spaces);
 
                 if (SelectedSpace == null)
                 {
                     SelectedSpace = Spaces.FirstOrDefault();
-                    return;
                 }
-
-                if (Spaces.Contains(SelectedSpace))
+                else if (!Spaces.Contains(SelectedSpace))
                 {
-                    return;
+                    SelectedSpace = Spaces.FirstOrDefault(s => s.Name == SelectedSpace.Name);
                 }
 
-                SelectedSpace = Spaces.FirstOrDefault(s => s.Name == SelectedSpace.Name);
+                NotifyPropertyChanged(nameof(IsSpacesEnabled));
             }).Task.LogExceptionAndForget();
         }
 
         private void RefreshProjects()
         {
             Projects.Clear();
+            DataErrorInfo.ClearErrors(nameof(Projects));
 
-            if (HasInvalidConnectionSettings() || SelectedSpace == null)
+            if (!Connection.IsConnectionValid || SelectedSpace == null)
             {
                 SelectedProject = null;
                 return;
@@ -239,30 +266,40 @@ namespace CommonUI.Models
 
             _joinableTaskFactory.RunAsync(async () =>
             {
-                var projects = await _codeCatalyst.GetProjectsAsync(SelectedSpace.Name, ConnectionSettings);
+                IEnumerable<ICodeCatalystProject> projects;
+
+                try
+                {
+                    projects = await _codeCatalyst.GetProjectsAsync(SelectedSpace.Name, ConnectionSettings);
+                }
+                catch (Exception ex)
+                {
+                    DataErrorInfo.AddError(ex, nameof(Projects));
+                    return;
+                }
+
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
                 Projects.AddAll(projects);
 
                 if (SelectedProject == null)
                 {
                     SelectedProject = Projects.FirstOrDefault();
-                    return;
                 }
-
-                if (Projects.Contains(SelectedProject))
+                else if (!Projects.Contains(SelectedProject))
                 {
-                    return;
+                    SelectedProject = Projects.FirstOrDefault(p => p.Name == SelectedProject.Name);
                 }
 
-                SelectedProject = Projects.FirstOrDefault(p => p.Name == SelectedProject.Name);
+                NotifyPropertyChanged(nameof(IsProjectsEnabled));                
             }).Task.LogExceptionAndForget();
         }
 
         private void RefreshRepositories()
         {
             Repositories.Clear();
+            DataErrorInfo.ClearErrors(nameof(Repositories));
 
-            if (HasInvalidConnectionSettings() || SelectedSpace == null || SelectedProject == null)
+            if (!Connection.IsConnectionValid || SelectedProject == null)
             {
                 SelectedRepository = null;
                 return;
@@ -270,36 +307,37 @@ namespace CommonUI.Models
 
             _joinableTaskFactory.RunAsync(async () =>
             {
-                var repos = await _codeCatalyst.GetRemoteRepositoriesAsync(SelectedSpace.Name, SelectedProject.Name, ConnectionSettings);
+                IEnumerable<ICodeCatalystRepository> repos;
+
+                try
+                {
+                    repos = await _codeCatalyst.GetRemoteRepositoriesAsync(SelectedSpace.Name, SelectedProject.Name, ConnectionSettings);
+                }
+                catch (Exception ex)
+                {
+                    DataErrorInfo.AddError(ex, nameof(Repositories));
+                    return;
+                }
+
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
                 Repositories.AddAll(repos);
 
                 if (SelectedRepository == null)
                 {
                     SelectedRepository = Repositories.FirstOrDefault();
-                    return;
                 }
-
-                if (Repositories.Contains(SelectedRepository))
+                else if (!Repositories.Contains(SelectedRepository))
                 {
-                    return;
+                    SelectedRepository = Repositories.FirstOrDefault(r => r.Name == SelectedRepository.Name);
                 }
 
-                SelectedRepository = Repositories.FirstOrDefault(r => r.Name == SelectedRepository.Name);
+                NotifyPropertyChanged(nameof(IsRepositoriesEnabled));                
             }).Task.LogExceptionAndForget();
-            // TODO - Is LogExceptionAndForget the right thing to do here or should we alert the user to the error?  This has happened to me when
-            // my yubi token has expired and it just doens't do anything.  Users may not be using Yubikeys, but it could still be confusing if nothing happens.
-            // Look into adding an error message per control or perhaps error messages in a centralized approach
-        }
-
-        private bool HasInvalidConnectionSettings()
-        {
-            return ConnectionSettings == null || ConnectionSettings.CredentialIdentifier == null || ConnectionSettings.Region == null || !Connection.IsConnectionValid;
         }
 
         public void Dispose()
         {
-            Connection?.Dispose();
+            Connection.Dispose();
         }
     }
 }

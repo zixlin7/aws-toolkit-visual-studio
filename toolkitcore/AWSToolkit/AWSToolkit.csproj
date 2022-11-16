@@ -92,9 +92,13 @@
     <Compile Include="CloudWatch\ILogStreamsViewer.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommand.cs" />
+    <Compile Include="CommonUI\Components\ValidationErrorsBox.xaml.cs">
+      <DependentUpon>ValidationErrorsBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
+    <Compile Include="CommonUI\Converters\RelayValueConverter.cs" />
     <Compile Include="CommonUI\Converters\ToolkitRegionConverter.cs" />
     <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePicker.xaml.cs">
       <DependentUpon>DateTimeRangePicker.xaml</DependentUpon>
@@ -585,6 +589,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="CommonUI\Components\ValidationErrorsBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="CommonUI\DateTimeRangePicker\DateTimeRangePicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -827,9 +835,9 @@
     <EmbeddedResource Include="Resources\ServiceIcons\CloudFront.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\CloudWatch.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\CodeArtifact.png" />
-	<!-- TODO IDE-9145 Update icon when latest received -->
-	<EmbeddedResource Include="Resources\ServiceIcons\CodeCatalyst.png" />
-	<EmbeddedResource Include="Resources\ServiceIcons\CodeCommit.png" />
+    <!-- TODO IDE-9145 Update icon when latest received -->
+    <EmbeddedResource Include="Resources\ServiceIcons\CodeCatalyst.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\CodeCommit.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\DynamoDB.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\EC2.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\Elastic-Beanstalk.png" />

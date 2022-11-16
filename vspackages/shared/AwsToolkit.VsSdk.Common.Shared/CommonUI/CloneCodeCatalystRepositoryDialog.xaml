@@ -9,6 +9,9 @@
     xmlns:components="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
     xmlns:models="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI.Models"
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+    xmlns:images="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+    xmlns:imageTheming="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
+    xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell15="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shellPf="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
@@ -99,6 +102,13 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <imaging:CrispImage
+                x:Key="ValidationErrorsBoxIcon"
+                x:Shared="False"
+                Height="16"
+                Moniker="{x:Static images:KnownMonikers.StatusInvalid}"
+                VerticalAlignment="Center"
+                Width="16" />
         </ResourceDictionary>
     </platformUi:DialogWindow.Resources>
 
@@ -115,7 +125,8 @@
 
     <platformUi:DialogWindow.ContentTemplate>
         <DataTemplate>
-            <Grid>
+            <Grid
+                imageTheming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}">
                 <Border
                     Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
                     BorderThickness="1"
@@ -187,6 +198,7 @@
             <StackPanel
                 Orientation="Horizontal"
                 Grid.Row="0">
+
                 <Image
                     Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCatalyst}"
                     Width="32"
@@ -214,7 +226,7 @@
             <TextBlock
                 Grid.Row="1"
                 Margin="0 12 0 0">
-            <!-- TODO Update this when we have the marketing page link -->
+            <!-- TODO IDE-8974 Update this when we have the marketing page link -->
             <commonUi:BrowserHyperLink
                     NavigateUri="https://aws.amazon.com/codecatalyst/">
                 <Run
@@ -281,7 +293,15 @@
                     <RowDefinition
                         Height="Auto" />
                     <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
                         Height="*" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
                     <RowDefinition
                         Height="Auto" />
                     <RowDefinition
@@ -409,11 +429,12 @@
                     x:Name="SpacesComboBox"
                     Grid.Row="5"
                     Grid.ColumnSpan="2"
-                    Margin="0 6 0 0"
-                    VerticalAlignment="Center"
-                    IsEnabled="{Binding Connection.IsConnectionValid}"
+                    IsEnabled="{Binding IsSpacesEnabled}"
                     ItemsSource="{Binding Spaces}"
-                    SelectedItem="{Binding SelectedSpace}">
+                    Margin="0 6 0 0"
+                    SelectedItem="{Binding SelectedSpace}"
+                    Validation.ErrorTemplate="{x:Null}"
+                    VerticalAlignment="Center">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel
@@ -425,8 +446,16 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <TextBlock
+                <components:ValidationErrorsBox
                     Grid.Row="6"
+                    Grid.ColumnSpan="3"
+                    Icon="{StaticResource ValidationErrorsBoxIcon}"
+                    Margin="0 6 0 0"
+                    RetryCommand="{Binding RetrySpacesCommand}"
+                    SourceElement="{x:Reference SpacesComboBox}" />
+
+                <TextBlock
+                    Grid.Row="7"
                     Grid.ColumnSpan="3"
                     Margin="0 16 0 0">
                     Project:
@@ -434,13 +463,14 @@
 
                 <ComboBox
                     x:Name="ProjectsComboBox"
-                    Grid.Row="7"
+                    Grid.Row="8"
                     Grid.ColumnSpan="2"
-                    Margin="0 6 0 0"
-                    VerticalAlignment="Center"
-                    IsEnabled="{Binding Connection.IsConnectionValid}"
+                    IsEnabled="{Binding IsProjectsEnabled}"
                     ItemsSource="{Binding Projects}"
-                    SelectedItem="{Binding SelectedProject}">
+                    Margin="0 6 0 0"
+                    SelectedItem="{Binding SelectedProject}"
+                    Validation.ErrorTemplate="{x:Null}"
+                    VerticalAlignment="Center">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel
@@ -452,20 +482,30 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
+                <components:ValidationErrorsBox
+                    Grid.Row="9"
+                    Grid.ColumnSpan="3"
+                    Icon="{StaticResource ValidationErrorsBoxIcon}"
+                    Margin="0 6 0 0"
+                    RetryCommand="{Binding RetryProjectsCommand}"
+                    SourceElement="{x:Reference ProjectsComboBox}" />
+
                 <TextBlock
-                    Grid.Row="8"
+                    Grid.Row="10"
                     Grid.ColumnSpan="3"
                     Margin="0 16 0 0">
                     Repository:
                 </TextBlock>
 
                 <ListBox
-                    Grid.Row="9"
+                    x:Name="RepositoriesListBox"
+                    Grid.Row="11"
                     Grid.ColumnSpan="3"
-                    Margin="0 6 0 0"
-                    IsEnabled="{Binding Connection.IsConnectionValid}"
+                    IsEnabled="{Binding IsRepositoriesEnabled}"
                     ItemsSource="{Binding Repositories}"
+                    Margin="0 6 0 0"
                     SelectedItem="{Binding SelectedRepository}"
+                    Validation.ErrorTemplate="{x:Null}"
                     VerticalAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -503,15 +543,23 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
+                <components:ValidationErrorsBox
+                    Grid.Row="12"
+                    Grid.ColumnSpan="3"
+                    Icon="{StaticResource ValidationErrorsBoxIcon}"
+                    Margin="0 6 0 0"
+                    RetryCommand="{Binding RetryRepositoriesCommand}"
+                    SourceElement="{x:Reference RepositoriesListBox}" />
+
                 <TextBlock
-                    Grid.Row="10"
+                    Grid.Row="13"
                     Grid.ColumnSpan="3"
                     Margin="0 16 0 0">
                     Path:
                 </TextBlock>
 
                 <Grid
-                    Grid.Row="11"
+                    Grid.Row="14"
                     Grid.ColumnSpan="3"
                     IsEnabled="{Binding Connection.IsConnectionValid}"
                     Margin="0 6 0 0">
@@ -525,7 +573,8 @@
                     <TextBox
                         x:Name="LocalPathTextBox"
                         Grid.Column="0"
-                        Text="{Binding LocalPath}" />
+                        Text="{Binding LocalPath}"
+                        Validation.ErrorTemplate="{x:Null}" />
                     <Button
                         Grid.Column="1"
                         Command="{Binding BrowseForRepositoryPathCommand}"
@@ -537,6 +586,14 @@
                         ...
                     </Button>
                 </Grid>
+
+                <components:ValidationErrorsBox
+                    Grid.Row="15"
+                    Grid.ColumnSpan="3"
+                    Icon="{StaticResource ValidationErrorsBoxIcon}"
+                    Margin="0 6 0 0"
+                    SourceElement="{x:Reference LocalPathTextBox}" />
+
             </Grid>
         </ScrollViewer>
     </DockPanel>

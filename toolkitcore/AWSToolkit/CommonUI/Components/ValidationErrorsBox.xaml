@@ -1,0 +1,70 @@
+﻿<UserControl
+    x:Name="RootControl"
+    x:Class="Amazon.AWSToolkit.CommonUI.Components.ValidationErrorsBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.Components"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:RelayValueConverter
+            x:Key="NullToCollapsedConverter"
+            ConvertHandler="{x:Static local:ValidationErrorsBox.ConvertNullToCollapsed}" />
+    </UserControl.Resources>
+
+    <!-- See SourceElementProperty_PropertyChangedCallback for data binding details of Grid.Visibility -->
+    <Grid
+        x:Name="LayoutGrid"
+        x:FieldModifier="private"
+        Background="{DynamicResource {x:Static themes:ToolkitThemes.InfoBackgroundKey}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="Auto" />
+            <ColumnDefinition
+                Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ContentControl
+            Grid.Row="0"
+            Grid.Column="0"
+            Content="{Binding Icon, ElementName=RootControl, Mode=OneWay}"
+            HorizontalContentAlignment="Center"
+            Margin="6 0 6 0"
+            VerticalContentAlignment="Center" />
+
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="1"
+            HorizontalAlignment="Left"
+            Margin="0 3 3 3"
+            Orientation="Vertical">
+
+            <!-- See SourceElementProperty_PropertyChangedCallback for data binding details of ItemsControl.Visibility -->
+            <ItemsControl
+                x:Name="ErrorItemsControl"
+                x:FieldModifier="private"
+                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.InfoTextBrushKey}}">
+                <ItemsControl.ItemTemplate>
+                    <!-- Consider exposing an ErrorMessageTemplate property for customization in the future -->
+                    <DataTemplate>
+                        <TextBlock
+                            Text="{Binding ErrorContent}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock
+                Visibility="{Binding RetryCommand, ElementName=RootControl, Mode=OneWay, Converter={StaticResource NullToCollapsedConverter}}">
+                <Hyperlink
+                    Command="{Binding RetryCommand, ElementName=RootControl, Mode=OneWay}">
+                    Retry
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>
