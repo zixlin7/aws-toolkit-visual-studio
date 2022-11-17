@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Clients;
@@ -31,7 +32,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             _toolkitContext = toolkitContext;
         }
 
-        public async Task<IEnumerable<ICodeCatalystSpace>> GetSpacesAsync(AwsConnectionSettings settings)
+        public async Task<IEnumerable<ICodeCatalystSpace>> GetSpacesAsync(AwsConnectionSettings settings, CancellationToken cancellationToken = default)
         {
             Arg.NotNull(settings, nameof(settings));
 
@@ -42,7 +43,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             do
             {
                 var req = new ListSpacesRequest() { NextToken = res.NextToken };
-                res = await client.ListSpacesAsync(req);
+                res = await client.ListSpacesAsync(req, cancellationToken);
 
                 spaces.AddAll(res.Items.Select(space => new CodeCatalystSpace(space)));
 
@@ -51,7 +52,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             return spaces;
         }
 
-        public async Task<IEnumerable<ICodeCatalystProject>> GetProjectsAsync(string spaceName, AwsConnectionSettings settings)
+        public async Task<IEnumerable<ICodeCatalystProject>> GetProjectsAsync(string spaceName, AwsConnectionSettings settings, CancellationToken cancellationToken = default)
         {
             Arg.NotNull(settings, nameof(settings));
             Arg.NotNullOrWhitespace(spaceName, nameof(spaceName));
@@ -67,7 +68,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
                     SpaceName = spaceName,
                     NextToken = res.NextToken
                 };
-                res = await client.ListProjectsAsync(req);
+                res = await client.ListProjectsAsync(req, cancellationToken);
 
                 projects.AddAll(res.Items.Select(project => new CodeCatalystProject(spaceName, project)));
 
@@ -76,7 +77,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             return projects;
         }
 
-        public async Task<IEnumerable<ICodeCatalystRepository>> GetRemoteRepositoriesAsync(string spaceName, string projectName, AwsConnectionSettings settings)
+        public async Task<IEnumerable<ICodeCatalystRepository>> GetRemoteRepositoriesAsync(string spaceName, string projectName, AwsConnectionSettings settings, CancellationToken cancellationToken = default)
         {
             Arg.NotNull(settings, nameof(settings));
             Arg.NotNullOrWhitespace(spaceName, nameof(spaceName));
@@ -95,7 +96,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
                     ProjectName = projectName,
                     NextToken = res.NextToken
                 };
-                res = await client.ListSourceRepositoriesAsync(req);
+                res = await client.ListSourceRepositoriesAsync(req, cancellationToken);
 
                 repos.AddAll(res.Items.Select(repo => new CodeCatalystRepository(factory, spaceName, projectName, repo)));
 
@@ -104,7 +105,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             return repos;
         }
 
-        public Task<IEnumerable<ICodeCatalystAccessToken>> GetAccessTokensAsync(AwsConnectionSettings settings)
+        public Task<IEnumerable<ICodeCatalystAccessToken>> GetAccessTokensAsync(AwsConnectionSettings settings, CancellationToken cancellationToken = default)
         {
             Arg.NotNull(settings, nameof(settings));
 
@@ -116,7 +117,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
                 Enumerable.Empty<ICodeCatalystAccessToken>());
         }
 
-        public async Task<ICodeCatalystAccessToken> CreateAccessTokenAsync(string name, DateTime? expiresOn, AwsConnectionSettings settings)
+        public async Task<ICodeCatalystAccessToken> CreateAccessTokenAsync(string name, DateTime? expiresOn, AwsConnectionSettings settings, CancellationToken cancellationToken = default)
         {
             Arg.NotNull(settings, nameof(settings));
 
@@ -129,7 +130,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst
                 {
                     req.ExpiresTime = expiresOn.Value;
                 }
-                var res = await client.CreateAccessTokenAsync(req);
+                var res = await client.CreateAccessTokenAsync(req, cancellationToken);
 
                 // TODO Remove assignment of name to response in line below once P74543357 has been resolved.
                 res.Name = name;

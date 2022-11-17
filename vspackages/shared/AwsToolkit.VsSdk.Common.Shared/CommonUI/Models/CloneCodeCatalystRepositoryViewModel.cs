@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Amazon;
@@ -170,7 +172,7 @@ namespace CommonUI.Models
                     break;
             }
         }
-        
+
         private void ExecuteBrowseForRepositoryPathCommand(object parameter)
         {
             var dlg = _toolkitContext.ToolkitHost.GetDialogFactory().CreateFolderBrowserDialog();
@@ -210,26 +212,44 @@ namespace CommonUI.Models
             }
         }
 
-        // TODO - IDE-8904 Add ProgressDialog when calling APIs to load view model collections
+        private void RefreshWithProgressDialog(string name, Func<CancellationToken, Task> refreshAsync)
+        {
+            _joinableTaskFactory.RunAsync(async () =>
+            {
+                using (var dialog = await _toolkitContext.ToolkitHost.CreateProgressDialog())
+                {
+                    dialog.Caption = "Amazon CodeCatalyst";
+                    dialog.Heading1 = $"Loading {name}...";
+                    dialog.Show(1);
+
+                    await refreshAsync(dialog.CancellationToken);
+                }
+            }).Task.LogExceptionAndForget();
+        }
 
         private void RefreshSpaces()
         {
-            Spaces.Clear();
-            DataErrorInfo.ClearErrors(nameof(Spaces));
-
-            if (!Connection.IsConnectionValid)
+            RefreshWithProgressDialog("spaces", async cancellationToken =>
             {
-                SelectedSpace = null;
-                return;
-            }
+                Spaces.Clear();
+                DataErrorInfo.ClearErrors(nameof(Spaces));
 
-            _joinableTaskFactory.RunAsync(async () =>
-            {
+                if (!Connection.IsConnectionValid)
+                {
+                    SelectedSpace = null;
+                    return;
+                }
+
                 IEnumerable<ICodeCatalystSpace> spaces;
 
                 try
                 {
-                    spaces = await _codeCatalyst.GetSpacesAsync(ConnectionSettings);
+                    spaces = await _codeCatalyst.GetSpacesAsync(ConnectionSettings, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    DataErrorInfo.AddError("Loading spaces canceled by user.", nameof(Spaces));
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -250,27 +270,32 @@ namespace CommonUI.Models
                 }
 
                 NotifyPropertyChanged(nameof(IsSpacesEnabled));
-            }).Task.LogExceptionAndForget();
+            });
         }
 
         private void RefreshProjects()
         {
-            Projects.Clear();
-            DataErrorInfo.ClearErrors(nameof(Projects));
-
-            if (!Connection.IsConnectionValid || SelectedSpace == null)
+            RefreshWithProgressDialog("projects", async cancellationToken =>
             {
-                SelectedProject = null;
-                return;
-            }
+                Projects.Clear();
+                DataErrorInfo.ClearErrors(nameof(Projects));
 
-            _joinableTaskFactory.RunAsync(async () =>
-            {
+                if (!Connection.IsConnectionValid || SelectedSpace == null)
+                {
+                    SelectedProject = null;
+                    return;
+                }
+
                 IEnumerable<ICodeCatalystProject> projects;
 
                 try
                 {
-                    projects = await _codeCatalyst.GetProjectsAsync(SelectedSpace.Name, ConnectionSettings);
+                    projects = await _codeCatalyst.GetProjectsAsync(SelectedSpace.Name, ConnectionSettings, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    DataErrorInfo.AddError("Loading projects canceled by user.", nameof(Projects));
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -290,28 +315,33 @@ namespace CommonUI.Models
                     SelectedProject = Projects.FirstOrDefault(p => p.Name == SelectedProject.Name);
                 }
 
-                NotifyPropertyChanged(nameof(IsProjectsEnabled));                
-            }).Task.LogExceptionAndForget();
+                NotifyPropertyChanged(nameof(IsProjectsEnabled));
+            });
         }
 
         private void RefreshRepositories()
         {
-            Repositories.Clear();
-            DataErrorInfo.ClearErrors(nameof(Repositories));
-
-            if (!Connection.IsConnectionValid || SelectedProject == null)
+            RefreshWithProgressDialog("repositories", async cancellationToken =>
             {
-                SelectedRepository = null;
-                return;
-            }
+                Repositories.Clear();
+                DataErrorInfo.ClearErrors(nameof(Repositories));
 
-            _joinableTaskFactory.RunAsync(async () =>
-            {
+                if (!Connection.IsConnectionValid || SelectedProject == null)
+                {
+                    SelectedRepository = null;
+                    return;
+                }
+
                 IEnumerable<ICodeCatalystRepository> repos;
 
                 try
                 {
-                    repos = await _codeCatalyst.GetRemoteRepositoriesAsync(SelectedSpace.Name, SelectedProject.Name, ConnectionSettings);
+                    repos = await _codeCatalyst.GetRemoteRepositoriesAsync(SelectedSpace.Name, SelectedProject.Name, ConnectionSettings, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    DataErrorInfo.AddError("Loading repositories canceled by user.", nameof(Repositories));
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -331,8 +361,8 @@ namespace CommonUI.Models
                     SelectedRepository = Repositories.FirstOrDefault(r => r.Name == SelectedRepository.Name);
                 }
 
-                NotifyPropertyChanged(nameof(IsRepositoriesEnabled));                
-            }).Task.LogExceptionAndForget();
+                NotifyPropertyChanged(nameof(IsRepositoriesEnabled));
+            });
         }
 
         public void Dispose()

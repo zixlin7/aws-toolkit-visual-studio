@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CodeCatalyst;
@@ -41,15 +42,17 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             _toolkitContextFixture.ToolkitHost.Setup(mock => mock.QueryAWSToolkitPluginService(It.Is<Type>(value => typeof(IAWSCodeCatalyst).Equals(value))))
                 .Returns(_codeCatalyst.Object);
 
+            _toolkitContextFixture.ToolkitHost.Setup(mock => mock.CreateProgressDialog()).ReturnsAsync(new FakeProgressDialog());
+
             _toolkitContextFixture.DefineRegion(new ToolkitRegion() { Id = _regionId });
 
-            _codeCatalyst.Setup(mock => mock.GetSpacesAsync(It.IsAny<AwsConnectionSettings>()))
+            _codeCatalyst.Setup(mock => mock.GetSpacesAsync(It.IsAny<AwsConnectionSettings>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new List<ICodeCatalystSpace>()
                 {
                     new CodeCatalystSpace(_spaceName, "test-space-display-name", "Test space description.", _regionId)
                 }.AsEnumerable()));
 
-            _codeCatalyst.Setup(mock => mock.GetProjectsAsync(It.Is<string>(spaceName => _spaceName == spaceName), It.IsAny<AwsConnectionSettings>()))
+            _codeCatalyst.Setup(mock => mock.GetProjectsAsync(It.Is<string>(spaceName => _spaceName == spaceName), It.IsAny<AwsConnectionSettings>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new List<ICodeCatalystProject>()
                 {
                     new CodeCatalystProject(_projectName, _spaceName, "test-project-display-name", "Test project description.")
@@ -57,7 +60,8 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 
             CloneUrlsFactoryAsync factory = repoName => Task.FromResult(new CloneUrls(new Uri("http://test")));
 
-            _codeCatalyst.Setup(mock => mock.GetRemoteRepositoriesAsync(It.Is<string>(spaceName => _spaceName == spaceName), It.Is<string>(projectName => _projectName == projectName), It.IsAny<AwsConnectionSettings>()))
+            _codeCatalyst.Setup(mock => mock.GetRemoteRepositoriesAsync(It.Is<string>(spaceName => _spaceName == spaceName), It.Is<string>(projectName => _projectName == projectName),
+                It.IsAny<AwsConnectionSettings>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new List<ICodeCatalystRepository>()
                 {
                     new CodeCatalystRepository(factory, _repoName, _spaceName, _projectName, "Test repo description.")
