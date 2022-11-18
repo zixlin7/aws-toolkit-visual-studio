@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -170,6 +171,9 @@ namespace CommonUI.Models
                 case nameof(SelectedProject):
                     RefreshRepositories();
                     break;
+                case nameof(LocalPath):
+                    ValidateLocalPath();
+                    break;
             }
         }
 
@@ -193,6 +197,28 @@ namespace CommonUI.Models
         public void ExecuteHelpCommand(object parameter)
         {
             _toolkitContext.ToolkitHost.OpenInBrowser(HelpUri, false);
+        }
+
+        private void ValidateLocalPath()
+        {
+            DataErrorInfo.ClearErrors(nameof(LocalPath));
+
+            try
+            {
+                // Using DirectoryInfo as best-effort check for valid path as it throws exceptions on many invalid path scenarios.
+                // https://learn.microsoft.com/en-us/dotnet/api/system.io.directoryinfo?view=netframework-4.7.2#remarks
+                var dir = new DirectoryInfo(LocalPath);
+
+                if (dir.Exists && (dir.GetDirectories().Any() || dir.GetFiles().Any()))
+                {
+                    DataErrorInfo.AddError($"Cannot clone to existing, non-empty directory {LocalPath}", nameof(LocalPath));
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                DataErrorInfo.AddError($"Invalid path: {ex.Message}", nameof(LocalPath));
+            }
         }
 
         /// <summary>

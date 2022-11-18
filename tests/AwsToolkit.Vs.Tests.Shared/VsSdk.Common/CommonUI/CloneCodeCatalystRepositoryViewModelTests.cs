@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tests.Common.Context;
+using Amazon.AWSToolkit.Tests.Common.IO;
 
 using CommonUI.Models;
 
@@ -173,7 +176,63 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             Assert.Null(_sut.LocalPath);
         }
 
-        // TODO IDE-8848 Be sure to add tests once LocalPath has validations
+
+        [Fact]
+        public void InvalidPathCharsCreateValidationErrorForLocalPath()
+        {
+            var info = (INotifyDataErrorInfo) _sut;
+
+            Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
+
+            // This is a best effort test, but even MS states in the docs "...this method is not guaranteed to contain the complete
+            // set of characters that are invalid in file and directory names. The full set of invalid characters can vary by file system."
+            // https://learn.microsoft.com/en-us/dotnet/api/system.io.path.getinvalidpathchars?view=netframework-4.7.2#remarks
+            _sut.LocalPath = new string(Path.GetInvalidPathChars());
+
+            Assert.NotEmpty(info.GetErrors(nameof(_sut.LocalPath)));
+        }
+
+        [Fact]
+        public void NonExistingDirectoryDoesNotCreateValidationErrorForLocalPath()
+        {
+            var info = (INotifyDataErrorInfo) _sut;
+
+            Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
+
+            _sut.LocalPath = Guid.NewGuid().ToString();
+
+            Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
+        }
+
+        [Fact]
+        public void EmptyExistingDirectoryDoesNotCreateValidationErrorForLocalPath()
+        {
+            var info = (INotifyDataErrorInfo) _sut;
+
+            using (var testLocation = new TemporaryTestLocation(false))
+            {
+                Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
+
+                _sut.LocalPath = testLocation.TestFolder;
+
+                Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
+            }
+        }
+
+        [Fact]
+        public void NotEmptyExistingDirectoryCreatesValidationErrorForLocalPath()
+        {
+            var info = (INotifyDataErrorInfo) _sut;
+
+            using (var testLocation = new TemporaryTestLocation())
+            {
+                Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
+
+                _sut.LocalPath = testLocation.TestFolder;
+
+                Assert.NotEmpty(info.GetErrors(nameof(_sut.LocalPath)));
+            }
+        }
 
         private void SetupInitialSpaces()
         {
