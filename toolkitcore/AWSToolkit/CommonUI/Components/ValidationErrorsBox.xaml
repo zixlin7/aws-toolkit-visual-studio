@@ -41,7 +41,7 @@
             Grid.Row="0"
             Grid.Column="1"
             HorizontalAlignment="Left"
-            Margin="0 3 3 3"
+            Margin="0 6 3 6"
             Orientation="Vertical">
 
             <!-- See SourceElementProperty_PropertyChangedCallback for data binding details of ItemsControl.Visibility -->

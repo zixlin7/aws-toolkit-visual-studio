@@ -21,7 +21,7 @@ namespace CommonUI.Models
 {
     internal class CloneCodeCommitRepositoryViewModel : BaseModel
     {
-        // TODO - Update to appropriate help page once written, see IDE-8830
+        // TODO IDE-9250 Update to appropriate help page once written
         private const string HelpUri = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/using-aws-codecommit-with-team-explorer.html";
 
         private readonly ToolkitContext _toolkitContext;
@@ -41,7 +41,7 @@ namespace CommonUI.Models
         public string LocalPath
         {
             get => _localPath;
-            set => SetProperty(ref _localPath, value);  // TODO - Shore up path validation (on each change, not leaving control) and handling in IDE-8848
+            set => SetProperty(ref _localPath, value);  // TODO IDE-8848 Shore up path validation (on each change, not leaving control) and handling
         }
 
         public ICommand BrowseForRepositoryPathCommand { get; }

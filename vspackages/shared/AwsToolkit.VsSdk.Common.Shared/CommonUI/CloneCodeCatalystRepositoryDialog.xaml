@@ -7,11 +7,11 @@
     mc:Ignorable="d"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:components="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
-    xmlns:models="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI.Models"
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
     xmlns:images="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
     xmlns:imageTheming="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
     xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+    xmlns:models="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI.Models"
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell15="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shellPf="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
@@ -103,12 +103,21 @@
                 </Style.Triggers>
             </Style>
             <imaging:CrispImage
-                x:Key="ValidationErrorsBoxIcon"
+                x:Key="ErrorIcon"
                 x:Shared="False"
                 Height="16"
                 Moniker="{x:Static images:KnownMonikers.StatusInvalid}"
                 VerticalAlignment="Center"
                 Width="16" />
+            <Style
+                TargetType="{x:Type components:ValidationErrorsBox}">
+                <Setter
+                    Property="Margin"
+                    Value="0 6 0 0" />
+                <Setter
+                    Property="Icon"
+                    Value="{StaticResource ErrorIcon}" />
+            </Style>
         </ResourceDictionary>
     </platformUi:DialogWindow.Resources>
 
@@ -201,8 +210,6 @@
 
                 <Image
                     Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeCatalyst}"
-                    Width="32"
-                    Height="32"
                     Margin="0 0 6 0"
                     VerticalAlignment="Center" />
                 <!-- 
@@ -425,32 +432,40 @@
                     Space:
                 </TextBlock>
 
-                <ComboBox
-                    x:Name="SpacesComboBox"
+                <Grid
                     Grid.Row="5"
-                    Grid.ColumnSpan="2"
-                    IsEnabled="{Binding IsSpacesEnabled}"
-                    ItemsSource="{Binding Spaces}"
-                    Margin="0 6 0 0"
-                    SelectedItem="{Binding SelectedSpace}"
-                    Validation.ErrorTemplate="{x:Null}"
-                    VerticalAlignment="Center">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel
-                                Orientation="Horizontal">
-                                <TextBlock
-                                    Text="{Binding DisplayName}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                    Grid.ColumnSpan="2">
+                    <ComboBox
+                        x:Name="SpacesComboBox"
+                        IsEnabled="{Binding IsSpacesEnabled}"
+                        ItemsSource="{Binding Spaces}"
+                        Margin="0 6 0 0"
+                        Panel.ZIndex="0"
+                        SelectedItem="{Binding SelectedSpace}"
+                        Validation.ErrorTemplate="{x:Null}"
+                        VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel
+                                    Orientation="Horizontal">
+                                    <TextBlock
+                                        Text="{Binding DisplayName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock
+                        Margin="6 6 0 0"
+                        Panel.ZIndex="1"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsSpacesEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        No spaces found.
+                    </TextBlock>
+                </Grid>
 
                 <components:ValidationErrorsBox
                     Grid.Row="6"
                     Grid.ColumnSpan="3"
-                    Icon="{StaticResource ValidationErrorsBoxIcon}"
-                    Margin="0 6 0 0"
                     RetryCommand="{Binding RetrySpacesCommand}"
                     SourceElement="{x:Reference SpacesComboBox}" />
 
@@ -461,32 +476,40 @@
                     Project:
                 </TextBlock>
 
-                <ComboBox
-                    x:Name="ProjectsComboBox"
+                <Grid
                     Grid.Row="8"
-                    Grid.ColumnSpan="2"
-                    IsEnabled="{Binding IsProjectsEnabled}"
-                    ItemsSource="{Binding Projects}"
-                    Margin="0 6 0 0"
-                    SelectedItem="{Binding SelectedProject}"
-                    Validation.ErrorTemplate="{x:Null}"
-                    VerticalAlignment="Center">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel
-                                Orientation="Horizontal">
-                                <TextBlock
-                                    Text="{Binding DisplayName}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                    Grid.ColumnSpan="2">
+                    <ComboBox
+                        x:Name="ProjectsComboBox"
+                        IsEnabled="{Binding IsProjectsEnabled}"
+                        ItemsSource="{Binding Projects}"
+                        Margin="0 6 0 0"
+                        Panel.ZIndex="0"
+                        SelectedItem="{Binding SelectedProject}"
+                        Validation.ErrorTemplate="{x:Null}"
+                        VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel
+                                    Orientation="Horizontal">
+                                    <TextBlock
+                                        Text="{Binding DisplayName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock
+                        Margin="6 6 0 0"
+                        Panel.ZIndex="1"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsProjectsEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        No projects found.
+                    </TextBlock>
+                </Grid>
 
                 <components:ValidationErrorsBox
                     Grid.Row="9"
                     Grid.ColumnSpan="3"
-                    Icon="{StaticResource ValidationErrorsBoxIcon}"
-                    Margin="0 6 0 0"
                     RetryCommand="{Binding RetryProjectsCommand}"
                     SourceElement="{x:Reference ProjectsComboBox}" />
 
@@ -497,57 +520,67 @@
                     Repository:
                 </TextBlock>
 
-                <ListBox
-                    x:Name="RepositoriesListBox"
+                <Grid
                     Grid.Row="11"
-                    Grid.ColumnSpan="3"
-                    IsEnabled="{Binding IsRepositoriesEnabled}"
-                    ItemsSource="{Binding Repositories}"
-                    Margin="0 6 0 0"
-                    SelectedItem="{Binding SelectedRepository}"
-                    Validation.ErrorTemplate="{x:Null}"
-                    VerticalAlignment="Stretch">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition
-                                        Height="Auto" />
-                                    <RowDefinition
-                                        Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition
-                                        Width="Auto" />
-                                    <ColumnDefinition
-                                        Width="*" />
-                                </Grid.ColumnDefinitions>
+                    Grid.ColumnSpan="3">
+                    <ListBox
+                        x:Name="RepositoriesListBox"
+                        IsEnabled="{Binding IsRepositoriesEnabled}"
+                        ItemsSource="{Binding Repositories}"
+                        Margin="0 6 0 0"
+                        MinHeight="{Binding Height, ElementName=ProjectsComboBox}"
+                        Panel.ZIndex="0"
+                        SelectedItem="{Binding SelectedRepository}"
+                        Validation.ErrorTemplate="{x:Null}"
+                        VerticalAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition
+                                            Height="Auto" />
+                                        <RowDefinition
+                                            Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition
+                                            Width="Auto" />
+                                        <ColumnDefinition
+                                            Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                                <Rectangle
-                                    Grid.Row="0"
-                                    Grid.RowSpan="2"
-                                    Grid.Column="0" />
+                                    <Rectangle
+                                        Grid.Row="0"
+                                        Grid.RowSpan="2"
+                                        Grid.Column="0" />
 
-                                <TextBlock
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    FontWeight="{DynamicResource {x:Static shell15:VsFonts.EnvironmentBoldFontWeightKey}}"
-                                    Text="{Binding Name}" />
+                                    <TextBlock
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        FontWeight="{DynamicResource {x:Static shell15:VsFonts.EnvironmentBoldFontWeightKey}}"
+                                        Text="{Binding Name}" />
 
-                                <TextBlock
-                                    Grid.Row="1"
-                                    Grid.Column="1"
-                                    Text="{Binding Description}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Text="{Binding Description}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Margin="0 6 0 0"
+                        Panel.ZIndex="1"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsRepositoriesEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        No repositories found.
+                    </TextBlock>
+                </Grid>
 
                 <components:ValidationErrorsBox
                     Grid.Row="12"
                     Grid.ColumnSpan="3"
-                    Icon="{StaticResource ValidationErrorsBoxIcon}"
-                    Margin="0 6 0 0"
                     RetryCommand="{Binding RetryRepositoriesCommand}"
                     SourceElement="{x:Reference RepositoriesListBox}" />
 
@@ -590,8 +623,6 @@
                 <components:ValidationErrorsBox
                     Grid.Row="15"
                     Grid.ColumnSpan="3"
-                    Icon="{StaticResource ValidationErrorsBoxIcon}"
-                    Margin="0 6 0 0"
                     SourceElement="{x:Reference LocalPathTextBox}" />
 
             </Grid>

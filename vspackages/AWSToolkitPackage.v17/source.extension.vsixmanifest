@@ -57,7 +57,7 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudWatchLogs.dll" AssemblyName="AWSSDK.CloudWatchLogs, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudWatchEvents.dll" AssemblyName="AWSSDK.CloudWatchEvents, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodeArtifact.dll" AssemblyName="AWSSDK.CodeArtifact, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-        <!-- TODO_FIX_BEFORE_CAWS_RELEASE: Replace with public build of CodeCatalyst NuGet package when available -->
+        <!-- TODO IDE-9249 Replace with public build of CodeCatalyst NuGet package when available -->
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodeCatalyst.dll" AssemblyName="AWSSDK.CodeCatalyst, Version=3.3.0.0, Culture=neutral, PublicKeyToken=71c852f8be1c371d" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodeCommit.dll" AssemblyName="AWSSDK.CodeCommit, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CognitoIdentity.dll" AssemblyName="AWSSDK.CognitoIdentity, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />

@@ -157,7 +157,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     //    registeredName: nameof(CodeCommitCodeContainerProvider),
     //    displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
     //    imageMonikerGuid: GuidList.VsImageCatalog.ImageCatalogGuidString,
-    //    imageMonikerId: 1027, // TODO - IDE-8851
+    //    imageMonikerId: 1027, // TODO IDE-8851
     //    displayNameResourceId: "#200", // See AWSToolkitPackage.resx
     //    displayDetailResourceId: "#201", // See AWSToolkitPackage.resx
     //    typeof(CodeCommitCodeContainerProvider))]
@@ -165,7 +165,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         registeredName: nameof(CodeCatalystCodeContainerProvider),
         displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
         imageMonikerGuid: GuidList.VsImageCatalog.ImageCatalogGuidString,
-        imageMonikerId: 1027, // TODO - IDE-8851
+        imageMonikerId: 1027, // TODO IDE-9145
         displayNameResourceId: "#210", // See AWSToolkitPackage.resx
         displayDetailResourceId: "#211", // See AWSToolkitPackage.resx
         typeof(CodeCatalystCodeContainerProvider))]
