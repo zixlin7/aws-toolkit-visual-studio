@@ -12,6 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)CodeContainerProviders\GitCodeContainerProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeContainerProviders\CodeCatalystCodeContainerProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeContainerProviders\CodeCommitCodeContainerProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Git.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GitService.cs" />
   </ItemGroup>
 </Project>

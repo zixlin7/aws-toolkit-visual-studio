@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AwsToolkit.SourceControl;
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
@@ -74,7 +75,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public ICloneCodeCatalystRepositoryDialog CreateCloneCodeCatalystRepositoryDialog()
         {
-            return new CloneCodeCatalystRepositoryDialog(_toolkitContext, _joinableTaskFactory);
+            return new CloneCodeCatalystRepositoryDialog(_toolkitContext, _joinableTaskFactory, new GitService(_toolkitContext));
         }
     }
 }

@@ -282,6 +282,7 @@
     <Compile Include="Publish\Banner\SwitchToNewExperienceCommandFactory.cs" />
     <Compile Include="Shared\IHelpHandler.cs" />
     <Compile Include="SimpleWorkers\CloudWatchMetrics.cs" />
+    <Compile Include="SourceControl\IGitService.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeBrushKeys.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeFontKeys.cs" />
     <Compile Include="Themes\IToolkitThemeBrushKeys.cs" />

@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.SourceControl;
 using Amazon.AWSToolkit.Tasks;
 
 using AwsToolkit.VsSdk.Common.CommonUI.Models;
@@ -35,6 +36,7 @@ namespace CommonUI.Models
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
         private readonly IAWSCodeCatalyst _codeCatalyst;
+        private readonly IGitService _git;
 
         private AwsConnectionSettings _connectionSettings;
 
@@ -78,10 +80,16 @@ namespace CommonUI.Models
 
         private ICodeCatalystRepository _selectedRepository;
 
+        private ICodeCatalystRepository _previousSelectedRepository;
+
         public ICodeCatalystRepository SelectedRepository
         {
             get => _selectedRepository;
-            set => SetProperty(ref _selectedRepository, value);
+            set
+            {
+                _previousSelectedRepository = _selectedRepository;
+                SetProperty(ref _selectedRepository, value);
+            }
         }
 
         public ObservableCollection<ICodeCatalystRepository> Repositories { get; } = new ObservableCollection<ICodeCatalystRepository>();
@@ -124,11 +132,12 @@ namespace CommonUI.Models
 
         public string Heading { get; } = "Clone an Amazon CodeCatalyst repository";
 
-        public CloneCodeCatalystRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory)
+        public CloneCodeCatalystRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory, IGitService git)
         {
             _toolkitContext = toolkitContext;
             _joinableTaskFactory = joinableTaskFactory;
             _codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
+            _git = git;
 
             AwsIdRegion = _toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
 
@@ -137,6 +146,8 @@ namespace CommonUI.Models
                 ConnectionTypes = new List<AwsConnectionType>() { AwsConnectionType.AwsToken },
             };
 
+            LocalPath = git.GetDefaultRepositoryPath();
+
             PropertyChanged += CloneCodeCatalystRepositoryViewModel_PropertyChanged;
 
             BrowseForRepositoryPathCommand = new RelayCommand(ExecuteBrowseForRepositoryPathCommand);
@@ -144,6 +155,11 @@ namespace CommonUI.Models
             RetryProjectsCommand = new RelayCommand(parameter => RefreshProjects());
             RetryRepositoriesCommand = new RelayCommand(parameter => RefreshRepositories());
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
+        }
+
+        public void Dispose()
+        {
+            Connection.Dispose();
         }
 
         /// <summary>
@@ -171,6 +187,9 @@ namespace CommonUI.Models
                 case nameof(SelectedProject):
                     RefreshRepositories();
                     break;
+                case nameof(SelectedRepository):
+                    TryAutoCompleteLocalPath();
+                    break;
                 case nameof(LocalPath):
                     ValidateLocalPath();
                     break;
@@ -191,7 +210,11 @@ namespace CommonUI.Models
 
         public bool CanSubmit()
         {
-            return Connection.IsConnectionValid && !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
+            return
+                Connection.IsConnectionValid &&
+                !string.IsNullOrWhiteSpace(LocalPath) &&
+                SelectedRepository != null &&
+                !Enumerable.Cast<object>(DataErrorInfo.GetErrors(null)).Any();
         }
 
         public void ExecuteHelpCommand(object parameter)
@@ -218,6 +241,43 @@ namespace CommonUI.Models
             catch (Exception ex)
             {
                 DataErrorInfo.AddError($"Invalid path: {ex.Message}", nameof(LocalPath));
+            }
+        }
+
+        private string RemoveInvalidPathChars(string path)
+        {
+            foreach (char invalidChar in Path.GetInvalidPathChars())
+            {
+                path = path.Replace(invalidChar.ToString(), string.Empty);
+            }
+
+            return path;
+        }
+
+        private void TryAutoCompleteLocalPath()
+        {
+            // Rudimentary and not as sophisticated as GitHub's provider, but to perform that level of path rewriting,
+            // we'd have to track every character/selection change in the path.
+
+            if (string.IsNullOrWhiteSpace(LocalPath))
+            {
+                LocalPath = _git.GetDefaultRepositoryPath();
+            }
+
+            var previousRepoName = RemoveInvalidPathChars(_previousSelectedRepository?.Name ?? string.Empty);
+            var selectedRepoName = RemoveInvalidPathChars(SelectedRepository?.Name ?? string.Empty);
+
+            if (string.Empty == previousRepoName)
+            {
+                LocalPath = Path.Combine(LocalPath, selectedRepoName);
+                return;
+            }
+
+            if (LocalPath.EndsWith($"{Path.DirectorySeparatorChar}{previousRepoName}"))
+            {
+                var root = LocalPath.Substring(0, LocalPath.LastIndexOf(Path.DirectorySeparatorChar));
+                LocalPath = Path.Combine(root, selectedRepoName);
+                return;
             }
         }
 
@@ -389,11 +449,6 @@ namespace CommonUI.Models
 
                 NotifyPropertyChanged(nameof(IsRepositoriesEnabled));
             });
-        }
-
-        public void Dispose()
-        {
-            Connection.Dispose();
         }
     }
 }

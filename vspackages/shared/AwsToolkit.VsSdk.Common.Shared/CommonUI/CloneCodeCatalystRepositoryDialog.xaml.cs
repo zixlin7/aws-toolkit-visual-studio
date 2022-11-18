@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.SourceControl;
 
 using AwsToolkit.VsSdk.Common.CommonUI.Commands.CodeCatalyst;
 
@@ -28,11 +29,11 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         private readonly JoinableTaskFactory _joinableTaskFactory;
         private readonly CloneCodeCatalystRepositoryViewModel _viewModel;
 
-        public CloneCodeCatalystRepositoryDialog(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory)
+        public CloneCodeCatalystRepositoryDialog(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory, IGitService git)
         {
             _toolkitContext = toolkitContext;
             _joinableTaskFactory = joinableTaskFactory;
-            _viewModel = new CloneCodeCatalystRepositoryViewModel(_toolkitContext, _joinableTaskFactory);
+            _viewModel = new CloneCodeCatalystRepositoryViewModel(_toolkitContext, _joinableTaskFactory, git);
             _viewModel.CancelDialogCommand = CancelCloneDialogCommandFactory.Create(this);
             _viewModel.SubmitDialogCommand = SubmitCloneDialogCommandFactory.Create(_viewModel, this);
 

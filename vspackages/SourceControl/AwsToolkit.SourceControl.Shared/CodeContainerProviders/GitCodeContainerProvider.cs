@@ -65,7 +65,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            cloneRepoData = await CloneAsync(cloneRepoData, downloadProgress, cancellationToken);
+            cloneRepoData = await CloneAsync(cloneRepoData, cancellationToken);
             if (cloneRepoData == null)
             {
                 return null;
@@ -80,16 +80,16 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             return CreateCodeContainer(cloneRepoData);
         }
 
-        private async Task<CloneRepositoryData> CloneAsync(CloneRepositoryData cloneRepoData, IProgress<sh.ServiceProgressData> downloadProgress, CancellationToken cancellationToken)
+        private async Task<CloneRepositoryData> CloneAsync(CloneRepositoryData cloneRepoData, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             await _toolkitContext.ToolkitHost.OpenShellWindowAsync(ShellWindows.Output);
 
-            var git = new Git(_toolkitContext);
+            var git = new GitService(_toolkitContext);
             while (true)
             {
-                var returned = await TryCloneAsync(cloneRepoData, git, downloadProgress, cancellationToken);
+                var returned = await TryCloneAsync(cloneRepoData, git, cancellationToken);
                 cloneRepoData = returned.CloneRepoData;
                 if (!returned.Retry)
                 {
@@ -111,7 +111,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
         }
 
         private async Task<TryCloneAsyncReturnValue> TryCloneAsync(
-            CloneRepositoryData cloneRepoData, Git git, IProgress<sh.ServiceProgressData> downloadProgress, CancellationToken cancellationToken)
+            CloneRepositoryData cloneRepoData, GitService git, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -121,7 +121,6 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                     cloneRepoData.RemoteUri,
                     cloneRepoData.LocalPath,
                     false,
-                    downloadProgress,
                     cancellationToken);
 
                 return new TryCloneAsyncReturnValue(false, cloneRepoData);

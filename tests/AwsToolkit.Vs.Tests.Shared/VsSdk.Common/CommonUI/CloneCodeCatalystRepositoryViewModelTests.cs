@@ -13,6 +13,7 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.SourceControl;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.Tests.Common.IO;
 
@@ -37,8 +38,10 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         private readonly ConnectionState _sampleConnectionState;
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
         private readonly Mock<IAWSCodeCatalyst> _codeCatalyst = new Mock<IAWSCodeCatalyst>();
+        private readonly Mock<IGitService> _git = new Mock<IGitService>();
         private readonly Mock<IFolderBrowserDialog> _folderDialog = new Mock<IFolderBrowserDialog>();
         private readonly ICredentialIdentifier _sampleIdentifier = new SonoCredentialIdentifier("sample");
+        private readonly TemporaryTestLocation _localPathTemporaryTestLocation = new TemporaryTestLocation(false);
 
         public CloneCodeCatalystRepositoryViewModelTests()
         {
@@ -69,13 +72,21 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
                 {
                     new CodeCatalystRepository(factory, _repoName, _spaceName, _projectName, "Test repo description.")
                 }.AsEnumerable()));
+            
+            _git.Setup(mock => mock.GetDefaultRepositoryPath()).Returns(_localPathTemporaryTestLocation.TestFolder);
 
 #pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
             var taskContext = new JoinableTaskContext();
 #pragma warning restore VSSDK005
 
-            _sut = new CloneCodeCatalystRepositoryViewModel(_toolkitContextFixture.ToolkitContext, taskContext.Factory);
+            _sut = new CloneCodeCatalystRepositoryViewModel(_toolkitContextFixture.ToolkitContext, taskContext.Factory, _git.Object);
             _sampleConnectionState = new ConnectionState.ValidConnection(_sampleIdentifier, _sut.AwsIdRegion);
+        }
+
+        public void Dispose()
+        {
+            _localPathTemporaryTestLocation?.Dispose();
+            _sut?.Dispose();
         }
 
         [Fact]
@@ -150,37 +161,40 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         [Fact]
         public void ExecuteBrowseForRepositoryPathCommandUpdatesLocalPathOnOk()
         {
-            const string expectedPath = @"c:\test\path";
+            var initialPath = _sut.LocalPath;
+            var expected = @"c:\test\path";
 
-            _folderDialog.Setup(mock => mock.FolderPath).Returns(expectedPath);
+            _folderDialog.Setup(mock => mock.FolderPath).Returns(expected);
             _folderDialog.Setup(mock => mock.ShowModal()).Returns(true);
             _toolkitContextFixture.DialogFactory.Setup(mock => mock.CreateFolderBrowserDialog()).Returns(_folderDialog.Object);
 
-            Assert.Null(_sut.LocalPath);
+            Assert.Equal(initialPath, _sut.LocalPath);
 
             _sut.BrowseForRepositoryPathCommand.Execute(null);
 
-            Assert.Equal(expectedPath, _sut.LocalPath);
+            Assert.Equal(expected, _sut.LocalPath);
         }
 
         [Fact]
         public void ExecuteBrowseForRepositoryPathCommandDoesNotUpdateLocalPathOnCancel()
         {
+            var expected = _sut.LocalPath;
+
             _folderDialog.Setup(mock => mock.ShowModal()).Returns(false);
             _toolkitContextFixture.DialogFactory.Setup(mock => mock.CreateFolderBrowserDialog()).Returns(_folderDialog.Object);
 
-            Assert.Null(_sut.LocalPath);
+            Assert.Equal(expected, _sut.LocalPath);
 
             _sut.BrowseForRepositoryPathCommand.Execute(null);
 
-            Assert.Null(_sut.LocalPath);
+            Assert.Equal(expected, _sut.LocalPath);
         }
-
 
         [Fact]
         public void InvalidPathCharsCreateValidationErrorForLocalPath()
         {
             var info = (INotifyDataErrorInfo) _sut;
+            _sut.SelectedRepository = new Mock<ICodeCatalystRepository>().Object;
 
             Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
 
@@ -209,14 +223,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         {
             var info = (INotifyDataErrorInfo) _sut;
 
-            using (var testLocation = new TemporaryTestLocation(false))
-            {
-                Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
-
-                _sut.LocalPath = testLocation.TestFolder;
-
-                Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
-            }
+            Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
         }
 
         [Fact]
@@ -234,6 +241,71 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             }
         }
 
+        [Fact]
+        public void LocalPathHasDefaultValue()
+        {
+            Assert.NotEmpty(_sut.LocalPath);
+        }
+
+        private Mock<ICodeCatalystRepository> MockCodeCatalystRepository(string repoName)
+        {
+            Mock<ICodeCatalystRepository> mock = new Mock<ICodeCatalystRepository>();
+            mock.SetupGet(m => m.Name).Returns(repoName);
+
+            return mock;
+        }
+
+        [Fact]
+        public void OnlyAddsSelectedRepositoryNameToLocalPathOnFirstSelection()
+        {
+            var selectedRepoName = "TestRepo";
+            var expected = Path.Combine(_sut.LocalPath, selectedRepoName);
+
+            _sut.SelectedRepository = MockCodeCatalystRepository(selectedRepoName).Object;
+
+            Assert.Equal(expected, _sut.LocalPath);
+        }
+
+        [Fact]
+        public void ReplacesRepositoryNameAtEndOfLocalPathOnSelectionChange()
+        {
+            var selectedRepoName1 = "TestRepo";
+            var selectedRepoName2 = "AndNowForSomethingCompletelyDifferent";
+            var expected = Path.Combine(_sut.LocalPath, selectedRepoName2);
+
+            _sut.SelectedRepository = MockCodeCatalystRepository(selectedRepoName1).Object;
+            _sut.SelectedRepository = MockCodeCatalystRepository(selectedRepoName2).Object;
+
+            Assert.Equal(expected, _sut.LocalPath);
+        }
+
+        [Fact]
+        public void SelectingRepositoryOnEmptyLocalPathAddsRepositoryNameOnly()
+        {
+            var selectedRepoName = "TestRepo";
+            var expected = Path.Combine(_localPathTemporaryTestLocation.TestFolder, selectedRepoName);
+
+            _sut.LocalPath = string.Empty;
+            _sut.SelectedRepository = MockCodeCatalystRepository(selectedRepoName).Object;
+
+            Assert.Equal(expected, _sut.LocalPath);
+        }
+
+        [Fact]
+        public void RepositoryNameIsOnlyAppendedWhenPreviousRepositoryNameInLocalPathWasEdited()
+        {
+            var selectedRepoName1 = "TestRepo";
+            var selectedRepoName2 = "AndNowForSomethingCompletelyDifferent";
+            var spoiler = "hahaha";
+            var expected = Path.Combine(_sut.LocalPath, selectedRepoName1 + spoiler);
+
+            _sut.SelectedRepository = MockCodeCatalystRepository(selectedRepoName1).Object;
+            _sut.LocalPath += spoiler;
+            _sut.SelectedRepository = MockCodeCatalystRepository(selectedRepoName2).Object;
+
+            Assert.Equal(expected, _sut.LocalPath);
+        }
+
         private void SetupInitialSpaces()
         {
             SetupInitialConnection();
@@ -245,11 +317,6 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             _sut.Connection.CredentialIdentifier = _sampleIdentifier;
             _sut.UpdateConnectionSettings();
             _sut.Connection.IsConnectionValid = true;
-        }
-
-        public void Dispose()
-        {
-            _sut?.Dispose();
         }
     }
 }
