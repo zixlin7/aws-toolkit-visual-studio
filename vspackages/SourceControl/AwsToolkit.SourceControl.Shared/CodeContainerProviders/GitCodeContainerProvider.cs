@@ -55,29 +55,55 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
         public async Task<ccm.CodeContainer> AcquireCodeContainerAsync(ccm.RemoteCodeContainer onlineCodeContainer, IProgress<sh.ServiceProgressData> downloadProgress, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var cloneRepoData = await GetCloneRepositoryDataAsync(onlineCodeContainer, cancellationToken);
-            if (cloneRepoData == null)
+            try
             {
-                return null; // VS expects null if the clone operation is incomplete
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var cloneRepoData = await GetCloneRepositoryDataAsync(onlineCodeContainer, cancellationToken);
+                if (cloneRepoData == null)
+                {
+                    await CloneCanceledAsync();
+                    return null; // VS expects null if the clone operation is incomplete
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                cloneRepoData = await CloneAsync(cloneRepoData, cancellationToken);
+                if (cloneRepoData == null)
+                {
+                    await CloneFailedAsync();
+                    return null;
+                }
+
+                // Too late to cancel now, while this is currently not used, leave here for future coders to be aware of the cut line
+                cancellationToken = CancellationToken.None;
+
+                // Make sure progress appears to be 100% complete as VS doesn't update correctly during git clone
+                downloadProgress.Report(new sh.ServiceProgressData(string.Empty, string.Empty, 1, 1));
+                await CloneCompletedAsync(cloneRepoData);
+
+                return CreateCodeContainer(cloneRepoData);
             }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            cloneRepoData = await CloneAsync(cloneRepoData, cancellationToken);
-            if (cloneRepoData == null)
+            catch (OperationCanceledException)
             {
-                return null;
+                await CloneCanceledAsync();
+                throw;
             }
+        }
 
-            // Too late to cancel now, while this is currently not used, leave here for future coders to be aware of the cut line
-            cancellationToken = CancellationToken.None;
+        protected virtual Task CloneCanceledAsync()
+        {
+            return Task.CompletedTask;
+        }
 
-            // Make sure progress appears to be 100% complete as VS doesn't update correctly during git clone
-            downloadProgress.Report(new sh.ServiceProgressData(string.Empty, string.Empty, 1, 1));
+        protected virtual Task CloneCompletedAsync(CloneRepositoryData cloneRepoData)
+        {
+            return Task.CompletedTask;
+        }
 
-            return CreateCodeContainer(cloneRepoData);
+        protected virtual Task CloneFailedAsync()
+        {
+            return Task.CompletedTask;
         }
 
         private async Task<CloneRepositoryData> CloneAsync(CloneRepositoryData cloneRepoData, CancellationToken cancellationToken)
