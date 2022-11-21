@@ -169,7 +169,6 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                // TODO IDE-9074 Emit metric for this error as this should never happen unless there is a bug in the HandleCloneRepositoryFailedAsync override
                 _toolkitContext.ToolkitHost.ShowError("Unexpected error when handling clone repository failure.  Check toolkit logs for details.");
 
                 return null;

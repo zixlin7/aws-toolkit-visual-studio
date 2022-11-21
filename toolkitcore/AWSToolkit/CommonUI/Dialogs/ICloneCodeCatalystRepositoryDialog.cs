@@ -14,6 +14,8 @@ namespace Amazon.AWSToolkit.CommonUI.Dialogs
 
         string LocalPath { get; }
 
+        string UserId { get; }
+
         bool Show();
     }
 }

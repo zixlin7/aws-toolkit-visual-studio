@@ -79,7 +79,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
                 var connectionState = e.State;
                 _viewModel.Connection.UpdateRequiredConnectionProperties(connectionState);
-
+                UserId = _viewModel.ConnectionManager.ActiveAwsId;
                 if (!connectionState.IsTerminal)
                 {
                     return;
@@ -96,6 +96,8 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         public Uri CloneUrl { get; private set; }
 
         public string LocalPath { get; private set; }
+
+        public string UserId { get; private set; }
 
         public new bool Show()
         {

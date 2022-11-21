@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 // There are a lot of duplicated type names between these two namespaces, so use aliases for clarity.
 // If VS injects an unaliased using statement for any of these namespaces, remove it immediately.
 using ccm = Microsoft.VisualStudio.Shell.CodeContainerManagement;
 using sh = Microsoft.VisualStudio.Shell;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 {
@@ -64,6 +66,37 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             }
 
             return null;
+        }
+
+        protected override Task CloneCanceledAsync()
+        {
+            RecordClone(Result.Cancelled);
+            return Task.CompletedTask;
+        }
+
+        protected override Task CloneCompletedAsync(CloneRepositoryData cloneRepoData)
+        {
+            RecordClone(Result.Succeeded);
+            return Task.CompletedTask;
+        }
+
+        protected override Task CloneFailedAsync()
+        {
+            RecordClone(Result.Failed);
+            return Task.CompletedTask;
+        }
+
+        private void RecordClone(Result result)
+        {
+            var userId = _dialog.UserId;
+
+            _toolkitContext.TelemetryLogger.RecordCodecatalystLocalClone(new CodecatalystLocalClone()
+            {
+                AwsAccount = MetadataValue.NotApplicable,
+                AwsRegion = MetadataValue.NotApplicable,
+                UserId = string.IsNullOrWhiteSpace(userId) ? MetadataValue.NotSet : userId,
+                Result = result
+            });
         }
     }
 }
