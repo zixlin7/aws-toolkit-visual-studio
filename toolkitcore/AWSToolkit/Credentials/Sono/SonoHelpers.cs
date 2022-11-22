@@ -22,12 +22,10 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         /// Produces an object that is configured to connect to Sono, and allows the Toolkit to
         /// prompt to start the SSO login flow.
         /// </summary>
-        public static ToolkitSsoTokenManagerOptions CreateSonoTokenManagerOptions(
-            ICredentialIdentifier credentialIdentifier,
-            IAWSToolkitShellProvider toolkitShell)
+        public static ToolkitSsoTokenManagerOptions CreateSonoTokenManagerOptions(Action<SsoVerificationArguments> ssoCallback)
         {
             return new ToolkitSsoTokenManagerOptions(SonoProperties.ClientName, SonoProperties.ClientType,
-                CreateSsoCallback(credentialIdentifier, toolkitShell), SonoProperties.Scopes);
+                ssoCallback, SonoProperties.Scopes);
         }
 
         /// <summary>

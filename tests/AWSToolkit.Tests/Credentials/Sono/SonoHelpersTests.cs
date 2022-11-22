@@ -21,11 +21,14 @@ namespace AWSToolkit.Tests.Credentials.Sono
         [Fact]
         public void CreateSonoTokenManagerOptions()
         {
-            var options = SonoHelpers.CreateSonoTokenManagerOptions(SonoCredentialId, _toolkitShell.Object);
+            void DoNothingCallback(SsoVerificationArguments verificationArgs) { }
+
+            var options = SonoHelpers.CreateSonoTokenManagerOptions(DoNothingCallback);
 
             Assert.Contains("AwsToolkitForVisualStudio", options.ClientName);
             Assert.Contains("public", options.ClientType);
             Assert.Contains("sso:account:access", options.Scopes);
+            Assert.Equal(DoNothingCallback, options.SsoVerificationCallback);
         }
 
         [Fact]

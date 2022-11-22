@@ -21,6 +21,10 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         private RegionEndpoint _oidcRegion = SonoProperties.DefaultOidcRegion;
         private RegionEndpoint _tokenProviderRegion = SonoProperties.DefaultTokenProviderRegion;
         private string _startUrl = SonoProperties.StartUrl;
+        private Action<SsoVerificationArguments> _ssoCallbackHandler;
+
+        private IFile _tokenCacheFileHandler = new FileRetriever();
+        private IDirectory _tokenCacheDirectoryHandler = new DirectoryRetriever();
 
         public static SonoTokenProviderBuilder Create()
         {
@@ -65,6 +69,30 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             return this;
         }
 
+        public SonoTokenProviderBuilder WithSsoCallback(Action<SsoVerificationArguments> callbackHandler)
+        {
+            _ssoCallbackHandler = callbackHandler;
+            return this;
+        }
+
+        /// <summary>
+        /// Intended for use with testing
+        /// </summary>
+        public SonoTokenProviderBuilder WithTokenCacheFileHandler(IFile fileHandler)
+        {
+            _tokenCacheFileHandler = fileHandler;
+            return this;
+        }
+
+        /// <summary>
+        /// Intended for use with testing
+        /// </summary>
+        public SonoTokenProviderBuilder WithTokenCacheDirectoryHandler(IDirectory directoryHandler)
+        {
+            _tokenCacheDirectoryHandler = directoryHandler;
+            return this;
+        }
+
         public IAWSTokenProvider Build()
         {
             ValidateProperties();
@@ -81,14 +109,18 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         /// <exception cref="InvalidOperationException"></exception>
         private void ValidateProperties()
         {
-            if (_toolkitShell == null)
+            // If a callback handler needs to be created, ToolkitShell and CredentialId are required
+            if (_ssoCallbackHandler == null)
             {
-                throw new InvalidOperationException("Toolkit shell is missing");
-            }
+                if (_toolkitShell == null)
+                {
+                    throw new InvalidOperationException("Toolkit shell is missing");
+                }
 
-            if (_credentialIdentifier == null)
-            {
-                throw new InvalidOperationException("Credential Id is missing");
+                if (_credentialIdentifier == null)
+                {
+                    throw new InvalidOperationException("Credential Id is missing");
+                }
             }
 
             if (string.IsNullOrWhiteSpace(_sessionName))
@@ -110,18 +142,31 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             {
                 throw new InvalidOperationException("OIDC region is missing");
             }
+
+            if (_tokenCacheFileHandler == null)
+            {
+                throw new InvalidOperationException("Token cache file handler is missing");
+            }
+
+            if (_tokenCacheDirectoryHandler == null)
+            {
+                throw new InvalidOperationException("Token cache directory handler is missing");
+            }
         }
 
         private ISSOTokenManager CreateTokenManager()
         {
-            var tokenManagerOptions = SonoHelpers.CreateSonoTokenManagerOptions(_credentialIdentifier, _toolkitShell);
+            Action<SsoVerificationArguments> ssoCallback =
+                _ssoCallbackHandler ?? SonoHelpers.CreateSsoCallback(_credentialIdentifier, _toolkitShell);
+
+            var tokenManagerOptions = SonoHelpers.CreateSonoTokenManagerOptions(ssoCallback);
 
             var ssoOidcClient = SSOServiceClientHelpers.BuildSSOIDCClient(_oidcRegion);
 
             var ssoTokenFileCache = new SSOTokenFileCache(
                 CryptoUtilFactory.CryptoInstance,
-                new FileRetriever(),
-                new DirectoryRetriever());
+                _tokenCacheFileHandler,
+                _tokenCacheDirectoryHandler);
 
             var ssoTokenManager = new SSOTokenManager(ssoOidcClient, ssoTokenFileCache);
 

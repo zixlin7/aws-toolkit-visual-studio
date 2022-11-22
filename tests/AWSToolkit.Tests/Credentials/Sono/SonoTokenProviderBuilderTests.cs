@@ -3,6 +3,7 @@
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Shared;
+using Amazon.Runtime;
 
 using Moq;
 
@@ -19,11 +20,23 @@ namespace AWSToolkit.Tests.Credentials.Sono
         private readonly Mock<IAWSToolkitShellProvider> _toolkitShell = new Mock<IAWSToolkitShellProvider>();
 
         [Fact]
-        public void Build()
+        public void BuildWithoutCallback()
         {
             var tokenProvider = SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(SonoCredentialId)
                 .WithToolkitShell(_toolkitShell.Object)
+                .Build();
+
+            Assert.NotNull(tokenProvider);
+        }
+
+        [Fact]
+        public void BuildWithCallback()
+        {
+            void SsoCallback(SsoVerificationArguments args) { }
+
+            var tokenProvider = SonoTokenProviderBuilder.Create()
+                .WithSsoCallback(SsoCallback)
                 .Build();
 
             Assert.NotNull(tokenProvider);
@@ -89,6 +102,26 @@ namespace AWSToolkit.Tests.Credentials.Sono
                 .Build());
 
             Assert.Contains("OIDC", exception.Message);
+        }
+
+        [Fact]
+        public void BuildShouldThrowWithMissingFileHandler()
+        {
+            var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
+                .WithTokenCacheFileHandler(null)
+                .Build());
+
+            Assert.Contains("file handler", exception.Message);
+        }
+
+        [Fact]
+        public void BuildShouldThrowWithMissingDirectoryHandler()
+        {
+            var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
+                .WithTokenCacheDirectoryHandler(null)
+                .Build());
+
+            Assert.Contains("directory handler", exception.Message);
         }
 
         private SonoTokenProviderBuilder PopulateBuilder()
