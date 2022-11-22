@@ -231,7 +231,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.184</Version>
+      <Version>3.7.100.22</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

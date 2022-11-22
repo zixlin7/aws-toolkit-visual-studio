@@ -282,7 +282,6 @@ namespace Amazon.AWSToolkit.Regions
                         }
                     }
 
-                    UpdateSdk(streamCopy);
                     Update(endpoints);
                 }
             }
@@ -308,24 +307,6 @@ namespace Amazon.AWSToolkit.Regions
             catch
             {
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Updates the AWS SDK with the provided endpoints.json data
-        /// </summary>
-        /// <param name="stream"></param>
-        private void UpdateSdk(Stream stream)
-        {
-            try
-            {
-                Logger.Debug("Updating AWS SDK with endpoints data...");
-                RegionEndpoint.Reload(stream);
-                Logger.Debug("Finished updating AWS SDK with endpoints data");
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to update the AWS SDK region endpoints. Toolkit may have difficulties accessing services.", e);
             }
         }
 
