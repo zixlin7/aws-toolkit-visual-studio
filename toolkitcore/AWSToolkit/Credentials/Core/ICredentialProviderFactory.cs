@@ -50,5 +50,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         List<ICredentialIdentifier> GetCredentialIdentifiers();
 
         event EventHandler<CredentialChangeEventArgs> CredentialsChanged;
+
+        void Invalidate(ICredentialIdentifier credentialIdentifier);
     }
 }

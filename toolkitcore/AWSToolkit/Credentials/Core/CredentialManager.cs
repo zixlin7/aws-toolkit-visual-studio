@@ -142,6 +142,20 @@ namespace Amazon.AWSToolkit.Credentials.Core
             return partitionCache[region.PartitionId];
         }
 
+        public void Invalidate(ICredentialIdentifier identifier)
+        {
+            _providerFactoryMapping.TryGetValue(identifier.FactoryId, out var factory);
+            if (factory == null)
+            {
+                throw new CredentialProviderNotFoundException(
+                    $"Unrecognized provider factory [{identifier.FactoryId}] for the Credential identifier type: {identifier.GetType()}");
+            }
+
+            _awsCredentialPartitionCache.TryRemove(identifier.Id, out _);
+
+            factory.Invalidate(identifier);
+        }
+
         protected void AddIdentifier(ICredentialIdentifier identifier)
         {
             _identifierIds[identifier.Id] = identifier;

@@ -156,6 +156,7 @@
     <Compile Include="Credentials\Utils\ProfileNameTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertyMappingTests.cs" />
+    <Compile Include="Credentials\Utils\TokenCacheTests.cs" />
     <Compile Include="Credentials\Utils\TokenExtensionMethodsTests.cs" />
     <Compile Include="Ec2\VpcEntityTests.cs" />
     <Compile Include="Ecr\EcrViewerTests.cs" />

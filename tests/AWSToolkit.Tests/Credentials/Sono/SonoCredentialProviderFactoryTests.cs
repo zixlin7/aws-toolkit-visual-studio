@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tests.Common.IO;
 
 using Moq;
 
@@ -12,7 +14,7 @@ using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.Sono
 {
-    public class SonoCredentialProviderFactoryTests
+    public class SonoCredentialProviderFactoryTests : IDisposable
     {
         private static readonly ToolkitRegion SampleRegion = new ToolkitRegion()
         {
@@ -23,12 +25,13 @@ namespace AWSToolkit.Tests.Credentials.Sono
         private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("default");
         private static readonly ICredentialIdentifier OtherSonoCredentialId = new SonoCredentialIdentifier("other-sono");
         private static readonly ICredentialIdentifier NonSonoCredentialId = new SDKCredentialIdentifier("non-sono-sample");
+        private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation(false);
         private readonly Mock<IAWSToolkitShellProvider> _toolkitShell = new Mock<IAWSToolkitShellProvider>();
         private readonly SonoCredentialProviderFactory _sut;
 
         public SonoCredentialProviderFactoryTests()
         {
-            _sut = new SonoCredentialProviderFactory(_toolkitShell.Object);
+            _sut = new SonoCredentialProviderFactory(_toolkitShell.Object, _testLocation.TestFolder);
             _sut.Initialize();
         }
 
@@ -96,6 +99,31 @@ namespace AWSToolkit.Tests.Credentials.Sono
         {
             Assert.Equal(CredentialType.BearerToken,
                 _sut.GetCredentialProfileProcessor().GetProfileProperties(SonoCredentialId).GetCredentialType());
+        }
+
+        [Fact]
+        public void Invalidate()
+        {
+            var cachePath = Path.Combine(
+                _testLocation.TestFolder,
+                TokenCache.GetCacheFilename(SonoProperties.StartUrl, SonoProperties.DefaultSessionName));
+
+            File.WriteAllText(cachePath, "a sample file that will be deleted");
+
+            _sut.Invalidate(SonoCredentialId);
+
+            Assert.False(File.Exists(cachePath));
+        }
+
+        [Fact]
+        public void InvalidateShouldThrowOnDifferentId()
+        {
+            Assert.Throws<NotSupportedException>(() => _sut.Invalidate(OtherSonoCredentialId));
+        }
+
+        public void Dispose()
+        {
+            _testLocation?.Dispose();
         }
     }
 }

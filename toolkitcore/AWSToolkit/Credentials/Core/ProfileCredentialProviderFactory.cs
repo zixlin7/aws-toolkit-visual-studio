@@ -485,6 +485,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
             return profile.AsProfileProperties();
         }
 
+        public virtual void Invalidate(ICredentialIdentifier credentialIdentifier)
+        {
+            // Profile-related credentials do not have invalidation handling at this time.
+        }
+
         public void Dispose()
         {
             Dispose(true);

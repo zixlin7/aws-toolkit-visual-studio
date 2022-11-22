@@ -19,6 +19,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
         bool Supports(ICredentialIdentifier credentialIdentifier, AwsConnectionType connectionType);
         AWSCredentials GetAwsCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region);
         ToolkitCredentials GetToolkitCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region);
+
+        void Invalidate(ICredentialIdentifier credentialIdentifier);
     }
 
     public static class ICredentialManagerExtensionMethods

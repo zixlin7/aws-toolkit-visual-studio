@@ -22,10 +22,19 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
         private readonly IAWSToolkitShellProvider _toolkitShell;
         private readonly SonoProfileProcessor _profileProcessor = new SonoProfileProcessor();
+        private readonly string _tokenCacheFolder;
 
-        public SonoCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell)
+        public SonoCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell) : this(toolkitShell, null) { }
+
+        /// <summary>
+        /// Overload for testing purposes
+        /// </summary>
+        /// <param name="toolkitShell"></param>
+        /// <param name="tokenCacheFolder">Location of the SSO Token cache. Set to null to use the default folder.</param>
+        public SonoCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell, string tokenCacheFolder)
         {
             _toolkitShell = toolkitShell;
+            _tokenCacheFolder = tokenCacheFolder;
         }
 
         public void Initialize()
@@ -80,6 +89,17 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             if (connectionType != AwsConnectionType.AwsToken) { return false; }
 
             return _profileProcessor.GetProfileProperties(credentialIdentifier) != null;
+        }
+
+        public virtual void Invalidate(ICredentialIdentifier credentialIdentifier)
+        {
+            var profileProperties = _profileProcessor.GetProfileProperties(credentialIdentifier);
+            if (profileProperties == null)
+            {
+                throw new NotSupportedException($"Unsupported AWS Builder ID based credential Id: {credentialIdentifier.Id}");
+            }
+
+            TokenCache.RemoveCacheFile(profileProperties.SsoStartUrl, SonoProperties.DefaultSessionName, _tokenCacheFolder);
         }
 
         public void Dispose()
