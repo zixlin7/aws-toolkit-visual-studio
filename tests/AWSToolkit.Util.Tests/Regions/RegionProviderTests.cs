@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.ResourceFetchers;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Util.Tests.Resources;
+
 using Moq;
+
 using Xunit;
 
 namespace Amazon.AWSToolkit.Util.Tests.Regions
 {
-    public class RegionProviderTests : IDisposable
+    public class RegionProviderTests
     {
         private const string EndpointsFilename = "sample-endpoints.json";
         private const string FakeRegionId = "us-moon-1";
         private static readonly string LocalRegionId = $"{RegionProvider.LocalRegionIdPrefix}region";
         private readonly Mock<IResourceFetcher> _sampleEndpointsFetcher = new Mock<IResourceFetcher>();
-        private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
         private readonly RegionProvider _sut;
 
         public RegionProviderTests()
@@ -33,39 +34,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
             InitializeAndWaitForUpdateEvents();
 
             _sampleEndpointsFetcher.Verify(mock => mock.Get(RegionProvider.EndpointsFile), Times.Exactly(2));
-        }
-
-        [Fact]
-        public void InitializeUpdatesAwsSdk()
-        {
-            // Sample endpoints file contains a test service entry in us-west-2
-            // check that this service is available after a Reload
-            var testServiceRegionId = "us-west-2";
-            var testServiceName = "test-service";
-            var testServiceHostname = "test-hostname";
-
-            // Sample endpoints file does not contain govcloud partition data
-            // check that a govcloud region isn't available after a Reload
-            var testPartition = "aws-us-gov";
-            var testRegion = "us-gov-east-1";
-
-            var beforeReloadRegion = RegionEndpoint.GetBySystemName(testRegion);
-            Assert.Equal(testPartition, beforeReloadRegion.PartitionName);
-            Assert.NotEqual("Unknown", beforeReloadRegion.DisplayName);
-
-            var beforeReloadEndpoints = RegionEndpoint.GetBySystemName(testServiceRegionId)
-                .GetEndpointForService(testServiceName);
-            Assert.DoesNotContain(testServiceHostname, beforeReloadEndpoints.Hostname);
-
-            InitializeAndWaitForUpdateEvents();
-
-            var afterReloadRegion = RegionEndpoint.GetBySystemName(testRegion);
-            Assert.NotEqual(testPartition, afterReloadRegion.PartitionName);
-            Assert.Equal("Unknown", afterReloadRegion.DisplayName);
-
-            var afterReloadEndpoints = RegionEndpoint.GetBySystemName(testServiceRegionId)
-                .GetEndpointForService(testServiceName);
-            Assert.Contains(testServiceHostname, afterReloadEndpoints.Hostname);
         }
 
         [Fact]
@@ -194,12 +162,6 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
             Assert.True(_sut.IsServiceAvailable(serviceName, LocalRegionId));
         }
 
-        public void Dispose()
-        {
-            // "Reset" the SDK's endpoints data because these tests mess with it
-            RegionEndpoint.Reload(null);
-        }
-        
         private void InitializeAndWaitForUpdateEvents()
         {
             var syncHandle = new ManualResetEvent(false);

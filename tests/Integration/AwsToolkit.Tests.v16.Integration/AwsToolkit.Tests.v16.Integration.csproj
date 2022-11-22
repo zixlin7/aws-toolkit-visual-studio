@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.ECR">
-      <Version>3.7.4.65</Version>
+      <Version>3.7.100.21</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>16.0.206</Version>
