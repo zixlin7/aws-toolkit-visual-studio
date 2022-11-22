@@ -48,7 +48,7 @@
             <ItemsControl
                 x:Name="ErrorItemsControl"
                 x:FieldModifier="private"
-                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.InfoTextBrushKey}}">
+                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}">
                 <ItemsControl.ItemTemplate>
                     <!-- Consider exposing an ErrorMessageTemplate property for customization in the future -->
                     <DataTemplate>

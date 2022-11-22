@@ -447,7 +447,7 @@
                                             Value="True">
                                             <Setter
                                                 Property="Foreground"
-                                                Value="{DynamicResource {x:Static themes:ToolkitThemes.InfoTextBrushKey}}" />
+                                                Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
