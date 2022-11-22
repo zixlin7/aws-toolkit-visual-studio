@@ -16,6 +16,7 @@ using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.SourceControl;
 using Amazon.AWSToolkit.Tasks;
@@ -39,6 +40,7 @@ namespace CommonUI.Models
         private readonly IGitService _git;
 
         private AwsConnectionSettings _connectionSettings;
+        private bool _isConnected = false;
 
         public AwsConnectionSettings ConnectionSettings
         {
@@ -104,6 +106,20 @@ namespace CommonUI.Models
             set => SetProperty(ref _localPath, value);
         }
 
+        private string _connectedUser;
+
+        public string ConnectedUser
+        {
+            get => _connectedUser;
+            set => SetProperty(ref _connectedUser, value);
+        }
+
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set => SetProperty(ref _isConnected, value);
+        }
+
         public ICommand BrowseForRepositoryPathCommand { get; }
 
         public ICommand RetrySpacesCommand { get; }
@@ -130,6 +146,11 @@ namespace CommonUI.Models
 
         public ICommand HelpCommand { get; }
 
+        public ICommand LogoutCommand { get; }
+
+        public ICommand LoginCommand { get; }
+
+
         public string Heading { get; } = "Clone an Amazon CodeCatalyst repository";
 
         public CloneCodeCatalystRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory, IGitService git)
@@ -155,7 +176,10 @@ namespace CommonUI.Models
             RetryProjectsCommand = new RelayCommand(parameter => RefreshProjects());
             RetryRepositoriesCommand = new RelayCommand(parameter => RefreshRepositories());
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
+            LoginCommand = new RelayCommand(ExecuteLogin);
+            LogoutCommand = new RelayCommand(ExecuteLogout);
         }
+
 
         public void Dispose()
         {
@@ -167,14 +191,7 @@ namespace CommonUI.Models
         /// </summary>
         public void UpdateConnectionSettings()
         {
-            if (ConnectionSettings == null)
-            {
-                ConnectionSettings = new AwsConnectionSettings(Identifier, AwsIdRegion);
-            }
-            else
-            {
-                Connection.CredentialIdentifier = Identifier;
-            }
+            ConnectionSettings = new AwsConnectionSettings(Identifier, AwsIdRegion);
         }
 
         private void CloneCodeCatalystRepositoryViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -220,6 +237,44 @@ namespace CommonUI.Models
         public void ExecuteHelpCommand(object parameter)
         {
             _toolkitContext.ToolkitHost.OpenInBrowser(HelpUri, false);
+        }
+
+        public void ExecuteLogin(object parameter)
+        {
+            Connection.CredentialIdentifier = new SonoCredentialIdentifier("default");
+        }
+
+        public void ExecuteLogout(object parameter)
+        {
+            InvalidateCache();
+            Connection.CredentialIdentifier = null;
+        }
+
+        public void SetupInitialConnection()
+        {
+            var isAuthenticated = IsAuthenticated();
+
+            // if already authenticated, set selected identifier for AwsBuilderId
+            // else, invalidate credential cache and indicate LoginStatus
+            if (isAuthenticated)
+            {
+                ExecuteLogin(null);
+            }
+            else
+            {
+                ExecuteLogout(null);
+            }
+        }
+
+        //TODO: Check for valid SONO token
+        public bool IsAuthenticated()
+        {
+            return false;
+        }
+
+        //TODO: Invalidate credential cache
+        public void InvalidateCache()
+        {
         }
 
         private void ValidateLocalPath()
@@ -310,6 +365,22 @@ namespace CommonUI.Models
 
                     await refreshAsync(dialog.CancellationToken);
                 }
+            }).Task.LogExceptionAndForget();
+        }
+
+        public void RefreshConnectedUser(string userId)
+        {
+            if (!Connection.IsConnectionValid)
+            {
+                ConnectedUser = null;
+                return;
+            }
+            _joinableTaskFactory.RunAsync(async () =>
+            {
+                var id = SanitizeId(userId);
+                var user = await _codeCatalyst.GetUserNameAsync(id, ConnectionSettings);
+                await _joinableTaskFactory.SwitchToMainThreadAsync();
+                ConnectedUser = user;
             }).Task.LogExceptionAndForget();
         }
 
@@ -464,6 +535,21 @@ namespace CommonUI.Models
                     NotifyPropertyChanged(nameof(IsRepositoriesEnabled));
                 }
             });
+        }
+
+        /// <summary>
+        /// Sanitize awsId to retrieve just the user Id
+        /// AwsId is currently in the format $"caws;{id}"
+        /// </summary>
+        private string SanitizeId(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return id;
+            }
+
+            var splitPos = id.IndexOf(';');
+            return id.Substring(splitPos + 1);
         }
     }
 }

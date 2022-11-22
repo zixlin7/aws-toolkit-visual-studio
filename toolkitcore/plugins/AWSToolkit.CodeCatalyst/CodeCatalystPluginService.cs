@@ -142,6 +142,21 @@ namespace Amazon.AWSToolkit.CodeCatalyst
             }
         }
 
+        public async Task<string> GetUserNameAsync(string userId, AwsConnectionSettings settings)
+        {
+            Arg.NotNull(settings, nameof(settings));
+            Arg.NotNullOrWhitespace(userId, nameof(userId));
+
+
+            using (var client = GetCodeCatalystClient(settings))
+            {
+                var request = new GetUserDetailsRequest() { Id = userId };
+                var response = await client.GetUserDetailsAsync(request);
+
+                return response.DisplayName;
+            }
+        }
+
         private async Task<CloneUrls> GetCloneUrlsAsync(string spaceName, string projectName, string repoName, AwsConnectionSettings settings)
         {
             var client = GetCodeCatalystClient(settings);

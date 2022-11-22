@@ -61,7 +61,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             Loaded -= OnLoaded;
             Unloaded += OnUnloaded;
             // initialize default selection
-            _viewModel.Connection.CredentialIdentifier = _viewModel.Connection.Credentials.FirstOrDefault(c => c.FactoryId == SonoCredentialProviderFactory.FactoryId);
+            _viewModel.Connection.CredentialIdentifier = null;
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -80,6 +80,8 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                 var connectionState = e.State;
                 _viewModel.Connection.UpdateRequiredConnectionProperties(connectionState);
                 UserId = _viewModel.ConnectionManager.ActiveAwsId;
+                _viewModel.RefreshConnectedUser(UserId);
+                _viewModel.IsConnected = _viewModel.Connection.IsConnectionValid;
                 if (!connectionState.IsTerminal)
                 {
                     return;
@@ -101,7 +103,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
         public new bool Show()
         {
-            LoadCredentials();
+            SetupInitialConnection();
 
             if (ShowModal() != true)
             {
@@ -125,35 +127,21 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             return true;
         }
 
-        private void LoadCredentials()
+        private void SetupInitialConnection()
         {
             _joinableTaskFactory.Run(async () =>
             {
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
-                _viewModel.Connection.Credentials =
-                    new ObservableCollection<ICredentialIdentifier>(_viewModel.Connection.GetCredentialIdentifiers());
+                _viewModel.SetupInitialConnection();
             });
         }
 
         private void ViewModelConnection_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(_viewModel.Connection.Credentials))
-            {
-                OnCredentialsChanged();
-            }
-            else if (e.PropertyName == nameof(_viewModel.Connection.CredentialIdentifier))
+            if (e.PropertyName == nameof(_viewModel.Connection.CredentialIdentifier))
             {
                 OnCredentialIdentifierChanged();
             }
-        }
-
-        private void OnCredentialsChanged()
-        {
-            var currentCredentialId = _viewModel.Connection.CredentialIdentifier;
-
-            _viewModel.Connection.CredentialIdentifier = currentCredentialId != null
-                ? _viewModel.Connection.Credentials.FirstOrDefault(a => a.Id == currentCredentialId.Id)
-                : _viewModel.Connection.Credentials.FirstOrDefault();
         }
 
         private void OnCredentialIdentifierChanged()

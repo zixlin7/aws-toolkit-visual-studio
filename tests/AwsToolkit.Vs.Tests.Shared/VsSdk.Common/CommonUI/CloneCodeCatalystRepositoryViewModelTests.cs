@@ -33,6 +33,8 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         private const string _spaceName = "test-space-name";
         private const string _projectName = "test-project-name";
         private const string _repoName = "test-repo-name";
+        private const string _userId = "test-userId";
+        private const string _userName = "test-user-name";
 
         private readonly CloneCodeCatalystRepositoryViewModel _sut;
         private readonly ConnectionState _sampleConnectionState;
@@ -74,6 +76,10 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
                 }.AsEnumerable()));
             
             _git.Setup(mock => mock.GetDefaultRepositoryPath()).Returns(_localPathTemporaryTestLocation.TestFolder);
+
+
+            _codeCatalyst.Setup(mock => mock.GetUserNameAsync(It.Is<string>(userId => _userId == userId), It.IsAny<AwsConnectionSettings>()))
+                .Returns(Task.FromResult(_userName));
 
 #pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
             var taskContext = new JoinableTaskContext();
@@ -119,6 +125,59 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
              _sut.UpdateSpacesForConnectionState(state);
 
              Assert.Empty(_sut.Spaces);
+        }
+
+        [Theory]
+        [InlineData("caws;test-userId")]
+        [InlineData(";test-userId")]
+        [InlineData("test-userId")]
+        public void RefreshConnectedUser(string userId)
+        {
+            Assert.Null(_sut.ConnectedUser);
+            SetupInitialSpaces();
+
+            _sut.RefreshConnectedUser(userId);
+
+            Assert.Equal(_userName, _sut.ConnectedUser);
+        }
+
+        [Theory]
+        [InlineData("caws;test-userId", false)]
+        [InlineData("test-userId", false)]
+        [InlineData("caws@test-userId", true)]
+        [InlineData("incorrect-userId", true)]
+        [InlineData("", true)]
+        [InlineData(null, true)]
+        public void RefreshConnectedUser_Invalid(string userId, bool isValid)
+        {
+            Assert.Null(_sut.ConnectedUser);
+
+            _sut.Connection.IsConnectionValid = isValid;
+            _sut.RefreshConnectedUser(userId);
+
+            Assert.Null(_sut.ConnectedUser);
+        }
+
+        [Fact]
+        public void ExecuteLogin()
+        {
+            Assert.Null(_sut.Identifier);
+
+            _sut.LoginCommand.Execute(null);
+
+            Assert.NotNull(_sut.Identifier);
+            Assert.Equal(SonoCredentialProviderFactory.FactoryId, _sut.Identifier.FactoryId);
+        }
+
+
+        [Fact]
+        public void ExecuteLogout()
+        {
+            _sut.Connection.CredentialIdentifier = _sampleIdentifier;
+
+            _sut.LogoutCommand.Execute(null);
+
+            Assert.Null(_sut.Identifier);
         }
 
         [Fact]

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -127,6 +126,27 @@ namespace AWSToolkit.Tests.CodeCatalyst
 
             Assert.Single(repos);
             Assert.Contains(repo, repos);
+        }
+
+
+        [Fact]
+        public async Task GetUserDetailsReturnsValues()
+        {
+            const string userId = "123456";
+            const string displayName = "test-user-display-name";
+
+
+            _client.Setup(
+                    mock => mock.GetUserDetailsAsync(It.IsAny<GetUserDetailsRequest>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new GetUserDetailsResponse()
+                {
+                    DisplayName = displayName,
+                    UserId = userId
+                }));
+
+            var name = await _sut.GetUserNameAsync(userId, _settings);
+
+            Assert.Equal(displayName, name);
         }
     }
 }

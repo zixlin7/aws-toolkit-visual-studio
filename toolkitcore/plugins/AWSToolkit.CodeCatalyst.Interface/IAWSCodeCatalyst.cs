@@ -19,6 +19,8 @@ namespace Amazon.AWSToolkit.CodeCatalyst
         Task<IEnumerable<ICodeCatalystAccessToken>> GetAccessTokensAsync(AwsConnectionSettings settings, CancellationToken cancellationToken = default);
 
         Task<ICodeCatalystAccessToken> CreateAccessTokenAsync(string name, DateTime? expiresOn, AwsConnectionSettings settings, CancellationToken cancellationToken = default);
+
+        Task<string> GetUserNameAsync(string userId, AwsConnectionSettings settings);
     }
 
     public static class IAWSCodeCatalystExtensionMethods

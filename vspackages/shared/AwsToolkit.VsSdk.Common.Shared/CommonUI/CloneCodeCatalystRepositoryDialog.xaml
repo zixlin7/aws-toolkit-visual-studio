@@ -31,6 +31,7 @@
                 x:Key="BooleanToVisibilityConverter" />
             <converters:InverseBooleanToVisibilityConverter
                 x:Key="InverseBooleanToVisibilityConverter" />
+            <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter"/>
             <commonUi:VsImages
                 x:Key="VsImages" />
             <!-- Only show an icon for warning or error states -->
@@ -330,15 +331,42 @@
                     Credential:
                 </TextBlock>
 
-                <Border
+
+                <Grid
                     Grid.Row="1"
                     Grid.ColumnSpan="2"
-                    Margin="0 6 0 0"
-                    Style="{StaticResource ValidationBorderStyle}">
-                    <components:CredentialIdentitySelector
-                        Identifier="{Binding Connection.CredentialIdentifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        Identifiers="{Binding Connection.Credentials, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
-                </Border>
+                    Margin="0 9 0 0">
+
+                    <Button
+                        Visibility="{Binding IsConnected, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                        Command="{Binding LoginCommand}"
+                        Content="Connect with AWS Builder ID" />
+
+                    <StackPanel
+                        HorizontalAlignment="Left"
+                        themes:ToolkitThemes.UseToolkitTheme="True"
+                        Orientation="Horizontal"
+                        Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Image
+                            Margin="0 0 6 0 "
+                            Height="16"
+                            Width="16"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource ConnectionImage}" />
+
+                        <TextBlock
+                            Text="{Binding ConnectedUser}" />
+                        <TextBlock
+                            Margin="12 0 0 0"
+                            Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Hyperlink
+                                Command="{Binding LogoutCommand}">
+                                Logout
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
 
                 <!--This is intentionally left space between the connection settings and any validation error messages-->
                 <Separator
@@ -351,8 +379,7 @@
                 <Grid
                     Grid.Row="3"
                     Grid.ColumnSpan="3"
-                    themes:ToolkitThemes.UseToolkitTheme="True"
-                    Visibility="{Binding Connection.IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    themes:ToolkitThemes.UseToolkitTheme="True">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition
                             Width="Auto" />
@@ -362,7 +389,19 @@
                     <Grid.Style>
                         <Style
                             TargetType="Grid">
+                            <Setter Property="Visibility"
+                                    Value="{Binding Connection.IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
                             <Style.Triggers>
+                                <!--Do not show validation failures for when a identifier selection has not been made or a message is not present-->
+                                <DataTrigger
+                                    Binding="{Binding Connection.ConnectionMessage, Converter={StaticResource HasValueVisibilityConverter}}"
+                                    Value="Collapsed">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding Connection.CredentialIdentifier}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
                                 <!-- Give the whole grid a "info" background color if the Connection is not valid. -->
                                 <DataTrigger
                                     Binding="{Binding Connection.IsConnectionBad}"
@@ -377,7 +416,7 @@
                     <Image
                         Grid.Row="0"
                         Grid.Column="0"
-                        Margin="6 9 6 0 "
+                        Margin="6 0 6 0 "
                         Height="16"
                         Width="16"
                         HorizontalAlignment="Left"
@@ -387,7 +426,7 @@
                     <StackPanel
                         Grid.Row="0"
                         Grid.Column="1"
-                        Margin="0 9 0 9"
+                        Margin="0 6 0 6"
                         HorizontalAlignment="Left"
                         themes:ToolkitThemes.UseToolkitTheme="True"
                         Orientation="Vertical">
@@ -415,20 +454,15 @@
                             </TextBlock.Style>
                         </TextBlock>
                         <TextBlock
-                            Margin="0 3 0 0"
-                            Visibility="{Binding Connection.IsConnectionBad, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Hyperlink
-                                Command="{Binding Connection.RetryCommand}">
-                                Retry
-                            </Hyperlink>
-                        </TextBlock>
+                            Text="Reconnect to continue."
+                            Visibility="{Binding Connection.IsConnectionBad, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </StackPanel>
                 </Grid>
 
                 <TextBlock
                     Grid.Row="4"
                     Grid.ColumnSpan="3"
-                    Margin="0 16 0 0">
+                    Margin="0 24 0 0">
                     Space:
                 </TextBlock>
 
