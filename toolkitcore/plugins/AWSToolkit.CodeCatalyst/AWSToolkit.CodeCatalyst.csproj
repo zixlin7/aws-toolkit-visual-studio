@@ -68,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.13.1</Version>
+      <Version>3.7.100.21</Version>
     </PackageReference>
     <!-- TODO_FIX_BEFORE_CAWS_RELEASE: Replace with public build of CodeCatalyst NuGet package when available -->
     <PackageReference Include="AWSSDK.CodeCatalyst">
