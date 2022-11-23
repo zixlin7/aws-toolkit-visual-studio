@@ -108,25 +108,6 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             Assert.Equal(_regionId, _sut.ConnectionSettings.Region.Id);
         }
 
-        public static IEnumerable<object[]> InvalidConnectionState = new List<object[]>
-        {
-            new object[] { new ConnectionState.IncompleteConfiguration(null, null)},
-            new object[] { new ConnectionState.InvalidConnection(null)},
-            new object[] { new ConnectionState.ValidatingConnection() },
-            new object[] { new ConnectionState.InitializingToolkit()},
-        };
-
-        [Theory]
-        [MemberData(nameof(InvalidConnectionState))]
-        public void UpdateSpacesForConnectionState_Invalid(ConnectionState state)
-        {
-            Assert.Empty(_sut.Spaces);
-
-             _sut.UpdateSpacesForConnectionState(state);
-
-             Assert.Empty(_sut.Spaces);
-        }
-
         [Theory]
         [InlineData("caws;test-userId")]
         [InlineData(";test-userId")]
@@ -169,27 +150,37 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             Assert.Equal(SonoCredentialProviderFactory.FactoryId, _sut.Identifier.FactoryId);
         }
 
-
         [Fact]
         public void ExecuteLogout()
         {
-            _sut.Connection.CredentialIdentifier = _sampleIdentifier;
+            var identifier = new SonoCredentialIdentifier("default");
+            _sut.Connection.CredentialIdentifier = identifier;
 
             _sut.LogoutCommand.Execute(null);
 
+            _toolkitContextFixture.CredentialManager.Verify(
+                mock => mock.Invalidate(It.Is<ICredentialIdentifier>(credentialId =>
+                    credentialId.Id.Equals(identifier.Id))), Times.Once);
             Assert.Null(_sut.Identifier);
         }
 
-        [Fact]
-        public void UpdateSpacesForConnectionState_Valid()
+        public static IEnumerable<object[]> CanExecuteData = new List<object[]>
         {
-            Assert.Empty(_sut.Spaces);
+            new object[] { new SonoCredentialIdentifier("default"), true},
+            new object[] { new SonoCredentialIdentifier("sample"), false},
+            new object[] { new SharedCredentialIdentifier("sample"), false },
+            new object[] { null, false},
+        };
 
-            SetupInitialConnection();
+        [Theory]
+        [MemberData(nameof(CanExecuteData))]
+        public void CanExecuteLogout(ICredentialIdentifier identifier, bool expectedResult)
+        {
+            _sut.Connection.CredentialIdentifier = identifier;
 
-            _sut.UpdateSpacesForConnectionState(_sampleConnectionState);
+            var result = _sut.LogoutCommand.CanExecute(null);
 
-            Assert.NotEmpty(_sut.Spaces);
+            Assert.Equal(expectedResult, result);
         }
 
         [Fact]
@@ -368,7 +359,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         private void SetupInitialSpaces()
         {
             SetupInitialConnection();
-            _sut.UpdateSpacesForConnectionState(_sampleConnectionState);
+            _sut.RefreshSpaces();
         }
 
         private void SetupInitialConnection()

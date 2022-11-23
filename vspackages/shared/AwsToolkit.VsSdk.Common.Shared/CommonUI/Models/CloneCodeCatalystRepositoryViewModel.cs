@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.SourceControl;
 using Amazon.AWSToolkit.Tasks;
@@ -24,8 +25,6 @@ using Amazon.AWSToolkit.Tasks;
 using AwsToolkit.VsSdk.Common.CommonUI.Models;
 
 using Microsoft.VisualStudio.Threading;
-
-using ConnectionState = Amazon.AWSToolkit.Credentials.State.ConnectionState;
 
 namespace CommonUI.Models
 {
@@ -38,6 +37,7 @@ namespace CommonUI.Models
         private readonly JoinableTaskFactory _joinableTaskFactory;
         private readonly IAWSCodeCatalyst _codeCatalyst;
         private readonly IGitService _git;
+        private readonly ICredentialIdentifier _awsIdIdentifier = new SonoCredentialIdentifier("default");
 
         private AwsConnectionSettings _connectionSettings;
         private bool _isConnected = false;
@@ -165,6 +165,7 @@ namespace CommonUI.Models
             Connection = new CredentialConnectionViewModel(_toolkitContext)
             {
                 ConnectionTypes = new List<AwsConnectionType>() { AwsConnectionType.AwsToken },
+                CredentialIdentifier = null
             };
 
             LocalPath = git.GetDefaultRepositoryPath();
@@ -177,7 +178,7 @@ namespace CommonUI.Models
             RetryRepositoriesCommand = new RelayCommand(parameter => RefreshRepositories());
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
             LoginCommand = new RelayCommand(ExecuteLogin);
-            LogoutCommand = new RelayCommand(ExecuteLogout);
+            LogoutCommand = new RelayCommand(CanExecuteLogout, ExecuteLogout);
         }
 
 
@@ -241,7 +242,21 @@ namespace CommonUI.Models
 
         public void ExecuteLogin(object parameter)
         {
-            Connection.CredentialIdentifier = new SonoCredentialIdentifier("default");
+            // if identifier is not set, set it to AwsBuilderId
+            // if identifier is already selected, refresh connection
+            if (Connection.CredentialIdentifier == null)
+            {
+                Connection.CredentialIdentifier = _awsIdIdentifier;
+            }
+            else
+            {
+                Connection.ConnectionManager.RefreshConnectionState();
+            }
+        }
+
+        private bool CanExecuteLogout(object arg)
+        {
+            return Connection.CredentialIdentifier?.Id == _awsIdIdentifier.Id;
         }
 
         public void ExecuteLogout(object parameter)
@@ -254,11 +269,11 @@ namespace CommonUI.Models
         {
             var isAuthenticated = IsAuthenticated();
 
-            // if already authenticated, set selected identifier for AwsBuilderId
+            // if already authenticated, set selected identifier for AwsBuilderId that triggers connection validation
             // else, invalidate credential cache and indicate LoginStatus
             if (isAuthenticated)
             {
-                ExecuteLogin(null);
+                Connection.CredentialIdentifier = _awsIdIdentifier;
             }
             else
             {
@@ -266,15 +281,14 @@ namespace CommonUI.Models
             }
         }
 
-        //TODO: Check for valid SONO token
         public bool IsAuthenticated()
         {
-            return false;
+           return _awsIdIdentifier.HasValidToken(_toolkitContext.ToolkitHost);
         }
 
-        //TODO: Invalidate credential cache
         public void InvalidateCache()
         {
+            _toolkitContext.CredentialManager.Invalidate(_awsIdIdentifier);
         }
 
         private void ValidateLocalPath()
@@ -336,23 +350,6 @@ namespace CommonUI.Models
             }
         }
 
-        /// <summary>
-        /// Update spaces for the given connection state
-        /// if connection is valid, reload spaces
-        /// else, clear the previously loaded spaces
-        /// </summary>
-        public void UpdateSpacesForConnectionState(ConnectionState connectionState)
-        {
-            if (connectionState is ConnectionState.ValidConnection)
-            {
-                RefreshSpaces();
-            }
-            else
-            {
-                Spaces.Clear();
-            }
-        }
-
         private void RefreshWithProgressDialog(string name, Func<CancellationToken, Task> refreshAsync)
         {
             _joinableTaskFactory.RunAsync(async () =>
@@ -384,7 +381,7 @@ namespace CommonUI.Models
             }).Task.LogExceptionAndForget();
         }
 
-        private void RefreshSpaces()
+        public void RefreshSpaces()
         {
             RefreshWithProgressDialog("spaces", async cancellationToken =>
             {

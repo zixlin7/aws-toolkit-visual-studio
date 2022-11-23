@@ -60,8 +60,6 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         {
             Loaded -= OnLoaded;
             Unloaded += OnUnloaded;
-            // initialize default selection
-            _viewModel.Connection.CredentialIdentifier = null;
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -82,12 +80,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                 UserId = _viewModel.ConnectionManager.ActiveAwsId;
                 _viewModel.RefreshConnectedUser(UserId);
                 _viewModel.IsConnected = _viewModel.Connection.IsConnectionValid;
-                if (!connectionState.IsTerminal)
-                {
-                    return;
-                }
-
-                _viewModel.UpdateSpacesForConnectionState(connectionState);
+                _viewModel.RefreshSpaces();
             });
         }
 
