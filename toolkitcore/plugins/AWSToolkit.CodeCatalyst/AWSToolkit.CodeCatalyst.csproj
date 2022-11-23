@@ -72,7 +72,7 @@
     </PackageReference>
     <!-- TODO_FIX_BEFORE_CAWS_RELEASE: Replace with public build of CodeCatalyst NuGet package when available -->
     <PackageReference Include="AWSSDK.CodeCatalyst">
-      <Version>3.7.130.0</Version>
+      <Version>3.7.130.1</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

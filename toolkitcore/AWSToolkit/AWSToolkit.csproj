@@ -997,7 +997,7 @@
       <Version>3.7.100.21</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CodeCatalyst">
-      <Version>3.7.130</Version>
+      <Version>3.7.130.1</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.7.100.21</Version>
