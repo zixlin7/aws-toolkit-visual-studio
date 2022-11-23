@@ -52,9 +52,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             var caws = CreateCodeCatalystClient(tokenProvider);
             var session = await caws.VerifySessionAsync(new VerifySessionRequest(), cancellationToken);
 
-            // TODO : If the source of AWS IDs converges on Sono, update the prefix from "caws" to something
-            // like "awsId", after consulting with the other Toolkit teams.
-            return $"caws;{session.Identity}";
+            return session.Identity;
         }
 
         private static AmazonCodeCatalystClient CreateCodeCatalystClient(IAWSTokenProvider tokenProvider)

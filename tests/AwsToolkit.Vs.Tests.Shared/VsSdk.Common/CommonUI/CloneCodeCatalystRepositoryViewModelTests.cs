@@ -108,24 +108,19 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             Assert.Equal(_regionId, _sut.ConnectionSettings.Region.Id);
         }
 
-        [Theory]
-        [InlineData("caws;test-userId")]
-        [InlineData(";test-userId")]
-        [InlineData("test-userId")]
-        public void RefreshConnectedUser(string userId)
+        [Fact]
+        public void RefreshConnectedUser()
         {
             Assert.Null(_sut.ConnectedUser);
             SetupInitialSpaces();
 
-            _sut.RefreshConnectedUser(userId);
+            _sut.RefreshConnectedUser(_userId);
 
             Assert.Equal(_userName, _sut.ConnectedUser);
         }
 
         [Theory]
-        [InlineData("caws;test-userId", false)]
         [InlineData("test-userId", false)]
-        [InlineData("caws@test-userId", true)]
         [InlineData("incorrect-userId", true)]
         [InlineData("", true)]
         [InlineData(null, true)]

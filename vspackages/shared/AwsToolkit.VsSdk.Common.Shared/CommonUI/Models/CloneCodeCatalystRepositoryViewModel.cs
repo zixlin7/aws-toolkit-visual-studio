@@ -374,8 +374,7 @@ namespace CommonUI.Models
             }
             _joinableTaskFactory.RunAsync(async () =>
             {
-                var id = SanitizeId(userId);
-                var user = await _codeCatalyst.GetUserNameAsync(id, ConnectionSettings);
+                var user = await _codeCatalyst.GetUserNameAsync(userId, ConnectionSettings);
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
                 ConnectedUser = user;
             }).Task.LogExceptionAndForget();
@@ -532,21 +531,6 @@ namespace CommonUI.Models
                     NotifyPropertyChanged(nameof(IsRepositoriesEnabled));
                 }
             });
-        }
-
-        /// <summary>
-        /// Sanitize awsId to retrieve just the user Id
-        /// AwsId is currently in the format $"caws;{id}"
-        /// </summary>
-        private string SanitizeId(string id)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return id;
-            }
-
-            var splitPos = id.IndexOf(';');
-            return id.Substring(splitPos + 1);
         }
     }
 }
