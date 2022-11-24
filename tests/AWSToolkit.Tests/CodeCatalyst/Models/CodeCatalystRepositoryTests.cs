@@ -11,7 +11,6 @@ namespace AWSToolkit.Tests.CodeCatalyst.Models
     public class CodeCatalystRepositoryTests
     {
         private const string _httpsCloneUrlString = "https://user@no.where/my-space/my-project/test-name";
-        private const string _httpsCloneUrlWithAccessTokenString = "https://user:password123%21@no.where/my-space/my-project/test-name";
         private readonly Uri _httpsCloneUrl;
         private readonly CloneUrls _cloneUrls;
         private readonly CloneUrlsFactoryAsync _cloneUrlsFactoryAsync;
@@ -21,11 +20,6 @@ namespace AWSToolkit.Tests.CodeCatalyst.Models
         private const string _projectName = "my-project";
         private const string _description = "Description for testing.\nBlah blah blah\nyada yada yada";
 
-        private const string _accessTokenName = "my-token";
-        private const string _accessTokenSecret = "password123!";
-        private readonly DateTime _accessTokenExpiresOn = DateTime.Now;
-        private readonly CodeCatalystAccessToken _accessToken;
-
         private readonly CodeCatalystRepository _sut;
 
         public CodeCatalystRepositoryTests()
@@ -33,8 +27,6 @@ namespace AWSToolkit.Tests.CodeCatalyst.Models
             _httpsCloneUrl = new Uri(_httpsCloneUrlString);
             _cloneUrls = new CloneUrls(_httpsCloneUrl);
             _cloneUrlsFactoryAsync = repoName => Task.FromResult(_cloneUrls);
-
-            _accessToken = new CodeCatalystAccessToken(_accessTokenName, _accessTokenSecret, _accessTokenExpiresOn);
 
             _sut = new CodeCatalystRepository(_cloneUrlsFactoryAsync, _name, _spaceName, _projectName, _description);
         }
@@ -71,14 +63,6 @@ namespace AWSToolkit.Tests.CodeCatalyst.Models
             var url = await _sut.GetCloneUrlAsync(CloneUrlType.Https);
 
             Assert.Equal(_httpsCloneUrl, url);
-        }
-
-        [Fact]
-        public async Task GetCloneUrlUsesFactoryToReturnUrlWithAccessToken()
-        {
-            var url = await _sut.GetCloneUrlAsync(CloneUrlType.Https, _accessToken);
-
-            Assert.Equal(_httpsCloneUrlWithAccessTokenString, url.ToString());
         }
 
         [Fact]

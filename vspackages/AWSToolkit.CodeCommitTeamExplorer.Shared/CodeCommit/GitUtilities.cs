@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.SourceControl;
 using Amazon.AWSToolkit.Util;
 
 using log4net;

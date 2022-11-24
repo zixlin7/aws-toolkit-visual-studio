@@ -13,7 +13,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst.Models
 
         string Description { get; }
 
-        Task<Uri> GetCloneUrlAsync(CloneUrlType cloneUrlType, ICodeCatalystAccessToken accessToken = null);
+        Task<Uri> GetCloneUrlAsync(CloneUrlType cloneUrlType);
     }
 
     public enum CloneUrlType

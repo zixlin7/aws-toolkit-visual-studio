@@ -88,7 +88,7 @@ namespace Amazon.AWSToolkit.CodeCatalyst.Models
             }
         }
 
-        public async Task<Uri> GetCloneUrlAsync(CloneUrlType cloneUrlType, ICodeCatalystAccessToken accessToken = null)
+        public async Task<Uri> GetCloneUrlAsync(CloneUrlType cloneUrlType)
         {
             var cloneUrls = await _cloneUrls.Value;
             Uri url;
@@ -102,15 +102,6 @@ namespace Amazon.AWSToolkit.CodeCatalyst.Models
                     // This should never happen unless the enum is extended and a case statement is forgotten here
                     _logger.Error($"{cloneUrlType} is not supported.");
                     throw new ArgumentOutOfRangeException(nameof(cloneUrlType), cloneUrlType, "Not supported.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(accessToken?.Secret))
-            {
-                url = new UriBuilder(url)
-                {
-                    // See https://github.com/dotnet/runtime/issues/74662 for why we Uri.EscapeDataString password
-                    Password = Uri.EscapeDataString(accessToken.Secret)
-                }.Uri;
             }
 
             return url;

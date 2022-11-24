@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.CodeCatalyst.Models;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.SourceControl;
 
@@ -107,14 +103,9 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             RepositoryName = _viewModel.SelectedRepository.Name;
             LocalPath = _viewModel.LocalPath;
 
-            var codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
-
             _joinableTaskFactory.Run(async () =>
             {
-                var pat = (await codeCatalyst.GetAccessTokensAsync(_viewModel.ConnectionSettings)).FirstOrDefault() ??
-                          (await codeCatalyst.CreateDefaultAccessTokenAsync(null, _viewModel.ConnectionSettings));
-
-                CloneUrl = await _viewModel.SelectedRepository.GetCloneUrlAsync(CloneUrlType.Https, pat);
+                CloneUrl = await _viewModel.SelectedRepository.GetCloneUrlAsync(CloneUrlType.Https);
             });
 
             return true;

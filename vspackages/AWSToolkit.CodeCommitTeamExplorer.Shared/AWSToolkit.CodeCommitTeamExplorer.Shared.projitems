@@ -24,8 +24,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\GitUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Model\ConnectSectionViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CredentialManagement\GitCredentials.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CredentialManagement\NativeMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CredentialManagement\TeamExplorerConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>

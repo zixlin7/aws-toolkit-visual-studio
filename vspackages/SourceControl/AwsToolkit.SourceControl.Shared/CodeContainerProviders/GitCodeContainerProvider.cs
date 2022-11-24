@@ -68,6 +68,10 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
                 cancellationToken.ThrowIfCancellationRequested();
 
+                await StoreGitCredentialsAsync(cloneRepoData, cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
                 cloneRepoData = await CloneAsync(cloneRepoData, cancellationToken);
                 if (cloneRepoData == null)
                 {
@@ -87,6 +91,12 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             catch (OperationCanceledException)
             {
                 await CloneCanceledAsync();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                await CloneFailedAsync();
+                _toolkitContext.ToolkitHost.ShowError("Unable to clone repo", $"Error cloning repo: {ex.Message}");
                 throw;
             }
         }
@@ -174,6 +184,8 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                 return null;
             }
         }
+
+        protected abstract Task StoreGitCredentialsAsync(CloneRepositoryData cloneRepoData, CancellationToken cancellationToken);
 
         protected abstract Task<CloneRepositoryData> GetCloneRepositoryDataAsync(ccm.RemoteCodeContainer onlineCodeContainer, CancellationToken cancellationToken);
 

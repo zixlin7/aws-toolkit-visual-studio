@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.SourceControl;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 // There are a lot of duplicated type names between these two namespaces, so use aliases for clarity.
@@ -31,6 +33,25 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             : base(toolkitContext, asyncServiceProvider, CodeCatalystSccProviderIdGuid)
         {
             _dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateCloneCodeCatalystRepositoryDialog();
+        }
+
+        protected override async Task StoreGitCredentialsAsync(CloneRepositoryData cloneRepoData, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Get PAT
+            var codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
+            var pat = (await codeCatalyst.GetAccessTokensAsync(_dialog.ConnectionSettings, cancellationToken)).FirstOrDefault() ??
+                      (await codeCatalyst.CreateDefaultAccessTokenAsync(null, _dialog.ConnectionSettings, cancellationToken));
+
+            // username is in url, eg: https://foo@bar.org/repo/path, get "foo"
+            var username = _dialog.CloneUrl.UserInfo;
+
+            // Store PAT (in Windows credential store)
+            var uri = cloneRepoData.RemoteUri;
+            var gitCredentialKey = $"git:{uri.Scheme}://{uri.DnsSafeHost}{uri.AbsolutePath}";
+            var gitCredentials = new GitCredentials(username, pat.Secret, gitCredentialKey);
+            gitCredentials.Save();
         }
 
         protected override Task<CloneRepositoryData> GetCloneRepositoryDataAsync(ccm.RemoteCodeContainer onlineCodeContainer, CancellationToken cancellationToken)

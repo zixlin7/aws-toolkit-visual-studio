@@ -16,6 +16,7 @@ using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.SourceControl;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime.Internal.Settings;
 
