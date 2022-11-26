@@ -303,7 +303,7 @@ namespace CommonUI.Models
 
                 if (dir.Exists && (dir.GetDirectories().Any() || dir.GetFiles().Any()))
                 {
-                    DataErrorInfo.AddError($"Cannot clone to existing, non-empty directory {LocalPath}", nameof(LocalPath));
+                    DataErrorInfo.AddError("This path isn't empty. Please select or provide a new location", nameof(LocalPath));
                     return;
                 }
             }
