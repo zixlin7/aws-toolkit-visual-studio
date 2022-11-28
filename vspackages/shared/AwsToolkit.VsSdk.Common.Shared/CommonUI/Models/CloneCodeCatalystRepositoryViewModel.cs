@@ -98,6 +98,8 @@ namespace CommonUI.Models
 
         public bool IsRepositoriesEnabled => SelectedProject != null && Repositories.Any() && Connection.IsConnectionValid;
 
+        public bool IsLocalPathEnabled => SelectedRepository != null && Connection.IsConnectionValid;
+
         private string _localPath;
 
         public string LocalPath
@@ -210,8 +212,14 @@ namespace CommonUI.Models
                     break;
                 case nameof(LocalPath):
                     ValidateLocalPath();
+                    RaiseCanExecuteChangedForSubmit();
                     break;
             }
+        }
+
+        private void RaiseCanExecuteChangedForSubmit()
+        {
+            SubmitDialogCommand?.CanExecute(null);
         }
 
         private void ExecuteBrowseForRepositoryPathCommand(object parameter)
@@ -293,10 +301,15 @@ namespace CommonUI.Models
 
         private void ValidateLocalPath()
         {
-            DataErrorInfo.ClearErrors(nameof(LocalPath));
-
             try
             {
+                DataErrorInfo.ClearErrors(nameof(LocalPath));
+
+                if (!Connection.IsConnectionValid || SelectedRepository == null)
+                {
+                    return;
+                }
+
                 // Using DirectoryInfo as best-effort check for valid path as it throws exceptions on many invalid path scenarios.
                 // https://learn.microsoft.com/en-us/dotnet/api/system.io.directoryinfo?view=netframework-4.7.2#remarks
                 var dir = new DirectoryInfo(LocalPath);
@@ -310,6 +323,10 @@ namespace CommonUI.Models
             catch (Exception ex)
             {
                 DataErrorInfo.AddError($"Invalid path: {ex.Message}", nameof(LocalPath));
+            }
+            finally
+            {
+                NotifyPropertyChanged(nameof(IsLocalPathEnabled));
             }
         }
 

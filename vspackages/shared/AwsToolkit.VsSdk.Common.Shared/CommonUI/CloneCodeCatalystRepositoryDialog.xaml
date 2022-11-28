@@ -628,7 +628,7 @@
                 <Grid
                     Grid.Row="14"
                     Grid.ColumnSpan="3"
-                    IsEnabled="{Binding Connection.IsConnectionValid}"
+                    IsEnabled="{Binding IsLocalPathEnabled}"
                     Margin="0 6 0 0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition

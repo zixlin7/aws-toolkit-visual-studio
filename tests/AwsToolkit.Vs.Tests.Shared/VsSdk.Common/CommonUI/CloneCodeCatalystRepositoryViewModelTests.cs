@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.CodeCatalyst.Models;
+using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
@@ -236,10 +237,46 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         }
 
         [Fact]
+        public void SettingPathRaisesSubmitCanExecute()
+        {
+            _sut.SubmitDialogCommand = new RelayCommand(null);
+            var eventRaised = false;
+            void Handler(object obj, EventArgs eventArgs) => eventRaised = true;
+
+            _sut.SubmitDialogCommand.CanExecuteChanged += Handler;
+            _sut.LocalPath = "some-value";
+
+            Assert.True(eventRaised);
+            _sut.SubmitDialogCommand.CanExecuteChanged -= Handler;
+        }
+
+        public static IEnumerable<object[]> InvalidPathSetup = new List<object[]>
+        {
+            new object[] { false, new Mock<ICodeCatalystRepository>().Object},
+            new object[] { true, null},
+            new object[] { false, null},
+        };
+
+        [Theory]
+        [MemberData(nameof(InvalidPathSetup))]
+        public void ValidatePathDoesNotSetErrorWhenInvalidSetup(bool isConnectionValid, ICodeCatalystRepository repository)
+        {
+            var info = (INotifyDataErrorInfo) _sut;
+            _sut.Connection.IsConnectionValid = isConnectionValid;
+            _sut.SelectedRepository = repository;
+
+            Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
+
+            _sut.LocalPath = _localPathTemporaryTestLocation.TestFolder;
+
+            Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
+        }
+
+        [Fact]
         public void InvalidPathCharsCreateValidationErrorForLocalPath()
         {
             var info = (INotifyDataErrorInfo) _sut;
-            _sut.SelectedRepository = new Mock<ICodeCatalystRepository>().Object;
+            SetupInitialRepository();
 
             Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
 
@@ -255,6 +292,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         public void NonExistingDirectoryDoesNotCreateValidationErrorForLocalPath()
         {
             var info = (INotifyDataErrorInfo) _sut;
+            SetupInitialRepository();
 
             Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
 
@@ -267,6 +305,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         public void EmptyExistingDirectoryDoesNotCreateValidationErrorForLocalPath()
         {
             var info = (INotifyDataErrorInfo) _sut;
+            SetupInitialRepository();
 
             Assert.Empty(info.GetErrors(nameof(_sut.LocalPath)));
         }
@@ -275,6 +314,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         public void NotEmptyExistingDirectoryCreatesValidationErrorForLocalPath()
         {
             var info = (INotifyDataErrorInfo) _sut;
+            SetupInitialRepository();
 
             using (var testLocation = new TemporaryTestLocation())
             {
@@ -362,6 +402,12 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             _sut.Connection.CredentialIdentifier = _sampleIdentifier;
             _sut.UpdateConnectionSettings();
             _sut.Connection.IsConnectionValid = true;
+        }
+
+        private void SetupInitialRepository()
+        {
+            _sut.Connection.IsConnectionValid = true;
+            _sut.SelectedRepository = new Mock<ICodeCatalystRepository>().Object;
         }
     }
 }
