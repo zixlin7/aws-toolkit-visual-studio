@@ -492,6 +492,7 @@
                         Margin="6 6 0 0"
                         Panel.ZIndex="1"
                         VerticalAlignment="Center"
+                        Foreground="{DynamicResource {x:Static platformUi:CommonControlsColors.TextBoxTextDisabledBrushKey}}"
                         Visibility="{Binding IsSpacesEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                         No spaces found.
                     </TextBlock>
@@ -536,6 +537,7 @@
                         Margin="6 6 0 0"
                         Panel.ZIndex="1"
                         VerticalAlignment="Center"
+                        Foreground="{DynamicResource {x:Static platformUi:CommonControlsColors.TextBoxTextDisabledBrushKey}}"
                         Visibility="{Binding IsProjectsEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                         No projects found.
                     </TextBlock>
@@ -607,6 +609,7 @@
                         Margin="0 6 0 0"
                         Panel.ZIndex="1"
                         VerticalAlignment="Center"
+                        Foreground="{DynamicResource {x:Static platformUi:CommonControlsColors.ComboBoxGlyphDisabledBrushKey}}"
                         Visibility="{Binding IsRepositoriesEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                         No repositories found.
                     </TextBlock>
