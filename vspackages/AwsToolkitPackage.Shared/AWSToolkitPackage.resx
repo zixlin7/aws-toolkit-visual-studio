@@ -196,7 +196,7 @@ This software includes third party software subject to the following copyrights:
     <comment>Git clone repository provider name for CodeCatalyst</comment>
   </data>
   <data name="211" xml:space="preserve">
-    <value>Put Catalyst tag line here.</value>
+    <value>Unified software development service to quickly build and deliver applications on AWS.</value>
     <comment>Git clone repository provider tooltip for CodeCatalyst</comment>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
