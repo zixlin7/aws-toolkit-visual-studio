@@ -97,12 +97,15 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
         protected override Task CloneCompletedAsync(CloneRepositoryData cloneRepoData)
         {
+            _toolkitContext.ToolkitHost.OutputToHostConsole($"Successfully cloned repository {cloneRepoData.RepositoryName} to {cloneRepoData.LocalPath}", true);
             RecordClone(Result.Succeeded);
             return Task.CompletedTask;
         }
 
-        protected override Task CloneFailedAsync()
+        protected override Task CloneFailedAsync(CloneRepositoryData cloneRepoData)
         {
+            var repositoryName = cloneRepoData?.RepositoryName ?? "(unknown)";
+            _toolkitContext.ToolkitHost.OutputToHostConsole($"Failed to clone repository: {repositoryName}. See toolkit logs for details.", true);
             RecordClone(Result.Failed);
             return Task.CompletedTask;
         }

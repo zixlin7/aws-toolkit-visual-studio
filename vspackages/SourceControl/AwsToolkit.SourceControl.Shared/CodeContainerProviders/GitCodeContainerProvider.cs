@@ -55,6 +55,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
         public async Task<ccm.CodeContainer> AcquireCodeContainerAsync(ccm.RemoteCodeContainer onlineCodeContainer, IProgress<sh.ServiceProgressData> downloadProgress, CancellationToken cancellationToken)
         {
+            CloneRepositoryData initialCloneRepoData = null;
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -66,6 +67,9 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                     return null; // VS expects null if the clone operation is incomplete
                 }
 
+                //keep a copy of the original clone repo data to report failure messages
+                initialCloneRepoData = cloneRepoData;
+
                 cancellationToken.ThrowIfCancellationRequested();
 
                 await StoreGitCredentialsAsync(cloneRepoData, cancellationToken);
@@ -75,7 +79,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                 cloneRepoData = await CloneAsync(cloneRepoData, cancellationToken);
                 if (cloneRepoData == null)
                 {
-                    await CloneFailedAsync();
+                    await CloneFailedAsync(initialCloneRepoData);
                     return null;
                 }
 
@@ -95,7 +99,9 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             }
             catch (Exception ex)
             {
-                await CloneFailedAsync();
+                var repositoryName = initialCloneRepoData?.RepositoryName ?? "(unknown)";
+                _logger.Error($"Failed to clone repository: {repositoryName}", ex);
+                await CloneFailedAsync(initialCloneRepoData);
                 _toolkitContext.ToolkitHost.ShowError("Unable to clone repo", $"Error cloning repo: {ex.Message}");
                 throw;
             }
@@ -111,7 +117,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             return Task.CompletedTask;
         }
 
-        protected virtual Task CloneFailedAsync()
+        protected virtual Task CloneFailedAsync(CloneRepositoryData cloneRepoData)
         {
             return Task.CompletedTask;
         }
