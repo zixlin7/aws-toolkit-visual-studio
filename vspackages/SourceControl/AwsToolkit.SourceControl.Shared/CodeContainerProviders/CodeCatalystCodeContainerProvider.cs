@@ -49,7 +49,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
             // Store PAT (in Windows credential store)
             var uri = cloneRepoData.RemoteUri;
-            var gitCredentialKey = $"git:{uri.Scheme}://{uri.DnsSafeHost}{uri.AbsolutePath}";
+            var gitCredentialKey = $"git:{uri.Scheme}://{uri.DnsSafeHost}";
             var gitCredentials = new GitCredentials(username, pat.Secret, gitCredentialKey);
             gitCredentials.Save();
         }
