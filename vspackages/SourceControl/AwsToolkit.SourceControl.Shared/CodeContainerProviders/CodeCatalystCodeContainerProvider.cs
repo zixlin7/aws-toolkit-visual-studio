@@ -35,23 +35,52 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             _dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateCloneCodeCatalystRepositoryDialog();
         }
 
-        protected override async Task StoreGitCredentialsAsync(CloneRepositoryData cloneRepoData, CancellationToken cancellationToken)
+        protected override async Task UpdateStoredGitCredentialsAsync(Uri uri, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             // Get PAT
             var codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
-            var pat = (await codeCatalyst.GetAccessTokensAsync(_dialog.ConnectionSettings, cancellationToken)).FirstOrDefault() ??
-                      (await codeCatalyst.CreateDefaultAccessTokenAsync(null, _dialog.ConnectionSettings, cancellationToken));
+
+            var pat = (await codeCatalyst.GetAccessTokensAsync(_dialog.ConnectionSettings, cancellationToken))
+                .FirstOrDefault();
+
+            // save pat to credential store
+            if (pat == null)
+            {
+                await StoreNewGitCredentialsAsync(uri, cancellationToken);
+                return;
+            }
+            await StoreGitCredentialsAsync(pat.Secret, uri, cancellationToken);
+        }
+
+        private async Task StoreNewGitCredentialsAsync(Uri uri, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
+
+            var pat = await codeCatalyst.CreateDefaultAccessTokenAsync(null, _dialog.ConnectionSettings, cancellationToken);
+
+            await StoreGitCredentialsAsync(pat.Secret, uri, cancellationToken);
+        }
+
+
+        private Task StoreGitCredentialsAsync(string patSecret, Uri uri, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
             // username is in url, eg: https://foo@bar.org/repo/path, get "foo"
             var username = _dialog.CloneUrl.UserInfo;
 
             // Store PAT (in Windows credential store)
-            var uri = cloneRepoData.RemoteUri;
             var gitCredentialKey = $"git:{uri.Scheme}://{uri.DnsSafeHost}";
-            var gitCredentials = new GitCredentials(username, pat.Secret, gitCredentialKey);
-            gitCredentials.Save();
+            using (var gitCredentials = new GitCredentials(username, patSecret, gitCredentialKey))
+            {
+                gitCredentials.Save();
+            }
+
+            return Task.CompletedTask;
         }
 
         protected override Task<CloneRepositoryData> GetCloneRepositoryDataAsync(ccm.RemoteCodeContainer onlineCodeContainer, CancellationToken cancellationToken)
@@ -74,16 +103,9 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             if (_toolkitContext.ToolkitHost.Confirm("Create access token",
                 "Cloning may have failed due to an invalid access token.  Would you like the toolkit to recreate your access token and try again?"))
             {
-                var codeCatalyst = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSCodeCatalyst)) as IAWSCodeCatalyst;
-                var pat = await codeCatalyst.CreateDefaultAccessTokenAsync(null, _dialog.ConnectionSettings);
-                var remoteUri = new UriBuilder(failedCloneRepoData.RemoteUri) { Password = pat.Secret }.Uri;
+                await StoreNewGitCredentialsAsync(failedCloneRepoData.RemoteUri);
 
-                return new CloneRepositoryData(
-                    failedCloneRepoData.RepositoryName,
-                    remoteUri,
-                    failedCloneRepoData.LocalPath,
-                    failedCloneRepoData.BrowseOnlineUri,
-                    failedCloneRepoData.IsFavorite);
+                return failedCloneRepoData;
             }
 
             return null;

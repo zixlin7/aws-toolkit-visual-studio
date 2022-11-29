@@ -72,7 +72,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await StoreGitCredentialsAsync(cloneRepoData, cancellationToken);
+                await UpdateStoredGitCredentialsAsync(cloneRepoData.RemoteUri, cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -191,7 +191,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             }
         }
 
-        protected abstract Task StoreGitCredentialsAsync(CloneRepositoryData cloneRepoData, CancellationToken cancellationToken);
+        protected abstract Task UpdateStoredGitCredentialsAsync(Uri uri, CancellationToken cancellationToken);
 
         protected abstract Task<CloneRepositoryData> GetCloneRepositoryDataAsync(ccm.RemoteCodeContainer onlineCodeContainer, CancellationToken cancellationToken);
 

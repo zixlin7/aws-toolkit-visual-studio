@@ -24,7 +24,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
         public CodeCommitCodeContainerProvider(ToolkitContext toolkitContext, sh.IAsyncServiceProvider asyncServiceProvider)
             : base(toolkitContext, asyncServiceProvider, CodeCommitSccProviderIdGuid) { }
 
-        protected override Task StoreGitCredentialsAsync(CloneRepositoryData cloneRepoData, CancellationToken cancellationToken)
+        protected override Task UpdateStoredGitCredentialsAsync(Uri uri, CancellationToken cancellationToken)
         {
             // no-op
             return Task.CompletedTask;
