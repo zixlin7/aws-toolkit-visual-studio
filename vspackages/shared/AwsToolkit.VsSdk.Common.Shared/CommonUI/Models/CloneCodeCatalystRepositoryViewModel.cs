@@ -17,12 +17,15 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.SourceControl;
 using Amazon.AWSToolkit.Tasks;
 
 using AwsToolkit.VsSdk.Common.CommonUI.Models;
+
+using CodeCatalyst.ViewModels;
 
 using Microsoft.VisualStudio.Threading;
 
@@ -39,12 +42,31 @@ namespace CommonUI.Models
         private readonly ICredentialIdentifier _awsIdIdentifier = new SonoCredentialIdentifier("default");
 
         private AwsConnectionSettings _connectionSettings;
-        private bool _isConnected = false;
+        private CodeCatalystConnectionStatus _connectionStatus;
+        private string _connectionFailure;
 
         public AwsConnectionSettings ConnectionSettings
         {
             get => _connectionSettings;
             private set => SetProperty(ref _connectionSettings, value);
+        }
+
+        /// <summary>
+        /// Generalized representation of the current connection state
+        /// </summary>
+        public CodeCatalystConnectionStatus ConnectionStatus
+        {
+            get => _connectionStatus;
+            private set => SetProperty(ref _connectionStatus, value);
+        }
+
+        /// <summary>
+        /// Contains the connection validation text when there is a connection failure
+        /// </summary>
+        public string ConnectionFailure
+        {
+            get => _connectionFailure;
+            private set => SetProperty(ref _connectionFailure, value);
         }
 
         public ToolkitRegion AwsIdRegion { get; }
@@ -107,20 +129,6 @@ namespace CommonUI.Models
             set => SetProperty(ref _localPath, value);
         }
 
-        private string _connectedUser;
-
-        public string ConnectedUser
-        {
-            get => _connectedUser;
-            set => SetProperty(ref _connectedUser, value);
-        }
-
-        public bool IsConnected
-        {
-            get => _isConnected;
-            set => SetProperty(ref _isConnected, value);
-        }
-
         public ICommand BrowseForRepositoryPathCommand { get; }
 
         public ICommand RetrySpacesCommand { get; }
@@ -180,6 +188,8 @@ namespace CommonUI.Models
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
             LoginCommand = new RelayCommand(ExecuteLogin);
             LogoutCommand = new RelayCommand(CanExecuteLogout, ExecuteLogout);
+
+            _connectionStatus = CreateDisconnectedConnectionStatus();
         }
 
 
@@ -381,19 +391,59 @@ namespace CommonUI.Models
             }).Task.LogExceptionAndForget();
         }
 
-        public void RefreshConnectedUser(string userId)
+        /// <summary>
+        /// Updates Connection Status related properties based on the given connection manager state.
+        /// </summary>
+        public void ApplyConnectionState(ConnectionState connectionState)
         {
-            if (!Connection.IsConnectionValid)
+            // Reset the Connection Failure - it will be set if needed
+            _joinableTaskFactory.Run(async () =>
             {
-                ConnectedUser = null;
-                return;
-            }
-            _joinableTaskFactory.RunAsync(async () =>
-            {
-                var user = await _codeCatalyst.GetUserNameAsync(userId, ConnectionSettings);
                 await _joinableTaskFactory.SwitchToMainThreadAsync();
-                ConnectedUser = user;
-            }).Task.LogExceptionAndForget();
+                ConnectionFailure = string.Empty;
+            });
+
+            // Valid connections - show the connected user name
+            if (connectionState is ConnectionState.ValidConnection)
+            {
+                _joinableTaskFactory.RunAsync(async () =>
+                {
+                    var userName = await GetConnectedUserNameAsync();
+
+                    await _joinableTaskFactory.SwitchToMainThreadAsync();
+                    ConnectionStatus = CreateConnectedConnectionStatus(userName);
+                }).Task.LogExceptionAndForget();
+            }
+            // Validating - indicate that a connection is being established
+            else if (connectionState is ConnectionState.ValidatingConnection)
+            {
+                _joinableTaskFactory.Run(async () =>
+                {
+                    await _joinableTaskFactory.SwitchToMainThreadAsync();
+                    ConnectionStatus = CreateConnectingConnectionStatus();
+                });
+            }
+            // Other Non-Valid state - indicate that we're disconnected
+            else
+            {
+                _joinableTaskFactory.Run(async () =>
+                {
+                    await _joinableTaskFactory.SwitchToMainThreadAsync();
+                    ConnectionStatus = CreateDisconnectedConnectionStatus();
+
+                    // Avoid messages like "no credentials" if user explicitly logs out
+                    if (connectionState.IsTerminal)
+                    {
+                        ConnectionFailure = connectionState.Message;
+                    }
+                });
+            }
+        }
+
+        private async Task<string> GetConnectedUserNameAsync()
+        {
+            var awsId = ConnectionManager.ActiveAwsId;
+            return await _codeCatalyst.GetUserNameAsync(awsId, ConnectionSettings);
         }
 
         public void RefreshSpaces()
@@ -547,6 +597,39 @@ namespace CommonUI.Models
                     NotifyPropertyChanged(nameof(IsRepositoriesEnabled));
                 }
             });
+        }
+
+        private CodeCatalystConnectionStatus CreateDisconnectedConnectionStatus()
+        {
+            return new CodeCatalystConnectionStatus()
+            {
+                Image = _vsImages.Disconnect,
+                Text = "Not Connected",
+                Command = LoginCommand,
+                CommandText = "Connect with AWS Builder ID",
+            };
+        }
+
+        private CodeCatalystConnectionStatus CreateConnectingConnectionStatus()
+        {
+            return new CodeCatalystConnectionStatus()
+            {
+                Image = _vsImages.Loading,
+                Text = "Connecting to AWS Builder ID...",
+                // In the future, we might set up a cancel command here (requires support from Credential Manager)
+            };
+        }
+
+        private readonly VsImages _vsImages = new VsImages();
+        private CodeCatalystConnectionStatus CreateConnectedConnectionStatus(string userName)
+        {
+            return new CodeCatalystConnectionStatus()
+            {
+                Image = _vsImages.StatusOK,
+                Text = userName,
+                Command = LogoutCommand,
+                CommandText = "Log out",
+            };
         }
     }
 }

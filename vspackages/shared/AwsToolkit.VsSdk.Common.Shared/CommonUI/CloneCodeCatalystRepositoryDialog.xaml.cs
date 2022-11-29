@@ -74,8 +74,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                 var connectionState = e.State;
                 _viewModel.Connection.UpdateRequiredConnectionProperties(connectionState);
                 UserId = _viewModel.ConnectionManager.ActiveAwsId;
-                _viewModel.RefreshConnectedUser(UserId);
-                _viewModel.IsConnected = _viewModel.Connection.IsConnectionValid;
+                _viewModel.ApplyConnectionState(connectionState);
                 _viewModel.RefreshSpaces();
             });
         }

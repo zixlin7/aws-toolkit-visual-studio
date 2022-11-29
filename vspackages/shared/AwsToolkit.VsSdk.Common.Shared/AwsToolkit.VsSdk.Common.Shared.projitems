@@ -36,6 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\KeyValueEditorDialog.xaml.cs">
       <DependentUpon>KeyValueEditorDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeCatalyst\ViewModels\CodeCatalystConnectionStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\CloneCodeCatalystRepositoryViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\CloneCodeCommitRepositoryViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\CredentialConnectionViewModel.cs" />

@@ -34,17 +34,15 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         private const string _spaceName = "test-space-name";
         private const string _projectName = "test-project-name";
         private const string _repoName = "test-repo-name";
-        private const string _userId = "test-userId";
-        private const string _userName = "test-user-name";
 
         private readonly CloneCodeCatalystRepositoryViewModel _sut;
-        private readonly ConnectionState _sampleConnectionState;
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
         private readonly Mock<IAWSCodeCatalyst> _codeCatalyst = new Mock<IAWSCodeCatalyst>();
         private readonly Mock<IGitService> _git = new Mock<IGitService>();
         private readonly Mock<IFolderBrowserDialog> _folderDialog = new Mock<IFolderBrowserDialog>();
         private readonly ICredentialIdentifier _sampleIdentifier = new SonoCredentialIdentifier("sample");
         private readonly TemporaryTestLocation _localPathTemporaryTestLocation = new TemporaryTestLocation(false);
+        private readonly ToolkitRegion _sampleRegion = new ToolkitRegion() { Id = _regionId };
 
         public CloneCodeCatalystRepositoryViewModelTests()
         {
@@ -53,7 +51,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 
             _toolkitContextFixture.ToolkitHost.Setup(mock => mock.CreateProgressDialog()).ReturnsAsync(new FakeProgressDialog());
 
-            _toolkitContextFixture.DefineRegion(new ToolkitRegion() { Id = _regionId });
+            _toolkitContextFixture.DefineRegion(_sampleRegion);
 
             _codeCatalyst.Setup(mock => mock.GetSpacesAsync(It.IsAny<AwsConnectionSettings>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new List<ICodeCatalystSpace>()
@@ -78,16 +76,11 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             
             _git.Setup(mock => mock.GetDefaultRepositoryPath()).Returns(_localPathTemporaryTestLocation.TestFolder);
 
-
-            _codeCatalyst.Setup(mock => mock.GetUserNameAsync(It.Is<string>(userId => _userId == userId), It.IsAny<AwsConnectionSettings>()))
-                .Returns(Task.FromResult(_userName));
-
 #pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
             var taskContext = new JoinableTaskContext();
 #pragma warning restore VSSDK005
 
             _sut = new CloneCodeCatalystRepositoryViewModel(_toolkitContextFixture.ToolkitContext, taskContext.Factory, _git.Object);
-            _sampleConnectionState = new ConnectionState.ValidConnection(_sampleIdentifier, _sut.AwsIdRegion);
         }
 
         public void Dispose()
@@ -110,29 +103,39 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         }
 
         [Fact]
-        public void RefreshConnectedUser()
+        public void ApplyConnectionState_ValidConnection()
         {
-            Assert.Null(_sut.ConnectedUser);
+            // Force a unique username back -- we don't have to set up the connection manager to actually validate a connection in this test.
+            var userName = Guid.NewGuid().ToString();
+            _codeCatalyst.Setup(mock => mock.GetUserNameAsync(It.IsAny<string>(), It.IsAny<AwsConnectionSettings>()))
+                .ReturnsAsync(userName);
+
             SetupInitialSpaces();
 
-            _sut.RefreshConnectedUser(_userId);
+            _sut.ApplyConnectionState(new ConnectionState.ValidConnection(_sampleIdentifier, _sampleRegion));
 
-            Assert.Equal(_userName, _sut.ConnectedUser);
+            Assert.Equal(userName, _sut.ConnectionStatus.Text);
         }
 
-        [Theory]
-        [InlineData("test-userId", false)]
-        [InlineData("incorrect-userId", true)]
-        [InlineData("", true)]
-        [InlineData(null, true)]
-        public void RefreshConnectedUser_Invalid(string userId, bool isValid)
+        [Fact]
+        public void ApplyConnectionState_Validating()
         {
-            Assert.Null(_sut.ConnectedUser);
+            SetupInitialSpaces();
 
-            _sut.Connection.IsConnectionValid = isValid;
-            _sut.RefreshConnectedUser(userId);
+            _sut.ApplyConnectionState(new ConnectionState.ValidatingConnection());
 
-            Assert.Null(_sut.ConnectedUser);
+            Assert.Contains("Connecting", _sut.ConnectionStatus.Text);
+        }
+
+        [Fact]
+        public void ApplyConnectionState_InvalidConnection()
+        {
+            string validationMessage = "some validation failure";
+
+            _sut.ApplyConnectionState(new ConnectionState.InvalidConnection(validationMessage));
+
+            Assert.Contains("Not Connected", _sut.ConnectionStatus.Text);
+            Assert.Contains(validationMessage, _sut.ConnectionFailure);
         }
 
         [Fact]
