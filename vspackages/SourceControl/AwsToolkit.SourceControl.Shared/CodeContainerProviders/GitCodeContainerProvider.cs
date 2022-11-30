@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -56,6 +57,8 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
         public async Task<ccm.CodeContainer> AcquireCodeContainerAsync(ccm.RemoteCodeContainer onlineCodeContainer, IProgress<sh.ServiceProgressData> downloadProgress, CancellationToken cancellationToken)
         {
             CloneRepositoryData initialCloneRepoData = null;
+            bool suppressExceptions = false;
+
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -83,6 +86,11 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                     return null;
                 }
 
+                // After this point, the clone has succeeded. Everything after this point should not fail (or should not report
+                // a failure). Suppress exceptions, which will raise a debug assert, alerting Toolkit developers that there
+                // are problems to address.
+                suppressExceptions = true;
+
                 // Too late to cancel now, while this is currently not used, leave here for future coders to be aware of the cut line
                 cancellationToken = CancellationToken.None;
 
@@ -101,8 +109,17 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             {
                 var repositoryName = initialCloneRepoData?.RepositoryName ?? "(unknown)";
                 _logger.Error($"Failed to clone repository: {repositoryName}", ex);
-                await CloneFailedAsync(initialCloneRepoData);
-                _toolkitContext.ToolkitHost.ShowError("Unable to clone repo", $"Error cloning repo: {ex.Message}");
+
+                if (!suppressExceptions)
+                {
+                    await CloneFailedAsync(initialCloneRepoData);
+                    _toolkitContext.ToolkitHost.ShowError("Unable to clone repo", $"Error cloning repo: {ex.Message}");
+                }
+
+                Debug.Assert(!suppressExceptions,
+                    "Clone handling has unexpectedly failed after the point when cloning is complete. The Toolkit implementation is wrong",
+                    ex.Message);
+
                 throw;
             }
         }
@@ -227,16 +244,9 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                     cloneRepoData.LocalPath,
                     _sccProviderId));
 
-            var remoteCodeContainer = new ccm.RemoteCodeContainer(
-                cloneRepoData.RepositoryName,
-                _codeContainerProviderId,
-                cloneRepoData.RemoteUri,
-                cloneRepoData.BrowseOnlineUri,
-                lastAccessed);
-
             return new ccm.CodeContainer(
                 localProperties,
-                remoteCodeContainer,
+                null,
                 cloneRepoData.IsFavorite,
                 lastAccessed);
         }
