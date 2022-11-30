@@ -228,9 +228,8 @@
             <TextBlock
                 Grid.Row="1"
                 Margin="0 12 0 0">
-            <!-- TODO IDE-8974 Update this when we have the marketing page link -->
             <commonUi:BrowserHyperLink
-                    NavigateUri="https://aws.amazon.com/codecatalyst/">
+                    NavigateUri="https://codecatalyst.aws/explore">
                 <Run
                         Text="Learn more about Amazon CodeCatalyst" />
             </commonUi:BrowserHyperLink>
