@@ -33,7 +33,7 @@ namespace CommonUI.Models
 {
     internal class CloneCodeCatalystRepositoryViewModel : BaseModel, IDisposable
     {
-        private const string HelpUri = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/codecatalyst";
+        private const string HelpUri = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/codecatalyst.html";
 
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
