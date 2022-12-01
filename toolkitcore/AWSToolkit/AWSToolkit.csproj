@@ -92,9 +92,6 @@
     <Compile Include="CloudWatch\ILogStreamsViewer.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommand.cs" />
-    <Compile Include="CommonUI\Components\ValidationErrorsBox.xaml.cs">
-      <DependentUpon>ValidationErrorsBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
@@ -593,10 +590,6 @@
     <Page Include="CommonUI\Components\RegisteredProfilesPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="CommonUI\Components\ValidationErrorsBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="CommonUI\DateTimeRangePicker\DateTimeRangePicker.xaml">
       <SubType>Designer</SubType>

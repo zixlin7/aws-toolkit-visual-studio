@@ -6,11 +6,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-    xmlns:components="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
     xmlns:images="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
     xmlns:imageTheming="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
     xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+    xmlns:local="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI"
     xmlns:models="clr-namespace:CodeCatalyst.ViewModels"
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell15="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
@@ -69,7 +69,7 @@
                 VerticalAlignment="Center"
                 Width="16" />
             <Style
-                TargetType="{x:Type components:ValidationErrorsBox}">
+                TargetType="{x:Type local:ValidationErrorsBox}">
                 <Setter
                     Property="Margin"
                     Value="0 6 0 0" />
@@ -368,8 +368,16 @@
                         themes:ToolkitThemes.UseToolkitTheme="True"
                         Orientation="Vertical">
 
+                        <!-- CAUTION 
+                        
+                        ToolkitThemes.InfoTextBrushKey does not compute correctly in VS 2022, resulting in an always black brush.
+                        It renders properly in VS 2019.
+                        
+                        The workaround here is to directly use EnvironmentColors.SystemInfoTextBrushKey, since 
+                        we are in a project that has access to the VS SDK.
+                        -->
                         <TextBlock
-                            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                            Foreground="{DynamicResource {x:Static platformUi:EnvironmentColors.SystemInfoTextBrushKey}}"
                             d:Text="Validation Failure Messages go here"
                             Text="{Binding ConnectionFailure}"
                             TextWrapping="WrapWithOverflow"
@@ -416,7 +424,7 @@
                     </TextBlock>
                 </Grid>
 
-                <components:ValidationErrorsBox
+                <local:ValidationErrorsBox
                     Grid.Row="6"
                     Grid.ColumnSpan="3"
                     RetryCommand="{Binding RetrySpacesCommand}"
@@ -461,7 +469,7 @@
                     </TextBlock>
                 </Grid>
 
-                <components:ValidationErrorsBox
+                <local:ValidationErrorsBox
                     Grid.Row="9"
                     Grid.ColumnSpan="3"
                     RetryCommand="{Binding RetryProjectsCommand}"
@@ -533,7 +541,7 @@
                     </TextBlock>
                 </Grid>
 
-                <components:ValidationErrorsBox
+                <local:ValidationErrorsBox
                     Grid.Row="12"
                     Grid.ColumnSpan="3"
                     RetryCommand="{Binding RetryRepositoriesCommand}"
@@ -575,7 +583,7 @@
                     </Button>
                 </Grid>
 
-                <components:ValidationErrorsBox
+                <local:ValidationErrorsBox
                     Grid.Row="15"
                     Grid.ColumnSpan="3"
                     SourceElement="{x:Reference LocalPathTextBox}" />
