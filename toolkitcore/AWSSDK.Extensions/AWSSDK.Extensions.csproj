@@ -68,25 +68,25 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.AutoScaling">
-      <Version>3.7.101.11</Version>
+      <Version>3.7.101.17</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.102.2</Version>
+      <Version>3.7.102.8</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancing">
-      <Version>3.7.100.21</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.22</Version>
+      <Version>3.7.100.28</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.101.21</Version>
+      <Version>3.7.101.27</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.100.21</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.100.21</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

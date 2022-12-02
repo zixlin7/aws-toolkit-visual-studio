@@ -73,10 +73,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.22</Version>
+      <Version>3.7.100.28</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.7.101.1</Version>
+      <Version>3.7.102.3</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

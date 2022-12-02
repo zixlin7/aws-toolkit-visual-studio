@@ -341,10 +341,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.109.0</Version>
+      <Version>3.7.111.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.RDS">
-      <Version>3.7.104.2</Version>
+      <Version>3.7.105.4</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

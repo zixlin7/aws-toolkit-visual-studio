@@ -37,9 +37,8 @@ jobs:
             - name: Restore
               run: msbuild buildtools\build.proj /t:restore /p:Configuration=${{ matrix.configuration }}
 
-            # TODO_ENABLE_BEFORE_CAWS_RELEASE
-            #- name: Verify
-            #  run: msbuild buildtools\build.proj /t:verify
+            - name: Verify
+              run: msbuild buildtools\build.proj /t:verify
 
             - name: Compile
               # DeployExtension=false skips installing the extension into an experimental instance of VS (we aren't going to debug it on CI machine)
