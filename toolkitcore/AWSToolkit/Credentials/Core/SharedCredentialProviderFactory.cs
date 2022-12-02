@@ -41,9 +41,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                                 throw new InvalidOperationException(
                                     $"Profile not found: {sharedIdentifierId.ProfileName}");
 
-            var awsCredentials = CreateAwsCredential(sharedProfile, region);
-
-            return new ToolkitCredentials(credentialIdentifier, awsCredentials);
+            return CreateToolkitCredentials(sharedProfile, credentialIdentifier, region);
         }
 
         /// <summary>
@@ -81,7 +79,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
             return new SharedCredentialIdentifier(profile.Name);
         }
 
-        protected override AWSCredentials CreateSaml(CredentialProfile profile)
+        protected override ToolkitCredentials CreateSaml(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier)
         {
             throw new InvalidOperationException($"Error creating credentials for {profile.Name}: SAML based profiles are not supported with a Shared Credentials File.");
         }

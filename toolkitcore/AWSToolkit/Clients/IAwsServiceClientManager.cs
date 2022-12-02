@@ -43,4 +43,21 @@ namespace Amazon.AWSToolkit.Clients
         T CreateServiceClient<T>(ICredentialIdentifier credentialIdentifier, ToolkitRegion region,
             ClientConfig serviceClientConfig) where T : class;
     }
+
+    public static class IAwsServiceClientManagerExtensionMethods
+    {
+        /// <summary>Produce and initialize a service client.</summary>
+        /// <remarks>Config fields relating to region (ServiceUrl for example) are adjusted based on the provided region.</remarks>
+        /// <typeparam name="T">Service Client to create.</typeparam>
+        /// <param name="this">Service client manager used to create the client.</param>
+        /// <param name="settings">AWS connection settings used to create the client.</param>
+        /// <param name="serviceClientConfig">Optional. Configuration to use with the service client. The region param overrides Region/Url related fields in the config.</param>
+        /// <returns>A created service client, or null of there is an error.</returns>
+        public static T CreateServiceClient<T>(this IAwsServiceClientManager @this, AwsConnectionSettings settings, ClientConfig serviceClientConfig = null) where T : class
+        {
+            return serviceClientConfig == null ?
+                @this.CreateServiceClient<T>(settings.CredentialIdentifier, settings.Region) :
+                @this.CreateServiceClient<T>(settings.CredentialIdentifier, settings.Region, serviceClientConfig);
+        }
+    }
 }

@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleDB">
-      <Version>3.7.100.21</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

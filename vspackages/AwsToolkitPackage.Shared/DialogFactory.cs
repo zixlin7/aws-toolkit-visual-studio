@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AwsToolkit.SourceControl;
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
@@ -65,6 +66,16 @@ namespace Amazon.AWSToolkit.VisualStudio
         public IEcrRepositorySelectionDialog CreateEcrRepositorySelectionDialog()
         {
             return new EcrRepositorySelectionDialog(_toolkitContext, _joinableTaskFactory);
+        }
+
+        public ICloneCodeCommitRepositoryDialog CreateCloneCodeCommitRepositoryDialog()
+        {
+            return new CloneCodeCommitRepositoryDialog(_toolkitContext, _joinableTaskFactory);
+        }
+
+        public ICloneCodeCatalystRepositoryDialog CreateCloneCodeCatalystRepositoryDialog()
+        {
+            return new CloneCodeCatalystRepositoryDialog(_toolkitContext, _joinableTaskFactory, new GitService(_toolkitContext));
         }
     }
 }

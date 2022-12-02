@@ -88,6 +88,9 @@ namespace AWSToolkit.Tests.Credentials.IO
             yield return new object[] { CredentialProfileTestHelper.CredentialProcess.InvalidProfile.Name };
             yield return new object[] { "non_existing_profile" };
             yield return new object[] { CredentialProfileTestHelper.Saml.InvalidProfile.Name };
+            yield return new object[] { CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceDoesNotExist.Name };
+            yield return new object[] { CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoRegion.Name };
+            yield return new object[] { CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoStartUrl.Name };
         }
 
         [Theory]
@@ -330,6 +333,13 @@ namespace AWSToolkit.Tests.Credentials.IO
                 CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRegion,
                 CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRole,
                 CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasUrl,
+                CredentialProfileTestHelper.SsoSession.Valid.SsoSessionProfile,
+                CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile,
+                CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionProfiles.MissingSsoRegion,
+                CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionProfiles.MissingSsoStartUrl,
+                CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceDoesNotExist,
+                CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoRegion,
+                CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoStartUrl,
             }.ForEach(profile => _profiles[profile.Name] = profile);
         }
     }

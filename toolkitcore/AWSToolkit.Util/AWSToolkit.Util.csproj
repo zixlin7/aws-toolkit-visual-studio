@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arg.cs" />
     <Compile Include="Collections\CollectionExtensionMethods.cs" />
     <Compile Include="CryptoUtil.cs" />
     <Compile Include="DisposingAction.cs" />
@@ -134,7 +135,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="S3FileFetcher.cs" />
     <Compile Include="ToolkitAMIManifest.cs" />
-    <Compile Include="ToolkitGlobalContants.cs" />
+    <Compile Include="ToolkitGlobalConstants.cs" />
     <Compile Include="UserCrypto.cs" />
     <Compile Include="Solutions\Project.cs" />
     <Compile Include="Solutions\ProjectType.cs" />
@@ -284,7 +285,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.102.2</Version>
+      <Version>3.7.102.8</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
       <Version>1.0.77</Version>
@@ -293,16 +294,16 @@
       <Version>1.0.77</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
-      <Version>3.7.100.21</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.109.0</Version>
+      <Version>3.7.111.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.22</Version>
+      <Version>3.7.100.28</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.101.21</Version>
+      <Version>3.7.101.27</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

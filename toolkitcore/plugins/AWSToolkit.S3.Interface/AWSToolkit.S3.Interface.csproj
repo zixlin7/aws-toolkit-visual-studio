@@ -71,7 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.101.21</Version>
+      <Version>3.7.101.27</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -34,5 +34,6 @@
 
         public const string ServiceCredentialsUserName = "UserName";
         public const string ServiceCredentialsPassword = "Password";
+        public const string ServiceCredentialsExpiresOn = "ExpiresOn";
     }
 }

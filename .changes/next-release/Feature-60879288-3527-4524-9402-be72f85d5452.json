@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Added support for cloning Amazon CodeCatalyst source repositories from Visual Studio's 'Clone a Repository' dialog"
+}

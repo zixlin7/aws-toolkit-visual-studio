@@ -24,6 +24,8 @@ namespace Amazon.AWSToolkit.CommonUI
         public static ImageSource CodeArtifact =>
             ImageSourceFactory.GetImageSource(AwsImageResourcePath.CodeArtifact.Path);
 
+        public static ImageSource CodeCatalyst => ImageSourceFactory.GetImageSource(AwsImageResourcePath.CodeCatalyst.Path);
+
         public static ImageSource CodeCommit => ImageSourceFactory.GetImageSource(AwsImageResourcePath.CodeCommit.Path);
 
         public static ImageSource DynamoDb => ImageSourceFactory.GetImageSource(AwsImageResourcePath.DynamoDb.Path);

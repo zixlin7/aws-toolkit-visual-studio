@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             dndDataObjects.SetData(DataFormats.Text, this.Name);
 
             Func<string> getTemplate = () => this._cloudFormationClient.GetTemplate(new GetTemplateRequest{StackName = this.StackName}).TemplateBody;
-            dndDataObjects.SetData(ToolkitGlobalContants.CloudFormationStackTemplateFetcherDnDFormat, getTemplate);
+            dndDataObjects.SetData(ToolkitGlobalConstants.CloudFormationStackTemplateFetcherDnDFormat, getTemplate);
         }
     }
 }

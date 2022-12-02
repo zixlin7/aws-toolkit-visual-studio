@@ -46,11 +46,7 @@ namespace Amazon.AWSToolkit.Account.View
         }
 
         public ServiceSpecificCredentials Credentials =>
-            new ServiceSpecificCredentials
-            {
-                Username = Controller.Model.UserName,
-                Password = Controller.Model.Password
-            };
+            new ServiceSpecificCredentials(Controller.Model.UserName, Controller.Model.Password);
 
         private void OnClickCredentialsEndpoint(object sender, RequestNavigateEventArgs e)
         {

@@ -533,6 +533,54 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
             }
         }
+        
+        /// Records Telemetry Event:
+        /// Clone a Amazon CodeCatalyst code repository locally
+        public static void RecordCodecatalystLocalClone(this ITelemetryLogger telemetryLogger, CodecatalystLocalClone payload, Func<MetricDatum, MetricDatum> transformDatum = null)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "codecatalyst_localClone";
+                datum.Unit = Unit.None;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+
+                datum.AddMetadata("userId", payload.UserId);
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum = datum.InvokeTransform(transformDatum);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
     }
     
     /// Metric field type
@@ -783,6 +831,22 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public string Variant;
         
         public LambdaAddEvent()
+        {
+            this.Passive = false;
+        }
+    }
+    
+    /// Clone a Amazon CodeCatalyst code repository locally
+    public sealed class CodecatalystLocalClone : BaseTelemetryEvent
+    {
+        
+        /// Opaque AWS Builder ID identifier
+        public string UserId;
+        
+        /// The result of the operation
+        public Result Result;
+        
+        public CodecatalystLocalClone()
         {
             this.Passive = false;
         }

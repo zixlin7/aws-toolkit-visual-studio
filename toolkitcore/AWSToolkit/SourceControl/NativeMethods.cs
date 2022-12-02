@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 
-namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
+namespace Amazon.AWSToolkit.SourceControl
 {
     public static class NativeMethods
     {

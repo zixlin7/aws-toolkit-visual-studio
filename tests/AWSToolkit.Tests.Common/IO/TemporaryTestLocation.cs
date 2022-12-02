@@ -9,15 +9,18 @@ namespace Amazon.AWSToolkit.Tests.Common.IO
         public readonly string InputFolder;
         public readonly string OutputFolder;
 
-        public TemporaryTestLocation()
+        public TemporaryTestLocation(bool createInputOutputFolders = true)
         {
             Directory.CreateDirectory(TestFolder);
 
-            InputFolder = Path.Combine(TestFolder, "input");
-            Directory.CreateDirectory(InputFolder);
+            if (createInputOutputFolders)
+            {
+                InputFolder = Path.Combine(TestFolder, "input");
+                Directory.CreateDirectory(InputFolder);
 
-            OutputFolder = Path.Combine(TestFolder, "output");
-            Directory.CreateDirectory(OutputFolder);
+                OutputFolder = Path.Combine(TestFolder, "output");
+                Directory.CreateDirectory(OutputFolder);
+            }
         }
 
         public void Dispose()

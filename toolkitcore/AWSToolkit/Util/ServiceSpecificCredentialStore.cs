@@ -1,5 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Net.Sockets;
+using System.Xml.Linq;
+
 using Amazon.AWSToolkit.Account.Model;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
@@ -10,21 +14,23 @@ namespace Amazon.AWSToolkit.Util
     public class ServiceSpecificCredentialStore
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ServiceSpecificCredentialStore));
-        private static readonly ServiceSpecificCredentialStore _instance = new ServiceSpecificCredentialStore();
 
-        public static readonly string CodeCommitServiceName = "codecommit";
-
-        private ServiceSpecificCredentialStore()
+        static ServiceSpecificCredentialStore()
         {
+            Instance = new ServiceSpecificCredentialStore();
         }
 
-        public static ServiceSpecificCredentialStore Instance => _instance;
+        private ServiceSpecificCredentialStore() { }
+
+        public static ServiceSpecificCredentialStore Instance { get; }
 
         public ServiceSpecificCredentials GetCredentialsForService(string accountArtifactsId, string serviceName)
         {
             var fullpath = ConstructArtifactsFilePath(accountArtifactsId, serviceName, false);
             if (!File.Exists(fullpath))
+            {
                 return null;
+            }
 
             string encryptedCredentials;
             using (var reader = new StreamReader(fullpath))
@@ -36,21 +42,30 @@ namespace Amazon.AWSToolkit.Util
             {
                 return ServiceSpecificCredentials.FromJson(encryptedCredentials);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.ErrorFormat("Failed to load {0} service credentials for account {1}, exception {2}", serviceName, accountArtifactsId, e);
+                LOGGER.ErrorFormat("Failed to load {0} service credentials for account {1}, exception {2}", serviceName, accountArtifactsId, ex);
                 throw;
             }
         }
 
-        public ServiceSpecificCredentials SaveCredentialsForService(string accountArtifactsId, string serviceName, string userName, string password)
+        public bool TryGetCredentialsForService(string accountArtifactsId, string serviceName, out ServiceSpecificCredentials creds)
         {
-            var serviceCredentials = new ServiceSpecificCredentials
+            try
             {
-                Username = userName,
-                Password = password
-            };
+                creds = GetCredentialsForService(accountArtifactsId, serviceName);
+            }
+            catch
+            {
+                creds = null;
+            }
 
+            return creds != null;
+        }
+
+        public ServiceSpecificCredentials SaveCredentialsForService(string accountArtifactsId, string serviceName, string userName, string password, DateTime? expiresOn = null)
+        {
+            var serviceCredentials = new ServiceSpecificCredentials(userName, password, expiresOn);
             return SaveCredentialsForService(accountArtifactsId, serviceName, serviceCredentials);
         }
 
@@ -65,9 +80,9 @@ namespace Amazon.AWSToolkit.Util
                     writer.Write(encryptedCredentials);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LOGGER.Error("Failed to write credentials data to settings folder", e);
+                LOGGER.Error("Failed to write credentials data to settings folder", ex);
             }
 
             return serviceCredentials;
@@ -92,8 +107,7 @@ namespace Amazon.AWSToolkit.Util
         private static string ConstructArtifactsFilePath(string accountArtifactsId, string serviceName, bool autoCreate)
         {
             var accountLocation = GetDirectory(accountArtifactsId, autoCreate);
-            var fullpath = string.Format(@"{0}\{1}.encrypted", accountLocation, serviceName);
-            return fullpath;
+            return string.Format(@"{0}\{1}.encrypted", accountLocation, serviceName);
         }
 
         private static string GetDirectory(string accountArtifactsId, bool autoCreateFolder)
@@ -102,17 +116,31 @@ namespace Amazon.AWSToolkit.Util
             var location = string.Format(@"{0}\servicecredentials\{1}", settingsFolder, accountArtifactsId);
 
             if (!Directory.Exists(location) && autoCreateFolder)
+            {
                 Directory.CreateDirectory(location);
+            }
 
             return location;
         }
     }
 
-
     public class ServiceSpecificCredentials
     {
-        public string Username { get; internal set; }
-        public string Password { get; internal set; }
+        internal ServiceSpecificCredentials(string username, string password, DateTime? expiresOn = null)
+        {
+            Arg.NotNull(username, nameof(username));
+            Arg.NotNull(password, nameof(password));
+
+            Username = username;
+            Password = password;
+            ExpiresOn = expiresOn;
+        }
+
+        public string Username { get; }
+
+        public string Password { get; }
+
+        public DateTime? ExpiresOn { get; }
 
         internal string ToJson()
         {
@@ -129,6 +157,17 @@ namespace Amazon.AWSToolkit.Util
             jsonWriter.WritePropertyName(ToolkitSettingsConstants.ServiceCredentialsPassword);
             jsonWriter.Write(UserCrypto.Encrypt(Password));
 
+            if (ExpiresOn != null)
+            {
+                var binary = ExpiresOn.Value.ToBinary();
+                var bytes = BitConverter.GetBytes(binary);
+                var base64 = Convert.ToBase64String(bytes);
+                var encrypted = UserCrypto.Encrypt(base64);
+
+                jsonWriter.WritePropertyName(ToolkitSettingsConstants.ServiceCredentialsExpiresOn);
+                jsonWriter.Write(encrypted);
+            }
+
             jsonWriter.WriteObjectEnd();
 
             return jsonWriter.ToString();
@@ -137,34 +176,75 @@ namespace Amazon.AWSToolkit.Util
         internal static ServiceSpecificCredentials FromJson(string encryptedJson)
         {
             var jdata = JsonMapper.ToObject(encryptedJson);
-            return new ServiceSpecificCredentials
+
+            var username = UserCrypto.Decrypt((string) jdata[ToolkitSettingsConstants.ServiceCredentialsUserName]);
+            var password = UserCrypto.Decrypt((string) jdata[ToolkitSettingsConstants.ServiceCredentialsPassword]);
+            DateTime? expiresOn = null;
+
+            if (jdata.PropertyNames.Contains(ToolkitSettingsConstants.ServiceCredentialsExpiresOn))
             {
-                Username = UserCrypto.Decrypt((string)jdata[ToolkitSettingsConstants.ServiceCredentialsUserName]),
-                Password = UserCrypto.Decrypt((string)jdata[ToolkitSettingsConstants.ServiceCredentialsPassword])
-            };
+                var encrypted = (string) jdata[ToolkitSettingsConstants.ServiceCredentialsExpiresOn];
+                var base64 = UserCrypto.Decrypt(encrypted);
+                var bytes = Convert.FromBase64String(base64);
+                var binary = BitConverter.ToInt64(bytes, 0);
+
+                expiresOn = DateTime.FromBinary(binary);
+            }
+
+            return new ServiceSpecificCredentials(username, password, expiresOn);
         }
 
         // Called to process a csv file created by us as we drive the user credential process, therefore
         // we don't expect the csv file to fail to load
         public static ServiceSpecificCredentials FromCsvFile(string csvFile)
         {
-            string username, password;
-            RegisterServiceCredentialsModel.ImportCredentialsFromCsv(csvFile, out username, out password);
-            return new ServiceSpecificCredentials
-            {
-                Username = username,
-                Password = password
-            };
+            RegisterServiceCredentialsModel.ImportCredentialsFromCsv(csvFile, out string username, out string password);
+            return new ServiceSpecificCredentials(username, password);
         }
 
         public static ServiceSpecificCredentials FromCredentials(string username, string password)
         {
-            return new ServiceSpecificCredentials
+            return new ServiceSpecificCredentials(username, password);
+        }
+
+        protected bool Equals(ServiceSpecificCredentials other)
+        {
+            return
+                Username == other.Username
+                && Password == other.Password
+                && Nullable.Equals(ExpiresOn, other.ExpiresOn);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
             {
-                Username = username,
-                Password = password
-            };
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
+            return Equals((ServiceSpecificCredentials) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Username != null ? Username.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Password != null ? Password.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ ExpiresOn.GetHashCode();
+
+                return hashCode;
+            }
         }
     }
-
 }

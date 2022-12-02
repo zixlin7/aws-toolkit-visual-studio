@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
@@ -55,6 +57,24 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, 
                                                         ToolkitRegion region,
                                                         bool ignoreCurrent);
+
+
+        /// <summary>
+        /// Obtains and returns the service-specific credentials to enable git operations
+        /// against a CodeCommit repo owned by the specified account.
+        /// </summary>
+        /// <param name="identifier">The credential identifier we want service specific credentials for.</param>
+        /// <param name="region">
+        /// Used if we attempt to create credentials, to construct the necessary IAM client.
+        /// </param>
+        /// <param name="ignoreCurrent">
+        /// Forces bypass of any credentials already associated with the account. Used when we
+        /// want to force an update of the credentials by obtaining new ones.
+        /// </param>
+        /// <returns></returns>
+        ServiceSpecificCredentials ObtainGitCredentials(ICredentialIdentifier identifier,
+            ToolkitRegion region,
+            bool ignoreCurrent);
 
         /// <summary>
         /// Prompts the user to select a repository to clone. The account and initial region
@@ -112,9 +132,31 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// Collection of wrappers around the found repositories. Repositories we failed to
         /// process are dropped on the floor.
         /// </returns>
-        Task<IEnumerable<ICodeCommitRepository>> GetRepositories(
+        Task<IEnumerable<ICodeCommitRepository>> GetRepositoriesAsync(
             AccountViewModel account,
             IEnumerable<string> pathsToRepositories);
+
+        /// <summary>
+        /// Queries for and wraps an ICodeCommitRespository instance around respositories found on
+        /// region that belong to the supplied account.
+        /// </summary>
+        /// <param name="account">The account for which to retrieve repositories.</param>
+        /// <param name="region">The region for which to retrieve repositories.</param>
+        /// <returns>Enumberable of wrappers around the found respositories.</returns>
+        Task<IEnumerable<ICodeCommitRepository>> GetRemoteRepositoriesAsync(
+            AccountViewModel account,
+            ToolkitRegion region);
+
+        /// <summary>
+        /// Queries for and wraps an ICodeCommitRespository instance around respositories found on
+        /// region that belong to the supplied credential identifier.
+        /// </summary>
+        /// <param name="credentialId">The credential identifier for which to retrieve repositories.</param>
+        /// <param name="region">The region for which to retrieve repositories.</param>
+        /// <returns>Enumberable of wrappers around the found respositories.</returns>
+        Task<IEnumerable<ICodeCommitRepository>> GetRemoteRepositoriesAsync(
+            ICredentialIdentifier credentialId,
+            ToolkitRegion region);
 
         /// <summary>
         /// Returns the wrapped metadata for a CodeCommit repository.

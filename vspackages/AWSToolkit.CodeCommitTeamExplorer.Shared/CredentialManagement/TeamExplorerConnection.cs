@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
@@ -16,11 +16,14 @@ using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.SourceControl;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime.Internal.Settings;
+
 using log4net;
 
 using Microsoft.Win32;
+
 using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
@@ -209,7 +212,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                 {
                     if (IsAccountValid)
                     {
-                        validRepos.AddRange(await CodeCommitPlugin.GetRepositories(Account, repoPaths));
+                        validRepos.AddRange(await CodeCommitPlugin.GetRepositoriesAsync(Account, repoPaths));
                     }
 
                     await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -434,7 +437,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                 else
                 {
                     _teamExplorerAwsConnectionManager = new AwsConnectionManager(
-                        AwsConnectionManager.DefaultStsClientCreator,
                         _toolkitContext.CredentialManager,
                         _toolkitContext.TelemetryLogger,
                         _toolkitContext.RegionProvider,
@@ -488,7 +490,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             {
                 if (credentialTargets != null)
                 {
-                    var svcCredentials = account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
+                    var svcCredentials = account.GetCredentialsForService(ServiceNames.CodeCommit);
 
                     foreach (var target in credentialTargets)
                     {

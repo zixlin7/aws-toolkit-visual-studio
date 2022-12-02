@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="|%CurrentProject%;GetVsixGuid2022|" Version="|%CurrentProject%;GetVsixVersion|" Language="en-US" Publisher="Amazon Web Services" />
@@ -10,7 +10,7 @@
         <ReleaseNotes>ReleaseNotes.txt</ReleaseNotes>
         <Icon>Resources\Package.ico</Icon>
         <PreviewImage>Resources\aws.png</PreviewImage>
-        <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CloudWatch Logs;CodeArtifact;CodeCommit;DynamoDB;EC2;ECR;ECS;IAM;Lambda;RDS;S3;Serverless;SNS;SQS</Tags>
+        <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CloudWatch Logs;CodeArtifact;CodeCommit;CodeCatalyst;DynamoDB;EC2;ECR;ECS;IAM;Lambda;RDS;S3;Serverless;SNS;SQS</Tags>
         <Preview>false</Preview>
     </Metadata>
     <Installation AllUsers="true">
@@ -57,6 +57,7 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudWatchLogs.dll" AssemblyName="AWSSDK.CloudWatchLogs, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudWatchEvents.dll" AssemblyName="AWSSDK.CloudWatchEvents, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodeArtifact.dll" AssemblyName="AWSSDK.CodeArtifact, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
+        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodeCatalyst.dll" AssemblyName="AWSSDK.CodeCatalyst, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodeCommit.dll" AssemblyName="AWSSDK.CodeCommit, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CognitoIdentity.dll" AssemblyName="AWSSDK.CognitoIdentity, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CognitoSync.dll" AssemblyName="AWSSDK.CognitoSync, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
@@ -79,6 +80,7 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SQS.dll" AssemblyName="AWSSDK.SQS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SSO.dll" AssemblyName="AWSSDK.SSOOIDC, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SSOOIDC.dll" AssemblyName="AWSSDK.SSOOIDC, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.SourceControl.v17" TargetVersion="[17.0,18.0)" Path="|AwsToolkit.SourceControl.v17|" />
 
     </Assets>
 </PackageManifest>

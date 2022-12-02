@@ -22,6 +22,16 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCatalyst.dll">
+      <Link>Plugins\AWSToolkit.CodeCatalyst.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCatalyst.Interface.dll">
+      <Link>Plugins\AWSToolkit.CodeCatalyst.Interface.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.dll">
       <Link>Plugins\AWSToolkit.CodeCommit.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

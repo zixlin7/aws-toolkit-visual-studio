@@ -1,0 +1,79 @@
+﻿<UserControl
+    x:Name="RootControl"
+    x:Class="AwsToolkit.VsSdk.Common.CommonUI.ValidationErrorsBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+    xmlns:local="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:RelayValueConverter
+            x:Key="NullToCollapsedConverter"
+            ConvertHandler="{x:Static local:ValidationErrorsBox.ConvertNullToCollapsed}" />
+    </UserControl.Resources>
+
+    <!-- See SourceElementProperty_PropertyChangedCallback for data binding details of Grid.Visibility -->
+    <Grid
+        x:Name="LayoutGrid"
+        x:FieldModifier="private"
+        Background="{DynamicResource {x:Static themes:ToolkitThemes.InfoBackgroundKey}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="Auto" />
+            <ColumnDefinition
+                Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ContentControl
+            Grid.Row="0"
+            Grid.Column="0"
+            Content="{Binding Icon, ElementName=RootControl, Mode=OneWay}"
+            HorizontalContentAlignment="Center"
+            Margin="6 0 6 0"
+            VerticalContentAlignment="Center" />
+
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="1"
+            HorizontalAlignment="Left"
+            Margin="0 6 3 6"
+            Orientation="Vertical">
+
+            <!-- See SourceElementProperty_PropertyChangedCallback for data binding details of ItemsControl.Visibility -->
+            <ItemsControl
+                x:Name="ErrorItemsControl"
+                x:FieldModifier="private">
+                <ItemsControl.ItemTemplate>
+                    <!-- Consider exposing an ErrorMessageTemplate property for customization in the future -->
+                    <DataTemplate>
+                        <!-- CAUTION 
+                        
+                        ToolkitThemes.InfoTextBrushKey does not compute correctly in VS 2022, resulting in an always black brush.
+                        It renders properly in VS 2019.
+                        
+                        The workaround here is to directly use EnvironmentColors.SystemInfoTextBrushKey, since 
+                        we are in a project that has access to the VS SDK.
+                        -->
+                        <TextBlock
+                            Foreground="{DynamicResource {x:Static platformUi:EnvironmentColors.SystemInfoTextBrushKey}}"
+                            Text="{Binding ErrorContent}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock
+                Visibility="{Binding RetryCommand, ElementName=RootControl, Mode=OneWay, Converter={StaticResource NullToCollapsedConverter}}">
+                <Hyperlink
+                    Command="{Binding RetryCommand, ElementName=RootControl, Mode=OneWay}">
+                    Retry
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>
