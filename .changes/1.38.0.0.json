@@ -1,0 +1,10 @@
+{
+  "Date": "2022-12-02",
+  "Version": "1.38.0.0",
+  "Entries": [
+    {
+      "Type": "Feature",
+      "Description": "Added support for cloning Amazon CodeCatalyst source repositories from Visual Studio's 'Clone a Repository' dialog"
+    }
+  ]
+}
