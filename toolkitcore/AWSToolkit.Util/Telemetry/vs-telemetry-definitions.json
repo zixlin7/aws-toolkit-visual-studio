@@ -61,6 +61,11 @@
             "type": "string",
             "allowedValues": ["install", "validate", "initialize", "show", "all"],
             "description": "Represents a phase of the publish experience startup sequence"
+        },
+        {
+            "name": "userId",
+            "type": "string",
+            "description": "Opaque AWS Builder ID identifier"
         }
     ],
     "metrics": [
@@ -154,6 +159,14 @@
                 { "type": "result" },
                 { "type": "variant" }
             ] 
+        },
+        {
+            "name": "codecatalyst_localClone",
+            "description": "Clone a Amazon CodeCatalyst code repository locally",
+            "metadata": [
+                { "type": "userId" },
+                { "type": "result" }
+            ]
         }
     ]
 }

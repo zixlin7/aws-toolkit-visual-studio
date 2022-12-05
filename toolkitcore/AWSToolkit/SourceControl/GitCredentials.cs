@@ -6,7 +6,7 @@ using System.Security;
 using System.Security.Permissions;
 using System.Text;
 
-namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
+namespace Amazon.AWSToolkit.SourceControl
 {
     /// <summary>
     /// Wrapper around git credentials that are persisted to the OS

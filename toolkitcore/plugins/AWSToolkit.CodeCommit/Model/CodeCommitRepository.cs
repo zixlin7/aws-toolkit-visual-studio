@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+﻿using System;
+
+using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.CodeCommit.Model;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
@@ -32,5 +34,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public string LocalFolder { get; set; }
 
         public string RepositoryUrl => RepositoryMetadata.CloneUrlHttp;
+
+        public DateTime? LastModifiedDate => RepositoryMetadata?.LastModifiedDate;
     }
 }

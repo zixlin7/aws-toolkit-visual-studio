@@ -48,9 +48,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                              throw new InvalidOperationException(
                                  $"Profile not found: {sdkIdentifierId.ProfileName}");
 
-            var awsCredentials = CreateAwsCredential(sdkProfile, region);
-
-            return new ToolkitCredentials(credentialIdentifier, awsCredentials);
+            return CreateToolkitCredentials(sdkProfile, credentialIdentifier, region);
         }
 
         /// <summary>
@@ -106,11 +104,12 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
         }
 
-        protected override AWSCredentials CreateSaml(CredentialProfile profile)
+        protected override ToolkitCredentials CreateSaml(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier)
         {
             ValidateRequiredProperty(profile.Options.EndpointName, ProfilePropertyConstants.EndpointName, profile.Name);
             ValidateRequiredProperty(profile.Options.RoleArn, ProfilePropertyConstants.RoleArn, profile.Name);
-            return GetSamlCredentials(profile);
+            return GetSamlCredentials(profile, credentialIdentifier);
         }
 
         private void DebounceAndHandleFileChange(object sender, EventArgs e)
@@ -130,12 +129,13 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// <summary>
         /// Wrapper for surfacing relevant exception messages while retrieving credentials for SAML profiles using AWS SDK
         /// </summary>
-        /// <param name="profile"></param>
-        private AWSCredentials GetSamlCredentials(CredentialProfile profile)
+        private ToolkitCredentials GetSamlCredentials(CredentialProfile profile,
+            ICredentialIdentifier credentialIdentifier)
         {
             try
             {
-                return profile.GetAWSCredentials(_credentialsFile);
+                var credentials = profile.GetAWSCredentials(_credentialsFile);
+                return new ToolkitCredentials(credentialIdentifier, credentials);
             }
             catch (Exception e)
             {

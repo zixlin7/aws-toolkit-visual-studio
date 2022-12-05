@@ -64,7 +64,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
             _okCommand = CreateOkCommand();
             _retryValidationCommand = CreateRetryValidationCommand();
-            _connectionManager = new AwsConnectionManager(AwsConnectionManager.DefaultStsClientCreator,
+            _connectionManager = new AwsConnectionManager(
                 _toolkitContext.CredentialManager, _toolkitContext.TelemetryLogger, _toolkitContext.RegionProvider,
                 new AppDataToolkitSettingsRepository());
             _viewModel = CreateViewModel();
@@ -114,7 +114,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
                 _viewModel.IsConnectionValid = isConnectionValid;
                 _viewModel.ConnectionMessage = isConnectionValid ? "Connection is valid" : e.State.Message;
                 _viewModel.IsConnectionBad = e.State.IsTerminal && !isConnectionValid;
-                _okCommand.Refresh();
+                _okCommand.CanExecute();
             });
         }
 

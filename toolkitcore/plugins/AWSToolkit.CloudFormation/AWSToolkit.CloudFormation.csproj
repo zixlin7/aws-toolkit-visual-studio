@@ -343,28 +343,28 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.AutoScaling">
-      <Version>3.7.10.55</Version>
+      <Version>3.7.101.17</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.11.26</Version>
+      <Version>3.7.102.8</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.7.7.10</Version>
+      <Version>3.7.101.4</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.85.2</Version>
+      <Version>3.7.111.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancing">
-      <Version>3.7.0.203</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.RDS">
-      <Version>3.7.17.9</Version>
+      <Version>3.7.105.4</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.9.50</Version>
+      <Version>3.7.101.27</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.4.3</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

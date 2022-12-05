@@ -23,6 +23,7 @@
         CloudRun,
         Copy,
         DeleteListItem,
+        Disconnect,
         DownloadLog,
         Edit,
         Feedback,

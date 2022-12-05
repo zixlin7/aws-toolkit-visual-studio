@@ -207,12 +207,12 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 if (solutionCreated)
                 {
-                    var teamExplorerService = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<ITeamExplorer>();
+                    var teamExplorerService = await ToolkitFactory.Instance.ShellProvider.QueryShellProviderServiceAsync<ITeamExplorer>();
                     teamExplorerService?.NavigateToPage(new Guid(TeamExplorerPageIds.Home), null);
                 }
                 else
                 {
-                    var solutionService = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IVsSolution>();
+                    var solutionService = await ToolkitFactory.Instance.ShellProvider.QueryShellProviderServiceAsync<IVsSolution>();
                     solutionService?.OpenSolutionViaDlg(SelectedRepository.LocalFolder, 1);
                 }
             });

@@ -84,6 +84,12 @@
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
     <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
+    <Compile Include="Commands\CommandTests.cs" />
+    <Compile Include="CodeCatalyst\CodeCatalystPluginServiceTests.cs" />
+    <Compile Include="CodeCatalyst\Models\CodeCatalystAccessTokenTests.cs" />
+    <Compile Include="CodeCatalyst\Models\CodeCatalystProjectTests.cs" />
+    <Compile Include="CodeCatalyst\Models\CodeCatalystRepositoryTests.cs" />
+    <Compile Include="CodeCatalyst\Models\CodeCatalystSpaceTests.cs" />
     <Compile Include="Commands\ShowExceptionAndForgetCommandTests.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommandTests.cs" />
     <Compile Include="CommonUI\AccountAndRegionPickerViewModelTests.cs" />
@@ -118,6 +124,8 @@
     <Compile Include="Credentials\Core\BaseFileCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\CredentialManagerTest.cs" />
     <Compile Include="Credentials\Core\CredentialSettingsManagerTests.cs" />
+    <Compile Include="Credentials\Core\FakeAwsTokenProvider.cs" />
+    <Compile Include="Credentials\Core\FakeIdentityResolver.cs" />
     <Compile Include="Credentials\Core\NoopToolkitSettingsRepository.cs" />
     <Compile Include="Credentials\Core\ProfileCredentialProviderFactoryTests.cs" />
     <Compile Include="Credentials\Core\TestProfileCredentialProviderFactory.cs" />
@@ -125,6 +133,7 @@
     <Compile Include="Credentials\Core\ToolkitSsoTokenManagerTests.cs" />
     <Compile Include="Credentials\CredentialProfileTestHelper.cs" />
     <Compile Include="Credentials\IO\EncryptedStoreTestFixture.cs" />
+    <Compile Include="Credentials\IO\ProfileValidatorSsoSessionTests.cs" />
     <Compile Include="Credentials\IO\ProfileValidatorTests.cs" />
     <Compile Include="Credentials\IO\ProfileWatcherTests.cs" />
     <Compile Include="Credentials\IO\SDKCredentialFileReaderTests.cs" />
@@ -137,11 +146,18 @@
     <Compile Include="Credentials\IO\SharedCredentialFileWriterTests.cs" />
     <Compile Include="Credentials\Presentation\CredentialIdentifierExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparerTests.cs" />
+    <Compile Include="Credentials\Sono\SonoCredentialProviderFactoryTests.cs" />
+    <Compile Include="Credentials\Sono\SonoHelpersTests.cs" />
+    <Compile Include="Credentials\Sono\SonoProfileProcessorTests.cs" />
+    <Compile Include="Credentials\Sono\SonoTokenProviderBuilderTests.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileOptionsExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\CredentialTypeExtensionMethodsTests.cs" />
+    <Compile Include="Credentials\Utils\ProfileNameTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethodsTests.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertyMappingTests.cs" />
+    <Compile Include="Credentials\Utils\TokenCacheTests.cs" />
+    <Compile Include="Credentials\Utils\TokenExtensionMethodsTests.cs" />
     <Compile Include="Ec2\VpcEntityTests.cs" />
     <Compile Include="Ecr\EcrViewerTests.cs" />
     <Compile Include="Ecr\RepoRepositoryTests.cs" />
@@ -199,11 +215,12 @@
     <Compile Include="S3\S3PathTests.cs" />
     <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
     <Compile Include="SNS\CreateTopicModelTests.cs" />
+    <Compile Include="Util\ServiceSpecificCredentialsTests.cs" />
     <Compile Include="ViewModels\KeyValuesViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeArtifact">
-      <Version>3.7.1.23</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.17.2</Version>
@@ -256,6 +273,14 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
       <Project>{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}</Project>
       <Name>AWSToolkit.CodeArtifact</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj">
+      <Project>{dbdb8299-3efb-4a02-a34e-7bfb98ce3169}</Project>
+      <Name>AWSToolkit.CodeCatalyst.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst\AWSToolkit.CodeCatalyst.csproj">
+      <Project>{5465c047-5a2e-424f-9961-3ca4dec2c2cc}</Project>
+      <Name>AWSToolkit.CodeCatalyst</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
       <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>

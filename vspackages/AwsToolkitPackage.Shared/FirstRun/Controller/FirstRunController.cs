@@ -156,7 +156,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 
         public async Task ShowAwsExplorerAsync()
         {
-            await _shellProvider.OpenShellWindowAsync(ShellWindows.Explorer);
+            await _shellProvider.OpenShellWindowAsync(ShellWindows.AwsExplorer);
         }
 
         public void CloseEditor(IAWSToolkitControl firstRunControl)

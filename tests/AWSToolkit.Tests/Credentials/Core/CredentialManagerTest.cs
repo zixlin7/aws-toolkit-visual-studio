@@ -186,5 +186,49 @@ namespace AWSToolkit.Tests.Credentials.Core
             _sharedFactory.Verify(mock => mock.CreateToolkitCredentials(sharedCredentialIdentifier, toolkitRegion),
                 timesCalled);
         }
+
+        [Fact]
+        public void InvalidateShouldRemoveFromCache()
+        {
+            var credentialsId = _sharedIdentifier1;
+
+            SetupFactoryCreateToolkitCredentials(credentialsId, new BasicAWSCredentials("access", "secret"));
+
+            var return1 = _credentialManager.GetToolkitCredentials(credentialsId, _region);
+            var return2 = _credentialManager.GetToolkitCredentials(credentialsId, _region);
+
+            Assert.Same(return1, return2);
+
+            _credentialManager.Invalidate(credentialsId);
+
+            var return3 = _credentialManager.GetToolkitCredentials(credentialsId, _region);
+
+            Assert.NotSame(return1, return3);
+        }
+
+        [Fact]
+        public void InvalidateShouldCallFactoryInvalidate()
+        {
+            var credentialsId = _sharedIdentifier1;
+
+            SetupFactoryCreateToolkitCredentials(credentialsId, new BasicAWSCredentials("access", "secret"));
+
+            _credentialManager.Invalidate(credentialsId);
+
+            _sharedFactory.Verify(mock => mock.Invalidate(credentialsId), Times.Once);
+        }
+
+        [Fact]
+        public void InvalidateShouldThrowOnUnrecognizedFactory()
+        {
+            Assert.Throws<CredentialProviderNotFoundException>(() =>
+                _credentialManager.Invalidate(_unregisteredFactoryCredentialId));
+        }
+
+        private void SetupFactoryCreateToolkitCredentials(ICredentialIdentifier credentialsId, AWSCredentials awsCredentials)
+        {
+            _sharedFactory.Setup(x => x.CreateToolkitCredentials(credentialsId, _region))
+                .Returns(() => new ToolkitCredentials(credentialsId, awsCredentials));
+        }
     }
 }

@@ -23,6 +23,9 @@
         public static readonly AwsImageResourcePath CodeArtifact =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CodeArtifact.png");
 
+        public static readonly AwsImageResourcePath CodeCatalyst =
+            new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CodeCatalyst.png");
+
         public static readonly AwsImageResourcePath CodeCommit =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CodeCommit.png");
 

@@ -74,10 +74,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeCommit">
-      <Version>3.7.0.203</Version>
+      <Version>3.7.100.27</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.2.184</Version>
+      <Version>3.7.100.28</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

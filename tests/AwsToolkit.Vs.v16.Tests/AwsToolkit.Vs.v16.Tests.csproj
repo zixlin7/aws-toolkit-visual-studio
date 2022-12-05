@@ -76,6 +76,14 @@
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj">
+      <Project>{dbdb8299-3efb-4a02-a34e-7bfb98ce3169}</Project>
+      <Name>AWSToolkit.CodeCatalyst.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst\AWSToolkit.CodeCatalyst.csproj">
+      <Project>{5465c047-5a2e-424f-9961-3ca4dec2c2cc}</Project>
+      <Name>AWSToolkit.CodeCatalyst</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
       <Project>{b8c28b72-63c0-406b-b5c6-405667db1d6d}</Project>
       <Name>AWSToolkit.EC2.Interface</Name>

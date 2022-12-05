@@ -28,50 +28,53 @@ namespace Amazon.AWSToolkit.Credentials.IO
             var invalidProfiles = new Dictionary<string, string>();
 
             _fileReader.Load();
-            _fileReader.ProfileNames.ForEach(profileName =>
-            {
-                try
+            _fileReader.ProfileNames
+                .Where(profileName => !ProfileName.IsSsoSession(profileName))
+                .ToList()
+                .ForEach(profileName =>
                 {
-                    var profileOptions = _fileReader.GetCredentialProfileOptions(profileName);
-                    if (profileOptions != null)
+                    try
                     {
-                        var message = ValidateProfile(profileOptions, profileName);
-                        if (string.IsNullOrWhiteSpace(message))
+                        var profileOptions = _fileReader.GetCredentialProfileOptions(profileName);
+                        if (profileOptions != null)
                         {
-                            var credentialProfile = _fileReader.GetCredentialProfile(profileName);
-                            if (credentialProfile != null)
+                            var message = ValidateProfile(profileOptions, profileName);
+                            if (string.IsNullOrWhiteSpace(message))
                             {
-                                validProfiles[profileName] = credentialProfile;
+                                var credentialProfile = _fileReader.GetCredentialProfile(profileName);
+                                if (credentialProfile != null)
+                                {
+                                    validProfiles[profileName] = credentialProfile;
+                                }
+                                else
+                                {
+                                    invalidProfiles[profileName] =
+                                        $"Profile {profileName} is not recognized by the AWS SDK. The Toolkit is unable to use it.";
+                                }
                             }
                             else
                             {
-                                invalidProfiles[profileName] =
-                                    $"Profile {profileName} is not recognized by the AWS SDK. The Toolkit is unable to use it.";
+                                invalidProfiles[profileName] = message;
                             }
                         }
                         else
                         {
-                            invalidProfiles[profileName] = message;
+                            invalidProfiles[profileName] =
+                                $"Profile {profileName} is not recognized by the AWS SDK. The Toolkit is unable to use it.";
                         }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        invalidProfiles[profileName] =
-                            $"Profile {profileName} is not recognized by the AWS SDK. The Toolkit is unable to use it.";
+                        invalidProfiles[profileName] = e.Message;
                     }
-                }
-                catch (Exception e)
-                {
-                    invalidProfiles[profileName] = e.Message;
-                }
-            });
+                });
 
             return new Profiles {ValidProfiles = validProfiles, InvalidProfiles = invalidProfiles};
         }
 
         private string ValidateProfile(CredentialProfileOptions profileOptions, string profileName)
         {
-            if (profileOptions.ContainsSsoProperties())
+            if (RequiresSsoValidations(profileOptions, profileName))
             {
                 return ValidateSso(profileOptions, profileName);
             }
@@ -102,6 +105,16 @@ namespace Amazon.AWSToolkit.Credentials.IO
             }
 
             return $"Profile {profileName} is not using role-based, session-based, process-based, or basic credentials";
+        }
+
+        private bool RequiresSsoValidations(CredentialProfileOptions profileOptions, string profileName)
+        {
+            return IsSsoSessionRelated(profileOptions, profileName) || profileOptions.ContainsSsoProperties();
+        }
+
+        private bool IsSsoSessionRelated(CredentialProfileOptions profileOptions, string profileName)
+        {
+            return ProfileName.IsSsoSession(profileName) || !string.IsNullOrWhiteSpace(profileOptions.SsoSession);
         }
 
         private string ValidateBasic(CredentialProfileOptions profileOptions, string profileName)
@@ -273,6 +286,84 @@ namespace Amazon.AWSToolkit.Credentials.IO
         }
 
         private string ValidateSso(CredentialProfileOptions profileOptions, string profileName)
+        {
+            // Profiles that either reference or are an sso-session profile
+            if (IsSsoSessionRelated(profileOptions, profileName))
+            {
+                return ValidateSsoSession(profileOptions, profileName);
+            }
+
+            // Profiles that use the AWS IAM Identity Center (AWS SSO) set of properties
+            if (profileOptions.ContainsSsoProperties())
+            {
+                return ValidateIamIdentityCenter(profileOptions, profileName);
+            }
+
+            throw new NotSupportedException($"Unable to perform SSO Validations on profile: {profileName}");
+        }
+
+        /// <summary>
+        /// Validates SSO Session related profiles:
+        /// - profiles that reference "sso-session foo" profiles using a sso_session property
+        /// - "sso-session foo" profiles 
+        /// </summary>
+        private string ValidateSsoSession(CredentialProfileOptions profileOptions, string profileName)
+        {
+            if (!profileOptions.ReferencesSsoSessionProfile())
+            {
+                // Check that the sso-session profile contains the necessary properties
+                return ValidateReferencedSsoSession(profileOptions, profileName, "(credentials file)");
+            }
+
+            // Check that the referenced sso_session exists
+            var referencedProfileName = ProfileName.CreateSsoSessionProfileName(profileOptions.SsoSession);
+            var referencedProfile = _fileReader.GetCredentialProfileOptions(referencedProfileName);
+
+            if (referencedProfile == null)
+            {
+                return $"{profileName} references missing SSO Session profile: {referencedProfileName}";
+            }
+
+            // Check that the referencing profile does not also contain properties expected from the referenced SSO Session profile
+            // Spec: The SSO token provider MUST NOT resolve if these configuration values are present directly on the profile instead
+            // of an sso-session section.
+            if (!string.IsNullOrWhiteSpace(profileOptions.SsoRegion) ||
+                !string.IsNullOrWhiteSpace(profileOptions.SsoStartUrl))
+            {
+                return $"{profileName} cannot reference an SSO Session and assign an SSO Region or SSO StartUrl";
+            }
+
+            // Check that the referenced sso_session is valid
+            return ValidateReferencedSsoSession(referencedProfile, referencedProfileName, profileName);
+        }
+
+        private string ValidateReferencedSsoSession(CredentialProfileOptions profileOptions, string profileName, string referencingProfileName)
+        {
+            var missingProperties = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(profileOptions.SsoRegion))
+            {
+                missingProperties.Add(ProfilePropertyConstants.SsoRegion);
+            }
+
+            if (string.IsNullOrWhiteSpace(profileOptions.SsoStartUrl))
+            {
+                missingProperties.Add(ProfilePropertyConstants.SsoStartUrl);
+            }
+
+            if (!missingProperties.Any())
+            {
+                return string.Empty;
+            }
+
+            var missingPropertiesStr = string.Join(", ", missingProperties.OrderBy(x => x));
+            return $"{referencingProfileName}: References SSO Session {profileName}, missing one or more properties: {missingPropertiesStr}";
+        }
+
+        /// <summary>
+        /// Validates the AWS IAM Identity Center (AWS SSO) set of properties
+        /// </summary>
+        private string ValidateIamIdentityCenter(CredentialProfileOptions profileOptions, string profileName)
         {
             var missingProperties = new List<string>();
 

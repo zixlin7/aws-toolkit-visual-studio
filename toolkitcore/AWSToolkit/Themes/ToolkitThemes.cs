@@ -61,7 +61,10 @@ namespace Amazon.AWSToolkit.Themes
         /// each UI does not need to reference specific colors.
         /// </summary>
         public static object ErrorBorderBrushKey => GetThemeBrushKeys().ErrorBorder;
+
         public static object HintTextBrushKey => GetThemeBrushKeys().HintText;
+        public static object InfoTextBrushKey => GetThemeBrushKeys().InfoText;
+        public static object InfoBackgroundKey => GetThemeBrushKeys().InfoBackground;
         public static object ToolTipBackgroundBrushKey => GetThemeBrushKeys().ToolTipBackground;
         public static object ToolTipBorderBrushKey => GetThemeBrushKeys().ToolTipBorder;
         public static object ToolTipTextBrushKey => GetThemeBrushKeys().ToolTipText;

@@ -87,5 +87,13 @@ namespace AWSToolkit.Tests.Credentials.Utils
             profileProperties = new ProfileProperties {SsoStartUrl = "sso-url"};
             Assert.Equal(CredentialType.SsoProfile, profileProperties.GetCredentialType());
         }
+
+        [Fact]
+        public void GetCredentialType_SsoSession()
+        {
+            Assert.Equal(CredentialType.BearerToken,
+                CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile.AsProfileProperties()
+                    .GetCredentialType());
+        }
     }
 }

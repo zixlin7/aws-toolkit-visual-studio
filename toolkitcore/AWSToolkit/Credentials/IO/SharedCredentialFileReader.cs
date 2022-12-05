@@ -114,11 +114,19 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 return false;
             }
 
+            var isSsoSession = ProfileName.IsSsoSession(sectionName);
+            if (isSsoSession)
+            {
+                sectionName = ProfileName.GetSsoSessionFromProfileName(sectionName);
+            }
+
             Dictionary<string, string> credentialsProperties = null;
             Dictionary<string, string> configProperties = null;
 
             var hasCredentialsProperties = false;
-            if (_credentialFile != null)
+
+            // Spec: SSO session sections in the credentials file are silently dropped
+            if (!isSsoSession && _credentialFile != null)
             {
                 hasCredentialsProperties = _credentialFile.TryGetSection(sectionName, out credentialsProperties);
             }
@@ -126,7 +134,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
             if (_configFile != null)
             {
                 _configFile.ProfileMarkerRequired = sectionName != DefaultProfileName;
-                hasConfigProperties = _configFile.TryGetSection(sectionName, out configProperties);
+                hasConfigProperties = _configFile.TryGetSection(sectionName, isSsoSession, out configProperties);
             }
 
             if (hasConfigProperties)
