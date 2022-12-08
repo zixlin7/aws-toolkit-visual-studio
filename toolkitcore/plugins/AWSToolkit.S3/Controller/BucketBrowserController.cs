@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Windows.Threading;
 
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -14,7 +13,9 @@ using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.CloudFront.Nodes;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.S3.DragAndDrop;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.S3;
@@ -60,8 +61,6 @@ namespace Amazon.AWSToolkit.S3.Controller
             if (_bucketViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            // Make sure the manifest watcher has started so DnD to explorer will work.
-            ManifestWatcher.Instance.Start(_toolkitContext); 
             this._clipboardContainer = _bucketViewModel.S3RootViewModel;
             return Execute(_bucketViewModel.S3Client, new BucketBrowserModel(_bucketViewModel.Name));
         }
@@ -605,6 +604,28 @@ namespace Amazon.AWSToolkit.S3.Controller
                 get;
                 set;
             }
+        }
+
+        public IS3DragAndDropHandler CreateDragAndDropHandler(IEnumerable<S3DragAndDropItem> items)
+        {
+            var dragAndDropManager =
+                _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IS3DragAndDropManager)) as
+                    IS3DragAndDropManager;
+
+            if (dragAndDropManager == null)
+            {
+                throw new Exception("Unable to get Toolkit service IS3DragAndDropManager");
+            }
+
+            var connectionSettings = new AwsConnectionSettings(
+                S3RootViewModel.AccountViewModel.Identifier,
+                S3RootViewModel.AccountViewModel.Region);
+          
+            var dragDropRequest = new S3DragAndDropRequest(
+                connectionSettings,
+                Model.BucketName, Model.Path, items);
+
+            return dragAndDropManager.Register(dragDropRequest);
         }
     }
 }

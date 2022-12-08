@@ -1,4 +1,5 @@
-using System.Reflection;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -34,5 +35,7 @@ using Amazon.AWSToolkit.S3;
     //(used if a resource is not found in the page, 
     // app, or any theme specific resource dictionaries)
 )]
+
+[assembly: InternalsVisibleTo("AWSToolkit.Tests, PublicKey=" + ToolkitGlobalConstants.StrongNamePublicKey)]
 
 [assembly: PluginActivatorType(typeof(S3Activator))]
