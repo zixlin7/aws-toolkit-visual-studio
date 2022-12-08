@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Regions;
 using Amazon.EC2;
@@ -35,13 +36,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         /// Perform synchronous fetch 
         /// </summary>
         public static VPCPropertyData QueryVPCProperties(AccountViewModel accountViewModel,
-                                                         ToolkitRegion region,
+            ToolkitRegion region,
+            string vpcId,
+            ILog logger)
+        {
+            var ec2 = accountViewModel.CreateServiceClient<AmazonEC2Client>(region);
+            return QueryVPCProperties(ec2, vpcId, logger);
+        }
+
+        public static VPCPropertyData QueryVPCProperties(IAmazonEC2 ec2,
                                                          string vpcId,
                                                          ILog logger)
         {
             var workerData = new WorkerData
             {
-                EC2Client = accountViewModel.CreateServiceClient<AmazonEC2Client>(region),
+                EC2Client = ec2,
                 VPCId = vpcId,
                 Logger = logger
             };

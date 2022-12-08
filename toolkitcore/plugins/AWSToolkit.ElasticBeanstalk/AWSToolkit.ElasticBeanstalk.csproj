@@ -113,6 +113,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utils\ModelExtensionMethods.cs" />
     <Compile Include="Utils\SolutionStackUtils.cs" />
     <Compile Include="View\ApplicationStatusControl.xaml.cs">
       <DependentUpon>ApplicationStatusControl.xaml</DependentUpon>

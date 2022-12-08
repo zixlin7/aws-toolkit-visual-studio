@@ -5,15 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.AutoScaling;
-using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2;
-using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
+using Amazon.AWSToolkit.ElasticBeanstalk.Models;
 using Amazon.AWSToolkit.ElasticBeanstalk.View;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.ViewModels.Charts;
@@ -28,43 +26,48 @@ using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
-    public class EnvironmentStatusController : BaseContextCommand
+    public class EnvironmentStatusController : BaseConnectionContextCommand
     {
         private readonly object UPDATE_EVENT_LOCK_OBJECT = new object();
 
         private static ILog Logger = LogManager.GetLogger(typeof(EnvironmentStatusController));
 
-        private IAmazonAutoScaling _asClient;
-        private IAmazonElasticLoadBalancing _elbClient;
-        private IAmazonEC2 _ec2Client;
-        private IAmazonCloudWatch _cwClient;
-        private CloudWatchMetrics _cloudWatchMetrics;
-        private IAmazonElasticBeanstalk _beanstalkClient;
-        private EnvironmentViewModel _environmentModel;
+        private readonly IAmazonAutoScaling _asClient;
+        private readonly IAmazonElasticLoadBalancing _elbClient;
+        private readonly IAmazonEC2 _ec2Client;
+        private readonly IAmazonCloudWatch _cwClient;
+        private readonly CloudWatchMetrics _cloudWatchMetrics;
+        private readonly IAmazonElasticBeanstalk _beanstalkClient;
+        private readonly BeanstalkEnvironmentModel _beanstalkEnvironment;
 
         private EnvironmentStatusModel _statusModel;
         private EnvironmentStatusControl _control;
 
-        public override ActionResults Execute(IViewModel model)
+        public EnvironmentStatusController(BeanstalkEnvironmentModel beanstalkEnvironment,
+            ToolkitContext toolkitContext, AwsConnectionSettings connectionSettings)
+            : base(toolkitContext, connectionSettings)
         {
-            _environmentModel = model as EnvironmentViewModel;
-            if (_environmentModel == null)
+            _beanstalkEnvironment = beanstalkEnvironment;
+
+            _beanstalkClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonElasticBeanstalkClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _cwClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonCloudWatchClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _cloudWatchMetrics = new CloudWatchMetrics(_cwClient);
+            _asClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonAutoScalingClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _elbClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonElasticLoadBalancingClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _ec2Client = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+        }
+
+        public override ActionResults Execute()
+        {
+            if (_beanstalkEnvironment == null)
             {
                 return new ActionResults().WithSuccess(false);
             }
 
-            var region = _environmentModel.ApplicationViewModel.ElasticBeanstalkRootViewModel.Region;
-            
-            _beanstalkClient = _environmentModel.BeanstalkClient;
-            _cwClient = _environmentModel.AccountViewModel.CreateServiceClient<AmazonCloudWatchClient>(region);
-            _cloudWatchMetrics = new CloudWatchMetrics(_cwClient);
-            _asClient = _environmentModel.AccountViewModel.CreateServiceClient<AmazonAutoScalingClient>(region);
-            _elbClient = _environmentModel.AccountViewModel.CreateServiceClient<AmazonElasticLoadBalancingClient>(region);
-            _ec2Client = _environmentModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(region);
-            _statusModel = new EnvironmentStatusModel(_environmentModel.Environment.EnvironmentId, _environmentModel.Environment.EnvironmentName);
+            _statusModel = new EnvironmentStatusModel(_beanstalkEnvironment.Id, _beanstalkEnvironment.Name);
             _control = new EnvironmentStatusControl(this) {DisplayNotificationOnReady = true};
 
-            ToolkitFactory.Instance.ShellProvider.OpenInEditor(_control);
+            _toolkitContext.ToolkitHost.OpenInEditor(_control);
 
             return new ActionResults().WithSuccess(true);
         }
@@ -103,7 +106,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             {
                 if (!polling)
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShowError("Error Refreshing",
+                    _toolkitContext.ToolkitHost.ShowError("Error Refreshing",
                         string.Format("Error refreshing environment {0}: {1}", this.Model.EnvironmentName, e.Message));
                 }
             }
@@ -111,39 +114,42 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         public void RestartApp()
         {
-            var command = new RestartAppController();
-            command.Execute(this._environmentModel);
+            var command = new RestartAppController(_beanstalkEnvironment,
+                _toolkitContext, ConnectionSettings);
+            command.Execute();
         }
 
         public void RebuildEnvironment()
         {
-            var command = new RebuildEnvironmentController();
-            command.Execute(this._environmentModel);
+            var command = new RebuildEnvironmentController(_beanstalkEnvironment,
+                _toolkitContext, ConnectionSettings);
+            command.Execute();
         }
 
         public void TerminateEnvironment()
         {
-            var command = new TerminateEnvironmentController();
-            command.Execute(this._environmentModel);
+            var command = new TerminateEnvironmentController(_beanstalkEnvironment,
+                _toolkitContext, ConnectionSettings);
+            command.Execute();
         }
 
         public void ConnectToInstance()
         {
             var instanceIds = getListOfInstances();
-            IAWSEC2 awsEc2 = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
-            AccountViewModel account = _environmentModel.AccountViewModel;
-            awsEc2.ConnectToInstance(new AwsConnectionSettings(account.Identifier, account.Region), instanceIds);
+            IAWSEC2 awsEc2 = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IAWSEC2)) as IAWSEC2;
+            awsEc2?.ConnectToInstance(ConnectionSettings, instanceIds);
         }
 
         public void ChangeEnvironmentType(string requestedType)
         {
-            var command = new ChangeEnvironmentTypeController 
+            var command = new ChangeEnvironmentTypeController(_beanstalkEnvironment,
+                _toolkitContext, ConnectionSettings)
             {
                 RequestedEnvironmentType = requestedType,
                 VPCId = this._statusModel.ConfigModel.GetValue("aws:ec2:vpc", "VPCId")
             };
 
-            if ((command.Execute(this._environmentModel)).Success)
+            if (command.Execute().Success)
             {
                 // decided cleanest approach is to dump and reload parts of the model
                 refreshEnvironmentProperties();
@@ -156,8 +162,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         IList<string> getListOfInstances()
         {
-            var response = this._environmentModel.BeanstalkClient.DescribeEnvironmentResources(
-                new DescribeEnvironmentResourcesRequest(){EnvironmentId = this._environmentModel.Environment.EnvironmentId});
+            var response = _beanstalkClient.DescribeEnvironmentResources(
+                new DescribeEnvironmentResourcesRequest(){EnvironmentId = _beanstalkEnvironment.Id});
 
 
             IList<string> instances = new List<string>();
@@ -193,7 +199,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                         sb.AppendLine("* " + message.Message);
                     }
 
-                    ToolkitFactory.Instance.ShellProvider.ShowError("Error Applying Changes", sb.ToString());
+                    _toolkitContext.ToolkitHost.ShowError("Error Applying Changes", sb.ToString());
                     return;
                 }
 
@@ -209,7 +215,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error Applying Changes", 
+                _toolkitContext.ToolkitHost.ShowError("Error Applying Changes", 
                     string.Format("Error applying changes to the environment {0}: {1}" , this.Model.EnvironmentName, e.Message));
                 Logger.Error("Error applying changes for environment.", e);
             }
@@ -238,7 +244,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var environment = response.Environments[0];
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this._statusModel.EnvironmentName = environment.EnvironmentName;
                     this._statusModel.Description = environment.Description;
@@ -268,7 +274,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var response = this._beanstalkClient.DescribeEvents(request);
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
             {
                 lock (UPDATE_EVENT_LOCK_OBJECT)
                 {
@@ -401,7 +407,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                     }
                 }
 
-                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+                _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
                 {
                     try
                     {
@@ -455,12 +461,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             DescribeConfigurationOptionsResponse optionsResponse =
                 this._beanstalkClient.DescribeConfigurationOptions(new DescribeConfigurationOptionsRequest
                 {
-                    ApplicationName = _environmentModel.Environment.ApplicationName,
-                    EnvironmentName = _environmentModel.Environment.EnvironmentName,
+                    ApplicationName = _beanstalkEnvironment.ApplicationName,
+                    EnvironmentName = _beanstalkEnvironment.Name,
                 });
             List<ConfigurationOptionDescription> options = optionsResponse.Options;
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._statusModel.ConfigModel.LoadConfigDescriptions(options);
             }));
@@ -475,15 +481,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var request = new DescribeConfigurationSettingsRequest()
             {
-                ApplicationName = this._environmentModel.Environment.ApplicationName,
-                EnvironmentName = this._environmentModel.Environment.EnvironmentName
+                ApplicationName = _beanstalkEnvironment.ApplicationName,
+                EnvironmentName = _beanstalkEnvironment.Name
             };
 
             var response = this._beanstalkClient.DescribeConfigurationSettings(request);
             if (response.ConfigurationSettings.Count == 0)
                 return;
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._statusModel.ConfigModel.LoadConfigOptions(response.ConfigurationSettings[0].OptionSettings, changingEnvironmentType);
             }));
@@ -491,12 +497,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         void setTabsForEnvironmentType(bool changingEnvironmentType)
         {
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => this._control.CustomizeTabsForEnvironmentType(changingEnvironmentType)));
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() => this._control.CustomizeTabsForEnvironmentType(changingEnvironmentType)));
         }
 
         public void ReapplyFilter()
         {
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread((Action)(() =>
             {
                 lock (UPDATE_EVENT_LOCK_OBJECT)
                 {
@@ -529,24 +535,24 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         {
             try
             {
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.Loading = true);
+                _toolkitContext.ToolkitHost.ExecuteOnUIThread(() => viewModel.Loading = true);
 
                 var values = await _cloudWatchMetrics.LoadMetricsAsync(
                     metricName, metricNamespace, dimensions, statsAggregate, units, hoursToView);
 
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
                 {
                     viewModel.ApplyMetrics(values);
                 });
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.ErrorMessage = e.Message);
+                _toolkitContext.ToolkitHost.ExecuteOnUIThread(() => viewModel.ErrorMessage = e.Message);
                 throw;
             }
             finally
             {
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => viewModel.Loading = false);
+                _toolkitContext.ToolkitHost.ExecuteOnUIThread(() => viewModel.Loading = false);
             }
         }
 
@@ -554,7 +560,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         {
             var request = new RequestEnvironmentInfoRequest()
             {
-                EnvironmentName = this._environmentModel.Environment.EnvironmentName,
+                EnvironmentName = _beanstalkEnvironment.Name,
                 InfoType = "tail"
             };
 
@@ -565,7 +571,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         {
             var request = new RetrieveEnvironmentInfoRequest()
             {
-                EnvironmentName = this._environmentModel.Environment.EnvironmentName,
+                EnvironmentName = _beanstalkEnvironment.Name,
                 InfoType = "tail"
             };
 

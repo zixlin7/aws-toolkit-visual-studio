@@ -178,6 +178,7 @@
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
     <Compile Include="Commands\LearnMoreCommandTests.cs" />
     <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageTests.cs" />
+    <Compile Include="ElasticBeanstalk\ModelExtensionMethodsTests.cs" />
     <Compile Include="ElasticBeanstalk\StartPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\Wizard\AWSWizardAsserter.cs" />
     <Compile Include="GlobalSuppressions.cs" />

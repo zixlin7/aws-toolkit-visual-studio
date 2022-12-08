@@ -53,6 +53,7 @@
     <Compile Include="BeanstalkConstants.cs" />
     <Compile Include="BeanstalkDeploymentWizardProperties.cs" />
     <Compile Include="IAWSElasticBeanstalk.cs" />
+    <Compile Include="Models\BeanstalkEnvironmentModel.cs" />
     <Compile Include="Nodes\IApplicationViewMetaNode.cs" />
     <Compile Include="Nodes\IApplicationViewModel.cs" />
     <Compile Include="Nodes\IElasticBeanstalkRootViewMetaNode.cs" />
