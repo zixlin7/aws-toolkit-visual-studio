@@ -1,13 +1,11 @@
-﻿using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.Util;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.CodeCommit.Interface
 {
     public interface ICodeCommitGitServices
     {
-        Task CloneAsync(ServiceSpecificCredentials credentials, string repositoryUrl, string localFolder);
-
         Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo);
     }
 }
