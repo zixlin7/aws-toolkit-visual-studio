@@ -70,6 +70,54 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         }
         
         /// Records Telemetry Event:
+        /// Called when Visual Studio requests credentials from the Toolkit in order to communicate with a CodeArtifact package repository
+        public static void RecordCodeartifactCredentialsRequest(this ITelemetryLogger telemetryLogger, CodeartifactCredentialsRequest payload, Func<MetricDatum, MetricDatum> transformDatum = null)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "codeartifact_credentialsRequest";
+                datum.Unit = Unit.None;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("reason", payload.Reason);
+
+                datum = datum.InvokeTransform(transformDatum);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+        
+        /// Records Telemetry Event:
         /// Called when user selects a profile
         public static void RecordCodeartifactGetRepoUrl(this ITelemetryLogger telemetryLogger, CodeartifactGetRepoUrl payload, Func<MetricDatum, MetricDatum> transformDatum = null)
         {
@@ -653,6 +701,22 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public ServerlessapplicationDeploy()
         {
             this.Passive = false;
+        }
+    }
+    
+    /// Called when Visual Studio requests credentials from the Toolkit in order to communicate with a CodeArtifact package repository
+    public sealed class CodeartifactCredentialsRequest : BaseTelemetryEvent
+    {
+        
+        /// The result of the operation
+        public Result Result;
+        
+        /// Optional - The reason for a metric or exception depending on context
+        public string Reason;
+        
+        public CodeartifactCredentialsRequest()
+        {
+            this.Passive = true;
         }
     }
     
