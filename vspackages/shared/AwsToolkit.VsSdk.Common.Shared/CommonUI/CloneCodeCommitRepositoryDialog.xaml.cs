@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.CodeCommit.Interface;
@@ -17,12 +16,11 @@ using AwsToolkit.VsSdk.Common.CommonUI.Commands.CodeCommit;
 
 using CommonUI.Models;
 
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Threading;
 
 namespace AwsToolkit.VsSdk.Common.CommonUI
 {
-    public partial class CloneCodeCommitRepositoryDialog : DialogWindow, ICloneCodeCommitRepositoryDialog
+    public partial class CloneCodeCommitRepositoryDialog : ThemedDialogWindow, ICloneCodeCommitRepositoryDialog
     {
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
@@ -37,15 +35,6 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             _viewModel.SubmitDialogCommand = SubmitCloneDialogCommandFactory.Create(_viewModel, this);
 
             InitializeComponent();
-
-            // No window chrome, have to support moving the window ourselves
-            MouseDown += (sender, e) =>
-            {
-                if (e.LeftButton == MouseButtonState.Pressed)
-                {
-                    DragMove();
-                }
-            };
 
             DataContext = _viewModel;
             Loaded += OnLoaded;

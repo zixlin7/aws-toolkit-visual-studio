@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Input;
 
 using Amazon.AWSToolkit.CodeCatalyst.Models;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
@@ -14,12 +13,11 @@ using AwsToolkit.VsSdk.Common.CommonUI.Commands.CodeCatalyst;
 
 using CommonUI.Models;
 
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Threading;
 
 namespace AwsToolkit.VsSdk.Common.CommonUI
 {
-    public partial class CloneCodeCatalystRepositoryDialog : DialogWindow, ICloneCodeCatalystRepositoryDialog
+    public partial class CloneCodeCatalystRepositoryDialog : ThemedDialogWindow, ICloneCodeCatalystRepositoryDialog
     {
         private readonly ToolkitContext _toolkitContext;
         private readonly JoinableTaskFactory _joinableTaskFactory;
@@ -34,15 +32,6 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             _viewModel.SubmitDialogCommand = SubmitCloneDialogCommandFactory.Create(_viewModel, this);
 
             InitializeComponent();
-
-            // No window chrome, have to support moving the window ourselves
-            MouseDown += (sender, e) =>
-            {
-                if (e.LeftButton == MouseButtonState.Pressed)
-                {
-                    DragMove();
-                }
-            };
 
             Loaded += OnLoaded;
 

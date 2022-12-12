@@ -1,5 +1,6 @@
-﻿<platformUi:DialogWindow
+﻿<local:ThemedDialogWindow
     x:Class="AwsToolkit.VsSdk.Common.CommonUI.CloneCodeCatalystRepositoryDialog"
+    x:Name="Root"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,18 +15,16 @@
     xmlns:models="clr-namespace:CodeCatalyst.ViewModels"
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell15="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
-    xmlns:shellPf="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
+    CloseCommand="{Binding CancelDialogCommand}"
     Height="700"
     Width="850"
     MinHeight="700"
     MinWidth="850"
-    Title="{Binding Heading}"
-    ShowInTaskbar="False"
-    ResizeMode="CanResizeWithGrip">
+    Title="{Binding Heading}">
 
-    <platformUi:DialogWindow.Resources>
+    <local:ThemedDialogWindow.Resources>
         <ResourceDictionary>
             <converters:InverseBooleanToVisibilityConverter
                 x:Key="InverseBooleanToVisibilityConverter" />
@@ -34,14 +33,6 @@
                 x:Key="VsImages" />
             <commonUi:ToolkitImages
                 x:Key="ToolkitImages" />
-            <Style
-                x:Key="CloseDialogButtonStyle"
-                TargetType="{x:Type Button}"
-                BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                <Setter
-                    Property="Foreground"
-                    Value="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}" />
-            </Style>
             <Style
                 x:Key="ValidationBorderStyle"
                 TargetType="{x:Type Border}">
@@ -114,81 +105,10 @@
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
-    </platformUi:DialogWindow.Resources>
-
-    <!-- https://learn.microsoft.com/en-us/dotnet/api/system.windows.shell.windowchrome?view=netframework-4.7.2 -->
-    <shellPf:WindowChrome.WindowChrome>
-        <!-- CornerRadius requires GlassFrameThickness="0" -->
-        <shellPf:WindowChrome
-            CaptionHeight="0"
-            CornerRadius="0"
-            GlassFrameThickness="0"
-            ResizeBorderThickness="5"
-            UseAeroCaptionButtons="False" />
-    </shellPf:WindowChrome.WindowChrome>
-
-    <platformUi:DialogWindow.ContentTemplate>
-        <DataTemplate>
-            <Grid
-                imageTheming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}">
-                <Border
-                    Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
-                    BorderThickness="1"
-                    BorderBrush="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowBorderBrushKey}}">
-                    <DockPanel
-                        LastChildFill="True">
-                        <Button
-                            DockPanel.Dock="Top"
-                            Content="&#x2715;"
-                            Style="{StaticResource CloseDialogButtonStyle}"
-                            Margin="0 0 6 0"
-                            HorizontalAlignment="Right"
-                            VerticalContentAlignment="Center"
-                            HorizontalContentAlignment="Center"
-                            Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.CancelDialogCommand}" />
-                        <!-- https://github.com/github/VisualStudio/blob/master/src/GitHub.VisualStudio.UI/Views/Dialog/GitHubDialogWindow.xaml -->
-                        <!-- DO THIS BEFORE MERGING TO MAIN
-                        TOOD Microsoft.VisualStudio.Shell.ViewManager is part of VS, but not available in NuGet.  We don't want to maintain this
-                        assembly in the thirdparty folder and not even sure if we can use it (i.e. does VS license allow for this?)  Do a little 
-                        research to determine how others are using GlyphButton and getting access to this deal.  The GitHub extension above does 
-                        embed the DLL in the repo, but GitHub is also owned by MS.  If using that assembly is not an option, consider if creating
-                        a similar GlyphButton of our own is low work, high value enough to do.  Otherwise, find another way to make the close button.
-                        If GlyphButton cannot be used, remove this comment before releasing to main.
-                        <shellControls:GlyphButton 
-                            x:Name="CloseButton"
-                            shellPf:WindowChrome.IsHitTestVisibleInChrome="True"
-                            Width="46"
-                            Height="33"
-                            DockPanel.Dock="Top"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            BorderBrush="Transparent"
-                            BorderThickness="0"
-                            Background="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonBrushKey}}"
-                            GlyphForeground="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonGlyphBrushKey}}"
-                            HoverBackground="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonHoverBrushKey}}"
-                            HoverForeground="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonHoverGlyphBrushKey}}"
-                            HoverBorderBrush="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonHoverBorderBrushKey}}"
-                            PressedBackground="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonDownBrushKey}}"
-                            PressedForeground="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonDownGlyphBrushKey}}"
-                            PressedBorderBrush="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonDownBorderBrushKey}}"
-                            IsCancel="True">
-                            <Path 
-                                Width="16"
-                                Height="16"
-                                Fill="{Binding Path=(TextElement.Foreground), RelativeSource={RelativeSource Self}}"
-                                Data="F1M8.583,8L13,12.424 12.424,13 8,8.583 3.576,13 3,12.424 7.417,8 3,3.576 3.576,3 8,7.417 12.424,3 13,3.576z"/>
-                        </shellControls:GlyphButton>
-                        -->
-                        <ContentControl
-                            Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" />
-                    </DockPanel>
-                </Border>
-            </Grid>
-        </DataTemplate>
-    </platformUi:DialogWindow.ContentTemplate>
+    </local:ThemedDialogWindow.Resources>
 
     <DockPanel
+        imageTheming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, ElementName=Root}"
         Margin="24 0 24 24">
         <Grid
             DockPanel.Dock="Top">
@@ -591,4 +511,4 @@
             </Grid>
         </ScrollViewer>
     </DockPanel>
-</platformUi:DialogWindow>
+</local:ThemedDialogWindow>

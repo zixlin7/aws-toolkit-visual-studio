@@ -51,6 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\OkDialogWindowHost.xaml.cs">
       <DependentUpon>OkDialogWindowHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\ThemedDialogWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\ValidationErrorsBox.xaml.cs">
       <DependentUpon>ValidationErrorsBox.xaml</DependentUpon>
     </Compile>
@@ -117,6 +118,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\SelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)themes\generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
