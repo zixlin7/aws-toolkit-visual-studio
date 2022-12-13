@@ -88,6 +88,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             return false;
         }
 
+        public bool ConfirmWithLinks(string title, string message)
+        {
+            return false;
+        }
+
         public void UpdateStatus(string status)
         {
 

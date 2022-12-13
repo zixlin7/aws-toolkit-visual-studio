@@ -4,17 +4,18 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.SourceControl;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Urls;
 
 // There are a lot of duplicated type names between these two namespaces, so use aliases for clarity.
 // If VS injects an unaliased using statement for any of these namespaces, remove it immediately.
 using ccm = Microsoft.VisualStudio.Shell.CodeContainerManagement;
 using sh = Microsoft.VisualStudio.Shell;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 {
@@ -65,7 +66,6 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
             await StoreGitCredentialsAsync(pat.Secret, uri, cancellationToken);
         }
 
-
         private Task StoreGitCredentialsAsync(string patSecret, Uri uri, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -100,8 +100,11 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                 return await base.HandleCloneRepositoryFailedAsync(failedCloneRepoData, cloneException);
             }
 
-            if (_toolkitContext.ToolkitHost.Confirm("Create access token",
-                "Cloning may have failed due to an invalid access token.  Would you like the toolkit to recreate your access token and try again?"))
+            var recreatePat = _toolkitContext.ToolkitHost.ConfirmWithLinks("Create access token",
+$@"Cloning may have failed due to an invalid <a href=""{AwsUrls.CodeCatalystUserGuidePatConcept}"">access token</a>.
+Recreate access token and retry?");
+
+            if (recreatePat)
             {
                 await StoreNewGitCredentialsAsync(failedCloneRepoData.RemoteUri);
 

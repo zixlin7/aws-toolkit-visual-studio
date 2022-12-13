@@ -381,6 +381,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             });
         }
 
+        public bool ConfirmWithLinks(string title, string message)
+        {
+            return ExecuteOnUIThread(() => Messaging.ConfirmWithLinks(_hostPackage.GetParentWindow(), title, message));
+        }
+
         public bool Confirm(string title, string message)
         {
             return Confirm(title, message, MessageBoxButton.YesNo);

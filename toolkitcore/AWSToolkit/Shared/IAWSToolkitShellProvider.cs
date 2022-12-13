@@ -182,6 +182,14 @@ namespace Amazon.AWSToolkit.Shared
         bool Confirm(string title, string message);
 
         /// <summary>
+        /// Displays a confirmation message box with Yes/No buttons.
+        /// </summary>
+        /// <param name="title">Title of message box.</param>
+        /// <param name="message">Message for body of message box.</param>
+        /// <returns>True if Yes clicked, false otherwise.</returns>
+        bool ConfirmWithLinks(string title, string message);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="title"></param>

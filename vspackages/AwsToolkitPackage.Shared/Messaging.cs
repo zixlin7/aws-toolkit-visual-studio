@@ -62,5 +62,25 @@ namespace Amazon.AWSToolkit.VisualStudio
                 MessageBox.Show(parentWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        public static bool ConfirmWithLinks(Window parentWindow, string title, string message)
+        {
+            if (TaskDialog.IsPlatformSupported)
+            {
+                TaskDialog td = new TaskDialog();
+                td.HyperlinksEnabled = true;
+                td.Caption = title;
+                td.Text = message;
+                td.Icon = TaskDialogStandardIcon.None;
+                td.StandardButtons = TaskDialogStandardButtons.Yes | TaskDialogStandardButtons.No;
+                td.HyperlinkClick += new EventHandler<TaskDialogHyperlinkClickedEventArgs>(td_HyperlinkClick);
+
+                return td.Show() == TaskDialogResult.Yes;
+            }
+            else
+            {
+                return MessageBox.Show(parentWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.None) == MessageBoxResult.Yes;
+            }
+        }
     }
 }
