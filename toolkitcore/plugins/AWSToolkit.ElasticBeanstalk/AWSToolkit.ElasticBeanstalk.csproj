@@ -65,12 +65,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BeanstalkViewer.cs" />
     <Compile Include="Commands\BaseBeanstalkDeployCommand.cs" />
     <Compile Include="Commands\DeployNewApplicationCommand.cs" />
     <Compile Include="Commands\DeployWithEbToolsCommand.cs" />
     <Compile Include="Controller\ApplicationStatusController.cs" />
     <Compile Include="Controller\BaseDeleteApplicationController.cs" />
-    <Compile Include="Controller\BeanstalkEnvironmentViewer.cs" />
     <Compile Include="Controller\ChangeEnvironmentTypeController.cs" />
     <Compile Include="Controller\DeleteApplicationController.cs" />
     <Compile Include="Controller\DeleteApplicationVersionController.cs" />
@@ -84,6 +84,7 @@
     <Compile Include="Model\ApplicationStatusModel.cs" />
     <Compile Include="Model\ApplicationVersionDescriptionWrapper.cs" />
     <Compile Include="Model\AutoScalingGroupWrapper.cs" />
+    <Compile Include="Model\BeanstalkViewerException.cs" />
     <Compile Include="Model\DeployedApplicationModel.cs" />
     <Compile Include="Model\MetricAlarmWrapper.cs" />
     <Compile Include="Model\LaunchConfigurationWrapper.cs" />

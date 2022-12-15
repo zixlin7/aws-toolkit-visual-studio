@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Beanstalk;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
@@ -13,7 +14,6 @@ using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
 using Amazon.AWSToolkit.ElasticBeanstalk.Models;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
-using Amazon.AWSToolkit.ElasticBeanstalk.Viewers;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -54,9 +54,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             if (serviceType == typeof(IAWSToolkitDeploymentService))
                 return this as IAWSToolkitDeploymentService;
 
-            if (serviceType == typeof(IBeanstalkEnvironmentViewer))
+            if (serviceType == typeof(IBeanstalkViewer))
             {
-                return new BeanstalkEnvironmentViewer(ToolkitContext.ToolkitHost, ToolkitFactory.Instance.Navigator);
+                return new BeanstalkViewer(ToolkitContext);
             }
 
             return null; 
@@ -70,7 +70,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             rootNode.ApplicationViewMetaNode.OnDeleteApplication =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteApplicationController>().Execute);
 
-            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnEnvironmentStatus = OnEnvironmentStatus;
+            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnEnvironmentStatus = OnViewBeanstalkEnvironment;
 
             rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnRestartApp = OnRestartApplication;
 
@@ -79,20 +79,32 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnTerminateEnvironment = OnTerminateEnvironment;
         }
 
-        private ActionResults OnEnvironmentStatus(IViewModel viewModel)
+        private ActionResults OnViewBeanstalkEnvironment(IViewModel viewModel)
         {
-            if (!(viewModel is EnvironmentViewModel environmentViewModel))
+            try
             {
-                LOGGER.Error("Unable to view Beanstalk Environment." +
-                             $" Expected: {nameof(EnvironmentViewModel)}," +
-                             $" Received: {viewModel?.GetType().Name ?? "null"}." +
-                             " Operation cancelled.");
+                if (!(viewModel is EnvironmentViewModel environmentViewModel))
+                {
+                    throw new Exception(
+                        "Unable to view Beanstalk Environment." +
+                        $" Expected: {nameof(EnvironmentViewModel)}," +
+                        $" Received: {viewModel?.GetType().Name ?? "null"}.");
+                }
+
+                var viewer = QueryPluginService(typeof(IBeanstalkViewer)) as IBeanstalkViewer ??
+                             throw new Exception("Unable to get Beanstalk Viewer");
+
+                viewer.ViewEnvironment(
+                    environmentViewModel.Environment.EnvironmentName,
+                    CreateAwsConnectionSettings(environmentViewModel));
+
+                return new ActionResults().WithSuccess(true);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error(e.Message);
                 return new ActionResults().WithSuccess(false);
             }
-
-            return RunBeanstalkEnvironmentCommand(environmentViewModel,
-                (beanstalkEnvironment, connectionSettings) =>
-                    new EnvironmentStatusController(beanstalkEnvironment, ToolkitContext, connectionSettings));
         }
 
         private ActionResults OnRestartApplication(IViewModel viewModel)

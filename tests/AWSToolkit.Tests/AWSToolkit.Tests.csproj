@@ -172,7 +172,7 @@
     <Compile Include="ECS\ViewClusterControllerTests.cs" />
     <Compile Include="ECS\ViewLogsCommandTests.cs" />
     <Compile Include="ElasticBeanstalk\AWSOptionsPageControllerTests.cs" />
-    <Compile Include="ElasticBeanstalk\BeanstalkEnvironmentViewerTests.cs" />
+    <Compile Include="ElasticBeanstalk\BeanstalkViewerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkWizardTests.cs" />
     <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageControllerTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />

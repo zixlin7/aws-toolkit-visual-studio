@@ -84,6 +84,7 @@
       <DependentUpon>RegisterServiceCredentialsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="AwsServices\ToolkitFileTypes.cs" />
+    <Compile Include="Beanstalk\IBeanstalkViewer.cs" />
     <Compile Include="Clients\AwsServiceClientManager.cs" />
     <Compile Include="Clients\IAwsServiceClientManager.cs" />
     <Compile Include="Clients\ServiceClientCreator.cs" />

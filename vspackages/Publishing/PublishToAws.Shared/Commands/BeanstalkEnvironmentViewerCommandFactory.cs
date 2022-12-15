@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Windows.Input;
 
+using Amazon.AWSToolkit.Beanstalk;
 using Amazon.AWSToolkit.Commands;
-using Amazon.AWSToolkit.ElasticBeanstalk.Viewers;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.ViewModels;
 
@@ -42,16 +43,24 @@ namespace Amazon.AWSToolkit.Publish.Commands
 
                 var publishContext = viewModel.PublishContext;
                 var viewer =
-                    publishContext.ToolkitShellProvider.QueryAWSToolkitPluginService(typeof(IBeanstalkEnvironmentViewer)) as
-                        IBeanstalkEnvironmentViewer;
+                    publishContext.ToolkitShellProvider.QueryAWSToolkitPluginService(typeof(IBeanstalkViewer)) as
+                        IBeanstalkViewer;
 
-                viewer.View(artifactId,
+                if (viewer == null)
+                {
+                    throw new Exception("Unable to get Beanstalk Viewer");
+                }
+
+                var connectionSettings = new AwsConnectionSettings(
                     publishContext.ConnectionManager.ActiveCredentialIdentifier,
                     publishContext.ConnectionManager.ActiveRegion);
+
+                viewer.ViewEnvironment(artifactId, connectionSettings);
             }
             catch (Exception e)
             {
-                viewModel.PublishContext.ToolkitShellProvider.OutputError(new Exception($"Error viewing Beanstalk environment {artifactId}", e), Logger);
+                viewModel.PublishContext.ToolkitShellProvider.OutputError(
+                    new Exception($"Error viewing Beanstalk environment {artifactId}", e), Logger);
             }
         }
     }
