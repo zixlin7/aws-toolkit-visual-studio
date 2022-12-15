@@ -70,7 +70,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                     return null; // VS expects null if the clone operation is incomplete
                 }
 
-                //keep a copy of the original clone repo data to report failure messages
+                // Keep a copy of the original clone repo data to report failure messages
                 initialCloneRepoData = cloneRepoData;
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -94,7 +94,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                 // Too late to cancel now, while this is currently not used, leave here for future coders to be aware of the cut line
                 cancellationToken = CancellationToken.None;
 
-                // Make sure progress appears to be 100% complete as VS doesn't update correctly during git clone
+                // Make sure progress appears to be 100% complete
                 downloadProgress.Report(new sh.ServiceProgressData(string.Empty, string.Empty, 1, 1));
                 await CloneCompletedAsync(cloneRepoData);
 

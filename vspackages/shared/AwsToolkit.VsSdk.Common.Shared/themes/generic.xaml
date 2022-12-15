@@ -5,25 +5,24 @@
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
 
-    <Style 
-        TargetType="{x:Type local:ThemedDialogWindow}"
-        BasedOn="{StaticResource {x:Type platformUi:DialogWindowBase}}">
-
-        <Setter Property="ContentTemplate">
+    <Style TargetType="{x:Type local:ThemedDialogWindow}">
+        <Setter Property="Template">
             <Setter.Value>
-                <DataTemplate>
+                <ControlTemplate TargetType="{x:Type local:ThemedDialogWindow}">
                     <Grid>
                         <Border
                             Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
                             BorderThickness="1"
                             BorderBrush="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowBorderBrushKey}}">
                             <DockPanel LastChildFill="True">
-                                <!-- VS would use a GlyphButton in this case, but it's not available for extensions -->
+                                <!-- VS would use a GlyphButton in this case, but it's not available for extensions.
+                                See ThemedDialogWindow.OnApplyTemplate override for how this button event handler is wired. -->
                                 <Button
+                                    x:Name="PART_CloseWindowButton"
                                     DockPanel.Dock="Top"
-                                    Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType={x:Type local:ThemedDialogWindow}}}"
                                     Content="&#x2715;"
                                     Foreground="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonGlyphBrushKey}}"
+                                    IsEnabled="{Binding IsCloseButtonEnabled, RelativeSource={RelativeSource AncestorType={x:Type local:ThemedDialogWindow}}}"
                                     HorizontalAlignment="Right"
                                     Margin="9 6 9 6"
                                     MinHeight="0"
@@ -35,14 +34,16 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
-                                <ContentControl Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <ContentPresenter />
                             </DockPanel>
                         </Border>
                     </Grid>
-                </DataTemplate>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
 
+        <Setter Property="HasMaximizeButton" Value="False" />
+        <Setter Property="HasMinimizeButton" Value="False" />
         <Setter Property="ResizeMode" Value="CanResizeWithGrip" />
         <Setter Property="ShowInTaskbar" Value="False" />
 

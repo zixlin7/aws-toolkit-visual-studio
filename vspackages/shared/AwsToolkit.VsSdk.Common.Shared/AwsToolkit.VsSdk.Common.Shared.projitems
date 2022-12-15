@@ -9,16 +9,13 @@
     <Import_RootNamespace>AwsToolkit.VsSdk.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Behaviors\WindowBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CloneCodeCatalystRepositoryDialog.xaml.cs">
       <DependentUpon>CloneCodeCatalystRepositoryDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CloneCodeCommitRepositoryDialog.xaml.cs">
       <DependentUpon>CloneCodeCommitRepositoryDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Commands\CodeCommit\CancelCloneDialogCommandFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Commands\CodeCommit\SubmitCloneDialogCommandFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Commands\CodeCatalyst\CancelCloneDialogCommandFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Commands\CodeCatalyst\SubmitCloneDialogCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Converters\ImageThemeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CredentialSelectionDialog.xaml.cs">
       <DependentUpon>CredentialSelectionDialog.xaml</DependentUpon>

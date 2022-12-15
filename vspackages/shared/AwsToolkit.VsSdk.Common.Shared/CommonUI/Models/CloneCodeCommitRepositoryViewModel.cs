@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.CodeCommit.Interface;
@@ -46,25 +47,21 @@ namespace CommonUI.Models
 
         public ICommand BrowseForRepositoryPathCommand { get; }
 
-        private ICommand _submitDialogCommand;
+        public ICommand SubmitDialogCommand { get; }
 
-        public ICommand SubmitDialogCommand
-        {
-            get => _submitDialogCommand;
-            set => SetProperty(ref _submitDialogCommand, value);
-        }
-
-        private ICommand _cancelDialogCommand;
-
-        public ICommand CancelDialogCommand
-        {
-            get => _cancelDialogCommand;
-            set => SetProperty(ref _cancelDialogCommand, value);
-        }
+        public ICommand CancelDialogCommand { get; }
 
         public ICommand HelpCommand { get; }
 
         public string Heading { get; } = "Clone an AWS CodeCommit repository";
+
+        private bool? _dialogResult;
+
+        public bool? DialogResult
+        {
+            get => _dialogResult;
+            private set => SetProperty(ref _dialogResult, value);
+        }
 
         public CloneCodeCommitRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory)
         {
@@ -80,6 +77,8 @@ namespace CommonUI.Models
 
             BrowseForRepositoryPathCommand = new RelayCommand(ExecuteBrowseForRepositoryPathCommand);
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
+            SubmitDialogCommand = new RelayCommand(CanExecuteSubmitDialog, ExecuteSubmitDialog);
+            CancelDialogCommand = new RelayCommand(ExecuteCancelDialog);
         }
 
         public CredentialConnectionViewModel Connection { get; }
@@ -102,7 +101,17 @@ namespace CommonUI.Models
             }
         }
 
-        public bool CanSubmit()
+        private void ExecuteCancelDialog(object parameter)
+        {
+            DialogResult = false;
+        }
+
+        private void ExecuteSubmitDialog(object parameter)
+        {
+            DialogResult = true;
+        }
+
+        private bool CanExecuteSubmitDialog(object parameter)
         {
             return Connection.IsConnectionValid && !string.IsNullOrWhiteSpace(LocalPath) && SelectedRepository != null;
         }
