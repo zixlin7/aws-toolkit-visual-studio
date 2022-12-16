@@ -435,8 +435,8 @@
       The version referenced MUST be no higher than the version that corresponds with the lowest 
       Major version of Visual Studio supported by this Toolkit. 
       (For a Toolkit that supports VS 2017, the version must be 15.0.*.*) -->
-    <PackageReference Include="Community.VisualStudio.Toolkit" ExcludeAssets="Runtime">
-      <Version>17.0.76.268-pre</Version>
+    <PackageReference Include="Community.VisualStudio.Toolkit.17" ExcludeAssets="Runtime">
+      <Version>17.0.486</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
