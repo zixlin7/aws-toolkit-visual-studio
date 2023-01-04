@@ -163,14 +163,6 @@
                 { "type": "result" },
                 { "type": "variant" }
             ] 
-        },
-        {
-            "name": "codecatalyst_localClone",
-            "description": "Clone a Amazon CodeCatalyst code repository locally",
-            "metadata": [
-                { "type": "userId" },
-                { "type": "result" }
-            ]
         }
     ]
 }
