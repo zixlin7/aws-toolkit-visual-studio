@@ -96,6 +96,13 @@
         <UpdateAwsSdkVersionsTask RootLocation="$(BuildRoot)" WaitForDebugger="$(WaitForDebugger)"/>
     </Target>
   
+    <!-- update-telemetry
+        Updates telemetry package references to use the latest package version.
+    -->
+    <Target Name="update-telemetry" DependsOnTargets="build-tools">
+        <UpdateTelemetryReferencesTask RootLocation="$(BuildRoot)" WaitForDebugger="$(WaitForDebugger)"/>
+    </Target>
+  
 	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-latest-endpoint-data;restore;update-version;build-vstoolkit;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>

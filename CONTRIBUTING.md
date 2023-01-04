@@ -60,10 +60,6 @@ Tests covering code (and projects) using the VS SDK must reside in shared projec
 
 See tests projects listed under [toolkit-architecture](./designs/toolkit-architecture/README.md#projects-and-assemblies) for a high level description of the current test project arrangements.
 
-### Adding Metrics
-
-Instructions for how to prototype and develop metrics specific to this Toolkit can be found on the [Toolkit Common repo](https://github.com/aws/aws-toolkit-common/tree/master/telemetry).
-
 ### Overriding Hosted Files
 
 To locally test hosted files changes, copy the hostedfiles folder to a temporary location locally. In the Visual Studio options (_Tools_ -> _Options_), go to the _AWS Toolkit_ section, set the _Toolkit Metadata_ option to use the local filesystem, and fill in your temporary local hostedfiles location. Remember to change this option back to _Default_ once you've finished iterating.
@@ -93,6 +89,21 @@ The following files are no longer referenced by the Toolkit, but were used in pr
   - The changes to support MFA and SSO credentials in 2021 migrated the Toolkit towards endpoints.json as the successor to this file.
 - hostedfiles\\flags\\*.png
   - Older versions of the Toolkit used to show a flag next to each region in region selection UIs. The code to show flags was removed in 2019. While unused, flag images were still embedded into the DLL, and this was removed in 2022.
+
+## Working with Telemetry
+
+### Adding Metrics
+
+Instructions for how to prototype and develop metrics specific to this Toolkit can be found on the [Toolkit Common repo](https://github.com/aws/aws-toolkit-common/tree/master/telemetry).
+
+### Updating Telemetry package references
+
+To help keep the referenced versions consistent across the repo, an msbuild task automates the process of querying for the latest package version, then updating the package references. The task is called `update-telemetry` and resides in `build.proj`.
+
+Example (from a Visual Studio developer prompt): 
+```
+msbuild buildtools\build.proj /t:update-telemetry
+```
 
 ## AWS SDK Package References
 
