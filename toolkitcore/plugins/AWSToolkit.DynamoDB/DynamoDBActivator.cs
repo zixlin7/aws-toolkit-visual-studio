@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.DynamoDB
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteTableController(ToolkitContext)).Execute);
 
             rootNode.DynamoDBTableViewMetaNode.OnProperties =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<TablePropertiesController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new TablePropertiesController(ToolkitContext)).Execute);
 
             rootNode.DynamoDBTableViewMetaNode.OnStreamProperties =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<StreamPropertiesController>().Execute);
