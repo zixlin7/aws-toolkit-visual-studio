@@ -4,18 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.DynamoDB.Nodes;
-using Amazon.AWSToolkit.DynamoDB.View;
-using Amazon.AWSToolkit.DynamoDB.View.Columns;
-using Amazon.AWSToolkit.DynamoDB.Model;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.DynamoDB.Model;
+using Amazon.AWSToolkit.DynamoDB.Nodes;
+using Amazon.AWSToolkit.DynamoDB.Util;
+using Amazon.AWSToolkit.DynamoDB.View;
+using Amazon.AWSToolkit.DynamoDB.View.Columns;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 
 using log4net;
 
@@ -27,7 +28,6 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(TableBrowserController));
 
         private readonly ToolkitContext _toolkitContext;
-        private readonly string _accountId;
 
         TableBrowserControl _control;
         TableBrowserModel _model;
@@ -38,7 +38,6 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
         public TableBrowserController(ToolkitContext toolkitContext)
         {
             _toolkitContext = toolkitContext;
-            _accountId = _toolkitContext.ConnectionManager.ActiveAccountId;
         }
 
         public override ActionResults Execute(IViewModel model)
@@ -171,14 +170,24 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             }
         }
 
+        public void RecordViewTable(ActionResults results)
+        {
+            _toolkitContext.RecordDynamoDbView(DynamoDbTarget.Table, results,
+                _rootModel.DynamoDBRootViewModel.AwsConnectionSettings);
+        }
+
         private string GetAccountId()
         {
-            if (string.IsNullOrWhiteSpace(_accountId))
+            var accountId =
+                _rootModel?.DynamoDBRootViewModel?.AwsConnectionSettings?.GetAccountId(
+                    _toolkitContext.ServiceClientManager);
+
+            if (string.IsNullOrWhiteSpace(accountId))
             {
                 return MetadataValue.Invalid;
             }
 
-            return _accountId;
+            return accountId;
         }
 
         public DynamoDBColumnDefinition[] FetchFromLastSearch(int pages)
