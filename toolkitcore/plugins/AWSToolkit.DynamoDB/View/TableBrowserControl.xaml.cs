@@ -152,10 +152,17 @@ namespace Amazon.AWSToolkit.DynamoDB.View
 
         void onCommitChangesClick(object sender, RoutedEventArgs evnt)
         {
-            this.commitChanges();
+            this.CommitChanges();
         }
 
-        bool commitChanges()
+        private bool CommitChanges()
+        {
+            var result = CommitEditsAndRefresh();
+            _controller.RecordEditTable(new ActionResults().WithSuccess(result));
+            return result;
+        }
+
+        private bool CommitEditsAndRefresh()
         {
             try
             {
@@ -193,7 +200,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
                 if (ToolkitFactory.Instance.ShellProvider.Confirm("Commit Changes",
                             "There are uncommitted changes.  Do you wish to commit changes before scanning table?"))
                 {
-                    if (!commitChanges())
+                    if (!CommitChanges())
                     {
                         return;
                     }

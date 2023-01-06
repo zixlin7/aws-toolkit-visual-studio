@@ -176,6 +176,12 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
                 _rootModel.DynamoDBRootViewModel.AwsConnectionSettings);
         }
 
+        public void RecordEditTable(ActionResults results)
+        {
+            _toolkitContext.RecordDynamoDbEdit(DynamoDbTarget.Table, results,
+                _rootModel.DynamoDBRootViewModel.AwsConnectionSettings);
+        }
+
         private string GetAccountId()
         {
             var accountId =
