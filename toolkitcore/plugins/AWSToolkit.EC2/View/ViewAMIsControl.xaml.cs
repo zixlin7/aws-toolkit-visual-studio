@@ -227,8 +227,8 @@ namespace Amazon.AWSToolkit.EC2.View
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error editting permissions image(s)", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error editting permissions image(s): " + e.Message);
+                LOGGER.Error("Error editing permissions image(s)", e);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error editing permissions image(s): " + e.Message);
             }
         }
 

@@ -140,8 +140,8 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void LaunchInstance(ImageWrapper image)
         {
-            var controller = new LaunchController();
-            var result = controller.Execute(this.FeatureViewModel, image.NativeImage);
+            var controller = new LaunchController(_toolkitContext, image.NativeImage);
+            var result = controller.Execute(this.FeatureViewModel);
 
             var rootModel = this.FeatureViewModel.Parent as EC2RootViewModel;
             if (result.Success && rootModel != null)

@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public IList<RunningInstanceWrapper> LaunchInstance()
         {
-            var launchController = new LaunchController();
+            var launchController = new LaunchController(_toolkitContext);
             var results = launchController.Execute(base.FeatureViewModel);
             if (results.Success)
             {

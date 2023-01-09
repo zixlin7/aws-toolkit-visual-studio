@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit.EC2.Controller;
-using Amazon.AWSToolkit.EC2.Repositories;
-using Amazon.AWSToolkit.Regions;
-using Amazon.EC2;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.EC2.Model;
-using System.Collections.Generic;
+using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.EC2.Repositories;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Regions;
+using Amazon.EC2;
+using Amazon.EC2.Model;
+
 using log4net;
-using Amazon.ElasticLoadBalancing.Model;
 
 namespace Amazon.AWSToolkit.EC2
 {
@@ -102,14 +103,14 @@ namespace Amazon.AWSToolkit.EC2
         void setupEC2ContextMenuHooks(EC2RootViewMetaNode rootNode)
         {
             rootNode.OnLaunch =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<LaunchController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new LaunchController(ToolkitContext)).Execute);
 
             rootNode.FindChild<EC2AMIsViewMetaNode>().OnView =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewAMIsController(ToolkitContext)).Execute);
 
             EC2InstancesViewMetaNode instancesNode = rootNode.FindChild<EC2InstancesViewMetaNode>();
             instancesNode.OnLaunch =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<LaunchController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new LaunchController(ToolkitContext)).Execute);
             instancesNode.OnView =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewInstancesController(ToolkitContext)).Execute);
 

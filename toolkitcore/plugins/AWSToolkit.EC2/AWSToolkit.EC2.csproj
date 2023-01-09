@@ -194,6 +194,7 @@
     <Compile Include="Model\CreateVolumeModel.cs" />
     <Compile Include="Model\CreateVPCModel.cs" />
     <Compile Include="Model\DHCPOptionsWrapper.cs" />
+    <Compile Include="Model\Ec2Exception.cs" />
     <Compile Include="Model\EC2QuickLaunchImage.cs" />
     <Compile Include="Model\GetConsoleOutputModel.cs" />
     <Compile Include="Model\GetPasswordModel.cs" />
