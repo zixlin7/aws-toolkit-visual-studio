@@ -316,19 +316,19 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public void OpenRemoteDesktop(RunningInstanceWrapper instance)
         {
             var controller = new OpenRemoteDesktopController(_toolkitContext);
-            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
+            controller.Execute(AwsConnectionSettings, instance);
         }
 
         public void OpenSSHSession(RunningInstanceWrapper instance)
         {
             var controller = new OpenSSHSessionController(_toolkitContext);
-            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
+            controller.Execute(AwsConnectionSettings, instance);
         }
 
         public void OpenSCPSession(RunningInstanceWrapper instance)
         {
             var controller = new OpenSCPSessionController(_toolkitContext);
-            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
+            controller.Execute(AwsConnectionSettings, instance);
         }
     }
 }

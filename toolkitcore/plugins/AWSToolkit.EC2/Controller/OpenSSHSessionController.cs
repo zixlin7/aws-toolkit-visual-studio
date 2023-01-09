@@ -1,7 +1,8 @@
-﻿using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.EC2.View;
-using Amazon.AWSToolkit.EC2.ConnectionUtils;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.EC2.ConnectionUtils;
+using Amazon.AWSToolkit.EC2.View;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -10,6 +11,8 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public override string Executable => SSHUtil.PUTTY_EXECUTABLE;
 
         public override string ToolSearchFolders => @"";
+
+        protected override Ec2ConnectionType _ec2ConnectionType => Ec2ConnectionType.Ssh;
 
         public OpenSSHSessionController(ToolkitContext toolkitContext)
             : base(toolkitContext) { }
