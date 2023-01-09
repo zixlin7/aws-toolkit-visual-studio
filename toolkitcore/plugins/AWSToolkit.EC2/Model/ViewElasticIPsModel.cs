@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
@@ -6,20 +7,20 @@ namespace Amazon.AWSToolkit.EC2.Model
 {
     public class ViewElasticIPsModel : BaseModel
     {
-        ObservableCollection<AddressWrapper> _addresses = new ObservableCollection<AddressWrapper>();
-        public ObservableCollection<AddressWrapper> Addresses => this._addresses;
+        private ObservableCollection<AddressWrapper> _addresses = new ObservableCollection<AddressWrapper>();
+        public ObservableCollection<AddressWrapper> Addresses => _addresses;
 
-        EC2ColumnDefinition[] _propertytColumnDefinitions;
+        private EC2ColumnDefinition[] _propertyColumnDefinitions;
         public EC2ColumnDefinition[] PropertyColumnDefinitions
         {
             get
             {
-                if (this._propertytColumnDefinitions == null)
+                if (_propertyColumnDefinitions == null)
                 {
-                    this._propertytColumnDefinitions = EC2ColumnDefinition.GetPropertyColumnDefinitions(typeof(AddressWrapper));
+                    _propertyColumnDefinitions = EC2ColumnDefinition.GetPropertyColumnDefinitions(typeof(AddressWrapper));
                 }
 
-                return this._propertytColumnDefinitions;
+                return _propertyColumnDefinitions;
             }
         }
     }
