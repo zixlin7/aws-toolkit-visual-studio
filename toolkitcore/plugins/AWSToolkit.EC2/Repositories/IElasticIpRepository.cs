@@ -17,5 +17,10 @@ namespace Amazon.AWSToolkit.EC2.Repositories
         Task<string> AllocateElasticIpAsync(string domain, AwsConnectionSettings awsConnectionSettings);
 
         Task ReleaseElasticIpAsync(AddressWrapper address, AwsConnectionSettings awsConnectionSettings);
+
+        Task AssociateWithInstance(AddressWrapper address, string instanceId, AwsConnectionSettings awsConnectionSettings);
+
+        Task<IEnumerable<AssociateAddressModel.InstanceItem>> GetUnassociatedInstancesAsync(
+            string domain, AwsConnectionSettings awsConnectionSettings);
     }
 }

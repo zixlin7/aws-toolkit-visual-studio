@@ -73,24 +73,6 @@ namespace Amazon.AWSToolkit.EC2.View
             }
         }
 
-        void onAssociateAddressClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
-                if (selectedItems.Count != 1)
-                    return;
-
-                this._controller.Associate(selectedItems[0]);
-                selectAddress(selectedItems[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error associate address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Associate Error", "Error associating address: " + e.Message);
-            }
-        }
-
         void onDisassociateAddressClick(object sender, RoutedEventArgs evnt)
         {
             try
@@ -152,7 +134,8 @@ namespace Amazon.AWSToolkit.EC2.View
             release.Command = _controller.Model.ReleaseElasticIp;
 
             MenuItem associate = new MenuItem() { Header = "Associate Address", Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.elastic-ip-associate.png") };
-            associate.Click += this.onAssociateAddressClick;
+            associate.CommandParameter = _ctlDataGrid;
+            associate.Command = _controller.Model.AssociateElasticIp;
 
             MenuItem disassociate = new MenuItem() { Header = "Disassociate Address", Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.elastic-ip-disassociate.png") };
             disassociate.Click += this.onDisassociateAddressClick;
@@ -162,10 +145,6 @@ namespace Amazon.AWSToolkit.EC2.View
 
             if (string.IsNullOrEmpty(selectedItems[0].InstanceId))
                 disassociate.IsEnabled = false;
-            else
-            {
-                associate.IsEnabled = false;
-            }
 
             menu.Items.Add(release);
             menu.Items.Add(new Separator());
@@ -189,7 +168,6 @@ namespace Amazon.AWSToolkit.EC2.View
 
             var selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
             
-            this._ctlAssociate.IsEnabled = selectedItems.Count == 1 && !selectedItems[0].IsAddressInUse;
             this._ctlDisassociate.IsEnabled = selectedItems.Count == 1 && selectedItems[0].IsAddressInUse;
         }        
 

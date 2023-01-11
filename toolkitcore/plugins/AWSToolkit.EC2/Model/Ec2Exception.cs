@@ -8,9 +8,10 @@ namespace Amazon.AWSToolkit.EC2.Model
     {
         public enum Ec2ErrorCode
         {
+            InternalMissingEc2State,
+            NoInstances,
             NoPublicIp,
             NoSecurityGroupCreated,
-            InternalMissingEc2State,
         }
 
         public Ec2Exception(string message, Ec2ErrorCode errorCode) : this(message, errorCode, null) { }

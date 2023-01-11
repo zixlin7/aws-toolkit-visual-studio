@@ -8,6 +8,12 @@ using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Commands
 {
+    public class SelectedElasticIpCommandArgs
+    {
+        public ICustomizeColumnGrid Grid;
+        public AddressWrapper SelectedAddress;
+    }
+
     /// <summary>
     /// Commands working with a an Elastic IP that is selected in the ViewElasticIPsControl grid can implement this class.
     /// It provides type-checked access to the selected address.
@@ -22,33 +28,71 @@ namespace Amazon.AWSToolkit.EC2.Commands
 
         protected override bool CanExecuteCore(object parameter)
         {
-            return parameter is ICustomizeColumnGrid grid
-                   && grid.SelectedItems.Count == 1
-                   && grid.SelectedItem is AddressWrapper selectedAddress
-                   && !selectedAddress.IsAddressInUse;
+            return TryGetCommandArgs(parameter, out var args)
+                   && args.Grid.SelectedItems.Count == 1
+                   && CanExecuteCore(args);
+        }
+
+        protected virtual bool CanExecuteCore(SelectedElasticIpCommandArgs args)
+        {
+            return true;
+        }
+
+        protected override Task<bool> PromptAsync(object parameter)
+        {
+            if (!TryGetCommandArgs(parameter, out var args))
+            {
+                return Task.FromResult(false);
+            }
+
+            return PromptAsync(args);
         }
 
         protected override bool Prompt(object parameter)
         {
-            return Prompt(GetAddress(parameter));
+            if (!TryGetCommandArgs(parameter, out var args))
+            {
+                return false;
+            }
+
+            return Prompt(args);
         }
 
-        protected virtual bool Prompt(AddressWrapper address)
+        protected virtual Task<bool> PromptAsync(SelectedElasticIpCommandArgs args)
+        {
+            return Task.FromResult(Prompt(args));
+        }
+
+        protected virtual bool Prompt(SelectedElasticIpCommandArgs args)
         {
             return true;
         }
 
         protected override Task ExecuteAsync(object parameter)
         {
-            return ExecuteAsync(GetAddress(parameter));
+            if (!TryGetCommandArgs(parameter, out var args))
+            {
+                // We screwed up the logic somewhere
+                throw new Ec2Exception("Unable to find the selected Elastic IP", Ec2Exception.Ec2ErrorCode.InternalMissingEc2State);
+            }
+
+            return ExecuteAsync(args);
         }
 
-        protected abstract Task ExecuteAsync(AddressWrapper address);
+        protected abstract Task ExecuteAsync(SelectedElasticIpCommandArgs args);
 
-        private AddressWrapper GetAddress(object parameter)
+        private bool TryGetCommandArgs(object parameter, out SelectedElasticIpCommandArgs commandArgs)
         {
-            var grid = parameter as ICustomizeColumnGrid;
-            return grid.SelectedItem as AddressWrapper;
+            commandArgs = null;
+
+            if (parameter is ICustomizeColumnGrid grid
+                && grid.SelectedItem is AddressWrapper selectedAddress)
+            {
+                commandArgs = new SelectedElasticIpCommandArgs { Grid = grid, SelectedAddress = selectedAddress, };
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -25,6 +25,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 IElasticIpRepository;
             Model.AllocateElasticIp = new AllocateElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
             Model.ReleaseElasticIp = new ReleaseElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
+            Model.AssociateElasticIp = new AssociateElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
 
             this._control = new ViewElasticIPsControl(this);
             _toolkitContext.ToolkitHost.OpenInEditor(this._control);
@@ -48,15 +49,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
                     this.Model.Addresses.Add(new AddressWrapper(item));
                 }
             }));
-        }
-
-        public void Associate(AddressWrapper address)
-        {
-            var controller = new AssociateAddressController();
-            var results = controller.Execute(this.EC2Client, address);
-
-            if(results.Success)
-                this.RefreshElasticIPs();
         }
 
         public void Disassociate(AddressWrapper address)

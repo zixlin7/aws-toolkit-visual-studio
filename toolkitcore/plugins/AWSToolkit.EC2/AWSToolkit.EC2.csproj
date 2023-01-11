@@ -68,6 +68,7 @@
     <Compile Include="AvailabilityZoneManager.cs" />
     <Compile Include="Commands\AllocateElasticIpCommand.cs" />
     <Compile Include="Commands\ElasticIpCommand.cs" />
+    <Compile Include="Commands\AssociateElasticIpCommand.cs" />
     <Compile Include="Commands\ReleaseElasticIpCommand.cs" />
     <Compile Include="Commands\SelectedElasticIpCommand.cs" />
     <Compile Include="ConnectionUtils\RemoteDesktopUtil.cs" />
@@ -77,7 +78,6 @@
     <Compile Include="Controller\AddNetworkAclRuleController.cs" />
     <Compile Include="Controller\AddRouteController.cs" />
     <Compile Include="Controller\AMIPermissionController.cs" />
-    <Compile Include="Controller\AssociateAddressController.cs" />
     <Compile Include="Controller\AssociateDHCPOptionSetController.cs" />
     <Compile Include="Controller\AssociateSubnetToNetworkAclController.cs" />
     <Compile Include="Controller\AssociateSubnetToRouteTableController.cs" />

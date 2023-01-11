@@ -22,15 +22,20 @@ namespace Amazon.AWSToolkit.EC2.Commands
         {
         }
 
-        protected override bool Prompt(AddressWrapper address)
+        protected override bool CanExecuteCore(SelectedElasticIpCommandArgs args)
         {
-            var message = $"Are you sure you want to release Elastic IP with address {address.PublicIp}?";
+            return !args.SelectedAddress.IsAddressInUse;
+        }
+
+        protected override bool Prompt(SelectedElasticIpCommandArgs args)
+        {
+            var message = $"Are you sure you want to release Elastic IP with address {args.SelectedAddress.PublicIp}?";
             return _toolkitContext.ToolkitHost.Confirm("Release Elastic IP", message);
         }
 
-        protected override async Task ExecuteAsync(AddressWrapper address)
+        protected override async Task ExecuteAsync(SelectedElasticIpCommandArgs args)
         {
-            await _elasticIp.ReleaseElasticIpAsync(address, _awsConnectionSettings);
+            await _elasticIp.ReleaseElasticIpAsync(args.SelectedAddress, _awsConnectionSettings);
             await RefreshElasticIpsAsync();
         }
 

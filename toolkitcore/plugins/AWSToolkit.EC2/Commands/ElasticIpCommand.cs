@@ -57,7 +57,7 @@ namespace Amazon.AWSToolkit.EC2.Commands
         {
             try
             {
-                if (!Prompt(parameter))
+                if (!await PromptAsync(parameter))
                 {
                     return ActionResults.CreateCancelled();
                 }
@@ -76,7 +76,22 @@ namespace Amazon.AWSToolkit.EC2.Commands
         /// <summary>
         /// Prompts the user about the operation.
         /// Prompting is optional, and defaults to proceeding with the operation.
-        /// When implementing a command, this method should be overridden, to present users with a prompt for input.
+        /// When implementing a command, if you need to prompt users for input:
+        /// - override this method if your prompt logic is async
+        /// - override <see cref="Prompt"/> if your prompt logic is synchronous
+        /// </summary>
+        /// <returns>true: operation should proceed, false: operation should be cancelled</returns>
+        protected virtual Task<bool> PromptAsync(object parameter)
+        {
+            return Task.FromResult(Prompt(parameter));
+        }
+
+        /// <summary>
+        /// Prompts the user about the operation.
+        /// Prompting is optional, and defaults to proceeding with the operation.
+        /// When implementing a command, if you need to prompt users for input:
+        /// - override <see cref="PromptAsync"/> if your prompt logic is async
+        /// - override this method if your prompt logic is synchronous
         /// </summary>
         /// <returns>true: operation should proceed, false: operation should be cancelled</returns>
         protected virtual bool Prompt(object parameter)

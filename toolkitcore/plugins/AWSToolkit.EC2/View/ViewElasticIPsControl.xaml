@@ -51,7 +51,9 @@
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-                <Button Click="onAssociateAddressClick" Name="_ctlAssociate" IsEnabled="False">
+                <Button
+                    CommandParameter="{Binding ElementName=_ctlDataGrid}"
+                    Command="{Binding AssociateElasticIp}">
                     <Button.Content>
                         <WrapPanel>
                             <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=AddLink}"/>
