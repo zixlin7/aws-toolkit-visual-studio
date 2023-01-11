@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="AvailabilityZoneManager.cs" />
     <Compile Include="Commands\AllocateElasticIpCommand.cs" />
+    <Compile Include="Commands\DisassociateElasticIpCommand.cs" />
     <Compile Include="Commands\ElasticIpCommand.cs" />
     <Compile Include="Commands\AssociateElasticIpCommand.cs" />
     <Compile Include="Commands\ReleaseElasticIpCommand.cs" />

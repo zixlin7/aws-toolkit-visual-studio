@@ -78,6 +78,24 @@ namespace Amazon.AWSToolkit.EC2.Repositories
             await ec2.AssociateAddressAsync(request);
         }
 
+        public async Task DisassociateFromInstanceAsync(AddressWrapper address, AwsConnectionSettings awsConnectionSettings)
+        {
+            var ec2 = CreateEc2Client(awsConnectionSettings);
+
+            DisassociateAddressRequest request = null;
+
+            if (address.NativeAddress.Domain == AddressWrapper.DOMAIN_EC2)
+            {
+                request = new DisassociateAddressRequest() { PublicIp = address.PublicIp };
+            }
+            else
+            {
+                request = new DisassociateAddressRequest() { AssociationId = address.AssociationId };
+            }
+
+            await ec2.DisassociateAddressAsync(request);
+        }
+
         public async Task<IEnumerable<AssociateAddressModel.InstanceItem>> GetUnassociatedInstancesAsync(string domain, AwsConnectionSettings awsConnectionSettings)
         {
             var ec2 = CreateEc2Client(awsConnectionSettings);

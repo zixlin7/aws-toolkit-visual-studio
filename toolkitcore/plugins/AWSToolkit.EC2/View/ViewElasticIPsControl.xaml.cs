@@ -73,41 +73,6 @@ namespace Amazon.AWSToolkit.EC2.View
             }
         }
 
-        void onDisassociateAddressClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
-                if (selectedItems.Count != 1)
-                    return;
-
-                string message = "Are you sure you want to disassociate the address?";
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Disassociate Address", message))
-                    return;
-
-                this._controller.Disassociate(selectedItems[0]);
-                selectAddress(selectedItems[0]);
-
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error disassociate address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Disassociate Error", "Error disassociating address: " + e.Message);
-            }
-        }
-
-        void selectAddress(AddressWrapper address)
-        {
-            foreach (var item in this._controller.Model.Addresses)
-            {
-                if (item.PublicIp == address.PublicIp)
-                {
-                    this._ctlDataGrid.SelectAndScrollIntoView(item);
-                    break;
-                }
-            }
-        }
-
         void onPropertiesClick(object sender, RoutedEventArgs evnt)
         {
             try
@@ -138,13 +103,11 @@ namespace Amazon.AWSToolkit.EC2.View
             associate.Command = _controller.Model.AssociateElasticIp;
 
             MenuItem disassociate = new MenuItem() { Header = "Disassociate Address", Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.elastic-ip-disassociate.png") };
-            disassociate.Click += this.onDisassociateAddressClick;
+            disassociate.CommandParameter = _ctlDataGrid;
+            disassociate.Command = _controller.Model.DisassociateElasticIp;
 
             MenuItem properties = new MenuItem() { Header = "Properties" };
             properties.Click += this.onPropertiesClick;
-
-            if (string.IsNullOrEmpty(selectedItems[0].InstanceId))
-                disassociate.IsEnabled = false;
 
             menu.Items.Add(release);
             menu.Items.Add(new Separator());
@@ -165,10 +128,6 @@ namespace Amazon.AWSToolkit.EC2.View
         void onSelectionChanged(object sender, RoutedEventArgs e)
         {
             this.UpdateProperties(this._ctlDataGrid.GetSelectedItems<PropertiesModel>());
-
-            var selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
-            
-            this._ctlDisassociate.IsEnabled = selectedItems.Count == 1 && selectedItems[0].IsAddressInUse;
         }        
 
         void OnColumnCustomizationApplyPressed(object sender, RoutedEventArgs e)

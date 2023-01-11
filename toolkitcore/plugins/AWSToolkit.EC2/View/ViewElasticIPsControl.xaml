@@ -61,7 +61,9 @@
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-                <Button Click="onDisassociateAddressClick" Name="_ctlDisassociate" IsEnabled="False">
+                <Button
+                    CommandParameter="{Binding ElementName=_ctlDataGrid}"
+                    Command="{Binding DisassociateElasticIp}">
                     <Button.Content>
                         <WrapPanel>
                             <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=RemoveLink}"/>

@@ -49,5 +49,12 @@ namespace Amazon.AWSToolkit.EC2.Model
             set => SetProperty(ref _associateElasticIp, value);
         }
 
+        private ICommand _disassociateElasticIp;
+
+        public ICommand DisassociateElasticIp
+        {
+            get => _disassociateElasticIp;
+            set => SetProperty(ref _disassociateElasticIp, value);
+        }
     }
 }

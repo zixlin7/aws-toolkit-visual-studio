@@ -22,5 +22,7 @@ namespace Amazon.AWSToolkit.EC2.Repositories
 
         Task<IEnumerable<AssociateAddressModel.InstanceItem>> GetUnassociatedInstancesAsync(
             string domain, AwsConnectionSettings awsConnectionSettings);
+
+        Task DisassociateFromInstanceAsync(AddressWrapper address, AwsConnectionSettings awsConnectionSettings);
     }
 }
