@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -6,6 +7,7 @@ using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
+    [DebuggerDisplay("{DisplayName}")]
     public class AddressWrapper : PropertiesModel, IWrapper
     {
         public const string DOMAIN_VPC = "vpc";

@@ -66,6 +66,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvailabilityZoneManager.cs" />
+    <Compile Include="Commands\AllocateElasticIpCommand.cs" />
+    <Compile Include="Commands\ElasticIpCommand.cs" />
+    <Compile Include="Commands\ReleaseElasticIpCommand.cs" />
+    <Compile Include="Commands\SelectedElasticIpCommand.cs" />
     <Compile Include="ConnectionUtils\RemoteDesktopUtil.cs" />
     <Compile Include="ConnectionUtils\SCPUtil.cs" />
     <Compile Include="ConnectionUtils\SSHUtil.cs" />
@@ -86,7 +90,6 @@
     <Compile Include="Controller\ChangeTerminationProtectionController.cs" />
     <Compile Include="Controller\ChangeUserDataController.cs" />
     <Compile Include="Controller\ConnectToInstanceController.cs" />
-    <Compile Include="Controller\AllocateAddressController.cs" />
     <Compile Include="Controller\CopyAmiController.cs" />
     <Compile Include="Controller\CreateImageController.cs" />
     <Compile Include="Controller\CreateNetworkAclController.cs" />
@@ -271,7 +274,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Repositories\IElasticIpRepository.cs" />
     <Compile Include="Repositories\InstanceTypeRepository.cs" />
+    <Compile Include="Repositories\ElasticIpRepository.cs" />
     <Compile Include="Utils\CommonImageFilters.cs" />
     <Compile Include="Utils\PlatformPicker.cs" />
     <Compile Include="Validators\InstanceNameValidator.cs" />

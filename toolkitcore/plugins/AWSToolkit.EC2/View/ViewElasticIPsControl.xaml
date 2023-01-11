@@ -31,18 +31,22 @@
 
         <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True" Margin="0,0,0,0">
             <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
-                <Button Click="onAllocateAddressClick">
+                <Button
+                    CommandParameter="{Binding ElementName=_ctlDataGrid}"
+                    Command="{Binding AllocateElasticIp}">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=Add}"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Add}"/>
                             <TextBlock>Allocate New Address</TextBlock>
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-                <Button Click="onReleaseAddressClick" Name="_ctlRelease" IsEnabled="False">
+                <Button
+                    CommandParameter="{Binding ElementName=_ctlDataGrid}"
+                    Command="{Binding ReleaseElasticIp}">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16"  Source="{Binding Source={StaticResource VsImages}, Path=Cancel}"/>
+                            <Image Width="16" Height="16" Source="{Binding Source={StaticResource VsImages}, Path=Cancel}"/>
                             <TextBlock>Release Address</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -91,7 +95,8 @@
                 GridSelectionChanged="onSelectionChanged"  
                 GotFocus="onGotFocus"                                             
                 KeyField="Address"                                             
-                ItemsSource="{Binding Addresses}"/>
+                ItemsSource="{Binding Addresses}"
+                SelectionMode="Single" />
         </DockPanel>
     </Grid>
 </commonui:BaseAWSView>

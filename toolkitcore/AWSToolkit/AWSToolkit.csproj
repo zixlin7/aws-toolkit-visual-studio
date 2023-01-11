@@ -91,6 +91,7 @@
     <Compile Include="CloudWatch\CloudWatchTelemetry.cs" />
     <Compile Include="CloudWatch\ILogEventsViewer.cs" />
     <Compile Include="CloudWatch\ILogStreamsViewer.cs" />
+    <Compile Include="Commands\AsyncCommand.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommand.cs" />
     <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />

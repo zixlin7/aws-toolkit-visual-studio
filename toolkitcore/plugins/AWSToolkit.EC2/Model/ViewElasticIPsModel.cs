@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
@@ -22,6 +23,22 @@ namespace Amazon.AWSToolkit.EC2.Model
 
                 return _propertyColumnDefinitions;
             }
+        }
+
+        private ICommand _allocateElasticIp;
+
+        public ICommand AllocateElasticIp
+        {
+            get => _allocateElasticIp;
+            set => SetProperty(ref _allocateElasticIp, value);
+        }
+
+        private ICommand _releaseElasticIp;
+
+        public ICommand ReleaseElasticIp
+        {
+            get => _releaseElasticIp;
+            set => SetProperty(ref _releaseElasticIp, value);
         }
     }
 }

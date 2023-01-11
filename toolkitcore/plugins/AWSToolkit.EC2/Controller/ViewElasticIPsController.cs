@@ -1,5 +1,9 @@
 ﻿using System;
+
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.EC2.Commands;
 using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.EC2.Repositories;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.EC2.Model;
 
@@ -7,12 +11,23 @@ namespace Amazon.AWSToolkit.EC2.Controller
 {
     public class ViewElasticIPsController : FeatureController<ViewElasticIPsModel>
     {
-        ViewElasticIPsControl _control;
+        private readonly ToolkitContext _toolkitContext;
+        private ViewElasticIPsControl _control;
+
+        public ViewElasticIPsController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         protected override void DisplayView()
         {
+            var ip = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IElasticIpRepository)) as
+                IElasticIpRepository;
+            Model.AllocateElasticIp = new AllocateElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
+            Model.ReleaseElasticIp = new ReleaseElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
+
             this._control = new ViewElasticIPsControl(this);
-            ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
+            _toolkitContext.ToolkitHost.OpenInEditor(this._control);
         }
 
         public void LoadModel()
@@ -25,7 +40,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             var response = this.EC2Client.DescribeAddresses(new DescribeAddressesRequest());
 
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Addresses.Clear();
                 foreach (var item in response.Addresses)
@@ -35,24 +50,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }));
         }
 
-        public AddressWrapper Allocate()
-        {
-            var controller = new AllocateAddressController();
-            var results = controller.Execute(this.EC2Client);
-
-            if (results.Success)
-            {
-                this.RefreshElasticIPs();
-                foreach (var item in this.Model.Addresses)
-                {
-                    if (string.Equals(item.PublicIp, results.FocalName))
-                        return item;
-                }
-            }
-
-            return null;
-        }
-
         public void Associate(AddressWrapper address)
         {
             var controller = new AssociateAddressController();
@@ -60,18 +57,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             if(results.Success)
                 this.RefreshElasticIPs();
-        }
-
-        public void Release(AddressWrapper address)
-        {
-            ReleaseAddressRequest request = null;
-            if (address.NativeAddress.Domain == AddressWrapper.DOMAIN_EC2)
-                request = new ReleaseAddressRequest() { PublicIp = address.PublicIp };
-            else
-                request = new ReleaseAddressRequest() { AllocationId = address.AllocationId };
-
-            this.EC2Client.ReleaseAddress(request);
-            this.RefreshElasticIPs();
         }
 
         public void Disassociate(AddressWrapper address)

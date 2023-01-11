@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -17,10 +18,21 @@ using log4net;
 
 namespace Amazon.AWSToolkit.EC2.View.DataGrid
 {
+    public interface ICustomizeColumnGrid
+    {
+        IList SelectedItems { get; }
+
+        object SelectedItem { get; }
+
+        IList<T> GetSelectedItems<T>();
+
+        void SelectAndScrollIntoView(object obj);
+    }
+
     /// <summary>
     /// Interaction logic for CustomizeColumnGrid.xaml
     /// </summary>
-    public partial class CustomizeColumnGrid
+    public partial class CustomizeColumnGrid : BaseAWSUserControl, ICustomizeColumnGrid
     {
         const string EC2_USER_PREFERENCES = "EC2UsersPreferences";
         const string EC2_COLUMN_LAYOUTS = "EC2ColumnLayout";
@@ -251,6 +263,12 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
         void onLoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
+
+        public DataGridSelectionMode SelectionMode
+        {
+            get => _ctlDataGrid.SelectionMode;
+            set => _ctlDataGrid.SelectionMode = value;
         }
 
         public System.Collections.IList SelectedItems => this._ctlDataGrid.SelectedItems;

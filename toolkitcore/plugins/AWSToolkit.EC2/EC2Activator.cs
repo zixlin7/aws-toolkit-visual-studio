@@ -78,6 +78,11 @@ namespace Amazon.AWSToolkit.EC2
                 return _instanceTypeRepository;
             }
 
+            if (serviceType == typeof(IElasticIpRepository))
+            {
+                return new ElasticIpRepository(ToolkitContext);
+            }
+
             return null;
         }
 
@@ -139,7 +144,7 @@ namespace Amazon.AWSToolkit.EC2
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewSubnetsController>().Execute);
 
             rootNode.FindChild<ElasticIPsViewMetaNode>().OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewElasticIPsController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewElasticIPsController(ToolkitContext)).Execute);
 
             rootNode.FindChild<NetworkAclViewMetaNode>().OnView =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewNetworkAclsController>().Execute);
