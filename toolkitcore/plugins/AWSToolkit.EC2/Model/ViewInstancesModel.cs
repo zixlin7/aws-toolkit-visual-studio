@@ -80,5 +80,13 @@ namespace Amazon.AWSToolkit.EC2.Model
             get => _changeTerminationProtection;
             set => SetProperty(ref _changeTerminationProtection, value);
         }
+
+        private ICommand _changeUserData;
+
+        public ICommand ChangeUserData
+        {
+            get => _changeUserData;
+            set => SetProperty(ref _changeUserData, value);
+        }
     }
 }

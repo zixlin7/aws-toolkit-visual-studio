@@ -60,5 +60,29 @@ namespace Amazon.AWSToolkit.EC2.Repositories
 
             await _ec2.ModifyInstanceAttributeAsync(request);
         }
+
+        public async Task<string> GetUserDataAsync(string instanceId)
+        {
+            var request = new DescribeInstanceAttributeRequest()
+            {
+                InstanceId = instanceId,
+                Attribute = InstanceAttributeName.UserData,
+            };
+
+            var response = await _ec2.DescribeInstanceAttributeAsync(request);
+
+            return response.InstanceAttribute.UserData;
+        }
+
+        public async Task SetUserDataAsync(string instanceId, string userData)
+        {
+            var request = new ModifyInstanceAttributeRequest()
+            {
+                InstanceId = instanceId,
+                UserData = userData,
+            };
+
+            await _ec2.ModifyInstanceAttributeAsync(request);
+        }
     }
 }

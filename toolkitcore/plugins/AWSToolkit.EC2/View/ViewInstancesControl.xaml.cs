@@ -151,7 +151,7 @@ namespace Amazon.AWSToolkit.EC2.View
             MenuItem changeTerminationProtection = CreateMenuItem("Change Termination Protection", _controller.Model.ChangeTerminationProtection, _ctlDataGrid);
             MenuItem changeInstanceType = createMenuItem("Change Instance Type", this.onChangeInstanceType);
             MenuItem changeShutdownBehavior = createMenuItem("Change Shutdown Behavior", this.onChangeShutdownBehavior);
-            MenuItem changeUserData = createMenuItem("View/Change User Data", this.onChangeUserData);
+            MenuItem changeUserData = CreateMenuItem("View/Change User Data", _controller.Model.ChangeUserData, _ctlDataGrid);
 
             MenuItem terminate = createMenuItem("Terminate", this.onTerminateClick);
             MenuItem reboot = createMenuItem("Reboot", this.onRebootClick);
@@ -173,7 +173,6 @@ namespace Amazon.AWSToolkit.EC2.View
                 ssh.IsEnabled = false;
                 changeInstanceType.IsEnabled = false;
                 changeShutdownBehavior.IsEnabled = false;
-                changeUserData.IsEnabled = false;
                 associateElasticIP.IsEnabled = false;
                 disassociateElasticIP.IsEnabled = false;
             }
@@ -408,23 +407,6 @@ namespace Amazon.AWSToolkit.EC2.View
             {
                 LOGGER.Error("Error changing shutdown behavior", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error changing shutdown behavior: " + e.Message);
-            }
-        }
-
-        void onChangeUserData(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.ChangeUserData(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing user data", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing user data: " + e.Message);
             }
         }
 
