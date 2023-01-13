@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
@@ -53,6 +55,14 @@ namespace Amazon.AWSToolkit.EC2.Model
 
                 return this._volumePropertytColumnDefinitions;
             }
+        }
+
+        private ICommand _viewSystemLog;
+
+        public ICommand ViewSystemLog
+        {
+            get => _viewSystemLog;
+            set => SetProperty(ref _viewSystemLog, value);
         }
     }
 }

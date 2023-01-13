@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
@@ -143,7 +145,7 @@ namespace Amazon.AWSToolkit.EC2.View
             MenuItem ssh = createMenuItem("Open SSH Session", this.onOpenSSHSessionClick);
             MenuItem scp = createMenuItem("Open SCP Session", this.onOpenSCPSessionClick);
 
-            MenuItem getConsoleOutput = createMenuItem("Get System Log", this.onGetConsoleOutput);
+            MenuItem getConsoleOutput = CreateMenuItem("Get System Log", _controller.Model.ViewSystemLog, _ctlDataGrid);
 
             MenuItem createImage = createMenuItem("Create Image (EBS AMI)", this.onCreateImageClick);
             MenuItem changeTerminationProtection = createMenuItem("Change Termination Protection", this.onChangeTerminationProtection);
@@ -174,7 +176,6 @@ namespace Amazon.AWSToolkit.EC2.View
                 changeShutdownBehavior.IsEnabled = false;
                 changeTerminationProtection.IsEnabled = false;
                 changeUserData.IsEnabled = false;
-                getConsoleOutput.IsEnabled = false;
                 associateElasticIP.IsEnabled = false;
                 disassociateElasticIP.IsEnabled = false;
             }
@@ -254,6 +255,11 @@ namespace Amazon.AWSToolkit.EC2.View
             MenuItem mi = new MenuItem() { Header = header};
             mi.Click += handler;
             return mi;
+        }
+
+        MenuItem CreateMenuItem(string header, ICommand command, object commandParameter)
+        {
+            return new MenuItem { Header = header, CommandParameter = commandParameter, Command = command };
         }
 
         void onPropertiesClick(object sender, RoutedEventArgs evnt)
@@ -446,23 +452,6 @@ namespace Amazon.AWSToolkit.EC2.View
             }
         }
 
-        void onGetConsoleOutput(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.GetConsoleOutput(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error getting console output", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error getting console output: " + e.Message);
-            }
-        }
-
         void onChangeUserData(object sender, RoutedEventArgs evnt)
         {
             try
@@ -537,9 +526,7 @@ namespace Amazon.AWSToolkit.EC2.View
             var items = new List<RunningInstanceWrapper>();
             foreach (RunningInstanceWrapper selectedItem in this._ctlDataGrid.SelectedItems)
             {
-                if(ignoreTerminated && (
-                    string.Equals(EC2Constants.INSTANCE_STATE_TERMINATED, selectedItem.NativeInstance.State.Name) ||
-                    string.Equals(EC2Constants.INSTANCE_STATE_SHUTTING_DOWN, selectedItem.NativeInstance.State.Name)))
+                if (ignoreTerminated && selectedItem.IsTerminated())
                 {
                     continue;
                 }

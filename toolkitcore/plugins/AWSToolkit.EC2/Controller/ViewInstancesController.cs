@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading;
 
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.EC2.Commands;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.Navigator;
@@ -13,6 +15,8 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.EC2.Model;
 
 using log4net;
+using Amazon.AWSToolkit.EC2.Repositories;
+using Amazon.AWSToolkit.EC2.ViewModels;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -21,6 +25,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ViewInstancesController));
 
         private readonly ToolkitContext _toolkitContext;
+        private IInstanceRepository _instanceRepository;
         ViewInstancesControl _control;
 
         public ViewInstancesController(ToolkitContext toolkitContext)
@@ -30,6 +35,17 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         protected override void DisplayView()
         {
+            if (!(_toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IEc2RepositoryFactory)) is
+                    IEc2RepositoryFactory factory))
+            {
+                Debug.Assert(!Debugger.IsAttached, $"Plugin factory {nameof(IEc2RepositoryFactory)} is missing. The Toolkit is unable to perform EC2 Instance operations.");
+                throw new NotSupportedException("AWS Toolkit was unable to get details about EC2 instances");
+            }
+
+            _instanceRepository = factory.CreateInstanceRepository(AwsConnectionSettings);
+            var viewModel = new ViewInstancesViewModel(Model, _instanceRepository);
+            Model.ViewSystemLog = new GetInstanceLogCommand(viewModel, AwsConnectionSettings, _toolkitContext);
+
             this._control = new ViewInstancesControl(this);
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
         }
@@ -298,12 +314,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public void ChangeUserData(RunningInstanceWrapper instance)
         {
             var controller = new ChangeUserDataController();
-            controller.Execute(this.EC2Client, instance);
-        }
-
-        public void GetConsoleOutput(RunningInstanceWrapper instance)
-        {
-            var controller = new GetConsoleOutputController();
             controller.Execute(this.EC2Client, instance);
         }
 

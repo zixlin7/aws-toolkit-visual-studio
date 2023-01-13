@@ -1,6 +1,5 @@
 ﻿using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Controller;
-using log4net;
+using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -9,17 +8,15 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class GetConsoleOutputControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(GetConsoleOutputControl));
+        private readonly GetConsoleOutputModel _model;
 
-        GetConsoleOutputController _controller;
-
-        public GetConsoleOutputControl(GetConsoleOutputController controller)
+        public GetConsoleOutputControl(GetConsoleOutputModel model)
         {
-            this._controller = controller;
-            this.DataContext = controller.Model;
+            _model = model;
             InitializeComponent();
+            DataContext = model;
         }
 
-        public override string Title => string.Format("Console Output for Instance {0}", this._controller.Model.InstanceId);
+        public override string Title => $"Console Output for Instance {_model.InstanceId}";
     }
 }

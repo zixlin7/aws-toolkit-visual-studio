@@ -83,6 +83,11 @@ namespace Amazon.AWSToolkit.EC2
                 return new ElasticIpRepository(ToolkitContext);
             }
 
+            if (serviceType == typeof(IEc2RepositoryFactory))
+            {
+                return new Ec2RepositoryFactory(ToolkitContext);
+            }
+
             return null;
         }
 

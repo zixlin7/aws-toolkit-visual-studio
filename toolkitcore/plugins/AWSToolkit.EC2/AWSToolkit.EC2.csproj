@@ -68,10 +68,14 @@
     <Compile Include="AvailabilityZoneManager.cs" />
     <Compile Include="Commands\AllocateElasticIpCommand.cs" />
     <Compile Include="Commands\DisassociateElasticIpCommand.cs" />
+    <Compile Include="Commands\BaseEc2Command.cs" />
+    <Compile Include="Commands\GetInstanceLogCommand.cs" />
+    <Compile Include="Commands\InstanceCommand.cs" />
     <Compile Include="Commands\ElasticIpCommand.cs" />
     <Compile Include="Commands\AssociateElasticIpCommand.cs" />
     <Compile Include="Commands\ReleaseElasticIpCommand.cs" />
     <Compile Include="Commands\SelectedElasticIpCommand.cs" />
+    <Compile Include="ViewModels\ViewInstancesViewModel.cs" />
     <Compile Include="ConnectionUtils\RemoteDesktopUtil.cs" />
     <Compile Include="ConnectionUtils\SCPUtil.cs" />
     <Compile Include="ConnectionUtils\SSHUtil.cs" />
@@ -109,7 +113,6 @@
     <Compile Include="Controller\DetachVolumeController.cs" />
     <Compile Include="Controller\FeatureController.cs" />
     <Compile Include="Controller\CreateKeyPairController.cs" />
-    <Compile Include="Controller\GetConsoleOutputController.cs" />
     <Compile Include="Controller\GetPasswordController.cs" />
     <Compile Include="Controller\IAssociateSubnetController.cs" />
     <Compile Include="Controller\IIPPermissionController.cs" />
@@ -204,6 +207,7 @@
     <Compile Include="Model\GetPasswordModel.cs" />
     <Compile Include="Model\IAssociationWrapper.cs" />
     <Compile Include="Model\ImageWrapper.cs" />
+    <Compile Include="Model\InstanceLog.cs" />
     <Compile Include="Model\InternatGatewayWrapper.cs" />
     <Compile Include="Model\ISubnetAssociationWrapper.cs" />
     <Compile Include="Model\KeyPairWrapper.cs" />
@@ -275,7 +279,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Repositories\Ec2RepositoryFactory.cs" />
+    <Compile Include="Repositories\IEc2RepositoryFactory.cs" />
     <Compile Include="Repositories\IElasticIpRepository.cs" />
+    <Compile Include="Repositories\IInstanceRepository.cs" />
+    <Compile Include="Repositories\InstanceRepository.cs" />
     <Compile Include="Repositories\InstanceTypeRepository.cs" />
     <Compile Include="Repositories\ElasticIpRepository.cs" />
     <Compile Include="Utils\CommonImageFilters.cs" />
