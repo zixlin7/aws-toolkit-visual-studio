@@ -1,9 +1,8 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Data;
+
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Controller;
-using log4net;
+using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -12,14 +11,12 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class ChangeInstanceTypeControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(ChangeInstanceTypeControl));
+        private readonly ChangeInstanceTypeModel _model;
 
-        ChangeInstanceTypeController _controller;
-
-        public ChangeInstanceTypeControl(ChangeInstanceTypeController controller)
+        public ChangeInstanceTypeControl(ChangeInstanceTypeModel model)
         {
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            _model = model;
+            DataContext = _model;
             InitializeComponent();
 
             // switch on grouping for the instance type and vpc subnet dropdowns
@@ -32,27 +29,12 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public override bool Validated()
         {
-            if (this._controller.Model.SelectedInstanceType == null)
+            if (_model.SelectedInstanceType == null)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Required Field", "Instance Type is required.");
                 return false;
             }
             return true;
-        }
-
-        public override bool OnCommit()
-        {
-            try
-            {
-                this._controller.ChangeInstanceType();
-                return true;
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing instance type", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing instance type: " + e.Message);
-                return false;
-            }
         }
 
         void onLoad(object sender, RoutedEventArgs e)

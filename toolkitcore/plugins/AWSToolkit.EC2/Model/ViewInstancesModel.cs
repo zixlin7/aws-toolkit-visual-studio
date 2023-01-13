@@ -88,5 +88,13 @@ namespace Amazon.AWSToolkit.EC2.Model
             get => _changeUserData;
             set => SetProperty(ref _changeUserData, value);
         }
+
+        private ICommand _changeInstanceType;
+
+        public ICommand ChangeInstanceType
+        {
+            get => _changeInstanceType;
+            set => SetProperty(ref _changeInstanceType, value);
+        }
     }
 }

@@ -149,7 +149,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
             MenuItem createImage = CreateMenuItem("Create Image (EBS AMI)", _controller.Model.CreateImage, _ctlDataGrid);
             MenuItem changeTerminationProtection = CreateMenuItem("Change Termination Protection", _controller.Model.ChangeTerminationProtection, _ctlDataGrid);
-            MenuItem changeInstanceType = createMenuItem("Change Instance Type", this.onChangeInstanceType);
+            MenuItem changeInstanceType = CreateMenuItem("Change Instance Type", _controller.Model.ChangeInstanceType, _ctlDataGrid);
             MenuItem changeShutdownBehavior = createMenuItem("Change Shutdown Behavior", this.onChangeShutdownBehavior);
             MenuItem changeUserData = CreateMenuItem("View/Change User Data", _controller.Model.ChangeUserData, _ctlDataGrid);
 
@@ -171,15 +171,9 @@ namespace Amazon.AWSToolkit.EC2.View
                 getPassword.IsEnabled = false;
                 openRemoteDesktop.IsEnabled = false;
                 ssh.IsEnabled = false;
-                changeInstanceType.IsEnabled = false;
                 changeShutdownBehavior.IsEnabled = false;
                 associateElasticIP.IsEnabled = false;
                 disassociateElasticIP.IsEnabled = false;
-            }
-
-            if (!EC2Constants.INSTANCE_STATE_STOPPED.Equals(selectedItems[0].NativeInstance.State.Name))
-            {
-                changeInstanceType.IsEnabled = false;
             }
 
             if (EC2Constants.INSTANCE_STATE_RUNNING.Equals(selectedItems[0].NativeInstance.State.Name))
@@ -331,23 +325,6 @@ namespace Amazon.AWSToolkit.EC2.View
             {
                 LOGGER.Error("Error getting password", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error getting password: " + e.Message);
-            }
-        }
-
-        void onChangeInstanceType(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.ChangeInstanceType(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing instance types", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing instance type: " + e.Message);
             }
         }
 

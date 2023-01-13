@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
@@ -26,6 +27,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         private readonly ToolkitContext _toolkitContext;
         private IInstanceRepository _instanceRepository;
+        private ViewInstancesViewModel _viewModel;
         ViewInstancesControl _control;
 
         public ViewInstancesController(ToolkitContext toolkitContext)
@@ -43,11 +45,12 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
 
             _instanceRepository = factory.CreateInstanceRepository(AwsConnectionSettings);
-            var viewModel = new ViewInstancesViewModel(Model, _instanceRepository);
-            Model.ViewSystemLog = new GetInstanceLogCommand(viewModel, AwsConnectionSettings, _toolkitContext);
-            Model.CreateImage = new CreateImageFromInstanceCommand(viewModel, AwsConnectionSettings, _toolkitContext);
-            Model.ChangeTerminationProtection = new ChangeTerminationProtectionCommand(viewModel, AwsConnectionSettings, _toolkitContext);
-            Model.ChangeUserData = new ChangeUserDataCommand(viewModel, AwsConnectionSettings, _toolkitContext);
+            _viewModel = new ViewInstancesViewModel(Model, _instanceRepository, _toolkitContext);
+            Model.ViewSystemLog = new GetInstanceLogCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.CreateImage = new CreateImageFromInstanceCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeTerminationProtection = new ChangeTerminationProtectionCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeUserData = new ChangeUserDataCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeInstanceType = new ChangeInstanceTypeCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
 
             this._control = new ViewInstancesControl(this);
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
@@ -89,30 +92,8 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void RefreshInstances()
         {
-            var ipResponse = this.EC2Client.DescribeAddresses(new DescribeAddressesRequest());
-
-            Dictionary<string, AddressWrapper> ipMap = new Dictionary<string, AddressWrapper>();
-            ipResponse.Addresses.ForEach(x =>
-                {
-                    if (!string.IsNullOrEmpty(x.InstanceId))
-                        ipMap[x.InstanceId] = new AddressWrapper(x);
-                });
-
-            var response = this.EC2Client.DescribeInstances(new DescribeInstancesRequest());
-            
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
-                {
-                    this.Model.RunningInstances.Clear();
-                    foreach (var reservation in response.Reservations)
-                    {
-                        foreach (var instance in reservation.Instances)
-                        {
-                            AddressWrapper address = null;
-                            ipMap.TryGetValue(instance.InstanceId, out address);
-                            this.Model.RunningInstances.Add(new RunningInstanceWrapper(reservation, instance, address));
-                        }
-                    }
-                }));
+            // This is currently the cleanest way we have to properly run async code from a sync location.
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(async () => await _viewModel.ReloadInstancesAsync());
         }
 
         public void UpdateSelection(IList<RunningInstanceWrapper> instances)
@@ -245,12 +226,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 Ec2InstanceState = instanceState,
                 Result = result.AsTelemetryResult(),
             });
-        }
-
-        public void ChangeInstanceType(RunningInstanceWrapper instance)
-        {
-            var controller = new ChangeInstanceTypeController();
-            controller.Execute(this.EC2Client, instance);
         }
 
         public RunningInstanceWrapper AssociatingElasticIP(RunningInstanceWrapper instance)
