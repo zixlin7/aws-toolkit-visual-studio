@@ -8,5 +8,7 @@ namespace Amazon.AWSToolkit.EC2.Repositories
     {
         Task<InstanceLog> GetInstanceLogAsync(string instanceInstanceId);
         Task<string> CreateImageFromInstanceAsync(string instanceId, string imageName, string imageDescription);
+        Task<bool> IsTerminationProtectedAsync(string instanceId);
+        Task SetTerminationProtectionAsync(string instanceId, bool enabled);
     }
 }

@@ -148,7 +148,7 @@ namespace Amazon.AWSToolkit.EC2.View
             MenuItem getConsoleOutput = CreateMenuItem("Get System Log", _controller.Model.ViewSystemLog, _ctlDataGrid);
 
             MenuItem createImage = CreateMenuItem("Create Image (EBS AMI)", _controller.Model.CreateImage, _ctlDataGrid);
-            MenuItem changeTerminationProtection = createMenuItem("Change Termination Protection", this.onChangeTerminationProtection);
+            MenuItem changeTerminationProtection = CreateMenuItem("Change Termination Protection", _controller.Model.ChangeTerminationProtection, _ctlDataGrid);
             MenuItem changeInstanceType = createMenuItem("Change Instance Type", this.onChangeInstanceType);
             MenuItem changeShutdownBehavior = createMenuItem("Change Shutdown Behavior", this.onChangeShutdownBehavior);
             MenuItem changeUserData = createMenuItem("View/Change User Data", this.onChangeUserData);
@@ -173,7 +173,6 @@ namespace Amazon.AWSToolkit.EC2.View
                 ssh.IsEnabled = false;
                 changeInstanceType.IsEnabled = false;
                 changeShutdownBehavior.IsEnabled = false;
-                changeTerminationProtection.IsEnabled = false;
                 changeUserData.IsEnabled = false;
                 associateElasticIP.IsEnabled = false;
                 disassociateElasticIP.IsEnabled = false;
@@ -409,23 +408,6 @@ namespace Amazon.AWSToolkit.EC2.View
             {
                 LOGGER.Error("Error changing shutdown behavior", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error changing shutdown behavior: " + e.Message);
-            }
-        }
-
-        void onChangeTerminationProtection(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.ChangeTerminationProtection(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing termination protection", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing termination protection: " + e.Message);
             }
         }
 

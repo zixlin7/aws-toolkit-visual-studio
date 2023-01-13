@@ -70,6 +70,7 @@
     <Compile Include="Commands\DisassociateElasticIpCommand.cs" />
     <Compile Include="Commands\BaseEc2Command.cs" />
     <Compile Include="Commands\CreateImageFromInstanceCommand.cs" />
+    <Compile Include="Commands\ChangeTerminationProtectionCommand.cs" />
     <Compile Include="Commands\GetInstanceLogCommand.cs" />
     <Compile Include="Commands\InstanceCommand.cs" />
     <Compile Include="Commands\ElasticIpCommand.cs" />
@@ -93,7 +94,6 @@
     <Compile Include="Controller\AddIPPermissionController.cs" />
     <Compile Include="Controller\ChangeInstanceTypeController.cs" />
     <Compile Include="Controller\ChangeShutdownBehaviorController.cs" />
-    <Compile Include="Controller\ChangeTerminationProtectionController.cs" />
     <Compile Include="Controller\ChangeUserDataController.cs" />
     <Compile Include="Controller\ConnectToInstanceController.cs" />
     <Compile Include="Controller\CopyAmiController.cs" />

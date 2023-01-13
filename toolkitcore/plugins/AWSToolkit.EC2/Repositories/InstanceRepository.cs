@@ -35,5 +35,30 @@ namespace Amazon.AWSToolkit.EC2.Repositories
 
             return response.ImageId;
         }
+
+        public async Task<bool> IsTerminationProtectedAsync(string instanceId)
+        {
+            var request = new DescribeInstanceAttributeRequest()
+            {
+                InstanceId = instanceId,
+                Attribute = InstanceAttributeName.DisableApiTermination,
+            };
+
+            var response = await _ec2.DescribeInstanceAttributeAsync(request);
+
+            return response.InstanceAttribute.DisableApiTermination;
+        }
+
+        public async Task SetTerminationProtectionAsync(string instanceId, bool enabled)
+        {
+            var request = new ModifyInstanceAttributeRequest()
+            {
+                InstanceId = instanceId,
+                Attribute = InstanceAttributeName.DisableApiTermination,
+                Value = enabled.ToString(),
+            };
+
+            await _ec2.ModifyInstanceAttributeAsync(request);
+        }
     }
 }

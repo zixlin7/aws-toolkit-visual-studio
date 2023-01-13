@@ -72,5 +72,13 @@ namespace Amazon.AWSToolkit.EC2.Model
             get => _createImage;
             set => SetProperty(ref _createImage, value);
         }
+
+        private ICommand _changeTerminationProtection;
+
+        public ICommand ChangeTerminationProtection
+        {
+            get => _changeTerminationProtection;
+            set => SetProperty(ref _changeTerminationProtection, value);
+        }
     }
 }

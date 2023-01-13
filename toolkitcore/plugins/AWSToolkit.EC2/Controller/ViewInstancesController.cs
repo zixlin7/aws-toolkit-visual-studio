@@ -46,6 +46,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var viewModel = new ViewInstancesViewModel(Model, _instanceRepository);
             Model.ViewSystemLog = new GetInstanceLogCommand(viewModel, AwsConnectionSettings, _toolkitContext);
             Model.CreateImage = new CreateImageFromInstanceCommand(viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeTerminationProtection = new ChangeTerminationProtectionCommand(viewModel, AwsConnectionSettings, _toolkitContext);
 
             this._control = new ViewInstancesControl(this);
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
@@ -297,12 +298,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public void ChangeShutdownBehavior(RunningInstanceWrapper instance)
         {
             var controller = new ChangeShutdownBehaviorController();
-            controller.Execute(this.EC2Client, instance);
-        }
-
-        public void ChangeTerminationProtection(RunningInstanceWrapper instance)
-        {
-            var controller = new ChangeTerminationProtectionController();
             controller.Execute(this.EC2Client, instance);
         }
 
