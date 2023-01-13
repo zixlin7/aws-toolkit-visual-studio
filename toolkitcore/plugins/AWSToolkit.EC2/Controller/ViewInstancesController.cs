@@ -45,6 +45,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             _instanceRepository = factory.CreateInstanceRepository(AwsConnectionSettings);
             var viewModel = new ViewInstancesViewModel(Model, _instanceRepository);
             Model.ViewSystemLog = new GetInstanceLogCommand(viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.CreateImage = new CreateImageFromInstanceCommand(viewModel, AwsConnectionSettings, _toolkitContext);
 
             this._control = new ViewInstancesControl(this);
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
@@ -242,12 +243,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 Ec2InstanceState = instanceState,
                 Result = result.AsTelemetryResult(),
             });
-        }
-
-        public void CreateImage(RunningInstanceWrapper instance)
-        {
-            var controller = new CreateImageController();
-            controller.Execute(this.EC2Client, instance);
         }
 
         public void ChangeInstanceType(RunningInstanceWrapper instance)

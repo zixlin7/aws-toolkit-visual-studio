@@ -147,7 +147,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
             MenuItem getConsoleOutput = CreateMenuItem("Get System Log", _controller.Model.ViewSystemLog, _ctlDataGrid);
 
-            MenuItem createImage = createMenuItem("Create Image (EBS AMI)", this.onCreateImageClick);
+            MenuItem createImage = CreateMenuItem("Create Image (EBS AMI)", _controller.Model.CreateImage, _ctlDataGrid);
             MenuItem changeTerminationProtection = createMenuItem("Change Termination Protection", this.onChangeTerminationProtection);
             MenuItem changeInstanceType = createMenuItem("Change Instance Type", this.onChangeInstanceType);
             MenuItem changeShutdownBehavior = createMenuItem("Change Shutdown Behavior", this.onChangeShutdownBehavior);
@@ -171,18 +171,12 @@ namespace Amazon.AWSToolkit.EC2.View
                 getPassword.IsEnabled = false;
                 openRemoteDesktop.IsEnabled = false;
                 ssh.IsEnabled = false;
-                createImage.IsEnabled = false;
                 changeInstanceType.IsEnabled = false;
                 changeShutdownBehavior.IsEnabled = false;
                 changeTerminationProtection.IsEnabled = false;
                 changeUserData.IsEnabled = false;
                 associateElasticIP.IsEnabled = false;
                 disassociateElasticIP.IsEnabled = false;
-            }
-
-            if (!EC2Constants.ROOT_DEVICE_TYPE_EBS.Equals(selectedItems[0].NativeInstance.RootDeviceType))
-            {
-                createImage.IsEnabled = false;
             }
 
             if (!EC2Constants.INSTANCE_STATE_STOPPED.Equals(selectedItems[0].NativeInstance.State.Name))
@@ -339,23 +333,6 @@ namespace Amazon.AWSToolkit.EC2.View
             {
                 LOGGER.Error("Error getting password", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error getting password: " + e.Message);
-            }
-        }
-
-        void onCreateImageClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.CreateImage(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error terminating instances", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error terminating instances: " + e.Message);
             }
         }
 

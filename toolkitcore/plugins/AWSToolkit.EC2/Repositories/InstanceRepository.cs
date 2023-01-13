@@ -21,5 +21,19 @@ namespace Amazon.AWSToolkit.EC2.Repositories
 
             return new InstanceLog { Timestamp = response.Timestamp, Log = response.Output, };
         }
+
+        public async Task<string> CreateImageFromInstanceAsync(string instanceId, string imageName, string imageDescription)
+        {
+            var request = new CreateImageRequest()
+            {
+                InstanceId = instanceId,
+                Name = imageName,
+                Description = imageDescription,
+            };
+
+            var response = await _ec2.CreateImageAsync(request);
+
+            return response.ImageId;
+        }
     }
 }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
+
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Controller;
-using log4net;
+using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -11,43 +10,25 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class CreateImageControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(CreateImageControl));
+        private readonly CreateImageModel _model;
 
-        CreateImageController _controller;
-
-        public CreateImageControl(CreateImageController controller)
+        public CreateImageControl(CreateImageModel model)
         {
+            _model = model;
             InitializeComponent();
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            DataContext = _model;
         }
 
         public override string Title => "Create Image";
 
         public override bool Validated()
         {
-            if (string.IsNullOrEmpty(this._controller.Model.Name))
+            if (string.IsNullOrEmpty(_model.Name))
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Required Field", "Name is required.");
                 return false;
             }
             return true;
-        }
-
-        public override bool OnCommit()
-        {
-            try
-            {
-                string imageId = this._controller.CreateImage();
-                ToolkitFactory.Instance.ShellProvider.ShowMessage("Image Created", string.Format("Image was created with id {0}.", imageId));
-                return true;
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error creating image", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating image: " + e.Message);
-                return false;
-            }
         }
 
         void onLoad(object sender, RoutedEventArgs e)

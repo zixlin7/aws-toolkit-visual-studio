@@ -64,5 +64,13 @@ namespace Amazon.AWSToolkit.EC2.Model
             get => _viewSystemLog;
             set => SetProperty(ref _viewSystemLog, value);
         }
+
+        private ICommand _createImage;
+
+        public ICommand CreateImage
+        {
+            get => _createImage;
+            set => SetProperty(ref _createImage, value);
+        }
     }
 }

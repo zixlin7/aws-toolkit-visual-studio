@@ -69,6 +69,7 @@
     <Compile Include="Commands\AllocateElasticIpCommand.cs" />
     <Compile Include="Commands\DisassociateElasticIpCommand.cs" />
     <Compile Include="Commands\BaseEc2Command.cs" />
+    <Compile Include="Commands\CreateImageFromInstanceCommand.cs" />
     <Compile Include="Commands\GetInstanceLogCommand.cs" />
     <Compile Include="Commands\InstanceCommand.cs" />
     <Compile Include="Commands\ElasticIpCommand.cs" />
@@ -96,7 +97,6 @@
     <Compile Include="Controller\ChangeUserDataController.cs" />
     <Compile Include="Controller\ConnectToInstanceController.cs" />
     <Compile Include="Controller\CopyAmiController.cs" />
-    <Compile Include="Controller\CreateImageController.cs" />
     <Compile Include="Controller\CreateNetworkAclController.cs" />
     <Compile Include="Controller\CreateRouteTableController.cs" />
     <Compile Include="Controller\CreateSecurityGroupController.cs" />
