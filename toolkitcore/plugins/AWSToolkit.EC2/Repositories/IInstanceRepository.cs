@@ -16,5 +16,7 @@ namespace Amazon.AWSToolkit.EC2.Repositories
         Task SetUserDataAsync(string instanceId, string userData);
         Task<IEnumerable<InstanceType>> GetSupportingInstanceTypes(string imageId);
         Task UpdateInstanceTypeAsync(string instanceId, string instanceTypeId);
+        Task<string> GetShutdownBehaviorAsync(string instanceId);
+        Task SetShutdownBehaviorAsync(string instanceId, string behavior);
     }
 }

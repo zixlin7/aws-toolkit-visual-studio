@@ -51,6 +51,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             Model.ChangeTerminationProtection = new ChangeTerminationProtectionCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
             Model.ChangeUserData = new ChangeUserDataCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
             Model.ChangeInstanceType = new ChangeInstanceTypeCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeShutdownBehavior = new ChangeShutdownBehaviorCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
 
             this._control = new ViewInstancesControl(this);
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
@@ -269,12 +270,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
 
             return null;
-        }
-
-        public void ChangeShutdownBehavior(RunningInstanceWrapper instance)
-        {
-            var controller = new ChangeShutdownBehaviorController();
-            controller.Execute(this.EC2Client, instance);
         }
 
         public void GetPassword(RunningInstanceWrapper instance)

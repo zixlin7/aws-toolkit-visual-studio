@@ -150,7 +150,7 @@ namespace Amazon.AWSToolkit.EC2.View
             MenuItem createImage = CreateMenuItem("Create Image (EBS AMI)", _controller.Model.CreateImage, _ctlDataGrid);
             MenuItem changeTerminationProtection = CreateMenuItem("Change Termination Protection", _controller.Model.ChangeTerminationProtection, _ctlDataGrid);
             MenuItem changeInstanceType = CreateMenuItem("Change Instance Type", _controller.Model.ChangeInstanceType, _ctlDataGrid);
-            MenuItem changeShutdownBehavior = createMenuItem("Change Shutdown Behavior", this.onChangeShutdownBehavior);
+            MenuItem changeShutdownBehavior = CreateMenuItem("Change Shutdown Behavior", _controller.Model.ChangeShutdownBehavior, _ctlDataGrid);
             MenuItem changeUserData = CreateMenuItem("View/Change User Data", _controller.Model.ChangeUserData, _ctlDataGrid);
 
             MenuItem terminate = createMenuItem("Terminate", this.onTerminateClick);
@@ -171,7 +171,6 @@ namespace Amazon.AWSToolkit.EC2.View
                 getPassword.IsEnabled = false;
                 openRemoteDesktop.IsEnabled = false;
                 ssh.IsEnabled = false;
-                changeShutdownBehavior.IsEnabled = false;
                 associateElasticIP.IsEnabled = false;
                 disassociateElasticIP.IsEnabled = false;
             }
@@ -367,23 +366,6 @@ namespace Amazon.AWSToolkit.EC2.View
             {
                 LOGGER.Error("Error disassociating Elastic IP address", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error disassociating Elastic IP address: " + e.Message);
-            }
-        }
-
-        void onChangeShutdownBehavior(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.ChangeShutdownBehavior(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing shutdown behavior", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing shutdown behavior: " + e.Message);
             }
         }
 

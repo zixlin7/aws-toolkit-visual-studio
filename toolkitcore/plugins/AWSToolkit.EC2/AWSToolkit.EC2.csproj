@@ -73,6 +73,7 @@
     <Compile Include="Commands\ChangeTerminationProtectionCommand.cs" />
     <Compile Include="Commands\ChangeUserDataCommand.cs" />
     <Compile Include="Commands\ChangeInstanceTypeCommand.cs" />
+    <Compile Include="Commands\ChangeShutdownBehaviorCommand.cs" />
     <Compile Include="Commands\GetInstanceLogCommand.cs" />
     <Compile Include="Commands\InstanceCommand.cs" />
     <Compile Include="Commands\ElasticIpCommand.cs" />
@@ -94,7 +95,6 @@
     <Compile Include="Controller\AttachToVPCController.cs" />
     <Compile Include="Controller\AttachVolumeController.cs" />
     <Compile Include="Controller\AddIPPermissionController.cs" />
-    <Compile Include="Controller\ChangeShutdownBehaviorController.cs" />
     <Compile Include="Controller\ConnectToInstanceController.cs" />
     <Compile Include="Controller\CopyAmiController.cs" />
     <Compile Include="Controller\CreateNetworkAclController.cs" />

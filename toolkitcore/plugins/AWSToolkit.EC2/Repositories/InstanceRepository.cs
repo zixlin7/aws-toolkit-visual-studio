@@ -132,5 +132,30 @@ namespace Amazon.AWSToolkit.EC2.Repositories
 
             await _ec2.ModifyInstanceAttributeAsync(request);
         }
+
+        public async Task<string> GetShutdownBehaviorAsync(string instanceId)
+        {
+            var request = new DescribeInstanceAttributeRequest()
+            {
+                InstanceId = instanceId,
+                Attribute = InstanceAttributeName.InstanceInitiatedShutdownBehavior,
+            };
+
+            var response = await _ec2.DescribeInstanceAttributeAsync(request);
+
+            return response.InstanceAttribute.InstanceInitiatedShutdownBehavior;
+        }
+
+        public async Task SetShutdownBehaviorAsync(string instanceId, string behavior)
+        {
+            var request = new ModifyInstanceAttributeRequest()
+            {
+                InstanceId = instanceId,
+                Attribute = InstanceAttributeName.InstanceInitiatedShutdownBehavior,
+                Value = behavior,
+            };
+
+            await _ec2.ModifyInstanceAttributeAsync(request);
+        }
     }
 }

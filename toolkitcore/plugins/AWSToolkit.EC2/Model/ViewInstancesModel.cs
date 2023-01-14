@@ -96,5 +96,13 @@ namespace Amazon.AWSToolkit.EC2.Model
             get => _changeInstanceType;
             set => SetProperty(ref _changeInstanceType, value);
         }
+
+        private ICommand _changeShutdownBehavior;
+
+        public ICommand ChangeShutdownBehavior
+        {
+            get => _changeShutdownBehavior;
+            set => SetProperty(ref _changeShutdownBehavior, value);
+        }
     }
 }
