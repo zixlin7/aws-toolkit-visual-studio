@@ -19,5 +19,11 @@ namespace Amazon.AWSToolkit.EC2.Repositories
             IAmazonEC2 ec2 = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(awsConnectionSettings);
             return new InstanceRepository(ec2);
         }
+
+        public IElasticIpRepository CreateElasticIpRepository(AwsConnectionSettings awsConnectionSettings)
+        {
+            IAmazonEC2 ec2 = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(awsConnectionSettings);
+            return new ElasticIpRepository(ec2);
+        }
     }
 }

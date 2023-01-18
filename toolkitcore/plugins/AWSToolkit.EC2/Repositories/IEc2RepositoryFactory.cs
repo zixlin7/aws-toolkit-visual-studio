@@ -5,5 +5,6 @@ namespace Amazon.AWSToolkit.EC2.Repositories
     public interface IEc2RepositoryFactory
     {
         IInstanceRepository CreateInstanceRepository(AwsConnectionSettings awsConnectionSettings);
+        IElasticIpRepository CreateElasticIpRepository(AwsConnectionSettings awsConnectionSettings);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2.Commands;
@@ -21,8 +22,14 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         protected override void DisplayView()
         {
-            var ip = _toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IElasticIpRepository)) as
-                IElasticIpRepository;
+            if (!(_toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IEc2RepositoryFactory)) is
+                    IEc2RepositoryFactory factory))
+            {
+                Debug.Assert(!Debugger.IsAttached, $"Plugin factory {nameof(IEc2RepositoryFactory)} is missing. The Toolkit is unable to perform EC2 Elastic IP operations.");
+                throw new NotSupportedException("AWS Toolkit was unable to get details about EC2 Elastic IPs");
+            }
+
+            var ip = factory.CreateElasticIpRepository(AwsConnectionSettings);
             Model.AllocateElasticIp = new AllocateElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
             Model.ReleaseElasticIp = new ReleaseElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
             Model.AssociateElasticIp = new AssociateElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);

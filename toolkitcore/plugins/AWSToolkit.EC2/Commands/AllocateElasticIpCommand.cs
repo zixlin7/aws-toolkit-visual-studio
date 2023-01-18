@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.EC2.Commands
             var grid = parameter as ICustomizeColumnGrid;
             Arg.NotNull(grid, nameof(parameter));
 
-            var publicId = await _elasticIp.AllocateElasticIpAsync(_ipDomain, _awsConnectionSettings);
+            var publicId = await _elasticIp.AllocateElasticIpAsync(_ipDomain);
 
             await RefreshElasticIpsAsync();
 

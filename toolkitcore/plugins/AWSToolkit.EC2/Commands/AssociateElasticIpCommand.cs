@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.EC2.Commands
         {
             var model = new AssociateAddressModel(args.SelectedAddress);
             model.AvailableInstances =
-                (await _elasticIp.GetUnassociatedInstancesAsync(args.SelectedAddress.Domain, _awsConnectionSettings)).ToList();
+                (await _elasticIp.GetUnassociatedInstancesAsync(args.SelectedAddress.Domain)).ToList();
 
             if (model.AvailableInstances.Count == 0)
             {
@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.EC2.Commands
 
         protected override async Task ExecuteAsync(SelectedElasticIpCommandArgs args)
         {
-            await _elasticIp.AssociateWithInstance(args.SelectedAddress, _instanceId, _awsConnectionSettings);
+            await _elasticIp.AssociateWithInstance(args.SelectedAddress, _instanceId);
             await RefreshElasticIpsAsync();
 
             var addressToSelect = _viewModel.Addresses.FirstOrDefault(x => x.PublicIp == args.SelectedAddress.PublicIp);

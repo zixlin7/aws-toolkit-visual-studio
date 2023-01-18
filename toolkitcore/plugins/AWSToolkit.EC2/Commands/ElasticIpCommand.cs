@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.EC2.Commands
         /// </summary>
         protected async Task RefreshElasticIpsAsync()
         {
-            var addresses = (await _elasticIp.ListElasticIpsAsync(_awsConnectionSettings)).ToList();
+            var addresses = (await _elasticIp.ListElasticIpsAsync()).ToList();
 
             _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {

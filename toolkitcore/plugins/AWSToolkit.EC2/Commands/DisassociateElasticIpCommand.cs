@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.EC2.Commands
 
         protected override async Task ExecuteAsync(SelectedElasticIpCommandArgs args)
         {
-            await _elasticIp.DisassociateFromInstanceAsync(args.SelectedAddress, _awsConnectionSettings);
+            await _elasticIp.DisassociateFromInstanceAsync(args.SelectedAddress);
             await RefreshElasticIpsAsync();
 
             var addressToSelect = _viewModel.Addresses.FirstOrDefault(x => x.PublicIp == args.SelectedAddress.PublicIp);

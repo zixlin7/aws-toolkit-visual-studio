@@ -2,9 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.Clients;
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.EC2;
 using Amazon.EC2.Model;
@@ -13,36 +10,30 @@ namespace Amazon.AWSToolkit.EC2.Repositories
 {
     public class ElasticIpRepository : IElasticIpRepository
     {
-        private readonly ToolkitContext _toolkitContext;
+        private readonly IAmazonEC2 _ec2;
 
-        public ElasticIpRepository(ToolkitContext toolkitContext)
+        public ElasticIpRepository(IAmazonEC2 ec2)
         {
-            _toolkitContext = toolkitContext;
+            _ec2 = ec2;
         }
 
-        public async Task<IEnumerable<AddressWrapper>> ListElasticIpsAsync(AwsConnectionSettings awsConnectionSettings)
+        public async Task<IEnumerable<AddressWrapper>> ListElasticIpsAsync()
         {
-            var ec2 = CreateEc2Client(awsConnectionSettings);
-
-            var response = await ec2.DescribeAddressesAsync(new DescribeAddressesRequest());
+            var response = await _ec2.DescribeAddressesAsync(new DescribeAddressesRequest());
 
             return response.Addresses.Select(a => new AddressWrapper(a));
         }
 
-        public async Task<string> AllocateElasticIpAsync(string domain, AwsConnectionSettings awsConnectionSettings)
+        public async Task<string> AllocateElasticIpAsync(string domain)
         {
-            var ec2 = CreateEc2Client(awsConnectionSettings);
-
             var request = new AllocateAddressRequest() { Domain = domain };
-            var response = await ec2.AllocateAddressAsync(request);
+            var response = await _ec2.AllocateAddressAsync(request);
 
             return response.PublicIp;
         }
 
-        public async Task ReleaseElasticIpAsync(AddressWrapper address, AwsConnectionSettings awsConnectionSettings)
+        public async Task ReleaseElasticIpAsync(AddressWrapper address)
         {
-            var ec2 = CreateEc2Client(awsConnectionSettings);
-
             ReleaseAddressRequest request = null;
 
             if (address.NativeAddress.Domain == AddressWrapper.DOMAIN_EC2)
@@ -54,13 +45,11 @@ namespace Amazon.AWSToolkit.EC2.Repositories
                 request = new ReleaseAddressRequest() { AllocationId = address.AllocationId };
             }
 
-            await ec2.ReleaseAddressAsync(request);
+            await _ec2.ReleaseAddressAsync(request);
         }
 
-        public async Task AssociateWithInstance(AddressWrapper address, string instanceId, AwsConnectionSettings awsConnectionSettings)
+        public async Task AssociateWithInstance(AddressWrapper address, string instanceId)
         {
-            var ec2 = CreateEc2Client(awsConnectionSettings);
-
             var request = new AssociateAddressRequest
             {
                 InstanceId = instanceId,
@@ -75,13 +64,11 @@ namespace Amazon.AWSToolkit.EC2.Repositories
                 request.AllocationId = address.NativeAddress.AllocationId;
             }
 
-            await ec2.AssociateAddressAsync(request);
+            await _ec2.AssociateAddressAsync(request);
         }
 
-        public async Task DisassociateFromInstanceAsync(AddressWrapper address, AwsConnectionSettings awsConnectionSettings)
+        public async Task DisassociateFromInstanceAsync(AddressWrapper address)
         {
-            var ec2 = CreateEc2Client(awsConnectionSettings);
-
             DisassociateAddressRequest request = null;
 
             if (address.NativeAddress.Domain == AddressWrapper.DOMAIN_EC2)
@@ -93,15 +80,13 @@ namespace Amazon.AWSToolkit.EC2.Repositories
                 request = new DisassociateAddressRequest() { AssociationId = address.AssociationId };
             }
 
-            await ec2.DisassociateAddressAsync(request);
+            await _ec2.DisassociateAddressAsync(request);
         }
 
-        public async Task<IEnumerable<AssociateAddressModel.InstanceItem>> GetUnassociatedInstancesAsync(string domain, AwsConnectionSettings awsConnectionSettings)
+        public async Task<IEnumerable<AssociateAddressModel.InstanceItem>> GetUnassociatedInstancesAsync(string domain)
         {
-            var ec2 = CreateEc2Client(awsConnectionSettings);
-
-            var addressResponseTask = ec2.DescribeAddressesAsync(new DescribeAddressesRequest());
-            var instanceResponseTask = ec2.DescribeInstancesAsync(new DescribeInstancesRequest());
+            var addressResponseTask = _ec2.DescribeAddressesAsync(new DescribeAddressesRequest());
+            var instanceResponseTask = _ec2.DescribeInstancesAsync(new DescribeInstancesRequest());
 
             await Task.WhenAll(addressResponseTask, instanceResponseTask);
 
@@ -121,8 +106,5 @@ namespace Amazon.AWSToolkit.EC2.Repositories
                 .Select(instance => new AssociateAddressModel.InstanceItem(instance))
                 .ToList();
         }
-
-        private IAmazonEC2 CreateEc2Client(AwsConnectionSettings awsConnectionSettings) =>
-            _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(awsConnectionSettings);
     }
 }
