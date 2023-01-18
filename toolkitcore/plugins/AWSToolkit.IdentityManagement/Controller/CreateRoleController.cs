@@ -1,9 +1,13 @@
 ﻿using System.Linq;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.IdentityManagement.View;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.IdentityManagement.Model;
 using Amazon.AWSToolkit.IdentityManagement.Nodes;
+using Amazon.AWSToolkit.IdentityManagement.Util;
+using Amazon.AWSToolkit.IdentityManagement.View;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.EC2;
 using Amazon.IdentityManagement.Model;
 
@@ -12,25 +16,41 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
     public class CreateRoleController : BaseContextCommand
     {
         private static readonly string Ec2ServiceName = new AmazonEC2Config().RegionEndpointServiceName;
-
+        private readonly ToolkitContext _toolkitContext;
         CreateRoleControl _control;
         CreateRoleModel _model;
         IAMRoleRootViewModel _rootModel;
         ActionResults _results;
 
+        public CreateRoleController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public override ActionResults Execute(IViewModel model)
         {
-            this._rootModel = model as IAMRoleRootViewModel;
-            if (this._rootModel == null)
-                return new ActionResults().WithSuccess(false);
+            var result = CreateRole(model);
+            RecordMetric(result);
+            return result;
+        }
 
-            this._model = new CreateRoleModel();
-            this._control = new CreateRoleControl(this);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);
+        public ActionResults CreateRole(IViewModel model)
+        {
+            _rootModel = model as IAMRoleRootViewModel;
+            if (_rootModel == null)
+            {
+                return ActionResults.CreateFailed();
+            }
 
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-            return this._results;
+            _model = new CreateRoleModel();
+            _control = new CreateRoleControl(this);
+
+            if (!_toolkitContext.ToolkitHost.ShowModal(_control))
+            {
+                return ActionResults.CreateCancelled();
+            }
+
+            return _results ?? ActionResults.CreateFailed();
         }
 
         public CreateRoleModel Model => this._model;
@@ -80,6 +100,13 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             this._results = new ActionResults()
                 .WithSuccess(true)
                 .WithParameter(IAMActionResultsConstants.PARAM_IAM_ROLE, createResponse.Role);
+        }
+
+        public void RecordMetric(ActionResults results)
+        {
+            var awsConnectionSettings = _rootModel?.IAMRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordIamCreate(IamResourceType.Role, results,
+                 awsConnectionSettings);
         }
     }
 }

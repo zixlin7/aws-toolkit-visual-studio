@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.IdentityManagement
         void setupContextMenuHooks(IAMRootViewMetaNode rootNode)
         {
             rootNode.IAMGroupRootViewMetaNode.OnCreateGroup =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateGroupController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateGroupController(ToolkitContext)).Execute);
 
             rootNode.IAMGroupRootViewMetaNode.IAMGroupViewMetaNode.OnEdit =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<EditGroupController>().Execute);
@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.IdentityManagement
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteGroupController>().Execute);
 
             rootNode.IAMUserRootViewMetaNode.OnCreateUser =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateUserController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateUserController(ToolkitContext)).Execute);
 
             rootNode.IAMUserRootViewMetaNode.IAMUserViewMetaNode.OnEdit =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<EditUserController>().Execute);
@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.IdentityManagement
 
 
             rootNode.IAMRoleRootViewMetaNode.OnCreateRole =
-                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateRoleController>().Execute);
+                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateRoleController(ToolkitContext)).Execute);
 
             rootNode.IAMRoleRootViewMetaNode.IAMRoleViewMetaNode.OnEdit =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<EditRoleController>().Execute);
