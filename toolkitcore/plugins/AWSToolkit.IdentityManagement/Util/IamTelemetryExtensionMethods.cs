@@ -40,5 +40,51 @@ namespace Amazon.AWSToolkit.IdentityManagement.Util
 
             toolkitContext.TelemetryLogger.RecordIamDelete(data);
         }
+
+        public static void RecordIamEdit(this ToolkitContext toolkitContext, IamResourceType resource,
+         ActionResults results, AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = new IamEdit()
+            {
+                AwsAccount =
+                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
+                IamResourceType = resource,
+                Result = results.AsTelemetryResult(),
+                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
+            };
+
+            toolkitContext.TelemetryLogger.RecordIamEdit(data);
+        }
+
+        public static void RecordIamCreateAccessKey(this ToolkitContext toolkitContext,
+            ActionResults results, AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = new IamCreateUserAccessKey()
+            {
+                AwsAccount =
+                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
+                Result = results.AsTelemetryResult(),
+                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
+            };
+
+            toolkitContext.TelemetryLogger.RecordIamCreateUserAccessKey(data);
+        }
+
+        public static void RecordIamDeleteAccessKey(this ToolkitContext toolkitContext,
+            ActionResults results, AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = new IamDeleteUserAccessKey()
+            {
+                AwsAccount =
+                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
+                Result = results.AsTelemetryResult(),
+                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
+            };
+
+            toolkitContext.TelemetryLogger.RecordIamDeleteUserAccessKey(data);
+        }
     }
 }

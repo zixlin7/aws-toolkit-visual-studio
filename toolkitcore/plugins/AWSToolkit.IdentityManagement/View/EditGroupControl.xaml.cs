@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.IdentityManagement.Controller;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.IdentityManagement.View
 {
@@ -50,16 +51,24 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
 
         void onSave(object sender, RoutedEventArgs e)
         {
+            var result = SaveChanges();
+            _controller.RecordEditGroup(result);
+        }
+
+        private ActionResults SaveChanges()
+        {
             try
             {
-                bool nameChange = this._controller.Model.OriginalName.Equals(this._controller.Model.NewName);
-                this._controller.Persist();
-                this._controller.Model.IsDirty = false;
+                var nameChange = _controller.Model.OriginalName.Equals(_controller.Model.NewName);
+                _controller.Persist();
+                _controller.Model.IsDirty = false;
                 base.NotifyPropertyChanged("Title");
+                return new ActionResults().WithSuccess(true);
             }
             catch (Exception ex)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error saving group: " + ex.Message);
+                return ActionResults.CreateFailed(ex);
             }
         }
 

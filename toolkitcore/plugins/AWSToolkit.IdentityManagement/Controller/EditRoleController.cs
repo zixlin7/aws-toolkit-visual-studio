@@ -9,16 +9,25 @@ using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 using log4net;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.IdentityManagement.Util;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Controller
 {
     public class EditRoleController : BaseContextCommand
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(EditRoleController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(EditRoleController));
 
+        private readonly ToolkitContext _toolkitContext;
         IAmazonIdentityManagementService _iamClient;
         EditRoleModel _model;
         IAMRoleViewModel _iamRoleViewModel;
+
+        public EditRoleController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public EditRoleModel Model => this._model;
 
@@ -70,7 +79,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                     }
                     catch (Exception e)
                     {
-                        LOGGER.Error("Error loading policy " + policyName, e);
+                        _logger.Error("Error loading policy " + policyName, e);
                         ToolkitFactory.Instance.ShellProvider.ShowError("Error parsing template " + policyName + ": " + e.Message);
                     }
                 }
@@ -118,5 +127,11 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             this.Model.CommitChanges();
         }
 
+        public void RecordEditRole(ActionResults results)
+        {
+            var awsConnectionSettings =
+                _iamRoleViewModel?.IAMRoleRootViewModel?.IAMRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordIamEdit(IamResourceType.Role, results, awsConnectionSettings);
+        }
     }
 }
