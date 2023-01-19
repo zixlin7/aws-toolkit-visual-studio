@@ -24,5 +24,21 @@ namespace Amazon.AWSToolkit.IdentityManagement.Util
 
             toolkitContext.TelemetryLogger.RecordIamCreate(data);
         }
+
+        public static void RecordIamDelete(this ToolkitContext toolkitContext, IamResourceType resource,
+           ActionResults results, AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = new IamDelete()
+            {
+                AwsAccount =
+                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
+                IamResourceType = resource,
+                Result = results.AsTelemetryResult(),
+                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
+            };
+
+            toolkitContext.TelemetryLogger.RecordIamDelete(data);
+        }
     }
 }

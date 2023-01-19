@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.IdentityManagement
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<EditGroupController>().Execute);
 
             rootNode.IAMGroupRootViewMetaNode.IAMGroupViewMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteGroupController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteGroupController(ToolkitContext)).Execute);
 
             rootNode.IAMUserRootViewMetaNode.OnCreateUser =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateUserController(ToolkitContext)).Execute);
@@ -55,8 +55,7 @@ namespace Amazon.AWSToolkit.IdentityManagement
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<EditUserController>().Execute);
 
             rootNode.IAMUserRootViewMetaNode.IAMUserViewMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteUserController>().Execute);
-
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteUserController(ToolkitContext)).Execute);
 
             rootNode.IAMRoleRootViewMetaNode.OnCreateRole =
                  new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateRoleController(ToolkitContext)).Execute);
@@ -65,7 +64,7 @@ namespace Amazon.AWSToolkit.IdentityManagement
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<EditRoleController>().Execute);
 
             rootNode.IAMRoleRootViewMetaNode.IAMRoleViewMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteRoleController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteRoleController(ToolkitContext)).Execute);
 
         }
 
