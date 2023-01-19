@@ -93,7 +93,10 @@
     <Compile Include="CloudWatch\ILogStreamsViewer.cs" />
     <Compile Include="Commands\AsyncCommand.cs" />
     <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\PromptAndExecuteCommand.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommand.cs" />
+    <Compile Include="Commands\PromptAndExecuteHandler.cs" />
+    <Compile Include="Commands\ToolkitCommandResult.cs" />
     <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />

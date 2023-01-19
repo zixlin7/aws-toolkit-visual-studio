@@ -3,39 +3,46 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.EC2.Repositories;
 using Amazon.AWSToolkit.EC2.View;
-using Amazon.AWSToolkit.Navigator;
 
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.Commands
 {
-    public class AssociateElasticIpCommand : SelectedElasticIpCommand
+    internal class AssociateElasticIpCommand : PromptAndExecuteHandler<ElasticIpCommandArgs>
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(AssociateElasticIpCommand));
 
+        private readonly ElasticIpCommandState _state;
+
         private string _instanceId;
 
-        public AssociateElasticIpCommand(ViewElasticIPsModel viewModel, IElasticIpRepository elasticIp,
-            AwsConnectionSettings awsConnectionSettings, ToolkitContext toolkitContext)
-            : base(viewModel, elasticIp, awsConnectionSettings, toolkitContext)
+        public AssociateElasticIpCommand(ElasticIpCommandState state)
         {
+            Arg.NotNull(state, nameof(state));
+
+            _state = state;
         }
 
-        protected override bool CanExecuteCore(SelectedElasticIpCommandArgs args)
+        public override ElasticIpCommandArgs AsHandlerArgs(object parameter)
         {
-            return !args.SelectedAddress.IsAddressInUse;
+            return ElasticIpCommandArgs.FromParameter(parameter);
         }
 
-        protected override async Task<bool> PromptAsync(SelectedElasticIpCommandArgs args)
+        public override bool CanExecute(ElasticIpCommandArgs args)
         {
-            var model = new AssociateAddressModel(args.SelectedAddress);
+            return args.Grid.SelectedItems.Count == 1
+                   && !args.GetSelectedAddress().IsAddressInUse;
+        }
+
+        public override async Task<bool> PromptAsync(ElasticIpCommandArgs args)
+        {
+            var address = args.GetSelectedAddress();
+            var model = new AssociateAddressModel(address);
             model.AvailableInstances =
-                (await _elasticIp.GetUnassociatedInstancesAsync(args.SelectedAddress.Domain)).ToList();
+                (await _state.ElasticIpRepository.GetUnassociatedInstancesAsync(address.Domain)).ToList();
 
             if (model.AvailableInstances.Count == 0)
             {
@@ -47,7 +54,7 @@ namespace Amazon.AWSToolkit.EC2.Commands
             model.Instance = model.AvailableInstances.FirstOrDefault();
 
             var control = new AssociateAddressControl(model);
-            var result = _toolkitContext.ToolkitHost.ShowModal(control);
+            var result = _state.ToolkitContext.ToolkitHost.ShowModal(control);
 
             if (result)
             {
@@ -57,32 +64,35 @@ namespace Amazon.AWSToolkit.EC2.Commands
             return result;
         }
 
-        protected override async Task ExecuteAsync(SelectedElasticIpCommandArgs args)
+        public override async Task ExecuteAsync(ElasticIpCommandArgs args)
         {
-            await _elasticIp.AssociateWithInstance(args.SelectedAddress, _instanceId);
-            await RefreshElasticIpsAsync();
+            var address = args.GetSelectedAddress();
+            await _state.ElasticIpRepository.AssociateWithInstance(address, _instanceId);
+            await _state.RefreshElasticIpsAsync();
 
-            var addressToSelect = _viewModel.Addresses.FirstOrDefault(x => x.PublicIp == args.SelectedAddress.PublicIp);
+            var addressToSelect =
+                _state.ViewElasticIPsModel.Addresses.FirstOrDefault(x => x.PublicIp == address.PublicIp);
             if (addressToSelect != null)
             {
                 args.Grid.SelectAndScrollIntoView(addressToSelect);
             }
         }
 
-        protected override void HandleExecuteException(Exception ex)
+        public override void HandleExecuteException(Exception ex)
         {
             _logger.Error("Error associating Elastic IP", ex);
-            _toolkitContext.ToolkitHost.ShowError("Associate Elastic IP Error",
+            _state.ToolkitContext.ToolkitHost.ShowError("Associate Elastic IP Error",
                 $"Error associating address: {ex.Message}");
         }
 
-        protected override void RecordMetric(ActionResults result)
+        public override void RecordMetric(ToolkitCommandResult result)
         {
-            var data = CreateMetricData<Ec2EditInstanceElasticIp>(result);
+            var data = result.CreateMetricData<Ec2EditInstanceElasticIp>(_state.AwsConnectionSettings,
+                _state.ToolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
             data.Enabled = true;
 
-            _toolkitContext.TelemetryLogger.RecordEc2EditInstanceElasticIp(data);
+            _state.ToolkitContext.TelemetryLogger.RecordEc2EditInstanceElasticIp(data);
         }
     }
 }

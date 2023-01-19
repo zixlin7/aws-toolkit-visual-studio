@@ -2,46 +2,62 @@
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Collections;
+using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Repositories;
+using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Commands
 {
-    /// <summary>
-    /// This is a base command that can be used with Elastic IP operations coming from the ViewElasticIPsControl grid.
-    /// The command is structured such that:
-    /// 1 - users are prompted for some kind of input. This is optional, and can be bypassed if not applicable.
-    /// 2 - the operation is performed
-    /// 3 - telemetry is logged in relation to the operation
-    ///
-    /// Commands that operate based on a selected Elastic IP item from the grid can derive from <see cref="SelectedElasticIpCommand"/>
-    /// </summary>
-    public abstract class ElasticIpCommand : BaseEc2Command
+    internal class ElasticIpCommandArgs : PromptAndExecuteHandlerArgs
     {
-        protected IElasticIpRepository _elasticIp;
-        protected ViewElasticIPsModel _viewModel;
+        public ICustomizeColumnGrid Grid;
 
-        protected ElasticIpCommand(ViewElasticIPsModel viewModel, IElasticIpRepository elasticIp,
-            AwsConnectionSettings awsConnectionSettings, ToolkitContext toolkitContext)
-            : base(awsConnectionSettings, toolkitContext)
+        public AddressWrapper GetSelectedAddress()
         {
-            _elasticIp = elasticIp;
-            _viewModel = viewModel;
+            return Grid.SelectedItem as AddressWrapper;
+        }
+
+        internal static ElasticIpCommandArgs FromParameter(object parameter)
+        {
+            if (parameter is ICustomizeColumnGrid grid)
+            {
+                return new ElasticIpCommandArgs { Grid = grid, };
+            }
+
+            // We screwed up the logic somewhere
+            throw new Ec2Exception("Unable to find Elastic IP details",
+                Ec2Exception.Ec2ErrorCode.InternalMissingEc2State);
+        }
+    }
+
+    internal class ElasticIpCommandState : PromptAndExecuteHandlerState
+    {
+        public AwsConnectionSettings AwsConnectionSettings { get; }
+        public IElasticIpRepository ElasticIpRepository { get; }
+        public ViewElasticIPsModel ViewElasticIPsModel { get; }
+
+        public ElasticIpCommandState(ViewElasticIPsModel viewElasticIPsModel, IElasticIpRepository elasticIpRepository,
+            AwsConnectionSettings awsConnectionSettings, ToolkitContext toolkitContext) : base(toolkitContext)
+        {
+            AwsConnectionSettings = awsConnectionSettings;
+            ElasticIpRepository = elasticIpRepository;
+            ViewElasticIPsModel = viewElasticIPsModel;
         }
 
         /// <summary>
         /// Utility method to reload the account's Elastic Ip objects into the viewmodel
         /// </summary>
-        protected async Task RefreshElasticIpsAsync()
+        public async Task RefreshElasticIpsAsync()
         {
-            var addresses = (await _elasticIp.ListElasticIpsAsync()).ToList();
+            var addresses = (await ElasticIpRepository.ListElasticIpsAsync()).ToList();
 
-            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+            ToolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
-                _viewModel.Addresses.Clear();
-                _viewModel.Addresses.AddAll(addresses);
+                ViewElasticIPsModel.Addresses.Clear();
+                ViewElasticIPsModel.Addresses.AddAll(addresses);
             });
         }
     }

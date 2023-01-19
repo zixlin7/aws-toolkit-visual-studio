@@ -2,55 +2,62 @@
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.EC2.Repositories;
-using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Commands;
 
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.Commands
 {
-    public class ReleaseElasticIpCommand : SelectedElasticIpCommand
+    internal class ReleaseElasticIpCommand : PromptAndExecuteHandler<ElasticIpCommandArgs>
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(ReleaseElasticIpCommand));
 
-        public ReleaseElasticIpCommand(ViewElasticIPsModel viewModel, IElasticIpRepository elasticIp,
-            AwsConnectionSettings awsConnectionSettings, ToolkitContext toolkitContext)
-            : base(viewModel, elasticIp, awsConnectionSettings, toolkitContext)
+        private readonly ElasticIpCommandState _state;
+
+        public ReleaseElasticIpCommand(ElasticIpCommandState state)
         {
+            Arg.NotNull(state, nameof(state));
+
+            _state = state;
         }
 
-        protected override bool CanExecuteCore(SelectedElasticIpCommandArgs args)
+        public override ElasticIpCommandArgs AsHandlerArgs(object parameter)
         {
-            return !args.SelectedAddress.IsAddressInUse;
+            return ElasticIpCommandArgs.FromParameter(parameter);
         }
 
-        protected override bool Prompt(SelectedElasticIpCommandArgs args)
+        public override bool CanExecute(ElasticIpCommandArgs args)
         {
-            var message = $"Are you sure you want to release Elastic IP with address {args.SelectedAddress.PublicIp}?";
-            return _toolkitContext.ToolkitHost.Confirm("Release Elastic IP", message);
+            return args.Grid.SelectedItems.Count == 1
+                   && !args.GetSelectedAddress().IsAddressInUse;
         }
 
-        protected override async Task ExecuteAsync(SelectedElasticIpCommandArgs args)
+        public override Task<bool> PromptAsync(ElasticIpCommandArgs args)
         {
-            await _elasticIp.ReleaseElasticIpAsync(args.SelectedAddress);
-            await RefreshElasticIpsAsync();
+            var message = $"Are you sure you want to release Elastic IP with address {args.GetSelectedAddress().PublicIp}?";
+            var result = _state.ToolkitContext.ToolkitHost.Confirm("Release Elastic IP", message);
+            return Task.FromResult(result);
         }
 
-        protected override void HandleExecuteException(Exception ex)
+        public override async Task ExecuteAsync(ElasticIpCommandArgs args)
+        {
+            await _state.ElasticIpRepository.ReleaseElasticIpAsync(args.GetSelectedAddress());
+            await _state.RefreshElasticIpsAsync();
+        }
+
+        public override void HandleExecuteException(Exception ex)
         {
             _logger.Error("Error releasing Elastic IP", ex);
-            _toolkitContext.ToolkitHost.ShowError("Release Elastic IP Error", "Error releasing address: " + ex.Message);
+            _state.ToolkitContext.ToolkitHost.ShowError("Release Elastic IP Error", "Error releasing address: " + ex.Message);
         }
 
-        protected override void RecordMetric(ActionResults result)
+        public override void RecordMetric(ToolkitCommandResult result)
         {
-            var data = CreateMetricData<Ec2DeleteElasticIp>(result);
+            var data = result.CreateMetricData<Ec2DeleteElasticIp>(_state.AwsConnectionSettings,
+                _state.ToolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
 
-            _toolkitContext.TelemetryLogger.RecordEc2DeleteElasticIp(data);
+            _state.ToolkitContext.TelemetryLogger.RecordEc2DeleteElasticIp(data);
         }
     }
 }

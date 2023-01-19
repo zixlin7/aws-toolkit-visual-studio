@@ -3,65 +3,79 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.EC2.Repositories;
-using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Commands;
 
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.Commands
 {
-    public class DisassociateElasticIpCommand : SelectedElasticIpCommand
+    internal class DisassociateElasticIpCommand : PromptAndExecuteHandler<ElasticIpCommandArgs>
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(DisassociateElasticIpCommand));
 
-        public DisassociateElasticIpCommand(ViewElasticIPsModel viewModel, IElasticIpRepository elasticIp,
-            AwsConnectionSettings awsConnectionSettings, ToolkitContext toolkitContext)
-            : base(viewModel, elasticIp, awsConnectionSettings, toolkitContext)
+        private readonly ElasticIpCommandState _state;
+
+        public DisassociateElasticIpCommand(ElasticIpCommandState state)
         {
+            Arg.NotNull(state, nameof(state));
+
+            _state = state;
         }
 
-        protected override bool CanExecuteCore(SelectedElasticIpCommandArgs args)
+        public override ElasticIpCommandArgs AsHandlerArgs(object parameter)
         {
-            return args.SelectedAddress.IsAddressInUse &&
-                   !string.IsNullOrEmpty(args.SelectedAddress.InstanceId);
+            return ElasticIpCommandArgs.FromParameter(parameter);
         }
 
-        protected override async Task<bool> PromptAsync(SelectedElasticIpCommandArgs args)
+        public override bool CanExecute(ElasticIpCommandArgs args)
         {
+            if (args.Grid.SelectedItems.Count != 1) { return false; }
+
+            var selectedAddress = args.GetSelectedAddress();
+
+            return args.Grid.SelectedItems.Count == 1 &&
+                   selectedAddress.IsAddressInUse &&
+                   !string.IsNullOrEmpty(selectedAddress.InstanceId);
+        }
+
+        public override Task<bool> PromptAsync(ElasticIpCommandArgs args)
+        {
+            var selectedAddress = args.GetSelectedAddress();
             var message =
-                $"Are you sure you want to disassociate the Elastic IP with address {args.SelectedAddress.PublicIp} from Instance {args.SelectedAddress.InstanceId}?";
-            return _toolkitContext.ToolkitHost.Confirm("Disassociate Elastic IP", message);
+                $"Are you sure you want to disassociate the Elastic IP with address {selectedAddress.PublicIp} from Instance {selectedAddress.InstanceId}?";
+            var result = _state.ToolkitContext.ToolkitHost.Confirm("Disassociate Elastic IP", message);
+            return Task.FromResult(result);
         }
 
-        protected override async Task ExecuteAsync(SelectedElasticIpCommandArgs args)
+        public override async Task ExecuteAsync(ElasticIpCommandArgs args)
         {
-            await _elasticIp.DisassociateFromInstanceAsync(args.SelectedAddress);
-            await RefreshElasticIpsAsync();
+            var selectedAddress = args.GetSelectedAddress();
+            await _state.ElasticIpRepository.DisassociateFromInstanceAsync(selectedAddress);
+            await _state.RefreshElasticIpsAsync();
 
-            var addressToSelect = _viewModel.Addresses.FirstOrDefault(x => x.PublicIp == args.SelectedAddress.PublicIp);
+            var addressToSelect =
+                _state.ViewElasticIPsModel.Addresses.FirstOrDefault(x => x.PublicIp == selectedAddress.PublicIp);
             if (addressToSelect != null)
             {
                 args.Grid.SelectAndScrollIntoView(addressToSelect);
             }
         }
 
-        protected override void HandleExecuteException(Exception ex)
+        public override void HandleExecuteException(Exception ex)
         {
             _logger.Error("Error disassociating Elastic IP", ex);
-            _toolkitContext.ToolkitHost.ShowError("Disassociate Elastic IP Error",
+            _state.ToolkitContext.ToolkitHost.ShowError("Disassociate Elastic IP Error",
                 $"Error disassociating address: {ex.Message}");
         }
 
-        protected override void RecordMetric(ActionResults result)
+        public override void RecordMetric(ToolkitCommandResult result)
         {
-            var data = CreateMetricData<Ec2EditInstanceElasticIp>(result);
+            var data = result.CreateMetricData<Ec2EditInstanceElasticIp>(_state.AwsConnectionSettings,
+                _state.ToolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
             data.Enabled = false;
 
-            _toolkitContext.TelemetryLogger.RecordEc2EditInstanceElasticIp(data);
+            _state.ToolkitContext.TelemetryLogger.RecordEc2EditInstanceElasticIp(data);
         }
     }
 }

@@ -3,75 +3,76 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.EC2.Repositories;
+using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
-using Amazon.AWSToolkit.Navigator;
 
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.Commands
 {
-    public class AllocateElasticIpCommand : ElasticIpCommand
+    internal class AllocateElasticIpCommand : PromptAndExecuteHandler<ElasticIpCommandArgs>
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(AllocateElasticIpCommand));
 
+        private readonly ElasticIpCommandState _state;
+
         private string _ipDomain;
 
-        public AllocateElasticIpCommand(ViewElasticIPsModel viewModel, IElasticIpRepository elasticIp,
-            AwsConnectionSettings awsConnectionSettings, ToolkitContext toolkitContext)
-            : base(viewModel, elasticIp, awsConnectionSettings, toolkitContext)
+        public AllocateElasticIpCommand(ElasticIpCommandState state)
         {
+            Arg.NotNull(state, nameof(state));
+
+            _state = state;
         }
 
-        protected override bool CanExecuteCore(object parameter)
+        public override ElasticIpCommandArgs AsHandlerArgs(object parameter)
         {
-            return parameter is ICustomizeColumnGrid;
+            var args = new ElasticIpCommandArgs { Grid = parameter as ICustomizeColumnGrid };
+
+            Arg.NotNull(args.Grid, nameof(parameter));
+
+            return args;
         }
 
-        protected override bool Prompt(object _)
+        public override Task<bool> PromptAsync(ElasticIpCommandArgs args)
         {
             var control = new AllocateAddressControl();
-            if (!_toolkitContext.ToolkitHost.ShowModal(control))
+            if (!_state.ToolkitContext.ToolkitHost.ShowModal(control))
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             _ipDomain = control.Domain;
-            return true;
+            return Task.FromResult(true);
         }
 
-        protected override async Task ExecuteAsync(object parameter)
+        public override async Task ExecuteAsync(ElasticIpCommandArgs args)
         {
-            var grid = parameter as ICustomizeColumnGrid;
-            Arg.NotNull(grid, nameof(parameter));
+            var publicId =
+                await _state.ElasticIpRepository.AllocateElasticIpAsync(_ipDomain);
 
-            var publicId = await _elasticIp.AllocateElasticIpAsync(_ipDomain);
+            await _state.RefreshElasticIpsAsync();
 
-            await RefreshElasticIpsAsync();
-
-            var addressToSelect = _viewModel.Addresses.FirstOrDefault(x => x.PublicIp == publicId);
+            var addressToSelect = _state.ViewElasticIPsModel.Addresses.FirstOrDefault(x => x.PublicIp == publicId);
             if (addressToSelect != null)
             {
-                grid.SelectAndScrollIntoView(addressToSelect);
+                args.Grid.SelectAndScrollIntoView(addressToSelect);
             }
         }
 
-        protected override void HandleExecuteException(Exception ex)
+        public override void HandleExecuteException(Exception ex)
         {
             _logger.Error("Error allocating Elastic IP", ex);
-            _toolkitContext.ToolkitHost.ShowError("Allocate Elastic IP Error", "Error allocating Elastic IP: " + ex.Message);
+            _state.ToolkitContext.ToolkitHost.ShowError("Allocate Elastic IP Error", "Error allocating Elastic IP: " + ex.Message);
         }
 
-        protected override void RecordMetric(ActionResults result)
+        public override void RecordMetric(ToolkitCommandResult result)
         {
-            var data = CreateMetricData<Ec2CreateElasticIp>(result);
+            var data = result.CreateMetricData<Ec2CreateElasticIp>(_state.AwsConnectionSettings, _state.ToolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
 
-            _toolkitContext.TelemetryLogger.RecordEc2CreateElasticIp(data);
+            _state.ToolkitContext.TelemetryLogger.RecordEc2CreateElasticIp(data);
         }
     }
 }

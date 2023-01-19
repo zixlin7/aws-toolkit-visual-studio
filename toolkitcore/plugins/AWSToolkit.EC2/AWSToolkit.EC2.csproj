@@ -79,7 +79,6 @@
     <Compile Include="Commands\ElasticIpCommand.cs" />
     <Compile Include="Commands\AssociateElasticIpCommand.cs" />
     <Compile Include="Commands\ReleaseElasticIpCommand.cs" />
-    <Compile Include="Commands\SelectedElasticIpCommand.cs" />
     <Compile Include="ViewModels\ViewInstancesViewModel.cs" />
     <Compile Include="ConnectionUtils\RemoteDesktopUtil.cs" />
     <Compile Include="ConnectionUtils\SCPUtil.cs" />

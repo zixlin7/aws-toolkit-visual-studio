@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
+using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2.Commands;
 using Amazon.AWSToolkit.EC2.Model;
@@ -30,13 +31,21 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
 
             var ip = factory.CreateElasticIpRepository(AwsConnectionSettings);
-            Model.AllocateElasticIp = new AllocateElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
-            Model.ReleaseElasticIp = new ReleaseElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
-            Model.AssociateElasticIp = new AssociateElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
-            Model.DisassociateElasticIp = new DisassociateElasticIpCommand(Model, ip, AwsConnectionSettings, _toolkitContext);
 
-            this._control = new ViewElasticIPsControl(this);
-            _toolkitContext.ToolkitHost.OpenInEditor(this._control);
+            var handlerState = new ElasticIpCommandState(Model, ip, AwsConnectionSettings, _toolkitContext);
+
+            Model.AllocateElasticIp = CreatePromptAndExecuteCommand(new AllocateElasticIpCommand(handlerState));
+            Model.ReleaseElasticIp = CreatePromptAndExecuteCommand(new ReleaseElasticIpCommand(handlerState));
+            Model.AssociateElasticIp = CreatePromptAndExecuteCommand(new AssociateElasticIpCommand(handlerState));
+            Model.DisassociateElasticIp = CreatePromptAndExecuteCommand(new DisassociateElasticIpCommand(handlerState));
+
+            _control = new ViewElasticIPsControl(this);
+            _toolkitContext.ToolkitHost.OpenInEditor(_control);
+        }
+
+        private PromptAndExecuteCommand<ElasticIpCommandArgs> CreatePromptAndExecuteCommand(PromptAndExecuteHandler<ElasticIpCommandArgs> handler)
+        {
+            return new PromptAndExecuteCommand<ElasticIpCommandArgs>(handler, _toolkitContext);
         }
 
         public void LoadModel()
