@@ -154,7 +154,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             var region = HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
 
-            IAmazonSecurityTokenService stsClient = account.CreateServiceClient<IAmazonSecurityTokenService>(region);
+            IAmazonSecurityTokenService stsClient = account.CreateServiceClient<AmazonSecurityTokenServiceClient>(region);
             IAmazonCloudFormation cloudFormationClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
             IAmazonS3 s3Client = account.CreateServiceClient<AmazonS3Client>(region);
             IAmazonECR ecrClient = account.CreateServiceClient<AmazonECRClient>(region);
@@ -356,7 +356,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 }
 
                 IAmazonSecurityTokenService stsClient =
-                    state.Account.CreateServiceClient<IAmazonSecurityTokenService>(state.Region);
+                    state.Account.CreateServiceClient<AmazonSecurityTokenServiceClient>(state.Region);
 
                 BaseUploadWorker worker;
 
