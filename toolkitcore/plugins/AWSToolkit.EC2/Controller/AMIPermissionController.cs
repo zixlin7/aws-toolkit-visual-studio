@@ -23,11 +23,12 @@ namespace Amazon.AWSToolkit.EC2.Controller
             this._model = new AMIPermissionModel(image);
             this._ec2Client = ec2Client;
             var control = new AMIPermissionControl(this);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(control);
-            if (this._results != null)
-                return this._results;
+            if (!ToolkitFactory.Instance.ShellProvider.ShowModal(control))
+            {
+                ActionResults.CreateCancelled();
+            }
 
-            return new ActionResults().WithSuccess(false);
+            return _results ?? ActionResults.CreateFailed();
         }
 
         public AMIPermissionModel Model => this._model;

@@ -10,6 +10,8 @@ using Amazon.AWSToolkit.EC2.View.DataGrid;
 using Amazon.AWSToolkit.EC2.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.EC2.Model;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -113,13 +115,13 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return true;
         }
 
-        public void CopyAmi(ImageWrapper image, ToolkitRegion destination)
+        public ActionResults CopyAmi(ImageWrapper image, ToolkitRegion destination)
         {
             var controller = new CopyAmiController(this.Region.Id, destination, this.FeatureViewModel.AccountViewModel);
-            controller.Execute(this.EC2Client, new List<ImageWrapper> { image });
+            return controller.Execute(this.EC2Client, new List<ImageWrapper> { image });
         }
 
-        public void Deregister(IList<ImageWrapper> images)
+        public ActionResults Deregister(IList<ImageWrapper> images)
         {
             var controller = new DeregisterAMIController();
             var results = controller.Execute(this.EC2Client, images);
@@ -130,12 +132,14 @@ namespace Amazon.AWSToolkit.EC2.Controller
                     this.Model.Images.Remove(image);
                 }
             }
+
+            return results;
         }
 
-        public void EditPermission(ImageWrapper image)
+        public ActionResults EditPermission(ImageWrapper image)
         {
             var controller = new AMIPermissionController();
-            controller.Execute(this.EC2Client, image);
+            return controller.Execute(EC2Client, image);
         }
 
         public void LaunchInstance(ImageWrapper image)
@@ -154,5 +158,26 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
         }
 
+        public void RecordCopyAmi(ActionResults result)
+        {
+            var data = CreateMetricData<Ec2CopyAmiToRegion>(result, _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            _toolkitContext.TelemetryLogger.RecordEc2CopyAmiToRegion(data);
+        }
+
+        public void RecordDeleteAmi(int imageCount, ActionResults result)
+        {
+            var data = CreateMetricData<Ec2DeleteAmi>(result, _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Value = imageCount;
+            _toolkitContext.TelemetryLogger.RecordEc2DeleteAmi(data);
+        }
+
+        public void RecordEditAmiPermission(ActionResults result)
+        {
+            var data = CreateMetricData<Ec2EditAmiPermission>(result, _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            _toolkitContext.TelemetryLogger.RecordEc2EditAmiPermission(data);
+        }
     }
 }

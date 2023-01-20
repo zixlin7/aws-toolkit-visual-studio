@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Util;
 using Amazon.EC2.Model;
 
@@ -137,14 +135,14 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void RecordCreateKeyPair(ActionResults result)
         {
-            var data = CreateMetricData<Ec2CreateKeyPair>(result);
+            var data = CreateMetricData<Ec2CreateKeyPair>(result, _toolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
             _toolkitContext.TelemetryLogger.RecordEc2CreateKeyPair(data);
         }
 
         public void RecordDeleteKeyPair(int count, ActionResults result)
         {
-            var data = CreateMetricData<Ec2DeleteKeyPair>(result);
+            var data = CreateMetricData<Ec2DeleteKeyPair>(result, _toolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
             data.Value = count;
             _toolkitContext.TelemetryLogger.RecordEc2DeleteKeyPair(data);
@@ -152,7 +150,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void RecordClearPrivateKey(int count, ActionResults result)
         {
-            var data = CreateMetricData<Ec2ClearPrivateKey>(result);
+            var data = CreateMetricData<Ec2ClearPrivateKey>(result, _toolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
             data.Value = count;
             _toolkitContext.TelemetryLogger.RecordEc2ClearPrivateKey(data);
@@ -160,32 +158,16 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void RecordImportPrivateKey(ActionResults result)
         {
-            var data = CreateMetricData<Ec2ImportPrivateKey>(result);
+            var data = CreateMetricData<Ec2ImportPrivateKey>(result, _toolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
             _toolkitContext.TelemetryLogger.RecordEc2ImportPrivateKey(data);
         }
 
         public void RecordExportPrivateKey(ActionResults result)
         {
-            var data = CreateMetricData<Ec2ExportPrivateKey>(result);
+            var data = CreateMetricData<Ec2ExportPrivateKey>(result, _toolkitContext.ServiceClientManager);
             data.Result = result.AsTelemetryResult();
             _toolkitContext.TelemetryLogger.RecordEc2ExportPrivateKey(data);
-        }
-
-        /// <summary>
-        /// Utility method to create a metric object and pre-populate it with standardized fields.
-        /// </summary>
-        /// <typeparam name="T">Metric object to instantiate</typeparam>
-        /// <param name="result">Operation result, used to populate some of the metric fields</param>
-        private T CreateMetricData<T>(ActionResults result) where T : BaseTelemetryEvent, new()
-        {
-            var metricData = new T();
-            metricData.AwsAccount = AwsConnectionSettings?.GetAccountId(_toolkitContext.ServiceClientManager) ??
-                                    MetadataValue.Invalid;
-            metricData.AwsRegion = AwsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid;
-            metricData.Reason = TelemetryHelper.GetMetricsReason(result.Exception);
-
-            return metricData;
         }
     }
 }

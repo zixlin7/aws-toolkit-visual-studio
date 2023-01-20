@@ -1,11 +1,12 @@
-﻿using System;
-
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.EC2.Controller
@@ -55,5 +56,21 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public ToolkitRegion Region => this.FeatureViewModel.Region;
 
         public AwsConnectionSettings AwsConnectionSettings => _awsConnectionSettings;
+
+        /// <summary>
+        /// Utility method to create a metric object and pre-populate it with standardized fields.
+        /// </summary>
+        /// <typeparam name="T">Metric object to instantiate</typeparam>
+        /// <param name="result">Operation result, used to populate some of the metric fields</param>
+        protected T CreateMetricData<T>(ActionResults result, IAwsServiceClientManager serviceClientManager) where T : BaseTelemetryEvent, new()
+        {
+            var metricData = new T();
+            metricData.AwsAccount = AwsConnectionSettings?.GetAccountId(serviceClientManager) ??
+                                    MetadataValue.Invalid;
+            metricData.AwsRegion = AwsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid;
+            metricData.Reason = TelemetryHelper.GetMetricsReason(result.Exception);
+
+            return metricData;
+        }
     }
 }
