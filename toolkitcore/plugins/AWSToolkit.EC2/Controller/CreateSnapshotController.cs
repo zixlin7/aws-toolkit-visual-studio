@@ -25,7 +25,10 @@ namespace Amazon.AWSToolkit.EC2.Controller
             _results = new ActionResults().WithSuccess(true);
 
             var control = new CreateSnapshotControl(this);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(control);
+            if (!ToolkitFactory.Instance.ShellProvider.ShowModal(control))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
             return _results;
         }

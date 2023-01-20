@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
-
+using Amazon.AWSToolkit.EC2.View.DataGrid;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.EC2.Model;
 
 using log4net;
@@ -15,7 +20,14 @@ namespace Amazon.AWSToolkit.EC2.Controller
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewVolumesController));
 
+        private readonly ToolkitContext _toolkitContext;
         ViewVolumesControl _control;
+
+        public ViewVolumesController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         protected override void DisplayView()
         {
             this._control = new ViewVolumesControl(this);
@@ -101,40 +113,67 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
         }
 
-        public VolumeWrapper CreateVolume()
+        public ActionResults CreateVolume(ICustomizeColumnGrid grid)
         {
             var controller = new CreateVolumeController();
             var result = controller.Execute(this.EC2Client, this.Region.Id);
+
             if (result.Success)
             {
                 RefreshVolumeList();
-                foreach (var vol in Model.Volumes)
+
+                var selectedVolume = Model.Volumes.FirstOrDefault(v => result.FocalName.Equals(v.VolumeId));
+                if (selectedVolume != null)
                 {
-                    if (result.FocalName.Equals(vol.VolumeId))
-                        return vol;
+                    grid.SelectAndScrollIntoView(selectedVolume);
                 }
             }
-            return null;
+            return result;
         }
 
         public void CreateSnapshot(VolumeWrapper volume)
         {
-            var controller = new CreateSnapshotController();
-            var result = controller.Execute(EC2Client, volume);
-            if (result.Success)
+            try
             {
-                ThreadPool.QueueUserWorkItem((WaitCallback)(x => RefreshFocusSnapshots()));
+                var controller = new CreateSnapshotController();
+                var result = controller.Execute(EC2Client, volume);
+                if (result.Success)
+                {
+                    ThreadPool.QueueUserWorkItem((WaitCallback)(x => RefreshFocusSnapshots()));
+                }
+
+                RecordCreateSnapshot(result);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error creating snapshot", e);
+                _toolkitContext.ToolkitHost.ShowError("Create Snapshot Error", $"Error creating snapshot: {e.Message}");
+                RecordCreateSnapshot(ActionResults.CreateFailed(e));
             }
         }
 
         public void DeleteSnapshots(IList<SnapshotWrapper> snapshots)
         {
-            var controller = new DeleteSnapshotController();
-            var results = controller.Execute(EC2Client, snapshots);
-            RefreshFocusSnapshots();
+            int count = 0;
+
+            try
+            {
+                count = snapshots.Count;
+                var controller = new DeleteSnapshotController();
+                var result = controller.Execute(EC2Client, snapshots);
+                RefreshFocusSnapshots();
+
+                RecordDeleteSnapshots(count, result);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error refreshing list of snapshots", e);
+                _toolkitContext.ToolkitHost.ShowError($"Error deleting snapshots: {e.Message}");
+                RecordDeleteSnapshots(count, ActionResults.CreateFailed(e));
+            }
         }
 
-        public void DeleteVolume(IList<VolumeWrapper> volumes)
+        public ActionResults DeleteVolume(IList<VolumeWrapper> volumes)
         {
             var controller = new DeleteVolumeController();
             var results = controller.Execute(EC2Client, volumes);
@@ -142,9 +181,11 @@ namespace Amazon.AWSToolkit.EC2.Controller
             {
                 this.RefreshVolumeList();
             }
+
+            return results;
         }
 
-        public void AttachVolume(VolumeWrapper volume)
+        public ActionResults AttachVolume(VolumeWrapper volume)
         {
             var controller = new AttachVolumeController();
             var results = controller.Execute(EC2Client, volume);
@@ -152,9 +193,11 @@ namespace Amazon.AWSToolkit.EC2.Controller
             {
                 this.RefreshVolumeList();
             }
+
+            return results;
         }
 
-        public void DetachVolumeFocusInstance(IList<VolumeWrapper> volumes, bool force)
+        public ActionResults DetachVolumeFocusInstance(IList<VolumeWrapper> volumes, bool force)
         {
             var controller = new DetachVolumeController(force);
             var results = controller.Execute(this.EC2Client, volumes);
@@ -162,6 +205,46 @@ namespace Amazon.AWSToolkit.EC2.Controller
             {
                 this.RefreshVolumeList();
             }
+
+            return results;
+        }
+
+        public void RecordCreateVolume(ActionResults result)
+        {
+            var data = CreateMetricData<Ec2CreateVolume>(result, _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            _toolkitContext.TelemetryLogger.RecordEc2CreateVolume(data);
+        }
+
+        public void RecordDeleteVolume(int count, ActionResults result)
+        {
+            var data = CreateMetricData<Ec2DeleteVolume>(result, _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Value = count;
+            _toolkitContext.TelemetryLogger.RecordEc2DeleteVolume(data);
+        }
+
+        public void RecordEditVolumeAttachment(bool attached, ActionResults result)
+        {
+            var data = CreateMetricData<Ec2EditVolumeAttachment>(result, _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Enabled = attached;
+            _toolkitContext.TelemetryLogger.RecordEc2EditVolumeAttachment(data);
+        }
+
+        private void RecordCreateSnapshot(ActionResults result)
+        {
+            var data = CreateMetricData<Ec2CreateSnapshot>(result, _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            _toolkitContext.TelemetryLogger.RecordEc2CreateSnapshot(data);
+        }
+
+        private void RecordDeleteSnapshots(int count, ActionResults result)
+        {
+            var data = CreateMetricData<Ec2DeleteSnapshot>(result, _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Value = count;
+            _toolkitContext.TelemetryLogger.RecordEc2DeleteSnapshot(data);
         }
     }
 }

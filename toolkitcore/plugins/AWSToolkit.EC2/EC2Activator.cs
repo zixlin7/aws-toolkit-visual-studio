@@ -120,7 +120,7 @@ namespace Amazon.AWSToolkit.EC2
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewInstancesController(ToolkitContext)).Execute);
 
             rootNode.FindChild<EC2VolumesViewMetaNode>().OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewVolumesController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewVolumesController(ToolkitContext)).Execute);
 
             rootNode.FindChild<EC2KeyPairsViewMetaNode>().OnView =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewKeyPairsController(ToolkitContext)).Execute);
