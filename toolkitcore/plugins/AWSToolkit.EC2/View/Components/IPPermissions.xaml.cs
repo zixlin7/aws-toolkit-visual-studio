@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Amazon.AWSToolkit.EC2.Model;
+
 using Amazon.AWSToolkit.EC2.Controller;
+using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.Navigator;
 
 using log4net;
 
@@ -49,12 +51,14 @@ namespace Amazon.AWSToolkit.EC2.View.Components
         {
             try
             {
-                this._controller.AddPermission(this._permissionType);
+                var result = _controller.AddPermission(_permissionType);
+                _controller.RecordEditSecurityGroupPermission(result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error adding ip permission", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error adding ip permission: " + e.Message);
+                _controller.RecordEditSecurityGroupPermission(ActionResults.CreateFailed(e));
             }
         }
 
@@ -71,12 +75,14 @@ namespace Amazon.AWSToolkit.EC2.View.Components
                     toBeDeleted.Add(perm);
                 }
 
-                this._controller.DeletePermission(toBeDeleted, this._permissionType);
+                var result = _controller.DeletePermission(toBeDeleted, _permissionType);
+                _controller.RecordEditSecurityGroupPermission(result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error deleting ip permission(s)", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error deleting ip permission(s): " + e.Message);
+                _controller.RecordEditSecurityGroupPermission(ActionResults.CreateFailed(e));
             }
         }
 

@@ -29,13 +29,12 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             AddIPPermissionControl control = new AddIPPermissionControl(this);
 
-            if(!ToolkitFactory.Instance.ShellProvider.ShowModal(control))
-                return new ActionResults().WithSuccess(false);
+            if (!ToolkitFactory.Instance.ShellProvider.ShowModal(control))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
-            if (this._result == null)
-                return new ActionResults().WithSuccess(false);
-
-            return this._result;
+            return _result ?? ActionResults.CreateFailed();
         }
 
         public AddIPPermissionModel Model => this._model;

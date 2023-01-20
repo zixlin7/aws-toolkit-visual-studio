@@ -126,7 +126,7 @@ namespace Amazon.AWSToolkit.EC2
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewKeyPairsController(ToolkitContext)).Execute);
 
             rootNode.FindChild<SecurityGroupsViewMetaNode>().OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewSecurityGroupsController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewSecurityGroupsController(ToolkitContext)).Execute);
         }
 
         void setupVPCContextMenuHooks(VPCRootViewMetaNode rootNode)

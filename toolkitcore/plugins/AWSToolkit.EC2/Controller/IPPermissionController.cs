@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit.EC2.Model;
 
+using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 
@@ -38,7 +39,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
         }
 
-        public void AddPermission(EC2Constants.PermissionType permisionType)
+        public ActionResults AddPermission(EC2Constants.PermissionType permisionType)
         {
             AddIPPermissionController controller = new AddIPPermissionController();
             var results = controller.Execute(this._viewModel, this._owningGroup.NativeSecurityGroup, permisionType);
@@ -46,13 +47,17 @@ namespace Amazon.AWSToolkit.EC2.Controller
             {
                 this.RefreshPermission(permisionType);
             }
+
+            return results;
         }
 
-        public void DeletePermission(IList<IPPermissionWrapper> toBeDeleted, EC2Constants.PermissionType permisionType)
+        public ActionResults DeletePermission(IList<IPPermissionWrapper> toBeDeleted, EC2Constants.PermissionType permisionType)
         {
             if (!ToolkitFactory.Instance.ShellProvider.Confirm("Delete IP Permission", 
                                                                "Are you sure you want to delete the ip permission(s)"))
-                return;
+            {
+                return ActionResults.CreateCancelled();
+            }
 
             foreach (var ipPermission in toBeDeleted)
             {
@@ -99,6 +104,13 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
 
             this.RefreshPermission(permisionType);
+
+            return new ActionResults().WithSuccess(true);
+        }
+
+        public void RecordEditSecurityGroupPermission(ActionResults result)
+        {
+            // unused -- ViewSecurityGroupsController is called for metrics
         }
     }
 }

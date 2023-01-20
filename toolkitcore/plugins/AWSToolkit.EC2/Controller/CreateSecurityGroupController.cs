@@ -26,12 +26,12 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 this._model.AvailableVPCs.Insert(0, new VPCWrapper(new Vpc { VpcId = VPCWrapper.NotInVpcPseudoId }));
 
             var control = new CreateSecurityGroupControl(this);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(control);
+            if (!ToolkitFactory.Instance.ShellProvider.ShowModal(control))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-
-            return this._results;
+            return _results ?? ActionResults.CreateFailed();
         }
 
         List<VPCWrapper> GetListVPCs()

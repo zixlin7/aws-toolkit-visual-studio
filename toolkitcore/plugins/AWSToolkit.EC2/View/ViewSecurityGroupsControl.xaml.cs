@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
@@ -68,15 +69,13 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                var newGroup = this._controller.CreateSecurityGroup();
-                if (newGroup != null)
-                {
-                    this._ctlDataGrid.SelectAndScrollIntoView(newGroup);
-                }
+                var result = _controller.CreateSecurityGroup(_ctlDataGrid);
+                _controller.RecordCreateSecurityGroup(result);
             }
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Data Error", "Error creating security groups: " + e.Message);
+                _controller.RecordCreateSecurityGroup(ActionResults.CreateFailed(e));
             }
         }
 
@@ -116,14 +115,20 @@ namespace Amazon.AWSToolkit.EC2.View
 
         void onDeleteSecurityGroupsClick(object sender, RoutedEventArgs evnt)
         {
+            int count = 0;
+
             try
             {
-                this._controller.DeleteSecurityGroups(this._controller.Model.SelectedGroups);
+                var selectedGroups = _controller.Model.SelectedGroups;
+                count = selectedGroups.Count;
+                var result = _controller.DeleteSecurityGroups(selectedGroups);
+                _controller.RecordDeleteSecurityGroup(count, result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error security groups", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Deleting Security Group", "Error security group: " + e.Message);
+                _controller.RecordDeleteSecurityGroup(count, ActionResults.CreateFailed(e));
             }
         }
 

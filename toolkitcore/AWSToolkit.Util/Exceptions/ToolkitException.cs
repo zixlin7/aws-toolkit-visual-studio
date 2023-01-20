@@ -8,6 +8,7 @@ namespace Amazon.AWSToolkit.Exceptions
         public enum CommonErrorCode
         {
             UnexpectedError,
+            UnsupportedState,
             InternalMissingServiceState
         }
 
