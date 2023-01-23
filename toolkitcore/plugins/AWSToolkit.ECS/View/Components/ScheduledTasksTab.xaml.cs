@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+
 using Amazon.AWSToolkit.ECS.Controller;
+using Amazon.AWSToolkit.ECS.Model;
+using Amazon.AWSToolkit.Navigator;
 
 using log4net;
-using Amazon.AWSToolkit.ECS.Model;
 
 namespace Amazon.AWSToolkit.ECS.View.Components
 {
@@ -48,8 +50,17 @@ namespace Amazon.AWSToolkit.ECS.View.Components
 
         private void Delete_Click(object sender, RoutedEventArgs evnt)
         {
-            if (!this._controller.ToolkitContext.ToolkitHost.Confirm("Delete Scheduled Task", "Are you want to delete the selected scheduled tasks?"))
-                return;
+            var results = TryDeleteScheduledTask(out var count);
+            _controller.RecordDeleteScheduledTask(count, results);
+        }
+
+        private ActionResults TryDeleteScheduledTask(out int taskCount)
+        {
+            taskCount = 0;
+            if (!_controller.ToolkitContext.ToolkitHost.Confirm("Delete Scheduled Task", "Are you want to delete the selected scheduled tasks?"))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
             try
             {
@@ -58,14 +69,17 @@ namespace Amazon.AWSToolkit.ECS.View.Components
                 {
                     tasks.Add(task);
                 }
-                this._controller.DeleteScheduleTasks(tasks);
-                this._controller.RefreshScheduledTasks();
+                taskCount = tasks.Count;
+                _controller.DeleteScheduleTasks(tasks);
+                _controller.RefreshScheduledTasks();
+                return new ActionResults().WithSuccess(true);
             }
             catch (Exception e)
             {
                 var msg = "Error stopping tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
+                return ActionResults.CreateFailed(e);
             }
         }
 

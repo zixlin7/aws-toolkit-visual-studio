@@ -27,6 +27,8 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public IAmazonECR ECRClient => this._ecrClient;
 
+        public RootViewModel EcsRootViewModel => _rootViewModel;
+
         protected override string IconName => AwsImageResourcePath.ElasticContainerRegistry.Path;
         protected override void LoadChildren()
         {

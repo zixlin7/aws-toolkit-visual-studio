@@ -1,7 +1,11 @@
 ﻿using System;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
+using Amazon.AWSToolkit.ECS.Util;
 using Amazon.AWSToolkit.ECS.View;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.ECR.Model;
@@ -10,24 +14,41 @@ namespace Amazon.AWSToolkit.ECS.Controller
 {
     public class CreateRepositoryController : BaseContextCommand
     {
+        private readonly ToolkitContext _toolkitContext;
         CreateRepositoryControl _control;
         CreateRepositoryModel _model;
         RepositoriesRootViewModel _rootModel;
         ActionResults _results;
 
+        public CreateRepositoryController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public override ActionResults Execute(IViewModel model)
         {
-            this._rootModel = model as RepositoriesRootViewModel;
-            if (this._rootModel == null)
-                return new ActionResults().WithSuccess(false);
+            var result = CreateRepository(model);
+            RecordMetric(result);
+            return result;
+        }
 
-            this._model = new CreateRepositoryModel();
-            this._control = new CreateRepositoryControl(this);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);
+        public ActionResults CreateRepository(IViewModel model)
+        {
+            _rootModel = model as RepositoriesRootViewModel;
+            if (_rootModel == null)
+            {
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find ECR repository data",
+                       ToolkitException.CommonErrorCode.InternalMissingServiceState));
+            }
 
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-            return this._results;
+            _model = new CreateRepositoryModel();
+            _control = new CreateRepositoryControl(this);
+            if (!_toolkitContext.ToolkitHost.ShowModal(_control))
+            {
+                return ActionResults.CreateCancelled();
+            }
+
+            return _results ?? ActionResults.CreateFailed();
         }
 
         public CreateRepositoryModel Model => this._model;
@@ -36,21 +57,30 @@ namespace Amazon.AWSToolkit.ECS.Controller
         {
             try
             {
-                var response = this._rootModel.ECRClient.CreateRepository(new CreateRepositoryRequest
+                var response = _rootModel.ECRClient.CreateRepository(new CreateRepositoryRequest
                 {
-                    RepositoryName = this.Model.RepositoryName
+                    RepositoryName = Model.RepositoryName
                 });
-                
-                this._results = new ActionResults().WithSuccess(true);
-                this._rootModel.AddRepository(new RepositoryWrapper(response.Repository));
+
+                _results = new ActionResults().WithSuccess(true);
+                _rootModel.AddRepository(new RepositoryWrapper(response.Repository));
                 return true;
             }
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error creating repository: " + e.Message);
-                this._results = new ActionResults().WithSuccess(false);
+                _results = ActionResults.CreateFailed(e);
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                RecordMetric(_results);
                 return false;
             }
+        }
+
+        private void RecordMetric(ActionResults result)
+        {
+            var awsConnectionSettings = _rootModel?.EcsRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordEcrCreateRepository(result, awsConnectionSettings);
         }
     }
 }

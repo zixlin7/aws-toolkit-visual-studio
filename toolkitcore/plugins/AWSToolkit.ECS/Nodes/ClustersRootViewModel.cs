@@ -25,6 +25,8 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public IAmazonECS ECSClient => this._ecsClient;
 
+        public RootViewModel EcsRootViewModel => _rootViewModel;
+
         protected override string IconName => AwsImageResourcePath.ElasticContainerServiceCluster.Path;
 
         protected override void LoadChildren()
