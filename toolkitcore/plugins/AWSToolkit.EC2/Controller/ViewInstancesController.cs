@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2.Commands;
 using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.EC2.Repositories;
 using Amazon.AWSToolkit.EC2.View;
+using Amazon.AWSToolkit.EC2.ViewModels;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.EC2.Model;
 
 using log4net;
-using Amazon.AWSToolkit.EC2.Repositories;
-using Amazon.AWSToolkit.EC2.ViewModels;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -45,13 +45,17 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
 
             _instanceRepository = factory.CreateInstanceRepository(AwsConnectionSettings);
-            _viewModel = new ViewInstancesViewModel(Model, _instanceRepository, _toolkitContext);
+            var elasticIpRepository = factory.CreateElasticIpRepository(AwsConnectionSettings);
+
+            _viewModel = new ViewInstancesViewModel(Model, _instanceRepository, elasticIpRepository, _toolkitContext);
             Model.ViewSystemLog = new GetInstanceLogCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
             Model.CreateImage = new CreateImageFromInstanceCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
             Model.ChangeTerminationProtection = new ChangeTerminationProtectionCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
             Model.ChangeUserData = new ChangeUserDataCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
             Model.ChangeInstanceType = new ChangeInstanceTypeCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
             Model.ChangeShutdownBehavior = new ChangeShutdownBehaviorCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.AttachElasticIp = new AttachElasticIpToInstanceCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.DetachElasticIp = new DetachElasticIpFromInstanceCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
 
             this._control = new ViewInstancesControl(this);
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
@@ -227,49 +231,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 Ec2InstanceState = instanceState,
                 Result = result.AsTelemetryResult(),
             });
-        }
-
-        public RunningInstanceWrapper AssociatingElasticIP(RunningInstanceWrapper instance)
-        {
-            var controller = new AttachElasticIPToInstanceController();
-            var results = controller.Execute(this.EC2Client, instance);
-            if (!results.Success)
-                return null;
-
-            this.RefreshInstances();
-            foreach (var item in this.Model.RunningInstances)
-            {
-                if (string.Equals(item.NativeInstance.InstanceId, instance.NativeInstance.InstanceId))
-                    return item;
-            }
-
-            return null;
-        }
-
-        public RunningInstanceWrapper DisassociateElasticIP(RunningInstanceWrapper instance)
-        {
-            DisassociateAddressRequest request = null;
-            if (string.IsNullOrEmpty(instance.VpcId))
-                request = new DisassociateAddressRequest() { PublicIp = instance.NativeInstance.PublicIpAddress };
-            else
-            {
-                var descResponse = this.EC2Client.DescribeAddresses(new DescribeAddressesRequest() { PublicIps = new List<string>() { instance.NativeInstance.PublicIpAddress } });
-                if (descResponse.Addresses.Count != 1)
-                    return null;
-
-                request = new DisassociateAddressRequest() { AssociationId = descResponse.Addresses[0].AssociationId };
-            }
-
-            this.EC2Client.DisassociateAddress(request);
-
-            this.RefreshInstances();
-            foreach (var item in this.Model.RunningInstances)
-            {
-                if (string.Equals(item.NativeInstance.InstanceId, instance.NativeInstance.InstanceId))
-                    return item;
-            }
-
-            return null;
         }
 
         public void GetPassword(RunningInstanceWrapper instance)

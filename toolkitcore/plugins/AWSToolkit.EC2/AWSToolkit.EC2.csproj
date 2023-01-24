@@ -67,6 +67,8 @@
   <ItemGroup>
     <Compile Include="AvailabilityZoneManager.cs" />
     <Compile Include="Commands\AllocateElasticIpCommand.cs" />
+    <Compile Include="Commands\DetachElasticIpFromInstanceCommand.cs" />
+    <Compile Include="Commands\AttachElasticIpToInstanceCommand.cs" />
     <Compile Include="Commands\DisassociateElasticIpCommand.cs" />
     <Compile Include="Commands\BaseEc2Command.cs" />
     <Compile Include="Commands\CreateImageFromInstanceCommand.cs" />
@@ -90,7 +92,6 @@
     <Compile Include="Controller\AssociateDHCPOptionSetController.cs" />
     <Compile Include="Controller\AssociateSubnetToNetworkAclController.cs" />
     <Compile Include="Controller\AssociateSubnetToRouteTableController.cs" />
-    <Compile Include="Controller\AttachElasticIPToInstanceController.cs" />
     <Compile Include="Controller\AttachToVPCController.cs" />
     <Compile Include="Controller\AttachVolumeController.cs" />
     <Compile Include="Controller\AddIPPermissionController.cs" />

@@ -157,5 +157,60 @@ namespace Amazon.AWSToolkit.EC2.Repositories
 
             await _ec2.ModifyInstanceAttributeAsync(request);
         }
+
+        public async Task AssociateWithNewElasticIpAsync(string instanceId, string instanceVpcId, string domain)
+        {
+            var request = new AllocateAddressRequest() { Domain = domain };
+            var response = await _ec2.AllocateAddressAsync(request);
+
+            await AssociateWithElasticIpAsync(instanceId, instanceVpcId, response.PublicIp, response.AllocationId);
+        }
+
+        public async Task AssociateWithElasticIpAsync(string instanceId, string instanceVpcId, string publicIp, string allocationId)
+        {
+            var associateRequest = new AssociateAddressRequest() { InstanceId = instanceId };
+
+            if (string.IsNullOrEmpty(instanceVpcId))
+            {
+                associateRequest.PublicIp = publicIp;
+            }
+            else
+            {
+                associateRequest.AllocationId = allocationId;
+            }
+
+            await _ec2.AssociateAddressAsync(associateRequest);
+        }
+
+        public async Task DisassociateElasticIpAsync(RunningInstanceWrapper instance)
+        {
+            DisassociateAddressRequest request = null;
+
+            if (string.IsNullOrEmpty(instance.VpcId))
+            {
+                request = new DisassociateAddressRequest() { PublicIp = instance.NativeInstance.PublicIpAddress };
+            }
+            else
+            {
+                var publicIpResponse = await _ec2.DescribeAddressesAsync(new DescribeAddressesRequest()
+                {
+                    PublicIps = new List<string>() { instance.NativeInstance.PublicIpAddress }
+                });
+
+                if (publicIpResponse.Addresses.Count != 1)
+                {
+                    throw new Ec2Exception(
+                        $"Expected one public IP address, found {publicIpResponse.Addresses.Count}. Unable to detach Elastic IP.",
+                        Ec2Exception.Ec2ErrorCode.NoElasticIp);
+                }
+
+                request = new DisassociateAddressRequest()
+                {
+                    AssociationId = publicIpResponse.Addresses.Single().AssociationId
+                };
+            }
+
+            await _ec2.DisassociateAddressAsync(request);
+        }
     }
 }

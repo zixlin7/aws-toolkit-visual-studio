@@ -9,6 +9,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         public enum Ec2ErrorCode
         {
             InternalMissingEc2State,
+            NoElasticIp,
             NoImages,
             NoInstances,
             NoPublicIp,

@@ -104,5 +104,21 @@ namespace Amazon.AWSToolkit.EC2.Model
             get => _changeShutdownBehavior;
             set => SetProperty(ref _changeShutdownBehavior, value);
         }
+
+        private ICommand _attachElasticIp;
+
+        public ICommand AttachElasticIp
+        {
+            get => _attachElasticIp;
+            set => SetProperty(ref _attachElasticIp, value);
+        }
+
+        private ICommand _detachElasticIp;
+
+        public ICommand DetachElasticIp
+        {
+            get => _detachElasticIp;
+            set => SetProperty(ref _detachElasticIp, value);
+        }
     }
 }

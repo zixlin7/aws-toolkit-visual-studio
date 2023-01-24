@@ -18,5 +18,8 @@ namespace Amazon.AWSToolkit.EC2.Repositories
         Task UpdateInstanceTypeAsync(string instanceId, string instanceTypeId);
         Task<string> GetShutdownBehaviorAsync(string instanceId);
         Task SetShutdownBehaviorAsync(string instanceId, string behavior);
+        Task AssociateWithNewElasticIpAsync(string instanceId, string instanceVpcId, string domain);
+        Task AssociateWithElasticIpAsync(string instanceId, string instanceVpcId, string publicIp, string allocationId);
+        Task DisassociateElasticIpAsync(RunningInstanceWrapper instance);
     }
 }

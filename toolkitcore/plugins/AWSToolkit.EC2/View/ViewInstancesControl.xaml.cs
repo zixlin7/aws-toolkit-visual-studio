@@ -158,8 +158,8 @@ namespace Amazon.AWSToolkit.EC2.View
             MenuItem stop = createMenuItem("Stop", this.onStopClick);
             MenuItem start = createMenuItem("Start", this.onStartClick);
 
-            MenuItem associateElasticIP = createMenuItem("Associate Elastic IP", this.onAssociatingElasticIP);
-            MenuItem disassociateElasticIP = createMenuItem("Disassociate Elastic IP", this.onDisassociateElasticIP);
+            MenuItem associateElasticIp = CreateMenuItem("Associate Elastic IP", _controller.Model.AttachElasticIp, _ctlDataGrid);
+            MenuItem disassociateElasticIp = CreateMenuItem("Disassociate Elastic IP", _controller.Model.DetachElasticIp, _ctlDataGrid);
 
             MenuItem properties = new MenuItem() { Header = "Properties" };
             properties.Click += this.onPropertiesClick;
@@ -171,8 +171,6 @@ namespace Amazon.AWSToolkit.EC2.View
                 getPassword.IsEnabled = false;
                 openRemoteDesktop.IsEnabled = false;
                 ssh.IsEnabled = false;
-                associateElasticIP.IsEnabled = false;
-                disassociateElasticIP.IsEnabled = false;
             }
 
             if (EC2Constants.INSTANCE_STATE_RUNNING.Equals(selectedItems[0].NativeInstance.State.Name))
@@ -187,11 +185,6 @@ namespace Amazon.AWSToolkit.EC2.View
                     ssh.IsEnabled = false;
                     scp.IsEnabled = false;
                 }
-
-                if (string.IsNullOrEmpty(selectedItems[0].ElasticIPAddress))
-                    disassociateElasticIP.IsEnabled = false;
-                else
-                    associateElasticIP.IsEnabled = false;
             }
             else
             {
@@ -220,8 +213,8 @@ namespace Amazon.AWSToolkit.EC2.View
             menu.Items.Add(changeInstanceType);
             menu.Items.Add(changeShutdownBehavior);
             menu.Items.Add(new Separator());
-            menu.Items.Add(associateElasticIP);
-            menu.Items.Add(disassociateElasticIP);
+            menu.Items.Add(associateElasticIp);
+            menu.Items.Add(disassociateElasticIp);
             menu.Items.Add(new Separator());
             menu.Items.Add(terminate);
             menu.Items.Add(reboot);
@@ -324,48 +317,6 @@ namespace Amazon.AWSToolkit.EC2.View
             {
                 LOGGER.Error("Error getting password", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error getting password: " + e.Message);
-            }
-        }
-
-        void onAssociatingElasticIP(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                var instance = this._controller.AssociatingElasticIP(instances[0]);
-                if(instance != null)
-                    this._ctlDataGrid.SelectAndScrollIntoView(instance);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error associating Elastic IP address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error associating Elastic IP address: " + e.Message);
-            }
-        }
-
-        void onDisassociateElasticIP(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                string message = string.Format("Are you sure you want to disassociate the address {0}?", instances[0].ElasticIPAddress);
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Disassociate Address", message))
-                    return;
-
-                var instance = this._controller.DisassociateElasticIP(instances[0]);
-                if (instance != null)
-                    this._ctlDataGrid.SelectAndScrollIntoView(instance);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error disassociating Elastic IP address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error disassociating Elastic IP address: " + e.Message);
             }
         }
 
