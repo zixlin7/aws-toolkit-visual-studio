@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
 
 using Amazon.AWSToolkit.CommonUI.Images;
 
@@ -24,7 +25,7 @@ namespace Amazon.AWSToolkit.CommonUI
         public static ImageSource CodeArtifact =>
             ImageSourceFactory.GetImageSource(AwsImageResourcePath.CodeArtifact.Path);
 
-        public static ImageSource CodeCatalyst => ImageSourceFactory.GetImageSource(AwsImageResourcePath.CodeCatalyst.Path);
+        public static ImageSource CodeCatalyst => ImageSourceFactory.GetImageSource(new Uri(AwsImageResourcePath.CodeCatalyst.Path, UriKind.RelativeOrAbsolute));
 
         public static ImageSource CodeCommit => ImageSourceFactory.GetImageSource(AwsImageResourcePath.CodeCommit.Path);
 

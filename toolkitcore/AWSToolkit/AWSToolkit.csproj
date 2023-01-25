@@ -839,7 +839,6 @@
     <EmbeddedResource Include="Resources\ServiceIcons\CloudWatch.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\CodeArtifact.png" />
     <!-- TODO IDE-9145 Update icon when latest received -->
-    <EmbeddedResource Include="Resources\ServiceIcons\CodeCatalyst.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\CodeCommit.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\DynamoDB.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\EC2.png" />
@@ -1046,6 +1045,9 @@
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ServiceIcons\CodeCatalyst40x40.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

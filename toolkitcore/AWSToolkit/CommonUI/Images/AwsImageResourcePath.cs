@@ -24,7 +24,7 @@
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CodeArtifact.png");
 
         public static readonly AwsImageResourcePath CodeCatalyst =
-            new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CodeCatalyst.png");
+            new AwsImageResourcePath("/AWSToolkit;Component/Resources/ServiceIcons/CodeCatalyst40x40.png");
 
         public static readonly AwsImageResourcePath CodeCommit =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CodeCommit.png");
@@ -70,7 +70,6 @@
 
         public static readonly AwsImageResourcePath VirtualPrivateCloud =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.Virtual-Private-Cloud.png");
-
 
         public static readonly AwsImageResourcePath CloudFormationStack =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ResourceIcons.CloudFormation-Stack.png");
@@ -170,7 +169,6 @@
         
         public static readonly AwsImageResourcePath Megaphone =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.Megaphone.png");
-
 
         public AwsImageResourcePath(string path)
         {

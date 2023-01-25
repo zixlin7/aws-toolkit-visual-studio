@@ -181,6 +181,10 @@
       <SubType>Designer</SubType>
       <Link>\source.extension.vsixmanifest</Link>
     </None>
+    <Content Include="..\AwsToolkitPackageResources\Monikers.imagemanifest">
+      <Link>Monikers.imagemanifest</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\AwsSdks.xml" />
   <Import Project="$(BuildRoot)\vspackages\AwsToolkitPackage.Shared\ProjectReferences\CloudFormationProjectBundling.xml" />
