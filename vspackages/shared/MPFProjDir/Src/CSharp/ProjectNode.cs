@@ -159,14 +159,20 @@ namespace Microsoft.VisualStudio.Project
         /// The VS command that allows projects to open Windows Explorer to the project directory.
         /// </summary>
         private const VsCommands2K ExploreFolderInWindowsCommand = (VsCommands2K)1635;
-		
-		#endregion
+
+        #endregion
 
         #region fields
 
-        private static readonly FrameworkName DefaultTargetFrameworkMoniker = new FrameworkName(".NETFramework", new Version(4, 0));
+        // Divergence:
+        // This code initially used a default of .NET Framework 4.0, which is no longer supported.
+        // Our minimum Toolkit targets Visual Studio 2019, which has a minimum .NET Framework version of 4.7.2.
+        // We've adjusted this value so that users aren't prompted to install the FW 4.0 targeting pack when they open
+        // a CloudFormation Template Project in Visual Studio.
+        private static readonly FrameworkName DefaultTargetFrameworkMoniker = new FrameworkName(".NETFramework", new Version(4, 7, 2));
+        // END Divergence
 
-		private static Guid addComponentLastActiveTab = VSConstants.GUID_SolutionPage;
+        private static Guid addComponentLastActiveTab = VSConstants.GUID_SolutionPage;
 
 		private static uint addComponentDialogSizeX = 0;
 
