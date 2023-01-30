@@ -20,13 +20,13 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         private readonly PublishDialogStepProcessor _sut = new PublishDialogStepProcessor();
         private readonly FakeProgressDialog _progressDialog = new FakeProgressDialog();
 
-        private readonly Func<Task> _noopTaskCreator = () => Task.CompletedTask;
-        private readonly Func<Task> _exceptionTaskCreator = () => throw TaskException;
-        private readonly Func<Task> _cancelDialogTaskCreator;
+        private readonly Func<CancellationToken, Task> _noopTaskCreator = (cancellationToken) => Task.CompletedTask;
+        private readonly Func<CancellationToken, Task> _exceptionTaskCreator = (cancellationToken) => throw TaskException;
+        private readonly Func<CancellationToken, Task> _cancelDialogTaskCreator;
 
         public PublishDialogStepProcessorTests()
         {
-            _cancelDialogTaskCreator = () =>
+            _cancelDialogTaskCreator = (cancellationToken) =>
             {
                 _progressDialog.CancelRequested = true;
                 return Task.CompletedTask;

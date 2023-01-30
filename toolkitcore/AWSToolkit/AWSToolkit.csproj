@@ -512,6 +512,8 @@
     <Compile Include="Util\RangeObservableCollection.cs" />
     <Compile Include="Util\RolePolicyFilter.cs" />
     <Compile Include="Util\ServiceSpecificCredentialStore.cs" />
+    <Compile Include="VersionInfo\DotNetVersion.cs" />
+    <Compile Include="VersionInfo\DotNetVersionProvider.cs" />
     <Compile Include="VersionInfo\VersionManager.cs" />
     <Compile Include="ViewModels\Charts\GraphPeriodViewModel.cs" />
     <Compile Include="ViewModels\Charts\MonitorGraphViewModel.cs" />

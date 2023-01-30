@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Services;
@@ -10,8 +13,7 @@ using Amazon.AWSToolkit.Publish.Views;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Telemetry;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.VersionInfo;
 
 using log4net;
 
@@ -33,7 +35,8 @@ namespace Amazon.AWSToolkit.Publish.Package
             Cancel,
         }
 
-        static readonly ILog Logger = LogManager.GetLogger(typeof(PublishToAws));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(PublishToAws));
+        private const int MinimumSupportedDotNetVersion = 6;
 
         private readonly PublishContext _publishContext;
         private readonly ProgressStepProcessor _showDocumentStepProcessor = new PublishDialogStepProcessor();
@@ -43,22 +46,33 @@ namespace Amazon.AWSToolkit.Publish.Package
             _publishContext = publishContext;
         }
 
-        public async Task ShowPublishToAwsDocument(ShowPublishToAwsDocumentArgs args)
+        public Task ShowPublishToAwsDocument(ShowPublishToAwsDocumentArgs args) =>
+            ShowPublishToAwsDocumentAsync(args, new DotNetVersionProvider());
+
+        public async Task ShowPublishToAwsDocumentAsync(ShowPublishToAwsDocumentArgs args, IDotNetVersionProvider dotNetVersionProvider)
         {
             try
             {
                 var steps = new List<ShowPublishDialogStep>();
 
-                steps.Add(new ShowPublishDialogStep(async () => await InstallDeployToolAsync(),
+#if VS2019
+                // VS 2019 only supports up to .NET Core 3.1, which reached End of Life in December 2022.
+                // Attempt to check for .NET 6 (or newer) before proceeding.
+                // Newer VS versions do not need this check, since their installed .NET version is supported.
+                steps.Add(new ShowPublishDialogStep(async (cancellationToken) => await CheckDotNetVersionAsync(dotNetVersionProvider, cancellationToken),
+                    "Checking .NET Version...", true));
+#endif
+
+                steps.Add(new ShowPublishDialogStep(async (cancellationToken) => await InstallDeployToolAsync(),
                     "Installing Deploy Tool...", true));
 
                 ICliServer cliServer = null;
-                steps.Add(new ShowPublishDialogStep(async () =>
+                steps.Add(new ShowPublishDialogStep(async (cancellationToken) =>
                 {
                     cliServer = await InitializeAsync(args);
                 }, "Initializing Deploy Tool...", true));
 
-                steps.Add(new ShowPublishDialogStep(async () => await ShowDocumentTabAsync(args, cliServer),
+                steps.Add(new ShowPublishDialogStep(async (cancellationToken) => await ShowDocumentTabAsync(args, cliServer),
                     "Starting up...", false));
 
                 var result = await ShowPublishToAwsDocumentAsync(args, steps).ConfigureAwait(false);
@@ -76,6 +90,51 @@ namespace Amazon.AWSToolkit.Publish.Package
 
                 ShowStartupError(e.Message);
             }
+        }
+
+        private Task CheckDotNetVersionAsync(IDotNetVersionProvider versionProvider, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var dotNetVersion = versionProvider.GetMajorVersion();
+
+            if (dotNetVersion.HasValue && dotNetVersion.Value >= MinimumSupportedDotNetVersion)
+            {
+                return Task.CompletedTask;
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var title = $"Publish to AWS requires .NET {MinimumSupportedDotNetVersion} or greater";
+
+            if (dotNetVersion.HasValue)
+            {
+                // User has an older .NET installed. They need to install a newer version.
+                _publishContext.ToolkitShellProvider.ShowError(
+                    title,
+                    $".NET {MinimumSupportedDotNetVersion} is required for Publish to AWS, .NET {dotNetVersion} was detected." +
+                    Environment.NewLine + Environment.NewLine +
+                    "Install a newer version of .NET, and try again.");
+
+                throw new OperationCanceledException($"Unsupported .NET version: {dotNetVersion}");
+            }
+            else
+            {
+                // Possible scenarios:
+                // - The Toolkit wasn't able to find .NET installed
+                // - The user doesn't have .NET installed
+                // - Something changed with the way the dotnet CLI returns the version, which is not compatible with how the Toolkit is obtaining it
+                // Allow the user to proceed, but log the details in case they have a bad experience.
+
+                // Maybe the Toolkit wasn't able to find it, let the user try to proceed
+                var message = "AWS Toolkit could not find a .NET installation. Publish to AWS may not work properly." +
+                              $" You may need to install .NET {MinimumSupportedDotNetVersion} or newer.";
+
+                Logger.Warn(message);
+                _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
+            }
+
+            return Task.CompletedTask;
         }
 
         private async Task InstallDeployToolAsync()

@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Publish to AWS has been updated to use v1.10.4 of the AWS .NET deploy tool. This version of the Toolkit includes the following Deploy Tool changes:\n  - .NET 6 is now required in order to use the publish experience. .NET Core 3.1 was the previously supported minimum version, but this has reached end of life.\n  - Error messaging has been improved when deployments fail\n  - Security group validations have been improved when publishing to Fargate\n  - See https://github.com/aws/aws-dotnet-deploy/releases for more details."
+}

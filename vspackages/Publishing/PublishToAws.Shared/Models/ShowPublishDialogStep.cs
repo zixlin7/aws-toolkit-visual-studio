@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.Publish.Models
@@ -9,7 +10,7 @@ namespace Amazon.AWSToolkit.Publish.Models
     /// </summary>
     public class ShowPublishDialogStep
     {
-        private readonly Func<Task> _taskCreator;
+        private readonly Func<CancellationToken, Task> _taskCreator;
 
         /// <summary>
         /// The name of the step that would be shown in a progress indicator
@@ -27,7 +28,7 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// <param name="taskCreator">Function that contains the actions to be performed by this step</param>
         /// <param name="description">Shown in a progress indicator while this step is performed</param>
         /// <param name="canCancel">Whether or not users can cancel during this step</param>
-        public ShowPublishDialogStep(Func<Task> taskCreator, string description, bool canCancel)
+        public ShowPublishDialogStep(Func<CancellationToken, Task> taskCreator, string description, bool canCancel)
         {
             _taskCreator = taskCreator;
             Description = description;
@@ -37,9 +38,9 @@ namespace Amazon.AWSToolkit.Publish.Models
         /// <summary>
         /// Called to start performing this step's actions
         /// </summary>
-        public Task StartTaskAsync()
+        public Task StartTaskAsync(CancellationToken cancellationToken)
         {
-            return _taskCreator();
+            return _taskCreator(cancellationToken);
         }
     }
 }

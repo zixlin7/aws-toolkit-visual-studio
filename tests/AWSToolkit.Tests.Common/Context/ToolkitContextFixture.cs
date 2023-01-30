@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Context;
@@ -103,6 +104,13 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             AwsConnectionType connectionType, bool isSupported)
         {
             CredentialManager.Setup(mock => mock.Supports(credentialIdentifier, connectionType)).Returns(isSupported);
+        }
+
+        public void SetupConfirm(bool returnValue)
+        {
+            ToolkitHost.Setup(
+                    mock => mock.Confirm(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageBoxButton>()))
+                .Returns(returnValue);
         }
     }
 }
