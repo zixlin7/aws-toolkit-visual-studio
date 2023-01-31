@@ -77,5 +77,10 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             return new CloneCodeCatalystRepositoryDialog(_toolkitContext, _joinableTaskFactory, new GitService(_toolkitContext));
         }
+
+        public ISsoLoginDialog CreateSsoLoginDialog()
+        {
+            return new SsoLoginDialog(_toolkitContext);
+        }
     }
 }

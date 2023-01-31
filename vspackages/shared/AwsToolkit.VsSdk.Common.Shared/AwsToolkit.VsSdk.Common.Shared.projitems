@@ -9,6 +9,10 @@
     <Import_RootNamespace>AwsToolkit.VsSdk.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Models\SsoLoginViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\SsoLoginDialog.xaml.cs">
+      <DependentUpon>SsoLoginDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\Behaviors\WindowBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CloneCodeCatalystRepositoryDialog.xaml.cs">
       <DependentUpon>CloneCodeCatalystRepositoryDialog.xaml</DependentUpon>
@@ -70,6 +74,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)VSWebProjectInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\SsoLoginDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\CloneCodeCatalystRepositoryDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

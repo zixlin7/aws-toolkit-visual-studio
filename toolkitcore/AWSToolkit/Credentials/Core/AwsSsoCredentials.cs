@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Windows;
 
+using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
@@ -16,7 +15,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
     /// </summary>
     public class AwsSsoCredentials : AWSCredentials
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(AwsSsoCredentials));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(AwsSsoCredentials));
 
         private readonly IAWSToolkitShellProvider _toolkitShell;
         private readonly CredentialProfile _profile;
@@ -41,7 +40,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
             catch (Exception e)
             {
-                _toolkitShell.OutputToHostConsole($"Login failed for AWS SSO based profile {_profile.Name}: {e.Message}", false);
+                _toolkitShell.OutputToHostConsole($"Login failed for AWS IAM Identity Center (SSO) based profile {_profile.Name}: {e.Message}", false);
                 throw;
             }
         }
@@ -51,24 +50,35 @@ namespace Amazon.AWSToolkit.Credentials.Core
             try
             {
                 // Prompt the user to start the SSO Login flow
-                var title = "AWS SSO Login Required";
-                var message =
-                    $"AWS Toolkit would like to start the SSO Login process for Credentials Profile {_profile.Name} by visiting the following URL and using the following code:{Environment.NewLine}{Environment.NewLine}URL: {ssoVerification.VerificationUri}{Environment.NewLine}Code: {ssoVerification.UserCode}";
-                if (!_toolkitShell.Confirm(title, message, MessageBoxButton.OKCancel))
+                _toolkitShell.ExecuteOnUIThread(() =>
                 {
-                    // Throw an exception to break out of the SDK AWSCredentials.GetCredentials call
-                    throw new UserCanceledException("User declined to start SSO Login Flow");
-                }
+                    var dialog = CreateDialog(ssoVerification);
+                    if (!dialog.Show())
+                    {
+                        // Throw an exception to break out of the SDK  AWSCredentials.GetCredentials call
+                        throw new UserCanceledException("User declined to start AWS IAM Identity Center (SSO) Login Flow");
+                    }
+                });
 
-                _toolkitShell.OutputToHostConsole($"SSO Login flow started for Credentials: {_profile.Name}", false);
-                Logger.Debug($"SSO Login flow started for Credentials: {_profile.Name}");
+                _toolkitShell.OutputToHostConsole($"AWS IAM Identity Center (SSO) Login flow started for Credentials: {_profile.Name}", false);
+                _logger.Debug($"AWS IAM Identity Center (SSO) Login flow started for Credentials: {_profile.Name}");
 
-                Process.Start(ssoVerification.VerificationUriComplete);
             }
-            catch (Exception e) {
-                Logger.Error($"Error starting SSO Login flow for {_profile.Name}", e);
+            catch (Exception e)
+            {
+                _logger.Error($"Error starting AWS IAM Identity Center (SSO) Login flow for {_profile.Name}", e);
                 throw;
             }
+        }
+
+        private ISsoLoginDialog CreateDialog(SsoVerificationArguments ssoVerification)
+        {
+            var dialog = _toolkitShell.GetDialogFactory().CreateSsoLoginDialog();
+            dialog.IsBuilderId = false;
+            dialog.UserCode = ssoVerification.UserCode;
+            dialog.LoginUri = ssoVerification.VerificationUri;
+            dialog.CredentialName = _profile.Name;
+            return dialog;
         }
     }
 }

@@ -21,5 +21,6 @@ namespace Amazon.AWSToolkit.CommonUI
         IEcrRepositorySelectionDialog CreateEcrRepositorySelectionDialog();
         ICloneCodeCommitRepositoryDialog CreateCloneCodeCommitRepositoryDialog();
         ICloneCodeCatalystRepositoryDialog CreateCloneCodeCatalystRepositoryDialog();
+        ISsoLoginDialog CreateSsoLoginDialog();
     }
 }

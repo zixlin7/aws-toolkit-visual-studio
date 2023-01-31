@@ -110,6 +110,7 @@
     <Compile Include="CommonUI\Dialogs\ICloneCodeCatalystRepositoryDialog.cs" />
     <Compile Include="CommonUI\Dialogs\ICloneCodeCommitRepositoryDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IFolderBrowserDialog.cs" />
+    <Compile Include="CommonUI\Dialogs\ISsoLoginDialog.cs" />
     <Compile Include="CommonUI\DualListBox.cs" />
     <Compile Include="CommonUI\Notifications\ITaskStatusNotifier.cs" />
     <Compile Include="CommonUI\HintTextBox.xaml.cs">

@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
+using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Exceptions;
@@ -32,20 +34,24 @@ namespace AWSToolkit.Tests.Credentials.Sono
         }
 
         [Fact]
+
         public void CreateSsoCallbackShouldThrowOnCancel()
         {
-            MockShellConfirmToFail();
+            SetupDialogForCancellation();
             var ssoCallback = SonoHelpers.CreateSsoCallback(SonoCredentialId, _toolkitShell.Object);
             var callbackArgs = new SsoVerificationArguments();
 
             Assert.Throws<UserCanceledException>(() => ssoCallback(callbackArgs));
         }
 
-        private void MockShellConfirmToFail()
+        private void SetupDialogForCancellation()
         {
-            _toolkitShell.Setup(mock =>
-                    mock.Confirm(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageBoxButton>()))
-                .Returns(false);
+            var ssoDialog = new Mock<ISsoLoginDialog>();
+            ssoDialog.Setup(mock => mock.Show()).Returns(false);
+
+            _toolkitShell.Setup(mock => mock.ExecuteOnUIThread(It.IsAny<Action>()))
+                .Callback<Action>(action => action());
+            _toolkitShell.Setup(mock => mock.GetDialogFactory().CreateSsoLoginDialog()).Returns(ssoDialog.Object);
         }
     }
 }
