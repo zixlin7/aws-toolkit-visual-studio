@@ -30,6 +30,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
             CancelDialogCommand = new RelayCommand(ExecuteCancelDialog);
             OkCommand = new RelayCommand(ExecuteOk);
             HelpCommand = new RelayCommand(ExecuteHelp);
+            CopyCommand = new RelayCommand(ExecuteCopy);
         }
 
         private bool? _dialogResult;
@@ -82,6 +83,8 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
         public ICommand OkCommand { get; }
 
         public ICommand HelpCommand { get; }
+
+        public ICommand CopyCommand { get; }
 
         public string DisplayName => IsBuilderId ? "AWS Builder ID" : "AWS IAM Identity Center";
 

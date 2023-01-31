@@ -114,6 +114,7 @@
                     Margin="6 0 0 0"
                     Command="{Binding OkCommand}"
                     CommandParameter="{Binding UserCode}"
+                    IsDefault="True"
                     Content="Open and Copy Code" />
 
                 <Button
