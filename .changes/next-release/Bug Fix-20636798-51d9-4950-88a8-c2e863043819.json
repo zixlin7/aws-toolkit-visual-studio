@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "AWS IAM Identity Center (AWS SSO) related credentials profiles that are created using the AWS CLI command `aws configure sso` now appear in the Toolkit."
+}

@@ -220,7 +220,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void CreateToolkitCredentials_SsoSession_Valid()
         {
             var credentialId =
-                CreateCredentialIdentifier(CredentialProfileTestHelper.SsoSession.Valid.SdkResolvedSsoSessionReferencingProfile
+                CreateCredentialIdentifier(CredentialProfileTestHelper.SsoSession.Valid.SdkHydratedProfileReferencesTokenBasedSsoSession
                     .Name);
 
             var toolkitCredentials = GetFactory().CreateToolkitCredentials(credentialId, SampleRegion);
@@ -251,7 +251,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             SampleProfiles.Add(CredentialProfileTestHelper.Mfa.Valid.MfaReference);
 
             SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Valid.SsoSessionProfile);
-            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Valid.SdkResolvedSsoSessionReferencingProfile);
+            SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Valid.SdkHydratedProfileReferencesTokenBasedSsoSession);
             SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceDoesNotExist);
             SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoRegion);
             SampleProfiles.Add(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionProfiles.MissingSsoRegion);

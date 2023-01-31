@@ -35,7 +35,8 @@ namespace AWSToolkit.Tests.Credentials.IO
         public ProfileValidatorSsoSessionTests()
         {
             _credentialsFixture.SetupFileContents(string.Empty, ConfigFileContents);
-            _credentialsFixture.CredentialsFile.RegisterProfile(CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile);
+            _credentialsFixture.CredentialsFile.RegisterProfile(CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesTokenBasedSsoSession);
+            _credentialsFixture.CredentialsFile.RegisterProfile(CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesSsoBasedSsoSession);
             _credentialsFixture.CredentialsFile.RegisterProfile(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoRegion);
             _credentialsFixture.CredentialsFile.RegisterProfile(CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceMissingSsoStartUrl);
 
@@ -67,17 +68,16 @@ namespace AWSToolkit.Tests.Credentials.IO
         [Fact]
         public void Validate_ValidCredentials()
         {
-            var referencingProfile = CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile;
-
             var validationResults = _sut.Validate();
 
-            Assert.True(validationResults.ValidProfiles.ContainsKey(referencingProfile.Name));
+            Assert.True(validationResults.ValidProfiles.ContainsKey(CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesSsoBasedSsoSession.Name));
+            Assert.True(validationResults.ValidProfiles.ContainsKey(CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesTokenBasedSsoSession.Name));
         }
 
         [Fact]
-        public void Validate_ReferencingProfileContainsSsoSessionProperties()
+        public void Validate_ReferencingProfileContainsDifferentRegion()
         {
-            var referencingProfile = CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ProfileHasAdditionalSsoProperties;
+            var referencingProfile = CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.SsoProfileWithDifferentSsoRegions;
             _credentialsFixture.CredentialsFile.RegisterProfile(referencingProfile);
 
             var validationResults = _sut.Validate();
@@ -85,7 +85,21 @@ namespace AWSToolkit.Tests.Credentials.IO
             var validationMessage = Assert.Contains(referencingProfile.Name,
                 validationResults.InvalidProfiles as IDictionary<string, string>);
 
-            Assert.Contains("cannot reference an SSO Session and assign an SSO Region or SSO StartUrl", validationMessage);
+            Assert.Contains("cannot have a different SSO Region value", validationMessage);
+        }
+
+        [Fact]
+        public void Validate_ReferencingProfileContainsDifferentStartUrl()
+        {
+            var referencingProfile = CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.SsoProfileWithDifferentSsoUrl;
+            _credentialsFixture.CredentialsFile.RegisterProfile(referencingProfile);
+
+            var validationResults = _sut.Validate();
+
+            var validationMessage = Assert.Contains(referencingProfile.Name,
+                validationResults.InvalidProfiles as IDictionary<string, string>);
+
+            Assert.Contains("cannot have a different SSO StartUrl value", validationMessage);
         }
 
         // CredentialProfile - the profile to test as invalid
