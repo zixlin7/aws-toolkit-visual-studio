@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -11,21 +12,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             try
             {
                 var desEnvRequest = new DescribeEnvironmentsRequest() { ApplicationName = applicationName, VersionLabel = version };
+                base.TerminateEnvironments(client, desEnvRequest);
+                client.DeleteApplicationVersion(new DeleteApplicationVersionRequest() { ApplicationName = applicationName, VersionLabel = version });
 
-                if (base.TerminateEnvironments(client, desEnvRequest))
-                {
-                    client.DeleteApplicationVersion(new DeleteApplicationVersionRequest(){ ApplicationName = applicationName, VersionLabel = version });
-
-                    return true;
-                }
+                return true;
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error terminating", 
-                    string.Format("Error deleting version {0} of application {1}. {2}",
-                        version, applicationName, e.Message));
+                ToolkitFactory.Instance.ShellProvider.ShowError("Delete Application Version Error",
+                    $"Error deleting version {version} of application {applicationName}:{Environment.NewLine}{e.Message}");
             }
-
             return false;
         }
     }

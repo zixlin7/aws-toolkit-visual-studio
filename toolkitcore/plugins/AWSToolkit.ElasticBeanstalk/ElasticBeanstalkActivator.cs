@@ -68,7 +68,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ApplicationStatusController(ToolkitContext)).Execute);
 
             rootNode.ApplicationViewMetaNode.OnDeleteApplication =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteApplicationController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteApplicationController(ToolkitContext)).Execute);
 
             rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnEnvironmentStatus = OnViewBeanstalkEnvironment;
 
@@ -106,8 +106,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                 return new ActionResults().WithSuccess(false);
             }
         }
-
         private ActionResults OnRestartApplication(IViewModel viewModel)
+        {
+            var results = RestartApplication(viewModel);
+
+            var model = viewModel as EnvironmentViewModel;
+            var connectionSettings = model?.ApplicationViewModel?
+                .ElasticBeanstalkRootViewModel?.AwsConnectionSettings;
+
+            ToolkitContext.RecordBeanstalkRestartApplication(results, connectionSettings);
+            return results;
+
+        }
+
+        private ActionResults RestartApplication(IViewModel viewModel)
         {
             if (!(viewModel is EnvironmentViewModel environmentViewModel))
             {
@@ -125,6 +137,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
 
         private ActionResults OnRebuildEnvironment(IViewModel viewModel)
         {
+            var results = RebuildEnvironment(viewModel);
+
+            var model = viewModel as EnvironmentViewModel;
+            var connectionSettings = model?.ApplicationViewModel?
+                .ElasticBeanstalkRootViewModel?.AwsConnectionSettings;
+
+            ToolkitContext.RecordBeanstalkRebuildEnvironment(results, connectionSettings);
+            return results;
+
+        }
+
+        private ActionResults RebuildEnvironment(IViewModel viewModel)
+        {
             if (!(viewModel is EnvironmentViewModel environmentViewModel))
             {
                 LOGGER.Error("Unable to rebuild Beanstalk Environment." +
@@ -140,6 +165,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
         }
 
         private ActionResults OnTerminateEnvironment(IViewModel viewModel)
+        {
+            var results = TerminateEnvironment(viewModel);
+
+            var model = viewModel as EnvironmentViewModel;
+            var connectionSettings = model?.ApplicationViewModel?
+                .ElasticBeanstalkRootViewModel?.AwsConnectionSettings;
+
+            ToolkitContext.RecordBeanstalkDeleteEnvironment(results, connectionSettings);
+            return results;
+        }
+
+        private ActionResults TerminateEnvironment(IViewModel viewModel)
         {
             if (!(viewModel is EnvironmentViewModel environmentViewModel))
             {

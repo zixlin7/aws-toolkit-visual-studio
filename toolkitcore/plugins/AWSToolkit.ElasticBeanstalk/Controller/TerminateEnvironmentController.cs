@@ -5,6 +5,7 @@ using System.Threading;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.ElasticBeanstalk.Models;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.EC2;
 using Amazon.EC2.Model;
@@ -42,34 +43,38 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         {
             if (_beanstalkEnvironment == null)
             {
-                return new ActionResults().WithSuccess(false);
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find Beanstalk environment data",
+                    ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 
-            string msg = string.Format(
+            var msg = string.Format(
                 "Are you sure you want to terminate the environment \"{0}\"?\r\n\r\n" +
                 "Note: By terminating this environment, the running application version " +
                 "and the URL http://{1}/ will no longer be available." +
                 "It also deletes any Amazon RDS DB Instances created with the environment. To save your data, " +
                 "create a snapshot before you terminating your environment."
                 , _beanstalkEnvironment.Name, _beanstalkEnvironment.Cname);
-            if (_toolkitContext.ToolkitHost.Confirm("Terminate Environment", msg))
-            {
-                try
-                {
-                    _logger.DebugFormat("Terminating environment {0}", _beanstalkEnvironment.Id);
-                    _beanstalk.TerminateEnvironment(new TerminateEnvironmentRequest() { EnvironmentId = _beanstalkEnvironment.Id });
 
-                    ThreadPool.QueueUserWorkItem(this.TryDeleteRDSSecurityGroup, null);
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(string.Format("Error terminating environment {0}", _beanstalkEnvironment.Id), e);
-                    _toolkitContext.ToolkitHost.ShowMessage("Error Terminating", "Error terminating environment: " + e.Message);
-                    return new ActionResults().WithSuccess(false);
-                }
+            if (!_toolkitContext.ToolkitHost.Confirm("Terminate Environment", msg))
+            {
+                return ActionResults.CreateCancelled();
             }
 
-            return new ActionResults().WithSuccess(true);
+            try
+            {
+                _logger.DebugFormat("Terminating environment {0}", _beanstalkEnvironment.Id);
+                _beanstalk.TerminateEnvironment(new TerminateEnvironmentRequest() { EnvironmentId = _beanstalkEnvironment.Id });
+
+                ThreadPool.QueueUserWorkItem(this.TryDeleteRDSSecurityGroup, null);
+                return new ActionResults().WithSuccess(true);
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error terminating environment {_beanstalkEnvironment.Id}", e);
+                _toolkitContext.ToolkitHost.ShowMessage("Error Terminating Environment",
+                    "Error terminating environment: " + e.Message);
+                return ActionResults.CreateFailed(e);
+            }
         }
 
         private void TryDeleteRDSSecurityGroup(object state)
@@ -115,7 +120,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                 }
 
                 // Wait for environment to be terminated so that all instance will be gone and the group can be deleted.
-                var describeRequest = new DescribeEnvironmentsRequest(){EnvironmentNames = new List<string>(){ _beanstalkEnvironment.Name}};
+                var describeRequest = new DescribeEnvironmentsRequest() { EnvironmentNames = new List<string>() { _beanstalkEnvironment.Name } };
 
                 long start = DateTime.Now.Ticks;
                 while (new TimeSpan(DateTime.Now.Ticks - start).TotalMinutes < 5)

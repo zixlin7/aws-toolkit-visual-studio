@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
@@ -212,19 +213,23 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
 
         private void onApplyChangesClick(object sender, RoutedEventArgs e)
         {
-            this._controller.ApplyConfigSettings();
+           var results =  _controller.ApplyConfigSettings();
+           _controller.RecordEditEnvironment(results);
         }
 
         private void onRestartAppServer(object sender, RoutedEventArgs evnt)
         {
             try
             {
-                this._controller.RestartApp();
+                var results = _controller.RestartApp();
+                _controller.RecordRestartApplication(results);
+
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error restarting app server", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error restarting app server: " + e.Message);
+                _controller.RecordRestartApplication(ActionResults.CreateFailed(e));
             }
 
             onRefreshClick(this, null);
@@ -234,12 +239,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
         {
             try
             {
-                this._controller.RebuildEnvironment();
+                var results =_controller.RebuildEnvironment();
+                _controller.RecordRebuildEnvironment(results);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error rebuilding environment", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error rebuilding environment: " + e.Message);
+                _controller.RecordRebuildEnvironment(ActionResults.CreateFailed(e));
             }
 
             onRefreshClick(this, null);
@@ -249,12 +256,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
         {
             try
             {
-                this._controller.TerminateEnvironment();
+                var results = _controller.TerminateEnvironment();
+                _controller.RecordDeleteEnvironment(results);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error terminating environment", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error terminating environment: " + e.Message);
+                _controller.RecordDeleteEnvironment(ActionResults.CreateFailed(e));
             }
 
             onRefreshClick(this, null);

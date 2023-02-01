@@ -10,7 +10,9 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.Models;
+using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
 using Amazon.AWSToolkit.ElasticBeanstalk.View;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.AWSToolkit.Tasks;
@@ -112,25 +114,25 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             }
         }
 
-        public void RestartApp()
+        public ActionResults RestartApp()
         {
             var command = new RestartAppController(_beanstalkEnvironment,
                 _toolkitContext, ConnectionSettings);
-            command.Execute();
+            return command.Execute();
         }
 
-        public void RebuildEnvironment()
+        public ActionResults RebuildEnvironment()
         {
             var command = new RebuildEnvironmentController(_beanstalkEnvironment,
                 _toolkitContext, ConnectionSettings);
-            command.Execute();
+            return command.Execute();
         }
 
-        public void TerminateEnvironment()
+        public ActionResults TerminateEnvironment()
         {
             var command = new TerminateEnvironmentController(_beanstalkEnvironment,
                 _toolkitContext, ConnectionSettings);
-            command.Execute();
+            return command.Execute();
         }
 
         public void ConnectToInstance()
@@ -176,20 +178,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         }
 
 
-        public void ApplyConfigSettings()
+        public ActionResults ApplyConfigSettings()
         {
-            var settings = this.Model.ConfigModel.GetSettings();
+            var settings = Model.ConfigModel.GetSettings();
             try
             {
-                var response = this._beanstalkClient.ValidateConfigurationSettings(new ValidateConfigurationSettingsRequest()
+                var response = _beanstalkClient.ValidateConfigurationSettings(new ValidateConfigurationSettingsRequest()
                 {
-                    ApplicationName = this.Model.ApplicationName,
-                    EnvironmentName = this.Model.EnvironmentName,
+                    ApplicationName = Model.ApplicationName,
+                    EnvironmentName = Model.EnvironmentName,
                     OptionSettings = settings
                 });
 
-                int warnings, errors;
-                messageCount(response.Messages, out warnings, out errors);
+                messageCount(response.Messages, out var warnings, out var errors);
                 if (errors > 0)
                 {
                     var sb = new StringBuilder();
@@ -199,25 +200,26 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                         sb.AppendLine("* " + message.Message);
                     }
 
-                    _toolkitContext.ToolkitHost.ShowError("Error Applying Changes", sb.ToString());
-                    return;
+                    throw new ToolkitException(sb.ToString(), ToolkitException.CommonErrorCode.UnexpectedError);
                 }
 
                 var xraySetting = settings.FirstOrDefault(x => string.Equals(x.OptionName, "XRayEnabled", StringComparison.Ordinal));
 
-                this._beanstalkClient.UpdateEnvironment(new UpdateEnvironmentRequest()
+                _beanstalkClient.UpdateEnvironment(new UpdateEnvironmentRequest()
                 {
-                    EnvironmentId = this.Model.EnvironmentId,
+                    EnvironmentId = Model.EnvironmentId,
                     OptionSettings = settings
                 });
 
-                this.Model.ConfigModel.IsConfigDirty = false;
+                Model.ConfigModel.IsConfigDirty = false;
+                return new ActionResults().WithSuccess(true);
             }
             catch (Exception e)
             {
-                _toolkitContext.ToolkitHost.ShowError("Error Applying Changes", 
-                    string.Format("Error applying changes to the environment {0}: {1}" , this.Model.EnvironmentName, e.Message));
-                Logger.Error("Error applying changes for environment.", e);
+                _toolkitContext.ToolkitHost.ShowError("Error Applying Changes",
+                    $"Error applying changes to the environment {Model.EnvironmentName}:{Environment.NewLine}{e.Message}");
+                Logger.Error("Error applying changes for environment", e);
+                return ActionResults.CreateFailed(e);
             }
         }
 
@@ -577,6 +579,26 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var response = this._beanstalkClient.RetrieveEnvironmentInfo(request);
             return response;
+        }
+
+        internal void RecordRebuildEnvironment(ActionResults result)
+        {
+            _toolkitContext.RecordBeanstalkRebuildEnvironment(result, ConnectionSettings);
+        }
+
+        internal void RecordDeleteEnvironment(ActionResults result)
+        {
+            _toolkitContext.RecordBeanstalkDeleteEnvironment(result, ConnectionSettings);
+        }
+
+        internal void RecordRestartApplication(ActionResults result)
+        {
+            _toolkitContext.RecordBeanstalkRestartApplication(result, ConnectionSettings);
+        }
+
+        internal void RecordEditEnvironment(ActionResults result)
+        {
+            _toolkitContext.RecordBeanstalkEditEnvironment(result, ConnectionSettings);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -9,10 +11,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
     public abstract class BaseDeleteApplicationController
     {
-        protected static ILog LOGGER = LogManager.GetLogger(typeof(BaseDeleteApplicationController));
+        protected static ILog _logger = LogManager.GetLogger(typeof(BaseDeleteApplicationController));
 
-
-        protected bool TerminateEnvironments(IAmazonElasticBeanstalk client, DescribeEnvironmentsRequest descRequest)
+        protected void TerminateEnvironments(IAmazonElasticBeanstalk client, DescribeEnvironmentsRequest descRequest)
         {
             var desEnvResponse = client.DescribeEnvironments(descRequest);
 
@@ -39,19 +40,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             }
             else
             {
-                StringBuilder msg = new StringBuilder();
+                var msg = new StringBuilder();
                 msg.AppendLine("Please wait for the following environment(s) to finish launching or updating:\r\n");
                 foreach (var env in envNotDeletable)
                 {
                     msg.AppendLine("\t" + env);
                 }
 
-                ToolkitFactory.Instance.ShellProvider.ShowError("Delete Application", msg.ToString());
-
-                return false;
+                throw new ToolkitException(msg.ToString(), ToolkitException.CommonErrorCode.UnsupportedState);
             }
-
-            return true;
         }
     }
 }

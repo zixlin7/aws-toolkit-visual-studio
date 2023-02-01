@@ -290,6 +290,7 @@
     <Compile Include="SourceControl\GitCredentials.cs" />
     <Compile Include="SourceControl\IGitService.cs" />
     <Compile Include="SourceControl\NativeMethods.cs" />
+    <Compile Include="Util\TelemetryExtensionMethods.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeBrushKeys.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeFontKeys.cs" />
     <Compile Include="Themes\IToolkitThemeBrushKeys.cs" />
