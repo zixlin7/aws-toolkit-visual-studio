@@ -21,8 +21,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                 case SDKCredentialProviderFactory.SdkProfileFactoryId:
                     return CredentialSourceId.SdkStore;
                 case SonoCredentialProviderFactory.FactoryId:
-                    // TODO : Update this once Telemetry has a public definition
-                    return new CredentialSourceId("awsBuilderId");
+                    return CredentialSourceId.AwsId;
             }
 
             // Give ourselves a hint when this function should be updated

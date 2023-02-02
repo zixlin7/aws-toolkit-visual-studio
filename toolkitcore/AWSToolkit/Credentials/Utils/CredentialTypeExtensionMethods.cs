@@ -28,8 +28,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                 case CredentialType.SsoProfile:
                     return TelemetryCredentialType.SsoProfile;
                 case CredentialType.BearerToken:
-                    // TODO : Update this once Telemetry has a public definition
-                    return new TelemetryCredentialType("bearerToken");
+                    return TelemetryCredentialType.BearerToken;
                 case CredentialType.Undefined:
                     return null;
                 case CredentialType.Unknown:

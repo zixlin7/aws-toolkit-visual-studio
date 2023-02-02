@@ -2,12 +2,15 @@
 using System.Windows.Forms;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 
 using log4net;
 
+using CredentialType = Amazon.AwsToolkit.Telemetry.Events.Generated.CredentialType;
 
 namespace AwsToolkit.VsSdk.Common.CommonUI.Models
 {
@@ -100,6 +103,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
             ExecuteCopy(obj);
             _toolkitContext.ToolkitHost.OpenInBrowser(LoginUri, false);
             DialogResult = true;
+            RecordLoginMetric(true);
         }
 
         private void ExecuteCopy(object obj)
@@ -120,6 +124,18 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
         private void ExecuteCancelDialog(object obj)
         {
             DialogResult = false;
+            RecordLoginMetric(false);
+        }
+
+        private void RecordLoginMetric(bool result)
+        {
+            _toolkitContext.TelemetryLogger.RecordAwsLoginWithBrowser(new AwsLoginWithBrowser()
+            {
+                AwsAccount = MetadataValue.Invalid,
+                AwsRegion = MetadataValue.Invalid,
+                Result = result ? Result.Succeeded : Result.Cancelled,
+                CredentialType = IsBuilderId ? CredentialType.BearerToken : CredentialType.SsoProfile,
+            });
         }
     }
 }
