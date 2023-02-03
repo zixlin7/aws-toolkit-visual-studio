@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.CloudFormation
             rootNode.CloudFormationStackViewMetaNode.OnOpen = OnOpenStack;
 
             rootNode.CloudFormationStackViewMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteStackController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteStackController(ToolkitContext)).Execute);
         }
 
         public ActionResults OnOpenStack(IViewModel viewModel)

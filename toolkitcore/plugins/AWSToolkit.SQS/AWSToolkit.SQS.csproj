@@ -84,6 +84,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="SQSActivator.cs" />
+    <Compile Include="Util\SqsTelemetryExtensionMethods.cs" />
     <Compile Include="View\CreateQueueControl.xaml.cs">
       <DependentUpon>CreateQueueControl.xaml</DependentUpon>
     </Compile>
@@ -178,5 +179,6 @@
       <Version>2.0.15</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

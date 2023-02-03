@@ -84,6 +84,7 @@
     <Compile Include="Model\StackEventWrapper.cs" />
     <Compile Include="Model\ViewDeploymentLogModel.cs" />
     <Compile Include="Model\ViewStackModel.cs" />
+    <Compile Include="Util\CloudFormationTelemetryExtensionMethods.cs" />
     <Compile Include="Util\CloudFormationUtil.cs" />
     <Compile Include="ViewModels\ApplicationLoadBalancerResourceChartsViewModel.cs" />
     <Compile Include="ViewModels\DesignSampleResourceChartsViewModel.cs" />

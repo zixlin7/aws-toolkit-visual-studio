@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.SNS
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<SNSPolicyEditorController>().Execute);
 
             rootNode.SNSTopicViewMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteTopicController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteTopicController(ToolkitContext)).Execute);
         }
     }
 }

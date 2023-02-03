@@ -1,5 +1,11 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
+﻿using System;
+
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Util;
 using Amazon.Lambda;
 
 namespace Amazon.AWSToolkit.Lambda.Util
@@ -75,6 +81,17 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 Result = result,
                 Variant = variant
             });
+        }
+
+        public static void RecordLambdaDelete(this ToolkitContext toolkitContext, ActionResults result,
+            AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = result.CreateMetricData<LambdaDelete>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Duration = Double.NaN;
+
+            toolkitContext.TelemetryLogger.RecordLambdaDelete(data);
         }
     }
 }

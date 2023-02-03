@@ -44,7 +44,7 @@ namespace Amazon.AWSToolkit.Lambda
             rootNode.LambdaFunctionViewMetaNode.OnOpen =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewFunctionController(ToolkitContext)).Execute);
             rootNode.LambdaFunctionViewMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteFunctionController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteFunctionController(ToolkitContext)).Execute);
             rootNode.LambdaFunctionViewMetaNode.OnViewLogs = OnViewLogs;
         }
 

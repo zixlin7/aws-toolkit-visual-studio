@@ -91,6 +91,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="SNSActivator.cs" />
+    <Compile Include="Util\SnsTelemetryExtensionMethods.cs" />
     <Compile Include="View\CreateSubscriptionControl.xaml.cs">
       <DependentUpon>CreateSubscriptionControl.xaml</DependentUpon>
     </Compile>
@@ -210,5 +211,6 @@
       <Version>2.0.15</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

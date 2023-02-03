@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             var repositoryModel = model as RepositoryViewModel;
             if (repositoryModel == null)
             {
-                return ActionResults.CreateFailed(new ToolkitException("Unable to find IAM group data",
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find ECR repository data",
                             ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 

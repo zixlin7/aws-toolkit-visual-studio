@@ -25,7 +25,7 @@ namespace Amazon.AWSToolkit.SQS
         void setupContextMenuHooks(SQSRootViewMetaNode sqsRootNode)
         {
             sqsRootNode.OnCreate =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateQueueCommand>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateQueueCommand(ToolkitContext)).Execute);
 
             SQSQueueViewMetaNode queueMetaNode = sqsRootNode.FindChild<SQSQueueViewMetaNode>();
             queueMetaNode.OnView =
@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.SQS
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<SQSPolicyEditorController>().Execute);
 
             queueMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteQueueCommand>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteQueueCommand(ToolkitContext)).Execute);
 
         }
     }
