@@ -153,7 +153,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     // This attribute is required to load imagemanifests to be available for ProvideCodeContainerProvider so icons appear in Git Clone dialog
-    [ProvideBindingPath]
+    // TODO IDE-9924 Enable this attribute when CFn/Lambda template fix has been made
+    //[ProvideBindingPath]
     // TODO IDE-8906
     //[ProvideCodeContainerProvider(
     //    registeredName: nameof(CodeCommitCodeContainerProvider),
