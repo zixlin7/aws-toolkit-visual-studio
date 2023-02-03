@@ -617,10 +617,11 @@ namespace Amazon.AWSToolkit.S3.Controller
                 throw new Exception("Unable to get Toolkit service IS3DragAndDropManager");
             }
 
-            var connectionSettings = new AwsConnectionSettings(
-                S3RootViewModel.AccountViewModel.Identifier,
-                S3RootViewModel.AccountViewModel.Region);
-          
+            var regionName = _bucketViewModel?.OverrideRegion ?? _s3Client?.Config?.RegionEndpoint?.SystemName;
+            var region = _toolkitContext.RegionProvider?.GetRegion(regionName) ?? S3RootViewModel.AwsConnectionSettings.Region;
+
+            var connectionSettings = new AwsConnectionSettings(S3RootViewModel.AccountViewModel.Identifier, region);
+
             var dragDropRequest = new S3DragAndDropRequest(
                 connectionSettings,
                 Model.BucketName, Model.Path, items);
