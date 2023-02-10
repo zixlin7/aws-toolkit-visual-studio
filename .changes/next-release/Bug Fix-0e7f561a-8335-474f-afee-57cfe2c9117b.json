@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed issue with Lambda project templates having an invalid region specified in appsettings.Development.json file"
+}

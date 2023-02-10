@@ -90,7 +90,9 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                                             .Replace("BlueprintBaseName._1", _replacementsDictionary["$safeprojectname$"].Replace('-', '_'))
                                             .Replace("BlueprintBaseName", _replacementsDictionary["$safeprojectname$"]);
 
-                    if (file.EndsWith("aws-lambda-tools-defaults.json"))
+                    if (file.EndsWith("aws-lambda-tools-defaults.json") ||
+                        file.EndsWith("appsettings.Development.json") ||
+                        file.EndsWith("appsettings.json"))
                     {
                         replacedContent = replacedContent.Replace("DefaultProfile", ToolkitFactory.Instance.Navigator.SelectedAccount?.AccountDisplayName);
                         replacedContent = replacedContent.Replace("DefaultRegion", ToolkitFactory.Instance.Navigator.SelectedRegionId);
