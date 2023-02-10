@@ -143,8 +143,9 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
+                var count = _controller.Model.SelectedKeys.Count;
                 var result = this._controller.DeleteKeyPairs();
-                _controller.RecordDeleteKeyPair(_controller.Model.SelectedKeys.Count, result);
+                _controller.RecordDeleteKeyPair(count, result);
             }
             catch (Exception e)
             {

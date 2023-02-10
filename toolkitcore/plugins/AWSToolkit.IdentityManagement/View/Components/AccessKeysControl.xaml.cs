@@ -39,10 +39,8 @@ namespace Amazon.AWSToolkit.IdentityManagement.View.Components
                 var accessKeyModel = _controller.CreateNewAccessKeys();
                 var control = new AccessKeyDetailsControl { DataContext = accessKeyModel };
 
-                if (!ToolkitFactory.Instance.ShellProvider.ShowModal(control, MessageBoxButton.OK))
-                {
-                    return ActionResults.CreateCancelled();
-                }
+                ToolkitFactory.Instance.ShellProvider.ShowModal(control, MessageBoxButton.OK);
+               
                 if (!accessKeyModel.PersistSecretKeyLocal)
                 {
                     accessKeyModel.SecretKey = null;

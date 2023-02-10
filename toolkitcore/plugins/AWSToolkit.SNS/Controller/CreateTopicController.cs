@@ -34,12 +34,7 @@ namespace Amazon.AWSToolkit.SNS.Controller
 
             void Invoke() => actionResults = CreateTopic(model);
 
-            void Record(ITelemetryLogger _)
-            {
-                var viewModel = model as SNSRootViewModel;
-                var awsConnectionSettings = viewModel?.AwsConnectionSettings;
-                _toolkitContext.RecordSnsCreateTopic(actionResults, awsConnectionSettings);
-            }
+            void Record(ITelemetryLogger _) => RecordMetric(actionResults);
 
             _toolkitContext.TelemetryLogger.InvokeAndRecord(Invoke, Record);
             return actionResults;
@@ -86,6 +81,12 @@ namespace Amazon.AWSToolkit.SNS.Controller
                 _toolkitContext.ToolkitHost.ShowError($"Error creating SNS Topic:{Environment.NewLine}{e.Message}");
                 return ActionResults.CreateFailed(e);
             }
+        }
+
+        public void RecordMetric(ActionResults result)
+        {
+            var awsConnectionSettings = _rootModel?.AwsConnectionSettings;
+            _toolkitContext.RecordSnsCreateTopic(result, awsConnectionSettings);
         }
     }
 }
