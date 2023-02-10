@@ -480,7 +480,7 @@ namespace CommonUI.Models
                     }
                     catch (Exception ex)
                     {
-                        DataErrorInfo.AddError(ex, nameof(Spaces));
+                        DataErrorInfo.AddError(ex.Message, nameof(Spaces));
                         return;
                     }
 
@@ -531,7 +531,7 @@ namespace CommonUI.Models
                     }
                     catch (Exception ex)
                     {
-                        DataErrorInfo.AddError(ex, nameof(Projects));
+                        DataErrorInfo.AddError(ex.Message, nameof(Projects));
                         return;
                     }
 
@@ -582,7 +582,7 @@ namespace CommonUI.Models
                     }
                     catch (Exception ex)
                     {
-                        DataErrorInfo.AddError(ex, nameof(Repositories));
+                        DataErrorInfo.AddError(ex.Message, nameof(Repositories));
                         return;
                     }
 
