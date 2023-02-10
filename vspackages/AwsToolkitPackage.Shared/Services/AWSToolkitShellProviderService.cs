@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -496,6 +495,34 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         public void OutputToHostConsole(string message, bool forceVisible)
         {
             _hostPackage.OutputToConsole(message, forceVisible);
+        }
+
+        public async Task<bool> OpenOutputWindowPaneAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return false;
+            }
+
+            var dte = (await _hostPackage.GetServiceAsync(typeof(EnvDTE.DTE))) as DTE2;
+            if (dte != null)
+            {
+                await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                var panes = dte.ToolWindows.OutputWindow.OutputWindowPanes;
+
+                foreach (EnvDTE.OutputWindowPane pane in panes)
+                {
+                    if (pane.Name == name)
+                    {
+                        await OpenShellWindowAsync(ShellWindows.Output);
+                        pane.Activate();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public void AddToLog(string category, string message)

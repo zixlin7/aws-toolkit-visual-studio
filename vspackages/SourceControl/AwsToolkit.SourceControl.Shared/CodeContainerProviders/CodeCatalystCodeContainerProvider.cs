@@ -93,7 +93,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                     null);
         }
 
-        protected async override Task<CloneRepositoryData> HandleCloneRepositoryFailedAsync(CloneRepositoryData failedCloneRepoData, Exception cloneException)
+        protected override async Task<CloneRepositoryData> HandleCloneRepositoryFailedAsync(CloneRepositoryData failedCloneRepoData, Exception cloneException)
         {
             if (cloneException?.Message?.ToLower().Contains("authentication failed") != true)
             {
@@ -130,7 +130,8 @@ Recreate access token and retry?");
         protected override Task CloneFailedAsync(CloneRepositoryData cloneRepoData)
         {
             var repositoryName = cloneRepoData?.RepositoryName ?? "(unknown)";
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"Failed to clone repository: {repositoryName}. See toolkit logs for details.", true);
+            _toolkitContext.ToolkitHost.OutputToHostConsole(
+                $"Failed to clone repository: {repositoryName}. See '{SourceControlGitOutputWindowPaneName}' Output window pane and toolkit logs for details.", true);
             RecordClone(Result.Failed);
             return Task.CompletedTask;
         }

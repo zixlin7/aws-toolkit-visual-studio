@@ -234,6 +234,13 @@ namespace Amazon.AWSToolkit.Shared
         void OutputToHostConsole(string message, bool forceVisible);
 
         /// <summary>
+        /// Attempts to show the output window pane specified by the name
+        /// </summary>
+        /// <param name="name">Name of output window pane to display.</param>
+        /// <returns>True if pane was found and attempted to show, false otherwise.</returns>
+        Task<bool> OpenOutputWindowPaneAsync(string name);
+
+        /// <summary>
         /// Adds the specified message to the toolkit shell's logfile
         /// </summary>
         /// <param name="category">Type of message; one of 'debug', 'warn', 'error' or 'info'</param>

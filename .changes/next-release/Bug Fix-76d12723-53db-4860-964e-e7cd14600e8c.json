@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Improves error message detail on CodeCatalyst cloning failures and ensures the proper Output window pane is displayed to show the error details."
+}

@@ -23,6 +23,8 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GitCodeContainerProvider));
 
+        protected const string SourceControlGitOutputWindowPaneName = "Source Control - Git";
+
         protected readonly Guid _codeContainerProviderId;
         protected readonly Guid _sccProviderId;
 
@@ -226,10 +228,19 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
         /// </remarks>
         protected virtual async Task<CloneRepositoryData> HandleCloneRepositoryFailedAsync(CloneRepositoryData failedCloneRepoData, Exception cloneException)
         {
-            await _toolkitContext.ToolkitHost.OpenShellWindowAsync(ShellWindows.Output);
-            _toolkitContext.ToolkitHost.ShowError("Clone repository failed", $"Failed to clone {failedCloneRepoData.RepositoryName}.  See Output window for details.");
+            var nl = Environment.NewLine;
+
+            await OpenSourceControlGitOutputWindowPaneAsync();
+
+            _toolkitContext.ToolkitHost.ShowError("Clone repository failed",
+                $"Failed to clone {failedCloneRepoData.RepositoryName}.{nl}{nl}{cloneException.Message}{nl}{nl}See Output window for details.");
 
             return null;
+        }
+
+        protected async Task<bool> OpenSourceControlGitOutputWindowPaneAsync()
+        {
+            return await _toolkitContext.ToolkitHost.OpenOutputWindowPaneAsync(SourceControlGitOutputWindowPaneName);
         }
 
         private ccm.CodeContainer CreateCodeContainer(CloneRepositoryData cloneRepoData)

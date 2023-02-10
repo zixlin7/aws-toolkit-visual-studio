@@ -127,6 +127,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         }
 
+        public Task<bool> OpenOutputWindowPaneAsync(string name)
+        {
+            return Task.FromResult(false);
+        }
+
         public void AddToLog(string category, string message)
         {
 
