@@ -59,7 +59,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
         public async Task<ccm.CodeContainer> AcquireCodeContainerAsync(ccm.RemoteCodeContainer onlineCodeContainer, IProgress<sh.ServiceProgressData> downloadProgress, CancellationToken cancellationToken)
         {
             CloneRepositoryData initialCloneRepoData = null;
-            bool suppressExceptions = false;
+            var suppressExceptions = false;
 
             try
             {
@@ -178,6 +178,8 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
             try
             {
+                _toolkitContext.ToolkitHost.OutputToHostConsole($"Attempting to clone {cloneRepoData.RepositoryName} to {cloneRepoData.LocalPath}", true);
+
                 await git.CloneAsync(
                     cloneRepoData.RemoteUri,
                     cloneRepoData.LocalPath,
