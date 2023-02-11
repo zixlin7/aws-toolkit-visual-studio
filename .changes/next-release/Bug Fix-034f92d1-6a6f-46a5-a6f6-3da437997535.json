@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Before cloning a CodeCatalyst repository, a message is now written to the Output pane stating that a clone will be attempted."
-}

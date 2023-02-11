@@ -1,4 +1,0 @@
-{
-  "Type": "Breaking Change",
-  "Description": "When connecting to AWS IAM Identity Center (formerly AWS SSO) and AWS Builder ID, it is now necessary to copy a user code from the Toolkit login dialog and paste it into the login page that is opened in the browser. This change helps to ensure that the browser-based login request is associated with actions being performed in the Toolkit."
-}
