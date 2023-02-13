@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.ECS
             var clusterNode = clustersRootNode.FindChild<ClusterViewMetaNode>();
             clusterNode.OnView = new ContextCommandExecutor(() => new ViewClusterController(ToolkitContext)).Execute;
 
-            clusterNode.OnDelete = new CommandInstantiator<DeleteClusterController>().Execute;
+            clusterNode.OnDelete = new ContextCommandExecutor(() => new DeleteClusterController(ToolkitContext)).Execute;
             
 
             // taskdef hierarchy
@@ -95,10 +95,10 @@ namespace Amazon.AWSToolkit.ECS
 
             // repository hierarchy
             var repositoriesRootNode = rootNode.FindChild<RepositoriesRootViewMetaNode>();
-            repositoriesRootNode.OnCreateRepository = new CommandInstantiator<CreateRepositoryController>().Execute;
+            repositoriesRootNode.OnCreateRepository = new ContextCommandExecutor(() => new CreateRepositoryController(ToolkitContext)).Execute;
             var repositoryNode = repositoriesRootNode.FindChild<RepositoryViewMetaNode>();
             repositoryNode.OnView = OnViewRepository;
-            repositoryNode.OnDelete = new CommandInstantiator<DeleteRepositoryController>().Execute;
+            repositoryNode.OnDelete = new ContextCommandExecutor(() => new DeleteRepositoryController(ToolkitContext)).Execute;
         }
 
         private ActionResults OnViewRepository(IViewModel viewModel)

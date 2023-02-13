@@ -56,7 +56,7 @@
       <Version>3.7.100.27</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>16.0.206</Version>
+      <Version>16.0.208</Version>
     </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.17.2</Version>

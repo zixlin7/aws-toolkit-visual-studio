@@ -1,0 +1,195 @@
+﻿<local:ThemedDialogWindow
+    xmlns:local="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI"
+    x:Class="AwsToolkit.VsSdk.Common.CommonUI.SsoLoginDialog"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:behaviors="clr-namespace:AwsToolkit.VsSdk.Common.CommonUI.Behaviors"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+    xmlns:imageTheming="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
+    xmlns:shell15="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    behaviors:WindowBehavior.BindDialogResult="{Binding DialogResult}"
+    Height="300"
+    Width="450"
+    MinHeight="300"
+    MinWidth="450">
+
+    <local:ThemedDialogWindow.Resources>
+        <ResourceDictionary>
+            <commonUi:VsImages
+                x:Key="VsImages" />
+            <commonUi:ToolkitImages
+                x:Key="ToolkitImages" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        </ResourceDictionary>
+
+    </local:ThemedDialogWindow.Resources>
+
+    <DockPanel
+        imageTheming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, ElementName=Root}"
+        Margin="24 0 24 24">
+        <Grid
+            DockPanel.Dock="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="1*" />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+
+
+            <StackPanel
+                Orientation="Horizontal"
+                Grid.Row="0">
+
+                <images:VsImage
+                     Source="{Binding Source={StaticResource ToolkitImages}, Path=Aws}"
+                     Width="32"
+                     Height="32"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center" />
+                <!-- 
+                    TODO Maintain this comment in the ThemedDialog class when it is written. The ThemedDialog.HeaderText will be a DepedencyProperty
+                    and this TextBlock will no longer be defined in XAML for types deriving from ThemedDialog.  
+            
+                    Per https://learn.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio?view=vs-2022
+                    Themed dialogs must have the 200% header size VsFonts.Environment200PercentFontSizeKey  The ToolkitThemes.Heading1FontSizeKey
+                    is set to this size, so it is safe to use here.  Should it change from 200%, FontSize here will need to be refactored.
+                -->
+
+                <WrapPanel Orientation="Vertical" 
+                           VerticalAlignment="Center"
+                           Margin="12 0 0 0">
+                    <TextBlock
+                        FontFamily="{DynamicResource {x:Static shell15:VsFonts.EnvironmentFontFamilyKey}}"
+                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                        FontWeight="SemiBold"
+                        Text="{Binding DisplayName, StringFormat=Login with {0}}"
+                        RenderOptions.ClearTypeHint="Enabled"
+                        VerticalAlignment="Center" />
+
+                    <!--Indicates information relevant to SSO login flow-->
+                    <TextBlock Text="(Successor to AWS Single Sign-on)"
+                               Margin="0 3 0 0"
+                               FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                               Visibility="{Binding IsBuilderId, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+
+                    <TextBlock Text="{Binding CredentialName, StringFormat=Credential Profile: {0}}"
+                               Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                               Visibility="{Binding IsBuilderId, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+
+                </WrapPanel>
+            </StackPanel>
+        </Grid>
+
+        <Grid
+            DockPanel.Dock="Bottom"
+            Margin="0 16 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="*" />
+                <ColumnDefinition
+                    Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                HorizontalAlignment="Left"
+                Command="{Binding HelpCommand}"
+                Content="Help" />
+
+            <StackPanel
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <Button
+                    Margin="6 0 0 0"
+                    Command="{Binding OkCommand}"
+                    CommandParameter="{Binding UserCode}"
+                    IsDefault="True"
+                    Content="Open and Copy Code" />
+
+                <Button
+                    IsCancel="True"
+                    Margin="6 0 0 0"
+                    Command="{Binding CancelDialogCommand}"
+                    Content="Cancel" />
+
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    TextWrapping="WrapWithOverFlow"
+                    Text="To proceed, open the login page and provide this code to confirm the access request for AWS Toolkit."
+                    RenderOptions.ClearTypeHint="Enabled"
+                    Margin="0 12 0 0">
+                </TextBlock>
+
+                <TextBlock
+                    Grid.Row="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    TextWrapping="WrapWithOverFlow"
+                    Text="{Binding LoginUri, StringFormat=URL: {0}}"
+                    RenderOptions.ClearTypeHint="Enabled"
+                    Margin="0 12 0 0">
+                </TextBlock>
+
+                <StackPanel Grid.Row="2" 
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="{Binding UserCode, StringFormat=Code: {0}}"
+                        d:Text="Code: 134S4"
+                        RenderOptions.ClearTypeHint="Enabled"
+                        Margin="0 12 0 0" />
+
+                    <Button
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Margin="6 12 0 0"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Command="{Binding CopyCommand}"
+                        CommandParameter="{Binding UserCode}"
+                        ToolTip="Copy Code To Clipboard">
+                        <images:VsImage
+                            Width="16"
+                            Height="16"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Source="{Binding Source={StaticResource VsImages}, Path=Copy}" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</local:ThemedDialogWindow>

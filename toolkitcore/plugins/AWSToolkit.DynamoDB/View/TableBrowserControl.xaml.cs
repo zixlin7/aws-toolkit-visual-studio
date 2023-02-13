@@ -5,11 +5,14 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.DynamoDB.Controller;
 using Amazon.AWSToolkit.DynamoDB.View.Columns;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Navigator;
+
 using log4net;
+
 using Microsoft.Win32;
 
 namespace Amazon.AWSToolkit.DynamoDB.View
@@ -51,10 +54,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
 
         public override void OnEditorOpened(bool success)
         {
-            ToolkitFactory.Instance.TelemetryLogger.RecordDynamodbOpenTable(new DynamodbOpenTable()
-            {
-                Result = success ? Result.Succeeded : Result.Failed,
-            });
+            _controller.RecordViewTable(new ActionResults().WithSuccess(success));
         }
         
         protected override void PostDataContextBound()
@@ -152,10 +152,17 @@ namespace Amazon.AWSToolkit.DynamoDB.View
 
         void onCommitChangesClick(object sender, RoutedEventArgs evnt)
         {
-            this.commitChanges();
+            this.CommitChanges();
         }
 
-        bool commitChanges()
+        private bool CommitChanges()
+        {
+            var result = CommitEditsAndRefresh();
+            _controller.RecordEditTable(new ActionResults().WithSuccess(result));
+            return result;
+        }
+
+        private bool CommitEditsAndRefresh()
         {
             try
             {
@@ -193,7 +200,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
                 if (ToolkitFactory.Instance.ShellProvider.Confirm("Commit Changes",
                             "There are uncommitted changes.  Do you wish to commit changes before scanning table?"))
                 {
-                    if (!commitChanges())
+                    if (!CommitChanges())
                     {
                         return;
                     }

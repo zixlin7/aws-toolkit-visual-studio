@@ -70,6 +70,15 @@
     <Compile Include="Controller\CreatePresignedURLController.cs" />
     <Compile Include="Controller\InvokeLambdaFunctionController.cs" />
     <Compile Include="Controller\RestoreObjectPromptController.cs" />
+    <Compile Include="DragAndDrop\DropSourcePlaceholder.cs" />
+    <Compile Include="DragAndDrop\IS3DragAndDropHandler.cs" />
+    <Compile Include="DragAndDrop\IS3DragAndDropManager.cs" />
+    <Compile Include="DragAndDrop\S3DataObject.cs" />
+    <Compile Include="DragAndDrop\S3DragAndDropHandler.cs" />
+    <Compile Include="DragAndDrop\S3DragAndDropManager.cs" />
+    <Compile Include="DragAndDrop\S3DragAndDropRequest.cs" />
+    <Compile Include="DragAndDrop\S3DragDropManifest.cs" />
+    <Compile Include="DragAndDrop\S3DropRequestWatcher.cs" />
     <Compile Include="Jobs\ChangeServerSideEncryptionJob.cs" />
     <Compile Include="Jobs\RestoreObjectsJob.cs" />
     <Compile Include="Model\CreatePresignedURLModel.cs" />
@@ -84,7 +93,6 @@
     <Compile Include="Controller\BucketPropertiesController.cs" />
     <Compile Include="Controller\CreateBucketController.cs" />
     <Compile Include="Controller\DeleteBucketController.cs" />
-    <Compile Include="Controller\ManifestWatcher.cs" />
     <Compile Include="Controller\NewFolderController.cs" />
     <Compile Include="Controller\NewUploadSettingsController.cs" />
     <Compile Include="Controller\ObjectPropertiesController.cs" />
@@ -110,7 +118,6 @@
     <Compile Include="Model\ObjectPropertiesModel.cs" />
     <Compile Include="Model\Permission.cs" />
     <Compile Include="Model\RenameFileModel.cs" />
-    <Compile Include="Model\S3DataObject.cs" />
     <Compile Include="Model\ViewMultipartUploadsModel.cs" />
     <Compile Include="Model\ViewPartsModel.cs" />
     <Compile Include="Nodes\S3BucketViewMetaNode.cs" />

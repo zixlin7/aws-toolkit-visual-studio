@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
+    [DebuggerDisplay("{DisplayName}")]
     public class AddressWrapper : PropertiesModel, IWrapper
     {
         public const string DOMAIN_VPC = "vpc";
@@ -26,7 +30,19 @@ namespace Amazon.AWSToolkit.EC2.Model
         public Address NativeAddress => this._address;
 
         [Browsable(false)]
-        public string DisplayName => this._address.PublicIp;
+        public string DisplayName
+        {
+            get
+            {
+                var name = Name;
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return PublicIp;
+                }
+
+                return $"{PublicIp} ({name})";
+            }
+        }
 
         [Browsable(false)]
         public string TypeName => "Elastic IP";
@@ -34,6 +50,20 @@ namespace Amazon.AWSToolkit.EC2.Model
         [DisplayName("Address")]
         [AssociatedIcon(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.elastic-ip.png")]
         public string PublicIp => this._address.PublicIp;
+
+        [DisplayName("Name")]
+        public string Name
+        {
+            get
+            {
+                if (_address.Tags == null)
+                {
+                    return string.Empty;
+                }
+
+                return _address.Tags.FirstOrDefault(tag => tag.Key == EC2Constants.TAG_NAME)?.Value ?? string.Empty;
+            }
+        }
 
         [DisplayName("Private IP")]
         public string PrivateIpAddress => this._address.PrivateIpAddress;

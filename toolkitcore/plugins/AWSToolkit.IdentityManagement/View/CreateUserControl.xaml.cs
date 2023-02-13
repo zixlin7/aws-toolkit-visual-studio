@@ -2,7 +2,7 @@
 using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.IdentityManagement.Controller;
-
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.IdentityManagement.View
 {
@@ -41,6 +41,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
                 if (newName.Trim().Equals(string.Empty))
                 {
                     ToolkitFactory.Instance.ShellProvider.ShowError("Name is required.");
+                    _controller.RecordMetric(ActionResults.CreateFailed());
                     return false;
                 }
 
@@ -50,6 +51,9 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error creating user: " + e.Message);
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                _controller.RecordMetric(ActionResults.CreateFailed(e));
                 return false;
             }
         }

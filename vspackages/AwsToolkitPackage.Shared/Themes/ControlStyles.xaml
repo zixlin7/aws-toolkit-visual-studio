@@ -22,8 +22,8 @@
     <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ProgressBarStyleKey}}">
     </Style>
 
-    <!-- TODO : TEMP : When a version of Community.VisualStudio.Toolkit is available with PasswordBox style, remove this style.
-        Community.VisualStudio.Toolkit version 15.0.75.103 does not contain PasswordBox style, and a new version hasn't been released yet. -->
+    <!-- Community.VisualStudio.Toolkit has a PasswordBox style, but we should maintain our own. If there was ever a regression
+        in a future version of this package, the Toolkit could start accidentally revealing password fields. -->
     <Style TargetType="PasswordBox">
         <Setter Property="Padding" Value="{StaticResource {x:Static toolkit:ThemeResourceKeys.InputPaddingKey}}" />
         <Setter Property="Background" Value="{DynamicResource {x:Static platform:CommonControlsColors.TextBoxBackgroundBrushKey}}" />

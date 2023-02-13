@@ -1,8 +1,7 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
+
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Controller;
-using log4net;
+using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -11,39 +10,22 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class ChangeUserDataControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(ChangeUserDataControl));
+        private readonly ChangeUserDataModel _model;
 
-        ChangeUserDataController _controller;
-
-        public ChangeUserDataControl(ChangeUserDataController controller)
+        public ChangeUserDataControl(ChangeUserDataModel model)
         {
+            _model = model;
             InitializeComponent();
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            DataContext = _model;
             checkWarningMessage();
         }
 
 
         public override string Title => "User Data";
 
-        public override bool OnCommit()
-        {
-            try
-            {
-                this._controller.ChangeUserData();
-                return true;
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing user data", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing user data: " + e.Message);
-                return false;
-            }
-        }
-
         void checkWarningMessage()
         {
-            if (this._controller.Model.IsReadOnly)
+            if (_model.IsReadOnly)
             {
                 this._ctlWarning.Visibility = Visibility.Visible;
                 this._ctlWarning.Height = double.NaN;

@@ -20,6 +20,8 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 
         public IAmazonIdentityManagementService IAMClient => this._serviceModel.IAMClient;
 
+        public IAMRootViewModel IAMRootViewModel => this._serviceModel;
+
         public void AddGroup(Group group)
         {
             var node = new IAMGroupViewModel(this._metaNode.IAMGroupViewMetaNode, this, group);

@@ -66,6 +66,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvailabilityZoneManager.cs" />
+    <Compile Include="Commands\AllocateElasticIpCommand.cs" />
+    <Compile Include="Commands\DetachElasticIpFromInstanceCommand.cs" />
+    <Compile Include="Commands\AttachElasticIpToInstanceCommand.cs" />
+    <Compile Include="Commands\DisassociateElasticIpCommand.cs" />
+    <Compile Include="Commands\BaseEc2Command.cs" />
+    <Compile Include="Commands\CreateImageFromInstanceCommand.cs" />
+    <Compile Include="Commands\ChangeTerminationProtectionCommand.cs" />
+    <Compile Include="Commands\ChangeUserDataCommand.cs" />
+    <Compile Include="Commands\ChangeInstanceTypeCommand.cs" />
+    <Compile Include="Commands\ChangeShutdownBehaviorCommand.cs" />
+    <Compile Include="Commands\GetInstanceLogCommand.cs" />
+    <Compile Include="Commands\InstanceCommand.cs" />
+    <Compile Include="Commands\ElasticIpCommand.cs" />
+    <Compile Include="Commands\AssociateElasticIpCommand.cs" />
+    <Compile Include="Commands\ReleaseElasticIpCommand.cs" />
+    <Compile Include="ViewModels\ViewInstancesViewModel.cs" />
     <Compile Include="ConnectionUtils\RemoteDesktopUtil.cs" />
     <Compile Include="ConnectionUtils\SCPUtil.cs" />
     <Compile Include="ConnectionUtils\SSHUtil.cs" />
@@ -73,22 +89,14 @@
     <Compile Include="Controller\AddNetworkAclRuleController.cs" />
     <Compile Include="Controller\AddRouteController.cs" />
     <Compile Include="Controller\AMIPermissionController.cs" />
-    <Compile Include="Controller\AssociateAddressController.cs" />
     <Compile Include="Controller\AssociateDHCPOptionSetController.cs" />
     <Compile Include="Controller\AssociateSubnetToNetworkAclController.cs" />
     <Compile Include="Controller\AssociateSubnetToRouteTableController.cs" />
-    <Compile Include="Controller\AttachElasticIPToInstanceController.cs" />
     <Compile Include="Controller\AttachToVPCController.cs" />
     <Compile Include="Controller\AttachVolumeController.cs" />
     <Compile Include="Controller\AddIPPermissionController.cs" />
-    <Compile Include="Controller\ChangeInstanceTypeController.cs" />
-    <Compile Include="Controller\ChangeShutdownBehaviorController.cs" />
-    <Compile Include="Controller\ChangeTerminationProtectionController.cs" />
-    <Compile Include="Controller\ChangeUserDataController.cs" />
     <Compile Include="Controller\ConnectToInstanceController.cs" />
-    <Compile Include="Controller\AllocateAddressController.cs" />
     <Compile Include="Controller\CopyAmiController.cs" />
-    <Compile Include="Controller\CreateImageController.cs" />
     <Compile Include="Controller\CreateNetworkAclController.cs" />
     <Compile Include="Controller\CreateRouteTableController.cs" />
     <Compile Include="Controller\CreateSecurityGroupController.cs" />
@@ -105,7 +113,6 @@
     <Compile Include="Controller\DetachVolumeController.cs" />
     <Compile Include="Controller\FeatureController.cs" />
     <Compile Include="Controller\CreateKeyPairController.cs" />
-    <Compile Include="Controller\GetConsoleOutputController.cs" />
     <Compile Include="Controller\GetPasswordController.cs" />
     <Compile Include="Controller\IAssociateSubnetController.cs" />
     <Compile Include="Controller\IIPPermissionController.cs" />
@@ -194,11 +201,13 @@
     <Compile Include="Model\CreateVolumeModel.cs" />
     <Compile Include="Model\CreateVPCModel.cs" />
     <Compile Include="Model\DHCPOptionsWrapper.cs" />
+    <Compile Include="Model\Ec2Exception.cs" />
     <Compile Include="Model\EC2QuickLaunchImage.cs" />
     <Compile Include="Model\GetConsoleOutputModel.cs" />
     <Compile Include="Model\GetPasswordModel.cs" />
     <Compile Include="Model\IAssociationWrapper.cs" />
     <Compile Include="Model\ImageWrapper.cs" />
+    <Compile Include="Model\InstanceLog.cs" />
     <Compile Include="Model\InternatGatewayWrapper.cs" />
     <Compile Include="Model\ISubnetAssociationWrapper.cs" />
     <Compile Include="Model\KeyPairWrapper.cs" />
@@ -270,7 +279,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Repositories\Ec2RepositoryFactory.cs" />
+    <Compile Include="Repositories\IEc2RepositoryFactory.cs" />
+    <Compile Include="Repositories\IElasticIpRepository.cs" />
+    <Compile Include="Repositories\IInstanceRepository.cs" />
+    <Compile Include="Repositories\InstanceRepository.cs" />
     <Compile Include="Repositories\InstanceTypeRepository.cs" />
+    <Compile Include="Repositories\ElasticIpRepository.cs" />
     <Compile Include="Utils\CommonImageFilters.cs" />
     <Compile Include="Utils\PlatformPicker.cs" />
     <Compile Include="Validators\InstanceNameValidator.cs" />

@@ -10,16 +10,25 @@ using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 using log4net;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.IdentityManagement.Util;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Controller
 {
     public class EditGroupController : BaseContextCommand
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(EditGroupController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(EditGroupController));
 
+        private readonly ToolkitContext _toolkitContext;
         IAmazonIdentityManagementService _iamClient;
         EditGroupModel _model;
         IAMGroupViewModel _iamGroupViewModel;
+
+        public EditGroupController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public EditGroupModel Model => this._model;
 
@@ -71,7 +80,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                     }
                     catch (Exception e)
                     {
-                        LOGGER.Error("Error loading policy " + policyName, e);
+                        _logger.Error("Error loading policy " + policyName, e);
                         ToolkitFactory.Instance.ShellProvider.ShowError("Error parsing template " + policyName + ": " + e.Message);
                     }
                 }
@@ -138,6 +147,13 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                 this._model.IAMPolicyModels.Clear();
             }));
             this.LoadModel();
+        }
+
+        public void RecordEditGroup(ActionResults results)
+        {
+            var awsConnectionSettings =
+                _iamGroupViewModel?.IAMGroupRootViewModel?.IAMRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordIamEdit(IamResourceType.Group, results, awsConnectionSettings);
         }
     }
 }

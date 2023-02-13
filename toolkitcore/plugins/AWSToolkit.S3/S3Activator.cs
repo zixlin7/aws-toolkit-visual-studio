@@ -1,6 +1,9 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System;
+
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.S3.Controller;
+using Amazon.AWSToolkit.S3.DragAndDrop;
 using Amazon.AWSToolkit.S3.Nodes;
 
 namespace Amazon.AWSToolkit.S3
@@ -19,6 +22,16 @@ namespace Amazon.AWSToolkit.S3
 
             var accountMetaNode = ToolkitFactory.Instance.RootViewMetaNode.FindChild<AccountViewMetaNode>();
             accountMetaNode.Children.Add(rootMetaNode);
+        }
+
+        public override object QueryPluginService(Type serviceType)
+        {
+            if (serviceType == typeof(IS3DragAndDropManager))
+            {
+                return new S3DragAndDropManager(ToolkitContext);
+            }
+
+            return base.QueryPluginService(serviceType);
         }
 
         void setupContextMenuHooks(S3RootViewMetaNode rootNode)

@@ -1,18 +1,26 @@
 ﻿using System;
 using System.Threading;
 
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.DynamoDB.View;
 using Amazon.AWSToolkit.DynamoDB.Model;
+using Amazon.AWSToolkit.DynamoDB.Util;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using Amazon.AWSToolkit.Clients;
 
 namespace Amazon.AWSToolkit.DynamoDB.Controller
 {
     public class StreamPropertiesController : BaseContextCommand
     {
+        private readonly ToolkitContext _toolkitContext;
+
         IAmazonDynamoDBStreams _dynamoDBStreamsClient;
 
         StreamPropertiesControl _control;
@@ -20,28 +28,53 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
         DynamoDBTableViewModel _rootModel;
         ActionResults _results;
 
+        public StreamPropertiesController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public override ActionResults Execute(IViewModel model)
+        {
+            ActionResults actionResults = null;
+
+            void Invoke() => actionResults = ViewTableStream(model);
+
+            void Record(ITelemetryLogger _)
+            {
+                _toolkitContext.RecordDynamoDbView(DynamoDbTarget.TableStream, actionResults,
+                    _rootModel?.DynamoDBRootViewModel?.AwsConnectionSettings);
+            }
+
+            _toolkitContext.TelemetryLogger.InvokeAndRecord(Invoke, Record);
+            return actionResults;
+        }
+
+        public ActionResults ViewTableStream(IViewModel model)
         {
             this._rootModel = model as DynamoDBTableViewModel;
             if (this._rootModel == null)
-                return new ActionResults().WithSuccess(false);
+            {
+                return ActionResults.CreateFailed();
+            }
 
             var serviceRoot = this._rootModel.Parent as ServiceRootViewModel;
             if (serviceRoot == null)
             {
-                return new ActionResults().WithSuccess(false);
+                return ActionResults.CreateFailed();
             }
 
             this._dynamoDBStreamsClient =
-                this._rootModel.AccountViewModel.CreateServiceClient<AmazonDynamoDBStreamsClient>(serviceRoot.Region);
+                _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonDynamoDBStreamsClient>(
+                    _rootModel.DynamoDBRootViewModel.AwsConnectionSettings);
 
             this._model = new StreamPropertiesModel(this._rootModel.Table);
             this._control = new StreamPropertiesControl(this);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);
+            if (!_toolkitContext.ToolkitHost.ShowModal(this._control))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-            return this._results;
+            return _results ?? ActionResults.CreateFailed();
         }
 
         public StreamPropertiesModel Model => this._model;
@@ -71,6 +104,17 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 
         public bool Persist()
         {
+            var updateResults = UpdateTableStream();
+
+            _toolkitContext.RecordDynamoDbEdit(DynamoDbTarget.TableStream, updateResults,
+                _rootModel?.DynamoDBRootViewModel?.AwsConnectionSettings);
+
+            _results = updateResults;
+            return updateResults.Success;
+        }
+
+        private ActionResults UpdateTableStream()
+        {
             try
             {
                 var describeResponse = this._rootModel.DynamoDBClient.DescribeTable(new DescribeTableRequest { TableName = this.Model.TableName });
@@ -84,11 +128,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
                 if(existingStreamEnabled == newStreamEnabled && 
                     existingStreamViewType == newStreamViewType)
                 {
-                    return true;
+                    return new ActionResults()
+                        .WithSuccess(true)
+                        .WithFocalname(this._model.TableName)
+                        .WithShouldRefresh(false);
                 }
 
                 // Changing view type. The stream must be disabled first and then renabled with the new view type.
-                if(newStreamEnabled &&
+                if (newStreamEnabled &&
                     existingStreamViewType != null &&
                     existingStreamViewType != newStreamViewType)
                 {
@@ -120,18 +167,15 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 
                 this._rootModel.DynamoDBClient.UpdateTable(updateRequest);
 
-                this._results = new ActionResults()
+                return new ActionResults()
                     .WithSuccess(true)
                     .WithFocalname(this._model.TableName)
                     .WithShouldRefresh(false);
-
-                return true;
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error updating stream: " + e.Message);
-                this._results = new ActionResults().WithSuccess(false);
-                return false;
+                _toolkitContext.ToolkitHost.ShowError("Error updating stream: " + e.Message);
+                return ActionResults.CreateFailed(e);
             }
         }
 

@@ -40,12 +40,12 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var control = new CreateVolumeControl(this);
             control.SetupDeviceNameField();
 
-            ToolkitFactory.Instance.ShellProvider.ShowModal(control);
+            if (!ToolkitFactory.Instance.ShellProvider.ShowModal(control))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
-            if(this._results == null)
-                return new ActionResults().WithSuccess(false);
-
-            return this._results;
+            return _results ?? ActionResults.CreateFailed();
         }
 
         public void LoadModel()

@@ -1,6 +1,8 @@
 ﻿using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
 
+using static AWSToolkit.Tests.Credentials.CredentialProfileTestHelper.SsoSession.Invalid;
+
 namespace AWSToolkit.Tests.Credentials
 {
     public class CredentialProfileTestHelper
@@ -130,27 +132,54 @@ namespace AWSToolkit.Tests.Credentials
         {
             public static class Valid
             {
-                // This sample represents what the SDK hydrates when loading a profile
-                public static readonly CredentialProfile SdkResolvedSsoSessionReferencingProfile = new CredentialProfile("my_sso_bearer_session_from_sdk",
-                    new CredentialProfileOptions
-                    {
-                        SsoSession = "sso_bearer",
-                        SsoRegion = "sso-region",
-                        SsoStartUrl = "sso-url",
-                    });
-
-                // This sample represents a raw definition as it would appear in the file
-                public static readonly CredentialProfile SsoSessionReferencingProfile = new CredentialProfile("my_sso_bearer_session",
-                    new CredentialProfileOptions
-                    {
-                        SsoSession = "sso_bearer",
-                    });
-
-                public static readonly CredentialProfile SsoSessionProfile = new CredentialProfile("sso-session sso_bearer",
+                public const string SsoSessionName = "sessionprofile";
+                public static readonly CredentialProfile SsoSessionProfile = new CredentialProfile($"sso-session {SsoSessionName}",
                     new CredentialProfileOptions
                     {
                         SsoRegion = "sso-region",
                         SsoStartUrl = "sso-url",
+                    });
+
+                // "SDK Hydrated" refers to how the credentials are loaded when using AWSSDK
+                // If you have profile X that has an sso_session reference to profile Y, the resulting CredentialProfileOptions
+                // are a composite of the values from both profiles.
+
+                // Sample bearer token based profile that references an sso session profile
+                public static readonly CredentialProfile SdkHydratedProfileReferencesTokenBasedSsoSession = new CredentialProfile("my_sso_bearer_session_from_sdk",
+                    new CredentialProfileOptions
+                    {
+                        SsoSession = SsoSessionName,
+                        SsoRegion = SsoSessionProfile.Options.SsoRegion,
+                        SsoStartUrl = SsoSessionProfile.Options.SsoStartUrl,
+                    });
+
+                // Sample AWS SSO based profile that references an sso session profile
+                public static readonly CredentialProfile SdkHydratedProfileReferencesSsoBasedSsoSession = new CredentialProfile("my_sso_session_from_sdk",
+                    new CredentialProfileOptions
+                    {
+                        SsoSession = SsoSessionName,
+                        SsoAccountId = "sso-account-id",
+                        SsoRoleName = "sso-role",
+                        SsoRegion = SsoSessionProfile.Options.SsoRegion,
+                        SsoStartUrl = SsoSessionProfile.Options.SsoStartUrl,
+                    });
+
+                // These non-"SDK Hydrated" forms of credential profiles are intended to exercise the Toolkit validation
+                // code independent from how the SDK loads the profiles.
+                // If you have profile X that has an sso_session reference to profile Y, these CredentialProfileOptions
+                // are crafted to only contain the values in profile X.
+                public static readonly CredentialProfile ProfileReferencesTokenBasedSsoSession = new CredentialProfile("my_sso_bearer_session",
+                    new CredentialProfileOptions
+                    {
+                        SsoSession = SsoSessionName,
+                    });
+
+                public static readonly CredentialProfile ProfileReferencesSsoBasedSsoSession = new CredentialProfile("my_sso_session",
+                    new CredentialProfileOptions
+                    {
+                        SsoSession = SsoSessionName,
+                        SsoAccountId = "sso-account-id",
+                        SsoRoleName = "sso-role",
                     });
             }
 
@@ -158,12 +187,24 @@ namespace AWSToolkit.Tests.Credentials
             {
                 public static class SsoSessionReferencingProfiles
                 {
-                    public static readonly CredentialProfile ProfileHasAdditionalSsoProperties = new CredentialProfile("my_sso_bearer_session_extra_props",
+                    public static readonly CredentialProfile SsoProfileWithDifferentSsoRegions = new CredentialProfile("my_sso_reference_different_region",
                         new CredentialProfileOptions
                         {
-                            SsoSession = "sso_bearer",
-                            SsoRegion = "sso-region",
-                            SsoStartUrl = "sso-url",
+                            SsoAccountId = "sso-account-id",
+                            SsoRoleName = "sso-role",
+                            SsoSession = Valid.SsoSessionName,
+                            SsoRegion = "alternate-sso-region",
+                            SsoStartUrl = Valid.SsoSessionProfile.Options.SsoStartUrl,
+                        });
+
+                    public static readonly CredentialProfile SsoProfileWithDifferentSsoUrl = new CredentialProfile("my_sso_reference_different_url",
+                        new CredentialProfileOptions
+                        {
+                            SsoAccountId = "sso-account-id",
+                            SsoRoleName = "sso-role",
+                            SsoSession = Valid.SsoSessionName,
+                            SsoRegion = Valid.SsoSessionProfile.Options.SsoRegion,
+                            SsoStartUrl = "alternate-sso-start-url",
                         });
 
                     public static readonly CredentialProfile ReferenceDoesNotExist = new CredentialProfile("sso_session_reference_not_exist",

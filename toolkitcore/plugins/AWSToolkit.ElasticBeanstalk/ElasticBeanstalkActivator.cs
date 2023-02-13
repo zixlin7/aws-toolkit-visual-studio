@@ -2,23 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
-using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
-using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
-
+using Amazon.AWSToolkit.Beanstalk;
 using Amazon.AWSToolkit.CommonUI;
-
+using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.ElasticBeanstalk.Viewers;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
+using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AWSToolkit.ElasticBeanstalk.Models;
+using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
+using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 using log4net;
-using Amazon.AWSToolkit.PluginServices.Deployment;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk
 {
@@ -51,9 +54,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             if (serviceType == typeof(IAWSToolkitDeploymentService))
                 return this as IAWSToolkitDeploymentService;
 
-            if (serviceType == typeof(IBeanstalkEnvironmentViewer))
+            if (serviceType == typeof(IBeanstalkViewer))
             {
-                return new BeanstalkEnvironmentViewer(ToolkitContext.ToolkitHost, ToolkitFactory.Instance.Navigator);
+                return new BeanstalkViewer(ToolkitContext);
             }
 
             return null; 
@@ -65,19 +68,147 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ApplicationStatusController(ToolkitContext)).Execute);
 
             rootNode.ApplicationViewMetaNode.OnDeleteApplication =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteApplicationController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteApplicationController(ToolkitContext)).Execute);
 
-            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnEnvironmentStatus =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<EnvironmentStatusController>().Execute);
+            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnEnvironmentStatus = OnViewBeanstalkEnvironment;
 
-            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnRestartApp =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<RestartAppController>().Execute);
+            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnRestartApp = OnRestartApplication;
 
-            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnRebuildingEnvironment =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<RebuildEnvironmentController>().Execute);
+            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnRebuildingEnvironment = OnRebuildEnvironment;
 
-            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnTerminateEnvironment =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<TerminateEnvironmentController>().Execute);
+            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnTerminateEnvironment = OnTerminateEnvironment;
+        }
+
+        private ActionResults OnViewBeanstalkEnvironment(IViewModel viewModel)
+        {
+            try
+            {
+                if (!(viewModel is EnvironmentViewModel environmentViewModel))
+                {
+                    throw new Exception(
+                        "Unable to view Beanstalk Environment." +
+                        $" Expected: {nameof(EnvironmentViewModel)}," +
+                        $" Received: {viewModel?.GetType().Name ?? "null"}.");
+                }
+
+                var viewer = QueryPluginService(typeof(IBeanstalkViewer)) as IBeanstalkViewer ??
+                             throw new Exception("Unable to get Beanstalk Viewer");
+
+                viewer.ViewEnvironment(
+                    environmentViewModel.Environment.EnvironmentName,
+                    CreateAwsConnectionSettings(environmentViewModel));
+
+                return new ActionResults().WithSuccess(true);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error(e.Message);
+                return new ActionResults().WithSuccess(false);
+            }
+        }
+        private ActionResults OnRestartApplication(IViewModel viewModel)
+        {
+            var results = RestartApplication(viewModel);
+
+            var model = viewModel as EnvironmentViewModel;
+            var connectionSettings = model?.ApplicationViewModel?
+                .ElasticBeanstalkRootViewModel?.AwsConnectionSettings;
+
+            ToolkitContext.RecordBeanstalkRestartApplication(results, connectionSettings);
+            return results;
+
+        }
+
+        private ActionResults RestartApplication(IViewModel viewModel)
+        {
+            if (!(viewModel is EnvironmentViewModel environmentViewModel))
+            {
+                LOGGER.Error("Unable to restart Beanstalk Application." +
+                             $" Expected: {nameof(EnvironmentViewModel)}," +
+                             $" Received: {viewModel?.GetType().Name ?? "null"}." +
+                             " Operation cancelled.");
+                return new ActionResults().WithSuccess(false);
+            }
+
+            return RunBeanstalkEnvironmentCommand(environmentViewModel,
+                (beanstalkEnvironment, connectionSettings) =>
+                    new RestartAppController(beanstalkEnvironment, ToolkitContext, connectionSettings));
+        }
+
+        private ActionResults OnRebuildEnvironment(IViewModel viewModel)
+        {
+            var results = RebuildEnvironment(viewModel);
+
+            var model = viewModel as EnvironmentViewModel;
+            var connectionSettings = model?.ApplicationViewModel?
+                .ElasticBeanstalkRootViewModel?.AwsConnectionSettings;
+
+            ToolkitContext.RecordBeanstalkRebuildEnvironment(results, connectionSettings);
+            return results;
+
+        }
+
+        private ActionResults RebuildEnvironment(IViewModel viewModel)
+        {
+            if (!(viewModel is EnvironmentViewModel environmentViewModel))
+            {
+                LOGGER.Error("Unable to rebuild Beanstalk Environment." +
+                             $" Expected: {nameof(EnvironmentViewModel)}," +
+                             $" Received: {viewModel?.GetType().Name ?? "null"}." +
+                             " Operation cancelled.");
+                return new ActionResults().WithSuccess(false);
+            }
+
+            return RunBeanstalkEnvironmentCommand(environmentViewModel,
+                (beanstalkEnvironment, connectionSettings) =>
+                    new RebuildEnvironmentController(beanstalkEnvironment, ToolkitContext, connectionSettings));
+        }
+
+        private ActionResults OnTerminateEnvironment(IViewModel viewModel)
+        {
+            var results = TerminateEnvironment(viewModel);
+
+            var model = viewModel as EnvironmentViewModel;
+            var connectionSettings = model?.ApplicationViewModel?
+                .ElasticBeanstalkRootViewModel?.AwsConnectionSettings;
+
+            ToolkitContext.RecordBeanstalkDeleteEnvironment(results, connectionSettings);
+            return results;
+        }
+
+        private ActionResults TerminateEnvironment(IViewModel viewModel)
+        {
+            if (!(viewModel is EnvironmentViewModel environmentViewModel))
+            {
+                LOGGER.Error("Unable to terminate Beanstalk Environment." +
+                             $" Expected: {nameof(EnvironmentViewModel)}," +
+                             $" Received: {viewModel?.GetType().Name ?? "null"}." +
+                             " Operation cancelled.");
+                return new ActionResults().WithSuccess(false);
+            }
+
+            return RunBeanstalkEnvironmentCommand(environmentViewModel,
+                (beanstalkEnvironment, connectionSettings) =>
+                    new TerminateEnvironmentController(beanstalkEnvironment, ToolkitContext, connectionSettings));
+        }
+
+        private ActionResults RunBeanstalkEnvironmentCommand(EnvironmentViewModel environmentViewModel,
+            Func<BeanstalkEnvironmentModel, AwsConnectionSettings, IConnectionContextCommand> commandCreator)
+        {
+            var beanstalkEnvironment = environmentViewModel.Environment.AsBeanstalkEnvironmentModel();
+            var connectionSettings = CreateAwsConnectionSettings(environmentViewModel);
+
+            return new ConnectionContextCommandExecutor(
+                () => commandCreator(beanstalkEnvironment, connectionSettings),
+                ToolkitContext.ToolkitHost
+            ).Execute();
+        }
+
+        private static AwsConnectionSettings CreateAwsConnectionSettings(EnvironmentViewModel beanstalkEnvironment)
+        {
+            var region = beanstalkEnvironment.ApplicationViewModel.ElasticBeanstalkRootViewModel.Region;
+            var connectionSettings = new AwsConnectionSettings(beanstalkEnvironment.AccountViewModel.Identifier, region);
+            return connectionSettings;
         }
 
         #region IAWSElasticBeanstalk Members

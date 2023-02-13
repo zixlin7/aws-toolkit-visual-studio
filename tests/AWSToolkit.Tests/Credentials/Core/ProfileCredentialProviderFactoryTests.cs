@@ -149,19 +149,23 @@ namespace AWSToolkit.Tests.Credentials.Core
             Assert.False(_factory.IsLoginRequired(identifier));
         }
 
-        [Fact]
-        public void LoginIsRequired()
+        public static TheoryData<string> GetLoginIsRequiredInputs()
         {
-            var identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.Mfa.Valid.MfaReference.Name);
-            Assert.True(_factory.IsLoginRequired(identifier));
+            return new TheoryData<string>()
+            {
+                CredentialProfileTestHelper.Mfa.Valid.MfaReference.Name,
+                CredentialProfileTestHelper.Mfa.Valid.ExternalSession.Name,
+                CredentialProfileTestHelper.Sso.ValidProfile.Name,
+                CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesSsoBasedSsoSession.Name,
+                CredentialProfileTestHelper.CredentialProcess.ValidProfile.Name,
+            };
+        }
 
-            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.Mfa.Valid.ExternalSession.Name);
-            Assert.True(_factory.IsLoginRequired(identifier));
-
-            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.Sso.ValidProfile.Name);
-            Assert.True(_factory.IsLoginRequired(identifier));
-
-            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.CredentialProcess.ValidProfile.Name);
+        [Theory]
+        [MemberData(nameof(GetLoginIsRequiredInputs))]
+        public void LoginIsRequired(string profileName)
+        {
+            var identifier = new SDKCredentialIdentifier(profileName);
             Assert.True(_factory.IsLoginRequired(identifier));
         }
 
@@ -176,14 +180,19 @@ namespace AWSToolkit.Tests.Credentials.Core
             theoryData.Add(basicCredentialsId, AwsConnectionType.AwsCredentials, true);
             theoryData.Add(basicCredentialsId, AwsConnectionType.AwsToken, false);
 
-            // SSO Profiles (except for sso_session) use AWSCredentials
+            // AWS SSO related profiles that don't reference an sso_session - uses AWSCredentials
             var ssoCredentialsId = new SharedCredentialIdentifier(CredentialProfileTestHelper.Sso.ValidProfile.Name);
             theoryData.Add(ssoCredentialsId, AwsConnectionType.AwsCredentials, true);
             theoryData.Add(ssoCredentialsId, AwsConnectionType.AwsToken, false);
 
-            // SSO Session based profiles use Tokens
+            // AWS SSO related profiles that do reference an sso_session - uses AWSCredentials
+            var ssoReferencedSessionId = new SharedCredentialIdentifier(CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesSsoBasedSsoSession.Name);
+            theoryData.Add(ssoReferencedSessionId, AwsConnectionType.AwsCredentials, true);
+            theoryData.Add(ssoReferencedSessionId, AwsConnectionType.AwsToken, false);
+
+            // Token based profile - uses AwsToken
             var ssoSessionCredentialsId =
-                new SharedCredentialIdentifier(CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile
+                new SharedCredentialIdentifier(CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesTokenBasedSsoSession
                     .Name);
             theoryData.Add(ssoSessionCredentialsId, AwsConnectionType.AwsCredentials, false);
             theoryData.Add(ssoSessionCredentialsId, AwsConnectionType.AwsToken, true);
@@ -271,7 +280,8 @@ namespace AWSToolkit.Tests.Credentials.Core
                          CredentialProfileTestHelper.Mfa.Valid.MfaReference,
                          CredentialProfileTestHelper.Mfa.Valid.ExternalSession,
                          CredentialProfileTestHelper.Sso.ValidProfile,
-                         CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile,
+                         CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesSsoBasedSsoSession,
+                         CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesTokenBasedSsoSession,
                          CredentialProfileTestHelper.SsoSession.Valid.SsoSessionProfile,
                          CredentialProfileTestHelper.AssumeRole.Valid.CredentialSource,
                          CredentialProfileTestHelper.AssumeRole.Valid.SourceProfile,

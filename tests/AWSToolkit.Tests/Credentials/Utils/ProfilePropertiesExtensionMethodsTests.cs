@@ -89,10 +89,18 @@ namespace AWSToolkit.Tests.Credentials.Utils
         }
 
         [Fact]
-        public void GetCredentialType_SsoSession()
+        public void GetCredentialType_SsoBasedSsoSession()
+        {
+            Assert.Equal(CredentialType.SsoProfile,
+                CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesSsoBasedSsoSession.AsProfileProperties()
+                    .GetCredentialType());
+        }
+
+        [Fact]
+        public void GetCredentialType_TokenBasedSsoSession()
         {
             Assert.Equal(CredentialType.BearerToken,
-                CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile.AsProfileProperties()
+                CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesTokenBasedSsoSession.AsProfileProperties()
                     .GetCredentialType());
         }
     }

@@ -24,6 +24,7 @@ using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
+using Amazon.AWSToolkit.S3.DragAndDrop;
 using Amazon.AWSToolkit.S3.Jobs;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.S3.IO;
@@ -39,6 +40,7 @@ namespace Amazon.AWSToolkit.S3.View
 
         private readonly BucketBrowserController _controller;
         private readonly BucketBrowserModel _model;
+        private readonly List<IDisposable> _dragAndDropHandlers = new List<IDisposable>();
 
         public BucketBrowserControl()
             : this(null)
@@ -62,7 +64,13 @@ namespace Amazon.AWSToolkit.S3.View
             BuildBreadCrumb();
             _ctlDataGrid.SelectedItem = null;
 
-            Unloaded += (sender, e) => _controller.DisposeLoadingThread();
+            Unloaded += (sender, e) =>
+            {
+                _controller.DisposeLoadingThread();
+
+                _dragAndDropHandlers.ForEach(handler => handler.Dispose());
+                _dragAndDropHandlers.Clear();
+            };
         }
 
         public override bool SupportsBackGroundDataLoad => true;
@@ -997,17 +1005,43 @@ namespace Amazon.AWSToolkit.S3.View
                         var selectedItems = GetSelectedItemsAsList();
                         if (selectedItems.Count > 0)
                         {
-                            _ctlDataGrid.AllowDrop = false;
-                            var s3DataObject = new S3DataObject(_controller.S3RootViewModel, _model.BucketName, _model.Path, selectedItems);
-                            s3DataObject.SetData(DataFormats.StringFormat, s3DataObject);
-                            DragDrop.DoDragDrop(_ctlDataGrid, s3DataObject, DragDropEffects.Copy);
-                            _ctlDataGrid.AllowDrop = true;
+                            using (var reAllowDrop = new DisposingAction(() => _ctlDataGrid.AllowDrop = true))
+                            {
+                                _ctlDataGrid.AllowDrop = false;
+
+                                var items = selectedItems
+                                    .Select(item => new S3DragAndDropItem()
+                                    {
+                                        ItemType = item.ChildType.ToString(), Key = item.FullPath,
+                                    });
+
+                                var dragAndDropHandler = _controller.CreateDragAndDropHandler(items);
+                                StartDragAndDropOperation(dragAndDropHandler);
+                            }
                         }
                     }
                 }
             }
             catch (Exception)
             {
+            }
+        }
+
+        private void StartDragAndDropOperation(IS3DragAndDropHandler dragAndDropHandler)
+        {
+            var s3DataObject = new S3DataObject(dragAndDropHandler);
+
+            var dragDropResult = DragDrop.DoDragDrop(_ctlDataGrid, s3DataObject, DragDropEffects.Copy);
+
+            if (dragDropResult == DragDropEffects.None)
+            {
+                // Drag and Drop was cancelled or dropped somewhere that doesn't accept it
+                dragAndDropHandler.Dispose();
+            }
+            else
+            {
+                // Drag and Drop will proceed, but will be handled through file changed events
+                _dragAndDropHandlers.Add(dragAndDropHandler);
             }
         }
 

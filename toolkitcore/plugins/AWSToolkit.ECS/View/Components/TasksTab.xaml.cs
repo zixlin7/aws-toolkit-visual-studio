@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using Amazon.ECS;
+
 using Amazon.AWSToolkit.ECS.Controller;
+using Amazon.AWSToolkit.ECS.Model;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.ECS;
 
 using log4net;
-using Amazon.AWSToolkit.ECS.Model;
 
 namespace Amazon.AWSToolkit.ECS.View.Components
 {
@@ -50,8 +52,18 @@ namespace Amazon.AWSToolkit.ECS.View.Components
 
         private void Stop_Click(object sender, RoutedEventArgs evnt)
         {
-            if (!this._controller.ToolkitContext.ToolkitHost.Confirm("Stop Task(s)", "Are you want to stop the selected task(s)?"))
-                return;
+            var results = TryStopTask(out var count);
+            _controller.RecordStopEcsTask(count, results);
+        }
+
+
+        private ActionResults TryStopTask(out int taskCount)
+        {
+            taskCount = 0;
+            if (!_controller.ToolkitContext.ToolkitHost.Confirm("Stop Task(s)", "Are you want to stop the selected task(s)?"))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
             try
             {
@@ -60,36 +72,51 @@ namespace Amazon.AWSToolkit.ECS.View.Components
                 {
                     tasks.Add(task);
                 }
-                this._controller.StopTasks(tasks);
-                this._controller.RefreshTasks();
+                taskCount = tasks.Count;
+                _controller.StopTasks(tasks);
+                _controller.RefreshTasks();
+
+                return new ActionResults().WithSuccess(true);
             }
             catch (Exception e)
             {
                 var msg = "Error stopping tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
+                return ActionResults.CreateFailed(e);
             }
         }
 
         private void StopAll_Click(object sender, RoutedEventArgs evnt)
         {
-            if (!this._controller.ToolkitContext.ToolkitHost.Confirm("Stop All Tasks", "Are you want to stop all tasks?"))
-                return;
+            var results = TryStopAllTask(out var count);
+            _controller.RecordStopEcsTask(count, results);
+        }
 
+        private ActionResults TryStopAllTask(out int taskCount)
+        {
+            taskCount = 0;
+            if (!_controller.ToolkitContext.ToolkitHost.Confirm("Stop All Tasks", "Are you want to stop all tasks?"))
+            {
+                return ActionResults.CreateCancelled();
+            }
             try
             {
-                this._controller.StopTasks(this._controller.Model.Tasks);
-                this._controller.RefreshTasks();
+                var tasks = _controller.Model.Tasks;
+                taskCount = tasks.Count;
+                _controller.StopTasks(tasks);
+                _controller.RefreshTasks();
+
+                return new ActionResults().WithSuccess(true);
             }
             catch (Exception e)
             {
                 var msg = "Error stopping tasks for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                this._controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Serivces Load Error", msg);
+                return ActionResults.CreateFailed(e);
             }
         }
-
-        
 
         private void DesiredStatus_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

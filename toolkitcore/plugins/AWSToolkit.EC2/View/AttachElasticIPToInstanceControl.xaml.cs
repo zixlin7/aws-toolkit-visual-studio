@@ -1,10 +1,7 @@
-﻿using System;
-using System.Windows;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Controller;
-using AMIImage = Amazon.EC2.Model.Image;
+﻿using System.Windows;
 
-using log4net;
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -13,45 +10,28 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class AttachElasticIPToInstanceControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(AttachVolumeControl));
+        private readonly AttachElasticIPToInstanceModel _model;
 
-        AttachElasticIPToInstanceController _controller;
-
-        public AttachElasticIPToInstanceControl(AttachElasticIPToInstanceController controller)
+        public AttachElasticIPToInstanceControl(AttachElasticIPToInstanceModel model)
         {
+            _model = model;
             InitializeComponent();
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            DataContext = _model;
         }
 
         public override string Title => "Attach Elastic IP to Instance";
-
-        public override bool OnCommit()
-        {
-            try
-            {
-                this._controller.Attach();
-                return true;
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error attaching Elastic IP to instance", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error attaching Elastic IP to instance: " + e.Message);
-                return false;
-            }
-        }
 
         void onLoad(object sender, RoutedEventArgs e)
         {
             if (this._ctlElasticIPs.Items.Count == 0)
             {
                 this._ctlSelectExisting.IsEnabled = false;
-                this._controller.Model.ActionCreateNewAddress = true;
+                _model.ActionCreateNewAddress = true;
             }
             else
             {
                 this._ctlElasticIPs.SelectedIndex = 0;
-                this._controller.Model.ActionSelectedAddress = true;
+                _model.ActionSelectedAddress = true;
             }
         }
     }

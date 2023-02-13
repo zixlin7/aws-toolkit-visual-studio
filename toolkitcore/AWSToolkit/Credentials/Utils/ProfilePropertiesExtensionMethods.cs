@@ -11,16 +11,21 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         {
             if (properties == null) { return CredentialType.Undefined; }
 
-            // When SsoSession is filled in, the profile is treated like a token provider
+            // Spec: If SSO account id or SSO role name are filled in, the profile is considered an SSO based profile
+            if (!string.IsNullOrWhiteSpace(properties.SsoAccountId) ||
+                !string.IsNullOrWhiteSpace(properties.SsoRoleName))
+            {
+                return CredentialType.SsoProfile;
+            }
+
+            // Otherwise if SsoSession is filled in, the profile is treated like a token provider
             if (!string.IsNullOrWhiteSpace(properties.SsoSession))
             {
                 return CredentialType.BearerToken;
             }
 
-            // If any SSO field is filled in, the profile is considered an SSO based profile
-            if (!string.IsNullOrWhiteSpace(properties.SsoAccountId) ||
-                !string.IsNullOrWhiteSpace(properties.SsoRegion) ||
-                !string.IsNullOrWhiteSpace(properties.SsoRoleName) ||
+            // If any other SSO field is filled in, the profile is considered an SSO based profile
+            if (!string.IsNullOrWhiteSpace(properties.SsoRegion) ||
                 !string.IsNullOrWhiteSpace(properties.SsoStartUrl))
             {
                 return CredentialType.SsoProfile;

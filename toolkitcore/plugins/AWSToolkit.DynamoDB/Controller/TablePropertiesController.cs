@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.DynamoDB.Model;
+using Amazon.AWSToolkit.DynamoDB.Nodes;
+using Amazon.AWSToolkit.DynamoDB.Util;
+using Amazon.AWSToolkit.DynamoDB.View;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.DynamoDB.Nodes;
-using Amazon.AWSToolkit.DynamoDB.View;
-using Amazon.AWSToolkit.DynamoDB.Model;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
@@ -13,26 +19,52 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 {
     public class TablePropertiesController : BaseContextCommand
     {
+        private readonly ToolkitContext _toolkitContext;
+
         TablePropertiesControl _control;
         TablePropertiesModel _model;
         DynamoDBTableViewModel _rootModel;
         ActionResults _results;
         Dictionary<string, ProvisionedThroughputDescription> _originalGlobalProvisions = new Dictionary<string, ProvisionedThroughputDescription>();
 
+        public TablePropertiesController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public override ActionResults Execute(IViewModel model)
+        {
+            ActionResults actionResults = null;
+
+            void Invoke() => actionResults = ViewTableProperties(model);
+
+            void Record(ITelemetryLogger _)
+            {
+                _toolkitContext.RecordDynamoDbView(DynamoDbTarget.TableProperties, actionResults,
+                    _rootModel?.DynamoDBRootViewModel?.AwsConnectionSettings);
+            }
+
+            _toolkitContext.TelemetryLogger.InvokeAndRecord(Invoke, Record);
+            return actionResults;
+        }
+
+        public ActionResults ViewTableProperties(IViewModel model)
         {
             this._rootModel = model as DynamoDBTableViewModel;
             if (this._rootModel == null)
-                return new ActionResults().WithSuccess(false);
+            {
+                return ActionResults.CreateFailed();
+            }
 
             this._model = new TablePropertiesModel(this._rootModel.Table);
             this._control = new TablePropertiesControl(this);
             this._control.PreloadModel();
-            ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);
+            if (!_toolkitContext.ToolkitHost.ShowModal(this._control))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-            return this._results;
+            return _results ?? ActionResults.CreateFailed();
         }
 
         public TablePropertiesModel Model => this._model;
@@ -198,6 +230,17 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 
         public bool Persist()
         {
+            var updateResults = UpdateTable();
+
+            _toolkitContext.RecordDynamoDbEdit(DynamoDbTarget.TableProperties, updateResults,
+                    _rootModel?.DynamoDBRootViewModel?.AwsConnectionSettings);
+
+            _results = updateResults;
+            return updateResults.Success;
+        }
+
+        private ActionResults UpdateTable()
+        {
             try
             {
                 this.PerformThroughputUpdates();
@@ -205,18 +248,15 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
                 this.PerformGlobalSecondaryDeletes();
                 this.PerformTTLUpdate();
 
-                this._results = new ActionResults()
+                return new ActionResults()
                     .WithSuccess(true)
                     .WithFocalname(this._model.TableName)
                     .WithShouldRefresh(true);
-
-                return true;
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error updating table: " + e.Message);
-                this._results = new ActionResults().WithSuccess(false);
-                return false;
+                _toolkitContext.ToolkitHost.ShowError("Error updating table: " + e.Message);
+                return ActionResults.CreateFailed(e);
             }
         }
 

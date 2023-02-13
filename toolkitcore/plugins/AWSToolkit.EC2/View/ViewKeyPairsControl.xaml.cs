@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
@@ -63,12 +64,14 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                this._controller.CreateKeyPair();
+                var result = this._controller.CreateKeyPair();
+                _controller.RecordCreateKeyPair(result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error Creating Key Pair", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Creating Key Pair: " + e.Message);
+                _controller.RecordCreateKeyPair(ActionResults.CreateFailed(e));
             }
         }
 
@@ -140,12 +143,15 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                this._controller.DeleteKeyPairs();
+                var count = _controller.Model.SelectedKeys.Count;
+                var result = this._controller.DeleteKeyPairs();
+                _controller.RecordDeleteKeyPair(count, result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error deleting key pairs", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Deleting Key Pairs", "Error deleting key pair: " + e.Message);
+                _controller.RecordDeleteKeyPair(1, ActionResults.CreateFailed(e));
             }
         }
 
@@ -153,12 +159,14 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                this._controller.ClearPrivateKeys(this._controller.Model.SelectedKeys);
+                var result = this._controller.ClearPrivateKeys(this._controller.Model.SelectedKeys);
+                _controller.RecordClearPrivateKey(_controller.Model.SelectedKeys.Count, result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error clearing private key", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Clearing Private Key(s)", "Error clearing private key(s): " + e.Message);
+                _controller.RecordClearPrivateKey(1, ActionResults.CreateFailed(e));
             }
         }
 
@@ -175,18 +183,22 @@ namespace Amazon.AWSToolkit.EC2.View
                 dlg.DefaultExt = ".pem"; // Default file extension
                 dlg.Filter = "PEM File (.pem)|*.pem"; // Filter files by extension
 
+                ActionResults actionResult = ActionResults.CreateCancelled();
                 Nullable<bool> result = dlg.ShowDialog();
 
                 if (result == true)
                 {
                     string filename = dlg.FileName;
-                    this._controller.ImportPrivatekey(key, filename);
+                    actionResult = this._controller.ImportPrivatekey(key, filename);
                 }
+
+                _controller.RecordImportPrivateKey(actionResult);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error importing private key", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Importing Private Key", "Error importing private key: " + e.Message);
+                _controller.RecordImportPrivateKey(ActionResults.CreateFailed(e));
             }
         }
 
@@ -203,18 +215,22 @@ namespace Amazon.AWSToolkit.EC2.View
                 dlg.DefaultExt = ".pem"; // Default file extension
                 dlg.Filter = "PEM File (.pem)|*.pem"; // Filter files by extension
 
+                ActionResults actionResult = ActionResults.CreateCancelled();
                 Nullable<bool> result = dlg.ShowDialog();
 
                 if (result == true)
                 {
                     string filename = dlg.FileName;
-                    this._controller.ExportPrivatekey(key, filename);
+                    actionResult = this._controller.ExportPrivatekey(key, filename);
                 }
+
+                _controller.RecordExportPrivateKey(actionResult);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error exporting private key", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Exporting Private Key", "Error exporting private key: " + e.Message);
+                _controller.RecordExportPrivateKey(ActionResults.CreateFailed(e));
             }
         }
     }

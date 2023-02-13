@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
@@ -84,29 +85,32 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                var volume = this._controller.CreateVolume();
-                if (volume != null)
-                {
-                    this._ctlDataGrid.SelectAndScrollIntoView(volume);
-                }
+                var result = _controller.CreateVolume(_ctlDataGrid);
+                _controller.RecordCreateVolume(result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error creating volume", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Create Error", "Error creating volume: " + e.Message);
+                _controller.RecordCreateVolume(ActionResults.CreateFailed(e));
             }
         }
 
         void onDeleteVolumeClick(object sender, RoutedEventArgs evnt)
         {
+            int count = 0;
             try
             {
-                _controller.DeleteVolume(this._ctlDataGrid.GetSelectedItems<VolumeWrapper>());
+                var selectedVolumes = _ctlDataGrid.GetSelectedItems<VolumeWrapper>();
+                count = selectedVolumes.Count;
+                var result = _controller.DeleteVolume(selectedVolumes);
+                _controller.RecordDeleteVolume(count, result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error deleting volumes", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Delete Error", "Error deleting volume(s): " + e.Message);
+                _controller.RecordDeleteVolume(count, ActionResults.CreateFailed(e));
             }
         }
 
@@ -118,12 +122,14 @@ namespace Amazon.AWSToolkit.EC2.View
                 if (selected.Count < 1)
                     return;
 
-                _controller.AttachVolume(selected[0]);
+                var result = _controller.AttachVolume(selected[0]);
+                _controller.RecordEditVolumeAttachment(true, result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error attaching volume", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Attach Error", "Error attaching volume(s): " + e.Message);
+                _controller.RecordEditVolumeAttachment(true, ActionResults.CreateFailed(e));
             }
         }
 
@@ -131,12 +137,14 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                _controller.DetachVolumeFocusInstance(this._ctlDataGrid.GetSelectedItems<VolumeWrapper>(), false);
+                var result = _controller.DetachVolumeFocusInstance(this._ctlDataGrid.GetSelectedItems<VolumeWrapper>(), false);
+                _controller.RecordEditVolumeAttachment(false, result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error detaching volumes", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Detach Error", "Error detaching volume(s): " + e.Message);
+                _controller.RecordEditVolumeAttachment(false, ActionResults.CreateFailed(e));
             }
         }
 
@@ -144,12 +152,14 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                _controller.DetachVolumeFocusInstance(this._ctlDataGrid.GetSelectedItems<VolumeWrapper>(), true);
+                var result = _controller.DetachVolumeFocusInstance(this._ctlDataGrid.GetSelectedItems<VolumeWrapper>(), true);
+                _controller.RecordEditVolumeAttachment(false, result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error force detaching volumes", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Force Detach Error", "Error detaching volume(s) by force: " + e.Message);
+                _controller.RecordEditVolumeAttachment(false, ActionResults.CreateFailed(e));
             }
 
         }

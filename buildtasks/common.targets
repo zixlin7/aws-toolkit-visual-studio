@@ -57,6 +57,10 @@
 
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.Telemetry.UpdateTelemetryReferencesTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
     TaskName="BuildTasks.ChangeLog.ChangeLogGeneratorTask" />
 
   <UsingTask

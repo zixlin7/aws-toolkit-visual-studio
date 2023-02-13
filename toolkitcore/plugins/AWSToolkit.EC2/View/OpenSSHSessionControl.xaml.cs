@@ -1,5 +1,7 @@
 ﻿using System;
+
 using Amazon.AWSToolkit.EC2.Controller;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.View
@@ -9,7 +11,7 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class OpenSSHSessionControl : OpenLinuxToolControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(OpenSSHSessionControl));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(OpenSSHSessionControl));
 
         OpenSSHSessionController _controller;
 
@@ -48,6 +50,7 @@ namespace Amazon.AWSToolkit.EC2.View
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error opening ssh session: " + e.Message);
+                _controller.RecordFailure(e);
                 return false;
             }
 

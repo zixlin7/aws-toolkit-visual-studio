@@ -10,16 +10,25 @@ using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 using log4net;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.IdentityManagement.Util;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Controller
 {
     public class EditUserController : BaseContextCommand
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(EditUserController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(EditUserController));
 
+        private readonly ToolkitContext _toolkitContext;
         IAmazonIdentityManagementService _iamClient;
         EditUserModel _model;
         IAMUserViewModel _iamUserViewModel;
+
+        public EditUserController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public EditUserModel Model => this._model;
 
@@ -118,7 +127,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                     }
                     catch (Exception e)
                     {
-                        LOGGER.Error("Error loading policy " + policyName, e);
+                        _logger.Error("Error loading policy " + policyName, e);
                         ToolkitFactory.Instance.ShellProvider.ShowError("Error parsing template " + policyName + ": " + e.Message);
                     }
                 }
@@ -289,6 +298,27 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                 Status = status
             };
             this._iamClient.UpdateAccessKey(request);
+        }
+
+        public void RecordEditUser(ActionResults results)
+        {
+            var awsConnectionSettings =
+                _iamUserViewModel?.IAMUserRootViewModel?.IAMRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordIamEdit(IamResourceType.User, results, awsConnectionSettings);
+        }
+
+        public void RecordCreateAccessKey(ActionResults results)
+        {
+            var awsConnectionSettings =
+                _iamUserViewModel?.IAMUserRootViewModel?.IAMRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordIamCreateAccessKey(results, awsConnectionSettings);
+        }
+
+        public void RecordDeleteAccessKey(ActionResults results)
+        {
+            var awsConnectionSettings =
+                _iamUserViewModel?.IAMUserRootViewModel?.IAMRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordIamDeleteAccessKey(results, awsConnectionSettings);
         }
     }
 }

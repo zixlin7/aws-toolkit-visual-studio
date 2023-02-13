@@ -242,7 +242,11 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         [Fact]
         public void SettingPathRaisesSubmitCanExecute()
         {
-            _sut.SubmitDialogCommand = new RelayCommand(null);
+            Assert.False(_sut.SubmitDialogCommand.CanExecute(null));
+
+            SetupInitialConnection();
+            SetupInitialRepository();
+
             var eventRaised = false;
             void Handler(object obj, EventArgs eventArgs) => eventRaised = true;
 
@@ -251,6 +255,29 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 
             Assert.True(eventRaised);
             _sut.SubmitDialogCommand.CanExecuteChanged -= Handler;
+        }
+
+        [Fact]
+        public void CancelDialogsSetDialogResultToFalse()
+        {
+            Assert.Null(_sut.DialogResult);
+
+            _sut.CancelDialogCommand.Execute(null);
+
+            Assert.False(_sut.DialogResult);
+        }
+
+        [Fact]
+        public void SubmitDialogSetsDialogResultToTrue()
+        {
+            Assert.Null(_sut.DialogResult);
+
+            SetupInitialConnection();
+            SetupInitialRepository();
+
+            _sut.SubmitDialogCommand.Execute(null);
+
+            Assert.True(_sut.DialogResult);
         }
 
         public static IEnumerable<object[]> InvalidPathSetup = new List<object[]>

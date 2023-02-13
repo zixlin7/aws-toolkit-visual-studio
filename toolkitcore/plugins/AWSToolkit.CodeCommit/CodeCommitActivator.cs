@@ -316,7 +316,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                         }
                     }
 
-                    repo.Stage(relativeFiles);
+                    LibGit2Sharp.Commands.Stage(repo, relativeFiles);
 
                     var author = new Signature(userName, userName, DateTime.Now);
                     var committer = author;

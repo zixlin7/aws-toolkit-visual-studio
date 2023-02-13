@@ -54,6 +54,54 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum = datum.InvokeTransform(transformDatum);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+        
+        /// Records Telemetry Event:
+        /// Called when Visual Studio requests credentials from the Toolkit in order to communicate with a CodeArtifact package repository
+        public static void RecordCodeartifactCredentialsRequest(this ITelemetryLogger telemetryLogger, CodeartifactCredentialsRequest payload, Func<MetricDatum, MetricDatum> transformDatum = null)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "codeartifact_credentialsRequest";
+                datum.Unit = Unit.None;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
 
@@ -100,6 +148,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
 
@@ -148,6 +197,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
 
@@ -196,6 +246,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
 
@@ -244,6 +295,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("published", payload.Published);
 
@@ -292,6 +344,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
 
@@ -318,8 +371,6 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
 
                 datum.AddMetadata("errorCode", payload.ErrorCode);
-
-                datum.AddMetadata("reason", payload.Reason);
 
                 datum = datum.InvokeTransform(transformDatum);
 
@@ -364,6 +415,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
 
@@ -421,6 +473,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("recipeId", payload.RecipeId);
 
@@ -469,10 +522,9 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
-
-                datum.AddMetadata("reason", payload.Reason);
 
                 datum = datum.InvokeTransform(transformDatum);
 
@@ -517,58 +569,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 }
                 datum.AddMetadata("awsAccount", payload.AwsAccount);
                 datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
 
                 datum.AddMetadata("variant", payload.Variant);
-
-                datum = datum.InvokeTransform(transformDatum);
-
-                metrics.Data.Add(datum);
-                telemetryLogger.Record(metrics);
-            }
-            catch (System.Exception e)
-            {
-                telemetryLogger.Logger.Error("Error recording telemetry event", e);
-                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
-            }
-        }
-        
-        /// Records Telemetry Event:
-        /// Clone a Amazon CodeCatalyst code repository locally
-        public static void RecordCodecatalystLocalClone(this ITelemetryLogger telemetryLogger, CodecatalystLocalClone payload, Func<MetricDatum, MetricDatum> transformDatum = null)
-        {
-            try
-            {
-                var metrics = new Metrics();
-                if (payload.CreatedOn.HasValue)
-                {
-                    metrics.CreatedOn = payload.CreatedOn.Value;
-                }
-                else
-                {
-                    metrics.CreatedOn = System.DateTime.Now;
-                }
-                metrics.Data = new List<MetricDatum>();
-
-                var datum = new MetricDatum();
-                datum.MetricName = "codecatalyst_localClone";
-                datum.Unit = Unit.None;
-                datum.Passive = payload.Passive;
-                if (payload.Value.HasValue)
-                {
-                    datum.Value = payload.Value.Value;
-                }
-                else
-                {
-                    datum.Value = 1;
-                }
-                datum.AddMetadata("awsAccount", payload.AwsAccount);
-                datum.AddMetadata("awsRegion", payload.AwsRegion);
-
-                datum.AddMetadata("userId", payload.UserId);
-
-                datum.AddMetadata("result", payload.Result);
 
                 datum = datum.InvokeTransform(transformDatum);
 
@@ -653,6 +658,19 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public ServerlessapplicationDeploy()
         {
             this.Passive = false;
+        }
+    }
+    
+    /// Called when Visual Studio requests credentials from the Toolkit in order to communicate with a CodeArtifact package repository
+    public sealed class CodeartifactCredentialsRequest : BaseTelemetryEvent
+    {
+        
+        /// The result of the operation
+        public Result Result;
+        
+        public CodeartifactCredentialsRequest()
+        {
+            this.Passive = true;
         }
     }
     
@@ -754,9 +772,6 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         /// Optional - The error code associated with an operation
         public string ErrorCode;
         
-        /// Optional - The reason for a metric or exception depending on context
-        public string Reason;
-        
         public PublishDeploy()
         {
             this.Passive = false;
@@ -811,9 +826,6 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         /// The result of the operation
         public Result Result;
         
-        /// The reason for a metric or exception depending on context
-        public string Reason;
-        
         public LambdaIamRoleCleanup()
         {
             this.Passive = false;
@@ -831,22 +843,6 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public string Variant;
         
         public LambdaAddEvent()
-        {
-            this.Passive = false;
-        }
-    }
-    
-    /// Clone a Amazon CodeCatalyst code repository locally
-    public sealed class CodecatalystLocalClone : BaseTelemetryEvent
-    {
-        
-        /// Opaque AWS Builder ID identifier
-        public string UserId;
-        
-        /// The result of the operation
-        public Result Result;
-        
-        public CodecatalystLocalClone()
         {
             this.Passive = false;
         }

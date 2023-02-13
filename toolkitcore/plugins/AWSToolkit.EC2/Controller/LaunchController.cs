@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Linq;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2.LaunchWizard;
 using Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers;
-using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.EC2.Model;
-
+using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 
@@ -25,66 +27,111 @@ namespace Amazon.AWSToolkit.EC2.Controller
 {
     public class LaunchController : BaseContextCommand
     {
-        FeatureViewModel _rootModel;
-        static ILog LOGGER = LogManager.GetLogger(typeof(LaunchController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(LaunchController));
+
+        private readonly ToolkitContext _toolkitContext;
+        private readonly Image _launchImage = null;
+        private FeatureViewModel _rootModel;
+        private AwsConnectionSettings _awsConnectionSettings;
+
+        /// <summary>
+        /// Default constructor
+        /// Used to open up the launch instance wizard with a selection of quick-launch images.
+        /// Called from the AWS Explorer, and the Instances viewer.
+        /// </summary>
+        public LaunchController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
+        /// <summary>
+        /// Overload
+        /// Used to open up the launch instance wizard with a specific EC2 image.
+        /// Called from the AMI viewer.
+        /// </summary>
+        public LaunchController(ToolkitContext toolkitContext, Image launchImage)
+            : this(toolkitContext)
+        {
+            _launchImage = launchImage;
+        }
 
         public override ActionResults Execute(IViewModel model)
         {
-            return Execute(model, null);
+            var result = ShowWizardAndCreateInstance(model);
+            RecordMetric(result);
+            return result;
         }
 
-        public ActionResults Execute(IViewModel model, Image image)
+        private ActionResults ShowWizardAndCreateInstance(IViewModel model)
         {
-            if (model is EC2RootViewModel)
+            try
             {
-                var root = model as EC2RootViewModel;
-                this._rootModel = model.FindSingleChild<EC2InstancesViewModel>(false);
+                switch (model)
+                {
+                    case EC2RootViewModel ec2Root:
+                        _rootModel = ec2Root.FindSingleChild<EC2InstancesViewModel>(false);
+                        break;
+                    case FeatureViewModel ec2Feature:
+                        _rootModel = ec2Feature;
+                        break;
+                }
+
+                if (_rootModel == null)
+                {
+                    throw new Ec2Exception("The Toolkit failed to properly initialize the launch wizard.", Ec2Exception.Ec2ErrorCode.InternalMissingEc2State);
+                }
+
+                _awsConnectionSettings = _rootModel.FindAncestor<ServiceRootViewModel>()?.AwsConnectionSettings;
+
+                // page groups in console: AMI, Instance Type, Instance Details, Storage, Tags, Security Group, Review
+                var seedProperties = new Dictionary<string, object>
+                {
+                    { LaunchWizardProperties.Global.propkey_EC2RootModel, this._rootModel },
+                    {
+                        LaunchWizardProperties.Global.propkey_VpcOnly,
+                        EC2Utilities.CheckForVpcOnlyMode(this._rootModel.EC2Client)
+                    },
+                    { LaunchWizardProperties.AMIOptions.propkey_SeedAMI, _launchImage },
+                };
+
+                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.EC2.View.LaunchEC2Instance", seedProperties);
+                wizard.Title = "Launch new Amazon EC2 Instance";
+                wizard.SetSelectedAccount(_rootModel.AccountViewModel);
+                wizard.SetSelectedRegion(_rootModel.Region);
+
+                var defaultPages = new IAWSWizardPageController[]
+                {
+                    new QuickLaunchPageController(),
+                    new AMIPageController(),
+                    new AMIOptionsPageController(),
+                    new StoragePageController(),
+                    new InstanceTagsPageController(),
+                    new SecurityOptionsPageController(),
+                    new ReviewPageController()
+                };
+
+                wizard.RegisterPageControllers(defaultPages, 0);
+
+                wizard.SetNavigationButtonText(AWSWizardConstants.NavigationButtons.Finish, "Launch");
+                if (!wizard.Run())
+                {
+                    return ActionResults.CreateCancelled();
+                }
+
+                return CreateInstance(wizard.CollectedProperties);
             }
-            else
+            catch (Exception e)
             {
-                this._rootModel = model as FeatureViewModel;
+                _toolkitContext.ToolkitHost.ShowError("Unable to Launch EC2 Instance", e.Message);
+                return ActionResults.CreateFailed(e);
             }
-
-            if (_rootModel == null)
-                return new ActionResults().WithSuccess(false);
-
-            // page groups in console: AMI, Instance Type, Instance Details, Storage, Tags, Security Group, Review
-            var seedProperties = new Dictionary<string, object>
-            {
-                {LaunchWizardProperties.Global.propkey_EC2RootModel, this._rootModel},
-                {LaunchWizardProperties.Global.propkey_VpcOnly, EC2Utilities.CheckForVpcOnlyMode(this._rootModel.EC2Client) },
-                {LaunchWizardProperties.AMIOptions.propkey_SeedAMI, image},
-            };
-
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.EC2.View.LaunchEC2Instance", seedProperties);
-            wizard.Title = "Launch new Amazon EC2 Instance";
-            wizard.SetSelectedAccount(_rootModel.AccountViewModel);
-            wizard.SetSelectedRegion(_rootModel.Region);
-
-            var defaultPages = new IAWSWizardPageController[]
-            {
-                new QuickLaunchPageController(),
-                new AMIPageController(),
-                new AMIOptionsPageController(),
-                new StoragePageController(), 
-                new InstanceTagsPageController(),
-                new SecurityOptionsPageController(),
-                new ReviewPageController()
-            };
-
-            wizard.RegisterPageControllers(defaultPages, 0);
-
-            wizard.SetNavigationButtonText(AWSWizardConstants.NavigationButtons.Finish, "Launch");
-            if (wizard.Run())
-            {
-                var newIds = createInstance(wizard.CollectedProperties);
-                return new ActionResults().WithParameter(EC2Constants.RESULTS_PARAMS_NEWIDS, newIds).WithSuccess(true);
-            }
-
-            return new ActionResults().WithSuccess(false);
         }
 
-        string[] createInstance(Dictionary<string, object> properties)
+        /// <summary>
+        /// If successful, the returned result will contain an array of created EC2 Instance IDs
+        /// in the Parameter <see cref="EC2Constants.RESULTS_PARAMS_NEWIDS"/>
+        /// </summary>
+        private ActionResults CreateInstance(Dictionary<string, object> properties)
         {
             var keyName = getValue<string>(properties, LaunchWizardProperties.SecurityProperties.propkey_KeyPair);
             if (getValue<bool>(properties, LaunchWizardProperties.SecurityProperties.propkey_CreatePair))
@@ -136,8 +183,11 @@ namespace Amazon.AWSToolkit.EC2.Controller
                     runRequest.SecurityGroupIds = new List<string>() { newGroupID };
                 else
                 {
-                    LOGGER.Error("Failed to create new security group, abandoning launch.");
-                    return new string[0];
+                    _logger.Error("Failed to create new security group, abandoning launch.");
+
+                    return ActionResults.CreateFailed(new Ec2Exception(
+                        "Failed to create new security group",
+                        Ec2Exception.Ec2ErrorCode.NoSecurityGroupCreated));
                 }
             }
 
@@ -155,14 +205,15 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 var newIds = response.Reservation.Instances.Select(instance => instance.InstanceId).ToList();
                 AddUserTags(newIds, userTags);
 
-                return newIds.ToArray();
+                return new ActionResults()
+                    .WithSuccess(true)
+                    .WithParameter(EC2Constants.RESULTS_PARAMS_NEWIDS, newIds.ToArray());
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Instance Launch Failure", e.Message);
+                _toolkitContext.ToolkitHost.ShowError("Failed to launch EC2 Instance", e.Message);
+                return ActionResults.CreateFailed(e);
             }
-
-            return new string[0];
         }
 
         // returns the id of the newly created group
@@ -309,7 +360,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var storageVolumes = properties[LaunchWizardProperties.StorageProperties.propkey_StorageVolumes] as ICollection<InstanceLaunchStorageVolume>;
             if (storageVolumes == null)
             {
-                LOGGER.ErrorFormat("Found wizard setting for storage volumes but null data; skipping storage config on launch");
+                _logger.ErrorFormat("Found wizard setting for storage volumes but null data; skipping storage config on launch");
                 return;
             }
             
@@ -370,7 +421,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 }
                 catch (Exception e)
                 {
-                    LOGGER.Info("Error adding name tags, going to wait and try again.", e);
+                    _logger.Info("Error adding name tags, going to wait and try again.", e);
                 }
             }
         }
@@ -383,8 +434,20 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 T convertedValue = (T)Convert.ChangeType(value, typeof(T));
                 return convertedValue;
             }
-
             return default(T);
+        }
+
+        private void RecordMetric(ActionResults results)
+        {
+            var data = new Ec2LaunchInstance()
+            {
+                AwsAccount = _awsConnectionSettings?.GetAccountId(_toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                AwsRegion = _awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
+                Result = results.AsTelemetryResult(),
+                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
+            };
+
+            _toolkitContext.TelemetryLogger.RecordEc2LaunchInstance(data);
         }
     }
 }

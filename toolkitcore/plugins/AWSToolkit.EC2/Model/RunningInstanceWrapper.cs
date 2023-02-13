@@ -397,4 +397,13 @@ namespace Amazon.AWSToolkit.EC2.Model
         [Browsable(false)]
         public List<Tag> Tags => this.NativeInstance.Tags;
     }
+
+    public static class RunningInstanceWrapperExtensionMethods
+    {
+        public static bool IsTerminated(this RunningInstanceWrapper instance)
+        {
+            return string.Equals(EC2Constants.INSTANCE_STATE_TERMINATED, instance?.NativeInstance?.State?.Name) ||
+                   string.Equals(EC2Constants.INSTANCE_STATE_SHUTTING_DOWN, instance?.NativeInstance?.State?.Name);
+        }
+    }
 }

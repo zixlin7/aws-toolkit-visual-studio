@@ -53,15 +53,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     // Apply Toolkit specific Theming and overrides
                     if (newPropertyValue)
                     {
-                        if (element is Control control)
-                        {
-                            // TODO : This is a temporary foreground/background assignment.
-                            // Community.VisualStudio.Toolkit version 15.0.75.103 has a bug that sets foreground (text) to a light grey
-                            // When the next non-preview version is available, this can be removed.
-                            control.SetResourceReference(Control.BackgroundProperty, ThemedDialogColors.WindowPanelBrushKey);
-                            control.SetResourceReference(Control.ForegroundProperty, ThemedDialogColors.WindowPanelTextBrushKey);
-                        }
-
                         // Only merge the styles after the element has been initialized.
                         // If the element hasn't been initialized yet, add an event handler
                         // so that we can merge the styles once it has been initialized.

@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.EC2.View;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.EC2.Commands;
+using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.EC2.Repositories;
+using Amazon.AWSToolkit.EC2.View;
+using Amazon.AWSToolkit.EC2.ViewModels;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.EC2.Model;
 
 using log4net;
@@ -21,6 +26,8 @@ namespace Amazon.AWSToolkit.EC2.Controller
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ViewInstancesController));
 
         private readonly ToolkitContext _toolkitContext;
+        private IInstanceRepository _instanceRepository;
+        private ViewInstancesViewModel _viewModel;
         ViewInstancesControl _control;
 
         public ViewInstancesController(ToolkitContext toolkitContext)
@@ -30,13 +37,33 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         protected override void DisplayView()
         {
+            if (!(_toolkitContext.ToolkitHost.QueryAWSToolkitPluginService(typeof(IEc2RepositoryFactory)) is
+                    IEc2RepositoryFactory factory))
+            {
+                Debug.Assert(!Debugger.IsAttached, $"Plugin factory {nameof(IEc2RepositoryFactory)} is missing. The Toolkit is unable to perform EC2 Instance operations.");
+                throw new NotSupportedException("AWS Toolkit was unable to get details about EC2 instances");
+            }
+
+            _instanceRepository = factory.CreateInstanceRepository(AwsConnectionSettings);
+            var elasticIpRepository = factory.CreateElasticIpRepository(AwsConnectionSettings);
+
+            _viewModel = new ViewInstancesViewModel(Model, _instanceRepository, elasticIpRepository, _toolkitContext);
+            Model.ViewSystemLog = new GetInstanceLogCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.CreateImage = new CreateImageFromInstanceCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeTerminationProtection = new ChangeTerminationProtectionCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeUserData = new ChangeUserDataCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeInstanceType = new ChangeInstanceTypeCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.ChangeShutdownBehavior = new ChangeShutdownBehaviorCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.AttachElasticIp = new AttachElasticIpToInstanceCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+            Model.DetachElasticIp = new DetachElasticIpFromInstanceCommand(_viewModel, AwsConnectionSettings, _toolkitContext);
+
             this._control = new ViewInstancesControl(this);
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
         }
 
         public IList<RunningInstanceWrapper> LaunchInstance()
         {
-            var launchController = new LaunchController();
+            var launchController = new LaunchController(_toolkitContext);
             var results = launchController.Execute(base.FeatureViewModel);
             if (results.Success)
             {
@@ -70,30 +97,8 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void RefreshInstances()
         {
-            var ipResponse = this.EC2Client.DescribeAddresses(new DescribeAddressesRequest());
-
-            Dictionary<string, AddressWrapper> ipMap = new Dictionary<string, AddressWrapper>();
-            ipResponse.Addresses.ForEach(x =>
-                {
-                    if (!string.IsNullOrEmpty(x.InstanceId))
-                        ipMap[x.InstanceId] = new AddressWrapper(x);
-                });
-
-            var response = this.EC2Client.DescribeInstances(new DescribeInstancesRequest());
-            
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
-                {
-                    this.Model.RunningInstances.Clear();
-                    foreach (var reservation in response.Reservations)
-                    {
-                        foreach (var instance in reservation.Instances)
-                        {
-                            AddressWrapper address = null;
-                            ipMap.TryGetValue(instance.InstanceId, out address);
-                            this.Model.RunningInstances.Add(new RunningInstanceWrapper(reservation, instance, address));
-                        }
-                    }
-                }));
+            // This is currently the cleanest way we have to properly run async code from a sync location.
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(async () => await _viewModel.ReloadInstancesAsync());
         }
 
         public void UpdateSelection(IList<RunningInstanceWrapper> instances)
@@ -228,85 +233,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
             });
         }
 
-        public void CreateImage(RunningInstanceWrapper instance)
-        {
-            var controller = new CreateImageController();
-            controller.Execute(this.EC2Client, instance);
-        }
-
-        public void ChangeInstanceType(RunningInstanceWrapper instance)
-        {
-            var controller = new ChangeInstanceTypeController();
-            controller.Execute(this.EC2Client, instance);
-        }
-
-        public RunningInstanceWrapper AssociatingElasticIP(RunningInstanceWrapper instance)
-        {
-            var controller = new AttachElasticIPToInstanceController();
-            var results = controller.Execute(this.EC2Client, instance);
-            if (!results.Success)
-                return null;
-
-            this.RefreshInstances();
-            foreach (var item in this.Model.RunningInstances)
-            {
-                if (string.Equals(item.NativeInstance.InstanceId, instance.NativeInstance.InstanceId))
-                    return item;
-            }
-
-            return null;
-        }
-
-        public RunningInstanceWrapper DisassociateElasticIP(RunningInstanceWrapper instance)
-        {
-            DisassociateAddressRequest request = null;
-            if (string.IsNullOrEmpty(instance.VpcId))
-                request = new DisassociateAddressRequest() { PublicIp = instance.NativeInstance.PublicIpAddress };
-            else
-            {
-                var descResponse = this.EC2Client.DescribeAddresses(new DescribeAddressesRequest() { PublicIps = new List<string>() { instance.NativeInstance.PublicIpAddress } });
-                if (descResponse.Addresses.Count != 1)
-                    return null;
-
-                request = new DisassociateAddressRequest() { AssociationId = descResponse.Addresses[0].AssociationId };
-            }
-
-            this.EC2Client.DisassociateAddress(request);
-
-            this.RefreshInstances();
-            foreach (var item in this.Model.RunningInstances)
-            {
-                if (string.Equals(item.NativeInstance.InstanceId, instance.NativeInstance.InstanceId))
-                    return item;
-            }
-
-            return null;
-        }
-
-        public void ChangeShutdownBehavior(RunningInstanceWrapper instance)
-        {
-            var controller = new ChangeShutdownBehaviorController();
-            controller.Execute(this.EC2Client, instance);
-        }
-
-        public void ChangeTerminationProtection(RunningInstanceWrapper instance)
-        {
-            var controller = new ChangeTerminationProtectionController();
-            controller.Execute(this.EC2Client, instance);
-        }
-
-        public void ChangeUserData(RunningInstanceWrapper instance)
-        {
-            var controller = new ChangeUserDataController();
-            controller.Execute(this.EC2Client, instance);
-        }
-
-        public void GetConsoleOutput(RunningInstanceWrapper instance)
-        {
-            var controller = new GetConsoleOutputController();
-            controller.Execute(this.EC2Client, instance);
-        }
-
         public void GetPassword(RunningInstanceWrapper instance)
         {
             var controller = new GetPasswordController();
@@ -316,19 +242,19 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public void OpenRemoteDesktop(RunningInstanceWrapper instance)
         {
             var controller = new OpenRemoteDesktopController(_toolkitContext);
-            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
+            controller.Execute(AwsConnectionSettings, instance);
         }
 
         public void OpenSSHSession(RunningInstanceWrapper instance)
         {
             var controller = new OpenSSHSessionController(_toolkitContext);
-            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
+            controller.Execute(AwsConnectionSettings, instance);
         }
 
         public void OpenSCPSession(RunningInstanceWrapper instance)
         {
             var controller = new OpenSCPSessionController(_toolkitContext);
-            controller.Execute(new AwsConnectionSettings(Account.Identifier, Region), instance);
+            controller.Execute(AwsConnectionSettings, instance);
         }
     }
 }

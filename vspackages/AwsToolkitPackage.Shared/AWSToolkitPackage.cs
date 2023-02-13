@@ -152,6 +152,9 @@ namespace Amazon.AWSToolkit.VisualStudio
         Transient = true,
         Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
+    // This attribute is required to load imagemanifests to be available for ProvideCodeContainerProvider so icons appear in Git Clone dialog
+    // TODO IDE-9924 Enable this attribute when CFn/Lambda template fix has been made
+    //[ProvideBindingPath]
     // TODO IDE-8906
     //[ProvideCodeContainerProvider(
     //    registeredName: nameof(CodeCommitCodeContainerProvider),
@@ -164,8 +167,8 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideCodeContainerProvider(
         registeredName: nameof(CodeCatalystCodeContainerProvider),
         displayNamePackageGuid: GuidList.AwsToolkitPackageGuidString,
-        imageMonikerGuid: GuidList.VsImageCatalog.ImageCatalogGuidString,
-        imageMonikerId: 278,
+        imageMonikerGuid: GuidList.MonikersGuidString,
+        imageMonikerId: 0, // See Monikers.imagemanifest
         displayNameResourceId: "#210", // See AWSToolkitPackage.resx
         displayDetailResourceId: "#211", // See AWSToolkitPackage.resx
         typeof(CodeCatalystCodeContainerProvider))]

@@ -1,10 +1,7 @@
 ﻿using System;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Controller;
-using Amazon.AWSToolkit.EC2.Model;
-using AMIImage = Amazon.EC2.Model.Image;
 
-using log4net;
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -13,14 +10,11 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class AllocateAddressControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(AllocateAddressControl));
+        public string Domain { get; private set; }
 
-        AllocateAddressController _controller;
-
-        public AllocateAddressControl(AllocateAddressController controller)
+        public AllocateAddressControl()
         {
             InitializeComponent();
-            this._controller = controller;
         }
 
         public override string Title => "Allocate New Address";
@@ -38,21 +32,11 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public override bool OnCommit()
         {
-            try
-            {
-                string domain = AddressWrapper.DOMAIN_EC2;
-                if (string.Equals("VPC", this._ctlType.Text, StringComparison.InvariantCultureIgnoreCase))
-                    domain = AddressWrapper.DOMAIN_VPC;
+            Domain = string.Equals("VPC", _ctlType.Text, StringComparison.InvariantCultureIgnoreCase)
+                ? AddressWrapper.DOMAIN_VPC
+                : AddressWrapper.DOMAIN_EC2;
 
-                this._controller.AllocateAddress(domain);
-                return true;
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error allocating new address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error allocating new address: " + e.Message);
-                return false;
-            }
+            return true;
         }
     }
 }

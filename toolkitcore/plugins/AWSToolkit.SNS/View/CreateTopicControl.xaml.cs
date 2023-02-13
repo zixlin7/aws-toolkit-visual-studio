@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.SNS.Controller;
 
 namespace Amazon.AWSToolkit.SNS.View
@@ -31,6 +33,10 @@ namespace Amazon.AWSToolkit.SNS.View
             if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Unable to create SNS Topic", errorMessage);
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                _controller.RecordMetric(ActionResults.CreateFailed(new ToolkitException(errorMessage,
+                    ToolkitException.CommonErrorCode.UnsupportedState)));
                 return false;
             }
 

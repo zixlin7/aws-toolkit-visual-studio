@@ -31,8 +31,8 @@ namespace Amazon.AWSToolkit.EC2.View
                 "]";
         }
 
+        private readonly ViewElasticIPsController _controller;
 
-        ViewElasticIPsController _controller;
         public ViewElasticIPsControl(ViewElasticIPsController controller)
         {
             InitializeComponent();
@@ -73,98 +73,6 @@ namespace Amazon.AWSToolkit.EC2.View
             }
         }
 
-        void onAllocateAddressClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var address = this._controller.Allocate();
-                if (address != null)
-                {
-                    this._ctlDataGrid.SelectAndScrollIntoView(address);
-                }
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error allocate address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Allocate Error", "Error allocating address: " + e.Message);
-            }
-        }
-
-        void onReleaseAddressClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
-                if (selectedItems.Count != 1)
-                    return;
-
-                string message = "Are you sure you want to release the address?";
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Re Address", message))
-                    return;
-
-                this._controller.Release(selectedItems[0]);
-                selectAddress(selectedItems[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error release address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Release Error", "Error releasing address: " + e.Message);
-            }
-        }
-
-        void onAssociateAddressClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
-                if (selectedItems.Count != 1)
-                    return;
-
-                this._controller.Associate(selectedItems[0]);
-                selectAddress(selectedItems[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error associate address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Associate Error", "Error associating address: " + e.Message);
-            }
-        }
-
-        void onDisassociateAddressClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
-                if (selectedItems.Count != 1)
-                    return;
-
-                string message = "Are you sure you want to disassociate the address?";
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Disassociate Address", message))
-                    return;
-
-                this._controller.Disassociate(selectedItems[0]);
-                selectAddress(selectedItems[0]);
-
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error disassociate address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Disassociate Error", "Error disassociating address: " + e.Message);
-            }
-        }
-
-        void selectAddress(AddressWrapper address)
-        {
-            foreach (var item in this._controller.Model.Addresses)
-            {
-                if (item.PublicIp == address.PublicIp)
-                {
-                    this._ctlDataGrid.SelectAndScrollIntoView(item);
-                    break;
-                }
-            }
-        }
-
         void onPropertiesClick(object sender, RoutedEventArgs evnt)
         {
             try
@@ -179,6 +87,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
         void onGridContextMenu(object sender, RoutedEventArgs e)
         {
+            // todo : try-wrap for caller safety
             IList<AddressWrapper> selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
             if (selectedItems.Count != 1)
                 return;
@@ -186,24 +95,19 @@ namespace Amazon.AWSToolkit.EC2.View
             ContextMenu menu = new ContextMenu();
 
             MenuItem release = new MenuItem() { Header = "Release Address", Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.elastic-ip-release.png") };
-            release.Click += this.onReleaseAddressClick;
+            release.CommandParameter = _ctlDataGrid;
+            release.Command = _controller.Model.ReleaseElasticIp;
 
             MenuItem associate = new MenuItem() { Header = "Associate Address", Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.elastic-ip-associate.png") };
-            associate.Click += this.onAssociateAddressClick;
+            associate.CommandParameter = _ctlDataGrid;
+            associate.Command = _controller.Model.AssociateElasticIp;
 
             MenuItem disassociate = new MenuItem() { Header = "Disassociate Address", Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.elastic-ip-disassociate.png") };
-            disassociate.Click += this.onDisassociateAddressClick;
+            disassociate.CommandParameter = _ctlDataGrid;
+            disassociate.Command = _controller.Model.DisassociateElasticIp;
 
             MenuItem properties = new MenuItem() { Header = "Properties" };
             properties.Click += this.onPropertiesClick;
-
-            if (string.IsNullOrEmpty(selectedItems[0].InstanceId))
-                disassociate.IsEnabled = false;
-            else
-            {
-                release.IsEnabled = false;
-                associate.IsEnabled = false;
-            }
 
             menu.Items.Add(release);
             menu.Items.Add(new Separator());
@@ -224,12 +128,6 @@ namespace Amazon.AWSToolkit.EC2.View
         void onSelectionChanged(object sender, RoutedEventArgs e)
         {
             this.UpdateProperties(this._ctlDataGrid.GetSelectedItems<PropertiesModel>());
-
-            var selectedItems = this._ctlDataGrid.GetSelectedItems<AddressWrapper>();
-            
-            this._ctlRelease.IsEnabled = selectedItems.Count == 1 && !selectedItems[0].IsAddressInUse;
-            this._ctlAssociate.IsEnabled = selectedItems.Count == 1 && !selectedItems[0].IsAddressInUse;
-            this._ctlDisassociate.IsEnabled = selectedItems.Count == 1 && selectedItems[0].IsAddressInUse;
         }        
 
         void OnColumnCustomizationApplyPressed(object sender, RoutedEventArgs e)

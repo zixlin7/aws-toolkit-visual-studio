@@ -88,6 +88,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             return false;
         }
 
+        public bool ConfirmWithLinks(string title, string message)
+        {
+            return false;
+        }
+
         public void UpdateStatus(string status)
         {
 
@@ -120,6 +125,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public virtual void OutputToHostConsole(string message, bool forceVisible)
         {
 
+        }
+
+        public Task<bool> OpenOutputWindowPaneAsync(string name)
+        {
+            return Task.FromResult(false);
         }
 
         public void AddToLog(string category, string message)

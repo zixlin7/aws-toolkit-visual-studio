@@ -88,7 +88,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             var type = CredentialProfileTypeDetector.DetectProfileType(profile.Options);
 
             return type.Equals(CredentialProfileType.SSO)
-                   && profile.Options.ReferencesSsoSessionProfile();
+                   && profile.Options.IsResolvedWithTokenProvider();
         }
 
         private bool SupportsAwsCredentials(CredentialProfile profile)
@@ -96,7 +96,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
             var type = CredentialProfileTypeDetector.DetectProfileType(profile.Options);
 
             return !type.Equals(CredentialProfileType.SSO)
-                   || !profile.Options.ReferencesSsoSessionProfile();
+                   || profile.Options.IsResolvedWithSso()
+                   || !profile.Options.IsResolvedWithTokenProvider();
         }
 
         public void LoadProfiles(bool initialLoad)
@@ -196,14 +197,15 @@ namespace Amazon.AWSToolkit.Credentials.Core
         protected ToolkitCredentials CreateToolkitCredentials(CredentialProfile profile,
             ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
         {
-            if (profile.Options.ReferencesSsoSessionProfile())
-            {
-                return CreateSsoSession(profile, credentialIdentifier);
-            }
-
-            if (profile.Options.ContainsSsoProperties())
+            // SSO takes precedence over Token - both can leverage sso-session
+            if (profile.Options.IsResolvedWithSso())
             {
                 return CreateSso(profile, credentialIdentifier);
+            }
+
+            if (profile.Options.IsResolvedWithTokenProvider())
+            {
+                return CreateTokenProviderCredentials(profile, credentialIdentifier);
             }
 
             if (!string.IsNullOrWhiteSpace(profile.Options.EndpointName))
@@ -422,7 +424,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             return ToolkitDefaultEc2InstanceCredentials.Instance;
         }
 
-        private ToolkitCredentials CreateSsoSession(CredentialProfile profile,
+        private ToolkitCredentials CreateTokenProviderCredentials(CredentialProfile profile,
             ICredentialIdentifier credentialIdentifier)
         {
             ValidateRequiredProperty(profile.Options.SsoRegion, ProfilePropertyConstants.SsoRegion, profile.Name);

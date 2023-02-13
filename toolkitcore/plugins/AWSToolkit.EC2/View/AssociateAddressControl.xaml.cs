@@ -1,9 +1,5 @@
-﻿using System;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Controller;
-using AMIImage = Amazon.EC2.Model.Image;
-
-using log4net;
+﻿using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -12,43 +8,26 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class AssociateAddressControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(AssociateAddressControl));
+        private readonly AssociateAddressModel _model;
 
-        AssociateAddressController _controller;
-
-        public AssociateAddressControl(AssociateAddressController controller)
+        public AssociateAddressControl(AssociateAddressModel model)
         {
+            _model = model;
             InitializeComponent();
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            DataContext = model;
         }
 
         public override string Title => "Associate Address";
 
         public override bool Validated()
         {
-            if (this._controller.Model.Instance == null)
+            if (_model.Instance == null)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Instance is a required field.");
                 return false;
             }
 
             return true;
-        }
-
-        public override bool OnCommit()
-        {
-            try
-            {
-                this._controller.AssociateAddress();
-                return true;
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error associating address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error associating address: " + e.Message);
-                return false;
-            }
         }
     }
 }

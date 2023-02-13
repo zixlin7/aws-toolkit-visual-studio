@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
@@ -143,21 +145,21 @@ namespace Amazon.AWSToolkit.EC2.View
             MenuItem ssh = createMenuItem("Open SSH Session", this.onOpenSSHSessionClick);
             MenuItem scp = createMenuItem("Open SCP Session", this.onOpenSCPSessionClick);
 
-            MenuItem getConsoleOutput = createMenuItem("Get System Log", this.onGetConsoleOutput);
+            MenuItem getConsoleOutput = CreateMenuItem("Get System Log", _controller.Model.ViewSystemLog, _ctlDataGrid);
 
-            MenuItem createImage = createMenuItem("Create Image (EBS AMI)", this.onCreateImageClick);
-            MenuItem changeTerminationProtection = createMenuItem("Change Termination Protection", this.onChangeTerminationProtection);
-            MenuItem changeInstanceType = createMenuItem("Change Instance Type", this.onChangeInstanceType);
-            MenuItem changeShutdownBehavior = createMenuItem("Change Shutdown Behavior", this.onChangeShutdownBehavior);
-            MenuItem changeUserData = createMenuItem("View/Change User Data", this.onChangeUserData);
+            MenuItem createImage = CreateMenuItem("Create Image (EBS AMI)", _controller.Model.CreateImage, _ctlDataGrid);
+            MenuItem changeTerminationProtection = CreateMenuItem("Change Termination Protection", _controller.Model.ChangeTerminationProtection, _ctlDataGrid);
+            MenuItem changeInstanceType = CreateMenuItem("Change Instance Type", _controller.Model.ChangeInstanceType, _ctlDataGrid);
+            MenuItem changeShutdownBehavior = CreateMenuItem("Change Shutdown Behavior", _controller.Model.ChangeShutdownBehavior, _ctlDataGrid);
+            MenuItem changeUserData = CreateMenuItem("View/Change User Data", _controller.Model.ChangeUserData, _ctlDataGrid);
 
             MenuItem terminate = createMenuItem("Terminate", this.onTerminateClick);
             MenuItem reboot = createMenuItem("Reboot", this.onRebootClick);
             MenuItem stop = createMenuItem("Stop", this.onStopClick);
             MenuItem start = createMenuItem("Start", this.onStartClick);
 
-            MenuItem associateElasticIP = createMenuItem("Associate Elastic IP", this.onAssociatingElasticIP);
-            MenuItem disassociateElasticIP = createMenuItem("Disassociate Elastic IP", this.onDisassociateElasticIP);
+            MenuItem associateElasticIp = CreateMenuItem("Associate Elastic IP", _controller.Model.AttachElasticIp, _ctlDataGrid);
+            MenuItem disassociateElasticIp = CreateMenuItem("Disassociate Elastic IP", _controller.Model.DetachElasticIp, _ctlDataGrid);
 
             MenuItem properties = new MenuItem() { Header = "Properties" };
             properties.Click += this.onPropertiesClick;
@@ -169,24 +171,6 @@ namespace Amazon.AWSToolkit.EC2.View
                 getPassword.IsEnabled = false;
                 openRemoteDesktop.IsEnabled = false;
                 ssh.IsEnabled = false;
-                createImage.IsEnabled = false;
-                changeInstanceType.IsEnabled = false;
-                changeShutdownBehavior.IsEnabled = false;
-                changeTerminationProtection.IsEnabled = false;
-                changeUserData.IsEnabled = false;
-                getConsoleOutput.IsEnabled = false;
-                associateElasticIP.IsEnabled = false;
-                disassociateElasticIP.IsEnabled = false;
-            }
-
-            if (!EC2Constants.ROOT_DEVICE_TYPE_EBS.Equals(selectedItems[0].NativeInstance.RootDeviceType))
-            {
-                createImage.IsEnabled = false;
-            }
-
-            if (!EC2Constants.INSTANCE_STATE_STOPPED.Equals(selectedItems[0].NativeInstance.State.Name))
-            {
-                changeInstanceType.IsEnabled = false;
             }
 
             if (EC2Constants.INSTANCE_STATE_RUNNING.Equals(selectedItems[0].NativeInstance.State.Name))
@@ -201,11 +185,6 @@ namespace Amazon.AWSToolkit.EC2.View
                     ssh.IsEnabled = false;
                     scp.IsEnabled = false;
                 }
-
-                if (string.IsNullOrEmpty(selectedItems[0].ElasticIPAddress))
-                    disassociateElasticIP.IsEnabled = false;
-                else
-                    associateElasticIP.IsEnabled = false;
             }
             else
             {
@@ -234,8 +213,8 @@ namespace Amazon.AWSToolkit.EC2.View
             menu.Items.Add(changeInstanceType);
             menu.Items.Add(changeShutdownBehavior);
             menu.Items.Add(new Separator());
-            menu.Items.Add(associateElasticIP);
-            menu.Items.Add(disassociateElasticIP);
+            menu.Items.Add(associateElasticIp);
+            menu.Items.Add(disassociateElasticIp);
             menu.Items.Add(new Separator());
             menu.Items.Add(terminate);
             menu.Items.Add(reboot);
@@ -254,6 +233,11 @@ namespace Amazon.AWSToolkit.EC2.View
             MenuItem mi = new MenuItem() { Header = header};
             mi.Click += handler;
             return mi;
+        }
+
+        MenuItem CreateMenuItem(string header, ICommand command, object commandParameter)
+        {
+            return new MenuItem { Header = header, CommandParameter = commandParameter, Command = command };
         }
 
         void onPropertiesClick(object sender, RoutedEventArgs evnt)
@@ -336,150 +320,6 @@ namespace Amazon.AWSToolkit.EC2.View
             }
         }
 
-        void onCreateImageClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.CreateImage(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error terminating instances", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error terminating instances: " + e.Message);
-            }
-        }
-
-        void onChangeInstanceType(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.ChangeInstanceType(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing instance types", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing instance type: " + e.Message);
-            }
-        }
-
-        void onAssociatingElasticIP(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                var instance = this._controller.AssociatingElasticIP(instances[0]);
-                if(instance != null)
-                    this._ctlDataGrid.SelectAndScrollIntoView(instance);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error associating Elastic IP address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error associating Elastic IP address: " + e.Message);
-            }
-        }
-
-        void onDisassociateElasticIP(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                string message = string.Format("Are you sure you want to disassociate the address {0}?", instances[0].ElasticIPAddress);
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Disassociate Address", message))
-                    return;
-
-                var instance = this._controller.DisassociateElasticIP(instances[0]);
-                if (instance != null)
-                    this._ctlDataGrid.SelectAndScrollIntoView(instance);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error disassociating Elastic IP address", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error disassociating Elastic IP address: " + e.Message);
-            }
-        }
-
-        void onChangeShutdownBehavior(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.ChangeShutdownBehavior(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing shutdown behavior", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing shutdown behavior: " + e.Message);
-            }
-        }
-
-        void onChangeTerminationProtection(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.ChangeTerminationProtection(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing termination protection", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing termination protection: " + e.Message);
-            }
-        }
-
-        void onGetConsoleOutput(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.GetConsoleOutput(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error getting console output", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error getting console output: " + e.Message);
-            }
-        }
-
-        void onChangeUserData(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                var instances = getSelectedItemsAsList(true);
-                if (instances.Count != 1)
-                    return;
-
-                this._controller.ChangeUserData(instances[0]);
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing user data", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing user data: " + e.Message);
-            }
-        }
-
         void onTerminateClick(object sender, RoutedEventArgs evnt)
         {
             try
@@ -537,9 +377,7 @@ namespace Amazon.AWSToolkit.EC2.View
             var items = new List<RunningInstanceWrapper>();
             foreach (RunningInstanceWrapper selectedItem in this._ctlDataGrid.SelectedItems)
             {
-                if(ignoreTerminated && (
-                    string.Equals(EC2Constants.INSTANCE_STATE_TERMINATED, selectedItem.NativeInstance.State.Name) ||
-                    string.Equals(EC2Constants.INSTANCE_STATE_SHUTTING_DOWN, selectedItem.NativeInstance.State.Name)))
+                if (ignoreTerminated && selectedItem.IsTerminated())
                 {
                     continue;
                 }

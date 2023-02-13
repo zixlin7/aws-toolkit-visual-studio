@@ -84,14 +84,19 @@
       <DependentUpon>RegisterServiceCredentialsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="AwsServices\ToolkitFileTypes.cs" />
+    <Compile Include="Beanstalk\IBeanstalkViewer.cs" />
     <Compile Include="Clients\AwsServiceClientManager.cs" />
     <Compile Include="Clients\IAwsServiceClientManager.cs" />
     <Compile Include="Clients\ServiceClientCreator.cs" />
     <Compile Include="CloudWatch\CloudWatchTelemetry.cs" />
     <Compile Include="CloudWatch\ILogEventsViewer.cs" />
     <Compile Include="CloudWatch\ILogStreamsViewer.cs" />
+    <Compile Include="Commands\AsyncCommand.cs" />
     <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\PromptAndExecuteCommand.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommand.cs" />
+    <Compile Include="Commands\PromptAndExecuteHandler.cs" />
+    <Compile Include="Commands\ToolkitCommandResult.cs" />
     <Compile Include="CommonUI\Converters\CredentialIdentifierConverter.cs" />
     <Compile Include="CommonUI\Converters\HasValueVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
@@ -105,6 +110,7 @@
     <Compile Include="CommonUI\Dialogs\ICloneCodeCatalystRepositoryDialog.cs" />
     <Compile Include="CommonUI\Dialogs\ICloneCodeCommitRepositoryDialog.cs" />
     <Compile Include="CommonUI\Dialogs\IFolderBrowserDialog.cs" />
+    <Compile Include="CommonUI\Dialogs\ISsoLoginDialog.cs" />
     <Compile Include="CommonUI\DualListBox.cs" />
     <Compile Include="CommonUI\Notifications\ITaskStatusNotifier.cs" />
     <Compile Include="CommonUI\HintTextBox.xaml.cs">
@@ -284,6 +290,7 @@
     <Compile Include="SourceControl\GitCredentials.cs" />
     <Compile Include="SourceControl\IGitService.cs" />
     <Compile Include="SourceControl\NativeMethods.cs" />
+    <Compile Include="Util\TelemetryExtensionMethods.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeBrushKeys.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeFontKeys.cs" />
     <Compile Include="Themes\IToolkitThemeBrushKeys.cs" />
@@ -507,6 +514,8 @@
     <Compile Include="Util\RangeObservableCollection.cs" />
     <Compile Include="Util\RolePolicyFilter.cs" />
     <Compile Include="Util\ServiceSpecificCredentialStore.cs" />
+    <Compile Include="VersionInfo\DotNetVersion.cs" />
+    <Compile Include="VersionInfo\DotNetVersionProvider.cs" />
     <Compile Include="VersionInfo\VersionManager.cs" />
     <Compile Include="ViewModels\Charts\GraphPeriodViewModel.cs" />
     <Compile Include="ViewModels\Charts\MonitorGraphViewModel.cs" />
@@ -834,7 +843,6 @@
     <EmbeddedResource Include="Resources\ServiceIcons\CloudWatch.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\CodeArtifact.png" />
     <!-- TODO IDE-9145 Update icon when latest received -->
-    <EmbeddedResource Include="Resources\ServiceIcons\CodeCatalyst.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\CodeCommit.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\DynamoDB.png" />
     <EmbeddedResource Include="Resources\ServiceIcons\EC2.png" />
@@ -1041,6 +1049,9 @@
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ServiceIcons\CodeCatalyst40x40.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -7,6 +8,11 @@ namespace Amazon.AWSToolkit.CommonUI.Images
 {
     public class ImageSourceFactory
     {
+        public static ImageSource GetImageSource(Uri uri)
+        {
+            return new BitmapImage(uri);
+        }
+
         public static ImageSource GetImageSource(string embeddedName)
         {
             return GetImageSource(Assembly.GetExecutingAssembly(), embeddedName);

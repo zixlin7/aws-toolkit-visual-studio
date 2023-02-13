@@ -182,6 +182,14 @@ namespace Amazon.AWSToolkit.Shared
         bool Confirm(string title, string message);
 
         /// <summary>
+        /// Displays a confirmation message box with Yes/No buttons.
+        /// </summary>
+        /// <param name="title">Title of message box.</param>
+        /// <param name="message">Message for body of message box.</param>
+        /// <returns>True if Yes clicked, false otherwise.</returns>
+        bool ConfirmWithLinks(string title, string message);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="title"></param>
@@ -224,6 +232,13 @@ namespace Amazon.AWSToolkit.Shared
         /// <param name="message"></param>
         /// <param name="forceVisible"></param>
         void OutputToHostConsole(string message, bool forceVisible);
+
+        /// <summary>
+        /// Attempts to show the output window pane specified by the name
+        /// </summary>
+        /// <param name="name">Name of output window pane to display.</param>
+        /// <returns>True if pane was found and attempted to show, false otherwise.</returns>
+        Task<bool> OpenOutputWindowPaneAsync(string name);
 
         /// <summary>
         /// Adds the specified message to the toolkit shell's logfile

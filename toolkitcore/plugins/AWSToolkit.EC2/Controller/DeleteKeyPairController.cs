@@ -28,7 +28,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             string msg = buildConfirmMessage(keypairs);
             if (!ToolkitFactory.Instance.ShellProvider.Confirm("Deleting Key Pairs", msg))
             {
-                return new ActionResults().WithSuccess(false);
+                return ActionResults.CreateCancelled();
             }
 
             Dictionary<KeyPairWrapper, Exception> failures = new Dictionary<KeyPairWrapper, Exception>();

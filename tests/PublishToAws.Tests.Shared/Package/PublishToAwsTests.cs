@@ -6,6 +6,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.PluginServices.Publishing;
 using Amazon.AWSToolkit.Publish.Package;
+using Amazon.AWSToolkit.Tests.Common.Versioning;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 
 using Moq;
@@ -19,13 +20,25 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
     public class PublishToAwsTests
     {
         private readonly PublishContextFixture _publishContextFixture = new PublishContextFixture();
+        private readonly FakeDotNetVersionProvider _dotNetVersionProvider = new FakeDotNetVersionProvider();
 
         private readonly PublishToAws _sut;
 
         public PublishToAwsTests()
         {
             _sut = new PublishToAws(_publishContextFixture.PublishContext);
+            _dotNetVersionProvider.MajorVersion = 6;
         }
+
+#if VS2019
+        [StaFact]
+        public async Task ShouldHandleUnsupportedDotNet()
+        {
+            _dotNetVersionProvider.MajorVersion = 3;
+
+            await AssertShowDocumentCancelledAsync();
+        }
+#endif
 
         [StaFact]
         public async Task ShouldHandleInstallFailure()
@@ -71,7 +84,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
         private async Task AssertShowDocumentFailsAsync()
         {
             var args = new ShowPublishToAwsDocumentArgs();
-            await _sut.ShowPublishToAwsDocument(args);
+            await _sut.ShowPublishToAwsDocumentAsync(args, _dotNetVersionProvider);
 
             _publishContextFixture.ToolkitShellProvider.Verify(
                 mock => mock.ShowMessage("Unable to Publish to AWS", It.IsAny<string>()), Times.Once);
@@ -83,9 +96,26 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Package
             AssertFailedResult(publishSetup);
         }
 
+        private async Task AssertShowDocumentCancelledAsync()
+        {
+            var args = new ShowPublishToAwsDocumentArgs();
+            await _sut.ShowPublishToAwsDocumentAsync(args, _dotNetVersionProvider);
+
+            var publishStart = Assert.Single(_publishContextFixture.TelemetryFixture.GetMetricsByMetricName("publish_start"));
+            AssertCancelledResult(publishStart);
+
+            var publishSetup = Assert.Single(GetPublishSetupMetrics(PublishSetupStage.All));
+            AssertCancelledResult(publishSetup);
+        }
+
         private static void AssertFailedResult(Metrics publishStart)
         {
             Assert.Contains(publishStart.Data, d => d.Metadata["result"] == Result.Failed.ToString());
+        }
+
+        private static void AssertCancelledResult(Metrics publishStart)
+        {
+            Assert.Contains(publishStart.Data, d => d.Metadata["result"] == Result.Cancelled.ToString());
         }
 
         private IList<Metrics> GetPublishSetupMetrics(PublishSetupStage publishSetupStage)

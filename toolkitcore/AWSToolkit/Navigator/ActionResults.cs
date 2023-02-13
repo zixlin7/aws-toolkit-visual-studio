@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.Navigator
 {
@@ -14,9 +15,31 @@ namespace Amazon.AWSToolkit.Navigator
             set;
         }
 
+        public Exception Exception { get; set; }
+
+        public static ActionResults CreateCancelled()
+        {
+            return new ActionResults()
+                .WithCancelled(true)
+                .WithSuccess(false);
+        }
+
+        public static ActionResults CreateFailed(Exception exception = null)
+        {
+            return new ActionResults()
+                .WithSuccess(false)
+                .WithException(exception);
+        }
+
         public ActionResults WithCancelled (bool cancelled)
         {
             Cancelled = cancelled;
+            return this;
+        }
+
+        public ActionResults WithException(Exception exception)
+        {
+            Exception = exception;
             return this;
         }
 

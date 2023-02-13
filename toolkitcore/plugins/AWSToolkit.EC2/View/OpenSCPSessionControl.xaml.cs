@@ -49,6 +49,7 @@ namespace Amazon.AWSToolkit.EC2.View
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error opening scp session: " + e.Message);
+                _controller.RecordFailure(e);
                 return false;
             }
 

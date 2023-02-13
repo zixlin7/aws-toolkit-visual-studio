@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Windows;
 
+using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Shared;
@@ -42,22 +41,23 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             {
                 try
                 {
-                    // Prompt the user to start the SSO Login flow
-                    var title = "Login with AWS Builder ID Required";
-                    var message =
-                        $"AWS Toolkit will start the AWS Builder ID Login process for {credentialIdentifier.DisplayName}.{Environment.NewLine}{Environment.NewLine}"
-                        + $"Clicking OK will take you to the following URL in order to sign in and allow access to the Toolkit: {Environment.NewLine}{ssoVerification.VerificationUriComplete}";
-                    if (!toolkitShell.Confirm(title, message, MessageBoxButton.OKCancel))
+                    // Prompt the user to start the AWS Builder ID Login flow
+
+                    toolkitShell.ExecuteOnUIThread(() =>
                     {
-                        // Throw an exception to break out of the SDK IAWSTokenProvider.TryResolveToken call
-                        throw new UserCanceledException("User declined to start AWS Builder ID Login Flow");
-                    }
+                        var dialog = CreateDialog(toolkitShell, ssoVerification);
+
+                        if (!dialog.Show())
+                        {
+                            // Throw an exception to break out of the SDK IAWSTokenProvider.TryResolveToken call
+                            throw new UserCanceledException("User declined to start AWS Builder ID Login Flow");
+                        }
+                    });
 
                     toolkitShell.OutputToHostConsole(
                         $"AWS Builder ID Login flow started for Credentials: {credentialIdentifier.DisplayName}", false);
                     Logger.Debug($"AWS Builder ID Login flow started for Credentials: {credentialIdentifier.Id}");
 
-                    Process.Start(ssoVerification.VerificationUriComplete);
                 }
                 catch (Exception e)
                 {
@@ -65,6 +65,15 @@ namespace Amazon.AWSToolkit.Credentials.Sono
                     throw;
                 }
             };
+        }
+
+        private static ISsoLoginDialog CreateDialog(IAWSToolkitShellProvider toolkitShell, SsoVerificationArguments ssoVerification)
+        {
+            var dialog = toolkitShell.GetDialogFactory().CreateSsoLoginDialog();
+            dialog.IsBuilderId = true;
+            dialog.UserCode = ssoVerification.UserCode;
+            dialog.LoginUri = ssoVerification.VerificationUri;
+            return dialog;
         }
     }
 }

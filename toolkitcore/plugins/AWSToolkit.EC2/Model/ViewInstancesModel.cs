@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
@@ -53,6 +55,70 @@ namespace Amazon.AWSToolkit.EC2.Model
 
                 return this._volumePropertytColumnDefinitions;
             }
+        }
+
+        private ICommand _viewSystemLog;
+
+        public ICommand ViewSystemLog
+        {
+            get => _viewSystemLog;
+            set => SetProperty(ref _viewSystemLog, value);
+        }
+
+        private ICommand _createImage;
+
+        public ICommand CreateImage
+        {
+            get => _createImage;
+            set => SetProperty(ref _createImage, value);
+        }
+
+        private ICommand _changeTerminationProtection;
+
+        public ICommand ChangeTerminationProtection
+        {
+            get => _changeTerminationProtection;
+            set => SetProperty(ref _changeTerminationProtection, value);
+        }
+
+        private ICommand _changeUserData;
+
+        public ICommand ChangeUserData
+        {
+            get => _changeUserData;
+            set => SetProperty(ref _changeUserData, value);
+        }
+
+        private ICommand _changeInstanceType;
+
+        public ICommand ChangeInstanceType
+        {
+            get => _changeInstanceType;
+            set => SetProperty(ref _changeInstanceType, value);
+        }
+
+        private ICommand _changeShutdownBehavior;
+
+        public ICommand ChangeShutdownBehavior
+        {
+            get => _changeShutdownBehavior;
+            set => SetProperty(ref _changeShutdownBehavior, value);
+        }
+
+        private ICommand _attachElasticIp;
+
+        public ICommand AttachElasticIp
+        {
+            get => _attachElasticIp;
+            set => SetProperty(ref _attachElasticIp, value);
+        }
+
+        private ICommand _detachElasticIp;
+
+        public ICommand DetachElasticIp
+        {
+            get => _detachElasticIp;
+            set => SetProperty(ref _detachElasticIp, value);
         }
     }
 }

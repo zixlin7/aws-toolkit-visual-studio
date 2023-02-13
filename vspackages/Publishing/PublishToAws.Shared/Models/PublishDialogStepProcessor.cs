@@ -30,8 +30,10 @@ namespace Amazon.AWSToolkit.Publish.Models
                 progressDialog.CurrentStep++;
                 progressDialog.Heading1 = step.Description;
 
-                // Cancelling does not stop the step's task, but allows the dialog to close
-                await step.StartTaskAsync().WithCancellation(progressDialog.CancellationToken).ConfigureAwait(false);
+                // Cancelling does not guarantee the step's task will stop, but allows the dialog to close
+                await step.StartTaskAsync(progressDialog.CancellationToken)
+                    .WithCancellation(progressDialog.CancellationToken)
+                    .ConfigureAwait(false);
 
                 if (progressDialog.IsCancelRequested() || progressDialog.CancellationToken.IsCancellationRequested)
                 {

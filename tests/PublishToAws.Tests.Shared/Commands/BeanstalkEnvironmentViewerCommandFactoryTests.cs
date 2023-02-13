@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Windows.Input;
 
+using Amazon.AWSToolkit.Beanstalk;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.ElasticBeanstalk.Viewers;
 using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Publishing.Common;
 using Amazon.AWSToolkit.Tests.Publishing.Fixtures;
@@ -24,7 +23,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         private const string SampleEnvironmentName = "sampleEnvironment";
         private readonly PublishContextFixture _contextFixture = new PublishContextFixture();
         private readonly TestPublishToAwsDocumentViewModel _viewModel;
-        private readonly Mock<IBeanstalkEnvironmentViewer> _environmentViewer = new Mock<IBeanstalkEnvironmentViewer>();
+        private readonly Mock<IBeanstalkViewer> _beanstalkViewer = new Mock<IBeanstalkViewer>();
         private readonly ICommand _viewerCommand;
         private Mock<IAWSToolkitShellProvider> ToolkitHost => _contextFixture.ToolkitShellProvider;
 
@@ -46,8 +45,8 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
 
         private void SetupToolkitHost()
         {
-            ToolkitHost.Setup(mock => mock.QueryAWSToolkitPluginService(typeof(IBeanstalkEnvironmentViewer)))
-                .Returns(_environmentViewer.Object);
+            ToolkitHost.Setup(mock => mock.QueryAWSToolkitPluginService(typeof(IBeanstalkViewer)))
+                .Returns(_beanstalkViewer.Object);
         }
 
         [Fact]
@@ -80,19 +79,19 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         {
             _viewerCommand.Execute(null);
 
-            ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(IBeanstalkEnvironmentViewer)), Times.Once);
-            _environmentViewer.Verify(view => view.View(SampleEnvironmentName, It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()), Times.Once);
+            ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(IBeanstalkViewer)), Times.Once);
+            _beanstalkViewer.Verify(view => view.ViewEnvironment(SampleEnvironmentName, It.IsAny<AwsConnectionSettings>()), Times.Once);
         }
 
         [Fact]
         public void ViewEnvironment_Throws()
         {
-            ToolkitHost.Setup(mock => mock.QueryAWSToolkitPluginService(typeof(IBeanstalkEnvironmentViewer)))
+            ToolkitHost.Setup(mock => mock.QueryAWSToolkitPluginService(typeof(IBeanstalkViewer)))
                 .Throws<Exception>();
             _viewerCommand.Execute(null);
 
-            ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(IBeanstalkEnvironmentViewer)), Times.Once);
-            _environmentViewer.Verify(view => view.View(SampleEnvironmentName, It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>()), Times.Never);
+            ToolkitHost.Verify(host => host.QueryAWSToolkitPluginService(typeof(IBeanstalkViewer)), Times.Once);
+            _beanstalkViewer.Verify(view => view.ViewEnvironment(SampleEnvironmentName, It.IsAny<AwsConnectionSettings>()), Times.Never);
             ToolkitHost.Verify(host => host.OutputToHostConsole(It.Is<string>(str => str.Contains("Error viewing")), true), Times.Once);
         }
     }

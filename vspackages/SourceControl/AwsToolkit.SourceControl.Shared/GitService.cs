@@ -35,6 +35,8 @@ namespace Amazon.AwsToolkit.SourceControl
             // For example of using VSSDK to perform git clone:
             // https://github.com/github/VisualStudio/blob/master/src/GitHub.StartPage/StartPagePackage.cs#L63-L96
             // https://github.com/github/VisualStudio/blob/6d428ef3bb1848ae0ece98fd57c9c8fa564aed7f/src/GitHub.TeamFoundation.14/Services/VSGitServices.cs#L74-L111
+            // Passing in null for progress arg in CloneAsync seems to allow the progress bar to work correctly.  Passing in a IProgress received from elsewhere
+            // appears to prevent CloneAsync from updating its own progress bar correctly, so just pass in null.
             try
             {
                 var gitActionsExt = await _toolkitContext.ToolkitHost.QueryShellProviderServiceAsync<IGitActionsExt>();

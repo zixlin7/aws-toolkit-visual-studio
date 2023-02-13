@@ -65,6 +65,7 @@
     <Compile Include="Context\ToolkitContextFixture.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ToolkitTheme.cs" />
+    <Compile Include="Versioning\FakeDotNetVersionProvider.cs" />
     <Compile Include="Wizard\InMemoryAWSWizard.cs" />
     <Compile Include="IntegrationTest.cs" />
     <Compile Include="IO\PlaceholderFile.cs" />

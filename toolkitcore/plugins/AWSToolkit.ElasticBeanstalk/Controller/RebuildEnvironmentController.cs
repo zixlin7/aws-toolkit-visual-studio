@@ -1,48 +1,62 @@
 ﻿using System;
+
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.ElasticBeanstalk.Models;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
+using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
-    public class RebuildEnvironmentController : BaseContextCommand
+    public class RebuildEnvironmentController : BaseConnectionContextCommand
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(RebuildEnvironmentController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(RebuildEnvironmentController));
 
-        public override ActionResults Execute(IViewModel model)
+        private readonly BeanstalkEnvironmentModel _beanstalkEnvironment;
+        private readonly AmazonElasticBeanstalkClient _beanstalk;
+
+        public RebuildEnvironmentController(BeanstalkEnvironmentModel beanstalkEnvironment,
+            ToolkitContext toolkitContext, AwsConnectionSettings connectionSettings)
+            : base(toolkitContext, connectionSettings)
         {
-            EnvironmentViewModel environmentModel = model as EnvironmentViewModel;
-            if (environmentModel == null)
-                return new ActionResults().WithSuccess(false);
+            _beanstalkEnvironment = beanstalkEnvironment;
+            _beanstalk = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonElasticBeanstalkClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+        }
 
-            string msg = string.Format(
-                "Are you sure you want to rebuild the environment \"{0}\"?\r\n\r\n" +
-                "Note: Rebuilding the environment may take " +
-                "several minutes during which your application " +
-                "will not be available. Use \"Restart App Servers\" " + 
-                "if you only need to restart the application."
-                , environmentModel.Name);
-            if (ToolkitFactory.Instance.ShellProvider.Confirm("Rebuild Environment", msg))
+        public override ActionResults Execute()
+        {
+            if (_beanstalkEnvironment == null)
             {
-                var beanstalkClient = environmentModel.BeanstalkClient;
-
-                try
-                {
-                    LOGGER.DebugFormat("Rebuilding environment {0}", environmentModel.Environment.EnvironmentId);
-                    beanstalkClient.RebuildEnvironment(new RebuildEnvironmentRequest() { EnvironmentId = environmentModel.Environment.EnvironmentId });
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error(string.Format("Error rebuilding environment {0}", environmentModel.Environment.EnvironmentId), e);
-                    ToolkitFactory.Instance.ShellProvider.ShowMessage("Error Rebuilding", "Error rebuilding environment: " + e.Message);
-                    return new ActionResults().WithSuccess(false);
-                }
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find Beanstalk environment data",
+                    ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 
-            return new ActionResults().WithSuccess(true);
+            var msg = $"Are you sure you want to rebuild the environment \"{_beanstalkEnvironment.Name}\"?\r\n\r\n" +
+                      "Note: Rebuilding the environment may take " + "several minutes during which your application " +
+                      "will not be available. Use \"Restart App Servers\" " +
+                      "if you only need to restart the application.";
+
+            if (!_toolkitContext.ToolkitHost.Confirm("Rebuild Environment", msg))
+            {
+                return ActionResults.CreateCancelled();
+            }
+
+            try
+            {
+                _logger.DebugFormat("Rebuilding environment {0}", _beanstalkEnvironment.Id);
+                _beanstalk.RebuildEnvironment(new RebuildEnvironmentRequest() { EnvironmentId = _beanstalkEnvironment.Id });
+                return new ActionResults().WithSuccess(true);
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error rebuilding environment {_beanstalkEnvironment.Id}", e);
+                _toolkitContext.ToolkitHost.ShowMessage("Rebuild environment error", "Error rebuilding environment: " + e.Message);
+                return ActionResults.CreateFailed(e);
+            }
         }
 
     }

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.Model;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Navigator;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.View
@@ -47,7 +50,7 @@ namespace Amazon.AWSToolkit.ECS.View
                 Result = success ? Result.Succeeded : Result.Failed,
             });
         }
-        
+
         void onRefreshClick(object sender, RoutedEventArgs evnt)
         {
             try
@@ -75,14 +78,25 @@ namespace Amazon.AWSToolkit.ECS.View
 
         public bool SaveService(ServiceWrapper service)
         {
+            var results = SaveEcsService(service);
+            if (!service.EditMode)
+            {
+                _controller.RecordEcsEditService(results);
+            }
+            return results.Success;
+        }
+
+        private ActionResults SaveEcsService(ServiceWrapper service)
+        {
             try
             {
-                return this._controller.SaveService(service);
+                var result = this._controller.SaveService(service);
+                return new ActionResults().WithSuccess(result);
             }
             catch (Exception e)
             {
                 this._controller.ToolkitContext.ToolkitHost.ShowError("Error saving service: " + e.Message);
-                return false;
+                return ActionResults.CreateFailed(e);
             }
         }
 

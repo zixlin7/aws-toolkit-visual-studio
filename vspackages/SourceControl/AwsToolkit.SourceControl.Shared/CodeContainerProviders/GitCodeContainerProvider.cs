@@ -23,6 +23,8 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GitCodeContainerProvider));
 
+        protected const string SourceControlGitOutputWindowPaneName = "Source Control - Git";
+
         protected readonly Guid _codeContainerProviderId;
         protected readonly Guid _sccProviderId;
 
@@ -57,7 +59,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
         public async Task<ccm.CodeContainer> AcquireCodeContainerAsync(ccm.RemoteCodeContainer onlineCodeContainer, IProgress<sh.ServiceProgressData> downloadProgress, CancellationToken cancellationToken)
         {
             CloneRepositoryData initialCloneRepoData = null;
-            bool suppressExceptions = false;
+            var suppressExceptions = false;
 
             try
             {
@@ -70,7 +72,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                     return null; // VS expects null if the clone operation is incomplete
                 }
 
-                //keep a copy of the original clone repo data to report failure messages
+                // Keep a copy of the original clone repo data to report failure messages
                 initialCloneRepoData = cloneRepoData;
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -94,7 +96,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
                 // Too late to cancel now, while this is currently not used, leave here for future coders to be aware of the cut line
                 cancellationToken = CancellationToken.None;
 
-                // Make sure progress appears to be 100% complete as VS doesn't update correctly during git clone
+                // Make sure progress appears to be 100% complete
                 downloadProgress.Report(new sh.ServiceProgressData(string.Empty, string.Empty, 1, 1));
                 await CloneCompletedAsync(cloneRepoData);
 
@@ -176,6 +178,8 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
             try
             {
+                _toolkitContext.ToolkitHost.OutputToHostConsole($"Attempting to clone {cloneRepoData.RepositoryName} to {cloneRepoData.LocalPath}", true);
+
                 await git.CloneAsync(
                     cloneRepoData.RemoteUri,
                     cloneRepoData.LocalPath,
@@ -226,10 +230,19 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
         /// </remarks>
         protected virtual async Task<CloneRepositoryData> HandleCloneRepositoryFailedAsync(CloneRepositoryData failedCloneRepoData, Exception cloneException)
         {
-            await _toolkitContext.ToolkitHost.OpenShellWindowAsync(ShellWindows.Output);
-            _toolkitContext.ToolkitHost.ShowError("Clone repository failed", $"Failed to clone {failedCloneRepoData.RepositoryName}.  See Output window for details.");
+            var nl = Environment.NewLine;
+
+            await OpenSourceControlGitOutputWindowPaneAsync();
+
+            _toolkitContext.ToolkitHost.ShowError("Clone repository failed",
+                $"Failed to clone {failedCloneRepoData.RepositoryName}.{nl}{nl}{cloneException.Message}{nl}{nl}See Output window for details.");
 
             return null;
+        }
+
+        protected async Task<bool> OpenSourceControlGitOutputWindowPaneAsync()
+        {
+            return await _toolkitContext.ToolkitHost.OpenOutputWindowPaneAsync(SourceControlGitOutputWindowPaneName);
         }
 
         private ccm.CodeContainer CreateCodeContainer(CloneRepositoryData cloneRepoData)

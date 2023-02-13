@@ -26,6 +26,13 @@ hostedfiles/ServiceEndPoints.xml
 hostedfiles/endpoints.json
 
 ####################
+# PEM to PPK
+####################
+
+thirdparty/PemToPPKConverter/Debug/
+thirdparty/PemToPPKConverter/Release/
+
+####################
 # Nuget
 ####################
 solutions/packages
@@ -35,4 +42,3 @@ solutions/packages
 ####################
 solutions/Backup*/**
 Solutions/UpgradeLog*.htm
-

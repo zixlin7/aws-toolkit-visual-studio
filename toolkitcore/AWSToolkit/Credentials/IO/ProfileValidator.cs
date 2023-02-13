@@ -74,9 +74,20 @@ namespace Amazon.AWSToolkit.Credentials.IO
 
         private string ValidateProfile(CredentialProfileOptions profileOptions, string profileName)
         {
-            if (RequiresSsoValidations(profileOptions, profileName))
+            // eg: profile is [sso-session foo]
+            if (ProfileName.IsSsoSession(profileName))
+            {
+                return ValidateReferencedSsoSession(profileOptions, profileName, "(credentials file)");
+            }
+
+            if (profileOptions.IsResolvedWithSso())
             {
                 return ValidateSso(profileOptions, profileName);
+            }
+
+            if (profileOptions.IsResolvedWithTokenProvider())
+            {
+                return ValidateTokenProvider(profileOptions, profileName);
             }
 
             if (!string.IsNullOrWhiteSpace(profileOptions.EndpointName))
@@ -105,16 +116,6 @@ namespace Amazon.AWSToolkit.Credentials.IO
             }
 
             return $"Profile {profileName} is not using role-based, session-based, process-based, or basic credentials";
-        }
-
-        private bool RequiresSsoValidations(CredentialProfileOptions profileOptions, string profileName)
-        {
-            return IsSsoSessionRelated(profileOptions, profileName) || profileOptions.ContainsSsoProperties();
-        }
-
-        private bool IsSsoSessionRelated(CredentialProfileOptions profileOptions, string profileName)
-        {
-            return ProfileName.IsSsoSession(profileName) || !string.IsNullOrWhiteSpace(profileOptions.SsoSession);
         }
 
         private string ValidateBasic(CredentialProfileOptions profileOptions, string profileName)
@@ -287,34 +288,21 @@ namespace Amazon.AWSToolkit.Credentials.IO
 
         private string ValidateSso(CredentialProfileOptions profileOptions, string profileName)
         {
-            // Profiles that either reference or are an sso-session profile
-            if (IsSsoSessionRelated(profileOptions, profileName))
+            // Validate the reference to an sso-session profile, if there is one
+            if (profileOptions.ReferencesSsoSessionProfile())
             {
-                return ValidateSsoSession(profileOptions, profileName);
+                var validation = ValidateSsoSessionReference(profileOptions, profileName);
+                if (!string.IsNullOrWhiteSpace(validation)) { return validation; }
             }
 
-            // Profiles that use the AWS IAM Identity Center (AWS SSO) set of properties
-            if (profileOptions.ContainsSsoProperties())
-            {
-                return ValidateIamIdentityCenter(profileOptions, profileName);
-            }
-
-            throw new NotSupportedException($"Unable to perform SSO Validations on profile: {profileName}");
+            return ValidateIamIdentityCenter(profileOptions, profileName);
         }
 
         /// <summary>
-        /// Validates SSO Session related profiles:
-        /// - profiles that reference "sso-session foo" profiles using a sso_session property
-        /// - "sso-session foo" profiles 
+        /// Validates profiles that reference "sso-session foo" profiles using a sso_session property
         /// </summary>
-        private string ValidateSsoSession(CredentialProfileOptions profileOptions, string profileName)
+        private string ValidateSsoSessionReference(CredentialProfileOptions profileOptions, string profileName)
         {
-            if (!profileOptions.ReferencesSsoSessionProfile())
-            {
-                // Check that the sso-session profile contains the necessary properties
-                return ValidateReferencedSsoSession(profileOptions, profileName, "(credentials file)");
-            }
-
             // Check that the referenced sso_session exists
             var referencedProfileName = ProfileName.CreateSsoSessionProfileName(profileOptions.SsoSession);
             var referencedProfile = _fileReader.GetCredentialProfileOptions(referencedProfileName);
@@ -324,13 +312,20 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 return $"{profileName} references missing SSO Session profile: {referencedProfileName}";
             }
 
-            // Check that the referencing profile does not also contain properties expected from the referenced SSO Session profile
-            // Spec: The SSO token provider MUST NOT resolve if these configuration values are present directly on the profile instead
-            // of an sso-session section.
-            if (!string.IsNullOrWhiteSpace(profileOptions.SsoRegion) ||
-                !string.IsNullOrWhiteSpace(profileOptions.SsoStartUrl))
+            // Spec: If the profile and the (referenced) sso-session both contain sso_region or sso_start_url then the values
+            // in both the profile and sso-session must match.
+            bool IsValueDifferent(string a, string b) => !string.IsNullOrWhiteSpace(a) && !string.IsNullOrWhiteSpace(b) && !a.Equals(b);
+
+            if (IsValueDifferent(profileOptions.SsoRegion, referencedProfile.SsoRegion))
             {
-                return $"{profileName} cannot reference an SSO Session and assign an SSO Region or SSO StartUrl";
+                return
+                    $"{profileName} cannot have a different SSO Region value ({profileOptions.SsoRegion}) than the referenced SSO Session ({referencedProfile.SsoRegion})";
+            }
+
+            if (IsValueDifferent(profileOptions.SsoStartUrl, referencedProfile.SsoStartUrl))
+            {
+                return
+                    $"{profileName} cannot have a different SSO StartUrl value ({profileOptions.SsoStartUrl}) than the referenced SSO Session ({referencedProfile.SsoStartUrl})";
             }
 
             // Check that the referenced sso_session is valid
@@ -372,7 +367,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 missingProperties.Add(ProfilePropertyConstants.SsoAccountId);
             }
 
-            if (string.IsNullOrWhiteSpace(profileOptions.SsoRegion))
+            if (!profileOptions.ReferencesSsoSessionProfile() && string.IsNullOrWhiteSpace(profileOptions.SsoRegion))
             {
                 missingProperties.Add(ProfilePropertyConstants.SsoRegion);
             }
@@ -382,7 +377,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 missingProperties.Add(ProfilePropertyConstants.SsoRoleName);
             }
 
-            if (string.IsNullOrWhiteSpace(profileOptions.SsoStartUrl))
+            if (!profileOptions.ReferencesSsoSessionProfile() && string.IsNullOrWhiteSpace(profileOptions.SsoStartUrl))
             {
                 missingProperties.Add(ProfilePropertyConstants.SsoStartUrl);
             }
@@ -394,6 +389,26 @@ namespace Amazon.AWSToolkit.Credentials.IO
 
             var missingPropertiesStr = string.Join(", ", missingProperties.OrderBy(x => x));
             return $"SSO-based profile {profileName} is missing one or more properties: {missingPropertiesStr}";
+        }
+
+        private string ValidateTokenProvider(CredentialProfileOptions profileOptions, string profileName)
+        {
+            if (string.IsNullOrWhiteSpace(profileName))
+            {
+                return $"Profile {profileName} is missing required property {ProfilePropertyConstants.SsoSession}";
+            }
+
+            // Check that the referenced sso_session exists
+            var referencedProfileName = ProfileName.CreateSsoSessionProfileName(profileOptions.SsoSession);
+            var referencedProfile = _fileReader.GetCredentialProfileOptions(referencedProfileName);
+
+            if (referencedProfile == null)
+            {
+                return $"{profileName} references missing SSO Session profile: {referencedProfileName}";
+            }
+
+            // Check that the referenced sso_session is valid
+            return ValidateReferencedSsoSession(referencedProfile, referencedProfileName, profileName);
         }
 
         private string ValidateSaml(CredentialProfileOptions profileOptions, string profileName)

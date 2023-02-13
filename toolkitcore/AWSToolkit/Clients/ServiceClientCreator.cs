@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 using Amazon.Runtime;
 
@@ -26,6 +27,8 @@ namespace Amazon.AWSToolkit.Clients
         {
             try
             {
+                AssertValidServiceClient(serviceClientType);
+
                 var constructor = serviceClientType.GetConstructor(new[] { typeof(AWSCredentials), typeof(RegionEndpoint) });
                 if (constructor == null)
                 {
@@ -37,6 +40,7 @@ namespace Amazon.AWSToolkit.Clients
             catch (Exception e)
             {
                 Logger.Error($"Error creating service client: {serviceClientType.FullName}", e);
+                ShowDebugAssert(serviceClientType.FullName, e);
                 return null;
             }
         }
@@ -55,6 +59,8 @@ namespace Amazon.AWSToolkit.Clients
         {
             try
             {
+                AssertValidServiceClient(serviceClientType);
+
                 var constructor = serviceClientType.GetConstructor(new[] {typeof(AWSCredentials), serviceClientConfig.GetType()});
                 if (constructor == null)
                 {
@@ -66,6 +72,7 @@ namespace Amazon.AWSToolkit.Clients
             catch (Exception e)
             {
                 Logger.Error($"Error creating service client: {serviceClientType.FullName}", e);
+                ShowDebugAssert(serviceClientType.FullName, e);
                 return null;
             }
         }
@@ -83,6 +90,8 @@ namespace Amazon.AWSToolkit.Clients
         {
             try
             {
+                AssertValidServiceClient(serviceClientType);
+
                 var constructor = serviceClientType.GetConstructor(new[] {serviceClientConfig.GetType()});
                 if (constructor == null)
                 {
@@ -94,8 +103,43 @@ namespace Amazon.AWSToolkit.Clients
             catch (Exception e)
             {
                 Logger.Error($"Error creating service client: {serviceClientType.FullName}", e);
+                ShowDebugAssert(serviceClientType.FullName, e);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Add runtime checks to help identify when an incorrect service client type has been requested
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        private static void AssertValidServiceClient(Type serviceClientType)
+        {
+            if (serviceClientType.IsInterface)
+            {
+                throw new InvalidOperationException($"Unable to create service clients from instance types: {serviceClientType.FullName}");
+            }
+
+            if (serviceClientType.IsAbstract)
+            {
+                throw new InvalidOperationException($"Unable to create service clients from abstract classes: {serviceClientType.FullName}");
+            }
+
+            if (!typeof(IAmazonService).IsAssignableFrom(serviceClientType))
+            {
+                throw new InvalidOperationException($"Service clients are expected to implement {typeof(IAmazonService)}: {serviceClientType.FullName}");
+            }
+        }
+
+        private static void ShowDebugAssert(string clientName, Exception exception)
+        {
+            // Because we are creating service clients with reflection, we don't get compiler checks
+            // to see that the type has the expected constructor. Show a debug message to improve
+            // the likelihood we see the problem during development.
+#if DEBUG
+            Debug.Assert(!Debugger.IsAttached,
+                $"Toolkit bug trying to create {clientName}. This will silently fail for users. Check that the correct class (not interface) has been requested.",
+                exception.Message);
+#endif
         }
     }
 }

@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit.EC2.Controller;
-using Amazon.AWSToolkit.EC2.Repositories;
-using Amazon.AWSToolkit.Regions;
-using Amazon.EC2;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.EC2.Model;
-using System.Collections.Generic;
+using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.EC2.Repositories;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Regions;
+using Amazon.EC2;
+using Amazon.EC2.Model;
+
 using log4net;
-using Amazon.ElasticLoadBalancing.Model;
 
 namespace Amazon.AWSToolkit.EC2
 {
@@ -77,6 +78,11 @@ namespace Amazon.AWSToolkit.EC2
                 return _instanceTypeRepository;
             }
 
+            if (serviceType == typeof(IEc2RepositoryFactory))
+            {
+                return new Ec2RepositoryFactory(ToolkitContext);
+            }
+
             return null;
         }
 
@@ -102,25 +108,25 @@ namespace Amazon.AWSToolkit.EC2
         void setupEC2ContextMenuHooks(EC2RootViewMetaNode rootNode)
         {
             rootNode.OnLaunch =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<LaunchController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new LaunchController(ToolkitContext)).Execute);
 
             rootNode.FindChild<EC2AMIsViewMetaNode>().OnView =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewAMIsController(ToolkitContext)).Execute);
 
             EC2InstancesViewMetaNode instancesNode = rootNode.FindChild<EC2InstancesViewMetaNode>();
             instancesNode.OnLaunch =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<LaunchController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new LaunchController(ToolkitContext)).Execute);
             instancesNode.OnView =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewInstancesController(ToolkitContext)).Execute);
 
             rootNode.FindChild<EC2VolumesViewMetaNode>().OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewVolumesController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewVolumesController(ToolkitContext)).Execute);
 
             rootNode.FindChild<EC2KeyPairsViewMetaNode>().OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewKeyPairsController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewKeyPairsController(ToolkitContext)).Execute);
 
             rootNode.FindChild<SecurityGroupsViewMetaNode>().OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewSecurityGroupsController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewSecurityGroupsController(ToolkitContext)).Execute);
         }
 
         void setupVPCContextMenuHooks(VPCRootViewMetaNode rootNode)
@@ -138,7 +144,7 @@ namespace Amazon.AWSToolkit.EC2
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewSubnetsController>().Execute);
 
             rootNode.FindChild<ElasticIPsViewMetaNode>().OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewElasticIPsController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewElasticIPsController(ToolkitContext)).Execute);
 
             rootNode.FindChild<NetworkAclViewMetaNode>().OnView =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewNetworkAclsController>().Execute);

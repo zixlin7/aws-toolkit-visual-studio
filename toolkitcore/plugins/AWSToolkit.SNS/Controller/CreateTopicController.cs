@@ -9,6 +9,10 @@ using Amazon.AWSToolkit.SNS.Nodes;
 using Amazon.AWSToolkit.SNS.View;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.SimpleNotificationService.Model;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.SNS.Util;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.Telemetry;
 
 namespace Amazon.AWSToolkit.SNS.Controller
 {
@@ -26,20 +30,31 @@ namespace Amazon.AWSToolkit.SNS.Controller
 
         public override ActionResults Execute(IViewModel model)
         {
+            ActionResults actionResults = null;
+
+            void Invoke() => actionResults = CreateTopic(model);
+
+            void Record(ITelemetryLogger _) => RecordMetric(actionResults);
+
+            _toolkitContext.TelemetryLogger.InvokeAndRecord(Invoke, Record);
+            return actionResults;
+        }
+
+        private ActionResults CreateTopic(IViewModel model)
+        {
             _rootModel = model as SNSRootViewModel;
             if (_rootModel == null)
             {
-                return new ActionResults().WithSuccess(false);
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find SNS Topic data",
+                    ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 
             _model = new CreateTopicModel();
             _control = new CreateTopicControl(this);
-
+            
             if (!_toolkitContext.ToolkitHost.ShowInModalDialogWindow(_control, MessageBoxButton.OKCancel))
             {
-                return new ActionResults()
-                    .WithCancelled(true)
-                    .WithSuccess(false);
+                return ActionResults.CreateCancelled();
             }
 
             return Persist();
@@ -64,8 +79,14 @@ namespace Amazon.AWSToolkit.SNS.Controller
             catch (Exception e)
             {
                 _toolkitContext.ToolkitHost.ShowError($"Error creating SNS Topic:{Environment.NewLine}{e.Message}");
-                return new ActionResults().WithSuccess(false);
+                return ActionResults.CreateFailed(e);
             }
+        }
+
+        public void RecordMetric(ActionResults result)
+        {
+            var awsConnectionSettings = _rootModel?.AwsConnectionSettings;
+            _toolkitContext.RecordSnsCreateTopic(result, awsConnectionSettings);
         }
     }
 }

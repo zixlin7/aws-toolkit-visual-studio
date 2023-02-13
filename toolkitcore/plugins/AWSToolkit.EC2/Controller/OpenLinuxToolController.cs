@@ -2,21 +2,28 @@
 using System.Collections.Generic;
 using System.Windows;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2.ConnectionUtils;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Util;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.Runtime.Internal.Settings;
 
+using log4net;
+
 namespace Amazon.AWSToolkit.EC2.Controller
 {
     public abstract class OpenLinuxToolController
     {
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(OpenLinuxToolController));
+
         protected ActionResults _results;
         protected IAmazonEC2 _ec2Client;
         protected RunningInstanceWrapper _instance;
@@ -27,7 +34,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         private bool _usingStoredPrivateKey;
 
         public OpenLinuxToolController(ToolkitContext toolkitContext)
-{
+        {
             _toolkitContext = toolkitContext;
         }
 
@@ -45,41 +52,58 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public string InstanceId => this._instance.InstanceId;
 
+        protected abstract Ec2ConnectionType _ec2ConnectionType { get; }
+
         public abstract OpenLinuxToolControl CreateControl(bool useKeyPair, string password);
 
         public ActionResults Execute(AwsConnectionSettings connectionSettings, RunningInstanceWrapper instance)
         {
-            _connectionSettings = connectionSettings;
-            _uniqueKey = _toolkitContext.CredentialSettingsManager.GetUniqueKey(_connectionSettings.CredentialIdentifier);
+            var result = PromptAndPerform(connectionSettings, instance);
+            RecordMetric(result);
+            return result;
+        }
 
-            if (!instance.HasPublicAddress)
+        private ActionResults PromptAndPerform(AwsConnectionSettings connectionSettings, RunningInstanceWrapper instance)
+        {
+            try
             {
-                if (!_toolkitContext.ToolkitHost.Confirm("Instance IP Address", EC2Constants.NO_PUBLIC_IP_CONFIRM_CONNECT_PRIVATE_IP))
+                _connectionSettings = connectionSettings;
+                _uniqueKey = _toolkitContext.CredentialSettingsManager.GetUniqueKey(_connectionSettings.CredentialIdentifier);
+
+                if (!instance.HasPublicAddress)
                 {
-                    return new ActionResults().WithSuccess(false);
+                    if (!_toolkitContext.ToolkitHost.Confirm("Instance IP Address", EC2Constants.NO_PUBLIC_IP_CONFIRM_CONNECT_PRIVATE_IP))
+                    {
+                        return ActionResults.CreateFailed(new Ec2Exception(
+                            "EC2 instance does not have a public IP address.", Ec2Exception.Ec2ErrorCode.NoPublicIp));
+                    }
                 }
+
+                _ec2Client = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(_connectionSettings.CredentialIdentifier, _connectionSettings.Region);
+                _instance = instance;
+                _model = new OpenLinuxToolModel(instance);
+                _model.ToolLocation = ToolsUtil.FindTool(Executable, ToolSearchFolders);
+
+                if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName))
+                {
+                    _model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName);
+                    _usingStoredPrivateKey = true;
+                }
+
+                loadLastSelectedValues(out var useKeyPair, out var password);
+                if (!_toolkitContext.ToolkitHost.ShowModal(CreateControl(useKeyPair, password)))
+                {
+                    return ActionResults.CreateCancelled();
+                }
+
+                return _results ?? ActionResults.CreateFailed();
             }
-
-            _ec2Client = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(_connectionSettings.CredentialIdentifier, _connectionSettings.Region);
-            _instance = instance;
-            _model = new OpenLinuxToolModel(instance);
-            _model.ToolLocation = ToolsUtil.FindTool(Executable, ToolSearchFolders);
-
-            if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName))
+            catch (Exception ex)
             {
-                _model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(_uniqueKey, _connectionSettings.Region.Id, _instance.NativeInstance.KeyName);
-                _usingStoredPrivateKey = true;
+                _logger.Error("Failure connecting to EC2 instance", ex);
+                _toolkitContext.ToolkitHost.ShowError("Unable to connect to EC2 Instance", ex.Message);
+                return ActionResults.CreateFailed(ex);
             }
-
-            bool useKeyPair;
-            string password;
-            loadLastSelectedValues(out useKeyPair, out password);
-            _toolkitContext.ToolkitHost.ShowModal(CreateControl(useKeyPair, password));
-
-            if (_results == null)
-                return new ActionResults().WithSuccess(false);
-
-            return new ActionResults().WithSuccess(true);
         }
 
         protected bool CheckIfOpenPort()
@@ -164,6 +188,26 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             this._model.SaveCredentials = Convert.ToBoolean(os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceSaveCredentials, true.ToString()));
             this._model.EnteredUsername = os.GetValueOrDefault(ToolkitSettingsConstants.EC2InstanceUserName, this._model.EnteredUsername);
+        }
+
+        public void RecordFailure(Exception exception)
+        {
+            RecordMetric(ActionResults.CreateFailed(exception));
+        }
+
+        protected void RecordMetric(ActionResults result)
+        {
+            var accountId = _connectionSettings?.GetAccountId(_toolkitContext.ServiceClientManager) ??
+                            MetadataValue.Invalid;
+
+            _toolkitContext.TelemetryLogger.RecordEc2ConnectToInstance(new Ec2ConnectToInstance()
+            {
+                Result = result.AsTelemetryResult(),
+                Reason = TelemetryHelper.GetMetricsReason(result.Exception),
+                Ec2ConnectionType = _ec2ConnectionType,
+                AwsAccount = accountId,
+                AwsRegion = _connectionSettings?.Region?.Id ?? MetadataValue.Invalid,
+            });
         }
     }
 }

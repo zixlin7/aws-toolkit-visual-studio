@@ -1,10 +1,7 @@
 ﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
-
-using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.DynamoDB.Controller;
-using Amazon.DynamoDBv2;
-
+using Amazon.AWSToolkit.DynamoDB.Nodes;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.DynamoDB
 {
@@ -37,13 +34,13 @@ namespace Amazon.AWSToolkit.DynamoDB
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<StopLocalDynamoDBController>().Execute);
 
             rootNode.DynamoDBTableViewMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteTableController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteTableController(ToolkitContext)).Execute);
 
             rootNode.DynamoDBTableViewMetaNode.OnProperties =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<TablePropertiesController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new TablePropertiesController(ToolkitContext)).Execute);
 
             rootNode.DynamoDBTableViewMetaNode.OnStreamProperties =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<StreamPropertiesController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new StreamPropertiesController(ToolkitContext)).Execute);
 
             rootNode.DynamoDBTableViewMetaNode.OnOpen =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new TableBrowserController(ToolkitContext)).Execute);

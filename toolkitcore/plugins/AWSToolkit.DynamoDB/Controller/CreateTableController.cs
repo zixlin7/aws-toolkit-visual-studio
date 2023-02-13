@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.DynamoDB.Model;
+using Amazon.AWSToolkit.DynamoDB.Nodes;
+using Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.DynamoDB.Nodes;
-using Amazon.AWSToolkit.DynamoDB.Model;
-using Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
-
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-
+using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -32,6 +37,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
         const string TOPIC_NAME = "dynamodb";
 
         private readonly ToolkitContext _toolkitContext;
+        private AwsConnectionSettings _awsConnectionSettings;
 
         CreateTableModel _model;
         DynamoDBRootViewModel _rootModel;
@@ -47,21 +53,32 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 
         public override ActionResults Execute(IViewModel model)
         {
+            var results = CreateTable(model);
+            RecordMetric(results);
+            return results;
+        }
+
+        private ActionResults CreateTable(IViewModel model)
+        {
             this._rootModel = model as DynamoDBRootViewModel;
             if (this._rootModel == null)
-                return new ActionResults().WithSuccess(false);
-
-            var region = this._rootModel.Region;
-            
-            if (_toolkitContext.RegionProvider.IsServiceAvailable(SnsServiceName, region.Id))
             {
-                _snsClient =
-                    _rootModel.AccountViewModel.CreateServiceClient<AmazonSimpleNotificationServiceClient>(region);
+                return ActionResults.CreateFailed();
             }
 
-            if (_toolkitContext.RegionProvider.IsServiceAvailable(CloudWatchServiceName, region.Id))
+            _awsConnectionSettings =
+                new AwsConnectionSettings(_rootModel.AccountViewModel.Identifier, _rootModel.Region);
+
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(SnsServiceName, _awsConnectionSettings.Region.Id))
             {
-                this._cwClient = _rootModel.AccountViewModel.CreateServiceClient<AmazonCloudWatchClient>(region);
+                _snsClient = _toolkitContext.ServiceClientManager
+                    .CreateServiceClient<AmazonSimpleNotificationServiceClient>(_awsConnectionSettings);
+            }
+
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(CloudWatchServiceName, _awsConnectionSettings.Region.Id))
+            {
+                _cwClient = _toolkitContext.ServiceClientManager
+                    .CreateServiceClient<AmazonCloudWatchClient>(_awsConnectionSettings);
             }
 
             var seedProperties = new Dictionary<string, object>();
@@ -98,11 +115,12 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             wizard.CommitAction = this.Persist;
 
             wizard.SetNavigationButtonText(AWSWizardConstants.NavigationButtons.Finish, "Create");
-            wizard.Run();
+            if (!wizard.Run())
+            {
+                return ActionResults.CreateCancelled();
+            }
 
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-            return this._results;
+            return _results ?? ActionResults.CreateFailed();
         }
 
         public CreateTableModel Model => this._model;
@@ -265,7 +283,12 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error creating table: " + e.Message);
-                this._results = new ActionResults().WithSuccess(false);
+                this._results = ActionResults.CreateFailed(e);
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                RecordMetric(_results);
+
+                // Return code indicates whether the dialog closes or not. Leave it open for user to retry.
                 return false;
             }
         }
@@ -328,6 +351,19 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 
 
             this._cwClient.PutMetricAlarm(putAlarm);
+        }
+
+        private void RecordMetric(ActionResults results)
+        {
+            var data = new DynamodbCreateTable()
+            {
+                AwsAccount = _awsConnectionSettings?.GetAccountId(_toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                AwsRegion = _awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
+                Result = results.AsTelemetryResult(),
+                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
+            };
+
+            _toolkitContext.TelemetryLogger.RecordDynamodbCreateTable(data);
         }
     }
 }

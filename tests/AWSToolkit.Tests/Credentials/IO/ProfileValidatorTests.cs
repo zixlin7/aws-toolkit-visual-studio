@@ -261,48 +261,62 @@ namespace AWSToolkit.Tests.Credentials.IO
             Assert.Contains("which fails validation", profiles.InvalidProfiles[referencingProfileName]);
         }
 
-        [Fact]
-        public void InvalidSsoCredentials()
+        public static TheoryData<string, IEnumerable<string>> GetSsoProfilesMissingProperties()
+        {
+            return new TheoryData<string, IEnumerable<string>>()
+            {
+                {
+                    CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasAccount.Name,
+                    new[]
+                    {
+                        nameof(ProfileProperties.SsoRegion), nameof(ProfileProperties.SsoRoleName),
+                        nameof(ProfileProperties.SsoStartUrl),
+                    }
+                },
+                {
+                    CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRole.Name,
+                    new[]
+                    {
+                        nameof(ProfileProperties.SsoAccountId), nameof(ProfileProperties.SsoRegion),
+                        nameof(ProfileProperties.SsoStartUrl),
+                    }
+                },
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSsoProfilesMissingProperties))]
+        public void InvalidSsoCredentials_MissingProperties(string profileName, IEnumerable<string> expectedMissingProperties)
         {
             const string missingPropertiesSubstr = "missing one or more properties";
 
-            _availableProfiles.Add(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasAccount.Name);
-            _availableProfiles.Add(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRegion.Name);
-            _availableProfiles.Add(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRole.Name);
-            _availableProfiles.Add(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasUrl.Name);
+            _availableProfiles.Add(profileName);
 
             var profiles = _profileValidator.Validate();
 
             Assert.Empty(profiles.ValidProfiles);
-            Assert.Equal(4, profiles.InvalidProfiles.Count);
+            Assert.Single(profiles.InvalidProfiles);
 
-            var validation = Assert.Contains(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasAccount.Name,
-                profiles.InvalidProfiles as IDictionary<string, string>);
-            Assert.Contains(missingPropertiesSubstr, validation);
-            Assert.Contains(nameof(ProfileProperties.SsoRegion), validation);
-            Assert.Contains(nameof(ProfileProperties.SsoRoleName), validation);
-            Assert.Contains(nameof(ProfileProperties.SsoStartUrl), validation);
+            var validationMessage = profiles.InvalidProfiles[profileName];
 
-            validation = Assert.Contains(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRegion.Name,
-                profiles.InvalidProfiles as IDictionary<string, string>);
-            Assert.Contains(missingPropertiesSubstr, validation);
-            Assert.Contains(nameof(ProfileProperties.SsoAccountId), validation);
-            Assert.Contains(nameof(ProfileProperties.SsoRoleName), validation);
-            Assert.Contains(nameof(ProfileProperties.SsoStartUrl), validation);
+            Assert.Contains(missingPropertiesSubstr, validationMessage);
+            Assert.All(expectedMissingProperties,
+                missingProperty => Assert.Contains(missingProperty, validationMessage));
+        }
 
-            validation = Assert.Contains(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRole.Name,
-                profiles.InvalidProfiles as IDictionary<string, string>);
-            Assert.Contains(missingPropertiesSubstr, validation);
-            Assert.Contains(nameof(ProfileProperties.SsoAccountId), validation);
-            Assert.Contains(nameof(ProfileProperties.SsoRegion), validation);
-            Assert.Contains(nameof(ProfileProperties.SsoStartUrl), validation);
+        /// <summary>
+        /// Profiles in the form [sso-session foo] are not returned in the top-level results.
+        /// They are validated through profiles that reference them.
+        /// </summary>
+        [Fact]
+        public void ValidationResultsExcludeSsoSessionProfiles()
+        {
+            _availableProfiles.Add(CredentialProfileTestHelper.SsoSession.Valid.SsoSessionProfile.Name);
 
-            validation = Assert.Contains(CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasUrl.Name,
-                profiles.InvalidProfiles as IDictionary<string, string>);
-            Assert.Contains(missingPropertiesSubstr, validation);
-            Assert.Contains(nameof(ProfileProperties.SsoAccountId), validation);
-            Assert.Contains(nameof(ProfileProperties.SsoRegion), validation);
-            Assert.Contains(nameof(ProfileProperties.SsoRoleName), validation);
+            var profiles = _profileValidator.Validate();
+
+            Assert.Empty(profiles.ValidProfiles);
+            Assert.Empty(profiles.InvalidProfiles);
         }
 
         private void PopulateSampleProfiles()
@@ -330,11 +344,10 @@ namespace AWSToolkit.Tests.Credentials.IO
                 CredentialProfileTestHelper.AssumeRole.Invalid.CyclicReference.ProfileC,
                 CredentialProfileTestHelper.Sso.ValidProfile,
                 CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasAccount,
-                CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRegion,
                 CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasRole,
-                CredentialProfileTestHelper.Sso.Invalid.MissingProperties.HasUrl,
                 CredentialProfileTestHelper.SsoSession.Valid.SsoSessionProfile,
-                CredentialProfileTestHelper.SsoSession.Valid.SsoSessionReferencingProfile,
+                CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesSsoBasedSsoSession,
+                CredentialProfileTestHelper.SsoSession.Valid.ProfileReferencesTokenBasedSsoSession,
                 CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionProfiles.MissingSsoRegion,
                 CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionProfiles.MissingSsoStartUrl,
                 CredentialProfileTestHelper.SsoSession.Invalid.SsoSessionReferencingProfiles.ReferenceDoesNotExist,

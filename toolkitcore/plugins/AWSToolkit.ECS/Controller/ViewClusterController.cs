@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.ECS.View;
-using Amazon.ECS.Model;
-using log4net;
-
+using Amazon.AWSToolkit.Navigator;
 using Amazon.CloudWatchEvents;
 using Amazon.EC2;
 using Amazon.ECS;
+using Amazon.ECS.Model;
 using Amazon.ElasticLoadBalancingV2;
 using Amazon.ElasticLoadBalancingV2.Model;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
@@ -67,11 +69,11 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 ToolkitContext.ToolkitHost.ShowError(msg, "Resource Query Failure");
             }
         }
-        
+
         public void DeleteService(ServiceWrapper service)
         {
             var controller = new DeleteServiceConfirmationController(this.ECSClient, this._elbClient, this._ec2Client, this.Model, service, ToolkitContext);
-            if(controller.Execute())
+            if (controller.Execute())
             {
                 this.Refresh();
             }
@@ -86,7 +88,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 DesiredCount = service.DesiredCount
             };
 
-            if(service.DeploymentMaximumPercent.HasValue || service.DeploymentMinimumHealthyPercent.HasValue)
+            if (service.DeploymentMaximumPercent.HasValue || service.DeploymentMinimumHealthyPercent.HasValue)
             {
                 request.DeploymentConfiguration = new DeploymentConfiguration
                 {
@@ -112,7 +114,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 },
                 Include = new List<string> { "STATISTICS" }
             };
-            ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(AWSToolkit.Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
+            ((Amazon.Runtime.Internal.IAmazonWebServiceRequest) request).AddBeforeRequestHandler(AWSToolkit.Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
             var response = this.ECSClient.DescribeClusters(request);
 
             if (response.Clusters.Count != 1)
@@ -127,7 +129,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             {
                 this.RefreshServices();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 var msg = "Error fetching services for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
@@ -165,7 +167,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             // We need to loop through the target group arns individual because there is a chance a service is pointing to a non existing ELB target group.
             // In that case the entire batch describe fails
             List<TargetGroup> targetGroupList = new List<TargetGroup>();
-            foreach(var targetGroupArn in targetGroupArns)
+            foreach (var targetGroupArn in targetGroupArns)
             {
                 var request = new DescribeTargetGroupsRequest();
                 request.TargetGroupArns.Add(targetGroupArn);
@@ -173,7 +175,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 {
                     targetGroupList.AddRange(this._elbClient.DescribeTargetGroups(request).TargetGroups);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     LOGGER.Error("Error getting target group " + targetGroupArn, e);
                 }
@@ -240,7 +242,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 }
             }
 
-            foreach(var service in this.Model.Services)
+            foreach (var service in this.Model.Services)
             {
                 service.LoadingELB = true;
             }
@@ -262,7 +264,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         private void UpdateServicesWithLoadBalancerInfo()
         {
-            ToolkitContext.ToolkitHost.BeginExecuteOnUIThread((System.Action)(() =>
+            ToolkitContext.ToolkitHost.BeginExecuteOnUIThread((System.Action) (() =>
             {
 
                 foreach (var service in this.Model.Services)
@@ -359,7 +361,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 {
                     var taskWrapper = new TaskWrapper(nativeTask);
                     var networkInterfaceId = taskWrapper.NetworkInterfaceId;
-                    if(!string.IsNullOrEmpty(networkInterfaceId))
+                    if (!string.IsNullOrEmpty(networkInterfaceId))
                     {
                         tasksToLookupENI[networkInterfaceId] = taskWrapper;
                     }
@@ -381,9 +383,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
                             request.NetworkInterfaceIds.Add(id);
 
                         var networkInterfaces = this._ec2Client.DescribeNetworkInterfaces(request).NetworkInterfaces;
-                        foreach(var networkInterface in networkInterfaces)
+                        foreach (var networkInterface in networkInterfaces)
                         {
-                            if(networkInterface.Association != null && !string.IsNullOrEmpty(networkInterface.Association.PublicIp))
+                            if (networkInterface.Association != null && !string.IsNullOrEmpty(networkInterface.Association.PublicIp))
                             {
                                 var task = tasksToLookupENI[networkInterface.NetworkInterfaceId];
                                 task.AddNetworkInterfaceInfo(networkInterface.Association.PublicIp, networkInterface.Association.PublicDnsName);
@@ -392,7 +394,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                         }
 
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         LOGGER.Error("Error looking up networking interfaces", e);
                     }
@@ -425,7 +427,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         public void DeleteScheduleTasks(IEnumerable<ScheduledTaskWrapper> tasks)
         {
-            foreach(var task in tasks)
+            foreach (var task in tasks)
             {
                 var removeTargetsRequest = new Amazon.CloudWatchEvents.Model.RemoveTargetsRequest
                 {
@@ -490,6 +492,29 @@ namespace Amazon.AWSToolkit.ECS.Controller
             var taskId = task.TaskArn.Substring(task.TaskArn.LastIndexOf('/') + 1);
             var logStream = $"{prefix}/{containerName}/{taskId}";
             return logStream;
+        }
+
+        public void RecordStopEcsTask(int count, ActionResults result)
+        {
+            var data = CreateMetricData<EcsStopTask>(result, ToolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Value = count;
+            ToolkitContext.TelemetryLogger.RecordEcsStopTask(data);
+        }
+
+        public void RecordDeleteScheduledTask(int count, ActionResults result)
+        {
+            var data = CreateMetricData<EcsDeleteScheduledTask>(result, ToolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Value = count;
+            ToolkitContext.TelemetryLogger.RecordEcsDeleteScheduledTask(data);
+        }
+
+        public void RecordEcsEditService(ActionResults result)
+        {
+            var data = CreateMetricData<EcsEditService>(result, ToolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            ToolkitContext.TelemetryLogger.RecordEcsEditService(data);
         }
     }
 }

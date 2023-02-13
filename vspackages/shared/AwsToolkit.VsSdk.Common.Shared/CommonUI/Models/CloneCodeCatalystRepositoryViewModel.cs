@@ -137,21 +137,9 @@ namespace CommonUI.Models
 
         public ICommand RetryRepositoriesCommand { get; }
 
-        private ICommand _submitDialogCommand;
+        public ICommand SubmitDialogCommand { get; }
 
-        public ICommand SubmitDialogCommand
-        {
-            get => _submitDialogCommand;
-            set => SetProperty(ref _submitDialogCommand, value);
-        }
-
-        private ICommand _cancelDialogCommand;
-
-        public ICommand CancelDialogCommand
-        {
-            get => _cancelDialogCommand;
-            set => SetProperty(ref _cancelDialogCommand, value);
-        }
+        public ICommand CancelDialogCommand { get; }
 
         public ICommand HelpCommand { get; }
 
@@ -159,8 +147,15 @@ namespace CommonUI.Models
 
         public ICommand LoginCommand { get; }
 
-
         public string Heading { get; } = "Clone an Amazon CodeCatalyst repository";
+
+        private bool? _dialogResult;
+
+        public bool? DialogResult
+        {
+            get => _dialogResult;
+            private set => SetProperty(ref _dialogResult, value);
+        }
 
         public CloneCodeCatalystRepositoryViewModel(ToolkitContext toolkitContext, JoinableTaskFactory joinableTaskFactory, IGitService git)
         {
@@ -188,10 +183,11 @@ namespace CommonUI.Models
             HelpCommand = new RelayCommand(ExecuteHelpCommand);
             LoginCommand = new RelayCommand(ExecuteLogin);
             LogoutCommand = new RelayCommand(CanExecuteLogout, ExecuteLogout);
+            SubmitDialogCommand = new RelayCommand(CanExecuteSubmitDialog, ExecuteSubmitDialog);
+            CancelDialogCommand = new RelayCommand(ExecuteCancelDialog);
 
             _connectionStatus = CreateDisconnectedConnectionStatus();
         }
-
 
         public void Dispose()
         {
@@ -221,14 +217,14 @@ namespace CommonUI.Models
                     break;
                 case nameof(LocalPath):
                     ValidateLocalPath();
-                    RaiseCanExecuteChangedForSubmit();
+                    RaiseCanExecuteSubmitDialogChanged();
                     break;
             }
         }
 
-        private void RaiseCanExecuteChangedForSubmit()
+        protected virtual void RaiseCanExecuteSubmitDialogChanged(object parameter = null)
         {
-            SubmitDialogCommand?.CanExecute(null);
+            SubmitDialogCommand?.CanExecute(parameter);
         }
 
         private void ExecuteBrowseForRepositoryPathCommand(object parameter)
@@ -243,7 +239,17 @@ namespace CommonUI.Models
             }
         }
 
-        public bool CanSubmit()
+        private void ExecuteCancelDialog(object parameter)
+        {
+            DialogResult = false;
+        }
+
+        private void ExecuteSubmitDialog(object parameter)
+        {
+            DialogResult = true;
+        }
+
+        private bool CanExecuteSubmitDialog(object parameter)
         {
             return
                 Connection.IsConnectionValid &&
@@ -474,7 +480,7 @@ namespace CommonUI.Models
                     }
                     catch (Exception ex)
                     {
-                        DataErrorInfo.AddError(ex, nameof(Spaces));
+                        DataErrorInfo.AddError(ex.Message, nameof(Spaces));
                         return;
                     }
 
@@ -525,7 +531,7 @@ namespace CommonUI.Models
                     }
                     catch (Exception ex)
                     {
-                        DataErrorInfo.AddError(ex, nameof(Projects));
+                        DataErrorInfo.AddError(ex.Message, nameof(Projects));
                         return;
                     }
 
@@ -576,7 +582,7 @@ namespace CommonUI.Models
                     }
                     catch (Exception ex)
                     {
-                        DataErrorInfo.AddError(ex, nameof(Repositories));
+                        DataErrorInfo.AddError(ex.Message, nameof(Repositories));
                         return;
                     }
 

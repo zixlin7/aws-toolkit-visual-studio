@@ -1,7 +1,5 @@
-﻿using System;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Controller;
-using log4net;
+﻿using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -10,32 +8,12 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class ChangeTerminationProtectionControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(ChangeTerminationProtectionControl));
-
-        ChangeTerminationProtectionController _controller;
-
-        public ChangeTerminationProtectionControl(ChangeTerminationProtectionController controller)
+        public ChangeTerminationProtectionControl(ChangeTerminationProtectionModel model)
         {
             InitializeComponent();
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            DataContext = model;
         }
 
         public override string Title => "Change Termination Protection";
-
-        public override bool OnCommit()
-        {
-            try
-            {
-                this._controller.ChangeTerminationProtection();
-                return true;
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error changing termination protection", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error changing termination protection: " + e.Message);
-                return false;
-            }
-        }
     }
 }

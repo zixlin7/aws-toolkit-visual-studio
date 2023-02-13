@@ -24,7 +24,10 @@ namespace Amazon.AWSToolkit.EC2.Controller
             this._ec2Client = this._keyPairModel.EC2Client;
             this._model = new CreateKeyPairModel();
 
-            ToolkitFactory.Instance.ShellProvider.ShowModal(new CreateKeyPairControl(this));
+            if (!ToolkitFactory.Instance.ShellProvider.ShowModal(new CreateKeyPairControl(this)))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
             if(this._results.Success)
                 ToolkitFactory.Instance.ShellProvider.ShowModal(new CreateKeyPairResponseControl(this), MessageBoxButton.OK);

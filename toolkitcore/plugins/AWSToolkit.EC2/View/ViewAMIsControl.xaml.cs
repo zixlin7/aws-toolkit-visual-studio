@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Utils;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.EC2;
@@ -193,25 +194,34 @@ namespace Amazon.AWSToolkit.EC2.View
             try
             {
                 var sourceRegion = (sender as Control).Tag as ToolkitRegion;
-                this._controller.CopyAmi(this._ctlDataGrid.GetSelectedItems<ImageWrapper>()[0], sourceRegion);
+                var result = _controller.CopyAmi(_ctlDataGrid.GetSelectedItems<ImageWrapper>()[0], sourceRegion);
+                _controller.RecordCopyAmi(result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error copying image(s)", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error copying image(s): " + e.Message);
+                _controller.RecordCopyAmi(ActionResults.CreateFailed(e));
             }
         }
 
         void onDeregisterClick(object sender, RoutedEventArgs evnt)
         {
+            int imageCount = 0;
+
             try
             {
-                this._controller.Deregister(this._ctlDataGrid.GetSelectedItems<ImageWrapper>());
+                var selectedItems = _ctlDataGrid.GetSelectedItems<ImageWrapper>();
+                imageCount = selectedItems.Count;
+
+                var result = _controller.Deregister(selectedItems);
+                _controller.RecordDeleteAmi(imageCount, result);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error de-registering image(s)", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error de-registering image(s): " + e.Message);
+                _controller.RecordDeleteAmi(imageCount, ActionResults.CreateFailed(e));
             }
         }
 
@@ -219,16 +229,20 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                if (this._ctlDataGrid.SelectedItems.Count != 1)
+                if (_ctlDataGrid.SelectedItems.Count != 1)
+                {
                     return;
+                }
 
-                var image = this._ctlDataGrid.SelectedItem as ImageWrapper;
-                this._controller.EditPermission(image);
+                var image = _ctlDataGrid.SelectedItem as ImageWrapper;
+                var result = _controller.EditPermission(image);
+                _controller.RecordEditAmiPermission(result);
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error editting permissions image(s)", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error editting permissions image(s): " + e.Message);
+                LOGGER.Error("Error editing permissions image(s)", e);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error editing permissions image(s): " + e.Message);
+                _controller.RecordEditAmiPermission(ActionResults.CreateFailed(e));
             }
         }
 

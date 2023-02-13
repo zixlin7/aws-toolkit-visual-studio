@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Windows;
 
 using Amazon.AWSToolkit;
 
@@ -13,3 +14,5 @@ using Amazon.AWSToolkit;
 [assembly: NeutralResourcesLanguage("en-US")]
 
 [assembly: InternalsVisibleTo("AwsToolkit.Vs.v16.Tests, PublicKey=" + ToolkitGlobalConstants.StrongNamePublicKey)]
+
+[assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]

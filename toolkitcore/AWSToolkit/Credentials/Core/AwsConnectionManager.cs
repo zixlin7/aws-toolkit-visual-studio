@@ -8,6 +8,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Tasks;
@@ -373,7 +374,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
             catch (Exception e)
             {
-                validationResult = Result.Failed;
+                validationResult = e is UserCanceledException ? Result.Cancelled : Result.Failed;
+               
                 LOGGER.Error($"Failed to switch to credentials: {identifier?.DisplayName}", e);
                 var connectionState = new ConnectionState.InvalidConnection(e.Message);
                 SetValidationResults(identifier, region, connectionState, null, string.Empty, string.Empty, token);

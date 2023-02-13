@@ -54,6 +54,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public const string VSProjectTypeProjectFolder = "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}";
 
+        public const string MonikersGuidString = "{ee9972ac-366c-43da-ad50-d4bb319dc2b8}";
+
         // Source : Microsoft.VisualStudio.ImageCatalog
         // There are conflicts with .NET Framework versions when trying to 
         // directly reference the NuGet package Microsoft.VisualStudio.ImageCatalog
