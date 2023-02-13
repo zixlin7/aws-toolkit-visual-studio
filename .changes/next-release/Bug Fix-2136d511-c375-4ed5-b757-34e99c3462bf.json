@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "When an error is displayed on the Clone CodeCatalyst Repository dialog, only the error message is shown rather than all exception details."
-}

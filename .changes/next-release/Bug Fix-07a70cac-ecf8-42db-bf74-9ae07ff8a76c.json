@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Loading CloudFormation template projects no longer displays a \"Target framework not supported\" dialog that attempts to target .NET Framework 4.0. The Toolkit now requires .NET Framework 4.7.2 in order to handle these projects."
-}
