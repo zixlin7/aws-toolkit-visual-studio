@@ -171,6 +171,8 @@ namespace CommonUI.Models
                 ConnectionTypes = new List<AwsConnectionType>() { AwsConnectionType.AwsToken },
                 CredentialIdentifier = null
             };
+            ConnectionManager.ConnectionStateChanged += ConnectionManager_ConnectionStateChanged;
+            Connection.PropertyChanged += Connection_PropertyChanged;
 
             LocalPath = git.GetDefaultRepositoryPath();
 
@@ -191,6 +193,9 @@ namespace CommonUI.Models
 
         public void Dispose()
         {
+            ConnectionManager.ConnectionStateChanged -= ConnectionManager_ConnectionStateChanged;
+            Connection.PropertyChanged -= Connection_PropertyChanged;
+
             Connection.Dispose();
         }
 
@@ -220,6 +225,20 @@ namespace CommonUI.Models
                     RaiseCanExecuteSubmitDialogChanged();
                     break;
             }
+        }
+
+        private void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Connection.CredentialIdentifier))
+            {
+                OnCredentialIdentifierChanged();
+            }
+        }
+
+        private void OnCredentialIdentifierChanged()
+        {
+            UpdateConnectionSettings();
+            ConnectionManager.ChangeConnectionSettings(Identifier, AwsIdRegion);
         }
 
         protected virtual void RaiseCanExecuteSubmitDialogChanged(object parameter = null)
@@ -395,6 +414,18 @@ namespace CommonUI.Models
                     await refreshAsync(dialog.CancellationToken);
                 }
             }).Task.LogExceptionAndForget();
+        }
+
+        private void ConnectionManager_ConnectionStateChanged(object sender, ConnectionStateChangeArgs e)
+        {
+            _joinableTaskFactory.Run(async () =>
+            {
+                await _joinableTaskFactory.SwitchToMainThreadAsync();
+                var connectionState = e.State;
+                Connection.UpdateRequiredConnectionProperties(connectionState);
+                ApplyConnectionState(connectionState);
+                RefreshSpaces();
+            });
         }
 
         /// <summary>
