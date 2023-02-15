@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 
 using LitJson;
 
-using Microsoft.Build.Utilities;
 using Microsoft.Build.Framework;
 
 namespace BuildTasks
@@ -185,6 +181,13 @@ namespace BuildTasks
                 PatchFile(manifestFile, "<Version>", "</Version>");
                 PatchFile(manifestFile, "Id=\"|%CurrentProject%;GetVsixGuid|\" Version=\"", "\"");
                 PatchFile(manifestFile, "Id=\"|%CurrentProject%;GetVsixGuid2022|\" Version=\"", "\"");
+            }
+
+            this.Log.LogMessage("...updating project template vstemplate files for version {0}", this.VersionNumber);
+            foreach (var vstemplateFile in Directory.GetFiles(this.RepositoryRoot, "*.vstemplate", SearchOption.AllDirectories))
+            {
+                Console.WriteLine("Updating vstemplate: " + vstemplateFile);
+                PatchFile(vstemplateFile, ",Version=", ",");
             }
 
             var assemblyVersionFile = Directory.GetFiles(Path.Combine(this.RepositoryRoot, "buildtools") , "AssemblyVersion.cs").FirstOrDefault();
