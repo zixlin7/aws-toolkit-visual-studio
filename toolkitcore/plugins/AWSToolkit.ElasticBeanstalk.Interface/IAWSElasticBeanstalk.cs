@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.PluginServices.Deployment;
+﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.PluginServices.Deployment;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk
 {
@@ -11,5 +12,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
         /// Returns the deployment service for Elastic Beanstalk
         /// </summary>
         IAWSToolkitDeploymentService DeploymentService { get; }
+
+        /// <summary>
+        /// Shows publish wizard
+        /// </summary>
+        bool ShowPublishWizard(IAWSWizard wizard);
     }
 }

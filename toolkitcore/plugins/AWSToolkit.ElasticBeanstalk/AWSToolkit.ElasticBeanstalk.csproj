@@ -93,6 +93,7 @@
     <Compile Include="Model\EnvironmentConfigModel.cs" />
     <Compile Include="Model\EnvironmentStatusModel.cs" />
     <Compile Include="Model\EventWrapper.cs" />
+    <Compile Include="Model\MetricSources.cs" />
     <Compile Include="Model\SecurityGroupInfo.cs" />
     <Compile Include="Model\SelectableGroup.cs" />
     <Compile Include="Nodes\ApplicationViewMetaNode.cs" />
@@ -114,6 +115,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utils\BeanstalkHelpers.cs" />
     <Compile Include="Utils\BeanstalkTelemetryExtensionMethods.cs" />
     <Compile Include="Utils\ModelExtensionMethods.cs" />
     <Compile Include="Utils\SolutionStackUtils.cs" />

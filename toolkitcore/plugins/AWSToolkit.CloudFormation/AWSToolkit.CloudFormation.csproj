@@ -76,8 +76,10 @@
     <Compile Include="Controllers\ViewDeploymentLogController.cs" />
     <Compile Include="Controllers\ViewStackController.cs" />
     <Compile Include="Model\AutoScalingGroupWrapper.cs" />
+    <Compile Include="Model\CloudFormationToolkitException.cs" />
     <Compile Include="Model\DBInstanceWrapper.cs" />
     <Compile Include="Model\LoadBalancerDescriptionWrapper.cs" />
+    <Compile Include="Model\MetricSources.cs" />
     <Compile Include="Model\ResourceWrapper.cs" />
     <Compile Include="Model\RunningInstanceWrapper.cs" />
     <Compile Include="Model\S3Location.cs" />

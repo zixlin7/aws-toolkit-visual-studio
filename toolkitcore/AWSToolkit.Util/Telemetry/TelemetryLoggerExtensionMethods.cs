@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.Telemetry
             }
         }
       
-        public static async Task TimeAndRecord(this ITelemetryLogger telemetryLogger, Func<Task> work,
+        public static async Task TimeAndRecordAsync(this ITelemetryLogger telemetryLogger, Func<Task> work,
             Action<ITelemetryLogger, long> recordMetric)
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -48,6 +48,23 @@ namespace Amazon.AWSToolkit.Telemetry
             {
                 stopwatch.Stop();
                 recordMetric(telemetryLogger, stopwatch.ElapsedMilliseconds);
+            }
+        }
+
+        public static void TimeAndRecord(this ITelemetryLogger telemetryLogger, Action work,
+            Action<ITelemetryLogger, double> recordMetric)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+
+            try
+            {
+                stopwatch.Start();
+                work();
+            }
+            finally
+            {
+                stopwatch.Stop();
+                recordMetric(telemetryLogger, stopwatch.Elapsed.TotalMilliseconds);
             }
         }
     }

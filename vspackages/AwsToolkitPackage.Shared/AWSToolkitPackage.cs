@@ -1503,10 +1503,11 @@ namespace Amazon.AWSToolkit.VisualStudio
                 IntPtr parent;
                 uiShell.GetDialogOwnerHwnd(out parent);
 
-                var ret = wizard.Run();
+                var success = beanstalk?.ShowPublishWizard(wizard) ?? false;
+
                 IDictionary<string, object> localWizardProperties = wizard.CollectedProperties;
 
-                return new Tuple<bool, IDictionary<string, object>>(ret, localWizardProperties);
+                return new Tuple<bool, IDictionary<string, object>>(success, localWizardProperties);
             });
 
             wizardProperties = tuple.Item2;

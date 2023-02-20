@@ -2,12 +2,12 @@
 
 using Amazon.AWSToolkit.CloudWatch.Logs.Commands;
 using Amazon.AWSToolkit.CloudWatch.Logs.Core;
-using Amazon.AWSToolkit.CloudWatch.Logs.Models;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using AWSToolkit.Tests.CloudWatch.Logs.Util;
@@ -33,7 +33,7 @@ namespace AWSToolkit.Tests.CloudWatch.Logs.Commands
             var awsConnectionSettings = new AwsConnectionSettings(null, null);
 
             Setup();
-            _command = new ViewLogGroupsCommand(AwsExplorerMetricSource.CloudWatchLogsNode, _contextFixture.ToolkitContext, awsConnectionSettings);
+            _command = new ViewLogGroupsCommand(CommonMetricSources.AwsExplorerMetricSource.ServiceNode, _contextFixture.ToolkitContext, awsConnectionSettings);
         }
 
         [Fact]

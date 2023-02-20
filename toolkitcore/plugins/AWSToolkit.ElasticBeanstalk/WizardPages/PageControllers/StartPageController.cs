@@ -144,7 +144,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     _toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
 
 
+                HostingWizard.SetSelectedRegion(_pageUI.Connection.Region);
+
                 //_accountSignUpValidation.ValidateSignUps(viewModel.RegisteredAccounts, DeploymentServiceIdentifiers.BeanstalkServiceName);
+
+
+                //TODO: Revisit the last deployed region logic. This sets the connection Region to null because no regions have been loaded yet
 
                 string lastRegionDeployedTo = string.Empty;
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo))

@@ -3,13 +3,13 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudWatch.Logs.Commands;
 using Amazon.AWSToolkit.CloudWatch.Logs.Core;
-using Amazon.AWSToolkit.CloudWatch.Logs.Models;
 using Amazon.AWSToolkit.CloudWatch.Logs.Viewers;
 using Amazon.AWSToolkit.CloudWatch.Nodes;
 using Amazon.AWSToolkit.CloudWatch.ViewModels;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 using log4net;
 
@@ -76,7 +76,7 @@ namespace Amazon.AWSToolkit.CloudWatch
 
                 var awsConnectionSetting = new AwsConnectionSettings(rootModel.Identifier, rootModel.Region);
 
-                return new ViewLogGroupsCommand(AwsExplorerMetricSource.CloudWatchLogsNode, ToolkitContext, awsConnectionSetting);
+                return new ViewLogGroupsCommand(CommonMetricSources.AwsExplorerMetricSource.ServiceNode, ToolkitContext, awsConnectionSetting);
             }
 
             return new ConnectionContextCommandExecutor(CreateCommand, ToolkitContext.ToolkitHost).Execute();
@@ -96,7 +96,7 @@ namespace Amazon.AWSToolkit.CloudWatch
                 
                 var awsConnectionSetting = new AwsConnectionSettings(logGroups.AccountViewModel?.Identifier, logGroups.Region);
 
-                return new ViewLogGroupsCommand(AwsExplorerMetricSource.CloudWatchLogsNode, ToolkitContext, awsConnectionSetting);
+                return new ViewLogGroupsCommand(CommonMetricSources.AwsExplorerMetricSource.ServiceNode, ToolkitContext, awsConnectionSetting);
             }
 
             return new ConnectionContextCommandExecutor(CreateCommand, ToolkitContext.ToolkitHost).Execute();

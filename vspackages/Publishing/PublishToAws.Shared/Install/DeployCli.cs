@@ -51,7 +51,7 @@ namespace Amazon.AWSToolkit.Publish.Install
                     AsInstallMode(installResult), milliseconds);
             }
 
-            await _toolkitContext.TelemetryLogger.TimeAndRecord(Install, Record);
+            await _toolkitContext.TelemetryLogger.TimeAndRecordAsync(Install, Record);
         }
 
         private async Task<InstallResult> InstallDeployCliAsync(CancellationToken cancellationToken)
@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.Publish.Install
                 RecordCliValidated(telemetryLogger, AsResult(success, cancellationToken), milliseconds);
             }
 
-            await _toolkitContext.TelemetryLogger.TimeAndRecord(Verify, Record);
+            await _toolkitContext.TelemetryLogger.TimeAndRecordAsync(Verify, Record);
         }
 
         private async Task VerifyDeployCliAsync(CancellationToken cancellationToken)

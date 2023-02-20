@@ -3,16 +3,6 @@ using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace Amazon.AWSToolkit.CloudWatch.Logs.Models
 {
-
-    public class AwsExplorerMetricSource : BaseMetricSource
-    {
-        public static readonly BaseMetricSource CloudWatchLogsNode = new AwsExplorerMetricSource("AwsExplorer");
-
-        private AwsExplorerMetricSource(string location) : base(null, location)
-        {
-        }
-    }
-
     public class CloudWatchLogsMetricSource : BaseMetricSource
     {
         public static readonly BaseMetricSource LogGroupsView = new CloudWatchLogsMetricSource("groupsView");

@@ -14,6 +14,7 @@ namespace Amazon.AWSToolkit.Regions
         // ***** HEAR ME NOW AND BELIEVE ME LATER!!! *****
         // When you add anything here, you MUST add a test for it in AWSToolkit.Util.Tests/Regions/ServiceNameTests.cs
         // Don't even think about submitting a PR without it.
+        public const string Beanstalk = "elasticbeanstalk";
         public const string CloudWatchLogs = "logs";
         public const string CodeCatalyst = "codecatalyst";
         public const string CodeCommit = "codecommit";

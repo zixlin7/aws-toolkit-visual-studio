@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Beanstalk;
 using Amazon.AWSToolkit.CommonUI;
@@ -18,6 +19,7 @@ using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -214,6 +216,35 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
         #region IAWSElasticBeanstalk Members
 
         IAWSToolkitDeploymentService IAWSElasticBeanstalk.DeploymentService => this as IAWSToolkitDeploymentService;
+
+        public bool ShowPublishWizard(IAWSWizard wizard)
+        {
+            var result = false;
+
+            void Invoke() => result = wizard.Run();
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var connectionSettings = CreateConnectionSettings(wizard);
+                RecordPublishWizard(result, duration, connectionSettings);
+            }
+
+            ToolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+            return result;
+        }
+
+        private AwsConnectionSettings CreateConnectionSettings(IAWSWizard wizard)
+        {
+            var identifier = wizard.GetSelectedAccount()?.Identifier;
+            var region = wizard.GetSelectedRegion();
+            return new AwsConnectionSettings(identifier, region);
+        }
+
+        private void RecordPublishWizard(bool success, double duration, AwsConnectionSettings connectionSettings)
+        {
+            var result = success ? new ActionResults().WithSuccess(true) : ActionResults.CreateCancelled();
+            ToolkitContext.RecordBeanstalkPublishWizard(result, duration, connectionSettings);
+        }
 
         #endregion
 
