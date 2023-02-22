@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.SQS
 
             SQSQueueViewMetaNode queueMetaNode = sqsRootNode.FindChild<SQSQueueViewMetaNode>();
             queueMetaNode.OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<QueueViewCommand>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new QueueViewCommand(ToolkitContext)).Execute);
 
             queueMetaNode.OnPermissions =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<PermissionsCommand>().Execute);

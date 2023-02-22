@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.SQS.Model;
 using Amazon.AWSToolkit.SQS.Controller;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.SQS.View
 {
@@ -54,9 +55,9 @@ namespace Amazon.AWSToolkit.SQS.View
 
         public override void OnEditorOpened(bool success)
         {
-            ToolkitFactory.Instance.TelemetryLogger.RecordSqsOpenQueue(new SqsOpenQueue()
+            _controller.ToolkitContext.TelemetryLogger.RecordSqsOpenQueue(new SqsOpenQueue()
             {
-                SqsQueueType = SqsQueueType.Standard,
+                SqsQueueType = _controller.IsFifo() ? SqsQueueType.Fifo : SqsQueueType.Standard
             }); 
         }
         
@@ -69,7 +70,7 @@ namespace Amazon.AWSToolkit.SQS.View
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error saving queue: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error saving queue: " + e.Message);
             }
         }
 
@@ -77,14 +78,17 @@ namespace Amazon.AWSToolkit.SQS.View
         {
             try
             {
-                if (this._controller.SendMessage())
+                var result = _controller.SendMessage();
+                 _controller.RecordSendMessage(result);
+                if (result.Success)
                 {
-                    this._controller.Refresh();
+                    _controller.Refresh();
                 }
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error sending message: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error sending message: " + e.Message);
+                _controller.RecordSendMessage(ActionResults.CreateFailed(e));
             }
         }
 
@@ -92,14 +96,17 @@ namespace Amazon.AWSToolkit.SQS.View
         {
             try
             {
-                if (this._controller.PurgeQueue())
+                var result = _controller.PurgeQueue();
+                _controller.RecordPurgeQueue(result);
+                if (result.Success)
                 {
-                    this._controller.Refresh();
+                    _controller.Refresh();
                 }
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error purging message: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error purging message: " + e.Message);
+                _controller.RecordPurgeQueue(ActionResults.CreateFailed(e));
             }
         }
 
@@ -111,7 +118,7 @@ namespace Amazon.AWSToolkit.SQS.View
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing queue: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error refreshing queue: " + e.Message);
             }
         }
 
@@ -121,7 +128,7 @@ namespace Amazon.AWSToolkit.SQS.View
             if (w == null)
                 return;
             ExamineMessageControl control = new ExamineMessageControl(w);
-            ToolkitFactory.Instance.ShellProvider.ShowModal(control, MessageBoxButton.OK);
+            _controller.ToolkitContext.ToolkitHost.ShowModal(control, MessageBoxButton.OK);
         }
 
         void onSelectionChanged(object sender, SelectionChangedEventArgs evnt)

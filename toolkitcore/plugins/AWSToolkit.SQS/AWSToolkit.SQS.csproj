@@ -84,6 +84,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="SQSActivator.cs" />
+    <Compile Include="Util\SqsHelpers.cs" />
     <Compile Include="Util\SqsTelemetryExtensionMethods.cs" />
     <Compile Include="View\CreateQueueControl.xaml.cs">
       <DependentUpon>CreateQueueControl.xaml</DependentUpon>

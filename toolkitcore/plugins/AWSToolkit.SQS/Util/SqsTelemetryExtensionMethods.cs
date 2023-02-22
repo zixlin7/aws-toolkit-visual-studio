@@ -28,5 +28,27 @@ namespace Amazon.AWSToolkit.SQS.Util
 
             toolkitContext.TelemetryLogger.RecordSqsDeleteQueue(data);
         }
+
+        public static void RecordSqsSendMessage(this ToolkitContext toolkitContext, ActionResults result, bool isFifo, 
+            AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = result.CreateMetricData<SqsSendMessage>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.SqsQueueType = isFifo ? SqsQueueType.Fifo : SqsQueueType.Standard;
+
+            toolkitContext.TelemetryLogger.RecordSqsSendMessage(data);
+        }
+
+        public static void RecordSqsPurgeQueue(this ToolkitContext toolkitContext, ActionResults result, bool isFifo,
+            AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = result.CreateMetricData<SqsPurgeQueue>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.SqsQueueType = isFifo ? SqsQueueType.Fifo : SqsQueueType.Standard;
+
+            toolkitContext.TelemetryLogger.RecordSqsPurgeQueue(data);
+        }
     }
 }

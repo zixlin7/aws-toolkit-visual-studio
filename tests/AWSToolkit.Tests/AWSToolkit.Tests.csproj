@@ -218,6 +218,7 @@
     <Compile Include="S3\S3PathTests.cs" />
     <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
     <Compile Include="SNS\CreateTopicModelTests.cs" />
+    <Compile Include="SQS\SqsHelpersTests.cs" />
     <Compile Include="Util\ServiceSpecificCredentialsTests.cs" />
     <Compile Include="ViewModels\KeyValuesViewModelTests.cs" />
   </ItemGroup>
@@ -332,6 +333,10 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">
       <Project>{a01edd42-f7f5-4e20-8deb-9f66f2980662}</Project>
       <Name>AWSToolkit.S3</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SQS\AWSToolkit.SQS.csproj">
+      <Project>{91DF5775-5635-4DF3-A26F-5CFE1136763E}</Project>
+      <Name>AWSToolkit.SQS</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
       <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
