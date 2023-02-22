@@ -192,11 +192,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
                 settings.TemplateParameters = parameters;
             }
+            var originator = (UploadOriginator) HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
 
 
             var worker = new PublishServerlessApplicationWorker(this,
                 stsClient, s3Client, cloudFormationClient, ecrClient,
-                iamClient, lambdaClient, settings, _toolkitContext.TelemetryLogger);
+                iamClient, lambdaClient, settings, originator, _toolkitContext.TelemetryLogger);
 
             ThreadPool.QueueUserWorkItem(x =>
             {
@@ -366,11 +367,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                         state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region);
                     var s3Client = state.Account.CreateServiceClient<AmazonS3Client>(state.Region);
                     worker = new UploadNETCoreWorker(this, stsClient, lambdaClient, ecrClient, iamClient, s3Client,
-                        _toolkitContext.TelemetryLogger);
+                        originator, _toolkitContext.TelemetryLogger);
                 }
                 else
                 {
-                    worker = new UploadGenericWorker(this, stsClient, lambdaClient, ecrClient, _toolkitContext);
+                    worker = new UploadGenericWorker(this, stsClient, lambdaClient, ecrClient, originator, _toolkitContext);
                 }
 
                 ThreadPool.QueueUserWorkItem(x =>

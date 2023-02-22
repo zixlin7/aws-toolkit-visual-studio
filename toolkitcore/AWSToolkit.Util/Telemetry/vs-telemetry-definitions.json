@@ -67,7 +67,22 @@
         {
             "name": "serverlessapplication_deploy",
             "description": "Called when deploying a Serverless Application Project",
-            "metadata": [ { "type": "result" } ]
+            "metadata": [ 
+                { "type": "result" },
+                { "type": "duration" },
+                { "type": "serviceType", "required": false },
+                { "type": "source" , "required": false}
+            ]
+        },
+        {
+            "name": "serverlessapplication_publishWizard",
+            "description": "Called when user completes a Serverless Application publish wizard",
+            "metadata": [
+                { "type": "result" },
+                { "type": "duration" },
+                { "type": "serviceType", "required": false },
+                { "type": "source" , "required": false}
+            ]
         },
         {
             "name": "codeartifact_credentialsRequest",

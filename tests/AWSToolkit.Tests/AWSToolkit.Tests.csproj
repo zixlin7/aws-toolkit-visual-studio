@@ -184,6 +184,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Iam\IamEntityRepositoryTests.cs" />
     <Compile Include="Lambda\LambdaStateWaiterTests.cs" />
+    <Compile Include="Lambda\LambdaTelemetryUtilTests.cs" />
     <Compile Include="Lambda\UploadFunctionViewModelIsValidConfigurationTests.cs" />
     <Compile Include="Lambda\ViewLogStreamsCommandTests.cs" />
     <Compile Include="Models\KeyValueConversionTests.cs" />

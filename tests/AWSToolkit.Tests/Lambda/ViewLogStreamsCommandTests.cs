@@ -45,7 +45,7 @@ namespace AWSToolkit.Tests.Lambda
                     It.Is<string>(msg => msg.Contains("Unable to view CloudWatch log streams")), true),
                 Times.Once);
             _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Failed,
-                CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaNode);
+                CloudWatchResourceType.LogGroup, MetricSources.LambdaMetricSource.LambdaNode);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace AWSToolkit.Tests.Lambda
             _logStreamsViewer.Verify(
                 mock => mock.View(_logGroup, It.IsAny<AwsConnectionSettings>()), Times.Once);
             _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Succeeded,
-                CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaNode);
+                CloudWatchResourceType.LogGroup, MetricSources.LambdaMetricSource.LambdaNode);
         }
 
         private void Setup()

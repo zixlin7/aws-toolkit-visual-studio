@@ -65,6 +65,7 @@
     <Compile Include="Controller\DeleteFunctionController.cs" />
     <Compile Include="DeploymentWorkers\ILambdaFunctionUploadHelpers.cs" />
     <Compile Include="Model\MetricSources.cs" />
+    <Compile Include="Util\LambdaHelpers.cs" />
     <Compile Include="Util\LambdaStateWaiter.cs" />
     <Compile Include="DeploymentWorkers\PublishServerlessApplicationWorker.cs" />
     <Compile Include="Controller\UploadFunctionController.cs" />

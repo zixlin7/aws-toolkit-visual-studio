@@ -5,12 +5,17 @@ namespace Amazon.AWSToolkit.Lambda.Model
 {
     public class MetricSources
     {
-        public class CloudWatchLogsMetricSource : BaseMetricSource
+        public class LambdaMetricSource : BaseMetricSource
         {
-            public static readonly BaseMetricSource LambdaNode = new CloudWatchLogsMetricSource("lambdaNode");
-            public static readonly BaseMetricSource LambdaView = new CloudWatchLogsMetricSource("lambdaView");
+            public static readonly BaseMetricSource Project = new LambdaMetricSource(null, "project");
+            public static readonly BaseMetricSource LambdaNode = new LambdaMetricSource("lambdaNode");
+            public static readonly BaseMetricSource LambdaView = new LambdaMetricSource("lambdaView");
 
-            private CloudWatchLogsMetricSource(string location) : base(ServiceNames.Lambda, location)
+            private LambdaMetricSource(string location) : this(ServiceNames.Lambda, location)
+            {
+            }
+
+            private LambdaMetricSource(string service, string location) : base(service, location)
             {
             }
         }

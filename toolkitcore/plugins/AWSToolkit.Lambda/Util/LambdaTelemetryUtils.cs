@@ -8,6 +8,12 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 using Amazon.Lambda;
 
+using Amazon.AWSToolkit.Lambda.Controller;
+using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.AWSToolkit.Telemetry.Model;
+
+using LambdaArchitecture = Amazon.AwsToolkit.Telemetry.Events.Generated.LambdaArchitecture;
+
 namespace Amazon.AWSToolkit.Lambda.Util
 {
     public static class LambdaTelemetryUtils
@@ -25,40 +31,39 @@ namespace Amazon.AWSToolkit.Lambda.Util
             public bool XRayEnabled { get; set; }
         }
 
-        public static void RecordLambdaDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, RecordLambdaDeployProperties lambdaDeploymentProperties)
+        public static void RecordLambdaDeploy(this ITelemetryLogger telemetryLogger, ActionResults result, double duration, BaseMetricSource metricSource, RecordLambdaDeployProperties lambdaDeploymentProperties)
         {
             telemetryLogger.RecordLambdaDeploy(new LambdaDeploy()
             {
                 AwsAccount = lambdaDeploymentProperties.AccountId ?? MetadataValue.Invalid,
-                AwsRegion = lambdaDeploymentProperties.RegionId ?? MetadataValue.NotSet,
-                Result = deployResult,
+                AwsRegion = lambdaDeploymentProperties.RegionId ?? MetadataValue.Invalid,
+                Result = result.AsTelemetryResult(),
                 LambdaPackageType = new LambdaPackageType(lambdaDeploymentProperties.LambdaPackageType?.Value ?? MetadataValue.NotSet),
                 InitialDeploy = lambdaDeploymentProperties.NewResource,
                 Runtime = new AwsToolkit.Telemetry.Events.Generated.Runtime(lambdaDeploymentProperties.Runtime?.Value ?? MetadataValue.NotSet),
                 Platform = lambdaDeploymentProperties.TargetFramework,
                 LambdaArchitecture = new LambdaArchitecture(lambdaDeploymentProperties.LambdaArchitecture?.Value ?? MetadataValue.NotSet),
                 Language = lambdaDeploymentProperties.Language,
-                XrayEnabled = lambdaDeploymentProperties.XRayEnabled
+                XrayEnabled = lambdaDeploymentProperties.XRayEnabled,
+                Reason = LambdaHelpers.GetMetricsReason(result?.Exception),
+                Duration = duration,
+                ServiceType = metricSource?.Service,
+                Source = metricSource?.Location
             });
         }
 
-        public static void RecordServerlessApplicationDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, string accountId, string regionId, string reason = null)
+        public static void RecordServerlessApplicationDeploy(this ITelemetryLogger telemetryLogger, ActionResults result, double duration, BaseMetricSource metricSource, string accountId, string regionId)
         {
-            telemetryLogger.RecordServerlessapplicationDeploy(
-                new ServerlessapplicationDeploy()
-                {
-                    AwsAccount = accountId ?? MetadataValue.Invalid,
-                    AwsRegion = regionId ?? MetadataValue.NotSet,
-                    Result = deployResult
-                }, metricDatum =>
-                {
-                    if (!string.IsNullOrWhiteSpace(reason))
-                    {
-                        metricDatum.Metadata["reason"] = reason;
-                    }
-
-                    return metricDatum;
-                });
+            telemetryLogger.RecordServerlessapplicationDeploy(new ServerlessapplicationDeploy()
+            {
+                AwsAccount = accountId ?? MetadataValue.Invalid,
+                AwsRegion = regionId ?? MetadataValue.Invalid,
+                Result = result.AsTelemetryResult(),
+                Reason = LambdaHelpers.GetMetricsReason(result?.Exception),
+                Duration = duration,
+                ServiceType = metricSource?.Service,
+                Source = metricSource?.Location
+            });
         }
 
         public static void RecordLambdaIamRoleCleanup(this ITelemetryLogger telemetryLogger, Result result, string reason, string accountId, string regionId)
@@ -92,6 +97,21 @@ namespace Amazon.AWSToolkit.Lambda.Util
             data.Duration = Double.NaN;
 
             toolkitContext.TelemetryLogger.RecordLambdaDelete(data);
+        }
+
+        public static BaseMetricSource AsMetricSource(this UploadFunctionController.UploadOriginator originator)
+        {
+            switch (originator)
+            {
+                case UploadFunctionController.UploadOriginator.FromAWSExplorer:
+                    return CommonMetricSources.AwsExplorerMetricSource.ServiceNode;
+                case UploadFunctionController.UploadOriginator.FromFunctionView:
+                    return MetricSources.LambdaMetricSource.LambdaView;
+                case UploadFunctionController.UploadOriginator.FromSourcePath:
+                    return MetricSources.LambdaMetricSource.Project;
+                default:
+                    return null;
+            }
         }
     }
 }

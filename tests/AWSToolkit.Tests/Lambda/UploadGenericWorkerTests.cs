@@ -57,7 +57,7 @@ namespace AWSToolkit.Tests.Lambda
         {
             SetupGetExistingConfiguration();
 
-            _sut = new UploadGenericWorker(_uploadHelpers.Object, null, _lambda.Object, null,
+            _sut = new UploadGenericWorker(_uploadHelpers.Object, null, _lambda.Object, null, UploadFunctionController.UploadOriginator.FromSourcePath,
                 _toolkitContextFixture.ToolkitContext);
 
             _uploadFunctionState = new UploadFunctionController.UploadFunctionState()

@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lambda.Controller;
 
 using log4net;
@@ -125,9 +124,12 @@ namespace Amazon.AWSToolkit.Lambda.View
         {
             try
             {
-                bool updated = this._controller.UploadNewFunctionSource();
-                if (updated)
-                    this._controller.Refresh();
+                var results = _controller.UploadNewFunctionSource();
+                if (results.Success)
+                {
+                    //handle exception/error around refresh separate from an upload failure
+                    onRefreshClick(this, null);
+                }
             }
             catch (Exception e)
             {

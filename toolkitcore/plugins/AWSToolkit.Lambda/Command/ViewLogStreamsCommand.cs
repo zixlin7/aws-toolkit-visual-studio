@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.Lambda.Command
     public class ViewLogStreamsCommand : BaseConnectionContextCommand
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ViewLogStreamsCommand));
-        private static readonly BaseMetricSource ViewLogsMetricSource = MetricSources.CloudWatchLogsMetricSource.LambdaNode;
+        private static readonly BaseMetricSource ViewLogsMetricSource = MetricSources.LambdaMetricSource.LambdaNode;
         private readonly string _functionName;
         private readonly string _logGroup;
 

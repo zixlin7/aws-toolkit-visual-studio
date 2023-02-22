@@ -20,6 +20,13 @@ using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using Amazon.AWSToolkit.Regions;
 using Amazon.ECR;
 using Amazon.Runtime;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Telemetry.Model;
+using Amazon.AWSToolkit.Lambda.Util;
+using Amazon.AWSToolkit.Exceptions;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -29,7 +36,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         public enum UploadOriginator { FromSourcePath, FromAWSExplorer, FromFunctionView };
 
-        ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(UploadFunctionController));
 
         public const string ZIP_FILTER = @"-\.njsproj$;-\.sln$;-\.suo$;-.ntvs_analysis\.dat;-\.git;-\.svn;-_testdriver.js;-_sampleEvent\.json";
 
@@ -58,19 +65,66 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         /// </summary>
         public override ActionResults Execute(IViewModel model)
         {
+            ActionResults results = null;
+
+            void Invoke() => results = DeployFromExplorer();
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var metricSource = UploadOriginator.FromAWSExplorer.AsMetricSource();
+                RecordLambdaPublishWizard(results, duration, metricSource);
+            }
+
+            _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+            return results;
+        }
+
+        private ActionResults DeployFromExplorer()
+        {
             var seedValues = new Dictionary<string, object>();
 
             seedValues[UploadFunctionWizardProperties.UploadOriginator] = UploadOriginator.FromAWSExplorer;
             seedValues[UploadFunctionWizardProperties.DeploymentType] = DeploymentType.NETCore;
 
-            DisplayUploadWizard(seedValues);
-            return _results;
+            return DisplayUploadWizard(seedValues);
         }
 
         /// <summary>
         /// Called from the Lambda function viewer to update code for an existing Lambda function
         /// </summary>
         public ActionResults Execute(IAmazonLambda lambdaClient, IAmazonECR ecrClient, string functionName)
+        {
+            ActionResults results = null;
+
+            void Invoke()
+            {
+                try
+                {
+                    results = DeployFromFunctionView(lambdaClient, ecrClient, functionName);
+                }
+                catch (Exception e)
+                {
+                    results = ActionResults.CreateFailed(e);
+                }
+            }
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var metricSource = UploadOriginator.FromFunctionView.AsMetricSource();
+                RecordLambdaPublishWizard(results, duration, metricSource);
+            }
+
+            _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+
+            //if an exception occurred re-throw it for handling from the calling function
+            if (results?.Exception != null)
+            {
+                throw results.Exception;
+            }
+            return results;
+        }
+
+        private ActionResults DeployFromFunctionView(IAmazonLambda lambdaClient, IAmazonECR ecrClient, string functionName)
         {
             var response = lambdaClient.GetFunctionConfiguration(functionName);
 
@@ -81,9 +135,13 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             seedValues[UploadFunctionWizardProperties.UploadOriginator] = UploadOriginator.FromFunctionView;
             if (response.Runtime.Value.StartsWith("netcore", StringComparison.OrdinalIgnoreCase))
+            {
                 seedValues[UploadFunctionWizardProperties.DeploymentType] = DeploymentType.NETCore;
+            }
             else
+            {
                 seedValues[UploadFunctionWizardProperties.DeploymentType] = DeploymentType.Generic;
+            }
 
             seedValues[UploadFunctionWizardProperties.FunctionName] = functionName;
             seedValues[UploadFunctionWizardProperties.Role] = response.Role;
@@ -92,8 +150,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             seedValues[UploadFunctionWizardProperties.Description] = response.Description;
             seedValues[UploadFunctionWizardProperties.Runtime] = response.Runtime;
 
-            DisplayUploadWizard(seedValues);
-            return _results;
+            return DisplayUploadWizard(seedValues);
         }
 
         /// <summary>
@@ -102,6 +159,48 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         /// </summary>
         public ActionResults UploadFunctionFromPath(Dictionary<string, object> seedValues)
         {
+            ActionResults results = null;
+            var isServerless = false;
+
+            void Invoke()
+            {
+                try
+                {
+                    results = UploadFunctionFromPath(seedValues, out isServerless);
+                }
+                catch (Exception e)
+                {
+                    results = ActionResults.CreateFailed(e);
+                }
+            }
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var metricSource = UploadOriginator.FromSourcePath.AsMetricSource();
+                if(isServerless)
+                {
+                    RecordServerlessPublishWizard(results, duration, metricSource);
+                }
+                else
+                {
+                    RecordLambdaPublishWizard(results, duration, metricSource);
+                }
+            }
+
+            _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+
+            //if an exception occurred re-throw it for handling from the calling function
+            if (results?.Exception != null)
+            {
+                throw results.Exception;
+            }
+            return results;
+        }
+
+
+        private ActionResults UploadFunctionFromPath(Dictionary<string, object> seedValues, out bool isServerless)
+        {
+            isServerless = false;
             string sourcePath = null;
             var deploymentType = DeploymentType.Generic;
 
@@ -128,17 +227,24 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
                     if (File.Exists(serverlessTemplatePath) || !string.IsNullOrEmpty(defaults.CloudFormationTemplate))
                     {
+                        isServerless = true;
                         string templateFile;
                         // If there is a template specified in the defaults then use that as way for a customer to use a template besides the hard coded serverless.template
                         if (!string.IsNullOrEmpty(defaults.CloudFormationTemplate))
+                        {
                             templateFile = Path.Combine(sourcePath, defaults.CloudFormationTemplate);
+                        }
                         else
+                        {
                             templateFile = serverlessTemplatePath;
+                        }
 
                         seedValues[UploadFunctionWizardProperties.CloudFormationTemplate] = templateFile;
 
                         if (defaults.CloudFormationTemplateParameters != null)
+                        {
                             seedValues[UploadFunctionWizardProperties.CloudFormationParameters] = defaults.CloudFormationTemplateParameters;
+                        }
 
                         try
                         {
@@ -146,12 +252,12 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                             if (wrapper.ContainsUserVisibleParameters)
                             {
                                 // All the template parameters in the defaults file to the template
-                                if(defaults.CloudFormationTemplateParameters?.Count > 0)
+                                if (defaults.CloudFormationTemplateParameters?.Count > 0)
                                 {
                                     foreach (var kvp in defaults.CloudFormationTemplateParameters)
                                     {
                                         var parameter = wrapper.Parameters.Values.FirstOrDefault(x => string.Equals(kvp.Key, x.Name, StringComparison.Ordinal));
-                                        if(parameter != null)
+                                        if (parameter != null)
                                         {
                                             parameter.OverrideValue = kvp.Value;
                                         }
@@ -161,11 +267,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                                 seedValues[UploadFunctionWizardProperties.CloudFormationTemplateWrapper] = wrapper;
                             }
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             ToolkitFactory.Instance.ShellProvider.ShowMessage("Error parsing CloudFormation Template", $"Error parsing CloudFormation Template {templateFile}: {e.Message}");
-                            LOGGER.Error($"Error parsing template {templateFile}", e);
-                            return _results;
+                            _logger.Error($"Error parsing template {templateFile}", e);
+                            return ActionResults.CreateFailed(e);
                         }
 
 
@@ -180,10 +286,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                         if (!string.IsNullOrEmpty(defaults.Framework))
                             seedValues[UploadFunctionWizardProperties.Framework] = defaults.Framework;
 
-                        DisplayServerlessWizard(seedValues);
+                        return DisplayServerlessWizard(seedValues);
                     }
                     else
                     {
+                        isServerless = false;
                         if (!string.IsNullOrEmpty(defaults.FunctionHandler))
                             seedValues[UploadFunctionWizardProperties.Handler] = defaults.FunctionHandler;
                         if (!string.IsNullOrEmpty(defaults.FunctionName))
@@ -225,25 +332,24 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                         if (defaults.EnvironmentVariables != null)
                         {
                             var envs = new List<EnvironmentVariable>();
-                            foreach(var kvp in defaults.EnvironmentVariables)
+                            foreach (var kvp in defaults.EnvironmentVariables)
                             {
                                 envs.Add(new EnvironmentVariable { Variable = kvp.Key, Value = kvp.Value });
                             }
                             seedValues[UploadFunctionWizardProperties.EnvironmentVariables] = envs;
                         }
 
-                        DisplayUploadWizard(seedValues);
+                        return DisplayUploadWizard(seedValues);
                     }
                 }
                 catch (LambdaToolsException e)
                 {
                     ToolkitFactory.Instance.ShellProvider.ShowMessage("Error", e.Message);
+                    return ActionResults.CreateFailed(e);
                 }
             }
 
-
-
-            return _results;
+            return ActionResults.CreateFailed(new LambdaToolkitException("Failed to upload Lambda function from source path", LambdaToolkitException.LambdaErrorCode.NoLambdaSourcePath));
         }
 
         public static void ApplyDefaultAccount(Dictionary<string, object> seedValues,
@@ -268,14 +374,14 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             }
         }
 
-        private void DisplayUploadWizard(Dictionary<string, object> seedProperties)
+        private ActionResults DisplayUploadWizard(Dictionary<string, object> seedProperties)
         {
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.UploadFunction", seedProperties);
+            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.UploadFunction", seedProperties);
             wizard.Title = "Upload to AWS Lambda";
 
             ApplyConnectionIfMissing(wizard);
 
-            IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
+            var defaultPages = new IAWSWizardPageController[]
             {
                 new UploadFunctionDetailsPageController(_toolkitContext),
                 new UploadFunctionAdvancedPageController(_toolkitContext),
@@ -291,18 +397,19 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             // for a specific property to be true on exit indicating successful upload vs user
             // cancel.
             wizard.Run();
-            var success = wizard.IsPropertySet(UploadFunctionWizardProperties.WizardResult) && (bool)wizard[UploadFunctionWizardProperties.WizardResult];
-            _results = new ActionResults().WithSuccess(success);
+            var success = wizard.IsPropertySet(UploadFunctionWizardProperties.WizardResult) && (bool) wizard[UploadFunctionWizardProperties.WizardResult];
+
+            return success ? new ActionResults().WithSuccess(true) : ActionResults.CreateCancelled();
         }
 
-        private void DisplayServerlessWizard(Dictionary<string, object> seedProperties)
+        private ActionResults DisplayServerlessWizard(Dictionary<string, object> seedProperties)
         {
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.PublishServerless", seedProperties);
+            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.PublishServerless", seedProperties);
             wizard.Title = "Publish AWS Serverless Application";
 
             ApplyConnectionIfMissing(wizard);
 
-            IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
+            var defaultPages = new IAWSWizardPageController[]
             {
                 new PublishServerlessDetailsPageController(),
                 new ServerlessTemplateParametersPageController(),
@@ -318,8 +425,44 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             // for a specific property to be true on exit indicating successful upload vs user
             // cancel.
             wizard.Run();
-            var success = wizard.IsPropertySet(UploadFunctionWizardProperties.WizardResult) && (bool)wizard[UploadFunctionWizardProperties.WizardResult];
-            _results = new ActionResults().WithSuccess(success);
+
+            var success = wizard.IsPropertySet(UploadFunctionWizardProperties.WizardResult) && (bool) wizard[UploadFunctionWizardProperties.WizardResult];
+          
+            return success ? new ActionResults().WithSuccess(true) : ActionResults.CreateCancelled();
+        }
+
+        private void RecordServerlessPublishWizard(ActionResults results, double duration, BaseMetricSource metricSource)
+        {
+            var connectionSettings = new AwsConnectionSettings(_credentialIdentifier, _region);
+            var accountId = connectionSettings.GetAccountId(_toolkitContext.ServiceClientManager);
+          
+            _toolkitContext.TelemetryLogger.RecordServerlessapplicationPublishWizard(new ServerlessapplicationPublishWizard()
+            {
+                AwsAccount = accountId ?? MetadataValue.Invalid,
+                AwsRegion = _region?.Id ?? MetadataValue.Invalid,
+                Result = results.AsTelemetryResult(),
+                Duration = duration,
+                Source = metricSource?.Location,
+                ServiceType = metricSource?.Service,
+                Reason = LambdaHelpers.GetMetricsReason(results?.Exception)
+            });
+        }
+
+        private void RecordLambdaPublishWizard(ActionResults results, double duration, BaseMetricSource metricSource)
+        {
+            var connectionSettings = new AwsConnectionSettings(_credentialIdentifier, _region);
+            var accountId = connectionSettings.GetAccountId(_toolkitContext.ServiceClientManager);
+
+            _toolkitContext.TelemetryLogger.RecordLambdaPublishWizard(new LambdaPublishWizard()
+            {
+                AwsAccount = accountId ?? MetadataValue.Invalid,
+                AwsRegion = _region?.Id ?? MetadataValue.Invalid,
+                Result = results.AsTelemetryResult() ,
+                Duration = duration,
+                Source = metricSource?.Location,
+                ServiceType = metricSource?.Service,
+                Reason = LambdaHelpers.GetMetricsReason(results?.Exception)
+            });
         }
 
         private void ApplyConnectionIfMissing(IAWSWizard wizard)
