@@ -6,14 +6,19 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.ECS.Util;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.Telemetry;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
     public class PushImageToECRWorker : BaseWorker, IEcsDeploy
     {
-        static readonly ILog Logger = LogManager.GetLogger(typeof(DeployTaskWorker));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(PushImageToECRWorker));
 
-        readonly IAmazonECR _ecrClient;
+        private readonly IAmazonECR _ecrClient;
 
         public PushImageToECRWorker(IDockerDeploymentHelper helper, IAmazonECR ecrClient,
             ToolkitContext toolkitContext)
@@ -32,15 +37,27 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         /// </summary>
         public void Execute(EcsDeployState state, IEcsDeploy ecsDeploy)
         {
-            Result deployResult = Result.Failed;
+            ActionResults result = null;
 
+            void Invoke() => result = PushImage(state, ecsDeploy);
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var connectionSettings = new AwsConnectionSettings(state.Account?.Identifier, state.Region);
+                EmitImageDeploymentMetric(connectionSettings, result, duration);
+            }
+
+            ToolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+        }
+
+        private ActionResults PushImage(EcsDeployState state, IEcsDeploy ecsDeploy)
+        {
             try
             {
-                if (ecsDeploy.Deploy(state).Result)
+                var result = ecsDeploy.Deploy(state).Result;
+                if (result.Success)
                 {
-                    deployResult = Result.Succeeded;
-
-                    this.Helper.SendImagePushCompleteSuccessAsync(state);
+                    Helper.SendImagePushCompleteSuccessAsync(state);
                     if (state.PersistConfigFile.GetValueOrDefault())
                     {
                         base.PersistDeploymentMode(state.HostingWizard);
@@ -48,38 +65,40 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 }
                 else
                 {
-                    this.Helper.SendCompleteErrorAsync("ECR image publish failed");
+                    Helper.SendCompleteErrorAsync("ECR image publish failed");
                 }
+
+                return result;
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error pushing to ECR repository.", e);
-                this.Helper.SendCompleteErrorAsync("Error pushing to ECR repository: " + e.Message);
-            }
-            finally
-            {
-                EmitImageDeploymentMetric(state.Region.Id, deployResult);
+                _logger.Error("Error pushing to ECR repository.", e);
+                Helper.SendCompleteErrorAsync("Error pushing to ECR repository: " + e.Message);
+                return ActionResults.CreateFailed(e);
             }
         }
 
-        private void EmitImageDeploymentMetric(string region, Result deployResult)
+        private void EmitImageDeploymentMetric(AwsConnectionSettings connectionSettings, ActionResults result, double duration)
         {
             try
             {
                 ToolkitContext.TelemetryLogger.RecordEcrDeployImage(new EcrDeployImage()
                 {
-                    Result = deployResult,
-                    AwsRegion = region,
+                    Result = result.AsTelemetryResult(),
+                    AwsRegion = connectionSettings.Region?.Id ?? MetadataValue.Invalid,
+                    AwsAccount = connectionSettings.GetAccountId(ToolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                    Reason = EcsTelemetryUtils.GetReason(result?.Exception),
+                    Duration = duration
                 });
             }
             catch (Exception e)
             {
-                Logger.Error("Error logging metric", e);
+                _logger.Error("Error logging metric", e);
                 Debug.Assert(false, $"Unexpected error while logging deployment metric: {e.Message}");
             }
         }
 
-        async Task<bool> IEcsDeploy.Deploy(EcsDeployState state)
+        async Task<ActionResults> IEcsDeploy.Deploy(EcsDeployState state)
         {
             var credentials =
                 ToolkitContext.CredentialManager.GetAwsCredentials(state.Account.Identifier, state.Region);
@@ -107,7 +126,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 Helper.AppendUploadStatus(errorMessage);
             }
 
-            return result;
+            var exception = DetermineErrorException(command.LastToolsException, "Failed to push image to AWS");
+            return result ? new ActionResults().WithSuccess(true) : ActionResults.CreateFailed(exception);
         }
     }
 }

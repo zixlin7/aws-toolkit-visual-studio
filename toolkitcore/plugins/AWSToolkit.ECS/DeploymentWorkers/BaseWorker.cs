@@ -16,12 +16,14 @@ using System.IO;
 using Amazon.AWSToolkit.Context;
 using Amazon.Common.DotNetCli.Tools.Commands;
 using Amazon.EC2;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
     public class BaseWorker
     {
-        protected ILog LOGGER = LogManager.GetLogger(typeof(BaseWorker));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(BaseWorker));
 
         protected ToolkitContext ToolkitContext { get; }
 
@@ -289,6 +291,16 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
 
             return newRole.Arn;
+        }
+
+        protected Exception DetermineErrorException(ToolsException lastToolsException, string errorMessage)
+        {
+            if (lastToolsException != null)
+            {
+                return lastToolsException;
+            }
+
+            return new ToolkitException(errorMessage, ToolkitException.CommonErrorCode.UnexpectedError);
         }
     }
 }
