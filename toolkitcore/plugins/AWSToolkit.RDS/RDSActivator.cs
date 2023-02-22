@@ -38,39 +38,39 @@ namespace Amazon.AWSToolkit.RDS
 
         void setupContextMenuHooks(RDSRootViewMetaNode rootNode)
         {
-            rootNode.OnLaunchDBInstance = new CommandInstantiator<LaunchDBInstanceController>().Execute;
+            rootNode.OnLaunchDBInstance = new ContextCommandExecutor(() => new LaunchDBInstanceController(ToolkitContext)).Execute;
 
             var instanceRootNode = rootNode.FindChild<RDSInstanceRootViewMetaNode>();
-            instanceRootNode.OnView = new CommandInstantiator<ViewDBInstancesController>().Execute;
-            instanceRootNode.OnLaunchDBInstance = new CommandInstantiator<LaunchDBInstanceController>().Execute;
+            instanceRootNode.OnView = new ContextCommandExecutor(() => new ViewDBInstancesController(ToolkitContext)).Execute;
+            instanceRootNode.OnLaunchDBInstance = new ContextCommandExecutor(() => new LaunchDBInstanceController(ToolkitContext)).Execute;
 
             var instanceNode = instanceRootNode.FindChild<RDSInstanceViewMetaNode>();
             instanceNode.OnModify = new CommandInstantiator<ModifyDBInstanceController>().Execute;
-            instanceNode.OnView = new CommandInstantiator<ViewDBInstancesController>().Execute;
+            instanceNode.OnView = new ContextCommandExecutor(() => new ViewDBInstancesController(ToolkitContext)).Execute;
             if (ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IRegisterDataConnectionService>() != null)
             {
                 instanceNode.OnAddToServerExplorer = new CommandInstantiator<AddToServerExplorerController>().Execute;
             }
             instanceNode.OnCreateSQLServerDatabase = new CommandInstantiator<CreateSqlServerDBController>().Execute;
-            instanceNode.OnDelete = new CommandInstantiator<DeleteDBInstanceController>().Execute;
+            instanceNode.OnDelete = new ContextCommandExecutor(() => new DeleteDBInstanceController(ToolkitContext)).Execute;
             instanceNode.OnTakeSnapshot = new CommandInstantiator<TakeSnapshotController>().Execute;
             instanceNode.OnReboot = new CommandInstantiator<RebootInstanceController>().Execute;
 
             var subnetGroupsRootMetaNode = rootNode.FindChild<RDSSubnetGroupsRootViewMetaNode>();
-            subnetGroupsRootMetaNode.OnView = new CommandInstantiator<ViewDBSubnetGroupsController>().Execute;
-            subnetGroupsRootMetaNode.OnCreate = new CommandInstantiator<CreateDBSubnetGroupController>().Execute;
+            subnetGroupsRootMetaNode.OnView = new ContextCommandExecutor(() => new ViewDBSubnetGroupsController(ToolkitContext)).Execute;
+            subnetGroupsRootMetaNode.OnCreate = new ContextCommandExecutor(() => new CreateDBSubnetGroupController(ToolkitContext)).Execute;
 
             var subnetGroupMetaNode = subnetGroupsRootMetaNode.FindChild<RDSSubnetGroupViewMetaNode>();
-            subnetGroupMetaNode.OnView = new CommandInstantiator<ViewDBSubnetGroupsController>().Execute;
-            subnetGroupMetaNode.OnDelete = new CommandInstantiator<DeleteSubnetGroupController>().Execute;
+            subnetGroupMetaNode.OnView = new ContextCommandExecutor(() => new ViewDBSubnetGroupsController(ToolkitContext)).Execute;
+            subnetGroupMetaNode.OnDelete = new ContextCommandExecutor(() => new DeleteSubnetGroupController(ToolkitContext)).Execute;
 
             var securityGroupRootMetaNode = rootNode.FindChild<RDSSecurityGroupRootViewMetaNode>();
             securityGroupRootMetaNode.OnView = new ContextCommandExecutor(() => new ViewDBSecurityGroupsController(ToolkitContext)).Execute;
-            securityGroupRootMetaNode.OnCreate = new CommandInstantiator<CreateSecurityGroupController>().Execute;
+            securityGroupRootMetaNode.OnCreate = new ContextCommandExecutor(() => new CreateSecurityGroupController(ToolkitContext)).Execute;
 
             var securityGroupMetaNode = securityGroupRootMetaNode.FindChild<RDSSecurityGroupViewMetaNode>();
             securityGroupMetaNode.OnView = new ContextCommandExecutor(() => new ViewDBSecurityGroupsController(ToolkitContext)).Execute;
-            securityGroupMetaNode.OnDelete = new CommandInstantiator<DeleteSecurityGroupController>().Execute;
+            securityGroupMetaNode.OnDelete = new ContextCommandExecutor(() => new DeleteSecurityGroupController(ToolkitContext)).Execute;
         }
     }
 }

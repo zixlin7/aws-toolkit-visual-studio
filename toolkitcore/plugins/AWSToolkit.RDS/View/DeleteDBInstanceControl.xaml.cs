@@ -1,5 +1,6 @@
 ﻿using System;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.RDS.Controller;
 using log4net;
 
@@ -10,34 +11,34 @@ namespace Amazon.AWSToolkit.RDS.View
     /// </summary>
     public partial class DeleteDBInstanceControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(CreateSecurityGroupControl));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CreateSecurityGroupControl));
 
         DeleteDBInstanceController _controller;
 
         public DeleteDBInstanceControl(DeleteDBInstanceController controller)
         {
             InitializeComponent();
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            _controller = controller;
+            DataContext = _controller.Model;
         }
 
         public override string Title => "Delete DB Instance";
 
         public override bool Validated()
         {
-            if (this._controller.Model.CreateFinalSnapshot)
+            if (_controller.Model.CreateFinalSnapshot)
             {
-                if (string.IsNullOrEmpty(this._controller.Model.FinalSnapshotName))
+                if (string.IsNullOrEmpty(_controller.Model.FinalSnapshotName))
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShowError("\"Final Snapshot Name\" is a required field when \"Create Final Snapshot\" is selected.");
+                    _controller.ToolkitContext.ToolkitHost.ShowError("\"Final Snapshot Name\" is a required field when \"Create Final Snapshot\" is selected.");
                     return false;
                 }
 
-                if (!char.IsLetter(this._controller.Model.FinalSnapshotName[0]))
+                if (!char.IsLetter(_controller.Model.FinalSnapshotName[0]))
                 {
-                    throw new Exception("First charater of snapshot name must be a letter.");
+                    throw new Exception("First character of snapshot name must be a letter.");
                 }
-                foreach (var c in this._controller.Model.FinalSnapshotName)
+                foreach (var c in _controller.Model.FinalSnapshotName)
                 {
                     if (!char.IsLetterOrDigit(c) && c != '-')
                     {
@@ -53,13 +54,16 @@ namespace Amazon.AWSToolkit.RDS.View
         {
             try
             {
-                this._controller.DeleteDBInstance();
+                _controller.DeleteDBInstance();
                 return true;
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error deleting DB instance", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error deleting DB instance: " + e.Message);
+                _logger.Error("Error deleting DB instance", e);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error deleting DB instance: " + e.Message);
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                _controller.RecordMetric(ActionResults.CreateFailed(e));
                 return false;
             }
         }

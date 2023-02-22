@@ -8,7 +8,7 @@ using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
-
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.RDS.View
 {
@@ -140,15 +140,14 @@ namespace Amazon.AWSToolkit.RDS.View
         {
             try
             {
-                var newGroup = this._controller.LaunchDBInstance();
-                if (newGroup != null)
-                {
-                    this._ctlDataGrid.SelectAndScrollIntoView(newGroup);
-                }
+                var results = _controller.LaunchDBInstance();
+                _controller.RecordLaunchDBInstance(results);
+
             }
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Data Error", "Error creating instance: " + e.Message);
+                _controller.RecordLaunchDBInstance(ActionResults.CreateFailed(e));
             }
         }
 
@@ -158,14 +157,19 @@ namespace Amazon.AWSToolkit.RDS.View
             {
                 IList<DBInstanceWrapper> instances = this._ctlDataGrid.GetSelectedItems<DBInstanceWrapper>();
                 if (instances.Count != 1)
+                {
                     throw new Exception("Deleting DB Instances only supports one instance at a time.");
+                }
 
-                this._controller.DeleteDBInstance(instances[0]);
+                var result = _controller.DeleteDBInstance(instances[0]);
+                _controller.RecordDeleteDBInstance(result);
+
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error deleting db instance", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Deleting DB Instance", "Error deleting db instance: " + e.Message);
+                _controller.RecordDeleteDBInstance(ActionResults.CreateFailed(e));
             }
         }
 

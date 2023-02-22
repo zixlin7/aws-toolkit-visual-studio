@@ -15,17 +15,25 @@ using Amazon.RDS;
 using Amazon.RDS.Model;
 
 using log4net;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.RDS.Util;
 
 namespace Amazon.AWSToolkit.RDS.Controller
 {
     public class ViewDBInstancesController : BaseContextCommand, IEventController
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewDBInstancesController));
+        private readonly ToolkitContext _toolkitContext;
 
         IAmazonRDS _rdsClient;
 
         ViewDBInstancesControl _control;
         RDSInstanceRootViewModel _instanceRootViewModel;
+
+        public ViewDBInstancesController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public override ActionResults Execute(IViewModel model)
         {
@@ -90,10 +98,12 @@ namespace Amazon.AWSToolkit.RDS.Controller
             }));
         }
 
-        public DBInstanceWrapper LaunchDBInstance()
+        public ActionResults LaunchDBInstance()
         {
-            var controller = new LaunchDBInstanceController();
-            var results = controller.Execute(this._instanceRootViewModel);
+            var controller = new LaunchDBInstanceController(_toolkitContext);
+            var results = controller.Execute(_instanceRootViewModel);
+            /*
+             * old code commented is a No-op, needs to be re-evaluated
             if (!results.Success)
                 return null;
 
@@ -106,7 +116,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                     this.Model.DBInstances.Add(instance);
             }
             */
-            return instance;
+            return results;
 
         }
 
@@ -124,11 +134,12 @@ namespace Amazon.AWSToolkit.RDS.Controller
             this.RefreshInstances();
         }
 
-        public void DeleteDBInstance(DBInstanceWrapper instance)
+        public ActionResults DeleteDBInstance(DBInstanceWrapper instance)
         {
-            var controller = new DeleteDBInstanceController();
-            controller.Execute(this._rdsClient, this._instanceRootViewModel, instance.DBInstanceIdentifier);
-            this.RefreshInstances();
+            var controller = new DeleteDBInstanceController(_toolkitContext);
+            var result = controller.Execute(_rdsClient, _instanceRootViewModel, instance.DBInstanceIdentifier);
+            RefreshInstances();
+            return result;
         }
 
         public void CopyEndpointToClipboard(DBInstanceWrapper instance)
@@ -220,5 +231,17 @@ namespace Amazon.AWSToolkit.RDS.Controller
         public string EndPointUniqueIdentifier => this._instanceRootViewModel.Region.Id;
 
         public string RegionDisplayName => _instanceRootViewModel.Region.DisplayName;
+
+        public void RecordLaunchDBInstance(ActionResults result)
+        {
+            var awsConnectionSettings = _instanceRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsLaunchInstance(result, awsConnectionSettings);
+        }
+
+        public void RecordDeleteDBInstance(ActionResults result)
+        {
+            var awsConnectionSettings = _instanceRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsDeleteInstance(result, awsConnectionSettings);
+        }
     }
 }

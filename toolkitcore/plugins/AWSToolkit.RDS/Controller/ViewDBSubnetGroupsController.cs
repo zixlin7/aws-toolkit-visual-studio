@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Controls;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.EC2.View.DataGrid;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.RDS.Nodes;
+using Amazon.AWSToolkit.RDS.Util;
 using Amazon.AWSToolkit.RDS.View;
 using Amazon.RDS;
 using log4net;
@@ -14,11 +20,17 @@ namespace Amazon.AWSToolkit.RDS.Controller
     public class ViewDBSubnetGroupsController : BaseContextCommand
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewDBSubnetGroupsController));
+        private readonly ToolkitContext _toolkitContext;
 
         IAmazonRDS _rdsClient;
 
         ViewDBSubnetGroupsControl _control;
         RDSSubnetGroupsRootViewModel _subnetGroupsRootViewModel;
+
+        public ViewDBSubnetGroupsController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public override ActionResults Execute(Navigator.Node.IViewModel model)
         {
@@ -75,31 +87,31 @@ namespace Amazon.AWSToolkit.RDS.Controller
             }));
         }
 
-        public DBSubnetGroupWrapper CreateSubnetGroup()
+        public ActionResults CreateSubnetGroup(ICustomizeColumnGrid grid)
         {
-            var controller = new CreateDBSubnetGroupController();
-            var results = controller.Execute(this._subnetGroupsRootViewModel);
+            var controller = new CreateDBSubnetGroupController(_toolkitContext);
+            var results = controller.Execute(_subnetGroupsRootViewModel);
             if (results.Success)
             {
-                this.RefreshSubnetGroups();
+                RefreshSubnetGroups();
+                var createdGroup = Model.DBSubnetGroups.FirstOrDefault(sg =>
+                  sg.Name == results.FocalName);
 
-                foreach (var group in this.Model.DBSubnetGroups)
+                if (createdGroup != null)
                 {
-                    if (group.Name == results.FocalName)
-                    {
-                        return group;
-                    }
+                    grid.SelectAndScrollIntoView(createdGroup);
                 }
             }
 
-            return null;
+            return results;
         }
 
-        public void DeleteSubnetGroups(IList<DBSubnetGroupWrapper> groups)
+        public ActionResults DeleteSubnetGroups(IList<DBSubnetGroupWrapper> groups)
         {
-            var controller = new DeleteSubnetGroupController(this._subnetGroupsRootViewModel);
-            controller.Execute(this._rdsClient, this._subnetGroupsRootViewModel, groups);
-            this.RefreshSubnetGroups();
+            var controller = new DeleteSubnetGroupController(_toolkitContext, _subnetGroupsRootViewModel);
+            var result = controller.Execute(_rdsClient, _subnetGroupsRootViewModel, groups);
+            RefreshSubnetGroups();
+            return result;
         }
 
 
@@ -108,5 +120,17 @@ namespace Amazon.AWSToolkit.RDS.Controller
         public string EndPointUniqueIdentifier => _subnetGroupsRootViewModel.Region.Id;
 
         public string RegionDisplayName => _subnetGroupsRootViewModel.Region.DisplayName;
+
+        public void RecordCreateSubnetGroup(ActionResults result)
+        {
+            var awsConnectionSettings = _subnetGroupsRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsCreateSubnetGroup(result, awsConnectionSettings);
+        }
+
+        public void RecordDeleteSubnetGroup(int count, ActionResults result)
+        {
+            var awsConnectionSettings = _subnetGroupsRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsDeleteSubnetGroup(count, result, awsConnectionSettings);
+        }
     }
 }

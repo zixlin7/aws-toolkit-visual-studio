@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.RDS.Controller;
 using log4net;
 
@@ -11,7 +12,7 @@ namespace Amazon.AWSToolkit.RDS.View
     /// </summary>
     public partial class CreateSecurityGroupControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(CreateSecurityGroupControl));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CreateSecurityGroupControl));
 
         public CreateSecurityGroupControl()
         {
@@ -23,21 +24,21 @@ namespace Amazon.AWSToolkit.RDS.View
         public CreateSecurityGroupControl(CreateSecurityGroupController controller)
         {
             InitializeComponent();
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            _controller = controller;
+            DataContext = _controller.Model;
         }
 
         public override string Title => "Create Security Group";
 
         public override bool Validated()
         {
-            if (string.IsNullOrEmpty(this._controller.Model.Name))
+            if (string.IsNullOrEmpty(_controller.Model.Name))
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Name is a required field.");
+                _controller.ToolkitContext.ToolkitHost.ShowError("Name is a required field.");
                 return false;
             }
 
-            foreach (var c in this._controller.Model.Name)
+            foreach (var c in _controller.Model.Name)
             {
                 if (!char.IsLetterOrDigit(c) && c != '-')
                 {
@@ -45,9 +46,9 @@ namespace Amazon.AWSToolkit.RDS.View
                 }
             }
 
-            if (string.IsNullOrEmpty(this._controller.Model.Description))
+            if (string.IsNullOrEmpty(_controller.Model.Description))
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Description is a required field.");
+                _controller.ToolkitContext.ToolkitHost.ShowError("Description is a required field.");
                 return false;
             }
             return true;
@@ -57,20 +58,23 @@ namespace Amazon.AWSToolkit.RDS.View
         {
             try
             {
-                this._controller.CreateSecurityGroup();
+                _controller.CreateSecurityGroup();
                 return true;
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error creating security group", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating security group: " + e.Message);
+                _logger.Error("Error creating security group", e);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error creating security group: " + e.Message);
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                _controller.RecordMetric(ActionResults.CreateFailed(e));
                 return false;
             }
         }
 
         void onLoad(object sender, RoutedEventArgs e)
         {
-            this._ctlName.Focus();
+            _ctlName.Focus();
         }
     }
 }

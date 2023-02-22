@@ -8,29 +8,44 @@ using Amazon.AWSToolkit.EC2.Controller;
 
 using Amazon.RDS;
 using Amazon.RDS.Model;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.RDS.Util;
 
 namespace Amazon.AWSToolkit.RDS.Controller
 {
     public class DeleteSecurityGroupController : BulkChangeController<IAmazonRDS, DBSecurityGroupWrapper>
     {
         RDSSecurityGroupRootViewModel _securityGroupRootViewModel;
+        private readonly ToolkitContext _toolkitContext;
 
-        public DeleteSecurityGroupController()
+        public DeleteSecurityGroupController(ToolkitContext toolkitContext)
         {
+            _toolkitContext = toolkitContext;
         }
 
-        public DeleteSecurityGroupController(RDSSecurityGroupRootViewModel securityGroupRootViewModel)
+        public DeleteSecurityGroupController(ToolkitContext toolkitContext, RDSSecurityGroupRootViewModel securityGroupRootViewModel) : this(toolkitContext)
         {
-            this._securityGroupRootViewModel = securityGroupRootViewModel;
+            _securityGroupRootViewModel = securityGroupRootViewModel;
         }
 
         public override ActionResults Execute(IViewModel model)
         {
+            var result = DeleteSecurityGroup(model);
+            RecordMetric(result);
+            return result;
+        }
+
+        private ActionResults DeleteSecurityGroup(IViewModel model)
+        {
             var rdsSecurityViewModel = model as RDSSecurityGroupViewModel;
             if (rdsSecurityViewModel == null)
-                return new ActionResults().WithSuccess(false);
+            {
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find RDS security group data",
+                 ToolkitException.CommonErrorCode.InternalMissingServiceState));
+            }
 
-            this._securityGroupRootViewModel = rdsSecurityViewModel.Parent as RDSSecurityGroupRootViewModel;
+            _securityGroupRootViewModel = rdsSecurityViewModel.Parent as RDSSecurityGroupRootViewModel;
             var list = new List<DBSecurityGroupWrapper>() { rdsSecurityViewModel.DBGroup };
             return base.Execute(rdsSecurityViewModel.RDSClient, list);
         }
@@ -43,8 +58,16 @@ namespace Amazon.AWSToolkit.RDS.Controller
         {
             rdsClient.DeleteDBSecurityGroup(new DeleteDBSecurityGroupRequest() { DBSecurityGroupName = group.DisplayName });
 
-            if (this._securityGroupRootViewModel != null)
-                this._securityGroupRootViewModel.RemoveSecurityGroup(group.DisplayName);
+            if (_securityGroupRootViewModel != null)
+            {
+                _securityGroupRootViewModel.RemoveSecurityGroup(group.DisplayName);
+            }
+        }
+
+        private void RecordMetric(ActionResults results)
+        {
+            var awsConnectionSettings = _securityGroupRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsDeleteSecurityGroup(1, results, awsConnectionSettings);
         }
     }
 }
