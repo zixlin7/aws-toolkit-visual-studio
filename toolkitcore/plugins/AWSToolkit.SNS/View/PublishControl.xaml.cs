@@ -1,4 +1,9 @@
-﻿using Amazon.AWSToolkit.CommonUI;
+﻿using System;
+
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.SNS.Controller;
 
 namespace Amazon.AWSToolkit.SNS.View
@@ -8,7 +13,7 @@ namespace Amazon.AWSToolkit.SNS.View
     /// </summary>
     public partial class PublishControl : BaseAWSControl
     {
-        PublishController _controller;
+        private readonly PublishController _controller;
 
         public PublishControl()
             : this(null)
@@ -17,8 +22,8 @@ namespace Amazon.AWSToolkit.SNS.View
 
         public PublishControl(PublishController controller)
         {
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            _controller = controller;
+            DataContext = _controller.Model;
             InitializeComponent();
 
         }
@@ -27,14 +32,24 @@ namespace Amazon.AWSToolkit.SNS.View
 
         public override bool OnCommit()
         {
-            if (string.IsNullOrEmpty(this._controller.Model.Message))
+            try
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Message is required!");
+                if (string.IsNullOrEmpty(_controller.Model.Message))
+                {
+                    throw new ToolkitException("Message is required!", ToolkitException.CommonErrorCode.UnsupportedState);
+                }
+
+                _controller.Persist();
+                return true;
+            }
+            catch (Exception e)
+            {
+                _controller.ToolkitContext.ToolkitHost.ShowError($"Error publishing message to SNS topic:{Environment.NewLine}{e.Message}");
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                _controller.RecordMetric(ActionResults.CreateFailed(e));
                 return false;
             }
-
-            this._controller.Persist();
-            return true;
         }    
     }
 }

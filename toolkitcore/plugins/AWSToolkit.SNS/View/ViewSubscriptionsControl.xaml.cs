@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.AWSToolkit.SNS.Controller;
 using Amazon.AWSToolkit.SQS.Nodes;
@@ -16,7 +17,7 @@ namespace Amazon.AWSToolkit.SNS.View
     /// </summary>
     public partial class ViewSubscriptionsControl : BaseAWSView
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewSubscriptionsControl));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ViewSubscriptionsControl));
 
         ViewSubscriptionsController _controller;
         ViewSubscriptionsModel _model;
@@ -54,7 +55,7 @@ namespace Amazon.AWSToolkit.SNS.View
 
         public override void OnEditorOpened(bool success)
         {
-            ToolkitFactory.Instance.TelemetryLogger.RecordSnsOpenSubscriptions(new SnsOpenSubscriptions()
+            _controller.ToolkitContext.TelemetryLogger.RecordSnsOpenSubscriptions(new SnsOpenSubscriptions()
             {
                 Result = success ? Result.Succeeded : Result.Failed,
             });
@@ -69,7 +70,7 @@ namespace Amazon.AWSToolkit.SNS.View
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating subscription: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error creating subscription: " + e.Message);
             }
         }
 
@@ -81,7 +82,7 @@ namespace Amazon.AWSToolkit.SNS.View
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing subscriptions: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error refreshing subscriptions: " + e.Message);
             }
         }
         #endregion
@@ -119,22 +120,35 @@ namespace Amazon.AWSToolkit.SNS.View
             if (entries.Count == 0)
                 return;
 
+            var result  = DeleteSubscriptions(entries);
+            _controller.RecordDeleteSubscription(result, entries.Count);
+        }
+
+        private ActionResults DeleteSubscriptions(List<SubscriptionEntry> entries)
+        {
             try
             {
                 string confirmMsg;
                 if (entries.Count == 1)
-                    confirmMsg = string.Format("Are you sure you want to unsubscribe from \"{0}\"?", entries[0].TopicArn);
-                else
-                    confirmMsg = string.Format("Are you sure you want to unsubscribe these {0} items?", entries.Count);
-
-                if (ToolkitFactory.Instance.ShellProvider.Confirm("Delete Items?", confirmMsg))
                 {
-                    this._controller.DeleteSubscriptions(entries);
+                    confirmMsg = $"Are you sure you want to unsubscribe from \"{entries[0].TopicArn}\"?";
                 }
+                else
+                {
+                    confirmMsg = $"Are you sure you want to unsubscribe these {entries.Count} items?";
+                }
+
+                if (!_controller.ToolkitContext.ToolkitHost.Confirm("Delete Items?", confirmMsg))
+                {
+                    return ActionResults.CreateCancelled();
+                }
+
+                return _controller.DeleteSubscriptions(entries);
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error deleting subscription: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError($"Error deleting subscription:{Environment.NewLine}{e.Message}");
+                return ActionResults.CreateFailed(e);
             }
         }
 
@@ -174,7 +188,7 @@ namespace Amazon.AWSToolkit.SNS.View
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating subscription: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error creating subscription: " + e.Message);
             }
         }
 
@@ -188,7 +202,7 @@ namespace Amazon.AWSToolkit.SNS.View
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error displaying properties", e);
+                _logger.Error("Error displaying properties", e);
             }
         }
 
@@ -200,7 +214,7 @@ namespace Amazon.AWSToolkit.SNS.View
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error displaying properties", e);
+                _logger.Error("Error displaying properties", e);
             }
         }
     }

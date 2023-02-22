@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.AWSToolkit.SNS.View;
-using Amazon.AWSToolkit.SNS.Model;
-using Amazon.AWSToolkit.SNS.Nodes;
-using Amazon.AWSToolkit.SQS.Nodes;
-using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
 
 using Amazon.Auth.AccessControlPolicy;
 using Amazon.Auth.AccessControlPolicy.ActionIdentifiers;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Lambda.Nodes;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.SNS.Model;
+using Amazon.AWSToolkit.SNS.Nodes;
+using Amazon.AWSToolkit.SNS.Util;
+using Amazon.AWSToolkit.SNS.View;
+using Amazon.AWSToolkit.SQS.Nodes;
+using Amazon.Lambda;
+using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 
-using Amazon.Lambda;
 using log4net;
 
 namespace Amazon.AWSToolkit.SNS.Controller
 {
     public class CreateSubscriptionController
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(CreateSubscriptionController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CreateSubscriptionController));
 
         IAmazonSimpleNotificationService _snsClient;
         IAmazonSQS _sqsClient;
@@ -30,105 +33,120 @@ namespace Amazon.AWSToolkit.SNS.Controller
         ISQSRootViewModel _sqsRootViewModel;
         CreateSubscriptionModel _model;
 
-        public CreateSubscriptionController(SNSRootViewModel snsRootViewModel, CreateSubscriptionModel model)
+        public CreateSubscriptionController(ToolkitContext toolkitContext, SNSRootViewModel snsRootViewModel, CreateSubscriptionModel model)
         {
-            this._snsRootViewModel = snsRootViewModel;
-            this._sqsRootViewModel = snsRootViewModel.AccountViewModel.FindSingleChild<ISQSRootViewModel>(false);
-            this._snsClient = this._snsRootViewModel.SNSClient;
-            this._sqsClient = this._sqsRootViewModel.SQSClient;
+            ToolkitContext = toolkitContext;
+            _snsRootViewModel = snsRootViewModel;
+            _sqsRootViewModel = snsRootViewModel.AccountViewModel.FindSingleChild<ISQSRootViewModel>(false);
+            _snsClient = _snsRootViewModel.SNSClient;
+            _sqsClient = _sqsRootViewModel.SQSClient;
 
             var lambdaRootViewModel = snsRootViewModel.AccountViewModel.FindSingleChild<ILambdaRootViewModel>(false);
             if (lambdaRootViewModel != null)
-                this._lambdaClient = lambdaRootViewModel.LambdaClient;
+            {
+                _lambdaClient = lambdaRootViewModel.LambdaClient;
+            }
 
-            this._model = model;
+            _model = model;
         }
 
-        public CreateSubscriptionModel Model => this._model;
+        public ToolkitContext ToolkitContext { get; }
 
-        public bool Execute()
-       {
-           CreateSubscriptionControl control = new CreateSubscriptionControl(this);
-           return ToolkitFactory.Instance.ShellProvider.ShowModal(control);
-       }
+        public CreateSubscriptionModel Model => _model;
 
-       public void Persist()
-       {
-           this._snsClient.Subscribe(new SubscribeRequest()
-           {
-               TopicArn = this._model.TopicArn,
-               Protocol = this._model.Protocol.SystemName,
-               Endpoint = this._model.FormattedEndpoint
-           });
+        public ActionResults Execute()
+        {
+            var control = new CreateSubscriptionControl(this);
+            var result = ToolkitContext.ToolkitHost.ShowModal(control);
 
-           if ("SQS".Equals(this._model.Protocol.SystemName.ToUpper()))
-           {
-               this.AttemptedToGivePermissionOnQueue();
-           }
-           else if ("LAMBDA".Equals(this._model.Protocol.SystemName.ToUpper()))
-           {
-               this.AddLambdaEventSource();
-           }
-       }
+            return result ? new ActionResults().WithSuccess(true) : ActionResults.CreateCancelled();
+        }
 
-       void AddLambdaEventSource()
-       {
-           if (this._lambdaClient == null)
-               return;
+        public void Persist()
+        {
+            _snsClient.Subscribe(new SubscribeRequest()
+            {
+                TopicArn = _model.TopicArn,
+                Protocol = _model.Protocol.SystemName,
+                Endpoint = _model.FormattedEndpoint
+            });
 
-           this._lambdaClient.AddPermission(new Amazon.Lambda.Model.AddPermissionRequest
-           {
-               FunctionName = this._model.Endpoint,
-               Action = "lambda:InvokeFunction",
-               Principal = "sns.amazonaws.com",
-               SourceArn = this._model.TopicArn,
-               StatementId = Guid.NewGuid().ToString() + "-vstoolkit"
-           });
-       }
+            if ("SQS".Equals(_model.Protocol.SystemName.ToUpper()))
+            {
+                AttemptedToGivePermissionOnQueue();
+            }
+            else if ("LAMBDA".Equals(_model.Protocol.SystemName.ToUpper()))
+            {
+                AddLambdaEventSource();
+            }
+        }
+
+        internal void RecordMetric(ActionResults result)
+        {
+            var connectionSettings = _snsRootViewModel?.AwsConnectionSettings;
+            ToolkitContext.RecordSnsCreateSubscription(result, connectionSettings);
+        }
+
+        void AddLambdaEventSource()
+        {
+            if (_lambdaClient == null)
+            {
+                return;
+            }
+            
+            _lambdaClient.AddPermission(new Amazon.Lambda.Model.AddPermissionRequest
+            {
+                FunctionName = _model.Endpoint,
+                Action = "lambda:InvokeFunction",
+                Principal = "sns.amazonaws.com",
+                SourceArn = _model.TopicArn,
+                StatementId = Guid.NewGuid().ToString() + "-vstoolkit"
+            });
+        }
 
         void AttemptedToGivePermissionOnQueue()
         {
-           if (this._sqsClient == null || string.IsNullOrWhiteSpace(_model.EndpointSqsUrl))
-           {
-               return;
-           }
+            if (_sqsClient == null || string.IsNullOrWhiteSpace(_model.EndpointSqsUrl))
+            {
+                return;
+            }
 
-           try
-           {
-               var queryUrl = _model.EndpointSqsUrl;
+            try
+            {
+                var queryUrl = _model.EndpointSqsUrl;
 
-               var getRequest = this._sqsClient.GetQueueAttributes(new GetQueueAttributesRequest()
-               {
-                   AttributeNames = new List<string>() { "All" },
-                   QueueUrl = queryUrl
-               });
+                var getRequest = _sqsClient.GetQueueAttributes(new GetQueueAttributesRequest()
+                {
+                    AttributeNames = new List<string>() { "All" },
+                    QueueUrl = queryUrl
+                });
 
 
-               Policy policy;
-               string policyStr = getRequest.Policy;
-               if (string.IsNullOrEmpty(policyStr))
-               {
-                   policy = new Policy();
-               }
-               else
-               {
-                   policy = Policy.FromJson(policyStr);
-               }
+                Policy policy;
+                string policyStr = getRequest.Policy;
+                if (string.IsNullOrEmpty(policyStr))
+                {
+                    policy = new Policy();
+                }
+                else
+                {
+                    policy = Policy.FromJson(policyStr);
+                }
 
-               if (this._model.IsAddSQSPermission && !hasSQSPermission(policy))
-               {
-                   addSQSPermission(policy);
-                   this._sqsClient.SetQueueAttributes(new SetQueueAttributesRequest()
-                   {
-                       QueueUrl = queryUrl,
-                       Attributes = new Dictionary<string, string>() { { "Policy", policy.ToJson() } }
-                   });
-               }
-           }
-           catch (Exception e)
-           {
-               LOGGER.Error("Error editing policy for queue", e);
-           }
+                if (_model.IsAddSQSPermission && !hasSQSPermission(policy))
+                {
+                    addSQSPermission(policy);
+                    _sqsClient.SetQueueAttributes(new SetQueueAttributesRequest()
+                    {
+                        QueueUrl = queryUrl,
+                        Attributes = new Dictionary<string, string>() { { "Policy", policy.ToJson() } }
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Error editing policy for queue", e);
+            }
         }
 
         void addSQSPermission(Policy policy)
@@ -137,8 +155,8 @@ namespace Amazon.AWSToolkit.SNS.Controller
 #pragma warning disable CS0618 // Type or member is obsolete (SQSActionIdentifiers)
             statement.Actions.Add(SQSActionIdentifiers.SendMessage);
 #pragma warning restore CS0618 // Type or member is obsolete
-            statement.Resources.Add(new Resource(this._model.Endpoint));
-            statement.Conditions.Add(ConditionFactory.NewSourceArnCondition(this._model.TopicArn));
+            statement.Resources.Add(new Resource(_model.Endpoint));
+            statement.Conditions.Add(ConditionFactory.NewSourceArnCondition(_model.TopicArn));
             statement.Principals.Add(new Principal("*"));
             policy.Statements.Add(statement);
         }
@@ -148,9 +166,9 @@ namespace Amazon.AWSToolkit.SNS.Controller
             foreach (Statement statement in policy.Statements)
             {
                 bool containsResource = false;
-                foreach (var resource in statement.Resources)                
+                foreach (var resource in statement.Resources)
                 {
-                    if (resource.Id.Equals(this._model.Endpoint))
+                    if (resource.Id.Equals(_model.Endpoint))
                     {
                         containsResource = true;
                         break;
@@ -166,7 +184,7 @@ namespace Amazon.AWSToolkit.SNS.Controller
                                 condition.Type.ToLower().Equals(ConditionFactory.ArnComparisonType.ArnEquals.ToString().ToLower()) ||
                                 condition.Type.ToLower().Equals(ConditionFactory.ArnComparisonType.ArnLike.ToString().ToLower())) &&
                             condition.ConditionKey.ToLower().Equals(ConditionFactory.SOURCE_ARN_CONDITION_KEY.ToLower()) &&
-                            condition.Values.Contains<string>(this._model.TopicArn))
+                            condition.Values.Contains<string>(_model.TopicArn))
                             return true;
                     }
                 }

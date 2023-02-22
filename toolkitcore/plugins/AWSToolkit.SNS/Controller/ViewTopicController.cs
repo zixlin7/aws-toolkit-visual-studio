@@ -7,11 +7,16 @@ using Amazon.AWSToolkit.SNS.View;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.SNS.Util;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.Telemetry;
 
 namespace Amazon.AWSToolkit.SNS.Controller
 {
     public class ViewTopicController : BaseContextCommand
     {
+        private readonly ToolkitContext _toolkitContext;
         IAmazonSimpleNotificationService _snsClient;
         ViewTopicModel _model;
         Dispatcher _uiDispatcher;
@@ -19,14 +24,20 @@ namespace Amazon.AWSToolkit.SNS.Controller
         string _title;
         string _topicARN;
 
+        public ViewTopicController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public override ActionResults Execute(IViewModel model)
         {
-            this._snsTopicModel = model as SNSTopicViewModel;
-            if (this._snsTopicModel == null)
+            _snsTopicModel = model as SNSTopicViewModel;
+            if (_snsTopicModel == null)
+            {
                 return new ActionResults().WithSuccess(false);
-
-            return Execute(this._snsTopicModel.SNSClient, this._snsTopicModel.TopicArn, this._snsTopicModel.Name);
+            }
+            
+            return Execute(_snsTopicModel.SNSClient, _snsTopicModel.TopicArn, _snsTopicModel.Name);
         }
 
         public ActionResults Execute(IAmazonSimpleNotificationService snsClient, string topicARN, string title)
@@ -44,14 +55,14 @@ namespace Amazon.AWSToolkit.SNS.Controller
                 control.SetTitle(this._title);
                 control.SetUniqueId(topicARN);
                 this._uiDispatcher = control.Dispatcher;
-                ToolkitFactory.Instance.ShellProvider.OpenInEditor(control);
+                _toolkitContext.ToolkitHost.OpenInEditor(control);
 
                 return new ActionResults()
                         .WithSuccess(true);
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError(string.Format("Error loading topic {0}: {1}", this._title, e.Message));
+                _toolkitContext.ToolkitHost.ShowError(string.Format("Error loading topic {0}: {1}", this._title, e.Message));
                 return new ActionResults()
                         .WithSuccess(true);
             }
@@ -61,8 +72,8 @@ namespace Amazon.AWSToolkit.SNS.Controller
         {
             try
             {
-                var controller = new ViewSubscriptionsController();
-                ViewSubscriptionsControl control = controller.CreateSubscriptionEntriesControl(
+                var controller = new ViewSubscriptionsController(_toolkitContext);
+                var control = controller.CreateSubscriptionEntriesControl(
                     this._snsTopicModel.SNSRootViewModel, this._model.SubscriptionModel, this._topicARN);
                 return control;
             }
@@ -72,16 +83,31 @@ namespace Amazon.AWSToolkit.SNS.Controller
             }
         }
 
+
         public void PublishToTopic()
+        {
+            ActionResults actionResults = null;
+
+            void Invoke() => actionResults = PublishMessage();
+
+            void Record(ITelemetryLogger _) => RecordPublishMessageMetric(actionResults);
+
+            _toolkitContext.TelemetryLogger.InvokeAndRecord(Invoke, Record);
+        }
+
+        private ActionResults PublishMessage()
         {
             try
             {
-                PublishController controller = new PublishController(this._snsClient, this._topicARN);
-                controller.Execute();
+                var connectionSettings = _snsTopicModel?.SNSRootViewModel?.AwsConnectionSettings;
+                var controller = new PublishController(_toolkitContext, connectionSettings ,_snsClient, _topicARN);
+
+                return controller.Execute();
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error publishing to topic: " + e.Message);
+                _toolkitContext.ToolkitHost.ShowError("Error publishing to topic: " + e.Message);
+                return ActionResults.CreateFailed(e);
             }
         }
 
@@ -98,7 +124,7 @@ namespace Amazon.AWSToolkit.SNS.Controller
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error publishing to topic: " + e.Message);
+                _toolkitContext.ToolkitHost.ShowError("Error publishing to topic: " + e.Message);
             }
         }
 
@@ -112,6 +138,12 @@ namespace Amazon.AWSToolkit.SNS.Controller
             this._model.TopicARN = this._topicARN;
             this._model.TopicOwner = response.GetOwner();
             this._model.DisplayName = response.GetDisplayName();
+        }
+
+        internal void RecordPublishMessageMetric(ActionResults result)
+        {
+            var connectionSettings = _snsTopicModel?.SNSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordSnsPublishMessage(result, connectionSettings);
         }
     }
 }
