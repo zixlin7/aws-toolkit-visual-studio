@@ -3,8 +3,10 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls;
+using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using log4net;
+using Amazon.AWSToolkit.Exceptions;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 {
@@ -21,27 +23,30 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 
         public ActionResults Execute()
         {
+            var results = Connect();
+            CodeCommitTelemetryUtils.RecordCodeCommitSetCredentialsMetric(results);
+            return results;
+        }
+
+        private ActionResults Connect()
+        {
             if (ToolkitFactory.Instance?.RootViewModel == null)
             {
                 // The Toolkit (extension) has not been loaded and initialized yet.
                 // Prevent a null access exception
                 Logger.Error("Tried to connect to CodeCommit, but the Toolkit has not been loaded yet.");
-                return new ActionResults().WithSuccess(false);
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find CodeCommit data", ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 
             // If the user has only one profile, we can just proceed
             var accounts = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts;
             if (accounts.Count == 1)
             {
-                GitUtilities.RecordCodeCommitSetCredentialsMetric(true);
                 SelectedAccount = accounts.First();
                 return new ActionResults().WithSuccess(true);
             }
 
             var results = accounts.Any() ? SelectFromExistingProfiles() : CreateNewProfile();
-            
-            GitUtilities.RecordCodeCommitSetCredentialsMetric(results.Success);
-
             return results;
         }
 
@@ -75,26 +80,26 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
                 return new ActionResults().WithSuccess(true);
             }
 
-            return new ActionResults().WithSuccess(false);
+            return ActionResults.CreateCancelled();
         }
 
         private ActionResults CreateNewProfile()
         {
             if (ToolkitFactory.Instance?.ToolkitContext == null)
             {
-                return new ActionResults().WithSuccess(false);
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find CodeCommit data", ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 
             var registrationController = new RegisterAccountController(ToolkitFactory.Instance.ToolkitContext);
-            var results = registrationController.Execute();
+            var results = registrationController.Execute(MetricSources.CodeCommitMetricSource.ConnectPanel);
+
             if (results.Success)
             {
                 ToolkitFactory.Instance.RootViewModel.Refresh();
                 SelectedAccount = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts.FirstOrDefault();
-                return results;
             }
 
-            return new ActionResults().WithSuccess(false);
+            return results;
         }
     }
 }

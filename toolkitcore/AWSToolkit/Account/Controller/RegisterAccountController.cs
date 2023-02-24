@@ -13,6 +13,11 @@ using Amazon.AWSToolkit.Context;
 using System.Linq;
 using System.Windows;
 
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Telemetry.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+
 namespace Amazon.AWSToolkit.Account.Controller
 {
     public class RegisterAccountController
@@ -31,20 +36,35 @@ namespace Amazon.AWSToolkit.Account.Controller
 
         public RegisterAccountModel Model => this._model;
 
+        /// <summary>
+        /// Overload to record telemetry when the base class is invoked
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public ActionResults Execute(BaseMetricSource source)
+        {
+            ActionResults actionResults = null;
+
+            void Invoke() => actionResults = Execute();
+
+            void Record(ITelemetryLogger _) => RecordAddMetric(actionResults, source);
+
+            ToolkitContext.TelemetryLogger.InvokeAndRecord(Invoke, Record);
+            return actionResults;
+        }
+
         public virtual ActionResults Execute()
         {
             this.Model.StorageLocationVisibility = System.Windows.Visibility.Visible;
             this._control = new RegisterAccountControl(this);
             this.LoadModel();
             CustomizeControl(this._control);
-            if (ToolkitFactory.Instance.ShellProvider.ShowInModalDialogWindow(this._control, MessageBoxButton.OKCancel))
+            if (ToolkitContext.ToolkitHost.ShowInModalDialogWindow(this._control, MessageBoxButton.OKCancel))
             {
                 return this._results;
             }
        
-            return new ActionResults()
-                .WithCancelled(true)
-                .WithSuccess(false);
+            return ActionResults.CreateCancelled().WithSuccess(false);
         }
 
         protected virtual void CustomizeControl(RegisterAccountControl control)
@@ -124,14 +144,28 @@ namespace Amazon.AWSToolkit.Account.Controller
                 mre.WaitOne(2000);
                 this._results = new ActionResults().WithSuccess(true).WithFocalname(this.Model.ProfileName);
             }
-            catch
+            catch(Exception e)
             {
-                this._results = new ActionResults().WithSuccess(false).WithFocalname(this.Model.ProfileName);
+                this._results = ActionResults.CreateFailed(e).WithFocalname(this.Model.ProfileName);
             }
             finally
             {
                 ToolkitContext.CredentialManager.CredentialManagerUpdated -= HandleCredentialUpdate;
             }
+        }
+
+        private void RecordAddMetric(ActionResults actionResults, BaseMetricSource source)
+        {
+            ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
+            {
+                AwsAccount = ToolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = MetadataValue.NotApplicable,
+                Result = actionResults.AsTelemetryResult(),
+                CredentialModification = CredentialModification.Add,
+                Source = source.Location,
+                ServiceType = source.Service,
+                Reason = TelemetryHelper.GetMetricsReason(actionResults?.Exception)
+            });
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Windows;
 
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -9,6 +8,7 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.View;
 
@@ -142,15 +142,18 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
             });
         }
 
-        public void RecordAwsModifyCredentialsMetric(bool success, CredentialModification modification)
+        internal void RecordAwsAddCredentialsMetric(ActionResults result)
         {
+            var metricSource = MetricSources.GettingStartedMetricSource.GettingStarted;
             ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
             {
-                AwsAccount = _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsAccount = ToolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
                 AwsRegion = MetadataValue.NotApplicable,
-                Result = success ? Result.Succeeded : Result.Failed,
-                CredentialModification = modification,
-                Source = _control.UniqueId
+                Result = result.AsTelemetryResult(),
+                CredentialModification = CredentialModification.Add,
+                Source = metricSource.Location,
+                ServiceType = metricSource.Service,
+                Reason = TelemetryHelper.GetMetricsReason(result?.Exception)
             });
         }
 

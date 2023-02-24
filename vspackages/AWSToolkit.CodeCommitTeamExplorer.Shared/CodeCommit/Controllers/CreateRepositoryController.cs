@@ -62,7 +62,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
                 // Emit a false metric only if any of the previous required operations have failures
                 if (!string.Equals(operation, "create"))
                 {
-                    GitUtilities.RecordCodeCommitCreateRepoMetric(false, operation);
+                    CodeCommitTelemetryUtils.RecordCodeCommitCreateRepoMetric(false, operation);
                 }
             }
         }

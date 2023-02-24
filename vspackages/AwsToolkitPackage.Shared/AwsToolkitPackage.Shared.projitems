@@ -46,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateFileNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Controller\FirstRunController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Model\FirstRunModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)firstrun\model\MetricSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml.cs">
       <DependentUpon>FirstRunControl.xaml</DependentUpon>
     </Compile>
