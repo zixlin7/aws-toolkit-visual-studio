@@ -199,6 +199,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         private OutputWindow _toolkitOutputWindow;
         private MetricsOutputWindow _metricsOutputWindow;
+        private DocumentEventWatcher _documentEventWatcher;
 
         internal AWSToolkitShellProviderService ToolkitShellProviderService { get; private set; }
         internal AWSLegacyDeploymentPersistenceService LegacyDeploymentPersistenceService { get; private set; }
@@ -603,6 +604,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                     ToolkitHostInfo = hostInfo
                 };
 
+                _documentEventWatcher = InitializeDocumentWatcher(_toolkitContext);
+
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
 
                 await InitializeAwsToolkitMenuCommandsAsync();
@@ -830,6 +833,23 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception e)
             {
                 Logger.Error("Failed to set up Image provider - portions of the Toolkit may not have icons", e);
+            }
+        }
+
+
+        /// <summary>
+        /// Initialize the system that watches for document events <see cref="DocumentEventWatcher"/>
+        /// </summary>
+        private DocumentEventWatcher InitializeDocumentWatcher(ToolkitContext toolkitContext)
+        {
+            try
+            {
+                return new DocumentEventWatcher(toolkitContext);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to initialize documents event watcher", e);
+                return null;
             }
         }
 
@@ -2556,6 +2576,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         int IVsPackage.Close()
         {
+            _documentEventWatcher?.Dispose();
             if (_toolkitCredentialInitializer != null)
             {
                 _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged -= AwsConnectionManager_ConnectionStateChanged;
