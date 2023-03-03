@@ -16,6 +16,8 @@ using Amazon.Runtime;
 
 namespace BuildTasks
 {
+    // Legacy method:  This has been replaced by automatic EC2QuickLaunch.json file generation.
+    // See https://w.amazon.com/bin/view/AWS/DevEx/IDEToolkits/HostedFilesDevelopment/ for details.
     public class EC2QuickLaunchGeneratorTask : BuildTaskBase
     {
         // each regional bucket contains one of these files, which we assemble into one single file
