@@ -225,7 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeArtifact">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.102.23</Version>
     </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.17.2</Version>
