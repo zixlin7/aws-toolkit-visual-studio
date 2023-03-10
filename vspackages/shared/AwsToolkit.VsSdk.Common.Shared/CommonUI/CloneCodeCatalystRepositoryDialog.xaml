@@ -490,7 +490,7 @@
                     <TextBox
                         x:Name="LocalPathTextBox"
                         Grid.Column="0"
-                        Text="{Binding LocalPath}"
+                        Text="{Binding LocalPath, Delay=500, UpdateSourceTrigger=PropertyChanged}"
                         Validation.ErrorTemplate="{x:Null}" />
                     <Button
                         Grid.Column="1"

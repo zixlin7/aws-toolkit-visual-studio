@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Entering a local repo path on the CodeCatalyst Clone Repository dialog now validates the path on changes rather than clicking away from the textbox which did not always work consistently depending on where the user clicked."
+}
