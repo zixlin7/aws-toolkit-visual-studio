@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.RDS.Controller;
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.RDS.View
 {
@@ -157,28 +158,34 @@ namespace Amazon.AWSToolkit.RDS.View
         {
             try
             {
-                this._controller.CreateSubnetGroup();
+                var result = this._controller.CreateSubnetGroup(_ctlDataGrid);
+                _controller.RecordCreateSubnetGroup(result);
             }
             catch (Exception exc)
             {
                 LOGGER.Error("Error Creating DB Subnet Group", exc);
                 var errMsg = string.Format("An error occurred attempting to create the DB subnet group: {0}", exc.Message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Creating Subnet Group", errMsg);
+                _controller.RecordCreateSubnetGroup(ActionResults.CreateFailed(exc));
             }
         }
 
         void onDeleteClick(object sender, RoutedEventArgs e)
         {
+            var count = 0;
             try
             {
-                IList<DBSubnetGroupWrapper> groups = this._ctlDataGrid.GetSelectedItems<DBSubnetGroupWrapper>();
-                this._controller.DeleteSubnetGroups(groups);
+                var groups = _ctlDataGrid.GetSelectedItems<DBSubnetGroupWrapper>();
+                count = groups.Count;
+                var result = _controller.DeleteSubnetGroups(groups);
+                _controller.RecordDeleteSubnetGroup(count, result);
             }
             catch (Exception exc)
             {
                 LOGGER.Error("Error Deleting DB Subnet Group(s)", exc);
                 var errMsg = string.Format("An error occurred attempting to delete the DB subnet group(s): {0}", exc.Message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Deleting Subnet Group", errMsg);
+                _controller.RecordDeleteSubnetGroup(0, ActionResults.CreateFailed(exc));
             }
         }
 

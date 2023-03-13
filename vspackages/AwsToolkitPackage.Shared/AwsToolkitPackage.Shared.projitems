@@ -40,12 +40,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\EbToolsDeploymentProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\IDeploymentProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DialogFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DocumentEventWatcher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\CloudFormationTemplateProjectFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\CloudFormationTemplateProjectNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateEditorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateFileNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Controller\FirstRunController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Model\FirstRunModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)firstrun\model\MetricSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml.cs">
       <DependentUpon>FirstRunControl.xaml</DependentUpon>
     </Compile>

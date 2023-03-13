@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SNS.Nodes;
@@ -9,6 +11,7 @@ using Amazon.AWSToolkit.SNS.View;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.AWSToolkit.SQS.Nodes;
 using Amazon.AWSToolkit.Lambda.Nodes;
+using Amazon.AWSToolkit.SNS.Util;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -22,13 +25,22 @@ namespace Amazon.AWSToolkit.SNS.Controller
         ViewSubscriptionsModel _model;
         SNSRootViewModel _snsRootModel;
 
+        public ViewSubscriptionsController(ToolkitContext toolkitContext)
+        {
+            ToolkitContext = toolkitContext;
+        }
+
+        public ToolkitContext ToolkitContext { get; }
+
         public ViewSubscriptionsModel Model => this._model;
 
         public override ActionResults Execute(IViewModel model)
         {
             this._snsRootModel = model as SNSRootViewModel;
             if (this._snsRootModel == null)
+            {
                 return new ActionResults().WithSuccess(false);
+            }
 
             return Execute(this._snsRootModel.SNSClient, string.Format("{0}: Subscriptions", this._snsRootModel.AccountDisplayName));
         }
@@ -40,7 +52,7 @@ namespace Amazon.AWSToolkit.SNS.Controller
 
             ViewSubscriptionsControl control = new ViewSubscriptionsControl(this, this._model);
             control.SetTitle(title);
-            ToolkitFactory.Instance.ShellProvider.OpenInEditor(control);
+            ToolkitContext.ToolkitHost.OpenInEditor(control);
 
             return new ActionResults()
                     .WithSuccess(true);
@@ -62,11 +74,11 @@ namespace Amazon.AWSToolkit.SNS.Controller
         {
             try
             {
-                CreateSubscriptionModel model = new CreateSubscriptionModel(this._snsRootModel.Region.Id);
+                var model = new CreateSubscriptionModel(_snsRootModel.Region.Id);
 
                 if (!string.IsNullOrEmpty(this._model.OwningTopicARN))
                 {
-                    model.TopicArn = this._model.OwningTopicARN;
+                    model.TopicArn = _model.OwningTopicARN;
                     model.IsTopicARNReadOnly = true;
                 }
 
@@ -76,16 +88,16 @@ namespace Amazon.AWSToolkit.SNS.Controller
                     model.Endpoint = queueARN;
                 }
 
-                if (this._snsRootModel != null)
+                if (_snsRootModel != null)
                 {
-                    foreach (IViewModel viewModel in this._snsRootModel.Children)
+                    foreach (IViewModel viewModel in _snsRootModel.Children)
                     {
                         SNSTopicViewModel topicViewModel = viewModel as SNSTopicViewModel;
                         if(topicViewModel != null)
                             model.PossibleTopicArns.Add(topicViewModel.TopicArn);
                     }
 
-                    AccountViewModel accountViewModel = this._snsRootModel.AccountViewModel;
+                    AccountViewModel accountViewModel = _snsRootModel.AccountViewModel;
                     if (accountViewModel != null)
                     {
                         ISQSRootViewModel sqsRootViewModel = accountViewModel.FindSingleChild<ISQSRootViewModel>(false);
@@ -115,71 +127,90 @@ namespace Amazon.AWSToolkit.SNS.Controller
                     }
                 }
 
-                CreateSubscriptionController controller = new CreateSubscriptionController(this._snsRootModel, model);
-                if (controller.Execute())
+                var controller = new CreateSubscriptionController(ToolkitContext, _snsRootModel, model);
+                var result = controller.Execute();
+
+                RecordCreateSubscription(result);
+                if (result.Success)
                 {
                     Thread.Sleep(SLEEP_TIME_FOR_REFRESH);
-                    this.Refresh();
+                    Refresh();
                 }
+
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating subscription: " + e.Message);
+               ToolkitContext.ToolkitHost.ShowError("Error creating subscription: " + e.Message);
+               RecordCreateSubscription(ActionResults.CreateFailed(e));
             }
         }
 
-        public bool DeleteSubscriptions(List<SubscriptionEntry> entries)
+        public ActionResults DeleteSubscriptions(List<SubscriptionEntry> entries)
         {
-            bool deletedItems = false;
-            try
+            var result = Delete(entries);
+            if (result.Success)
             {
-                bool pendingSubscriptions = false;
-                foreach (SubscriptionEntry entry in entries)
+                Thread.Sleep(SLEEP_TIME_FOR_REFRESH);
+                Refresh();
+            }
+
+            return result;
+        }
+
+        private ActionResults Delete(List<SubscriptionEntry> entries)
+        {
+            var pendingSubscriptionCount = 0;
+            var failureCount = 0;
+
+            foreach (var entry in entries)
+            {
+                if (!entry.SubscriptionId.StartsWith("arn:"))
                 {
-                    if (!entry.SubscriptionId.StartsWith("arn:"))
+                    pendingSubscriptionCount++;
+                    continue;
+                }
+
+                try
+                {
+                    _snsClient.Unsubscribe(new UnsubscribeRequest()
                     {
-                        pendingSubscriptions = true;                        
-                        continue;
-                    }
-
-                    this._snsClient.Unsubscribe(new UnsubscribeRequest() { SubscriptionArn = entry.SubscriptionId });
-
-                    deletedItems = true;
+                        SubscriptionArn = entry.SubscriptionId
+                    });
                 }
-
-                if (pendingSubscriptions)
+                catch (Exception e)
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShowError("Pending subscriptions can not be unsubscribed.");
-                }
-            }
-            catch (Exception e)
-            {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Deleting Subscriptions: " + e.Message);
-            }
-            finally
-            {
-                if (deletedItems)
-                {
-                    Thread.Sleep(SLEEP_TIME_FOR_REFRESH);
-                    this.Refresh();
+                    var errMsg = $"An error occurred attempting to delete the subscription {entry.TopicArn}: {e.Message}";
+                    ToolkitContext.ToolkitHost.ShowError("Subscription Delete Failed", errMsg);
+                    failureCount++;
                 }
             }
 
-            return deletedItems;
+            if (pendingSubscriptionCount > 0)
+            {
+                ToolkitContext.ToolkitHost.ShowError("Pending subscriptions can not be unsubscribed.");
+            }
+
+            // if total failure and pending count equals all entries to be deleted, report failure result
+            if (failureCount > 0 && pendingSubscriptionCount > 0 && (failureCount+pendingSubscriptionCount == entries.Count))
+            {
+                return ActionResults.CreateFailed();
+            }
+
+            return new ActionResults().WithSuccess(true);
         }
 
         public void Refresh()
         {
             try
             {
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
+                ToolkitContext.ToolkitHost.ExecuteOnUIThread((Action) (() =>
                 {
                     LoadModel();
                 }));
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing list of subscriptions: " + e.Message);
+                ToolkitContext.ToolkitHost.ShowError("Error refreshing list of subscriptions: " + e.Message);
             }
         }
 
@@ -189,6 +220,18 @@ namespace Amazon.AWSToolkit.SNS.Controller
                 loadAllSubscriptionsEntries();
             else
                 loadSubscriptionsEntriesByTopic();
+        }
+
+        public void RecordDeleteSubscription(ActionResults result, int count)
+        {
+            var connectionSettings = _snsRootModel?.AwsConnectionSettings;
+            ToolkitContext.RecordSnsDeleteSubscription(result, count, connectionSettings);
+        }
+
+        private void RecordCreateSubscription(ActionResults result)
+        {
+            var connectionSettings = _snsRootModel?.AwsConnectionSettings;
+            ToolkitContext.RecordSnsCreateSubscription(result, connectionSettings);
         }
 
         private void loadSubscriptionsEntriesByTopic()

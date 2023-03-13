@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Amazon.AWSToolkit.Navigator;
 using log4net;
@@ -12,6 +11,8 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.ECS.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Telemetry;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
@@ -186,20 +187,33 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         private void DisplayPublishWizard(Dictionary<string, object> seedProperties)
         {
-            Stopwatch duration = new Stopwatch();
-            duration.Start();
+            var success = false;
+            IAWSWizard wizard = null;
 
+            void Invoke() => success = TryCreateWizard(seedProperties, out wizard);
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var connectionSettings = CreateConnectionSettings(wizard);
+                RecordEcsPublishWizardMetric(connectionSettings, success, duration);
+            }
+
+            _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+        }
+
+        private bool TryCreateWizard(Dictionary<string, object> seedProperties, out IAWSWizard wizard)
+        {
             var baseDockerImage = DetermineImageBase(seedProperties);
 
             var navigator = ToolkitFactory.Instance.Navigator;
             LoadPreviousSettings(seedProperties);
 
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.ECS.PublishContainerToAWS", seedProperties);
+            wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.ECS.PublishContainerToAWS", seedProperties);
             wizard.Title = "Publish Container to AWS";
             wizard.SetSelectedAccount(navigator.SelectedAccount, PublishContainerToAWSWizardProperties.UserAccount);
             wizard.SetSelectedRegion(navigator.SelectedRegion, PublishContainerToAWSWizardProperties.Region);
 
-            IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
+            var defaultPages = new IAWSWizardPageController[]
             {
                 new PushImageToECRPageController(),
                 new ECSClusterPageController(),
@@ -215,17 +229,18 @@ namespace Amazon.AWSToolkit.ECS.Controller
             wizard.SetNavigationButtonText(AWSWizardConstants.NavigationButtons.Finish, "Publish");
             wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
 
-
             wizard.Run();
-            var success = wizard.IsPropertySet(PublishContainerToAWSWizardProperties.WizardResult) && (bool)wizard[PublishContainerToAWSWizardProperties.WizardResult];
+            var success = wizard.IsPropertySet(PublishContainerToAWSWizardProperties.WizardResult) && (bool) wizard[PublishContainerToAWSWizardProperties.WizardResult];
             _results = new ActionResults().WithSuccess(success);
 
-            duration.Stop();
-            RecordEcsPublishWizardMetric(
-                navigator.SelectedAccountId,
-                navigator.SelectedRegionId,
-                success,
-                duration.Elapsed.TotalMilliseconds);
+            return success;
+        }
+
+        private AwsConnectionSettings CreateConnectionSettings(IAWSWizard wizard)
+        {
+            var identifier = wizard.GetSelectedAccount(PublishContainerToAWSWizardProperties.UserAccount)?.Identifier;
+            var region = wizard.GetSelectedRegion(PublishContainerToAWSWizardProperties.Region);
+            return new AwsConnectionSettings(identifier, region);
         }
 
         private string DetermineImageBase(Dictionary<string, object> seedProperties)
@@ -263,13 +278,13 @@ namespace Amazon.AWSToolkit.ECS.Controller
             }
         }
 
-        private void RecordEcsPublishWizardMetric(string accountId, string regionId, bool result, double duration)
+        private void RecordEcsPublishWizardMetric(AwsConnectionSettings connectionSettings, bool result, double duration)
         {
             _toolkitContext.TelemetryLogger.RecordEcsPublishWizard(new EcsPublishWizard()
             {
-                AwsAccount = accountId ?? MetadataValue.NotSet,
-                AwsRegion = regionId ?? MetadataValue.NotSet,
-                Result = result ? Result.Succeeded : Result.Failed,
+                AwsAccount = connectionSettings.GetAccountId(_toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                AwsRegion = connectionSettings.Region?.Id ?? MetadataValue.Invalid,
+                Result = result ? Result.Succeeded : Result.Cancelled,
                 Duration = duration
             });
         }

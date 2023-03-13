@@ -3,6 +3,7 @@ using Amazon.CloudWatchLogs;
 using Amazon.CodeCatalyst;
 using Amazon.CodeCommit;
 using Amazon.ECS;
+using Amazon.ElasticBeanstalk;
 using Amazon.Lambda;
 using Amazon.XRay;
 
@@ -13,6 +14,11 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
     public class ServiceNamesTests
     {
         [Fact]
+        public void Beanstalk()
+        {
+            Assert.Equal(new AmazonElasticBeanstalkConfig().RegionEndpointServiceName, ServiceNames.Beanstalk);
+        }
+
         public void CloudWatchLogs()
         {
             Assert.Equal(new AmazonCloudWatchLogsConfig().RegionEndpointServiceName, ServiceNames.CloudWatchLogs);

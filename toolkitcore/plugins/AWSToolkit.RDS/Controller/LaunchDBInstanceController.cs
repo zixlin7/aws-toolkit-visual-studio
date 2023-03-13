@@ -23,21 +23,31 @@ using Amazon.AWSToolkit.Util;
 using System.Threading;
 using Filter = Amazon.EC2.Model.Filter;
 using Amazon.AWSToolkit.EC2;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.RDS.Util;
 
 namespace Amazon.AWSToolkit.RDS.Controller
 {
     public class LaunchDBInstanceController : BaseContextCommand
     {
         public const string CreatedInstanceParameter = "CREATED_INSTANCE_PARAMETER";
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(LaunchDBInstanceController));
+        private readonly ToolkitContext _toolkitContext;
 
-        static readonly ILog Logger = LogManager.GetLogger(typeof(LaunchDBInstanceController));
         RDSInstanceRootViewModel _rootModel;
 
         const int MaxRefreshRetries = 3;
         const int SleepTimeBetweenRefreshes = 500;
 
+        public LaunchDBInstanceController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public override ActionResults Execute(IViewModel model)
         {
+            ActionResults result = null;
             try
             {
                 if (model is RDSRootViewModel)
@@ -49,9 +59,14 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 {
                     this._rootModel = model as RDSInstanceRootViewModel;
                 }
-            
+
                 if (_rootModel == null)
-                    return new ActionResults().WithSuccess(false);
+                {
+                    result = ActionResults.CreateFailed(new ToolkitException("Unable to find RDS DB Instance data",
+                        ToolkitException.CommonErrorCode.InternalMissingServiceState));
+                    RecordMetric(result);
+                    return result;
+                }
 
                 var seedProperties = new Dictionary<string, object>();
                 var account = _rootModel.AccountViewModel;
@@ -80,19 +95,31 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 };
 
                 wizard.RegisterPageControllers(defaultPages, 0);
-                if (wizard.Run())
+                if (!wizard.Run())
                 {
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(this.CreateDBInstanceAsync), wizard.CollectedProperties);
-                    return new ActionResults().WithSuccess(true);
+                    result = ActionResults.CreateCancelled();
+                    RecordMetric(result);
+                    return result;
                 }
+
+                ThreadPool.QueueUserWorkItem(new WaitCallback(this.CreateDBInstanceAsync), wizard.CollectedProperties);
+                return new ActionResults().WithSuccess(true);
             }
             catch (Exception e)
             {
                 Logger.ErrorFormat("Exception during RDS launch wizard run or instance launch process - {0}", e.Message);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Launch RDS Instance", "An error occurred in the launch wizard or instance creation process.\r\n" + e.Message);
-            }
+                _toolkitContext.ToolkitHost.ShowError("Launch RDS Instance", $"An error occurred in the launch wizard or instance creation process.{Environment.NewLine}{e.Message}");
 
-            return new ActionResults().WithSuccess(false);
+                result = ActionResults.CreateFailed(e);
+                RecordMetric(result);
+                return result;
+            }
+        }
+
+        private void RecordMetric(ActionResults results)
+        {
+            var awsConnectionSettings = _rootModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsLaunchInstance(results, awsConnectionSettings);
         }
 
         public static bool IsLaunchingIntoVPC(string vpcId)
@@ -145,7 +172,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
                 var isMultiAz = getValue<bool>(launchProperties, RDSWizardProperties.InstanceProperties.propkey_MultiAZ);
                 var optionGroups = new List<OptionGroup>();
-                
+
                 // SQL Server does Multi AZ by using an option group for mirroring instead of the MultiAZ Property.
                 if (request.Engine.StartsWith("sqlserver-") && isMultiAz)
                 {
@@ -176,8 +203,8 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
                     // if launching into a default VPC, we may need to create the subnet group. Note that the console shows
                     // (and uses) the name 'Default' - we can't use it, as it is reserved
-                    request.DBSubnetGroupName = getValue<bool>(launchProperties, RDSWizardProperties.InstanceProperties.propkey_CreateDBSubnetGroup) 
-                        ? CreateDBSubnetGroupForVPC(ec2Client, rdsClient, vpcId, null) 
+                    request.DBSubnetGroupName = getValue<bool>(launchProperties, RDSWizardProperties.InstanceProperties.propkey_CreateDBSubnetGroup)
+                        ? CreateDBSubnetGroupForVPC(ec2Client, rdsClient, vpcId, null)
                         : getValue<string>(launchProperties, RDSWizardProperties.InstanceProperties.propkey_DBSubnetGroup);
                 }
 
@@ -213,7 +240,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                     }
                 }
 
-                if (securityGroups.Any() 
+                if (securityGroups.Any()
                         && (getValue<bool>(launchProperties, RDSWizardProperties.InstanceProperties.propkey_AddCIDRToGroups)
                             || createNewSecurityGroup))
                 {
@@ -247,7 +274,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 var instance = new DBInstanceWrapper(response.DBInstance, optionGroups);
 
                 var launchViewOnClose = getValue<bool>(launchProperties, RDSWizardProperties.ReviewProperties.propkey_LaunchInstancesViewOnClose);
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action) (() =>
                 {
                     if (this._rootModel != null)
                     {
@@ -267,7 +294,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
                             if (newInstance != null)
                             {
-                                var command = new ViewDBInstancesController();
+                                var command = new ViewDBInstancesController(_toolkitContext);
                                 command.Execute(newInstance);
                                 ToolkitFactory.Instance.Navigator.SelectedNode = newInstance;
                             }
@@ -278,11 +305,13 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 }));
 
                 ToolkitFactory.Instance.ShellProvider.OutputToHostConsole("DB instance configuration and launch request completed", true);
+                RecordMetric(new ActionResults().WithSuccess(true));
             }
             catch (AmazonRDSException e)
             {
                 Logger.ErrorFormat("Caught exception creating DB instance - {0}", e.Message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Data Error", "Error launching DB instance: " + e.Message);
+                RecordMetric(ActionResults.CreateFailed(e));
             }
         }
 
@@ -301,10 +330,10 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 const string cidrBlockFormat = "172.30.{0}.0/{1}"; // follow console
 
                 var vpc = ec2Client.CreateVpc(new CreateVpcRequest
-                { 
-                    CidrBlock = string.Format(cidrBlockFormat, 0, 16) 
+                {
+                    CidrBlock = string.Format(cidrBlockFormat, 0, 16)
                 }).Vpc;
-                WaitTillTrue(((Func<bool>)(() => ec2Client.DescribeVpcs(new DescribeVpcsRequest { VpcIds = new List<string> { vpc.VpcId } }).Vpcs.Count == 1)));
+                WaitTillTrue(((Func<bool>) (() => ec2Client.DescribeVpcs(new DescribeVpcsRequest { VpcIds = new List<string> { vpc.VpcId } }).Vpcs.Count == 1)));
 
                 OutputProgress(string.Format("...created VPC with ID {0}", vpc.VpcId));
 
@@ -337,9 +366,9 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 var defaultRouteTable = ec2Client.DescribeRouteTables(new DescribeRouteTablesRequest
                 {
                     Filters = new List<Filter>
-                    { 
+                    {
                         new Filter { Name = "vpc-id", Values = new List<string> { vpc.VpcId } },
-                        new Filter { Name = "association.main", Values = new List<string> { "true" } } 
+                        new Filter { Name = "association.main", Values = new List<string> { "true" } }
                     }
                 }).RouteTables[0];
 
@@ -486,11 +515,11 @@ namespace Amazon.AWSToolkit.RDS.Controller
         /// <param name="vpcGroups"></param>
         /// <param name="rdsClient"></param>
         /// <param name="ec2Client"></param>
-        void AddCidrToSecurityGroups(string currentIp, 
+        void AddCidrToSecurityGroups(string currentIp,
                                      int port,
-                                     IEnumerable<string> securityGroups, 
-                                     bool vpcGroups, 
-                                     IAmazonRDS rdsClient, 
+                                     IEnumerable<string> securityGroups,
+                                     bool vpcGroups,
+                                     IAmazonRDS rdsClient,
                                      IAmazonEC2 ec2Client)
         {
             if (string.IsNullOrEmpty(currentIp))
@@ -540,7 +569,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                     var request = new AuthorizeSecurityGroupIngressRequest
                     {
                         GroupId = groupId,
-                        IpPermissions = new List<IpPermission> {  ipPermission }
+                        IpPermissions = new List<IpPermission> { ipPermission }
                     };
 
                     ec2Client.AuthorizeSecurityGroupIngress(request);
@@ -559,7 +588,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             object value;
             if (properties.TryGetValue(key, out value))
             {
-                T convertedValue = (T)Convert.ChangeType(value, typeof(T));
+                T convertedValue = (T) Convert.ChangeType(value, typeof(T));
                 return convertedValue;
             }
 

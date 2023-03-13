@@ -1,9 +1,11 @@
 ﻿using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.Navigator;
+
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
     public interface IEcsDeploy
     {
-        Task<bool> Deploy(EcsDeployState state);
+        Task<ActionResults> Deploy(EcsDeployState state);
     }
 }

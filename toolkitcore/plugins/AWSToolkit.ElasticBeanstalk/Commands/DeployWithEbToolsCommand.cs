@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
@@ -7,8 +8,13 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.Notifications;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AWSToolkit.ElasticBeanstalk.Model;
+using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.ElasticBeanstalk.Tools.Commands;
 
@@ -83,12 +89,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         {
             var statusLogger = new DeployToolLogger();
             var success = false;
+            var metricSource = MetricSources.BeanstalkMetricSource.Project;
+            var duration = new Stopwatch();
+            duration.Start();
+
             var deployMetric = new BeanstalkDeploy()
             {
                 Name = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack),
                 Framework = getValue<string>(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime),
                 EnhancedHealthEnabled = false,
                 XrayEnabled = false,
+                Source = metricSource.Location,
+                ServiceType = metricSource.Service
             };
 
             var command = new DeployEnvironmentCommand(statusLogger, this._projectLocation, new string[0]);
@@ -96,7 +108,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             command.DeployEnvironmentOptions.WaitForUpdate = false;
             var region = CommonWizardProperties.AccountSelection.GetSelectedRegion(DeploymentProperties);
             command.Region = region.Id;
-            deployMetric.AwsRegion = command.Region;
+            deployMetric.AwsRegion = command.Region ?? MetadataValue.Invalid;
+            deployMetric.AwsAccount = GetAccountId(region);
 
             command.STSClient =
                 this.Account.CreateServiceClient<Amazon.SecurityToken.AmazonSecurityTokenServiceClient>(
@@ -119,7 +132,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 EnsureRolesExist(command, region);
 
                 success = command.ExecuteAsync().GetAwaiter().GetResult();
-                deployMetric.Result = success ? Result.Succeeded : Result.Failed;
+
                 if (!success && command.LastToolsException != null)
                 {
                     throw command.LastToolsException;
@@ -127,15 +140,24 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
             catch (Exception e)
             {
-                deployMetric.Result = Result.Failed;
+                deployMetric.Reason = BeanstalkHelpers.GetMetricsReason(e);
                 string errMsg = string.Format("Error publishing application: {0}", e.Message);
                 statusLogger.WriteLine(errMsg);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Publish Error", errMsg);
             }
             finally
             {
+                duration.Stop();
+                deployMetric.Result = success ? Result.Succeeded : Result.Failed;
+                deployMetric.Duration = duration.Elapsed.TotalMilliseconds;
+
                 ReportFinalStatus(deployMetric, success, command);
             }
+        }
+
+        private string GetAccountId(ToolkitRegion region)
+        {
+           return Account?.ToolkitContext.ServiceClientManager.GetAccountId(new AwsConnectionSettings(Account?.Identifier, region)) ?? MetadataValue.Invalid;
         }
 
         /// <summary>

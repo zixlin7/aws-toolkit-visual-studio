@@ -65,6 +65,7 @@
     <Compile Include="Controller\DeleteFunctionController.cs" />
     <Compile Include="DeploymentWorkers\ILambdaFunctionUploadHelpers.cs" />
     <Compile Include="Model\MetricSources.cs" />
+    <Compile Include="Util\LambdaHelpers.cs" />
     <Compile Include="Util\LambdaStateWaiter.cs" />
     <Compile Include="DeploymentWorkers\PublishServerlessApplicationWorker.cs" />
     <Compile Include="Controller\UploadFunctionController.cs" />
@@ -295,37 +296,37 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.102.8</Version>
+      <Version>3.7.104.24</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchEvents">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.100.86</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.102.0</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.111.2</Version>
+      <Version>3.7.126.0</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.28</Version>
+      <Version>3.7.100.87</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.KeyManagementService">
-      <Version>3.7.101.2</Version>
+      <Version>3.7.101.61</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Kinesis">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.102.23</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.7.102.3</Version>
+      <Version>3.7.105.6</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.101.27</Version>
+      <Version>3.7.103.23</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.101.22</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.100.86</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

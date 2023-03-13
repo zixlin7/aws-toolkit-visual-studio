@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Util;
 using Amazon.ECR;
 using Amazon.IdentityManagement.Model;
@@ -21,12 +22,13 @@ using Amazon.SecurityToken;
 using log4net;
 
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
+using static Amazon.AWSToolkit.Lambda.Util.LambdaTelemetryUtils;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public class UploadGenericWorker : BaseUploadWorker
     {
-        ILog LOGGER = LogManager.GetLogger(typeof(UploadGenericWorker));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(UploadGenericWorker));
 
         public static readonly Regex[] ExcludedFiles =
         {
@@ -41,23 +43,42 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         };
 
         private readonly ToolkitContext _toolkitContext;
+        private readonly UploadOriginator _originator;
 
         public UploadGenericWorker(ILambdaFunctionUploadHelpers functionUploader,
             IAmazonSecurityTokenService stsClient,
             IAmazonLambda lambdaClient,
             IAmazonECR ecrClient,
+            UploadOriginator originator,
             ToolkitContext toolkitContext)
             : base(functionUploader, stsClient, lambdaClient, ecrClient)
         {
             _toolkitContext = toolkitContext;
+            _originator = originator;
         }
 
         public override void UploadFunction(UploadFunctionState uploadState)
         {
+            ActionResults results = null;
+            var deploymentProperties = new RecordLambdaDeployProperties();
+
+            void Invoke() => results = Upload(uploadState, out deploymentProperties);
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var metricSource = _originator.AsMetricSource();
+                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(results, duration, metricSource,
+                    deploymentProperties);
+            }
+
+            _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+        }
+
+        private ActionResults Upload(UploadFunctionState uploadState, out RecordLambdaDeployProperties deploymentProperties)
+        {
             string zipFile = null;
             bool deleteZipWhenDone = false;
-            var deploymentProperties = new LambdaTelemetryUtils.RecordLambdaDeployProperties();
-
+            deploymentProperties = new RecordLambdaDeployProperties();
             try
             {
                 var architectureList = uploadState.GetRequestArchitectures();
@@ -94,15 +115,15 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                             file => file.Substring(uploadState.SourcePath.Length + 1)
                         );
 
-                    this.FunctionUploader.AppendUploadStatus("Starting to zip up {0}", uploadState.SourcePath);
+                    FunctionUploader.AppendUploadStatus("Starting to zip up {0}", uploadState.SourcePath);
                     ZipUtil.CreateZip(zipFile, zipContents);
-                    this.FunctionUploader.AppendUploadStatus("Finished zipping up directory to {0} with file size {1} bytes.", zipFile, new FileInfo(zipFile).Length);
+                    FunctionUploader.AppendUploadStatus("Finished zipping up directory to {0} with file size {1} bytes.", zipFile, new FileInfo(zipFile).Length);
                 }
                 else if (string.Equals(Path.GetExtension(uploadState.SourcePath), ".zip", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Use provided Zip file
                     zipFile = uploadState.SourcePath;
-                    this.FunctionUploader.AppendUploadStatus("Selected source is a zip archive.");
+                    FunctionUploader.AppendUploadStatus("Selected source is a zip archive.");
                 }
                 else
                 {
@@ -113,22 +134,22 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                         {uploadState.SourcePath, Path.GetFileName(uploadState.SourcePath)}
                     };
                     ZipUtil.CreateZip(zipFile, zipContents);
-                    this.FunctionUploader.AppendUploadStatus("Zipped up file {0}", uploadState.SourcePath);
+                    FunctionUploader.AppendUploadStatus("Zipped up file {0}", uploadState.SourcePath);
                 }
 
-                this.FunctionUploader.AppendUploadStatus("Starting upload of Lambda function zip file.");
+                FunctionUploader.AppendUploadStatus("Starting upload of Lambda function zip file.");
 
                 int lastReportedPercent = 0;
                 uploadState.Request.StreamTransferProgress += (System.EventHandler<Amazon.Runtime.StreamTransferProgressArgs>)((s, args) =>
                 {
                     if (args.PercentDone != lastReportedPercent)
                     {
-                        this.FunctionUploader.AppendUploadStatus("Uploaded {0}%", args.PercentDone);
+                        FunctionUploader.AppendUploadStatus("Uploaded {0}%", args.PercentDone);
                         lastReportedPercent = args.PercentDone;
                     }
                 });
 
-                var existingConfiguration = this.FunctionUploader.GetExistingConfiguration(this.LambdaClient, uploadState.Request.FunctionName);
+                var existingConfiguration = FunctionUploader.GetExistingConfiguration(LambdaClient, uploadState.Request.FunctionName);
                 deploymentProperties.NewResource = existingConfiguration == null;
 
                 // Add retry logic in case the new IAM role has not propagated yet.
@@ -150,45 +171,44 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 }
 
 
-                this.FunctionUploader.AppendUploadStatus("Upload complete.");
-                this.Results = new ActionResults { Success = true, ShouldRefresh = true, FocalName = uploadState.Request.FunctionName };
+                FunctionUploader.AppendUploadStatus("Upload complete.");
 
                 deploymentProperties.Language = this.FunctionUploader.GetFunctionLanguage();
                 deploymentProperties.XRayEnabled = this.FunctionUploader.XRayEnabled();
 
-                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
-                this.FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
+                FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
+                return new ActionResults { Success = true, ShouldRefresh = true, FocalName = uploadState.Request.FunctionName };
             }
             catch (ToolkitException e)
             {
-                this.FunctionUploader.AppendUploadStatus(e.Message);
-                this.FunctionUploader.AppendUploadStatus("Upload stopped.");
+                FunctionUploader.AppendUploadStatus(e.Message);
+                FunctionUploader.AppendUploadStatus("Upload stopped.");
 
-                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
+                FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
+                return ActionResults.CreateFailed(e);
             }
             catch (Exception e)
             {
-                string serviceCode = null;
-                var serviceException = e as AmazonServiceException;
-                if (serviceException != null)
+                if (e is AmazonServiceException serviceException)
                 {
-                    serviceCode = $"{serviceException.ErrorCode}-{serviceException.StatusCode}";
-                    this.FunctionUploader.AppendUploadStatus("{0} - {1}", serviceException.ErrorCode, serviceException.StatusCode);
+                    var serviceCode = $"{serviceException.ErrorCode}-{serviceException.StatusCode}";
+                    FunctionUploader.AppendUploadStatus(serviceCode);
                 }
 
-                this.FunctionUploader.AppendUploadStatus(e.Message);
-                this.FunctionUploader.AppendUploadStatus("Upload stopped.");
+                FunctionUploader.AppendUploadStatus(e.Message);
+                FunctionUploader.AppendUploadStatus("Upload stopped.");
 
-                LOGGER.Error("Error uploading Lambda function.", e);
+                _logger.Error("Error uploading Lambda function.", e);
 
-                _toolkitContext.TelemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
+                FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
+                return ActionResults.CreateFailed(e);
             }
             finally
             {
                 if (zipFile != null && deleteZipWhenDone)
+                {
                     File.Delete(zipFile);
+                }
             }
         }
 

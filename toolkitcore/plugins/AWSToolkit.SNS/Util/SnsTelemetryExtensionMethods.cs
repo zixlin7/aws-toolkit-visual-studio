@@ -27,5 +27,37 @@ namespace Amazon.AWSToolkit.SNS.Util
 
             toolkitContext.TelemetryLogger.RecordSnsDeleteTopic(data);
         }
+
+        public static void RecordSnsCreateSubscription(this ToolkitContext toolkitContext, ActionResults result,
+            AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = result.CreateMetricData<SnsCreateSubscription>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+
+            toolkitContext.TelemetryLogger.RecordSnsCreateSubscription(data);
+        }
+
+
+        public static void RecordSnsDeleteSubscription(this ToolkitContext toolkitContext, ActionResults result, int count,
+            AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = result.CreateMetricData<SnsDeleteSubscription>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Value = count;
+
+            toolkitContext.TelemetryLogger.RecordSnsDeleteSubscription(data);
+        }
+
+        public static void RecordSnsPublishMessage(this ToolkitContext toolkitContext, ActionResults result,
+            AwsConnectionSettings awsConnectionSettings)
+        {
+            var data = result.CreateMetricData<SnsPublishMessage>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+
+            toolkitContext.TelemetryLogger.RecordSnsPublishMessage(data);
+        }
     }
 }

@@ -11,13 +11,17 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.EC2;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.Telemetry;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
     public class DeployTaskWorker : BaseWorker, IEcsDeploy
     {
-        static readonly ILog Logger = LogManager.GetLogger(typeof(DeployTaskWorker));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(DeployTaskWorker));
 
         private readonly IAmazonECR _ecrClient;
         private readonly IAmazonECS _ecsClient;
@@ -50,15 +54,27 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         /// </summary>
         public void Execute(EcsDeployState state, IEcsDeploy ecsDeploy)
         {
-            Result deployResult = Result.Failed;
+            ActionResults result = null;
+          
+            void Invoke() => result = DeployTask(state, ecsDeploy);
 
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var connectionSettings = new AwsConnectionSettings(state.Account?.Identifier, state.Region);
+                EmitTaskDeploymentMetric(connectionSettings, result, state.HostingWizard, duration);
+            }
+
+            ToolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+        }
+
+        private ActionResults DeployTask(EcsDeployState state, IEcsDeploy ecsDeploy)
+        {
             try
             {
-                if (ecsDeploy.Deploy(state).Result)
+                var result = ecsDeploy.Deploy(state).Result;
+                if (result.Success)
                 {
-                    deployResult = Result.Succeeded;
-
-                    this.Helper.SendCompleteSuccessAsync(state);
+                    Helper.SendCompleteSuccessAsync(state);
                     if (state.PersistConfigFile.GetValueOrDefault())
                     {
                         base.PersistDeploymentMode(state.HostingWizard);
@@ -66,39 +82,41 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 }
                 else
                 {
-                    this.Helper.SendCompleteErrorAsync("ECS Task deployment failed");
+                    Helper.SendCompleteErrorAsync("ECS Task deployment failed");
                 }
+
+                return result;
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error deploying ECS Task.", e);
-                this.Helper.SendCompleteErrorAsync("Error deploying ECS Task: " + e.Message);
-            }
-            finally
-            {
-                EmitTaskDeploymentMetric(state.Region.Id, deployResult, state.HostingWizard);
+                _logger.Error("Error deploying ECS Task.", e);
+                Helper.SendCompleteErrorAsync("Error deploying ECS Task: " + e.Message);
+                return ActionResults.CreateFailed(e);
             }
         }
 
-        private void EmitTaskDeploymentMetric(string region, Result deployResult, IAWSWizard awsWizard)
+        private void EmitTaskDeploymentMetric(AwsConnectionSettings connectionSettings, ActionResults result, IAWSWizard awsWizard, double duration)
         {
             try
             {
                 ToolkitContext.TelemetryLogger.RecordEcsDeployTask(new EcsDeployTask()
                 {
-                    Result = deployResult,
+                    Result = result.AsTelemetryResult(),
                     EcsLaunchType = EcsTelemetryUtils.GetMetricsEcsLaunchType(awsWizard),
-                    AwsRegion = region,
+                    AwsRegion = connectionSettings.Region?.Id ?? MetadataValue.Invalid,
+                    AwsAccount = connectionSettings.GetAccountId(ToolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
+                    Reason = EcsTelemetryUtils.GetReason(result?.Exception),
+                    Duration = duration
                 });
             }
             catch (Exception e)
             {
-                Logger.Error("Error logging metric", e);
+                _logger.Error("Error logging metric", e);
                 Debug.Assert(false, $"Unexpected error while logging deployment metric: {e.Message}");
             }
         }
 
-        async Task<bool> IEcsDeploy.Deploy(EcsDeployState state)
+        async Task<ActionResults> IEcsDeploy.Deploy(EcsDeployState state)
         {
             var credentials =
                 ToolkitContext.CredentialManager.GetAwsCredentials(state.Account.Identifier, state.Region);
@@ -133,7 +151,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 Helper.AppendUploadStatus(errorMessage);
             }
 
-            return result;
+            var exception = DetermineErrorException(command.LastToolsException, "Failed to deploy ECS task to AWS");
+            return result ? new ActionResults().WithSuccess(true) : ActionResults.CreateFailed(exception);
         }
     }
 }

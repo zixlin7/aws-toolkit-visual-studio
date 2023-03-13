@@ -22,6 +22,8 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Telemetry.Model;
+
 using log4net;
 using CredentialType = Amazon.AWSToolkit.Credentials.Utils.CredentialType;
 
@@ -358,8 +360,7 @@ namespace Amazon.AWSToolkit.Navigator
         void AddAccount(object parameter)
         {
             RegisterAccountController command = new RegisterAccountController(_toolkitContext);
-            ActionResults results = command.Execute();
-            RecordAwsModifyCredentialsMetric(results, CredentialModification.Add);
+            ActionResults results = command.Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
         }
 
         private void RecordAwsModifyCredentialsMetric(ActionResults actionResults, CredentialModification modification)

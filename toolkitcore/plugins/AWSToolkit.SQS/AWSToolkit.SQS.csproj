@@ -84,6 +84,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="SQSActivator.cs" />
+    <Compile Include="Util\SqsHelpers.cs" />
     <Compile Include="Util\SqsTelemetryExtensionMethods.cs" />
     <Compile Include="View\CreateQueueControl.xaml.cs">
       <DependentUpon>CreateQueueControl.xaml</DependentUpon>
@@ -173,7 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.100.86</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

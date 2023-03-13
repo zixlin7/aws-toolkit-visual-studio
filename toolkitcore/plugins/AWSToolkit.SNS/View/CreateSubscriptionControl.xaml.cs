@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.AWSToolkit.SNS.Controller;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.SNS.View
 {
@@ -55,27 +57,28 @@ namespace Amazon.AWSToolkit.SNS.View
 
         public override bool OnCommit()
         {
-            if (string.IsNullOrEmpty(this._controller.Model.TopicArn))
-            {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Topic ARN is required!");
-                return false;
-            }
-            if (string.IsNullOrEmpty(this._controller.Model.Endpoint))
-            {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Endpoint is required!");
-                return false;
-            }
-
             try
             {
-                this._controller.Persist();
+                if (string.IsNullOrEmpty(_controller.Model.TopicArn))
+                {
+                    throw new ToolkitException("Topic ARN is required!", ToolkitException.CommonErrorCode.UnsupportedState);
+                }
+                if (string.IsNullOrEmpty(_controller.Model.Endpoint))
+                {
+                    throw new ToolkitException("Endpoint is required!", ToolkitException.CommonErrorCode.UnsupportedState);
+                }
+
+                _controller.Persist();
+                return true;
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating subscription: " + e.Message);
+                _controller.ToolkitContext.ToolkitHost.ShowError($"Error creating subscription:{Environment.NewLine}{e.Message}");
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                _controller.RecordMetric(ActionResults.CreateFailed(e));
                 return false;
             }
-            return true;
         }
 
         private void onProtocolsSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Base\TeamExplorerInvitationBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)codecommit\CodeCommitTelemetryUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Connect\ConnectionSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Connect\InvitationSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Controllers\BaseCodeCommitController.cs" />
@@ -24,6 +25,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\GitUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CodeCommit\Model\ConnectSectionViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)codecommit\model\MetricSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CredentialManagement\TeamExplorerConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>

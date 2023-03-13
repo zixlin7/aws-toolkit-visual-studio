@@ -13,12 +13,15 @@ using Amazon.RDS;
 using Amazon.RDS.Model;
 
 using log4net;
+using Amazon.AWSToolkit.EC2.View.DataGrid;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.RDS.Util;
 
 namespace Amazon.AWSToolkit.RDS.Controller
 {
     public class ViewDBSecurityGroupsController : BaseContextCommand
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewDBSecurityGroupsController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ViewDBSecurityGroupsController));
 
         private readonly ToolkitContext _toolkitContext;
 
@@ -87,31 +90,31 @@ namespace Amazon.AWSToolkit.RDS.Controller
             }));
         }
 
-        public DBSecurityGroupWrapper CreateSecurityGroup()
+        public ActionResults CreateSecurityGroup(ICustomizeColumnGrid grid)
         {
-            var controller = new CreateSecurityGroupController();
-            var results = controller.Execute(this._securityRootViewModel);
+            var controller = new CreateSecurityGroupController(_toolkitContext);
+            var results = controller.Execute(_securityRootViewModel);
             if (results.Success)
             {
-                this.RefreshSecurityGroups();
+                RefreshSecurityGroups();
+                var createdGroup = Model.SecurityGroups.FirstOrDefault(sg =>
+                   sg.DisplayName == results.FocalName);
 
-                foreach (var group in this.Model.SecurityGroups)
+                if (createdGroup != null)
                 {
-                    if (group.DisplayName == results.FocalName)
-                    {
-                        return group;
-                    }
+                    grid.SelectAndScrollIntoView(createdGroup);
                 }
             }
 
-            return null;
+            return results;
         }
 
-        public void DeleteSecurityGroups(IList<DBSecurityGroupWrapper> groups)
+        public ActionResults DeleteSecurityGroups(IList<DBSecurityGroupWrapper> groups)
         {
-            var controller = new DeleteSecurityGroupController(this._securityRootViewModel);
-            controller.Execute(this._rdsClient, groups);
-            this.RefreshSecurityGroups();
+            var controller = new DeleteSecurityGroupController(_toolkitContext, _securityRootViewModel);
+            var result = controller.Execute(_rdsClient, groups);
+            RefreshSecurityGroups();
+            return result;
         }
 
         public AccountViewModel Account => this._securityRootViewModel.AccountViewModel;
@@ -162,6 +165,18 @@ namespace Amazon.AWSToolkit.RDS.Controller
             {
                 dbSecurityGroup.RefreshNative(response.DBSecurityGroups[0]);
             }
+        }
+
+        public void RecordCreateSecurityGroup(ActionResults result)
+        {
+            var awsConnectionSettings = _securityRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsCreateSecurityGroup(result, awsConnectionSettings);
+        }
+
+        public void RecordDeleteSecurityGroup(int count, ActionResults result)
+        {
+            var awsConnectionSettings = _securityRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsDeleteSecurityGroup(count, result, awsConnectionSettings);
         }
     }
 }

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.RDS.Nodes;
+using Amazon.AWSToolkit.RDS.Util;
 using Amazon.AWSToolkit.RDS.View;
 using Amazon.EC2;
 using Amazon.RDS;
@@ -15,7 +19,8 @@ namespace Amazon.AWSToolkit.RDS.Controller
 {
     public class CreateDBSubnetGroupController : BaseContextCommand
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(CreateDBSubnetGroupController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CreateDBSubnetGroupController));
+        private readonly ToolkitContext _toolkitContext;
 
         ActionResults _results;
         IAmazonRDS _rdsClient;
@@ -23,30 +28,42 @@ namespace Amazon.AWSToolkit.RDS.Controller
         CreateDBSubnetGroupModel _model;
         RDSSubnetGroupsRootViewModel _subnetGroupsRootViewModel;
 
-        public CreateDBSubnetGroupController()
+        public CreateDBSubnetGroupController(ToolkitContext toolkitContext)
         {
+            _toolkitContext = toolkitContext;
         }
+
+        public ToolkitContext ToolkitContext => _toolkitContext;
 
         public CreateDBSubnetGroupModel Model => _model;
 
-
         public override ActionResults Execute(IViewModel model)
+        {
+            var result = CreateDBSubnetGroup(model);
+            RecordMetric(result);
+            return result;
+        }
+
+        private ActionResults CreateDBSubnetGroup(IViewModel model)
         {
             var subnetGroupsRootViewModel = model as RDSSubnetGroupsRootViewModel;
             if (subnetGroupsRootViewModel == null)
-                return new ActionResults().WithSuccess(false);
+            {
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find RDS Subnet group data",
+                    ToolkitException.CommonErrorCode.InternalMissingServiceState));
+            }
 
-            return this.Execute(subnetGroupsRootViewModel);
+            return Execute(subnetGroupsRootViewModel);
         }
 
         public ActionResults Execute(RDSSubnetGroupsRootViewModel subnetGroupsRootViewModel)
         {
             try
             {
-                this._subnetGroupsRootViewModel = subnetGroupsRootViewModel;
-                _rdsClient = this._subnetGroupsRootViewModel.RDSClient;
+                _subnetGroupsRootViewModel = subnetGroupsRootViewModel;
+                _rdsClient = _subnetGroupsRootViewModel.RDSClient;
 
-                var account = this._subnetGroupsRootViewModel.AccountViewModel;
+                var account = _subnetGroupsRootViewModel.AccountViewModel;
                 _ec2Client = account.CreateServiceClient<AmazonEC2Client>(_subnetGroupsRootViewModel.Region);
 
                 _model = new CreateDBSubnetGroupModel();
@@ -56,18 +73,18 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 _model.LoadAllSubnets(_ec2Client.DescribeSubnets().Subnets);
 
                 var control = new CreateDBSubnetGroupControl(this);
-                ToolkitFactory.Instance.ShellProvider.ShowModal(control);
+                if (!_toolkitContext.ToolkitHost.ShowModal(control))
+                {
+                    return ActionResults.CreateCancelled();
+                }
 
+                return _results ?? ActionResults.CreateFailed();
             }
             catch (Exception e)
             {
-                LOGGER.ErrorFormat("Caught exception launching create dbsubnet dialog: {0}", e.Message);
+                _logger.ErrorFormat("Caught exception launching create dbsubnet dialog: {0}", e.Message);
+                return ActionResults.CreateFailed(e);
             }
-
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-
-            return this._results;
         }
 
         internal void LoadSubnetsForSelectedVPCAndZone()
@@ -161,23 +178,21 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 SubnetIds = _model.AssignedSubnets.Select(subnet => subnet.SubnetId).ToList()
             };
 
-            try
-            {
-                var response = _rdsClient.CreateDBSubnetGroup(request);
+            var response = _rdsClient.CreateDBSubnetGroup(request);
 
-                if (this._subnetGroupsRootViewModel != null)
-                    this._subnetGroupsRootViewModel.AddDBSubnetGroup(response.DBSubnetGroup);
-
-                this._results = new ActionResults().WithFocalname(this._model.Name).WithSuccess(true);
-                return _model.Name;
-            }
-            catch (Exception e)
+            if (this._subnetGroupsRootViewModel != null)
             {
-                LOGGER.ErrorFormat("Caught exception creating DB subnet group '{0}': {1}", request.DBSubnetGroupName, e.Message);
+                this._subnetGroupsRootViewModel.AddDBSubnetGroup(response.DBSubnetGroup);
             }
 
-            return null;
+            this._results = new ActionResults().WithFocalname(this._model.Name).WithSuccess(true);
+            return _model.Name;
         }
 
+        public void RecordMetric(ActionResults results)
+        {
+            var awsConnectionSettings = _subnetGroupsRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsCreateSubnetGroup(results, awsConnectionSettings);
+        }
     }
 }

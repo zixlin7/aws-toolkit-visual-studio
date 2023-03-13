@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CodeCommitTeamExplorer.Base;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Navigator;
 
 using log4net;
 
@@ -130,18 +131,22 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
         public override void SignUp()
         {
             LOGGER.Debug("CodeCommit SignUp");
+            ActionResults results = null;
             try
             {
-                var u = new UriBuilder(_signUpUrl)
-                {
-                    Scheme = "https"
-                };
+                var u = new UriBuilder(_signUpUrl) { Scheme = "https" };
 
                 Process.Start(new ProcessStartInfo(u.Uri.ToString()));
+                results = new ActionResults().WithSuccess(true);
             }
             catch (Exception ex)
             {
                 LOGGER.Error("Failed to launch process to go to AWS sign up page", ex);
+                results = ActionResults.CreateFailed(ex);
+            }
+            finally
+            {
+                CodeCommitTelemetryUtils.RecordOpenUrl(results, _signUpUrl);
             }
         }
 

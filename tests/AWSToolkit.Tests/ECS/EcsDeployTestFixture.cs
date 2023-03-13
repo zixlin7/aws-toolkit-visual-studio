@@ -12,6 +12,8 @@ using Amazon.IdentityManagement;
 using Moq;
 using System;
 using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using LaunchType = Amazon.ECS.LaunchType;
@@ -59,12 +61,12 @@ namespace AWSToolkit.Tests.ECS
 
         public void SetupEcsDeployToSucceed()
         {
-            EcsDeploy.Setup(mock => mock.Deploy(It.IsAny<EcsDeployState>())).ReturnsAsync(true);
+            EcsDeploy.Setup(mock => mock.Deploy(It.IsAny<EcsDeployState>())).ReturnsAsync(new ActionResults().WithSuccess(true));
         }
 
         public void SetupEcsDeployToFail()
         {
-            EcsDeploy.Setup(mock => mock.Deploy(It.IsAny<EcsDeployState>())).ReturnsAsync(false);
+            EcsDeploy.Setup(mock => mock.Deploy(It.IsAny<EcsDeployState>())).ReturnsAsync(ActionResults.CreateFailed());
         }
 
         public void SetupEcsDeployToThrow()

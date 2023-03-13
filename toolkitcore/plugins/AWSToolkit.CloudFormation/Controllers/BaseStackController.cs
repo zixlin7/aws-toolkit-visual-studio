@@ -11,34 +11,59 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
+using Amazon.AWSToolkit.CloudFormation.Model;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Telemetry.Model;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     public abstract class BaseStackController : BaseContextCommand
     {
-        private readonly ITelemetryLogger _telemetryLogger;
+        private readonly BaseMetricSource _metricSource;
 
-        protected BaseStackController(ITelemetryLogger telemetryLogger)
+        protected BaseStackController(ToolkitContext toolkitContext, BaseMetricSource metricSource)
         {
-            _telemetryLogger = telemetryLogger;
+            _toolkitContext = toolkitContext;
+            _metricSource = metricSource;
         }
+
+        protected ToolkitContext _toolkitContext { get; }
 
         public override ActionResults Execute(IViewModel model)
         {
             return new ActionResults().WithSuccess(true);
         }
 
-        protected ActionResults UpdateStack(AccountViewModel account, ToolkitRegion region, Dictionary<string, object> collectedProperties)
+        protected ActionResults UpdateStack(AccountViewModel account, ToolkitRegion region,
+            Dictionary<string, object> collectedProperties)
         {
-            var deployResult = Result.Failed;
+            var connectionSettings = new AwsConnectionSettings(account?.Identifier, region);
+            ActionResults results = null;
 
+            void Invoke() => results = Update(account, region, collectedProperties);
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                RecordDeployMetric(results, connectionSettings, duration, initialDeploy: false);
+            }
+
+            _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+            return results;
+        }
+
+        private ActionResults Update(AccountViewModel account, ToolkitRegion region, Dictionary<string, object> collectedProperties)
+        {
             try
             {
                 var wrapper = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as CloudFormationTemplateWrapper;
                 if (wrapper == null)
                 {
-                    return new ActionResults().WithSuccess(false);
+                    return ActionResults.CreateFailed(new ToolkitException("Unable to find CloudFormation stack data", ToolkitException.CommonErrorCode.InternalMissingServiceState));
                 }
 
                 var cfClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
@@ -84,7 +109,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
                 if (wrapper.MustCreateWithChangeSets())
                 {
-                    ToolkitFactory.Instance.ShellProvider.UpdateStatus("Creating Change Set");
+                    _toolkitContext.ToolkitHost.UpdateStatus("Creating Change Set");
                     var ccRequest = new CreateChangeSetRequest
                     {
                         Capabilities = request.Capabilities,
@@ -101,14 +126,13 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                     };
                     if (!ExecuteChangeSet(cfClient, ccRequest))
                     {
-                        return new ActionResults().WithSuccess(false);
+                        return ActionResults.CreateFailed(new CloudFormationToolkitException("Failed to execute change set request", CloudFormationToolkitException.CloudFormationErrorCode.ChangeSetFailed));
                     }
                 }
                 else
                 {
-                    ToolkitFactory.Instance.ShellProvider.UpdateStatus("Updating Stack");
+                    _toolkitContext.ToolkitHost.UpdateStatus("Updating Stack");
                     cfClient.UpdateStack(request);
-                    deployResult = Result.Succeeded;
                 }
 
                 return new ActionResults().WithSuccess(true).WithFocalname(request.StackName)
@@ -116,25 +140,37 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error updating stack: " + e.Message);
-                return new ActionResults().WithSuccess(false);
-            }
-            finally
-            {
-                RecordDeployMetric(deployResult, region.Id, initialDeploy: false);
+                _toolkitContext.ToolkitHost.ShowError("Error updating stack: " + e.Message);
+                return ActionResults.CreateFailed(e);
             }
         }
 
-        protected ActionResults CreateStack(AccountViewModel account, ToolkitRegion region, Dictionary<string, object> collectedProperties)
+        protected ActionResults CreateStack(AccountViewModel account, ToolkitRegion region,
+            Dictionary<string, object> collectedProperties)
         {
-            var deployResult = Result.Failed;
+            var connectionSettings = new AwsConnectionSettings(account?.Identifier, region);
+            ActionResults results = null;
 
+            void Invoke() => results = Create(account, region, collectedProperties);
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                RecordDeployMetric(results, connectionSettings, duration, initialDeploy: true);
+            }
+
+            _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+            return results;
+        }
+
+
+        private ActionResults Create(AccountViewModel account, ToolkitRegion region, Dictionary<string, object> collectedProperties)
+        {
             try
             {
                 var wrapper = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as CloudFormationTemplateWrapper;
                 if (wrapper == null)
                 {
-                    return new ActionResults().WithSuccess(false);
+                    return ActionResults.CreateFailed(new ToolkitException("Unable to find CloudFormation stack data", ToolkitException.CommonErrorCode.InternalMissingServiceState));
                 }
 
                 var cfClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
@@ -184,7 +220,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
                 if (wrapper.MustCreateWithChangeSets())
                 {
-                    ToolkitFactory.Instance.ShellProvider.UpdateStatus("Creating Change Set");
+                    _toolkitContext.ToolkitHost.UpdateStatus("Creating Change Set");
                     var ccRequest = new CreateChangeSetRequest
                     {
                         Capabilities = request.Capabilities,
@@ -201,26 +237,21 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                     };
                     if(!ExecuteChangeSet(cfClient, ccRequest))
                     {
-                        return new ActionResults().WithSuccess(false);
+                        return ActionResults.CreateFailed(new CloudFormationToolkitException("Failed to execute change set request", CloudFormationToolkitException.CloudFormationErrorCode.ChangeSetFailed));
                     }
                 }
                 else
                 {
-                    ToolkitFactory.Instance.ShellProvider.UpdateStatus("Creating Stack");
+                    _toolkitContext.ToolkitHost.UpdateStatus("Creating Stack");
                     cfClient.CreateStack(request);
-                    deployResult = Result.Succeeded;
                 }
 
                 return new ActionResults().WithSuccess(true).WithFocalname(request.StackName).WithRunDefaultAction(true);
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating stack: " + e.Message);
-                return new ActionResults().WithSuccess(false);
-            }
-            finally
-            {
-                RecordDeployMetric(deployResult, region.Id, initialDeploy: true);
+               _toolkitContext.ToolkitHost.ShowError("Error creating stack: " + e.Message);
+                return ActionResults.CreateFailed(e);
             }
         }
 
@@ -312,14 +343,18 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             return persistableData;
         }
 
-        private void RecordDeployMetric(Result deployResult, string regionId, bool initialDeploy)
+        private void RecordDeployMetric(ActionResults result, AwsConnectionSettings connectionSettings, double duration,
+            bool initialDeploy)
         {
-            _telemetryLogger.RecordCloudformationDeploy(new CloudformationDeploy()
-            {
-                Result = deployResult,
-                AwsRegion = regionId,
-                InitialDeploy = initialDeploy,
-            });
+            var data = result.CreateMetricData<CloudformationDeploy>(connectionSettings,
+                _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.InitialDeploy = initialDeploy;
+            data.Duration = duration;
+            data.Source = _metricSource.Location;
+            data.ServiceType = _metricSource.Service;
+
+            _toolkitContext.TelemetryLogger.RecordCloudformationDeploy(data);
         }
     }
 }

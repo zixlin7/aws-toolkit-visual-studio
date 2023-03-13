@@ -130,13 +130,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeCommit">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.100.86</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.105.15</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.28</Version>
+      <Version>3.7.100.87</Version>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp">
       <Version>0.26.2</Version>

@@ -67,7 +67,7 @@ namespace Amazon.AWSToolkit.CloudFormation
         private void setupContextMenuHooks(CloudFormationRootViewMetaNode rootNode)
         {
             rootNode.OnCreate =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateStackController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateStackController(ToolkitContext)).Execute);
 
             rootNode.CloudFormationStackViewMetaNode.OnOpen = OnOpenStack;
 

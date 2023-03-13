@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,7 +45,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         private static readonly string SqsServiceName =
             new AmazonSQSConfig().RegionEndpointServiceName;
 
-        private static readonly BaseMetricSource ViewLogsMetricSource = MetricSources.CloudWatchLogsMetricSource.LambdaView;
+        private static readonly BaseMetricSource ViewLogsMetricSource = MetricSources.LambdaMetricSource.LambdaView;
         private readonly ToolkitContext _toolkitContext;
 
         ViewFunctionModel _model;
@@ -680,15 +678,13 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         /// <summary>
         /// Called from the Lambda function viewer to update code for an existing Lambda function
         /// </summary>
-        public bool UploadNewFunctionSource()
+        public ActionResults UploadNewFunctionSource()
         {
             var controller = new UploadFunctionController(_toolkitContext,
-                _viewModel.LambdaRootViewModel.AccountViewModel?.Identifier,
-                _viewModel.LambdaRootViewModel.Region,
-                _viewModel.FindAncestor<AWSViewModel>());
-            var results = controller.Execute(this._lambdaClient, this._ecrClient, this._model.FunctionName);
-
-            return results.Success;
+                    _viewModel.LambdaRootViewModel.AccountViewModel?.Identifier,
+                    _viewModel.LambdaRootViewModel.Region,
+                    _viewModel.FindAncestor<AWSViewModel>());
+                return controller.Execute(this._lambdaClient, this._ecrClient, this._model.FunctionName);
         }
 
         public bool AddEventSource()

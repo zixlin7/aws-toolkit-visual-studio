@@ -162,7 +162,7 @@ namespace Amazon.AWSToolkit.Publish.Package
                 RecordInitialized(telemetryLogger, result, showPublishToAwsDocumentArgs, milliseconds);
             }
 
-            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecord(Initialize, Record);
+            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecordAsync(Initialize, Record);
             return cliServer;
         }
 
@@ -197,7 +197,7 @@ namespace Amazon.AWSToolkit.Publish.Package
                 RecordShow(telemetryLogger, result, args, milliseconds);
             }
 
-            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecord(Show, Record);
+            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecordAsync(Show, Record);
         }
 
         private async Task CreateAndShowDocumentAsync(ShowPublishToAwsDocumentArgs args, ICliServer cliServer)
@@ -232,7 +232,7 @@ namespace Amazon.AWSToolkit.Publish.Package
                 RecordFullPublishSetup(telemetryLogger, AsResult(showResult), args, milliseconds);
             }
 
-            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecord(Show, Record);
+            await _publishContext.ToolkitContext.TelemetryLogger.TimeAndRecordAsync(Show, Record);
             return showResult;
         }
 

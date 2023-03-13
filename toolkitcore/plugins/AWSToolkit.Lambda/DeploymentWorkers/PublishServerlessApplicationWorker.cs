@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Util;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.CloudFormation;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.ECR;
@@ -17,7 +18,6 @@ using Amazon.Lambda.Tools.Commands;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.SecurityToken;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
@@ -27,6 +27,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         private static readonly ILog Logger = LogManager.GetLogger(typeof(PublishServerlessApplicationWorker));
 
         private readonly ITelemetryLogger _telemetryLogger;
+        private readonly UploadFunctionController.UploadOriginator _originator;
 
         PublishServerlessApplicationWorkerSettings Settings { get; }
         ILambdaFunctionUploadHelpers Helpers { get; }
@@ -43,23 +44,40 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             IAmazonS3 s3Client, IAmazonCloudFormation cloudFormationClient, IAmazonECR ecrClient,
             IAmazonIdentityManagementService iamClient, IAmazonLambda lambdaClient,
             PublishServerlessApplicationWorkerSettings settings,
+            UploadFunctionController.UploadOriginator originator,
             ITelemetryLogger telemetryLogger)
         {
-            this.Helpers = helpers;
-            this.StsClient = stsClient;
-            this.S3Client = s3Client;
-            this.CloudFormationClient = cloudFormationClient;
-            this.ECRClient = ecrClient;
-            this.IamClient = iamClient;
-            this.LambdaClient = lambdaClient;
-            this.Settings = settings;
-            this._telemetryLogger = telemetryLogger;
+            Helpers = helpers;
+            StsClient = stsClient;
+            S3Client = s3Client;
+            CloudFormationClient = cloudFormationClient;
+            ECRClient = ecrClient;
+            IamClient = iamClient;
+            LambdaClient = lambdaClient;
+            Settings = settings;
+            _originator = originator;
+            _telemetryLogger = telemetryLogger;
         }
 
         public void Publish()
         {
-            var logger = new UploadNETCoreWorker.DeployToolLogger(Helpers);
+            ActionResults results = null;
 
+            void Invoke() => results = PublishServerless();
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var metricSource = _originator.AsMetricSource();
+                _telemetryLogger.RecordServerlessApplicationDeploy(results, duration, metricSource, Settings.AccountId,
+                    Settings.Region?.Id);
+            }
+
+            _telemetryLogger.TimeAndRecord(Invoke, Record);
+        }
+
+        private ActionResults PublishServerless()
+        {
+            var logger = new UploadNETCoreWorker.DeployToolLogger(Helpers);
             try
             {
                 var command = new DeployServerlessCommand(logger, Settings.SourcePath, new string[0]);
@@ -75,23 +93,18 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.Credentials = Settings.Credentials;
                 command.Region = Settings.Region.Id;
 
-                command.CloudFormationTemplate = this.Settings.Template;
-                command.TemplateParameters = this.Settings.TemplateParameters;
-                command.StackName = this.Settings.StackName;
-                command.TargetFramework = this.Settings.Framework;
-                command.Configuration = this.Settings.Configuration;
-                command.S3Bucket = this.Settings.S3Bucket;
-                command.PersistConfigFile = this.Settings.SaveSettings;
+                command.CloudFormationTemplate = Settings.Template;
+                command.TemplateParameters = Settings.TemplateParameters;
+                command.StackName = Settings.StackName;
+                command.TargetFramework = Settings.Framework;
+                command.Configuration = Settings.Configuration;
+                command.S3Bucket = Settings.S3Bucket;
+                command.PersistConfigFile = Settings.SaveSettings;
 
                 if (command.ExecuteAsync().Result)
                 {
-                    _telemetryLogger.RecordServerlessApplicationDeploy(
-                        Result.Succeeded,
-                        Settings.AccountId,
-                        Settings.Region?.Id
-                    );
-
-                    this.Helpers.PublishServerlessAsyncCompleteSuccess(this.Settings);
+                    Helpers.PublishServerlessAsyncCompleteSuccess(Settings);
+                    return new ActionResults().WithSuccess(true);
                 }
                 else
                 {
@@ -108,58 +121,23 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             }
             catch (ToolsException e)
             {
-                RecordPublishFailure(e);
-
-                this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
+                Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
+                return ActionResults.CreateFailed(e);
             }
             catch (ToolkitException e)
             {
                 logger.WriteLine(e.Message);
-
-                RecordPublishFailure(e);
-
-                this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
+                Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
+                return ActionResults.CreateFailed(e);
             }
             catch (Exception e)
             {
                 logger.WriteLine(e.Message);
                 Logger.Error("Error publishing AWS Serverless application.", e);
 
-                RecordPublishFailure(e);
-
-                this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
+                Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
+                return ActionResults.CreateFailed(e);
             }
-        }
-
-        private void RecordPublishFailure(Exception e)
-        {
-            _telemetryLogger.RecordServerlessApplicationDeploy(
-                Result.Failed,
-                Settings.AccountId,
-                Settings.Region?.Id,
-                GetReason(e));
-        }
-
-        private string GetReason(Exception e)
-        {
-            var reasonChunks = new List<string>();
-
-            switch (e)
-            {
-                case ToolsException toolsException:
-                    reasonChunks.Add(toolsException.ServiceCode);
-                    reasonChunks.Add(toolsException.Code);
-                    break;
-                case ToolkitException toolkitException:
-                    reasonChunks.Add(toolkitException.ServiceErrorCode);
-                    reasonChunks.Add(toolkitException.ServiceStatusCode);
-                    reasonChunks.Add(toolkitException.Code);
-                    break;
-            }
-
-            string reason = string.Join("-", reasonChunks.Where(r => !string.IsNullOrWhiteSpace(r)));
-
-            return string.IsNullOrWhiteSpace(reason) ? "Unknown" : reason;
         }
     }
 
@@ -173,7 +151,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         public string Configuration { get; set; }
         public string Framework { get; set; }
         public string Template { get; set; }
-        public Dictionary<string,string> TemplateParameters { get; set; }
+        public Dictionary<string, string> TemplateParameters { get; set; }
         public string StackName { get; set; }
         public string S3Bucket { get; set; }
         public bool SaveSettings { get; set; }

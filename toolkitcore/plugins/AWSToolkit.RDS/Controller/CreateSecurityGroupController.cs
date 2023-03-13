@@ -9,48 +9,64 @@ using Amazon.RDS;
 using Amazon.RDS.Model;
 
 using log4net;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.RDS.Util;
 
 namespace Amazon.AWSToolkit.RDS.Controller
 {
     public class CreateSecurityGroupController : BaseContextCommand
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(CreateSecurityGroupController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CreateSecurityGroupController));
 
+        private readonly ToolkitContext _toolkitContext;
         ActionResults _results;
         IAmazonRDS _rdsClient;
         CreateSecurityGroupModel _model;
         RDSSecurityGroupRootViewModel _securityGroupRootViewModel;
 
-
-        public CreateSecurityGroupController()
+        public CreateSecurityGroupController(ToolkitContext toolkitContext)
         {
+            _toolkitContext = toolkitContext;
         }
 
         public CreateSecurityGroupModel Model => _model;
 
+        public ToolkitContext ToolkitContext => _toolkitContext;
+
         public override ActionResults Execute(IViewModel model)
+        {
+            var result = CreateSecurityGroup(model);
+            RecordMetric(result);
+            return result;
+        }
+
+        private ActionResults CreateSecurityGroup(IViewModel model)
         {
             var securityGroupRootViewModel = model as RDSSecurityGroupRootViewModel;
             if (securityGroupRootViewModel == null)
-                return new ActionResults().WithSuccess(false);
+            {
+                return ActionResults.CreateFailed(new ToolkitException("Unable to find RDS Security group data",
+                    ToolkitException.CommonErrorCode.InternalMissingServiceState));
+            }
 
-            return this.Execute(securityGroupRootViewModel);
+            return Execute(securityGroupRootViewModel);
         }
 
         public ActionResults Execute(RDSSecurityGroupRootViewModel securityGroupRootViewModel)
         {
-            this._securityGroupRootViewModel = securityGroupRootViewModel;
+            _securityGroupRootViewModel = securityGroupRootViewModel;
             _model = new CreateSecurityGroupModel();
-            _rdsClient = this._securityGroupRootViewModel.RDSClient;
+            _rdsClient = _securityGroupRootViewModel.RDSClient;
 
             var control = new CreateSecurityGroupControl(this);
 
-            ToolkitFactory.Instance.ShellProvider.ShowModal(control);
+            if (!_toolkitContext.ToolkitHost.ShowModal(control))
+            {
+                return ActionResults.CreateCancelled();
+            }
 
-            if (this._results == null)
-                return new ActionResults().WithSuccess(false);
-
-            return this._results;
+            return _results ?? ActionResults.CreateFailed();
         }
 
         public string CreateSecurityGroup()
@@ -71,8 +87,13 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 this._securityGroupRootViewModel.AddSecurityGroup(wrapper);
             }
 
-
             return this._model.Name;
+        }
+
+        public void RecordMetric(ActionResults results)
+        {
+            var awsConnectionSettings = _securityGroupRootViewModel?.RDSRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordRdsCreateSecurityGroup(results, awsConnectionSettings);
         }
     }
 }

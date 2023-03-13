@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 using System.Threading;
@@ -10,16 +11,23 @@ using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
+using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
+using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.ElasticBeanstalk;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Telemetry.Model;
 
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
     public class DeployApplicationVersionController
     {
+        private static readonly BaseMetricSource _deployMetricSource = MetricSources.BeanstalkMetricSource.ApplicationView;
         private readonly ToolkitContext _toolkitContext;
         IAmazonElasticBeanstalk _beanstalkClient;
 
@@ -29,6 +37,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         }
 
         public bool Execute(ApplicationViewModel applicationViewModel, string versionLabel)
+        {
+            ActionResults result = null;
+
+            void Invoke() => result = DeployApplication(applicationViewModel, versionLabel);
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                RecordMetric(applicationViewModel, result, duration);
+            }
+
+            _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
+            return result.Success;
+        }
+
+        private ActionResults DeployApplication(ApplicationViewModel applicationViewModel, string versionLabel)
         {            
             this._beanstalkClient = applicationViewModel.BeanstalkClient;
 
@@ -70,17 +93,24 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             };
 
             wizard.RegisterPageControllers(defaultPages, 0);
-            if (wizard.Run() == true)
+            var result = wizard.Run();
+            if (!result)
             {
-                ThreadPool.QueueUserWorkItem(x =>
-                    {
-                        var command = new DeployNewApplicationCommand("FakePackage", wizard.CollectedProperties, _toolkitContext);
-                        command.Execute();
-                    });
-                return true;
+                return ActionResults.CreateCancelled();
             }
+            
+            ThreadPool.QueueUserWorkItem(x =>
+                {
+                    var command = new DeployNewApplicationCommand("FakePackage", wizard.CollectedProperties, _toolkitContext, _deployMetricSource);
+                    command.Execute();
+                });
+            return new ActionResults().WithSuccess(true);
+        }
 
-            return false;
+        private void RecordMetric(ApplicationViewModel applicationViewModel, ActionResults result, double duration)
+        {
+            var connectionSettings = applicationViewModel?.ElasticBeanstalkRootViewModel?.AwsConnectionSettings;
+            _toolkitContext.RecordBeanstalkPublishWizard(result, duration, connectionSettings, _deployMetricSource);
         }
 
         private DeploymentTemplateWrapperBase LoadDeploymentTemplate(string region)

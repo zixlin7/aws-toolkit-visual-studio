@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.Telemetry
             }
         }
 
-        private static string ConcatenateReasonFragments(params string[] fragments)
+        public static string ConcatenateReasonFragments(params string[] fragments)
         {
             var reason = string.Join("-", fragments.Where(r => !string.IsNullOrWhiteSpace(r)));
 

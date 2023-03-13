@@ -316,7 +316,7 @@ namespace AWSToolkit.Tests.Lambda
             _controller.RecordOpenLogGroup(result);
 
             _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(expectedResult,
-                CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaView);
+                CloudWatchResourceType.LogGroup, MetricSources.LambdaMetricSource.LambdaView);
         }
 
         [Fact]
@@ -326,7 +326,7 @@ namespace AWSToolkit.Tests.Lambda
             _controller.RecordOpenLogGroup(false);
 
             _contextFixture.TelemetryFixture.VerifyRecordCloudWatchLogsOpen(Result.Succeeded,
-             CloudWatchResourceType.LogGroup, MetricSources.CloudWatchLogsMetricSource.LambdaView);
+             CloudWatchResourceType.LogGroup, MetricSources.LambdaMetricSource.LambdaView);
         }
 
         private void AssertJoinByComma(List<string> strings, string expectedText)

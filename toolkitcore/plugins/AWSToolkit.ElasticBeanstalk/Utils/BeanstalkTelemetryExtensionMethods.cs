@@ -1,13 +1,21 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
+﻿using System;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Util;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Utils
 {
     public static class BeanstalkTelemetryExtensionMethods
     {
+        private static readonly BaseMetricSource _defaultDeployMetricSource = MetricSources.BeanstalkMetricSource.Project;
+
         public static void RecordBeanstalkDeleteEnvironment(this ToolkitContext toolkitContext,
             ActionResults result, AwsConnectionSettings awsConnectionSettings)
         {
@@ -51,6 +59,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Utils
             data.Result = result.AsTelemetryResult();
 
             toolkitContext.TelemetryLogger.RecordBeanstalkEditEnvironment(data);
+        }
+
+        public static void RecordBeanstalkPublishWizard(this ToolkitContext toolkitContext,
+            ActionResults result, double duration, AwsConnectionSettings awsConnectionSettings, BaseMetricSource source = null)
+        {
+            var metricSource = source ?? _defaultDeployMetricSource;
+            var data = result.CreateMetricData<BeanstalkPublishWizard>(awsConnectionSettings, toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Duration = duration;
+            data.Source = metricSource.Location;
+            data.ServiceType = metricSource.Service;
+
+            toolkitContext.TelemetryLogger.RecordBeanstalkPublishWizard(data);
         }
     }
 }

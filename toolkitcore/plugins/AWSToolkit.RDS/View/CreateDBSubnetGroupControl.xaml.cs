@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.RDS.Controller;
 using log4net;
 
@@ -12,47 +13,47 @@ namespace Amazon.AWSToolkit.RDS.View
     /// </summary>
     public partial class CreateDBSubnetGroupControl : BaseAWSControl
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(CreateDBSubnetGroupControl));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CreateDBSubnetGroupControl));
 
         public CreateDBSubnetGroupControl()
         {
             InitializeComponent();
         }
 
-        readonly CreateDBSubnetGroupController _controller;
+        private readonly CreateDBSubnetGroupController _controller;
 
         public CreateDBSubnetGroupControl(CreateDBSubnetGroupController controller)
         {
             InitializeComponent();
-            this._controller = controller;
-            this.DataContext = this._controller.Model;
+            _controller = controller;
+            DataContext = _controller.Model;
         }
 
         public override string Title => "Create Subnet Group";
 
         public override bool Validated()
         {
-            if (string.IsNullOrEmpty(this._controller.Model.Name))
+            if (string.IsNullOrEmpty(_controller.Model.Name))
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Name is a required field.");
+                _controller.ToolkitContext.ToolkitHost.ShowError("Name is a required field.");
                 return false;
             }
 
-            if (this._controller.Model.Name.Equals("Default", StringComparison.OrdinalIgnoreCase))
+            if (_controller.Model.Name.Equals("Default", StringComparison.OrdinalIgnoreCase))
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("'Default' may not be used for the subnet group name.");
+                _controller.ToolkitContext.ToolkitHost.ShowError("'Default' may not be used for the subnet group name.");
                 return false;
             }
 
-            if (string.IsNullOrEmpty(this._controller.Model.Description))
+            if (string.IsNullOrEmpty(_controller.Model.Description))
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Description is a required field.");
+                _controller.ToolkitContext.ToolkitHost.ShowError("Description is a required field.");
                 return false;
             }
 
-            if (this._controller.Model.AssignedSubnets.Count < 2)
+            if (_controller.Model.AssignedSubnets.Count < 2)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("DB subnet groups must contain at least one subnet in at least two AZs in the region.");
+                _controller.ToolkitContext.ToolkitHost.ShowError("DB subnet groups must contain at least one subnet in at least two AZs in the region.");
                 return false;
             }
 
@@ -63,20 +64,23 @@ namespace Amazon.AWSToolkit.RDS.View
         {
             try
             {
-                this._controller.CreateDBSubnetGroup();
+                _controller.CreateDBSubnetGroup();
                 return true;
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error creating subnet group", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating subnet group: " + e.Message);
+                _logger.Error("Error creating subnet group", e);
+                _controller.ToolkitContext.ToolkitHost.ShowError("Error creating subnet group: " + e.Message);
+
+                // Record failures immediately -- the top level call records success/cancel once the dialog is closed
+                _controller.RecordMetric(ActionResults.CreateFailed(e));
                 return false;
             }
         }
 
         void onLoad(object sender, RoutedEventArgs e)
         {
-            this._ctlName.Focus();
+            _ctlName.Focus();
         }
 
         private void _ctlVPCList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

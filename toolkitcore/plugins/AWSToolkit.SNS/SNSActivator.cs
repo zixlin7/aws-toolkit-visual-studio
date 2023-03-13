@@ -27,11 +27,9 @@ namespace Amazon.AWSToolkit.SNS
             rootNode.OnCreateTopic =
                 new ContextCommandExecutor(() => new CreateTopicController(ToolkitContext)).Execute;
 
-            rootNode.OnViewSubscriptions =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewSubscriptionsController>().Execute);
+            rootNode.OnViewSubscriptions = new ContextCommandExecutor(() => new ViewSubscriptionsController(ToolkitContext)).Execute;
 
-            rootNode.SNSTopicViewMetaNode.OnViewTopic =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewTopicController>().Execute);
+            rootNode.SNSTopicViewMetaNode.OnViewTopic = new ContextCommandExecutor(() => new ViewTopicController(ToolkitContext)).Execute;
 
             rootNode.SNSTopicViewMetaNode.OnEditPolicy =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<SNSPolicyEditorController>().Execute);

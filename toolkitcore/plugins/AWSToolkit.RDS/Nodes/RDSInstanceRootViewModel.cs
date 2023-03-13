@@ -26,6 +26,8 @@ namespace Amazon.AWSToolkit.RDS.Nodes
 
         public IAmazonRDS RDSClient => this._rdsClient;
 
+        public RDSRootViewModel RDSRootViewModel => this._rootViewModel;
+
         protected override string IconName => AwsImageResourcePath.RdsDbInstances.Path;
 
         protected override void LoadChildren()

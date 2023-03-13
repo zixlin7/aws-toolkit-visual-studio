@@ -79,7 +79,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
                 // Emit a false metric only if any of the previous required operations have failures
                 if (!string.Equals(operation, "clone"))
                 {
-                    GitUtilities.RecordCodeCommitCloneRepoMetric(false, operation);
+                    CodeCommitTelemetryUtils.RecordCodeCommitCloneRepoMetric(false, operation);
                 }
             }
         }

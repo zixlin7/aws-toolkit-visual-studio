@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
@@ -14,18 +16,29 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.ElasticBeanstalk.Model;
+using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
     public class DeployNewApplicationCommand : BaseBeanstalkDeployCommand
     {
+        private readonly BaseMetricSource _deployMetricSource;
         private readonly ToolkitContext _toolkitContext;
 
         public BeanstalkDeploymentEngine Deployment { get; protected set; }
 
         public DeployNewApplicationCommand(string deploymentPackage, IDictionary<string, object> deploymentProperties, ToolkitContext toolkitContext)
-            : base(deploymentProperties)
+            : this(deploymentPackage, deploymentProperties, toolkitContext, MetricSources.BeanstalkMetricSource.Project)
         {
+        }
+
+
+        public DeployNewApplicationCommand(string deploymentPackage, IDictionary<string, object> deploymentProperties,
+            ToolkitContext toolkitContext, BaseMetricSource deploySource) : base(deploymentProperties)
+        {
+            _deployMetricSource = deploySource;
             _toolkitContext = toolkitContext;
 
             Deployment
@@ -49,6 +62,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 return;
 
             bool success = false;
+            var duration = new Stopwatch();
+            duration.Start();
+
             var deployMetric = new BeanstalkDeploy()
             {
                 Name = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack),
@@ -56,7 +72,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 EnhancedHealthEnabled = false,
                 XrayEnabled = false,
                 InitialDeploy = !getValue<bool>(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy),
-                AwsRegion = Deployment.Region,
+                AwsRegion = Deployment.Region ?? MetadataValue.Invalid,
+                Source = _deployMetricSource.Location,
+                ServiceType = _deployMetricSource.Service
             };
             try
             {
@@ -228,6 +246,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
             catch (Exception e)
             {
+                deployMetric.Reason = BeanstalkHelpers.GetMetricsReason(e);
                 string errMsg = string.Format("Error publishing application: {0}", e.Message);
                 Observer.Error(errMsg);
                 _toolkitContext.ToolkitHost.ShowError("Publish Error", errMsg);
@@ -236,7 +255,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             {
                 try
                 {
+                    duration.Stop();
                     deployMetric.Result = success ? Result.Succeeded : Result.Failed;
+                    deployMetric.Duration = duration.Elapsed.TotalMilliseconds;
                     deployMetric.AwsAccount = GetAccountId();
                     _toolkitContext.TelemetryLogger.RecordBeanstalkDeploy(deployMetric);
 
@@ -268,7 +289,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
         private string GetAccountId()
         {
-            return _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.NotSet;
+            return _toolkitContext.ConnectionManager.ActiveAccountId ?? MetadataValue.Invalid;
         }
 
         void CopyApplicationOptionProperties()

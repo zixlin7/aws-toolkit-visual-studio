@@ -140,7 +140,8 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideProjectFactory(typeof(CloudFormationTemplateProjectFactory),
                            null,
                            "CloudFormation Template Project Files (*.cfproj);*.cfproj",
-                           "cfproj", "cfproj",
+                           "cfproj",
+                           "cfproj",
                            ".\\NullPath",
                            LanguageVsTemplate = "AWS")]
     [ProvideOptionPage(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true)]
@@ -153,8 +154,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     // This attribute is required to load imagemanifests to be available for ProvideCodeContainerProvider so icons appear in Git Clone dialog
-    // TODO IDE-9924 Enable this attribute when CFn/Lambda template fix has been made
-    //[ProvideBindingPath]
+    [ProvideBindingPath]
     // TODO IDE-8906
     //[ProvideCodeContainerProvider(
     //    registeredName: nameof(CodeCommitCodeContainerProvider),
@@ -199,6 +199,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         private OutputWindow _toolkitOutputWindow;
         private MetricsOutputWindow _metricsOutputWindow;
+        private DocumentEventWatcher _documentEventWatcher;
 
         internal AWSToolkitShellProviderService ToolkitShellProviderService { get; private set; }
         internal AWSLegacyDeploymentPersistenceService LegacyDeploymentPersistenceService { get; private set; }
@@ -603,6 +604,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                     ToolkitHostInfo = hostInfo
                 };
 
+                _documentEventWatcher = InitializeDocumentWatcher(_toolkitContext);
+
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
 
                 await InitializeAwsToolkitMenuCommandsAsync();
@@ -830,6 +833,23 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception e)
             {
                 Logger.Error("Failed to set up Image provider - portions of the Toolkit may not have icons", e);
+            }
+        }
+
+
+        /// <summary>
+        /// Initialize the system that watches for document events <see cref="DocumentEventWatcher"/>
+        /// </summary>
+        private DocumentEventWatcher InitializeDocumentWatcher(ToolkitContext toolkitContext)
+        {
+            try
+            {
+                return new DocumentEventWatcher(toolkitContext);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to initialize documents event watcher", e);
+                return null;
             }
         }
 
@@ -1503,10 +1523,11 @@ namespace Amazon.AWSToolkit.VisualStudio
                 IntPtr parent;
                 uiShell.GetDialogOwnerHwnd(out parent);
 
-                var ret = wizard.Run();
+                var success = beanstalk?.ShowPublishWizard(wizard) ?? false;
+
                 IDictionary<string, object> localWizardProperties = wizard.CollectedProperties;
 
-                return new Tuple<bool, IDictionary<string, object>>(ret, localWizardProperties);
+                return new Tuple<bool, IDictionary<string, object>>(success, localWizardProperties);
             });
 
             wizardProperties = tuple.Item2;
@@ -2555,6 +2576,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         int IVsPackage.Close()
         {
+            _documentEventWatcher?.Dispose();
             if (_toolkitCredentialInitializer != null)
             {
                 _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged -= AwsConnectionManager_ConnectionStateChanged;

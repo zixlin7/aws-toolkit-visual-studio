@@ -70,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.100.27</Version>
+      <Version>3.7.105.15</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

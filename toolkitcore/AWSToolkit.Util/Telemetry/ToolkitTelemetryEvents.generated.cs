@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 
 /// --------------------------------------------------------------------------------
-/// This file is generated from https://github.com/aws/aws-toolkit-common/tree/master/telemetry
+/// This file is generated from https://github.com/aws/aws-toolkit-common/tree/main/telemetry
 /// --------------------------------------------------------------------------------
 
 namespace Amazon.AwsToolkit.Telemetry.Events.Generated
@@ -57,6 +57,65 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 datum.AddMetadata("reason", payload.Reason);
 
                 datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("duration", payload.Duration);
+
+                datum.AddMetadata("serviceType", payload.ServiceType);
+
+                datum.AddMetadata("source", payload.Source);
+
+                datum = datum.InvokeTransform(transformDatum);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+        
+        /// Records Telemetry Event:
+        /// Called when user completes a Serverless Application publish wizard
+        public static void RecordServerlessapplicationPublishWizard(this ITelemetryLogger telemetryLogger, ServerlessapplicationPublishWizard payload, Func<MetricDatum, MetricDatum> transformDatum = null)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "serverlessapplication_publishWizard";
+                datum.Unit = Unit.None;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("duration", payload.Duration);
+
+                datum.AddMetadata("serviceType", payload.ServiceType);
+
+                datum.AddMetadata("source", payload.Source);
 
                 datum = datum.InvokeTransform(transformDatum);
 
@@ -655,7 +714,38 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         /// The result of the operation
         public Result Result;
         
+        /// The duration of the operation in milliseconds
+        public double Duration;
+        
+        /// Optional - The name of the AWS service acted on. These values come from the AWS SDK. To find them in the JAVA SDK search for SERVICE_NAME in each service client, or look for serviceId in metadata in the service2.json
+        public string ServiceType;
+        
+        /// Optional - The source of the operation
+        public string Source;
+        
         public ServerlessapplicationDeploy()
+        {
+            this.Passive = false;
+        }
+    }
+    
+    /// Called when user completes a Serverless Application publish wizard
+    public sealed class ServerlessapplicationPublishWizard : BaseTelemetryEvent
+    {
+        
+        /// The result of the operation
+        public Result Result;
+        
+        /// The duration of the operation in milliseconds
+        public double Duration;
+        
+        /// Optional - The name of the AWS service acted on. These values come from the AWS SDK. To find them in the JAVA SDK search for SERVICE_NAME in each service client, or look for serviceId in metadata in the service2.json
+        public string ServiceType;
+        
+        /// Optional - The source of the operation
+        public string Source;
+        
+        public ServerlessapplicationPublishWizard()
         {
             this.Passive = false;
         }

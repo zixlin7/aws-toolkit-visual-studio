@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.Util
             metricData.AwsAccount = awsConnectionSettings?.GetAccountId(serviceClientManager) ??
                                     MetadataValue.Invalid;
             metricData.AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid;
-            metricData.Reason = TelemetryHelper.GetMetricsReason(result.Exception);
+            metricData.Reason = TelemetryHelper.GetMetricsReason(result?.Exception);
 
             return metricData;
         }

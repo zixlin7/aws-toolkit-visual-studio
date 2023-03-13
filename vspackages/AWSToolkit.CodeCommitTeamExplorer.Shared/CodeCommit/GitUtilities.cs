@@ -5,8 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using Amazon.AWSToolkit.Regions;
@@ -80,7 +78,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 
                 if (operation == "clone")
                 {
-                    RecordCodeCommitCloneRepoMetric(success, operation);
+                    CodeCommitTelemetryUtils.RecordCodeCommitCloneRepoMetric(success, operation);
                 }
                 
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
@@ -151,7 +149,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
             }
             finally
             {
-                RecordCodeCommitCreateRepoMetric(success, phase);
+                CodeCommitTelemetryUtils.RecordCodeCommitCreateRepoMetric(success, phase);
 
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
@@ -159,60 +157,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
                     TeamExplorerConnection.ActiveConnection.RefreshRepositories();
                 });
             }
-        }
-
-        public static void RecordCodeCommitCreateRepoMetric(bool success, string reason)
-        {
-            var payload = new CodecommitCreateRepo
-            {
-                AwsAccount = GetAccountId(),
-                AwsRegion = GetRegionId(),
-                Result = success ? Result.Succeeded : Result.Failed
-            };
-
-            if (!success)
-            {
-                payload.Reason = reason;
-            }
-
-            ToolkitFactory.Instance.TelemetryLogger.RecordCodecommitCreateRepo(payload);
-        }
-
-        public static void RecordCodeCommitCloneRepoMetric(bool success, string reason)
-        {
-            var payload = new CodecommitCloneRepo
-            {
-                AwsAccount = GetAccountId(),
-                AwsRegion = GetRegionId(),
-                Result = success ? Result.Succeeded : Result.Failed
-            };
-
-            if (!success)
-            {
-                payload.Reason = reason;
-            }
-
-            ToolkitFactory.Instance.TelemetryLogger.RecordCodecommitCloneRepo(payload);
-        }
-
-        public static void RecordCodeCommitSetCredentialsMetric(bool success)
-        {
-            ToolkitFactory.Instance.TelemetryLogger.RecordCodecommitSetCredentials(new CodecommitSetCredentials
-            {
-                AwsAccount = GetAccountId(),
-                AwsRegion = GetRegionId(),
-                Result = success ? Result.Succeeded : Result.Failed
-            });
-        }
-
-        private static string GetAccountId()
-        {
-            return TeamExplorerConnection.ActiveConnection?.AccountId ?? MetadataValue.NotSet;
-        }
-
-        private static string GetRegionId()
-        {
-            return TeamExplorerConnection.ActiveConnection?.Account.Region?.Id ?? MetadataValue.NotSet;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" 
             Type="Project" 
             xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" 
@@ -22,7 +22,7 @@
     </Project>
   </TemplateContent>
   <WizardExtension>
-    <Assembly>AWSToolkit.CloudFormation.TemplateWizards.v17,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
+    <Assembly>AWSToolkit.CloudFormation.TemplateWizards.v17,Version=2.0.0.0,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
     <FullClassName>Amazon.AWSToolkit.CloudFormation.TemplateWizards.ProjectWizardImplementation</FullClassName>
   </WizardExtension>
 </VSTemplate>

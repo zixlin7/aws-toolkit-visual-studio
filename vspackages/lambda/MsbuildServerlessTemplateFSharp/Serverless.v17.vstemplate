@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="2.0.0" Type="Project"
     xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
   <TemplateData>
@@ -26,7 +26,7 @@
 
 
   <WizardExtension>
-    <Assembly>AWSToolkit.Lambda.TemplateWizards.v17,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
+    <Assembly>AWSToolkit.Lambda.TemplateWizards.v17,Version=2.0.0.0,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
     <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild.ServerlessNETCoreFunctionFSharpWizard</FullClassName>
   </WizardExtension>
 

@@ -9,12 +9,14 @@ namespace Amazon.AWSToolkit.Exceptions
             LambdaCreateFunction,
             LambdaUpdateFunctionConfig,
             LambdaUpdateFunctionCode,
+            NoLambdaSourcePath
         }
+
+        public LambdaToolkitException(string message, LambdaErrorCode errorCode) : this(message, errorCode, null) { }
 
         public LambdaToolkitException(string message, LambdaErrorCode errorCode, Exception e) : base(message,
             errorCode.ToString(), e)
         {
-
         }
     }
 }

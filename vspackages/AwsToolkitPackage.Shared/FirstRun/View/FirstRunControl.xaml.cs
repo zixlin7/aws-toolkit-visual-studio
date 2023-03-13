@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -8,12 +7,11 @@ using System.Windows.Navigation;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using log4net;
 using Amazon.AWSToolkit.Settings;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 {
@@ -80,19 +78,24 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             Cursor = Cursors.Wait;
             var autoExit = true;
 
-            try
+            if (_saveFirstRunModel)
             {
-                if (_saveFirstRunModel)
+                ActionResults result = null;
+                try
                 {
                     Model.Save();
+                    result = new ActionResults().WithSuccess(true);
                 }
-                _controller.RecordAwsModifyCredentialsMetric(true, CredentialModification.Add);
-            }
-            catch (Exception ex)
-            {
-                autoExit = false;
-                LOGGER.Error("Error during save of credentials", ex);
-                _controller.RecordAwsModifyCredentialsMetric(false, CredentialModification.Add);
+                catch (Exception ex)
+                {
+                    autoExit = false;
+                    LOGGER.Error("Error during save of credentials", ex);
+                    result = ActionResults.CreateFailed(ex);
+                }
+                finally
+                {
+                    _controller.RecordAwsAddCredentialsMetric(result);
+                }
             }
 
             if (autoExit)
@@ -137,7 +140,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
         {
             var toolkitContext = this._controller.ToolkitContext;
             var command = new RegisterAccountController(toolkitContext);
-            var results  = command.Execute();
+            var results  = command.Execute(MetricSources.GettingStartedMetricSource.GettingStarted);
             if (results.Success)
             {
                 _saveFirstRunModel = false;

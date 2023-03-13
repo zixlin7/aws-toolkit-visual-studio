@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading;
 
 using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Util;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.ECR;
 using Amazon.IdentityManagement;
@@ -18,32 +19,54 @@ using Amazon.SecurityToken;
 
 using log4net;
 
+using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
+using static Amazon.AWSToolkit.Lambda.Util.LambdaTelemetryUtils;
+
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public class UploadNETCoreWorker : BaseUploadWorker
     {
-        ILog LOGGER = LogManager.GetLogger(typeof(UploadNETCoreWorker));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(UploadNETCoreWorker));
 
         private readonly ITelemetryLogger _telemetryLogger;
         private readonly IAmazonIdentityManagementService _iamClient;
         private readonly IAmazonS3 _s3Client;
+        private readonly UploadOriginator _originator;
 
         public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler,
             IAmazonSecurityTokenService stsClient,
             IAmazonLambda lambdaClient, IAmazonECR ecrClient,
-            IAmazonIdentityManagementService iamClient, IAmazonS3 s3Client, ITelemetryLogger telemetryLogger)
+            IAmazonIdentityManagementService iamClient, IAmazonS3 s3Client, UploadOriginator originator, ITelemetryLogger telemetryLogger)
             : base(functionHandler, stsClient, lambdaClient, ecrClient)
         {
             _iamClient = iamClient;
             _s3Client = s3Client;
             _telemetryLogger = telemetryLogger;
+            _originator = originator;
         }
 
         static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
-        public override void UploadFunction(UploadFunctionController.UploadFunctionState uploadState)
+
+        public override void UploadFunction(UploadFunctionState uploadState)
+        {
+            ActionResults results = null;
+            var deploymentProperties = new RecordLambdaDeployProperties();
+
+            void Invoke() => results = Upload(uploadState, out deploymentProperties);
+
+            void Record(ITelemetryLogger telemetryLogger, double duration)
+            {
+                var metricSource = _originator.AsMetricSource();
+                _telemetryLogger.RecordLambdaDeploy(results, duration, metricSource, deploymentProperties);
+            }
+
+            _telemetryLogger.TimeAndRecord(Invoke, Record);
+        }
+
+        private ActionResults Upload(UploadFunctionState uploadState, out RecordLambdaDeployProperties deploymentProperties)
         {
             var logger = new DeployToolLogger(this.FunctionUploader);
-            var deploymentProperties = new LambdaTelemetryUtils.RecordLambdaDeployProperties();
+            deploymentProperties = new RecordLambdaDeployProperties();
             try
             {
                 var architectureList = uploadState.GetRequestArchitectures();
@@ -98,7 +121,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 {
                     command.Role = uploadState.SelectedRole.Arn;
                 }
-                else if(uploadState.SelectedManagedPolicy != null)
+                else if (uploadState.SelectedManagedPolicy != null)
                 {
                     command.Role = this.CreateRole(uploadState);
                     logger.WriteLine(string.Format("Created IAM role {0} with managed policy {1}", command.Role,
@@ -112,9 +135,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     deploymentProperties.Language = this.FunctionUploader.GetFunctionLanguage();
                     deploymentProperties.XRayEnabled = this.FunctionUploader.XRayEnabled();
 
-                    _telemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
+                    FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
 
-                    this.FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
+                    return new ActionResults().WithSuccess(true);
                 }
                 else
                 {
@@ -124,28 +147,29 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     }
                     else
                     {
-                        throw new ToolkitException("Failed to deploy Lambda Function", ToolkitException.CommonErrorCode.UnexpectedError);
+                        throw new ToolkitException("Failed to deploy Lambda Function",
+                            ToolkitException.CommonErrorCode.UnexpectedError);
                     }
                 }
             }
 
-            catch (ToolsException)
+            catch (ToolsException ex)
             {
-                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+                FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+                return ActionResults.CreateFailed(ex);
             }
-            catch (ToolkitException e)
+            catch (ToolkitException ex)
             {
-                logger.WriteLine(e.Message);
-                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+                logger.WriteLine(ex.Message);
+                FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+                return ActionResults.CreateFailed(ex);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                logger.WriteLine(e.Message);
-                LOGGER.Error("Error uploading Lambda function.", e);
-                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+                logger.WriteLine(ex.Message);
+                _logger.Error("Error uploading Lambda function.", ex);
+                FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+                return ActionResults.CreateFailed(ex);
             }
         }
 
@@ -158,7 +182,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error looking up lambda configuration", e);
+                _logger.Error("Error looking up lambda configuration", e);
                 Debug.Assert(false, $"Error looking up lambda configuration. Function will be considered new for metrics purposes: {e.Message}");
                 return true;
             }

@@ -5,12 +5,15 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SQS.View;
 using Amazon.AWSToolkit.SQS.Model;
 using Amazon.AWSToolkit.SQS.Nodes;
+using Amazon.AWSToolkit.SQS.Util;
 using Amazon.AWSToolkit.SQS.Workers;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amazon.SQS.Util;
 
 using log4net;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 
 namespace Amazon.AWSToolkit.SQS.Controller
 {
@@ -25,12 +28,24 @@ namespace Amazon.AWSToolkit.SQS.Controller
         IAmazonSQS _sqsClient;
         QueueViewModel _queueViewModel;
 
+        private AwsConnectionSettings _connectionSettings;
+
+        public QueueViewCommand(ToolkitContext toolkitContext)
+        {
+            ToolkitContext = toolkitContext;
+        }
+
+        public ToolkitContext ToolkitContext { get; }
+
         public override ActionResults Execute(IViewModel model)
         {
             var queueModel = model as SQSQueueViewModel;
             if (queueModel == null)
+            {
                 return new ActionResults().WithSuccess(false);
+            }
 
+            _connectionSettings = queueModel.SQSRootViewModel?.AwsConnectionSettings;
             this._sqsClient = queueModel.SQSClient;
             this._queueViewModel = new QueueViewModel
                 {
@@ -40,7 +55,7 @@ namespace Amazon.AWSToolkit.SQS.Controller
                 };
 
             var view = new QueueViewControl(this);
-            ToolkitFactory.Instance.ShellProvider.OpenInEditor(view);
+            ToolkitContext.ToolkitHost.OpenInEditor(view);
             return new ActionResults()
                 .WithSuccess(true);
         }
@@ -83,7 +98,7 @@ namespace Amazon.AWSToolkit.SQS.Controller
                 }
             }
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            ToolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this._queueViewModel.Messages.Clear();
                     foreach (var message in messages)
@@ -101,7 +116,7 @@ namespace Amazon.AWSToolkit.SQS.Controller
                 QueueUrl = this._queueViewModel.QueueURL
             });
 
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            ToolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
                 {
                     int timeout;
                     if (this.UseCacheValue(SQSConstants.ATTRIBUTE_VISIBILITY_TIMEOUT))
@@ -194,53 +209,66 @@ namespace Amazon.AWSToolkit.SQS.Controller
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError(string.Format("Error setting attribute {0}: {1} ", attributeFriendlyName, e.Message));
+                ToolkitContext.ToolkitHost.ShowError(string.Format("Error setting attribute {0}: {1} ", attributeFriendlyName, e.Message));
                 throw;
             }
 
         }
 
-        public bool SendMessage()
+        public ActionResults SendMessage()
         {
             var details = new NewMessageDetails();
-            bool dialogResult = ToolkitFactory.Instance.ShellProvider.ShowModal(details);
-            if (dialogResult)
+            if (!ToolkitContext.ToolkitHost.ShowModal(details))
             {
-                var request = new SendMessageRequest()
-                {
-                    MessageBody = details.MessageBodyContent,
-                    QueueUrl = this._queueViewModel.QueueURL
-                };
-
-                if (details.DelaySeconds.HasValue && details.DelaySeconds >= 0)
-                    request.DelaySeconds = details.DelaySeconds.Value;
-
-                this._sqsClient.SendMessage(request);
-
-                return true;
+                return ActionResults.CreateCancelled();
             }
 
-            
-            return false;
+            var request = new SendMessageRequest()
+            {
+                MessageBody = details.MessageBodyContent,
+                QueueUrl = _queueViewModel.QueueURL
+            };
+
+            if (details.DelaySeconds.HasValue && details.DelaySeconds >= 0)
+            {
+                request.DelaySeconds = details.DelaySeconds.Value;
+            }
+
+            _sqsClient.SendMessage(request);
+            return new ActionResults().WithSuccess(true);
         }
 
-        public bool PurgeQueue()
+        public ActionResults PurgeQueue()
         {
-            var shouldDelete = ToolkitFactory.Instance.ShellProvider.Confirm("Purge Queue",
+            var shouldDelete = ToolkitContext.ToolkitHost.Confirm("Purge Queue",
                 "Are you sure you want to purge the queue (removing all the messages left in it)?");
-
-            if (shouldDelete)
+            if (!shouldDelete)
             {
-                var request = new PurgeQueueRequest
-                {
-                    QueueUrl = this._queueViewModel.QueueURL
-                };
-
-                this._sqsClient.PurgeQueue(request);
-                return true;
+                return ActionResults.CreateCancelled();
             }
+           
+            var request = new PurgeQueueRequest
+            {
+                QueueUrl = _queueViewModel.QueueURL
+            };
 
-            return false;
+            _sqsClient.PurgeQueue(request);
+            return new ActionResults().WithSuccess(true);
+        }
+
+        public bool IsFifo()
+        {
+            return SqsHelpers.IsFifo(_queueViewModel?.Name);
+        }
+
+        internal void RecordSendMessage(ActionResults result)
+        {
+            ToolkitContext.RecordSqsSendMessage(result, IsFifo(), _connectionSettings);
+        }
+
+        internal void RecordPurgeQueue(ActionResults result)
+        {
+            ToolkitContext.RecordSqsPurgeQueue(result, IsFifo(), _connectionSettings);
         }
 
         bool UseCacheValue(string name)
