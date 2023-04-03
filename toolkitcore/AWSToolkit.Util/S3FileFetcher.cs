@@ -153,14 +153,12 @@ namespace Amazon.AWSToolkit
             Cache,
             ConfiguredFolder,
             CloudFront,
-            S3,
             Resources
         }
 
         public ResolvedLocation ResolvedContentLocation { get; private set; }
 
-        public const string CLOUDFRONT_CONFIG_FILES_LOCATION = @"https://d3rrggjwfhwld2.cloudfront.net/";
-        public const string S3_FALLBACK_LOCATION = @"https://aws-vs-toolkit.s3.amazonaws.com/";
+        public const string HOSTEDFILES_LOCATION = @"https://idetoolkits-hostedfiles.amazonaws.com/";
 
         public const string AWSVSTOOLKIT_BUCKETPREFIX = "aws-vs-toolkit";
         public const string REGIONALENDPOINTSCHEME = "region://";
@@ -238,8 +236,7 @@ namespace Amazon.AWSToolkit
             var fileStream = LoadFromConfiguredHostedFilesFolder(filename)                      // registry or folder path set in options dialog
                              ?? LoadFromUserProfileCache(filename, cacheMode)                   // appdata cache folder
                              ?? LoadFromConfiguredHostedFilesUri(filename, out canCacheLocal)   // region: or uri configured location in options dialog
-                             ?? LoadFromUrl(CLOUDFRONT_CONFIG_FILES_LOCATION + filename, ResolvedLocation.CloudFront, out canCacheLocal) // preferred
-                             ?? LoadFromUrl(S3_FALLBACK_LOCATION + filename, ResolvedLocation.S3, out canCacheLocal) // backup preference
+                             ?? LoadFromUrl(HOSTEDFILES_LOCATION + filename, ResolvedLocation.CloudFront, out canCacheLocal) // preferred
                              ?? LoadFromUserProfileCache(filename); // everything failed but we have cached so use it anyway as last-but-one resort
 
             // if we got content from an online source, then consider caching it in the user profile
@@ -558,7 +555,7 @@ namespace Amazon.AWSToolkit
             string remoteMD5;
             try
             {
-                var httpRequest = _contentResolver.ConstructWebRequest(CLOUDFRONT_CONFIG_FILES_LOCATION + filename);
+                var httpRequest = _contentResolver.ConstructWebRequest(HOSTEDFILES_LOCATION + filename);
                 httpRequest.Method = "HEAD";
 
                 using (var response = httpRequest.GetResponse() as HttpWebResponse)

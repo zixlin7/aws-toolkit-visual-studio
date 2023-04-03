@@ -37,8 +37,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         }
 
         [Theory]
-        [InlineData(S3FileFetcher.CLOUDFRONT_CONFIG_FILES_LOCATION)]
-        [InlineData(S3FileFetcher.S3_FALLBACK_LOCATION)]
+        [InlineData(S3FileFetcher.HOSTEDFILES_LOCATION)]
         public void HostedFilesLocationAsUri_AsUrl(string hostedFilesLocation)
         {
             _toolkitSettings.HostedFilesLocation = hostedFilesLocation;

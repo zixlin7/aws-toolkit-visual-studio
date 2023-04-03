@@ -10,7 +10,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
     /// </summary>
     public class RelativeHttpResourceFetcherTests
     {
-        private readonly string _baseUrl = S3FileFetcher.CLOUDFRONT_CONFIG_FILES_LOCATION;
+        private readonly string _baseUrl = S3FileFetcher.HOSTEDFILES_LOCATION;
         private readonly RelativeHttpResourceFetcher _sut;
 
         public RelativeHttpResourceFetcherTests()
