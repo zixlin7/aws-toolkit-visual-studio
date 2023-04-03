@@ -51,9 +51,8 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         public void HostedFiles_Url()
         {
             // Setup: "hosted files" explicitly points to the CloudFront distribution
-            _toolkitSettings.HostedFilesLocation = S3FileFetcher.CLOUDFRONT_CONFIG_FILES_LOCATION;
+            _toolkitSettings.HostedFilesLocation = S3FileFetcher.HOSTEDFILES_LOCATION;
             _options.CloudFrontBaseUrl = "";
-            _options.S3BaseUrl = "";
 
             var stream = _sut.Get(HostedFilesResourcePath);
             AssertStreamHasExpectedContents(stream);
@@ -104,7 +103,6 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
             // Then have it fail the validation check so that the in-assembly resource is used.
             _options.ResourceValidator = s => false;
             _options.CloudFrontBaseUrl = "";
-            _options.S3BaseUrl = "";
 
             File.WriteAllText(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, HostedFilesResourcePath), _fixture.SampleData);
 

@@ -37,12 +37,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             /// <summary>
             /// CloudFormation-backed location to fetch resources from
             /// </summary>
-            public string CloudFrontBaseUrl { get; set; } = S3FileFetcher.CLOUDFRONT_CONFIG_FILES_LOCATION;
-
-            /// <summary>
-            /// S3-backed location to fetch resources from
-            /// </summary>
-            public string S3BaseUrl { get; set; } = S3FileFetcher.S3_FALLBACK_LOCATION;
+            public string CloudFrontBaseUrl { get; set; } = S3FileFetcher.HOSTEDFILES_LOCATION;
 
             /// <summary>
             /// (Optional) Callback that verifies if the contents can be considered valid,
@@ -160,21 +155,6 @@ namespace Amazon.AWSToolkit.ResourceFetchers
                         new RelativeHttpResourceFetcher.Options()
                         {
                             BasePath = _options.CloudFrontBaseUrl,
-                            TelemetryLogger = _options.TelemetryLogger,
-                        }),
-                    FnGetFullCachePath));
-            }
-
-            // Next, try the S3 backed location
-            // We check this location in the worst case situation that the CloudFront distribution
-            // is accidentally removed.
-            if (!string.IsNullOrWhiteSpace(_options.S3BaseUrl))
-            {
-                httpFetcherChain.Add(new CachingResourceFetcher(
-                    new RelativeHttpResourceFetcher(
-                        new RelativeHttpResourceFetcher.Options()
-                        {
-                            BasePath = _options.S3BaseUrl,
                             TelemetryLogger = _options.TelemetryLogger,
                         }),
                     FnGetFullCachePath));

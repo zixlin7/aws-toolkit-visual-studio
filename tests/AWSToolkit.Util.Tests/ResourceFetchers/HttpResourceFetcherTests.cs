@@ -12,7 +12,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
     /// </summary>
     public class HttpResourceFetcherTests
     {
-        private readonly string _baseUrl = S3FileFetcher.CLOUDFRONT_CONFIG_FILES_LOCATION;
+        private readonly string _baseUrl = S3FileFetcher.HOSTEDFILES_LOCATION;
         private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
         private readonly HttpResourceFetcherOptions _fetcherOptions = new HttpResourceFetcherOptions();
         private readonly HttpResourceFetcher _sut;
