@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.CodeCatalyst.Models;
-using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
@@ -65,15 +64,11 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
                     new CodeCatalystProject(_projectName, _spaceName, "test-project-display-name", "Test project description.")
                 }.AsEnumerable()));
 
-            CloneUrlsFactoryAsync factory = repoName => Task.FromResult(new CloneUrls(new Uri("http://test")));
+            CloneUrlsFactoryAsync factory = repoName => Task.FromResult(new CloneUrls(new Uri($"https://codecatalyst.aws/{repoName}")));
+            var repo = new CodeCatalystRepository(factory, _repoName, _spaceName, _projectName,
+                "Test repo description.");
+            SetupGetRemoteRepositories(new List<ICodeCatalystRepository>{ repo });
 
-            _codeCatalyst.Setup(mock => mock.GetRemoteRepositoriesAsync(It.Is<string>(spaceName => _spaceName == spaceName), It.Is<string>(projectName => _projectName == projectName),
-                It.IsAny<AwsConnectionSettings>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new List<ICodeCatalystRepository>()
-                {
-                    new CodeCatalystRepository(factory, _repoName, _spaceName, _projectName, "Test repo description.")
-                }.AsEnumerable()));
-            
             _git.Setup(mock => mock.GetDefaultRepositoryPath()).Returns(_localPathTemporaryTestLocation.TestFolder);
 
 #pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
@@ -362,13 +357,6 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             Assert.NotEmpty(_sut.LocalPath);
         }
 
-        private Mock<ICodeCatalystRepository> MockCodeCatalystRepository(string repoName)
-        {
-            Mock<ICodeCatalystRepository> mock = new Mock<ICodeCatalystRepository>();
-            mock.SetupGet(m => m.Name).Returns(repoName);
-
-            return mock;
-        }
 
         [Fact]
         public void OnlyAddsSelectedRepositoryNameToLocalPathOnFirstSelection()
@@ -421,6 +409,29 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             Assert.Equal(expected, _sut.LocalPath);
         }
 
+
+        [Fact]
+        public void FiltersThirdPartyRepos()
+        {
+            var firstPartyRepo = MockCodeCatalystRepository("code-catalyst", "https://codecatalyst.aws/code-catalyst");
+            var thirdPartyRepo =
+                MockCodeCatalystRepository("not-code-catalyst", "https://github.com/aws/not-code-catalyst.git");
+
+            SetupGetRemoteRepositories(
+                new List<ICodeCatalystRepository> { firstPartyRepo.Object, thirdPartyRepo.Object });
+
+            Assert.Empty(_sut.Repositories);
+
+            SetupInitialSpaces();
+
+            _sut.SelectedSpace = _sut.Spaces.First();
+            _sut.SelectedProject = _sut.Projects.First();
+
+            Assert.Single(_sut.Repositories);
+            Assert.Contains(firstPartyRepo.Object, _sut.Repositories);
+        }
+
+
         private void SetupInitialSpaces()
         {
             SetupInitialConnection();
@@ -438,6 +449,32 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         {
             _sut.Connection.IsConnectionValid = true;
             _sut.SelectedRepository = new Mock<ICodeCatalystRepository>().Object;
+        }
+
+        private void SetupGetRemoteRepositories(List<ICodeCatalystRepository> repos)
+        {
+            _codeCatalyst.Setup(mock => mock.GetRemoteRepositoriesAsync(
+                    It.Is<string>(spaceName => _spaceName == spaceName),
+                    It.Is<string>(projectName => _projectName == projectName),
+                    It.IsAny<AwsConnectionSettings>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(repos.AsEnumerable()));
+        }
+
+        private Mock<ICodeCatalystRepository> MockCodeCatalystRepository(string repoName)
+        {
+            var mock = new Mock<ICodeCatalystRepository>();
+            mock.SetupGet(m => m.Name).Returns(repoName);
+
+            return mock;
+        }
+
+        private Mock<ICodeCatalystRepository> MockCodeCatalystRepository(string repoName, string cloneUrl)
+        {
+            var mock = MockCodeCatalystRepository(repoName);
+            mock.Setup(x => x.GetCloneUrlAsync(It.IsAny<CloneUrlType>()))
+                .ReturnsAsync(new Uri(cloneUrl));
+
+            return mock;
         }
     }
 }
