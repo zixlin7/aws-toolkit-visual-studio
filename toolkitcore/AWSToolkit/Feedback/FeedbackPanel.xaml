@@ -7,18 +7,16 @@
                          xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
                          xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images"
                          xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+                         xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls;assembly=AWSToolkit"
                          themes:ToolkitThemes.UseToolkitTheme="True"
                          mc:Ignorable="d"
-                         Height="300" Width="500">
+                         Height="400" Width="500">
     <commonUi:BaseAWSControl.Resources>
         <ResourceDictionary>
             <converters:NullableInverseBooleanConverter x:Key="NullableInverseBooleanConverter" />
             <commonUi:VsImages x:Key="VsImages" />
-            <converters:ConverterPipeline x:Key="VisibleIfNull">
-                <converters:EqualityBooleanConverter />
-                <BooleanToVisibilityConverter />
-            </converters:ConverterPipeline>
         </ResourceDictionary>
+
     </commonUi:BaseAWSControl.Resources>
 
     <Grid>
@@ -27,37 +25,71 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
+        <Grid Margin="6 6 6 6" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
 
-        <TextBlock Margin="6" Grid.Row="0">
-            Have an issue or feature request?
-            <Hyperlink
-                NavigateUri="https://github.com/aws/aws-toolkit-visual-studio"
-                RequestNavigate="OnRequestNavigate">
-                Talk to us on Github instead!
-            </Hyperlink>
-        </TextBlock>
+            <TextBlock Grid.Column="0"
+                       VerticalAlignment="Bottom"
+                       TextWrapping="NoWrap"
+                       Text="Looking for help? Search our"/>
+            <commonUi:HyperlinkText Grid.Column="1"
+                                    Margin="3 0 0 0"
+                                    OpenUrlCommand="{Binding ViewUserGuideCommand}"
+                                    LinkText="Documentation"/>
 
-        <TextBlock 
-            Margin="6 9 6 6" 
-            Grid.Row="1" 
-            FontWeight="SemiBold" 
-            Text="How is your experience with the AWS Toolkit?" 
-            />
 
-        <StackPanel 
+        </Grid>
+
+        <TextBlock
+            Margin="6 9 6 0"
+            Grid.Row="1"
+            FontWeight="SemiBold"
+            Text="Join us on GitHub" />
+
+        <StackPanel Grid.Row="2" 
+                    Margin="6"
+                    Orientation="Vertical">
+        
+            <commonUi:HyperlinkText
+                OpenUrlCommand="{Binding ViewUrlCommand}"
+                LinkText="Report a bug"
+                Url="{x:Static urls:GitHubUrls.BugReportUrl}"
+                Margin="0 0 0 3" />
+          
+            <commonUi:HyperlinkText
+                Margin="0 3 0 3"
+                OpenUrlCommand="{Binding ViewUrlCommand}"
+                LinkText="Request a feature"
+                Url="{x:Static urls:GitHubUrls.FeatureRequestUrl}" />
+
+        </StackPanel>
+
+        <TextBlock
+            Margin="6 9 6 6"
+            Grid.Row="3"
+            FontWeight="SemiBold"
+            Text="Share feedback" />
+
+        <StackPanel
             Name="FeedbackSentiment" x:FieldModifier="private"
-            Grid.Row="2" 
-            Margin="6" 
-            Orientation="Horizontal" 
+            Grid.Row="4"
+            Margin="6"
+            Orientation="Horizontal"
             HorizontalAlignment="Left">
             <RadioButton Name="PositiveButton" x:FieldModifier="private"
                          VerticalContentAlignment="Center"
                          IsChecked="{Binding FeedbackSentiment,UpdateSourceTrigger=PropertyChanged}">
-                <images:VsImage 
+                <images:VsImage
                     Width="32"
                     Height="32"
                     VerticalAlignment="Top"
@@ -67,42 +99,39 @@
             <RadioButton Name="NegativeButton" x:FieldModifier="private"
                          VerticalContentAlignment="Center"
                          IsChecked="{Binding FeedbackSentiment, Converter={StaticResource NullableInverseBooleanConverter}, UpdateSourceTrigger=PropertyChanged}">
-                <images:VsImage 
-                    Width="32" 
+                <images:VsImage
+                    Width="32"
                     Height="32"
                     VerticalAlignment="Top"
                     Margin="0 0 9 0"
                     Source="{Binding Source={StaticResource VsImages}, Path=FeedbackFrown32}" />
             </RadioButton>
-            <TextBlock 
-                Margin="12 6 0 0"
-                TextWrapping="Wrap"
-                Visibility="{Binding FeedbackSentiment, Converter={StaticResource VisibleIfNull}, ConverterParameter={x:Null}}"
-                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
-                Text="Please select how you are feeling."
-            />
         </StackPanel>
 
-        <TextBlock 
-            Margin="6 9 6 6" 
-            Grid.Row="3" 
-            FontWeight="SemiBold" 
-            Text="Please enter your feedback"   
-            />
+        <TextBlock
+            Margin="6 9 6 6"
+            Grid.Row="5"
+            FontWeight="SemiBold"
+            Text="How can we improve the AWS Toolkit?" />
+
+        <TextBlock
+            Margin="6 0 6 6"
+            Grid.Row="6"
+            TextWrapping="WrapWithOverflow"
+            Text="Don’t add personally identifiable information (PII), confidential or sensitive information in your feedback. Please remove any PII when sharing file paths, error messages, etc." />
 
         <commonUi:HintTextBox
             x:Name="FeedbackComment" x:FieldModifier="private"
-            Margin="6" 
-            Grid.Row="4"
+            Margin="6"
+            Grid.Row="7"
             VerticalAlignment="Stretch"
             HintText="[Optional]"
             AcceptsReturn="True"
-            Text="{Binding FeedbackComment, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-             />
+            Text="{Binding FeedbackComment, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 
-        <TextBlock 
-            Margin="6" 
-            Grid.Row="5"
+        <TextBlock
+            Margin="6"
+            Grid.Row="8"
             VerticalAlignment="Stretch"
             Text="{Binding RemainingCharacters, StringFormat={}{0} characters remaining}" />
     </Grid>

@@ -53,5 +53,21 @@ namespace AWSToolkitPackage.Tests.Images
                 It.IsAny<ImageAttributes>()), Times.Once);
             _image.Verify(mock => mock.get_Data(out _imageGetDataObject), Times.Once);
         }
+
+
+        [Fact]
+        public void GetImage_WithGuid()
+        {
+            ImageMoniker expectedImageMoniker = KnownMonikers.Edit;
+
+            var image = _sut.GetImage(expectedImageMoniker.Guid, expectedImageMoniker.Id, 16);
+            Assert.Null(image);
+
+            _serviceProvider.Verify(mock => mock.GetService(It.IsAny<Type>()), Times.Once);
+            _imageService.Verify(mock => mock.GetImage(
+                It.Is<ImageMoniker>(moniker => moniker.ValueEquals(expectedImageMoniker)),
+                It.IsAny<ImageAttributes>()), Times.Once);
+            _image.Verify(mock => mock.get_Data(out _imageGetDataObject), Times.Once);
+        }
     }
 }

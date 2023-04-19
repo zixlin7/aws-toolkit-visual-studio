@@ -64,6 +64,27 @@ namespace Amazon.AWSToolkit.VisualStudio.Images
         }
 
         /// <summary>
+        ///  Retrieves an image from the VS Image Service that can be used in Image controls using the moniker properties supplied
+        /// </summary>
+        /// <param name="imageGuid">Known moniker image catalog guid</param>
+        /// <param name="imageId">Known moniker image Id</param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public BitmapSource GetImage(Guid imageGuid, int imageId, int size)
+        {
+            var moniker = new ImageMoniker() { Guid = imageGuid, Id = imageId };
+            try
+            {
+                return LoadImage(moniker, size);
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Failed to load image: {moniker}", e);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Loads an image from the Image Service that can be used in WPF Image controls.
         /// </summary>
         private BitmapSource LoadImage(ImageMoniker moniker, int size)

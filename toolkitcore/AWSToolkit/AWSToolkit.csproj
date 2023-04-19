@@ -93,6 +93,8 @@
     <Compile Include="CloudWatch\ILogStreamsViewer.cs" />
     <Compile Include="Commands\AsyncCommand.cs" />
     <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\OpenUrlCommand.cs" />
+    <Compile Include="Commands\OpenUserGuideCommand.cs" />
     <Compile Include="Commands\PromptAndExecuteCommand.cs" />
     <Compile Include="Commands\ShowMessageInOutputCommand.cs" />
     <Compile Include="Commands\PromptAndExecuteHandler.cs" />
@@ -102,6 +104,7 @@
     <Compile Include="CommonUI\Converters\ParameterPassThroughConverter.cs" />
     <Compile Include="CommonUI\Converters\RelayValueConverter.cs" />
     <Compile Include="CommonUI\Converters\ToolkitRegionConverter.cs" />
+    <Compile Include="CommonUI\CustomImages.cs" />
     <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePicker.xaml.cs">
       <DependentUpon>DateTimeRangePicker.xaml</DependentUpon>
     </Compile>
@@ -112,6 +115,9 @@
     <Compile Include="CommonUI\Dialogs\IFolderBrowserDialog.cs" />
     <Compile Include="CommonUI\Dialogs\ISsoLoginDialog.cs" />
     <Compile Include="CommonUI\DualListBox.cs" />
+    <Compile Include="CommonUI\HyperlinkText.xaml.cs">
+      <DependentUpon>HyperlinkText.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CommonUI\Notifications\ITaskStatusNotifier.cs" />
     <Compile Include="CommonUI\HintTextBox.xaml.cs">
       <DependentUpon>HintTextBox.xaml</DependentUpon>
@@ -260,6 +266,7 @@
       <DependentUpon>FeedbackPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Feedback\FeedbackPanelViewModel.cs" />
+    <Compile Include="Feedback\MetricSources.cs" />
     <Compile Include="Feedback\SendFeedbackCommand.cs" />
     <Compile Include="Models\KeyValue.cs" />
     <Compile Include="Models\KeyValueConversion.cs" />
@@ -613,6 +620,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="CommonUI\HintTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\HyperlinkText.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

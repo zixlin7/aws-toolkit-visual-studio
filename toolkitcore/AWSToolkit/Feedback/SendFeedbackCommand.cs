@@ -2,9 +2,10 @@
 using System.Windows;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Tasks;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 
@@ -56,21 +57,21 @@ namespace Amazon.AWSToolkit.Feedback
             var feedbackResult = Result.Failed;
             try
             {
-                var feedbackViewModel = new FeedbackPanelViewModel();
+                var feedbackViewModel = CreateViewModel();
                 var sourceMarker = parameter as string;
 
-                var dialog = new FeedbackPanel(sourceMarker) {DataContext = feedbackViewModel};
+                var dialog = new FeedbackPanel(sourceMarker) { DataContext = feedbackViewModel };
 
                 var result = _toolkitContext.ToolkitHost.ShowInModalDialogWindow(dialog, MessageBoxButton.OKCancel);
                 if (result)
                 {
-                    feedbackResult = await feedbackViewModel.SubmitFeedbackAsync(_toolkitContext, sourceMarker);
+                    feedbackResult = await feedbackViewModel.SubmitFeedbackAsync(sourceMarker);
                 }
                 else
                 {
                     feedbackResult = Result.Cancelled;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -79,8 +80,18 @@ namespace Amazon.AWSToolkit.Feedback
             }
             finally
             {
-                _toolkitContext.TelemetryLogger.RecordFeedbackResult(new FeedbackResult() {Result = feedbackResult});
+                _toolkitContext.TelemetryLogger.RecordFeedbackResult(new FeedbackResult() { Result = feedbackResult });
             }
+        }
+
+        private FeedbackPanelViewModel CreateViewModel()
+        {
+            var viewModel = new FeedbackPanelViewModel(_toolkitContext)
+            {
+                ViewUrlCommand = OpenUrlCommandFactory.Create(_toolkitContext, MetricSources.FeedbackMetricSource.Feedback),
+                ViewUserGuideCommand = OpenUserGuideCommand.Create(_toolkitContext)
+            };
+            return viewModel;
         }
     }
 }

@@ -829,6 +829,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
                 VsImages.Initialize(new VsImageProvider(this));
+                CustomImages.Initialize(new VsImageProvider(this));
             }
             catch (Exception e)
             {

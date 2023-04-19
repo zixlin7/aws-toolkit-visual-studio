@@ -72,6 +72,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             public const int StatusInformation = 2933;
         }
 
-#endregion
-    };
+        #endregion
+    }
 }
