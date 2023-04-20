@@ -400,7 +400,7 @@
                     Grid.Row="10"
                     Grid.ColumnSpan="3"
                     Margin="0 16 0 0">
-                    Repository:
+                    CodeCatalyst Repository:
                 </TextBlock>
 
                 <Grid
