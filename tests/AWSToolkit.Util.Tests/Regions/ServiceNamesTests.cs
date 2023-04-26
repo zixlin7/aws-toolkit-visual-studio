@@ -19,6 +19,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
             Assert.Equal(new AmazonElasticBeanstalkConfig().RegionEndpointServiceName, ServiceNames.Beanstalk);
         }
 
+        [Fact]
         public void CloudWatchLogs()
         {
             Assert.Equal(new AmazonCloudWatchLogsConfig().RegionEndpointServiceName, ServiceNames.CloudWatchLogs);
