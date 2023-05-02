@@ -1,15 +1,8 @@
-using System.Reflection;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.ECS;
 using Amazon.AWSToolkit.PluginServices.Activators;
-
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("AWSToolkit.ECS")]
-[assembly: AssemblyDescription("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from

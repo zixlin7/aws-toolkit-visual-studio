@@ -146,9 +146,9 @@
 
         <ItemGroup>
             <!-- Add projects to be tested with xunit here -->
-            <TestAssemblies Include="..\tests\AmazonCLIExtensions.Tests\bin\$(Configuration)\AmazonCLIExtensions.Tests.dll" />
-            <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\AWSToolkit.Tests.dll" />
-            <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
+            <TestAssemblies Include="..\tests\AmazonCLIExtensions.Tests\bin\$(Configuration)\net472\AmazonCLIExtensions.Tests.dll" />
+            <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\net472\AWSToolkit.Tests.dll" />
+            <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\net472\AWSToolkit.Util.Tests.dll" />
             <TestAssemblies Condition="'$(VisualStudioVersion)' == '16.0'" Include="..\tests\AwsToolkit.Vs.v16.Tests\bin\$(Configuration)\AwsToolkit.Vs.v16.Tests.dll" />
             <TestAssemblies Condition="'$(VisualStudioVersion)' == '17.0'" Include="..\tests\AwsToolkit.Vs.v17.Tests\bin\$(Configuration)\AwsToolkit.Vs.v17.Tests.dll" />
             <TestAssemblies Condition="'$(VisualStudioVersion)' == '16.0'" Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />

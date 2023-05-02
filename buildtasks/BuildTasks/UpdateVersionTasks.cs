@@ -174,6 +174,8 @@ namespace BuildTasks
             this.Log.LogMessage("Updating VSToolkit AssemblyInfo files for version {0}", this.VersionNumber);
             base.UpdateAssemblyInfoFiles();
 
+            UpdateDirectoryBuildProps();
+
             this.Log.LogMessage("...updating Visual Studio package manifest for version {0}", this.VersionNumber);
             foreach (var manifestFile in Directory.GetFiles(this.RepositoryRoot, "source.extension.vsixmanifest", SearchOption.AllDirectories))
             {
@@ -200,6 +202,14 @@ namespace BuildTasks
             }
 
             return true;
+        }
+
+        private void UpdateDirectoryBuildProps()
+        {
+            var filename = Path.Combine(this.RepositoryRoot, "Directory.Build.props");
+
+            Console.WriteLine("Updating Directory.Build.props: " + filename);
+            PatchFile(filename, "<ToolkitVersion>", "</ToolkitVersion>");
         }
     }
 

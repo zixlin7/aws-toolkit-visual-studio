@@ -1,154 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
-  </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
-  <PropertyGroup>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(BuildRoot)\solutions\</SolutionDir>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9AA7DD53-7BC4-4971-BC0C-0540A391DC22}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWSToolkit.CodeCommit</AssemblyTitle>
     <RootNamespace>Amazon.AWSToolkit.CodeCommit</RootNamespace>
-    <AssemblyName>AWSToolkit.CodeCommit</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <RestorePackages>true</RestorePackages>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
+    <PackageReference Include="AWSSDK.CodeCommit" Version="3.7.100.86" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.105.15" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.100.87" />
+    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
+    <PackageReference Include="LibGit2Sharp.NativeBinaries" Version="2.0.306" />
+    <PackageReference Include="log4net" Version="2.0.15" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="PresentationCore">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="PresentationFramework">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeCommitActivator.cs" />
-    <Compile Include="Controller\CreateRepositoryController.cs" />
-    <Compile Include="Controller\CloneRepositoryController.cs" />
-    <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />
-    <Compile Include="Util\CodeCommitClientExtensionMethods.cs" />
-    <Compile Include="View\Controls\CloneRepositoryControl.xaml.cs">
-      <DependentUpon>CloneRepositoryControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Model\BaseRepositoryModel.cs" />
-    <Compile Include="Model\CreateRepositoryModel.cs" />
-    <Compile Include="Model\NewRepositoryInfo.cs" />
-    <Compile Include="Model\CloneRepositoryModel.cs" />
-    <Compile Include="Model\CodeCommitRepository.cs" />
-    <Compile Include="Model\SaveServiceSpecificCredentialsModel.cs" />
-    <Compile Include="Nodes\CodeCommitRepositoryViewMetaNode.cs" />
-    <Compile Include="Nodes\CodeCommitRepositoryViewModel.cs" />
-    <Compile Include="Nodes\CodeCommitRootViewMetaNode.cs" />
-    <Compile Include="Nodes\CodeCommitRootViewModel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\CodeCommitGitServices.cs" />
-    <Compile Include="View\Controls\CreateRepositoryControl.xaml.cs">
-      <DependentUpon>CreateRepositoryControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\SaveServiceSpecificCredentialsControl.xaml.cs">
-      <DependentUpon>SaveServiceSpecificCredentialsControl.xaml</DependentUpon>
-    </Compile>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\*.png" />
     <Resource Include="Resources\CodeCommit32x32.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
-      <Name>AWSToolkit.Util</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
-      <Name>AWSToolkit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
-      <Project>{b8cfce12-d441-46a5-a415-c763e1e2beb0}</Project>
-      <Name>AWSToolkit.CodeCommit.Interface</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="View\Controls\CloneRepositoryControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Controls\CreateRepositoryControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\SaveServiceSpecificCredentialsControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\repository-alert.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\repository-node.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\service-root-node.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.CodeCommit">
-      <Version>3.7.100.86</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.105.15</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.87</Version>
-    </PackageReference>
-    <PackageReference Include="LibGit2Sharp">
-      <Version>0.26.2</Version>
-    </PackageReference>
-    <PackageReference Include="LibGit2Sharp.NativeBinaries">
-      <Version>2.0.306</Version>
-    </PackageReference>
-    <PackageReference Include="log4net">
-      <Version>2.0.15</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

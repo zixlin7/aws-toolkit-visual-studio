@@ -1,6 +1,12 @@
 ﻿version: 0.2
 
 phases:
+    install:
+        commands:
+            # Fix for 'filename too long' errors
+            # LongPathsEnabled Reference:
+            # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#enable-long-paths-in-windows-10-version-1607-and-later
+            - '& Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -Value 1'
     pre_build:
         commands:
             - |

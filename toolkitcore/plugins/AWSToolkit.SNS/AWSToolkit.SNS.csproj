@@ -1,216 +1,30 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == ''" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{FE4C0E46-0427-46E1-8CC9-4B26FB15F728}</ProjectGuid>
-    <OutputType>library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWSToolkit.SNS</AssemblyTitle>
     <RootNamespace>Amazon.AWSToolkit.SNS</RootNamespace>
-    <AssemblyName>AWSToolkit.SNS</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.105.6" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.101.22" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.100.86" />
+    <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\CreateSubscriptionController.cs" />
-    <Compile Include="Controller\CreateTopicController.cs" />
-    <Compile Include="Controller\DeleteTopicController.cs" />
-    <Compile Include="Controller\EditDisplayNameController.cs" />
-    <Compile Include="Controller\PublishController.cs" />
-    <Compile Include="Controller\SNSPolicyEditorController.cs" />
-    <Compile Include="Controller\ViewSubscriptionsController.cs" />
-    <Compile Include="Controller\ViewTopicController.cs" />
-    <Compile Include="Model\CreateSubscriptionModel.cs" />
-    <Compile Include="Model\CreateTopicModel.cs" />
-    <Compile Include="Model\EditDisplayNameModel.cs" />
-    <Compile Include="Model\PublishModel.cs" />
-    <Compile Include="Model\SubscriptionEntry.cs" />
-    <Compile Include="Model\SubscriptionProtocol.cs" />
-    <Compile Include="Model\ViewSubscriptionsModel.cs" />
-    <Compile Include="Model\ViewTopicModel.cs" />
-    <Compile Include="Nodes\SNSRootViewMetaNode.cs" />
-    <Compile Include="Nodes\SNSRootViewModel.cs" />
-    <Compile Include="Nodes\SNSTopicViewMetaNode.cs" />
-    <Compile Include="Nodes\SNSTopicViewModel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="SNSActivator.cs" />
-    <Compile Include="Util\SnsTelemetryExtensionMethods.cs" />
-    <Compile Include="View\CreateSubscriptionControl.xaml.cs">
-      <DependentUpon>CreateSubscriptionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\CreateTopicControl.xaml.cs">
-      <DependentUpon>CreateTopicControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\EditDisplayNameControl.xaml.cs">
-      <DependentUpon>EditDisplayNameControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\PublishControl.xaml.cs">
-      <DependentUpon>PublishControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ViewSubscriptionsControl.xaml.cs">
-      <DependentUpon>ViewSubscriptionsControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ViewTopicControl.xaml.cs">
-      <DependentUpon>ViewTopicControl.xaml</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <AppDesigner Include="Properties\" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.PolicyEditor\AWSToolkit.PolicyEditor.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SNS.Interface\AWSToolkit.SNS.Interface.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SQS.Interface\AWSToolkit.SQS.Interface.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\create_subscription.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\create_topic.png" />
-    <Resource Include="Resources\Images\delete_subscription.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\publish_to_topic.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\send-message.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\service-root-icon.png" />
-    <EmbeddedResource Include="Resources\EmbeddedImages\topic-node.png" />
-    <Resource Include="Resources\Images\publish_to_topic.png" />
-    <Resource Include="Resources\Images\send-message.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\*.png" />
+    <Resource Include="Resources\Images\*.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
-      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
-      <Name>AWSSDK.Extensions</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
-      <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
-      <Name>AWSToolkit.Lambda.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.PolicyEditor\AWSToolkit.PolicyEditor.csproj">
-      <Project>{12910BAF-29C4-48CA-B50D-4CCABDFB879A}</Project>
-      <Name>AWSToolkit.PolicyEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SNS.Interface\AWSToolkit.SNS.Interface.csproj">
-      <Project>{4D9293CF-0D56-4BB9-B50D-BC829E53C16F}</Project>
-      <Name>AWSToolkit.SNS.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SQS.Interface\AWSToolkit.SQS.Interface.csproj">
-      <Project>{8FB3CC1B-D3F6-49A0-A700-3A212C4772DC}</Project>
-      <Name>AWSToolkit.SQS.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
-      <Name>AWSToolkit.Util</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
-      <Name>AWSToolkit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="View\CreateSubscriptionControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\CreateTopicControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\EditDisplayNameControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\PublishControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\ViewSubscriptionsControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\ViewTopicControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\delete_subscription.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.7.105.6</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.101.22</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.100.86</Version>
-    </PackageReference>
-    <PackageReference Include="log4net">
-      <Version>2.0.15</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

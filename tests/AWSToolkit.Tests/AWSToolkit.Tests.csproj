@@ -1,403 +1,66 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B5A5A4DC-8EF3-4C04-85FD-76E85C4EA4CB}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AWSToolkit.Tests</RootNamespace>
-    <AssemblyName>AWSToolkit.Tests</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <!-- Strong-Sign this assembly so that it can access Internal classes from other Strong-Signed assemblies -->
-  <PropertyGroup>
-    <SignManifests>false</SignManifests>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="netstandard" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="WindowsBase" />
+    <Reference Include="YamlDotNet">
+      <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Clients\AwsServiceClientManagerTests.cs" />
-    <Compile Include="Clients\ServiceClientCreatorTests.cs" />
-    <Compile Include="CloudFormation\CloudFormationViewerTests.cs" />
-    <Compile Include="CloudWatch\Logs\Commands\DeleteLogGroupCommandTests.cs" />
-    <Compile Include="CloudWatch\Logs\Commands\ExportStreamCommandTests.cs" />
-    <Compile Include="CloudWatch\Logs\Commands\RefreshLogEventsCommandTests.cs" />
-    <Compile Include="CloudWatch\Logs\Commands\ViewLogEventsCommandTests.cs" />
-    <Compile Include="CloudWatch\Logs\Fixtures\BaseLogsViewModelFixture.cs" />
-    <Compile Include="CloudWatch\Logs\Fixtures\LogEventsViewModelFixture.cs" />
-    <Compile Include="CloudWatch\Logs\Util\CloudWatchLogsExtensionMethodTests.cs" />
-    <Compile Include="CloudWatch\Logs\Core\CloudWatchLogsRepositoryTests.cs" />
-    <Compile Include="CloudWatch\Logs\Util\ExportStreamHandlerTests.cs" />
-    <Compile Include="CloudWatch\Logs\Util\TelemetryFixtureExtensionMethods.cs" />
-    <Compile Include="CloudWatch\Logs\Viewer\LogEventsViewerTests.cs" />
-    <Compile Include="CloudWatch\Logs\Viewer\LogStreamViewerTests.cs" />
-    <Compile Include="CloudWatch\Logs\ViewModels\BaseLogEntityViewModelTests.cs" />
-    <Compile Include="CloudWatch\ViewModels\CloudWatchRootViewModelTests.cs" />
-    <Compile Include="CloudWatch\Logs\Fixtures\LogGroupsViewModelFixture.cs" />
-    <Compile Include="CloudWatch\Logs\ViewModels\LogEventsViewModelTests.cs" />
-    <Compile Include="CloudWatch\Logs\ViewModels\LogGroupsViewModelTests.cs" />
-    <Compile Include="CloudWatch\Logs\Fixtures\LogStreamsViewModelFixture.cs" />
-    <Compile Include="CloudWatch\Logs\ViewModels\LogStreamsViewModelTests.cs" />
-    <Compile Include="CloudWatch\Logs\Commands\RefreshLogGroupsCommandTests.cs" />
-    <Compile Include="CloudWatch\Logs\Commands\RefreshLogStreamsCommandTests.cs" />
-    <Compile Include="CloudWatch\ViewModels\TestCloudWatchRootViewModel.cs" />
-    <Compile Include="CloudWatch\Logs\Commands\ViewLogGroupsCommandTests.cs" />
-    <Compile Include="CloudWatch\Logs\Commands\ViewLogStreamsCommandTests.cs" />
-    <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
-    <Compile Include="CodeArtifact\ConfigurationTests.cs" />
-    <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
-    <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
-    <Compile Include="CodeArtifact\TelemetryFixture.cs" />
-    <Compile Include="Commands\CommandTests.cs" />
-    <Compile Include="CodeCatalyst\CodeCatalystPluginServiceTests.cs" />
-    <Compile Include="CodeCatalyst\Models\CodeCatalystAccessTokenTests.cs" />
-    <Compile Include="CodeCatalyst\Models\CodeCatalystProjectTests.cs" />
-    <Compile Include="CodeCatalyst\Models\CodeCatalystRepositoryTests.cs" />
-    <Compile Include="CodeCatalyst\Models\CodeCatalystSpaceTests.cs" />
-    <Compile Include="Commands\ShowExceptionAndForgetCommandTests.cs" />
-    <Compile Include="Commands\ShowMessageInOutputCommandTests.cs" />
-    <Compile Include="CommonUI\AccountAndRegionPickerViewModelTests.cs" />
-    <Compile Include="CommonUI\AccountViewModelGroupConverterTests.cs" />
-    <Compile Include="CommonUI\BaseModelTests.cs" />
-    <Compile Include="CommonUI\CloudFormationTemplateWrapperTests.cs" />
-    <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
-    <Compile Include="CommonUI\ConcatenateCollectionConverterTests.cs" />
-    <Compile Include="CommonUI\ConverterPipelineTests.cs" />
-    <Compile Include="CommonUI\CredentialIdentifierConverterTests.cs" />
-    <Compile Include="CommonUI\CredentialIdentifierGroupConverterTests.cs" />
-    <Compile Include="CommonUI\DataErrorInfoTests.cs" />
-    <Compile Include="CommonUI\DateTimeRangePicker\DateTimeRangePickerViewModelTests.cs" />
-    <Compile Include="CommonUI\DateTimeRangePicker\TimeInputViewModelTests.cs" />
-    <Compile Include="CommonUI\EqualityBooleanConverterTests.cs" />
-    <Compile Include="CommonUI\CredentialSelector\CredentialSelectionViewModelTests.cs" />
-    <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
-    <Compile Include="CommonUI\HasValueVisibilityConverterTests.cs" />
-    <Compile Include="CommonUI\ToolkitRegionConverterTests.cs" />
-    <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
-    <Compile Include="CommonUI\InverseVisibilityConverterTests.cs" />
-    <Compile Include="CommonUI\NullableInverseBooleanConverterTests.cs" />
-    <Compile Include="CommonUI\ToolkitImagesTest.cs" />
-    <Compile Include="CommonUI\TemplateParserTests.cs" />
-    <Compile Include="CommonUI\VsImagesTests.cs" />
-    <Compile Include="CommonUI\WizardExtensionMethodsTests.cs" />
-    <Compile Include="CommonValidators\DockerTagValidatorTests.cs" />
-    <Compile Include="CommonValidators\EcsPlatformVersionValidatorTests.cs" />
-    <Compile Include="CommonValidators\EcsRepoNameValidatorTests.cs" />
-    <Compile Include="ConstantsTests.cs" />
-    <Compile Include="Credentials\Core\AwsConnectionManagerTest.cs" />
-    <Compile Include="Credentials\Core\BaseFileCredentialProviderFactoryTests.cs" />
-    <Compile Include="Credentials\Core\CredentialManagerTest.cs" />
-    <Compile Include="Credentials\Core\CredentialSettingsManagerTests.cs" />
-    <Compile Include="Credentials\Core\FakeAwsTokenProvider.cs" />
-    <Compile Include="Credentials\Core\FakeIdentityResolver.cs" />
-    <Compile Include="Credentials\Core\NoopToolkitSettingsRepository.cs" />
-    <Compile Include="Credentials\Core\ProfileCredentialProviderFactoryTests.cs" />
-    <Compile Include="Credentials\Core\TestProfileCredentialProviderFactory.cs" />
-    <Compile Include="Credentials\Core\ToolkitCredentialsTests.cs" />
-    <Compile Include="Credentials\Core\ToolkitSsoTokenManagerTests.cs" />
-    <Compile Include="Credentials\CredentialProfileTestHelper.cs" />
-    <Compile Include="Credentials\IO\EncryptedStoreTestFixture.cs" />
-    <Compile Include="Credentials\IO\ProfileValidatorSsoSessionTests.cs" />
-    <Compile Include="Credentials\IO\ProfileValidatorTests.cs" />
-    <Compile Include="Credentials\IO\ProfileWatcherTests.cs" />
-    <Compile Include="Credentials\IO\SDKCredentialFileReaderTests.cs" />
-    <Compile Include="Credentials\IO\SDKCredentialFileTestFixture.cs" />
-    <Compile Include="Credentials\IO\SDKCredentialFileWriterTests.cs" />
-    <Compile Include="Credentials\IO\SharedCredentialFileReaderTests.cs" />
-    <Compile Include="Credentials\IO\SharedCredentialFileTestFixture.cs" />
-    <Compile Include="Credentials\Core\SDKCredentialProviderFactoryTests.cs" />
-    <Compile Include="Credentials\Core\SharedCredentialProviderFactoryTests.cs" />
-    <Compile Include="Credentials\IO\SharedCredentialFileWriterTests.cs" />
-    <Compile Include="Credentials\Presentation\CredentialIdentifierExtensionMethodsTests.cs" />
-    <Compile Include="Credentials\Presentation\CredentialIdentifierGroupComparerTests.cs" />
-    <Compile Include="Credentials\Sono\SonoCredentialProviderFactoryTests.cs" />
-    <Compile Include="Credentials\Sono\SonoHelpersTests.cs" />
-    <Compile Include="Credentials\Sono\SonoProfileProcessorTests.cs" />
-    <Compile Include="Credentials\Sono\SonoTokenProviderBuilderTests.cs" />
-    <Compile Include="Credentials\Utils\CredentialProfileExtensionMethodsTests.cs" />
-    <Compile Include="Credentials\Utils\CredentialProfileOptionsExtensionMethodsTests.cs" />
-    <Compile Include="Credentials\Utils\CredentialTypeExtensionMethodsTests.cs" />
-    <Compile Include="Credentials\Utils\ProfileNameTests.cs" />
-    <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethodsTests.cs" />
-    <Compile Include="Credentials\Utils\ProfilePropertyMappingTests.cs" />
-    <Compile Include="Credentials\Utils\TokenCacheTests.cs" />
-    <Compile Include="Credentials\Utils\TokenExtensionMethodsTests.cs" />
-    <Compile Include="Ec2\VpcEntityTests.cs" />
-    <Compile Include="Ecr\EcrViewerTests.cs" />
-    <Compile Include="Ecr\RepoRepositoryTests.cs" />
-    <Compile Include="Ecr\RepositoryConversionTests.cs" />
-    <Compile Include="ECS\DeployServiceWorkerTests.cs" />
-    <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
-    <Compile Include="ECS\EcsDeployTestFixture.cs" />
-    <Compile Include="ECS\PushImageToECRWorkerTests.cs" />
-    <Compile Include="ECS\DeployTaskWorkerTests.cs" />
-    <Compile Include="ECS\EcsTelemetryUtilsTests.cs" />
-    <Compile Include="ECS\EcsWizardUtilsTests.cs" />
-    <Compile Include="ECS\ViewClusterControllerTests.cs" />
-    <Compile Include="ECS\ViewLogsCommandTests.cs" />
-    <Compile Include="ElasticBeanstalk\AWSOptionsPageControllerTests.cs" />
-    <Compile Include="ElasticBeanstalk\BeanstalkViewerTests.cs" />
-    <Compile Include="ElasticBeanstalk\BeanstalkWizardTests.cs" />
-    <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageControllerTests.cs" />
-    <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
-    <Compile Include="Commands\LearnMoreCommandTests.cs" />
-    <Compile Include="ElasticBeanstalk\CoreCLRApplicationOptionsPageTests.cs" />
-    <Compile Include="ElasticBeanstalk\ModelExtensionMethodsTests.cs" />
-    <Compile Include="ElasticBeanstalk\StartPageControllerTests.cs" />
-    <Compile Include="ElasticBeanstalk\Wizard\AWSWizardAsserter.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Iam\IamEntityRepositoryTests.cs" />
-    <Compile Include="Lambda\LambdaStateWaiterTests.cs" />
-    <Compile Include="Lambda\LambdaTelemetryUtilTests.cs" />
-    <Compile Include="Lambda\UploadFunctionViewModelIsValidConfigurationTests.cs" />
-    <Compile Include="Lambda\ViewLogStreamsCommandTests.cs" />
-    <Compile Include="Models\KeyValueConversionTests.cs" />
-    <Compile Include="Models\KeyValueTests.cs" />
-    <Compile Include="Navigator\ActionResultsExtensionMethodsTests.cs" />
-    <Compile Include="Publish\Banner\ProjectToolkitShellProvider.cs" />
-    <Compile Include="Publish\Banner\PublishBannerPropertyChangedHandlerTests.cs" />
-    <Compile Include="Publish\Banner\SwitchToNewExperienceCommandTests.cs" />
-    <Compile Include="Publish\Banner\PublishBannerViewModelTests.cs" />
-    <Compile Include="ElasticBeanstalk\SolutionStackUtilsTests.cs" />
-    <Compile Include="ElasticBeanstalk\WizardToEbToolsCommandTests.cs" />
-    <Compile Include="Lambda\AddEventSourceControllerTests.cs" />
-    <Compile Include="Lambda\ArchitectureToBoolConverterTests.cs" />
-    <Compile Include="Lambda\LambdaTesterInstallerTests.cs" />
-    <Compile Include="Lambda\LambdaModel.cs" />
-    <Compile Include="Lambda\PackageTypeToVisibilityConverterTest.cs" />
-    <Compile Include="Lambda\ProjectTests.cs" />
-    <Compile Include="Lambda\RuntimeOptionTests.cs" />
-    <Compile Include="Lambda\LambdaAssert.cs" />
-    <Compile Include="Lambda\UploadFunctionDetailsPageFixture.cs" />
-    <Compile Include="Lambda\UploadFunctionDetailsPageTests.cs" />
-    <Compile Include="Lambda\UploadFunctionViewModelTests.cs" />
-    <Compile Include="Lambda\UploadGenericWorkerTests.cs" />
-    <Compile Include="Lambda\UploadNETCoreWorkerTests.cs" />
-    <Compile Include="Lambda\ViewFunctionControllerTests.cs" />
-    <Compile Include="PluginActivator\PluginActivatorUtilitiesTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Publish\PublishToAwsExtensionMethodsTests.cs" />
-    <Compile Include="S3\DragAndDrop\DropSourcePlaceholderTests.cs" />
-    <Compile Include="S3\DragAndDrop\S3DropRequestWatcherTests.cs" />
-    <Compile Include="S3\RenameFileModelTests.cs" />
-    <Compile Include="S3\S3PathTests.cs" />
-    <Compile Include="SNS\CreateSubscriptionModelTests.cs" />
-    <Compile Include="SNS\CreateTopicModelTests.cs" />
-    <Compile Include="SQS\SqsHelpersTests.cs" />
-    <Compile Include="Util\ServiceSpecificCredentialsTests.cs" />
-    <Compile Include="ViewModels\KeyValuesViewModelTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.CodeArtifact">
-      <Version>3.7.102.23</Version>
-    </PackageReference>
-    <PackageReference Include="Moq">
-      <Version>4.17.2</Version>
-    </PackageReference>
-    <PackageReference Include="xunit">
-      <Version>2.4.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.4.5</Version>
+    <PackageReference Include="AWSSDK.CodeArtifact" Version="3.7.102.23" />
+    <PackageReference Include="Moq" Version="4.17.2" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Xunit.StaFact">
-      <Version>1.1.11</Version>
-    </PackageReference>
+    <PackageReference Include="Xunit.StaFact" Version="1.1.11" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj">
-      <Project>{dffe75f2-61cc-4cea-87a5-1c573436de9e}</Project>
-      <Name>AWSDeploymentLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\AmazonCLIExtensions\AmazonCLIExtensions.csproj">
-      <Project>{b4771f7a-a835-4b86-8b52-0e2fd560a48c}</Project>
-      <Name>AmazonCLIExtensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
-      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
-      <Name>AWSSDK.Extensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
-      <Name>AWSToolkit.Util</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
-      <Name>AWSToolkit</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
-      <Project>{6AE302DB-2304-47C8-8E3C-96C85AC1D469}</Project>
-      <Name>AWSToolkit.CloudFormation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudWatch.Interface\AWSToolkit.CloudWatch.Interface.csproj">
-      <Project>{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}</Project>
-      <Name>AWSToolkit.CloudWatch.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudWatch\AWSToolkit.CloudWatch.csproj">
-      <Project>{71CE999A-BF87-4EAA-81B6-BF78FBD05CEB}</Project>
-      <Name>AWSToolkit.CloudWatch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
-      <Project>{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}</Project>
-      <Name>AWSToolkit.CodeArtifact</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj">
-      <Project>{dbdb8299-3efb-4a02-a34e-7bfb98ce3169}</Project>
-      <Name>AWSToolkit.CodeCatalyst.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst\AWSToolkit.CodeCatalyst.csproj">
-      <Project>{5465c047-5a2e-424f-9961-3ca4dec2c2cc}</Project>
-      <Name>AWSToolkit.CodeCatalyst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
-      <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
-      <Name>AWSToolkit.EC2.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2\AWSToolkit.EC2.csproj">
-      <Project>{BD907681-AFE8-4008-97CD-11B138FDDCA7}</Project>
-      <Name>AWSToolkit.EC2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
-      <Project>{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}</Project>
-      <Name>AWSToolkit.ECS.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj">
-      <Project>{a09c427c-dbf7-49c8-9590-e99ad60dece2}</Project>
-      <Name>AWSToolkit.ECS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
-      <Project>{d4d5c421-6265-4674-a1f9-dc11a56fc030}</Project>
-      <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
-      <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
-      <Name>AWSToolkit.ElasticBeanstalk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj">
-      <Project>{49C00D37-5980-495F-80C6-43C5192C4A87}</Project>
-      <Name>AWSToolkit.IdentityManagement.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement\AWSToolkit.IdentityManagement.csproj">
-      <Project>{CFBD26F3-E44E-41EB-89B1-2E84391A0686}</Project>
-      <Name>AWSToolkit.IdentityManagement</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
-      <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
-      <Name>AWSToolkit.Lambda.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj">
-      <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>
-      <Name>AWSToolkit.Lambda</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj">
-      <Project>{c2d616bd-c2ab-4130-93e5-2ada2172a08a}</Project>
-      <Name>AWSToolkit.S3.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">
-      <Project>{a01edd42-f7f5-4e20-8deb-9f66f2980662}</Project>
-      <Name>AWSToolkit.S3</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SQS\AWSToolkit.SQS.csproj">
-      <Project>{91DF5775-5635-4DF3-A26F-5CFE1136763E}</Project>
-      <Name>AWSToolkit.SQS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
-      <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
-      <Name>AWSToolkit.CloudFormation.Parser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SNS\AWSToolkit.SNS.csproj">
-      <Project>{fe4c0e46-0427-46e1-8cc9-4b26fb15f728}</Project>
-      <Name>AWSToolkit.SNS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
-      <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
-      <Name>AWSToolkit.Tests.Common</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\AmazonCLIExtensions\AmazonCLIExtensions.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudWatch.Interface\AWSToolkit.CloudWatch.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudWatch\AWSToolkit.CloudWatch.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst\AWSToolkit.CodeCatalyst.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.EC2\AWSToolkit.EC2.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.IdentityManagement\AWSToolkit.IdentityManagement.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SNS.Interface\AWSToolkit.SNS.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SQS\AWSToolkit.SQS.csproj" />
+    <ProjectReference Include="..\..\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.SNS\AWSToolkit.SNS.csproj" />
+    <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ElasticBeanstalk\Resources\single-instance-deploy-settings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ElasticBeanstalk\Resources\application-load-balancer-settings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ElasticBeanstalk\Resources\classic-load-balancer-settings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ElasticBeanstalk\Resources\network-load-balancer-settings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ElasticBeanstalk\Resources\nondefault-vpc-deploy-settings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ElasticBeanstalk\Resources\self-contained-redeploy-no-proxy.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ElasticBeanstalk\Resources\windows-self-contained.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="CommonUI\Resources\short-form.yaml">
+    <Content Include="CommonUI\Resources\*.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="CommonUI\Resources\simple.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CommonUI\Resources\simple-no-parameters.yaml">
+    <Content Include="ElasticBeanstalk\Resources\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Lambda\test-data\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

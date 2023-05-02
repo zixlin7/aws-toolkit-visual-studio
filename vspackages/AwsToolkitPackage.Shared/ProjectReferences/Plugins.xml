@@ -12,177 +12,177 @@
 
   <!-- Reference Toolkit Plugins -->
   <ItemGroup>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFormation.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation\bin\$(Configuration)\net472\AWSToolkit.CloudFormation.dll">
       <Link>Plugins\AWSToolkit.CloudFormation.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFormation.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\bin\$(Configuration)\net472\AWSToolkit.CloudFormation.Interface.dll">
       <Link>Plugins\AWSToolkit.CloudFormation.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCatalyst.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCatalyst\bin\$(Configuration)\net472\AWSToolkit.CodeCatalyst.dll">
       <Link>Plugins\AWSToolkit.CodeCatalyst.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCatalyst.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\bin\$(Configuration)\net472\AWSToolkit.CodeCatalyst.Interface.dll">
       <Link>Plugins\AWSToolkit.CodeCatalyst.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit\bin\$(Configuration)\net472\AWSToolkit.CodeCommit.dll">
       <Link>Plugins\AWSToolkit.CodeCommit.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\bin\$(Configuration)\net472\AWSToolkit.CodeCommit.Interface.dll">
       <Link>Plugins\AWSToolkit.CodeCommit.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.DynamoDB.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.DynamoDB\bin\$(Configuration)\net472\AWSToolkit.DynamoDB.dll">
       <Link>Plugins\AWSToolkit.DynamoDB.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.DynamoDB.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.DynamoDB.Interface\bin\$(Configuration)\net472\AWSToolkit.DynamoDB.Interface.dll">
       <Link>Plugins\AWSToolkit.DynamoDB.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFront.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFront\bin\$(Configuration)\net472\AWSToolkit.CloudFront.dll">
       <Link>Plugins\AWSToolkit.CloudFront.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFront.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFront.Interface\bin\$(Configuration)\net472\AWSToolkit.CloudFront.Interface.dll">
       <Link>Plugins\AWSToolkit.CloudFront.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.EC2.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.EC2\bin\$(Configuration)\net472\AWSToolkit.EC2.dll">
       <Link>Plugins\AWSToolkit.EC2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.EC2.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.EC2.Interface\bin\$(Configuration)\net472\AWSToolkit.EC2.Interface.dll">
       <Link>Plugins\AWSToolkit.EC2.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ECS.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ECS\bin\$(Configuration)\net472\AWSToolkit.ECS.dll">
       <Link>Plugins\AWSToolkit.ECS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ECS.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ECS.Interface\bin\$(Configuration)\net472\AWSToolkit.ECS.Interface.dll">
       <Link>Plugins\AWSToolkit.ECS.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ElasticBeanstalk.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\bin\$(Configuration)\net472\AWSToolkit.ElasticBeanstalk.dll">
       <Link>Plugins\AWSToolkit.ElasticBeanstalk.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ElasticBeanstalk.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\bin\$(Configuration)\net472\AWSToolkit.ElasticBeanstalk.Interface.dll">
       <Link>Plugins\AWSToolkit.ElasticBeanstalk.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.IdentityManagement.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.IdentityManagement\bin\$(Configuration)\net472\AWSToolkit.IdentityManagement.dll">
       <Link>Plugins\AWSToolkit.IdentityManagement.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.IdentityManagement.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\bin\$(Configuration)\net472\AWSToolkit.IdentityManagement.Interface.dll">
       <Link>Plugins\AWSToolkit.IdentityManagement.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.Lambda.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda\bin\$(Configuration)\net472\AWSToolkit.Lambda.dll">
       <Link>Plugins\AWSToolkit.Lambda.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.Lambda.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda.Interface\bin\$(Configuration)\net472\AWSToolkit.Lambda.Interface.dll">
       <Link>Plugins\AWSToolkit.Lambda.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.PolicyEditor.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.PolicyEditor\bin\$(Configuration)\net472\AWSToolkit.PolicyEditor.dll">
       <Link>Plugins\AWSToolkit.PolicyEditor.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.RDS.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.RDS\bin\$(Configuration)\net472\AWSToolkit.RDS.dll">
       <Link>Plugins\AWSToolkit.RDS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.RDS.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.RDS.Interface\bin\$(Configuration)\net472\AWSToolkit.RDS.Interface.dll">
       <Link>Plugins\AWSToolkit.RDS.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.S3.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.S3\bin\$(Configuration)\net472\AWSToolkit.S3.dll">
       <Link>Plugins\AWSToolkit.S3.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.S3.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.S3.Interface\bin\$(Configuration)\net472\AWSToolkit.S3.Interface.dll">
       <Link>Plugins\AWSToolkit.S3.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeArtifact.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeArtifact\bin\$(Configuration)\net472\AWSToolkit.CodeArtifact.dll">
       <Link>Plugins\AWSToolkit.CodeArtifact.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeArtifact.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeArtifact.Interface\bin\$(Configuration)\net472\AWSToolkit.CodeArtifact.Interface.dll">
       <Link>Plugins\AWSToolkit.CodeArtifact.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SimpleDB.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SimpleDB\bin\$(Configuration)\net472\AWSToolkit.SimpleDB.dll">
       <Link>Plugins\AWSToolkit.SimpleDB.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SimpleDB.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SimpleDB.Interface\bin\$(Configuration)\net472\AWSToolkit.SimpleDB.Interface.dll">
       <Link>Plugins\AWSToolkit.SimpleDB.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SNS.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SNS\bin\$(Configuration)\net472\AWSToolkit.SNS.dll">
       <Link>Plugins\AWSToolkit.SNS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SNS.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SNS.Interface\bin\$(Configuration)\net472\AWSToolkit.SNS.Interface.dll">
       <Link>Plugins\AWSToolkit.SNS.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SQS.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SQS\bin\$(Configuration)\net472\AWSToolkit.SQS.dll">
       <Link>Plugins\AWSToolkit.SQS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SQS.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SQS.Interface\bin\$(Configuration)\net472\AWSToolkit.SQS.Interface.dll">
       <Link>Plugins\AWSToolkit.SQS.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudWatch.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudWatch\bin\$(Configuration)\net472\AWSToolkit.CloudWatch.dll">
       <Link>Plugins\AWSToolkit.CloudWatch.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudWatch.Interface.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudWatch.Interface\bin\$(Configuration)\net472\AWSToolkit.CloudWatch.Interface.dll">
       <Link>Plugins\AWSToolkit.CloudWatch.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
@@ -203,7 +203,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\AWSDeploymentLib.dll">
+    <Content Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\net472\AWSDeploymentLib.dll">
       <Link>Plugins\AWSDeploymentLib.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -214,12 +214,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="$(OutputRoot)\AmazonCLIExtensions.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\AmazonCLIExtensions\bin\$(Configuration)\net472\AmazonCLIExtensions.dll">
       <Link>AmazonCLIExtensions.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.Extensions.dll">
+    <Content Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\bin\$(Configuration)\net472\AWSSDK.Extensions.dll">
       <Link>AWSSDK.Extensions.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
