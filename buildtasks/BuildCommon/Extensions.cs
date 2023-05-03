@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using LitJson;
+using ThirdParty.Json.LitJson;
 
 namespace BuildCommon
 {
@@ -14,7 +14,7 @@ namespace BuildCommon
             if (data == null)
                 return null;
 
-            LitJson.JsonData subData = null;
+            JsonData subData = null;
             try
             {
                 subData = data[property];

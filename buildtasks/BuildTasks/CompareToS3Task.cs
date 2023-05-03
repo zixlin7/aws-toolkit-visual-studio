@@ -12,7 +12,7 @@ using Amazon.S3.Model;
 
 using BuildCommon;
 
-using LitJson;
+using ThirdParty.Json.LitJson;
 using System.Linq;
 using System.Drawing.Imaging;
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LitJson;
+using ThirdParty.Json.LitJson;
 using System.Diagnostics;
 
 namespace BuildCommon

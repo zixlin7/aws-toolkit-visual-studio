@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using LitJson;
+using ThirdParty.Json.LitJson;
 
 using Microsoft.Build.Framework;
 
@@ -273,9 +273,9 @@ namespace BuildTasks
             using (var stream = File.Open(VersionFile, FileMode.Truncate, FileAccess.Write))
             using (var writer = new StreamWriter(stream))
             {
-                var jsonWriter = new LitJson.JsonWriter(writer);
+                var jsonWriter = new ThirdParty.Json.LitJson.JsonWriter(writer);
                 jsonWriter.PrettyPrint = true;
-                LitJson.JsonMapper.ToJson(version, jsonWriter);
+                ThirdParty.Json.LitJson.JsonMapper.ToJson(version, jsonWriter);
             }
 
             return true;
