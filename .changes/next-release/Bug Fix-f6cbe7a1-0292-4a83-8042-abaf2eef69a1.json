@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixes issue where the AWS Explorer would sometimes show both the connection status and the resource tree at once."
+}
