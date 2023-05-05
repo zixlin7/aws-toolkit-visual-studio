@@ -17,7 +17,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
         bool _turnedOffAutoScroll;
         EnvironmentStatusController _controller;
-        bool _isLoading = false;
 
         public EnvironmentResources()
         {
@@ -43,34 +42,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
         public void LoadEnviromentResourceData()
         {
-            if (this._isLoading)
+            if (_controller.Model.IsLoading)
+            {
                 return;
+            }
 
-            this._isLoading = true;
-            this._ctlLastRefresh.Text = "Loading";
-            this.IsEnabled = false;
+            IsEnabled = false;
 
-            ThreadPool.QueueUserWorkItem(x =>
+            ThreadPool.QueueUserWorkItem(async _ =>
+            {
+                await _controller.RefreshResourcesAsync();
+                Dispatcher.Invoke((Action) (() =>
                 {
-                    try
-                    {
-                        this._controller.RefreshResources();
-                    }
-                    catch (Exception e)
-                    {
-                        this._ctlLastRefresh.Text = e.Message;
-                        LOGGER.Error("Error refreshing resources", e);
-                    }
-                    finally
-                    {
-                        this._isLoading = false;
-                        this.Dispatcher.Invoke((Action)(() =>
-                            {
-                                this._ctlLastRefresh.Text = this._controller.Model.ResourcesUpdated.ToString();
-                                this.IsEnabled = true;
-                            }));
-                    }
-                });
+                    IsEnabled = true;
+                }));
+            });
         }
     }
 }

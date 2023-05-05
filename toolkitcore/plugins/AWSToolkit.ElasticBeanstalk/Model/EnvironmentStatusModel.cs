@@ -82,6 +82,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value, nameof(IsLoading));
+        }
+
         DateTime _resourcesUpdated;
         public DateTime ResourcesUpdated
         {
@@ -268,14 +275,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
-        ObservableCollection<LoadBalancerWrapper> _loadBalancers = new ObservableCollection<LoadBalancerWrapper>();
-        public ObservableCollection<LoadBalancerWrapper> LoadBalancers
+        private ObservableCollection<LoadBalancer> _loadBalancers = new ObservableCollection<LoadBalancer>();
+        public ObservableCollection<LoadBalancer> LoadBalancers
         {
-            get => this._loadBalancers;
+            get => _loadBalancers;
             set
             {
-                this._loadBalancers = value;
-                base.NotifyPropertyChanged("LoadBalancers");
+                _loadBalancers = value;
+                base.NotifyPropertyChanged(nameof(LoadBalancers));
             }
         } 
                 

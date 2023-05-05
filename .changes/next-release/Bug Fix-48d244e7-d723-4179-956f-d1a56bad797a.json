@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix issue viewing Beanstalk Environments where the Resources tab would not show details. Health check information is no longer displayed in the load balancer details."
+}
