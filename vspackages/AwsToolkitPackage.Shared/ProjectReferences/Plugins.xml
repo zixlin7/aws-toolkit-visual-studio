@@ -197,12 +197,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\thirdparty\dotnet-lambda.dll">
-      <Link>Plugins\dotnet-lambda.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
     <Content Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\net472\AWSDeploymentLib.dll">
       <Link>Plugins\AWSDeploymentLib.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
