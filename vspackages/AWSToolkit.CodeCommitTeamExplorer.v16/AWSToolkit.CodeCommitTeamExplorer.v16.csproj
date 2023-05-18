@@ -43,18 +43,26 @@
   <ItemGroup>
     <Reference Include="Microsoft.TeamFoundation.Client">
       <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Client.dll</HintPath>
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Controls">
       <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Controls.dll</HintPath>
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Git.Controls">
       <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Git.Provider">
       <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
