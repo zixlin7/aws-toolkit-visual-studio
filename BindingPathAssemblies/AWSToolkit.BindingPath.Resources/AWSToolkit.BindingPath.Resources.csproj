@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	<AssemblyTitle>AWS Toolkit for Visual Studio - Resources in BindingPath</AssemblyTitle>
+	<RootNamespace>Amazon.AWSToolkit</RootNamespace>
+	<UseCommonOutputDirectory>false</UseCommonOutputDirectory>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Resource Include="..\..\toolkitcore\AWSToolkit\Resources\ServiceIcons\CodeCatalyst40x40.png" Link="Resources\ServiceIcons\CodeCatalyst40x40.png" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Resources\ServiceIcons\" />
+  </ItemGroup>
+
+</Project>

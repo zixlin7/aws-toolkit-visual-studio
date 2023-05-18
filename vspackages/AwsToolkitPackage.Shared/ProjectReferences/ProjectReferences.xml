@@ -18,6 +18,11 @@
   -->
 
   <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\BindingPathAssemblies\AWSToolkit.BindingPath.Resources\AWSToolkit.BindingPath.Resources.csproj">
+      <Project>{27fb0ade-bc88-45a0-a91b-5ea5f9d8165d}</Project>
+      <Name>AWSToolkit.BindingPath.Resources</Name>
+      <VSIXSubPath>BindingPathAssemblies</VSIXSubPath>
+    </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
       <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
       <Name>AWSSDK.Extensions</Name>

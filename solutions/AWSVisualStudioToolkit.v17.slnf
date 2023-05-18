@@ -3,6 +3,7 @@
     "path": "AWSVisualStudioToolkit.sln",
     "projects": [
       "..\\awsdeploy\\client\\AWSDeploymentLib\\AWSDeploymentLib.csproj",
+      "..\\BindingPathAssemblies\\AWSToolkit.BindingPath.Resources\\AWSToolkit.BindingPath.Resources.csproj",
       "..\\tests\\AWSToolkit.Tests.Common.VS.Shared\\AWSToolkit.Tests.Common.VS.Shared.shproj",
       "..\\tests\\AWSToolkit.Tests.Common\\AWSToolkit.Tests.Common.csproj",
       "..\\tests\\AWSToolkit.Tests\\AWSToolkit.Tests.csproj",

@@ -53,14 +53,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="MainIcon.ico" />
+    <Resource Include="Resources\ServiceIcons\CodeCatalyst40x40.png" />
     <EmbeddedResource Include="Resources\*.gif" />
     <EmbeddedResource Include="Resources\*.ico" />
     <EmbeddedResource Include="Resources\*.png" />
     <EmbeddedResource Include="Resources\Accounts\*.png" />
     <Resource Include="Resources\Logos\*.png" />
     <EmbeddedResource Include="Resources\ResourceIcons\*.png" />
-    <!-- CodeCatalyst is used differently -->
-    <Resource Include="Resources\ServiceIcons\CodeCatalyst40x40.png" />
-    <EmbeddedResource Include="Resources\ServiceIcons\*.png" Exclude="Resources\ServiceIcons\CodeCatalyst40x40.png" />
+    <EmbeddedResource Include="Resources\ServiceIcons\*.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\ServiceIcons\CodeCatalyst40x40.png" />
   </ItemGroup>
 </Project>
