@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Clone CodeCatalyst Repository dialog now only lists repositories that are hosted on CodeCatalyst"
-}

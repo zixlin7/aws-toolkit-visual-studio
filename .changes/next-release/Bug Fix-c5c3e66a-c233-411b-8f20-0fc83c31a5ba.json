@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fix \"Unable to get IAM security credentials from EC2 Instance Metadata Service.\" error when trying to clone CodeCatalyst repos on a system that does not contain a default credentials profile."
-}
