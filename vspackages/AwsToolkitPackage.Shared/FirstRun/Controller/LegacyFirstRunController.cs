@@ -24,19 +24,19 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
     /// Controller class for the 'first run' experience when the toolkit
     /// determines no credentials have been set up.
     /// </summary>
-    public class FirstRunController
+    public class LegacyFirstRunController
     {
-        internal static ILog LOGGER = LogManager.GetLogger(typeof(FirstRunController));
+        internal static ILog LOGGER = LogManager.GetLogger(typeof(LegacyFirstRunController));
 
         private readonly IAWSToolkitShellProvider _shellProvider;
 
         protected ActionResults _results;
-        private FirstRunControl _control;
+        private LegacyFirstRunControl _control;
         private readonly IToolkitSettingsWatcher _settingsWatcher;
         private readonly ToolkitContext _toolkitContext;
         private readonly ToolkitSettings _toolkitSettings;
 
-        public FirstRunController(AWSToolkitPackage hostPackage,
+        public LegacyFirstRunController(AWSToolkitPackage hostPackage,
             IToolkitSettingsWatcher toolkitSettingsWatcher,
             ToolkitContext toolkitContext)
             : this(hostPackage, toolkitSettingsWatcher, toolkitContext,
@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         {
         }
 
-        public FirstRunController(
+        public LegacyFirstRunController(
             AWSToolkitPackage hostPackage,
             IToolkitSettingsWatcher toolkitSettingsWatcher,
             ToolkitContext toolkitContext,
@@ -56,14 +56,14 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
             _toolkitSettings = toolkitSettings;
             HostPackage = hostPackage;
             _toolkitContext = toolkitContext;
-            Model = new FirstRunModel(_toolkitContext);
+            Model = new LegacyFirstRunModel(_toolkitContext);
             Model.PropertyChanged += ModelOnPropertyChanged;
 
             _settingsWatcher = toolkitSettingsWatcher;
             _settingsWatcher.SettingsChanged += ToolkitSettingsChanged;
         }
 
-        public FirstRunModel Model { get; }
+        public LegacyFirstRunModel Model { get; }
 
         public ToolkitContext ToolkitContext => _toolkitContext;
 
@@ -73,7 +73,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         {
             try
             {
-                this._control = new FirstRunControl(this);
+                this._control = new LegacyFirstRunControl(this);
                 _shellProvider.OpenInEditor(this._control);
                 _control.Unloaded += FirstRunControlUnloaded;
             }
@@ -88,7 +88,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 
         private void FirstRunControlUnloaded(object sender, RoutedEventArgs e)
         {
-            if (!(sender is FirstRunControl control))
+            if (!(sender is LegacyFirstRunControl control))
             {
                 return;
             }

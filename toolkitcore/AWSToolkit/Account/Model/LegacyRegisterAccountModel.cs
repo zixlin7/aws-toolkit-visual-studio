@@ -15,11 +15,11 @@ using log4net;
 
 namespace Amazon.AWSToolkit.Account.Model
 {
-    public class RegisterAccountModel : INotifyPropertyChanged, IHelpHandler
+    public class LegacyRegisterAccountModel : INotifyPropertyChanged, IHelpHandler
     {
         private const string CredentialsHelpUrl = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/credentials.html";
 
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(RegisterAccountModel));
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(LegacyRegisterAccountModel));
         private readonly ToolkitContext _toolkitContext;
         private ToolkitRegion _region;
         private Partition _partition;
@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.Account.Model
         private ObservableCollection<ToolkitRegion> _regions = new ObservableCollection<ToolkitRegion>();
         private bool _isPartitionEnabled = false;
 
-        public RegisterAccountModel(ToolkitContext toolkitContext)
+        public LegacyRegisterAccountModel(ToolkitContext toolkitContext)
         {
             _toolkitContext = toolkitContext;
             _partitions = _toolkitContext.RegionProvider?.GetPartitions();

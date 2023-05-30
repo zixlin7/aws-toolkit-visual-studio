@@ -90,7 +90,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
                 return ActionResults.CreateFailed(new ToolkitException("Unable to find CodeCommit data", ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 
-            var registrationController = new RegisterAccountController(ToolkitFactory.Instance.ToolkitContext);
+            var registrationController = new LegacyRegisterAccountController(ToolkitFactory.Instance.ToolkitContext);
             var results = registrationController.Execute(MetricSources.CodeCommitMetricSource.ConnectPanel);
 
             if (results.Success)

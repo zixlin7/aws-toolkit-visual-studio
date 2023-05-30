@@ -20,21 +20,21 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
-    public class RegisterAccountController
+    public class LegacyRegisterAccountController
     {
-        private readonly RegisterAccountModel _model;
-        protected RegisterAccountControl _control;
+        private readonly LegacyRegisterAccountModel _model;
+        protected LegacyRegisterAccountControl _control;
         protected bool DefaultProfileNameInUse;
         protected ActionResults _results;
         protected readonly ToolkitContext ToolkitContext;
 
-        public RegisterAccountController(ToolkitContext toolkitContext)
+        public LegacyRegisterAccountController(ToolkitContext toolkitContext)
         {
             ToolkitContext = toolkitContext;
-            this._model = new RegisterAccountModel(toolkitContext);
+            this._model = new LegacyRegisterAccountModel(toolkitContext);
         }
 
-        public RegisterAccountModel Model => this._model;
+        public LegacyRegisterAccountModel Model => this._model;
 
         /// <summary>
         /// Overload to record telemetry when the base class is invoked
@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.Account.Controller
         public virtual ActionResults Execute()
         {
             this.Model.StorageLocationVisibility = System.Windows.Visibility.Visible;
-            this._control = new RegisterAccountControl(this);
+            this._control = new LegacyRegisterAccountControl(this);
             this.LoadModel();
             CustomizeControl(this._control);
             if (ToolkitContext.ToolkitHost.ShowInModalDialogWindow(this._control, MessageBoxButton.OKCancel))
@@ -67,7 +67,7 @@ namespace Amazon.AWSToolkit.Account.Controller
             return ActionResults.CreateCancelled().WithSuccess(false);
         }
 
-        protected virtual void CustomizeControl(RegisterAccountControl control)
+        protected virtual void CustomizeControl(LegacyRegisterAccountControl control)
         {
         }
 

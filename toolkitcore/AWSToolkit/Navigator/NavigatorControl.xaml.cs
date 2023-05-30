@@ -359,7 +359,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         void AddAccount(object parameter)
         {
-            RegisterAccountController command = new RegisterAccountController(_toolkitContext);
+            LegacyRegisterAccountController command = new LegacyRegisterAccountController(_toolkitContext);
             ActionResults results = command.Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
         }
 
@@ -515,7 +515,7 @@ namespace Amazon.AWSToolkit.Navigator
 
             try
             {
-                var command = new EditAccountController(_toolkitContext);
+                var command = new LegacyEditAccountController(_toolkitContext);
                 var results = command.Execute(viewModel);
                 RecordAwsModifyCredentialsMetric(results, CredentialModification.Edit);
             }

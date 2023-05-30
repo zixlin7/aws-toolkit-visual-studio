@@ -45,11 +45,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\CloudFormationTemplateProjectNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateEditorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateFileNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Controller\FirstRunController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Model\FirstRunModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Controller\LegacyFirstRunController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Model\LegacyFirstRunModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)firstrun\model\MetricSources.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml.cs">
-      <DependentUpon>FirstRunControl.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml.cs">
+      <DependentUpon>LegacyFirstRunControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Guids.cs" />
@@ -128,7 +128,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

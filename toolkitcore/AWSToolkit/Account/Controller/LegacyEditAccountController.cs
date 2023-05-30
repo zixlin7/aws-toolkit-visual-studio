@@ -12,14 +12,14 @@ using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
-    public class EditAccountController : RegisterAccountController, IContextCommand
+    public class LegacyEditAccountController : LegacyRegisterAccountController, IContextCommand
     {
         public const string NAME_CHANGE_PARAMETER = "nameChange";
         public const string CREDENTIALS_CHANGE_PARAMETER = "credentialsChange";
 
         AccountViewModel _accountViewModel;
 
-        public EditAccountController(ToolkitContext toolkitContext) : base(toolkitContext)
+        public LegacyEditAccountController(ToolkitContext toolkitContext) : base(toolkitContext)
         {
         }
 

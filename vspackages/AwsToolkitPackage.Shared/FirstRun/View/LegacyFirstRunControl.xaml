@@ -1,5 +1,5 @@
 ﻿<commonUi:BaseAWSControl
-    x:Class="Amazon.AWSToolkit.VisualStudio.FirstRun.View.FirstRunControl"
+    x:Class="Amazon.AWSToolkit.VisualStudio.FirstRun.View.LegacyFirstRunControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"

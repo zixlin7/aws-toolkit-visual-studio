@@ -16,22 +16,22 @@ using Amazon.AWSToolkit.Settings;
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 {
     /// <summary>
-    /// Interaction logic for FirstRunControl.xaml
+    /// Interaction logic for LegacyFirstRunControl.xaml
     /// </summary>
-    public partial class FirstRunControl
+    public partial class LegacyFirstRunControl
     {
-        readonly FirstRunController _controller;
+        readonly LegacyFirstRunController _controller;
 
-        readonly ILog LOGGER = LogManager.GetLogger(typeof(FirstRunControl));
+        readonly ILog LOGGER = LogManager.GetLogger(typeof(LegacyFirstRunControl));
 
         private bool _saveFirstRunModel = true;
 
-        public FirstRunControl()
+        public LegacyFirstRunControl()
             : this(null)
         {
         }
 
-        public FirstRunControl(FirstRunController controller)
+        public LegacyFirstRunControl(LegacyFirstRunController controller)
         {
             this._controller = controller;
             this.DataContext = this._controller.Model;
@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 
         public override string UniqueId => "AWSGettingStarted";
 
-        private FirstRunModel Model => _controller.Model;
+        private LegacyFirstRunModel Model => _controller.Model;
 
         public override void OnEditorOpened(bool success)
         {
@@ -139,7 +139,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
         private void OnRequestCreateDialog(object sender, RoutedEventArgs e)
         {
             var toolkitContext = this._controller.ToolkitContext;
-            var command = new RegisterAccountController(toolkitContext);
+            var command = new LegacyRegisterAccountController(toolkitContext);
             var results  = command.Execute(MetricSources.GettingStartedMetricSource.GettingStarted);
             if (results.Success)
             {

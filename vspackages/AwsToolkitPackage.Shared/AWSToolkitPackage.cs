@@ -1071,7 +1071,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     {
                         if (!ToolkitSettings.Instance.HasUserSeenFirstRunForm)
                         {
-                            var controller = new FirstRunController(this, _toolkitSettingsWatcher, _toolkitContext);
+                            var controller = new LegacyFirstRunController(this, _toolkitSettingsWatcher, _toolkitContext);
                             controller.Execute();
                         }
                     }

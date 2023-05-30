@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
         {
             try
             {
-                var controller = new FirstRunController(_toolkitPackage, _toolkitSettingsWatcher, _toolkitContext);
+                var controller = new LegacyFirstRunController(_toolkitPackage, _toolkitSettingsWatcher, _toolkitContext);
                 controller.Execute();
             }
             catch (Exception e)

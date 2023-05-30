@@ -13,13 +13,13 @@ using Amazon.AWSToolkit.Shared;
 namespace Amazon.AWSToolkit.Account.View
 {
     /// <summary>
-    /// Interaction logic for RegisterAccountControl.xaml
+    /// Interaction logic for LegacyRegisterAccountControl.xaml
     /// </summary>
-    public partial class RegisterAccountControl : BaseAWSControl
+    public partial class LegacyRegisterAccountControl : BaseAWSControl
     {
-        private readonly RegisterAccountController _controller;
+        private readonly LegacyRegisterAccountController _controller;
 
-        public RegisterAccountControl(RegisterAccountController controller)
+        public LegacyRegisterAccountControl(LegacyRegisterAccountController controller)
         {
             this._controller = controller;
             this.DataContext = this._controller.Model;

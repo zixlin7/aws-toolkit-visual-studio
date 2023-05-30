@@ -10,23 +10,23 @@ using Xunit;
 
 namespace AWSToolkitPackage.Tests.FirstRun
 {
-    public class FirstRunControllerTests
+    public class LegacyFirstRunControllerTests
     {
-        private readonly FirstRunController _sut;
+        private readonly LegacyFirstRunController _sut;
 
         private readonly Mock<IToolkitSettingsWatcher> _settingsWatcher = new Mock<IToolkitSettingsWatcher>();
         private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
         private readonly ToolkitSettings _toolkitSettings = FakeToolkitSettings.Create();
         private readonly ToolkitContext _toolkitContext = new ToolkitContext();
 
-        public FirstRunControllerTests()
+        public LegacyFirstRunControllerTests()
         {
             _toolkitSettings.TelemetryEnabled = true;
 
             _shellProvider.Setup(mock => mock.ExecuteOnUIThread(It.IsAny<Action>()))
                 .Callback<Action>(action => action());
 
-            _sut = new FirstRunController(null, _settingsWatcher.Object, _toolkitContext, _shellProvider.Object, _toolkitSettings);
+            _sut = new LegacyFirstRunController(null, _settingsWatcher.Object, _toolkitContext, _shellProvider.Object, _toolkitSettings);
         }
 
         [Fact]

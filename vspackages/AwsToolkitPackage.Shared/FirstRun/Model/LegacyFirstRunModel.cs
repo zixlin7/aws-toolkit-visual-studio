@@ -17,7 +17,7 @@ using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 {
-    public class FirstRunModel : INotifyPropertyChanged
+    public class LegacyFirstRunModel : INotifyPropertyChanged
     {
         public string IamConsoleEndpoint => "https://console.aws.amazon.com/iam/home?region=us-east-1#/users";
 
@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 
         private readonly ToolkitContext _toolkitContext;
 
-        public FirstRunModel(ToolkitContext toolkitContext)
+        public LegacyFirstRunModel(ToolkitContext toolkitContext)
         {
             _toolkitContext = toolkitContext;
             _collectAnalytics = CheckAnalyticsCollectionPermission();
@@ -134,7 +134,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         internal bool AwsCredentialsFromCsv(string csvCredentialsFile)
         {
             string accessKey, secretKey;
-            if (RegisterAccountModel.ReadAwsCredentialsFromCsv(csvCredentialsFile, out accessKey, out secretKey))
+            if (LegacyRegisterAccountModel.ReadAwsCredentialsFromCsv(csvCredentialsFile, out accessKey, out secretKey))
             {
                 AccessKey = accessKey;
                 SecretKey = secretKey;
@@ -196,7 +196,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         private bool _isValid;
         private bool _openAwsExplorerOnClose = true;
 
-        internal static ILog LOGGER = LogManager.GetLogger(typeof(FirstRunModel));
+        internal static ILog LOGGER = LogManager.GetLogger(typeof(LegacyFirstRunModel));
     }
 
 }
