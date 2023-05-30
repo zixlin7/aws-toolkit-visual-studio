@@ -1,84 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B8CFCE12-D441-46A5-A415-C763E1E2BEB0}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWSToolkit.CodeCommit.Interface</AssemblyTitle>
     <RootNamespace>Amazon.AWSToolkit.CodeCommit.Interface</RootNamespace>
-    <AssemblyName>AWSToolkit.CodeCommit.Interface</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CodeCommitConstants.cs" />
-    <Compile Include="IAWSCodeCommit.cs" />
-    <Compile Include="ICodeCommitGitServices.cs" />
-    <Compile Include="Model\ICodeCommitRepository.cs" />
-    <Compile Include="Nodes\ICodeCommitRepositoryViewMetaNode.cs" />
-    <Compile Include="Nodes\ICodeCommitRepositoryViewModel.cs" />
-    <Compile Include="Nodes\ICodeCommitRootViewMetaNode.cs" />
-    <Compile Include="Nodes\ICodeCommitRootViewModel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
-      <Name>AWSToolkit.Util</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
-      <Name>AWSToolkit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.CodeCommit">
-      <Version>3.7.100.86</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.87</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

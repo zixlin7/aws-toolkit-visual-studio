@@ -400,7 +400,7 @@
                     Grid.Row="10"
                     Grid.ColumnSpan="3"
                     Margin="0 16 0 0">
-                    Repository:
+                    CodeCatalyst Repository:
                 </TextBlock>
 
                 <Grid
@@ -490,7 +490,7 @@
                     <TextBox
                         x:Name="LocalPathTextBox"
                         Grid.Column="0"
-                        Text="{Binding LocalPath}"
+                        Text="{Binding LocalPath, Delay=500, UpdateSourceTrigger=PropertyChanged}"
                         Validation.ErrorTemplate="{x:Null}" />
                     <Button
                         Grid.Column="1"

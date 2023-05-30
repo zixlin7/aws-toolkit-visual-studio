@@ -27,7 +27,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
 
             var options = SonoHelpers.CreateSonoTokenManagerOptions(DoNothingCallback);
 
-            Assert.Contains("AwsToolkitForVisualStudio", options.ClientName);
+            Assert.Contains("AWS Toolkit for Visual Studio", options.ClientName);
             Assert.Contains("public", options.ClientType);
             Assert.Contains("sso:account:access", options.Scopes);
             Assert.Equal(DoNothingCallback, options.SsoVerificationCallback);

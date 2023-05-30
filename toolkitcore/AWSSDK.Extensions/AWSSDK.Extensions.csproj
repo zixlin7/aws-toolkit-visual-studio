@@ -1,93 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWS Toolkit for Visual Studio - AWS SDK Extensions</AssemblyTitle>
     <RootNamespace>AWSSDK.Extensions</RootNamespace>
-    <AssemblyName>AWSSDK.Extensions</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <OldToolsVersion>3.5</OldToolsVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
+    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.103.14" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.24" />
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.100.86" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.100.87" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.103.23" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.101.22" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.100.86" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Amazon.CloudFormation\AmazonCloudFormationClientExt.cs" />
-    <Compile Include="Amazon.IdentityManagement\Model\GetGroupPolicyResultExt.cs" />
-    <Compile Include="Amazon.IdentityManagement\Model\GetRolePolicyResultExt.cs" />
-    <Compile Include="Amazon.IdentityManagement\Model\GetUserPolicyResultExt.cs" />
-    <Compile Include="Amazon.S3\AmazonS3ClientExt.cs" />
-    <Compile Include="Amazon.S3\IO\S3Directory.cs" />
-    <Compile Include="Amazon.S3\IO\S3File.cs" />
-    <Compile Include="Amazon.S3\IO\S3Path.cs" />
-    <Compile Include="Amazon.SimpleNotificationService\AmazonSimpleNotificationServiceClientExt.cs" />
-    <Compile Include="Amazon.SimpleNotificationService\Model\GetTopicAttributesResultExt.cs" />
-    <Compile Include="Amazon.SQS\AmazonSQSClientExt.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.AutoScaling">
-      <Version>3.7.103.14</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.104.24</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.ElasticLoadBalancing">
-      <Version>3.7.100.86</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.87</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.103.23</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.101.22</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.SQS">
-      <Version>3.7.100.86</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

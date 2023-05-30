@@ -604,7 +604,10 @@ namespace CommonUI.Models
 
                     try
                     {
-                        repos = await _codeCatalyst.GetRemoteRepositoriesAsync(SelectedSpace.Name, SelectedProject.Name, ConnectionSettings, cancellationToken);
+                        var allRepos = await _codeCatalyst.GetRemoteRepositoriesAsync(SelectedSpace.Name,
+                            SelectedProject.Name, ConnectionSettings, cancellationToken);
+                        // Filter 3p repos: https://sim.amazon.com/issues/IDE-9883
+                        repos = await FilterThirdPartyReposAsync(allRepos);
                     }
                     catch (OperationCanceledException)
                     {
@@ -634,6 +637,22 @@ namespace CommonUI.Models
                     NotifyPropertyChanged(nameof(IsRepositoriesEnabled));
                 }
             });
+        }
+
+        private async Task<IEnumerable<ICodeCatalystRepository>> FilterThirdPartyReposAsync(
+            IEnumerable<ICodeCatalystRepository> repos)
+        {
+            var filteredRepos =
+                (await Task.WhenAll(repos.Select(async repo => await IsThirdPartyRepoAsync(repo) ? null : repo)))
+                .Where(item => item != null)
+                .ToList();
+            return filteredRepos;
+        }
+
+        private async Task<bool> IsThirdPartyRepoAsync(ICodeCatalystRepository repo)
+        {
+            var url = await repo.GetCloneUrlAsync(CloneUrlType.Https);
+            return !url.Authority.EndsWith("codecatalyst.aws");
         }
 
         private CodeCatalystConnectionStatus CreateDisconnectedConnectionStatus()

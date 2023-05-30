@@ -78,7 +78,6 @@
         <CustomExtension Type="Plugins">AWSToolkit.SQS.dll</CustomExtension>
         <CustomExtension Type="Plugins">AWSToolkit.SQS.Interface.dll</CustomExtension>
         <CustomExtension Type="Plugins">PemToPPKConverter.exe</CustomExtension>
-        <CustomExtension Type="Plugins">dotnet-lambda.dll</CustomExtension>
 
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Extensions.dll" AssemblyName="AWSSDK.Extensions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.AutoScaling.dll" AssemblyName="AWSSDK.AutoScaling, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />

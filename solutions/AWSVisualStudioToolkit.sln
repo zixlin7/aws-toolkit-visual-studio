@@ -12,71 +12,71 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "buildtools", "buildtools", 
 		..\buildtools\Package.Build.targets = ..\buildtools\Package.Build.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit", "..\toolkitcore\AWSToolkit\AWSToolkit.csproj", "{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit", "..\toolkitcore\AWSToolkit\AWSToolkit.csproj", "{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Util", "..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj", "{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.Util", "..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj", "{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSSDK.Extensions", "..\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj", "{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSSDK.Extensions", "..\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj", "{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AWSDeploymentClient", "AWSDeploymentClient", "{C74FEDAE-A2DD-4033-9CDD-9005681D6059}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSDeploymentLib", "..\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj", "{DFFE75F2-61CC-4CEA-87A5-1C573436DE9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSDeploymentLib", "..\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj", "{DFFE75F2-61CC-4CEA-87A5-1C573436DE9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation", "..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj", "{6AE302DB-2304-47C8-8E3C-96C85AC1D469}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CloudFormation", "..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj", "{6AE302DB-2304-47C8-8E3C-96C85AC1D469}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.Interface", "..\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj", "{5A78BF40-7D5B-467E-8CE4-9659F22669D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CloudFormation.Interface", "..\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj", "{5A78BF40-7D5B-467E-8CE4-9659F22669D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFront.Interface", "..\toolkitcore\plugins\AWSToolkit.CloudFront.Interface\AWSToolkit.CloudFront.Interface.csproj", "{C4042C0E-20B3-40C3-9CD1-D4FB2CA84FD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CloudFront.Interface", "..\toolkitcore\plugins\AWSToolkit.CloudFront.Interface\AWSToolkit.CloudFront.Interface.csproj", "{C4042C0E-20B3-40C3-9CD1-D4FB2CA84FD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCatalyst.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj", "{DBDB8299-3EFB-4A02-A34E-7BFB98CE3169}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CodeCatalyst.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj", "{DBDB8299-3EFB-4A02-A34E-7BFB98CE3169}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCatalyst", "..\toolkitcore\plugins\AWSToolkit.CodeCatalyst\AWSToolkit.CodeCatalyst.csproj", "{5465C047-5A2E-424F-9961-3CA4DEC2C2CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CodeCatalyst", "..\toolkitcore\plugins\AWSToolkit.CodeCatalyst\AWSToolkit.CodeCatalyst.csproj", "{5465C047-5A2E-424F-9961-3CA4DEC2C2CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.DynamoDB.Interface", "..\toolkitcore\plugins\AWSToolkit.DynamoDB.Interface\AWSToolkit.DynamoDB.Interface.csproj", "{59D6F9BE-5344-496A-9E03-A2A0020DAAC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.DynamoDB.Interface", "..\toolkitcore\plugins\AWSToolkit.DynamoDB.Interface\AWSToolkit.DynamoDB.Interface.csproj", "{59D6F9BE-5344-496A-9E03-A2A0020DAAC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.EC2.Interface", "..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj", "{B8C28B72-63C0-406B-B5C6-405667DB1D6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.EC2.Interface", "..\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj", "{B8C28B72-63C0-406B-B5C6-405667DB1D6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ElasticBeanstalk.Interface", "..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj", "{D4D5C421-6265-4674-A1F9-DC11A56FC030}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.ElasticBeanstalk.Interface", "..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj", "{D4D5C421-6265-4674-A1F9-DC11A56FC030}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.IdentityManagement.Interface", "..\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj", "{49C00D37-5980-495F-80C6-43C5192C4A87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.IdentityManagement.Interface", "..\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj", "{49C00D37-5980-495F-80C6-43C5192C4A87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Lambda.Interface", "..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj", "{7E4C1857-240E-4BD2-B4CE-D37BF0E41DF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.Lambda.Interface", "..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj", "{7E4C1857-240E-4BD2-B4CE-D37BF0E41DF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.RDS.Interface", "..\toolkitcore\plugins\AWSToolkit.RDS.Interface\AWSToolkit.RDS.Interface.csproj", "{35745A87-699D-481A-8142-C2BD9F238983}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.RDS.Interface", "..\toolkitcore\plugins\AWSToolkit.RDS.Interface\AWSToolkit.RDS.Interface.csproj", "{35745A87-699D-481A-8142-C2BD9F238983}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.S3.Interface", "..\toolkitcore\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj", "{C2D616BD-C2AB-4130-93E5-2ADA2172A08A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.S3.Interface", "..\toolkitcore\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj", "{C2D616BD-C2AB-4130-93E5-2ADA2172A08A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.SimpleDB.Interface", "..\toolkitcore\plugins\AWSToolkit.SimpleDB.Interface\AWSToolkit.SimpleDB.Interface.csproj", "{CA419760-C27E-418D-AE0F-869F40AB26E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.SimpleDB.Interface", "..\toolkitcore\plugins\AWSToolkit.SimpleDB.Interface\AWSToolkit.SimpleDB.Interface.csproj", "{CA419760-C27E-418D-AE0F-869F40AB26E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.SNS.Interface", "..\toolkitcore\plugins\AWSToolkit.SNS.Interface\AWSToolkit.SNS.Interface.csproj", "{4D9293CF-0D56-4BB9-B50D-BC829E53C16F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.SNS.Interface", "..\toolkitcore\plugins\AWSToolkit.SNS.Interface\AWSToolkit.SNS.Interface.csproj", "{4D9293CF-0D56-4BB9-B50D-BC829E53C16F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.SQS.Interface", "..\toolkitcore\plugins\AWSToolkit.SQS.Interface\AWSToolkit.SQS.Interface.csproj", "{8FB3CC1B-D3F6-49A0-A700-3A212C4772DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.SQS.Interface", "..\toolkitcore\plugins\AWSToolkit.SQS.Interface\AWSToolkit.SQS.Interface.csproj", "{8FB3CC1B-D3F6-49A0-A700-3A212C4772DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFront", "..\toolkitcore\plugins\AWSToolkit.CloudFront\AWSToolkit.CloudFront.csproj", "{7EEF2DDF-BEC6-4A1E-81E4-174D3BDF5CC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CloudFront", "..\toolkitcore\plugins\AWSToolkit.CloudFront\AWSToolkit.CloudFront.csproj", "{7EEF2DDF-BEC6-4A1E-81E4-174D3BDF5CC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudWatch", "..\toolkitcore\plugins\AWSToolkit.CloudWatch\AWSToolkit.CloudWatch.csproj", "{71CE999A-BF87-4EAA-81B6-BF78FBD05CEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CloudWatch", "..\toolkitcore\plugins\AWSToolkit.CloudWatch\AWSToolkit.CloudWatch.csproj", "{71CE999A-BF87-4EAA-81B6-BF78FBD05CEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.DynamoDB", "..\toolkitcore\plugins\AWSToolkit.DynamoDB\AWSToolkit.DynamoDB.csproj", "{6748E175-B799-427E-A7FD-625EEF5AFB91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.DynamoDB", "..\toolkitcore\plugins\AWSToolkit.DynamoDB\AWSToolkit.DynamoDB.csproj", "{6748E175-B799-427E-A7FD-625EEF5AFB91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.EC2", "..\toolkitcore\plugins\AWSToolkit.EC2\AWSToolkit.EC2.csproj", "{BD907681-AFE8-4008-97CD-11B138FDDCA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.EC2", "..\toolkitcore\plugins\AWSToolkit.EC2\AWSToolkit.EC2.csproj", "{BD907681-AFE8-4008-97CD-11B138FDDCA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ElasticBeanstalk", "..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj", "{AA98EC2E-AC7C-4080-993B-F80592D31037}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.ElasticBeanstalk", "..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj", "{AA98EC2E-AC7C-4080-993B-F80592D31037}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.IdentityManagement", "..\toolkitcore\plugins\AWSToolkit.IdentityManagement\AWSToolkit.IdentityManagement.csproj", "{CFBD26F3-E44E-41EB-89B1-2E84391A0686}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.IdentityManagement", "..\toolkitcore\plugins\AWSToolkit.IdentityManagement\AWSToolkit.IdentityManagement.csproj", "{CFBD26F3-E44E-41EB-89B1-2E84391A0686}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Lambda", "..\toolkitcore\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj", "{7102B4CF-9B9D-4827-ADCA-D23971CD84C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.Lambda", "..\toolkitcore\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj", "{7102B4CF-9B9D-4827-ADCA-D23971CD84C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.PolicyEditor", "..\toolkitcore\plugins\AWSToolkit.PolicyEditor\AWSToolkit.PolicyEditor.csproj", "{12910BAF-29C4-48CA-B50D-4CCABDFB879A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.PolicyEditor", "..\toolkitcore\plugins\AWSToolkit.PolicyEditor\AWSToolkit.PolicyEditor.csproj", "{12910BAF-29C4-48CA-B50D-4CCABDFB879A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.RDS", "..\toolkitcore\plugins\AWSToolkit.RDS\AWSToolkit.RDS.csproj", "{6DF6E969-44FD-462D-92B3-B97531C01216}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.RDS", "..\toolkitcore\plugins\AWSToolkit.RDS\AWSToolkit.RDS.csproj", "{6DF6E969-44FD-462D-92B3-B97531C01216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.S3", "..\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj", "{A01EDD42-F7F5-4E20-8DEB-9F66F2980662}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.S3", "..\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj", "{A01EDD42-F7F5-4E20-8DEB-9F66F2980662}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.SimpleDB", "..\toolkitcore\plugins\AWSToolkit.SimpleDB\AWSToolkit.SimpleDB.csproj", "{9DD9F407-F2C6-495A-9204-C9825C67E9B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.SimpleDB", "..\toolkitcore\plugins\AWSToolkit.SimpleDB\AWSToolkit.SimpleDB.csproj", "{9DD9F407-F2C6-495A-9204-C9825C67E9B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.SNS", "..\toolkitcore\plugins\AWSToolkit.SNS\AWSToolkit.SNS.csproj", "{FE4C0E46-0427-46E1-8CC9-4B26FB15F728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.SNS", "..\toolkitcore\plugins\AWSToolkit.SNS\AWSToolkit.SNS.csproj", "{FE4C0E46-0427-46E1-8CC9-4B26FB15F728}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.SQS", "..\toolkitcore\plugins\AWSToolkit.SQS\AWSToolkit.SQS.csproj", "{91DF5775-5635-4DF3-A26F-5CFE1136763E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.SQS", "..\toolkitcore\plugins\AWSToolkit.SQS\AWSToolkit.SQS.csproj", "{91DF5775-5635-4DF3-A26F-5CFE1136763E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PluginInterfaces", "PluginInterfaces", "{62237430-5212-4823-924E-344007109D14}"
 EndProject
@@ -94,9 +94,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{BDF238
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.EditorExtensions", "..\vspackages\cloudformation\AWSToolkit.CloudFormation.EditorExtensions\AWSToolkit.CloudFormation.EditorExtensions.csproj", "{18023934-17CF-421E-87C2-61838B7498C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.MSBuildTasks", "..\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\AWSToolkit.CloudFormation.MSBuildTasks.csproj", "{FE98588C-7FEE-414E-9EAB-F36BF64C88C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CloudFormation.MSBuildTasks", "..\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\AWSToolkit.CloudFormation.MSBuildTasks.csproj", "{FE98588C-7FEE-414E-9EAB-F36BF64C88C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.Parser", "..\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj", "{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CloudFormation.Parser", "..\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj", "{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.TemplateWizards", "..\vspackages\cloudformation\AWSToolkit.CloudFormation.TemplateWizards\AWSToolkit.CloudFormation.TemplateWizards.csproj", "{0588D27B-7D87-4B33-9120-4C0A9E7D6665}"
 EndProject
@@ -124,13 +124,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessTemplate",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessWithTestsTemplate", "..\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj", "{22C00710-A6E5-4F49-92CE-A5A2DD71C24A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommit.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj", "{B8CFCE12-D441-46A5-A415-C763E1E2BEB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CodeCommit.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj", "{B8CFCE12-D441-46A5-A415-C763E1E2BEB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommit", "..\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj", "{9AA7DD53-7BC4-4971-BC0C-0540A391DC22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CodeCommit", "..\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj", "{9AA7DD53-7BC4-4971-BC0C-0540A391DC22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ECS", "..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj", "{A09C427C-DBF7-49C8-9590-E99AD60DECE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.ECS", "..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj", "{A09C427C-DBF7-49C8-9590-E99AD60DECE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ECS.Interface", "..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj", "{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.ECS.Interface", "..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj", "{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildFunctionTemplateFSharp", "..\vspackages\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.csproj", "{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}"
 EndProject
@@ -142,23 +142,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessWithTestsT
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{73718FA9-C78C-4459-A1C0-E5964EE5F420}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Util.Tests", "..\tests\AWSToolkit.Util.Tests\AWSToolkit.Util.Tests.csproj", "{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.Util.Tests", "..\tests\AWSToolkit.Util.Tests\AWSToolkit.Util.Tests.csproj", "{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmazonCLIExtensions", "..\toolkitcore\AmazonCLIExtensions\AmazonCLIExtensions.csproj", "{B4771F7A-A835-4B86-8B52-0E2FD560A48C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmazonCLIExtensions", "..\toolkitcore\AmazonCLIExtensions\AmazonCLIExtensions.csproj", "{B4771F7A-A835-4B86-8B52-0E2FD560A48C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmazonCLIExtensions.Tests", "..\tests\AmazonCLIExtensions.Tests\AmazonCLIExtensions.Tests.csproj", "{3AD9F490-7725-41C8-8816-07966B3DE958}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmazonCLIExtensions.Tests", "..\tests\AmazonCLIExtensions.Tests\AmazonCLIExtensions.Tests.csproj", "{3AD9F490-7725-41C8-8816-07966B3DE958}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommitTeamExplorer.v16", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer.v16\AWSToolkit.CodeCommitTeamExplorer.v16.csproj", "{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Tests", "..\tests\AWSToolkit.Tests\AWSToolkit.Tests.csproj", "{B5A5A4DC-8EF3-4C04-85FD-76E85C4EA4CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.Tests", "..\tests\AWSToolkit.Tests\AWSToolkit.Tests.csproj", "{B5A5A4DC-8EF3-4C04-85FD-76E85C4EA4CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkitPackage.Tests", "..\tests\AWSToolkitPackage.Tests\AWSToolkitPackage.Tests.csproj", "{1D99DF2D-30AA-47F4-98B0-5E2F48258C44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Tests.Common", "..\tests\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj", "{AA57CB1D-F511-4BF5-9410-72A49D063365}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.Tests.Common", "..\tests\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj", "{AA57CB1D-F511-4BF5-9410-72A49D063365}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeArtifact", "..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj", "{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CodeArtifact", "..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj", "{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeArtifact.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeArtifact.Interface\AWSToolkit.CodeArtifact.Interface.csproj", "{F1A54C06-A4A8-4E6B-B7FA-8469105408B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CodeArtifact.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeArtifact.Interface\AWSToolkit.CodeArtifact.Interface.csproj", "{F1A54C06-A4A8-4E6B-B7FA-8469105408B3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2ED448C2-5300-49BB-8721-A1312569D86F}"
 	ProjectSection(SolutionItems) = preProject
@@ -183,13 +183,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkitPackage.v17", "..
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkit.VsSdk.Common.Shared", "..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.shproj", "{A27787ED-5A7A-455A-9E90-CAEB9030F850}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsToolkit.VsSdk.Common.v17", "..\vspackages\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj", "{260EB803-0C5D-4000-B920-4E8AF84820CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsToolkit.VsSdk.Common.v17", "..\vspackages\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj", "{260EB803-0C5D-4000-B920-4E8AF84820CA}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AWSToolkit.CodeCommitTeamExplorer.Shared", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.shproj", "{98FC1018-A866-4B34-90D8-C432EFEF5D2A}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkit.Lambda.TemplateWizards.Shared", "..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.shproj", "{0ED4AF1C-27CC-4BA8-8333-F941D45246C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Lambda.TemplateWizards.v17", "..\vspackages\lambda\AWSToolkit.Lambda.TemplateWizards.v17\AWSToolkit.Lambda.TemplateWizards.v17.csproj", "{3F04815A-2A4B-4B28-B683-053A46D6A076}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.Lambda.TemplateWizards.v17", "..\vspackages\lambda\AWSToolkit.Lambda.TemplateWizards.v17\AWSToolkit.Lambda.TemplateWizards.v17.csproj", "{3F04815A-2A4B-4B28-B683-053A46D6A076}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaFunctionProjectTemplate.v17", "..\vspackages\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.v17.csproj", "{630D31A1-6D34-4A7E-863C-A09B5F11888A}"
 EndProject
@@ -225,7 +225,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessWithTestsT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFormation.EditorExtensions.v17", "..\vspackages\cloudformation\CloudFormation.EditorExtensions.v17\CloudFormation.EditorExtensions.v17.csproj", "{368A798C-38D1-4DC0-BC08-4102AF381302}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommitTeamExplorer.v17", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer.v17\AWSToolkit.CodeCommitTeamExplorer.v17.csproj", "{5A075C30-BB90-4095-98D2-508E92B3ED2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CodeCommitTeamExplorer.v17", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer.v17\AWSToolkit.CodeCommitTeamExplorer.v17.csproj", "{5A075C30-BB90-4095-98D2-508E92B3ED2D}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PublishToAws.Shared", "..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.shproj", "{820D848A-E3C5-4DAC-9465-9A6B8726D419}"
 EndProject
@@ -239,7 +239,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkit.CloudFormation.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.TemplateWizards.v17", "..\vspackages\cloudformation\AWSToolkit.CloudFormation.TemplateWizards.v17\AWSToolkit.CloudFormation.TemplateWizards.v17.csproj", "{EF567336-499A-47C6-989E-B992B01DBDC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudWatch.Interface", "..\toolkitcore\plugins\AWSToolkit.CloudWatch.Interface\AWSToolkit.CloudWatch.Interface.csproj", "{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.CloudWatch.Interface", "..\toolkitcore\plugins\AWSToolkit.CloudWatch.Interface\AWSToolkit.CloudWatch.Interface.csproj", "{46A3DF20-879B-4A99-BFD2-3D885ED2C6FB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeCommit", "CodeCommit", "{F3BE0165-6EDD-4F1B-888E-CCC0DD0CBAEE}"
 EndProject
@@ -270,6 +270,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsToolkit.SourceControl.v16", "..\vspackages\SourceControl\AwsToolkit.SourceControl.v16\AwsToolkit.SourceControl.v16.csproj", "{5803508B-E038-46E8-A426-07F0439B5401}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsToolkit.SourceControl.v17", "..\vspackages\SourceControl\AwsToolkit.SourceControl.v17\AwsToolkit.SourceControl.v17.csproj", "{016436FE-FEF3-4CDC-ABD1-840B25C6BD16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BindingPathAssemblies", "BindingPathAssemblies", "{97FE6CE1-11B5-4A09-BA5D-F5C9F367C7B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSToolkit.BindingPath.Resources", "..\BindingPathAssemblies\AWSToolkit.BindingPath.Resources\AWSToolkit.BindingPath.Resources.csproj", "{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1015,6 +1019,14 @@ Global
 		{016436FE-FEF3-4CDC-ABD1-840B25C6BD16}.Release|Any CPU.Build.0 = Release|Any CPU
 		{016436FE-FEF3-4CDC-ABD1-840B25C6BD16}.Release|x86.ActiveCfg = Release|Any CPU
 		{016436FE-FEF3-4CDC-ABD1-840B25C6BD16}.Release|x86.Build.0 = Release|Any CPU
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}.Debug|x86.Build.0 = Debug|Any CPU
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}.Release|x86.ActiveCfg = Release|Any CPU
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1142,6 +1154,7 @@ Global
 		{58BC29BE-DDC9-4BAB-ADEF-926A08AFF113} = {F56159E5-CBA1-47F0-A6C0-9A8D2CA3EBFD}
 		{5803508B-E038-46E8-A426-07F0439B5401} = {F56159E5-CBA1-47F0-A6C0-9A8D2CA3EBFD}
 		{016436FE-FEF3-4CDC-ABD1-840B25C6BD16} = {F56159E5-CBA1-47F0-A6C0-9A8D2CA3EBFD}
+		{27FB0ADE-BC88-45A0-A91B-5EA5F9D8165D} = {97FE6CE1-11B5-4A09-BA5D-F5C9F367C7B9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
@@ -1154,17 +1167,17 @@ Global
 		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{18023934-17cf-421e-87c2-61838b7498c6}*SharedItemsImports = 4
 		..\tests\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems*{1d99df2d-30aa-47f4-98b0-5e2f48258c44}*SharedItemsImports = 4
 		..\tests\AWSToolkitPackage.Tests.Shared\AWSToolkitPackage.Tests.Shared.projitems*{1d99df2d-30aa-47f4-98b0-5e2f48258c44}*SharedItemsImports = 4
-		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{260eb803-0c5d-4000-b920-4e8af84820ca}*SharedItemsImports = 4
+		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{260eb803-0c5d-4000-b920-4e8af84820ca}*SharedItemsImports = 5
 		..\vspackages\cloudformation\CloudFormation.EditorExtensions.Shared\CloudFormation.EditorExtensions.Shared.projitems*{368a798c-38d1-4dc0-bc08-4102af381302}*SharedItemsImports = 4
 		..\tests\AwsToolkit.Vs.Tests.Shared\AwsToolkit.Vs.Tests.Shared.projitems*{3cfd6707-b0d4-49c0-b46b-d3c3f52a8183}*SharedItemsImports = 13
-		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{3f04815a-2a4b-4b28-b683-053a46d6a076}*SharedItemsImports = 4
+		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{3f04815a-2a4b-4b28-b683-053a46d6a076}*SharedItemsImports = 5
 		..\vspackages\Publishing\PublishToAws.Shared\PublishToAws.Shared.projitems*{463eb6a0-df14-4e66-a01a-8384aaa51ab0}*SharedItemsImports = 4
 		..\tests\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems*{54842e72-02d8-4417-8764-95bc3680d488}*SharedItemsImports = 4
 		..\tests\AwsToolkit.Vs.Tests.Shared\AwsToolkit.Vs.Tests.Shared.projitems*{54842e72-02d8-4417-8764-95bc3680d488}*SharedItemsImports = 4
 		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5739ee0e-1e8c-4ac6-9aaa-f58c7345b9a8}*SharedItemsImports = 4
 		..\vspackages\SourceControl\AwsToolkit.SourceControl.Shared\AwsToolkit.SourceControl.Shared.projitems*{5803508b-e038-46e8-a426-07f0439b5401}*SharedItemsImports = 4
 		..\vspackages\SourceControl\AwsToolkit.SourceControl.Shared\AwsToolkit.SourceControl.Shared.projitems*{58bc29be-ddc9-4bab-adef-926a08aff113}*SharedItemsImports = 13
-		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5a075c30-bb90-4095-98d2-508e92b3ed2d}*SharedItemsImports = 4
+		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5a075c30-bb90-4095-98d2-508e92b3ed2d}*SharedItemsImports = 5
 		..\vspackages\cloudformation\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems*{5dcdb793-d7f9-4b59-a543-90e518769310}*SharedItemsImports = 13
 		..\vspackages\lambda\AwsToolkit.Lambda.TemplateWizards.Shared\AwsToolkit.Lambda.TemplateWizards.Shared.projitems*{783e4198-a8f1-4e74-af3e-0001b0ad516b}*SharedItemsImports = 4
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{81552efa-46b0-4ebe-bc29-5ba6a7628207}*SharedItemsImports = 4

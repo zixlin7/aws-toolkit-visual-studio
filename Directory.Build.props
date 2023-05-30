@@ -1,0 +1,25 @@
+<Project>
+
+  <PropertyGroup>
+    <ToolkitVersion>2.0.0.0</ToolkitVersion>
+    <AssemblyVersion>$(ToolkitVersion)</AssemblyVersion>
+    <FileVersion>$(ToolkitVersion)</FileVersion>
+    <InformationalVersion>$(ToolkitVersion)</InformationalVersion>
+
+    <Product>AWS Toolkit for Visual Studio</Product>
+    <Company>Amazon.com, Inc</Company>
+    <Copyright>Copyright 2011-2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.</Copyright>
+  </PropertyGroup>
+  <PropertyGroup>
+    <BuildRoot>$(MSBuildThisFileDirectory)</BuildRoot>
+  </PropertyGroup>
+  
+  <!-- Assembly Signing -->
+  <!-- Even test assemblies are signed so they can access Internal classes from other Strong-Signed assemblies -->
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(BuildRoot)\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+</Project>

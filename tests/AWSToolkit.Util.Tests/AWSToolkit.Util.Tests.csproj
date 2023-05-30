@@ -1,197 +1,47 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AWSToolkit.Util.Tests</RootNamespace>
     <RootNamespace>Amazon.AWSToolkit.Util.Tests</RootNamespace>
-    <AssemblyName>AWSToolkit.Util.Tests</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CollectionExtensionMethodsTests.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Regions\ServiceNamesTests.cs" />
-    <Compile Include="Settings\FileLoggingSettingsRepositoryTests.cs" />
-    <Compile Include="Settings\LoggingSettingsTests.cs" />
-    <Compile Include="Telemetry\ClientIdTests.cs" />
-    <Compile Include="Telemetry\MetricsMetadataTests.cs" />
-    <Compile Include="Threading\ResettableCancellationTokenTests.cs" />
-    <Compile Include="UtilityTests.cs" />
-    <Compile Include="Util\DateTimeUtilTests.cs" />
-    <Compile Include="Events\LogExceptionAndForgetChangedHandlerTests.cs" />
-    <Compile Include="IisPathTests.cs" />
-    <Compile Include="LambdaIAMRoleFixUpTests.cs" />
-    <Compile Include="PickSolutionStackNameTests.cs" />
-    <Compile Include="ProjectFileUtilitiesTests.cs" />
-    <Compile Include="Publish\PublishableProjectSpecificationTests.cs" />
-    <Compile Include="Publish\PublishSetting\DeploySettingsTests.cs" />
-    <Compile Include="Publish\PublishSetting\FilePublishSettingsRepositoryTest.cs" />
-    <Compile Include="Regions\EndpointsExtensionMethodsTests.cs" />
-    <Compile Include="Regions\EndpointsTests.cs" />
-    <Compile Include="Regions\RegionProviderTests.cs" />
-    <Compile Include="Regions\ServiceTests.cs" />
-    <Compile Include="Regions\ToolkitRegionEqualityTests.cs" />
-    <Compile Include="ResourceFetchers\AssemblyResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\CallbackResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\ChainedResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\ConditionalResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\CachingResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\HostedFilesResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\RelativeHttpResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\HttpResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\RelativeFileResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\FileResourceFetcherTests.cs" />
-    <Compile Include="ResourceFetchers\ResourceFetchersFixture.cs" />
-    <Compile Include="S3FileFetcherTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\DynamoDbSettingsTest.cs" />
-    <Compile Include="Settings\HostedFilesSettingsTests.cs" />
-    <Compile Include="Settings\SettingsPersistenceBaseTests.cs" />
-    <Compile Include="Settings\ToolkitSettingsTests.cs" />
-    <Compile Include="Solutions\ProjectFileTests.cs" />
-    <Compile Include="StringExtensionMethodsTests.cs" />
-    <Compile Include="Tasks\TaskExtensionMethodsTests.cs" />
-    <Compile Include="Telemetry\ModelExtensionMethodsTests.cs" />
-    <Compile Include="Telemetry\TelemetryClientTests.cs" />
-    <Compile Include="Telemetry\TelemetryPublisherTests.cs" />
-    <Compile Include="Telemetry\TelemetryServiceTests.cs" />
-    <Compile Include="Telemetry\TestHelper.cs" />
-    <Compile Include="Resources\TestResources.cs" />
-    <Compile Include="Solutions\ProjectTests.cs" />
-    <Compile Include="Telemetry\ToolkitTelemetryEventsSupplementalTests.cs" />
-    <Compile Include="Util\DisposingActionTests.cs" />
-    <Compile Include="Util\FrameworkNameHelperTests.cs" />
-    <Compile Include="Util\ListExtensionMethodsTests.cs" />
-    <Compile Include="Util\NumericLog4NetConverterTests.cs" />
-    <Compile Include="Util\StringUtilsTests.cs" />
-    <Compile Include="Util\ZipUtilTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
-      <Name>AWSToolkit.Util</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
-      <Name>AWSToolkit</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
-      <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
-      <Name>AWSToolkit.ElasticBeanstalk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
-      <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
-      <Name>AWSToolkit.Lambda.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
-      <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
-      <Name>AWSToolkit.Tests.Common</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\InvalidXmlEndpointsFile.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.CodeCommit">
-      <Version>3.7.100.86</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.105.15</Version>
-    </PackageReference>
-    <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.111.0</Version>
-    </PackageReference>
-    <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.111.0</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.XRay">
-      <Version>3.7.102.67</Version>
-    </PackageReference>
-    <PackageReference Include="log4net">
-      <Version>2.0.15</Version>
-    </PackageReference>
-    <PackageReference Include="Moq">
-      <Version>4.17.2</Version>
-    </PackageReference>
-    <PackageReference Include="xunit">
-      <Version>2.4.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.extensibility.core">
-      <Version>2.4.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.4.5</Version>
+    <PackageReference Include="AWSSDK.CodeCommit" Version="3.7.100.86" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.105.15" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.123.0" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.123.0" />
+    <PackageReference Include="AWSSDK.XRay" Version="3.7.102.67" />
+    <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="Moq" Version="4.17.2" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\sample-endpoints.json" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj" />
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj" />
+    <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Solutions\SampleProjects\AspNet.csproj">
+    <EmbeddedResource Include="Resources\InvalidXmlEndpointsFile.xml" />
+    <EmbeddedResource Include="Resources\sample-endpoints.json" />
+    <None Include="Solutions\SampleProjects\*.csproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Solutions\SampleProjects\FSharp.fsproj">
+    <None Include="Solutions\SampleProjects\*.fsproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Solutions\SampleProjects\LambdaTester-Compatible.csproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Solutions\SampleProjects\NoTargetFramework.csproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Solutions\SampleProjects\VisualBasic.vbproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Solutions\SampleProjects\DotNetFrameworkProject.csproj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Solutions\SampleProjects\DotNetStandard.csproj">
+    <None Include="Solutions\SampleProjects\*.vbproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

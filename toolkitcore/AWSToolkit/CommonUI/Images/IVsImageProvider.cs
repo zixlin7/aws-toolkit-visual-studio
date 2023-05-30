@@ -1,4 +1,5 @@
-﻿using System.Windows.Media.Imaging;
+﻿using System;
+using System.Windows.Media.Imaging;
 
 namespace Amazon.AWSToolkit.CommonUI.Images
 {
@@ -13,5 +14,7 @@ namespace Amazon.AWSToolkit.CommonUI.Images
     public interface IVsImageProvider
     {
         BitmapSource GetImage(VsKnownImages knownImage, int size);
+
+        BitmapSource GetImage(Guid imageGuid, int imageId, int size);
     }
 }

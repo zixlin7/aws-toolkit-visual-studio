@@ -1,212 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWS Toolkit for Visual Studio - Utility</AssemblyTitle>
     <RootNamespace>Amazon.AWSToolkit</RootNamespace>
-    <AssemblyName>AWSToolkit.Util</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <WarningLevel>4</WarningLevel>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arg.cs" />
-    <Compile Include="Collections\CollectionExtensionMethods.cs" />
-    <Compile Include="CryptoUtil.cs" />
-    <Compile Include="DisposingAction.cs" />
-    <Compile Include="Events\LogExceptionAndForgetChangedHandler.cs" />
-    <Compile Include="Exceptions\IamToolkitException.cs" />
-    <Compile Include="Exceptions\LambdaToolkitException.cs" />
-    <Compile Include="Exceptions\NodeNotFoundException.cs" />
-    <Compile Include="Exceptions\ToolkitException.cs" />
-    <Compile Include="Exceptions\UserCanceledException.cs" />
-    <Compile Include="Frameworks.cs" />
-    <Compile Include="HostedFileContentLoader.cs" />
-    <Compile Include="HostedFilesSettings.cs" />
-    <Compile Include="HostManagerClientRequest.cs" />
-    <Compile Include="IAMUtilities.cs" />
-    <Compile Include="IISPath.cs" />
-    <Compile Include="LoggingMutex.cs" />
-    <Compile Include="Publish\PublishableProjectSpecification.cs" />
-    <Compile Include="Publish\PublishSetting\DeployServerSettings.cs" />
-    <Compile Include="Publish\PublishSetting\FilePublishSettingsRepository.cs" />
-    <Compile Include="Publish\PublishSetting\IPublishSettingsRepository.cs" />
-    <Compile Include="Publish\PublishSetting\PortRange.cs" />
-    <Compile Include="Publish\PublishSetting\PublishSettings.cs" />
-    <Compile Include="Settings\FileSettingsRepository.cs" />
-    <Compile Include="Settings\ISettingsRepository.cs" />
-    <Compile Include="Settings\LoggingSettings.cs" />
-    <Compile Include="Settings\SettingsException.cs" />
-    <Compile Include="Shell\DotnetProcess.cs" />
-    <Compile Include="Shell\HeadlessProcess.cs" />
-    <Compile Include="ProjectFileUtilities.cs" />
-    <Compile Include="Regions\Manifest\Endpoints.cs" />
-    <Compile Include="Regions\IRegionProvider.cs" />
-    <Compile Include="Regions\Manifest\EndpointsExtensionMethods.cs" />
-    <Compile Include="Regions\Manifest\Partition.cs" />
-    <Compile Include="Regions\Manifest\Region.cs" />
-    <Compile Include="Regions\Manifest\Service.cs" />
-    <Compile Include="Regions\PartitionIds.cs" />
-    <Compile Include="Regions\RegionProvider.cs" />
-    <Compile Include="Regions\ServiceNames.cs" />
-    <Compile Include="Regions\ToolkitRegion.cs" />
-    <Compile Include="ResourceFetchers\AssemblyResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\CachingResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\CallbackResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\ChainedResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\ConditionalResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\FileResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\HostedFilesResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\HttpResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\HttpResourceFetcherOptions.cs" />
-    <Compile Include="ResourceFetchers\IResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\RelativeFileResourceFetcher.cs" />
-    <Compile Include="ResourceFetchers\RelativeHttpResourceFetcher.cs" />
-    <Compile Include="Settings\AppDataToolkitSettingsRepository.cs" />
-    <Compile Include="Settings\DynamoDbSettings.cs" />
-    <Compile Include="Settings\IToolkitSettingsWatcher.cs" />
-    <Compile Include="Settings\SettingsPersistenceBase.cs" />
-    <Compile Include="Settings\SettingsPersistence.cs" />
-    <Compile Include="Settings\ToolkitSettings.cs" />
-    <Compile Include="Settings\IToolkitSettingsRepository.cs" />
-    <Compile Include="Settings\ToolkitSettingsWatcher.cs" />
-    <Compile Include="Solutions\ProjectFile.cs" />
-    <Compile Include="StringExtensionMethods.cs" />
-    <Compile Include="Tasks\TaskExtensionMethods.cs" />
-    <Compile Include="Telemetry\ClientId.cs" />
-    <Compile Include="Telemetry\IMetricsOutputWindow.cs" />
-    <Compile Include="Telemetry\Internal\ITelemetryClient.cs" />
-    <Compile Include="Telemetry\Internal\ITelemetryPublisher.cs" />
-    <Compile Include="Telemetry\MetricsMetadata.cs" />
-    <Compile Include="Telemetry\ModelExtensionMethods.cs" />
-    <Compile Include="Telemetry\Model\BaseMetricSource.cs" />
-    <Compile Include="Telemetry\Model\MetadataKeys.cs" />
-    <Compile Include="Telemetry\Internal\PostMetricsRequest.cs" />
-    <Compile Include="Telemetry\Model\CommonMetricSources.cs" />
-    <Compile Include="Telemetry\Model\ProductEnvironment.cs" />
-    <Compile Include="Telemetry\Internal\TelemetryClient.cs" />
-    <Compile Include="Telemetry\Internal\TelemetryPublisher.cs" />
-    <Compile Include="Telemetry\TelemetryHelper.cs" />
-    <Compile Include="Telemetry\TelemetryLoggerExtensionMethods.cs" />
-    <Compile Include="Telemetry\TelemetryService.cs" />
-    <Compile Include="Telemetry\ToolkitTelemetryEvents.generated.cs" />
-    <Compile Include="Telemetry\ToolkitTelemetryEventsSupplemental.cs" />
-    <Compile Include="Threading\ResettableCancellationToken.cs" />
-    <Compile Include="ToolkitAppDataPath.cs" />
-    <Compile Include="ToolkitSettingsConstants.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="S3FileFetcher.cs" />
-    <Compile Include="ToolkitAMIManifest.cs" />
-    <Compile Include="ToolkitGlobalConstants.cs" />
-    <Compile Include="UserCrypto.cs" />
-    <Compile Include="Solutions\Project.cs" />
-    <Compile Include="Solutions\ProjectType.cs" />
-    <Compile Include="Utility.cs" />
-    <Compile Include="Util\DateTimeUtil.cs" />
-    <Compile Include="Util\NumericLog4NetConverter.cs" />
-    <Compile Include="Util\ThrottleDispatcher.cs" />
-    <Compile Include="Util\DebounceDispatcher.cs" />
-    <Compile Include="Util\FrameworkNameHelper.cs" />
-    <Compile Include="Util\HttpStatusCodeExtensionMethods.cs" />
-    <Compile Include="Util\IToolkitHostInfo.cs" />
-    <Compile Include="Util\IToolkitTimer.cs" />
-    <Compile Include="Util\ListExtensionMethods.cs" />
-    <Compile Include="Util\IPAddressUtil.cs" />
-    <Compile Include="Util\Mutable.cs" />
-    <Compile Include="Util\MutableString.cs" />
-    <Compile Include="Util\ReflectionUtils.cs" />
-    <Compile Include="Util\SpecialFolderPatternConverter.cs" />
-    <Compile Include="Util\CloudFormationUtil.cs" />
-    <Compile Include="Util\StringUtils.cs" />
-    <Compile Include="Util\TimeProvider.cs" />
-    <Compile Include="Util\ToolkitTimer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Util\ZipUtil.cs" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.123.0" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.123.0" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.24" />
+    <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.86" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.7.126.0" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.100.87" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.103.23" />
+    <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\EC2QuickLaunch.json">
-      <Link>HostedFiles\EC2QuickLaunch.json</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\nuget-versions.json">
-      <Link>HostedFiles\nuget-versions.json</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\endpoints.json">
-      <Link>HostedFiles\endpoints.json</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ToolkitAMIs.xml">
-      <Link>HostedFiles\ToolkitAMIs.xml</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CloudFormationSchema\CloudFormationV1.schema">
       <Link>HostedFiles\CloudFormationSchema\CloudFormationV1.schema</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CloudFormationTemplates\LoadBalanced.template">
       <Link>HostedFiles\CloudFormationTemplates\LoadBalanced.template</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CodeCommit\vsdefault.gitignore.txt">
-      <Link>HostedFiles\CodeCommit\vsdefault.gitignore.txt</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\JSONSchemas\catalog.json">
-      <Link>HostedFiles\JSONSchemas\catalog.json</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ServiceMeta\EC2ServiceMeta.xml">
-      <Link>HostedFiles\ServiceMeta\EC2ServiceMeta.xml</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\IAMConfiguration.xml">
-      <Link>HostedFiles\IAMConfiguration.xml</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\IAMPolicyTemplates.xml">
-      <Link>HostedFiles\IAMPolicyTemplates.xml</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\LambdaPackageStoreManifest.xml">
-      <Link>HostedFiles\LambdaPackageStoreManifest.xml</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CloudFormationTemplates\LoadBalanced-ap-northeast-1.template">
       <Link>HostedFiles\CloudFormationTemplates\LoadBalanced-ap-northeast-1.template</Link>
     </EmbeddedResource>
@@ -252,70 +73,55 @@
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CloudFormationTemplates\SingleInstance.template">
       <Link>HostedFiles\CloudFormationTemplates\SingleInstance.template</Link>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CloudFormationTemplates\SampleTemplateManifest.xml">
       <Link>HostedFiles\CloudFormationTemplates\SampleTemplateManifest.xml</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CloudFormationTemplates\TemplatesManifest.xml">
       <Link>HostedFiles\CloudFormationTemplates\TemplatesManifest.xml</Link>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\CodeCommit\vsdefault.gitignore.txt">
+      <Link>HostedFiles\CodeCommit\vsdefault.gitignore.txt</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\EC2QuickLaunch.json">
+      <Link>HostedFiles\EC2QuickLaunch.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\endpoints.json">
+      <Link>HostedFiles\endpoints.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\IAMConfiguration.xml">
+      <Link>HostedFiles\IAMConfiguration.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\IAMPolicyTemplates.xml">
+      <Link>HostedFiles\IAMPolicyTemplates.xml</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\JSONSchemas\aws-windows-deployment-manifest-schema.json">
       <Link>HostedFiles\JSONSchemas\aws-windows-deployment-manifest-schema.json</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\JSONSchemas\aws-windows-deployment-manifest-schema.v1.json">
       <Link>HostedFiles\JSONSchemas\aws-windows-deployment-manifest-schema.v1.json</Link>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\JSONSchemas\catalog.json">
+      <Link>HostedFiles\JSONSchemas\catalog.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\LambdaPackageStoreManifest.xml">
+      <Link>HostedFiles\LambdaPackageStoreManifest.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\nuget-versions.json">
+      <Link>HostedFiles\nuget-versions.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ServiceMeta\EC2ServiceMeta.xml">
+      <Link>HostedFiles\ServiceMeta\EC2ServiceMeta.xml</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ServiceMeta\ECSServiceMeta.json">
       <Link>HostedFiles\ServiceMeta\ECSServiceMeta.json</Link>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ServiceMeta\RDSServiceMeta.xml">
       <Link>HostedFiles\ServiceMeta\RDSServiceMeta.xml</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ToolkitAMIs.xml">
+      <Link>HostedFiles\ToolkitAMIs.xml</Link>
+    </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="$(BuildRoot)\hostedfiles\stockamis.json">
-      <Link>HostedFiles\stockamis.json</Link>
-    </None>
-    <None Include="HostedFiles\.editorconfig" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.104.24</Version>
-    </PackageReference>
-    <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>1.0.111.0</Version>
-    </PackageReference>
-    <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>1.0.111.0</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.CognitoIdentity">
-      <Version>3.7.100.86</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.126.0</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.87</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.103.23</Version>
-    </PackageReference>
-    <PackageReference Include="log4net">
-      <Version>2.0.15</Version>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="!Exists('$(BuildRoot)\hostedfiles\endpoints.json')">
     <PreBuildEvent>"$(MSBuildToolsPath)\msbuild.exe" "$(SolutionDir)\..\buildtools\build.proj" -t:get-latest-endpoint-data</PreBuildEvent>
   </PropertyGroup>

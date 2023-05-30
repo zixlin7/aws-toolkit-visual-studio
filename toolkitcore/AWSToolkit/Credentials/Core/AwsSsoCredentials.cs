@@ -24,7 +24,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         public AwsSsoCredentials(CredentialProfile profile, IAWSToolkitShellProvider toolkitShell)
         {
             var ssoCredentials = new SSOAWSCredentials(profile.Options.SsoAccountId, profile.Options.SsoRegion, profile.Options.SsoRoleName, profile.Options.SsoStartUrl);
-            ssoCredentials.Options.ClientName = "aws-toolkit-visual-studio";
+            ssoCredentials.Options.ClientName = "AWS Toolkit for Visual Studio";
             ssoCredentials.Options.SsoVerificationCallback = StartSsoLogin;
 
             _profile = profile;

@@ -1,91 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{260EB803-0C5D-4000-B920-4E8AF84820CA}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWS Toolkit for Visual Studio 2022 - Package Utilities</AssemblyTitle>
     <RootNamespace>Amazon.AwsToolkit.VsSdk.Common</RootNamespace>
-    <AssemblyName>AwsToolkit.VsSdk.Common.v17</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <DefineConstants>$(DefineConstants);VS2022;VS2022_OR_LATER</DefineConstants>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);VS2022;VS2022_OR_LATER;DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);VS2022;VS2022_OR_LATER;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Build" />
-    <Reference Include="Microsoft.Build.Engine" />
-    <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Tasks.v4.0" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
-      <Name>AWSToolkit</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
-      <Project>{5a78bf40-7d5b-467e-8ce4-9659f22669d0}</Project>
-      <Name>AWSToolkit.CloudFormation.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
-      <Name>AWSToolkit.Util</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
-      <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
-      <Name>AWSToolkit.EC2.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
-      <Project>{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}</Project>
-      <Name>AWSToolkit.ECS.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj">
-      <Project>{49C00D37-5980-495F-80C6-43C5192C4A87}</Project>
-      <Name>AWSToolkit.IdentityManagement.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj">
-      <Project>{dbdb8299-3efb-4a02-a34e-7bfb98ce3169}</Project>
-      <Name>AWSToolkit.CodeCatalyst.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
-      <Project>{b8cfce12-d441-46a5-a415-c763e1e2beb0}</Project>
-      <Name>AWSToolkit.CodeCommit.Interface</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.0.32112.339</Version>
@@ -93,7 +16,23 @@
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Tasks.v4.0" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj" />
+  </ItemGroup>
   <Import Project="..\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems" Label="Shared" />
   <Import Project="$(BuildRoot)\vspackages\shared\MPFProjDir\Src\CSharp\ProjectBase.files" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

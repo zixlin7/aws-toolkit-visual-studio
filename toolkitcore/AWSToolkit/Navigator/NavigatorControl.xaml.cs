@@ -383,7 +383,7 @@ namespace Amazon.AWSToolkit.Navigator
         {
             try
             {
-                RefreshResourceTree();
+               OnRetry();
             }
             catch (Exception ex)
             {

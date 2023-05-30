@@ -1,92 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWSToolkit.ECS.Interface</AssemblyTitle>
     <RootNamespace>Amazon.AWSToolkit.ECS</RootNamespace>
-    <AssemblyName>AWSToolkit.ECS.Interface</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <OldToolsVersion>3.5</OldToolsVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="PresentationFramework">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="PresentationFramework.Aero">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
+    <PackageReference Include="AWSSDK.ECS" Version="3.7.105.7" />
+    <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants.cs" />
-    <Compile Include="IAWSECS.cs" />
-    <Compile Include="Models\Ecr\Repository.cs" />
-    <Compile Include="Nodes\IECSRootViewModel.cs" />
-    <Compile Include="PluginServices\Ecr\IRepoRepository.cs" />
-    <Compile Include="PluginServices\Ecr\IRepositoryFactory.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PublishContainerToAWSWizardProperties.cs" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
-      <Name>AWSToolkit</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
-      <Name>AWSToolkit.Util</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.ECS">
-      <Version>3.7.105.7</Version>
-    </PackageReference>
-    <PackageReference Include="log4net">
-      <Version>2.0.15</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Amazon.AutoScaling;
+using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.EC2;
@@ -19,12 +19,12 @@ using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.ViewModels.Charts;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
-using Amazon.EC2;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-using Amazon.ElasticLoadBalancing;
 
 using log4net;
+
+using Action = System.Action;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
@@ -34,10 +34,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         private static ILog Logger = LogManager.GetLogger(typeof(EnvironmentStatusController));
 
-        private readonly IAmazonAutoScaling _asClient;
-        private readonly IAmazonElasticLoadBalancing _elbClient;
-        private readonly IAmazonEC2 _ec2Client;
-        private readonly IAmazonCloudWatch _cwClient;
+        private readonly EnvironmentResourceRepository _environmentResourceRepository;
+
         private readonly CloudWatchMetrics _cloudWatchMetrics;
         private readonly IAmazonElasticBeanstalk _beanstalkClient;
         private readonly BeanstalkEnvironmentModel _beanstalkEnvironment;
@@ -51,12 +49,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
         {
             _beanstalkEnvironment = beanstalkEnvironment;
 
+            _environmentResourceRepository = new EnvironmentResourceRepository(ConnectionSettings, _toolkitContext);
+
             _beanstalkClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonElasticBeanstalkClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
-            _cwClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonCloudWatchClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
-            _cloudWatchMetrics = new CloudWatchMetrics(_cwClient);
-            _asClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonAutoScalingClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
-            _elbClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonElasticLoadBalancingClient>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
-            _ec2Client = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(ConnectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+
+            var cloudWatchClient = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonCloudWatchClient>(connectionSettings.CredentialIdentifier, ConnectionSettings.Region);
+            _cloudWatchMetrics = new CloudWatchMetrics(cloudWatchClient);
         }
 
         public override ActionResults Execute()
@@ -295,164 +293,60 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             }));
         }
 
-        public void RefreshResources()
+        public async Task RefreshResourcesAsync()
         {
             try
             {
-                EnvironmentResourceDescription resources = GetEnvironmentResourceDescription();
-
-                List<Amazon.EC2.Model.Instance> ris = new List<Amazon.EC2.Model.Instance>();
-                List<string> iNames = new List<string>();   
-                foreach (Instance instance in resources.Instances)
+                SetIsLoading(true);
+                using (var _ = new DisposingAction(() => SetIsLoading(false)))
                 {
-                    iNames.Add(instance.Id);
+                    var environmentResources =
+                        await _environmentResourceRepository.LoadEnvironmentResourcesAsync(_statusModel.EnvironmentId);
+
+                    UpdateUi(environmentResources);
                 }
-                if (iNames.Count != 0)
-                {
-                    Amazon.EC2.Model.DescribeInstancesResponse iResponse = this._ec2Client.DescribeInstances(
-                        new Amazon.EC2.Model.DescribeInstancesRequest() { InstanceIds = iNames });
-                    foreach (Amazon.EC2.Model.Reservation reservation in iResponse.Reservations)
-                    {
-                        ris.AddRange(reservation.Instances);
-                    }
-                }
-
-                List<Amazon.ElasticLoadBalancing.Model.LoadBalancerDescription> elbs = new List<Amazon.ElasticLoadBalancing.Model.LoadBalancerDescription>();
-                List<string> lbNames = new List<string>();
-                foreach (LoadBalancer lb in resources.LoadBalancers)
-                {
-                    lbNames.Add(lb.Name);
-                }
-                if (lbNames.Count != 0)
-                {
-                    Amazon.ElasticLoadBalancing.Model.DescribeLoadBalancersResponse lbResponse = this._elbClient.DescribeLoadBalancers(
-                        new Amazon.ElasticLoadBalancing.Model.DescribeLoadBalancersRequest() { LoadBalancerNames = lbNames });
-                    elbs.AddRange(lbResponse.LoadBalancerDescriptions);
-                }
-
-                Dictionary<string, Amazon.AutoScaling.Model.LaunchConfiguration> lcs = new Dictionary<string, Amazon.AutoScaling.Model.LaunchConfiguration>();
-                foreach (LaunchConfiguration lc in resources.LaunchConfigurations)
-                {
-                    lcs.Add(lc.Name, null);
-                }
-                if (lcs.Count != 0)
-                {
-                    Amazon.AutoScaling.Model.DescribeLaunchConfigurationsResponse lcResponse = this._asClient.DescribeLaunchConfigurations(
-                        new Amazon.AutoScaling.Model.DescribeLaunchConfigurationsRequest
-                        {
-                            LaunchConfigurationNames = lcs.Keys.ToList<string>()
-                        });
-
-                    foreach (var lc in lcResponse.LaunchConfigurations)
-                        lcs[lc.LaunchConfigurationName] = lc;
-
-                    while (!String.IsNullOrEmpty(lcResponse.NextToken))
-                    {
-                        lcResponse = this._asClient.DescribeLaunchConfigurations(
-                            new Amazon.AutoScaling.Model.DescribeLaunchConfigurationsRequest
-                            {
-                                LaunchConfigurationNames = lcs.Keys.ToList<string>(),
-                                NextToken = lcResponse.NextToken
-                            });
-                        foreach (var lc in lcResponse.LaunchConfigurations)
-                            lcs[lc.LaunchConfigurationName] = lc;
-                    }
-                }
-
-                List<Amazon.AutoScaling.Model.AutoScalingGroup> asgs = new List<Amazon.AutoScaling.Model.AutoScalingGroup>();
-                List<string> asgNames = new List<string>();
-                foreach (AutoScalingGroup asg in resources.AutoScalingGroups)
-                {
-                    asgNames.Add(asg.Name);
-                }
-                if (asgNames.Count != 0)
-                {
-                    Amazon.AutoScaling.Model.DescribeAutoScalingGroupsResponse asgResponse = this._asClient.DescribeAutoScalingGroups(
-                        new Amazon.AutoScaling.Model.DescribeAutoScalingGroupsRequest
-                        {
-                            AutoScalingGroupNames = asgNames
-                        });
-                    asgs.AddRange(asgResponse.AutoScalingGroups);
-                    while (!String.IsNullOrEmpty(asgResponse.NextToken))
-                    {
-                        asgResponse = this._asClient.DescribeAutoScalingGroups(
-                            new Amazon.AutoScaling.Model.DescribeAutoScalingGroupsRequest
-                            {
-                                AutoScalingGroupNames = asgNames,
-                                NextToken = asgResponse.NextToken
-                            });
-                        asgs.AddRange(asgResponse.AutoScalingGroups);
-                    }
-                }
-
-                List<Amazon.CloudWatch.Model.MetricAlarm> mas = new List<Amazon.CloudWatch.Model.MetricAlarm>();
-                List<string> alarmNames = new List<string>();
-                foreach (Amazon.ElasticBeanstalk.Model.Trigger t in resources.Triggers)
-                {
-                    alarmNames.Add(String.Format("{0}{1}", t.Name, "-lower"));
-                    alarmNames.Add(String.Format("{0}{1}", t.Name, "-upper"));
-                }
-                if (alarmNames.Count != 0)
-                {
-                    Amazon.CloudWatch.Model.DescribeAlarmsResponse alarmsResponse = this._cwClient.DescribeAlarms(
-                        new Amazon.CloudWatch.Model.DescribeAlarmsRequest() { AlarmNames = alarmNames });
-                    mas.AddRange(alarmsResponse.MetricAlarms);
-                    while (!String.IsNullOrEmpty(alarmsResponse.NextToken))
-                    {
-                        alarmsResponse = this._cwClient.DescribeAlarms(
-                            new Amazon.CloudWatch.Model.DescribeAlarmsRequest()
-                            {
-                                AlarmNames = alarmNames,
-                                NextToken = alarmsResponse.NextToken
-                            });
-                        mas.AddRange(alarmsResponse.MetricAlarms);
-                    }
-                }
-
-                _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
-                {
-                    try
-                    {
-                        this._statusModel.ResourcesUpdated = DateTime.Now;
-
-                        this._statusModel.Instances.Clear();
-                        foreach (Amazon.EC2.Model.Instance ri in ris)
-                        {
-                            this._statusModel.Instances.Insert(0, new InstanceWrapper(ri));
-                        }
-
-                        this._statusModel.LoadBalancers.Clear();
-                        foreach (Amazon.ElasticLoadBalancing.Model.LoadBalancerDescription lb in elbs)
-                        {
-                            this._statusModel.LoadBalancers.Insert(0, new LoadBalancerWrapper(lb));
-                        }
-
-                        this._statusModel.AutoScalingGroups.Clear();
-                        foreach (Amazon.AutoScaling.Model.AutoScalingGroup asg in asgs)
-                        {
-                            Amazon.AutoScaling.Model.LaunchConfiguration lc;
-                            if (lcs.TryGetValue(asg.LaunchConfigurationName, out lc))
-                            {
-                                this._statusModel.AutoScalingGroups.Insert(0, new AutoScalingGroupWrapper(asg, lc));
-                            }
-                        }
-
-                        this._statusModel.Triggers.Clear();
-                        foreach (Amazon.CloudWatch.Model.MetricAlarm ma in mas)
-                        {
-                            this._statusModel.Triggers.Insert(0, new MetricAlarmWrapper(ma));
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error("Error refreshing UI for resources", e);
-                    }
-                }));
             }
             catch (Exception e)
             {
                 Logger.Error("Error refreshing resources", e);
+                _toolkitContext.ToolkitHost.OutputToHostConsole(
+                    $"Error loading resources for environment {_statusModel.EnvironmentId}: {e.Message}", true);
             }
+        }
+
+        private void SetIsLoading(bool isLoading)
+        {
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
+            {
+                _statusModel.IsLoading = isLoading;
+            });
+        }
+
+        private void UpdateUi(EnvironmentResources environmentResources)
+        {
+            _toolkitContext.ToolkitHost.BeginExecuteOnUIThread((Action)(() =>
+            {
+                try
+                {
+                    _statusModel.ResourcesUpdated = DateTime.Now;
+
+                    _statusModel.Instances.Clear();
+                    _statusModel.Instances.AddAll(environmentResources.Instances);
+
+                    _statusModel.LoadBalancers.Clear();
+                    _statusModel.LoadBalancers.AddAll(environmentResources.LoadBalancers);
+
+                    _statusModel.AutoScalingGroups.Clear();
+                    _statusModel.AutoScalingGroups.AddAll(environmentResources.AutoScalingGroups);
+
+                    _statusModel.Triggers.Clear();
+                    _statusModel.Triggers.AddAll(environmentResources.Alarms);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Error refreshing UI for resources", e);
+                }
+            }));
         }
 
         void refreshOptions()
@@ -521,10 +415,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         internal EnvironmentResourceDescription GetEnvironmentResourceDescription()
         {
-            var response = this._beanstalkClient.DescribeEnvironmentResources(
-                new DescribeEnvironmentResourcesRequest() { EnvironmentId = this._statusModel.EnvironmentId });
-
-            return response.EnvironmentResources;
+            return _environmentResourceRepository.GetEnvironmentResourceDescription(_statusModel.EnvironmentId);
         }
 
         internal void LoadCloudWatchData(MonitorGraphViewModel viewModel, string metricNamespace, string metricName, CloudWatchMetrics.Aggregate statsAggregate, string units, List<Dimension> dimensions, int hoursToView)

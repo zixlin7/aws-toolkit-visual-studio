@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using LitJson;
+using ThirdParty.Json.LitJson;
 
 using Microsoft.Build.Framework;
 
@@ -174,6 +174,8 @@ namespace BuildTasks
             this.Log.LogMessage("Updating VSToolkit AssemblyInfo files for version {0}", this.VersionNumber);
             base.UpdateAssemblyInfoFiles();
 
+            UpdateDirectoryBuildProps();
+
             this.Log.LogMessage("...updating Visual Studio package manifest for version {0}", this.VersionNumber);
             foreach (var manifestFile in Directory.GetFiles(this.RepositoryRoot, "source.extension.vsixmanifest", SearchOption.AllDirectories))
             {
@@ -200,6 +202,14 @@ namespace BuildTasks
             }
 
             return true;
+        }
+
+        private void UpdateDirectoryBuildProps()
+        {
+            var filename = Path.Combine(this.RepositoryRoot, "Directory.Build.props");
+
+            Console.WriteLine("Updating Directory.Build.props: " + filename);
+            PatchFile(filename, "<ToolkitVersion>", "</ToolkitVersion>");
         }
     }
 
@@ -263,9 +273,9 @@ namespace BuildTasks
             using (var stream = File.Open(VersionFile, FileMode.Truncate, FileAccess.Write))
             using (var writer = new StreamWriter(stream))
             {
-                var jsonWriter = new LitJson.JsonWriter(writer);
+                var jsonWriter = new ThirdParty.Json.LitJson.JsonWriter(writer);
                 jsonWriter.PrettyPrint = true;
-                LitJson.JsonMapper.ToJson(version, jsonWriter);
+                ThirdParty.Json.LitJson.JsonMapper.ToJson(version, jsonWriter);
             }
 
             return true;

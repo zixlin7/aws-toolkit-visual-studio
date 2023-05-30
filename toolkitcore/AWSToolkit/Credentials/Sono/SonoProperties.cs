@@ -2,7 +2,7 @@
 {
     internal static class SonoProperties
     {
-        public const string ClientName = "AwsToolkitForVisualStudio";
+        public const string ClientName = "AWS Toolkit for Visual Studio";
         public const string ClientType = "public";
         public const string DefaultSessionName = "aws-toolkit-visual-studio";
 

@@ -30,7 +30,6 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
             var imageStr = knownImage.ToString();
             var property = typeof(KnownMonikers).GetProperty(imageStr,
                 BindingFlags.Static | BindingFlags.Public);
-
             return property != null;
         }
     }

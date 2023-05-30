@@ -96,6 +96,10 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
   - Second-most central common code
   - Common Toolkit components (Navigator, Accounts, Wizards)
   - Contains some UI code
+- AWSToolkit.BindingPath.Resources
+  - BindingPathAssemblies folder is added to VS binding path via ProvideBindingPath on AWSToolkitPackage; assemblies here will be found when VS probes for assemblies
+  - The CodeCatalyst icon so that VS can find it when displaying the Git Clone dialog
+  - Resources with similar needs may be added to this project or additional projects can be added to this folder if needed
 - Plugins
 
   - AWSToolkit.ZZZ.Interface

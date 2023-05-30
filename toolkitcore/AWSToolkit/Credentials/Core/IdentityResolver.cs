@@ -63,7 +63,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 AWSTokenProvider = tokenProvider,
             };
 
-            return new AmazonCodeCatalystClient(config);
+            // AmazonCodeCatalystClient has standard service client handling, which tries to resolve AWSCredentials,
+            // even though we're using the token provider here. Any system that doesn't have a default credentials profile
+            // will get an AmazonServiceException "Unable to get IAM security credentials from EC2 Instance Metadata Service."
+            // Pass anonymous credentials to keep the client happy.
+            return new AmazonCodeCatalystClient(new AnonymousAWSCredentials(), config);
         }
     }
 }

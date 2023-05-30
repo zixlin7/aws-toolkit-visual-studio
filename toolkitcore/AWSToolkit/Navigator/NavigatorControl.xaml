@@ -18,6 +18,7 @@
                     <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
                 </ResourceDictionary.MergedDictionaries>
                 <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+                <converters:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
                 <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
                 <Style TargetType="{x:Type Image}">
                     <Style.Triggers>
@@ -204,7 +205,9 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0"
-                  Visibility="{Binding IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                  x:Name="ConnectionMsgGrid"
+                  x:FieldModifier="private"
+                  Visibility="{Binding IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
                   Margin="11">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -284,7 +287,7 @@
                       Style="{DynamicResource awsTreeViewStyle}"
                       VerticalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch"
-                      Visibility="{Binding IsConnectionValid, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                      Visibility="{Binding Visibility, ElementName=ConnectionMsgGrid, Converter={StaticResource InverseVisibilityConverter}}"
                       BorderThickness="0"
                       ItemContainerStyle="{StaticResource navigatorTreeViewItemStyle}"
                       ItemsSource="{Binding Children}"

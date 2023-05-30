@@ -1,101 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DFFE75F2-61CC-4CEA-87A5-1C573436DE9E}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWSDeploymentLib</AssemblyTitle>
     <RootNamespace>AWSDeployment</RootNamespace>
-    <AssemblyName>AWSDeploymentLib</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <OldToolsVersion>3.5</OldToolsVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\release\</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
+    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.103.14" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.24" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.105.15" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.7.126.0" />
+    <PackageReference Include="AWSSDK.ElasticBeanstalk" Version="3.7.101.24" />
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.100.86" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.100.87" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.114.34" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.103.23" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeploymentConfigurationWriter.cs" />
-    <Compile Include="DeploymentEngineBase.cs" />
-    <Compile Include="BeanstalkDeploymentEngine.cs" />
-    <Compile Include="DeploymentConstants.cs" />
-    <Compile Include="CreateStackSettings.cs" />
-    <Compile Include="CloudFormationDeploymentEngine.cs" />
-    <Compile Include="DeploymentConfigurationReader.cs" />
-    <Compile Include="DeploymentEngineFactory.cs" />
-    <Compile Include="DeploymentObserver.cs" />
-    <Compile Include="HostManagerEvent.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
-      <Project>{20c1f223-eef5-4eab-9e2d-8df31bb3ff45}</Project>
-      <Name>AWSSDK.Extensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
-      <Name>AWSToolkit.Util</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
-      <Name>AWSToolkit</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.AutoScaling">
-      <Version>3.7.103.14</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.104.24</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.Core">
-      <Version>3.7.105.15</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.EC2">
-      <Version>3.7.126.0</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.ElasticBeanstalk">
-      <Version>3.7.101.24</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.ElasticLoadBalancing">
-      <Version>3.7.100.86</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.7.100.87</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.RDS">
-      <Version>3.7.114.34</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.S3">
-      <Version>3.7.103.23</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,247 +1,34 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6748E175-B799-427E-A7FD-625EEF5AFB91}</ProjectGuid>
-    <OutputType>library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyTitle>AWSToolkit.DynamoDB</AssemblyTitle>
     <RootNamespace>Amazon.AWSToolkit.DynamoDB</RootNamespace>
-    <AssemblyName>AWSToolkit.DynamoDB</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <OldToolsVersion>3.5</OldToolsVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
-    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationFramework.Aero">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="PresentationCore">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="PresentationFramework">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
+    <!-- TODO : remove legacy files -->
+    <Page Remove="View\Components\DataFormatToolBar*" />
+    <Compile Remove="View\Components\DataFormatToolBar*" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\AddAttributeController.cs" />
-    <Compile Include="Controller\CreateTableController.cs" />
-    <Compile Include="Controller\DeleteTableController.cs" />
-    <Compile Include="Controller\StartLocalDynamoDBController.cs" />
-    <Compile Include="Controller\StopLocalDynamoDBController.cs" />
-    <Compile Include="Controller\StreamPropertiesController.cs" />
-    <Compile Include="Controller\TableBrowserController.cs" />
-    <Compile Include="Controller\TablePropertiesController.cs" />
-    <Compile Include="DynamoDBActivator.cs" />
-    <Compile Include="Model\AddAttributeModel.cs" />
-    <Compile Include="Model\CreateTableModel.cs" />
-    <Compile Include="Model\ScanCondition.cs" />
-    <Compile Include="Model\StartLocalDynamoDBModel.cs" />
-    <Compile Include="Model\StreamPropertiesModel.cs" />
-    <Compile Include="Model\TableBrowserModel.cs" />
-    <Compile Include="Model\TablePropertiesModel.cs" />
-    <Compile Include="Nodes\DynamoDBRootViewMetaNode.cs" />
-    <Compile Include="Nodes\DynamoDBRootViewModel.cs" />
-    <Compile Include="Nodes\DynamoDBTableViewModel.cs" />
-    <Compile Include="Nodes\DynamoDBTableViewMetaNode.cs" />
-    <Compile Include="Nodes\LocalConnectFailViewModel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="Util\DynamoDBLocalManager.cs" />
-    <Compile Include="Util\DynamoDbTelemetryExtensionMethods.cs" />
-    <Compile Include="View\AddAttributeControl.xaml.cs">
-      <DependentUpon>AddAttributeControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Columns\AttributeColumn.cs" />
-    <Compile Include="View\Columns\BaseDynamoDBColumn.cs" />
-    <Compile Include="View\Columns\DynamoDBColumnDefinition.cs" />
-    <Compile Include="View\Columns\HashAndRangeKeyColumn.cs" />
-    <Compile Include="View\Components\ScanConditionsControl.xaml.cs">
-      <DependentUpon>ScanConditionsControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Components\TableIndexesControl.xaml.cs">
-      <DependentUpon>TableIndexesControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\CreateTableWizard\PageControllers\BasePageController.cs" />
-    <Compile Include="View\CreateTableWizard\PageControllers\BasicSettingsPageController.cs" />
-    <Compile Include="View\CreateTableWizard\PageControllers\IndexesPageController.cs" />
-    <Compile Include="View\CreateTableWizard\PageControllers\NotificationPageController.cs" />
-    <Compile Include="View\CreateTableWizard\PageUI\BasicSettingsPage.xaml.cs">
-      <DependentUpon>BasicSettingsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\CreateTableWizard\PageUI\IndexesPage.xaml.cs">
-      <DependentUpon>IndexesPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\CreateTableWizard\PageUI\NotificationPage.xaml.cs">
-      <DependentUpon>NotificationPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\StartLocalDynamoDBControl.xaml.cs">
-      <DependentUpon>StartLocalDynamoDBControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\StreamPropertiesControl.xaml.cs">
-      <DependentUpon>StreamPropertiesControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\TableBrowserControl.xaml.cs">
-      <DependentUpon>TableBrowserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\TablePropertiesControl.xaml.cs">
-      <DependentUpon>TablePropertiesControl.xaml</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <AppDesigner Include="Properties\" />
+    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.103.30" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.102.0" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.101.22" />
+    <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.DynamoDB.Interface\AWSToolkit.DynamoDB.Interface.csproj">
-      <Project>{59D6F9BE-5344-496A-9E03-A2A0020DAAC4}</Project>
-      <Name>AWSToolkit.DynamoDB.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
-      <Name>AWSToolkit.Util</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
-      <Name>AWSToolkit</Name>
-      <Private>False</Private>
-    </ProjectReference>
+    <Reference Include="PresentationFramework.Aero" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\EmbeddedImages\table.png" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.DynamoDB.Interface\AWSToolkit.DynamoDB.Interface.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Resources\ScanConditionTableResourceDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\AddAttributeControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Components\ScanConditionsControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Components\TableIndexesControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\CreateTableWizard\PageUI\BasicSettingsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\CreateTableWizard\PageUI\IndexesPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\CreateTableWizard\PageUI\NotificationPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\StartLocalDynamoDBControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\StreamPropertiesControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\TableBrowserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\TablePropertiesControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <EmbeddedResource Include="Resources\EmbeddedImages\*.png" />
+    <Resource Include="Resources\Images\*.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\AsAlpha.png" />
-    <Resource Include="Resources\Images\AsAlphaSet.png" />
-    <Resource Include="Resources\Images\AsNumber.png" />
-    <Resource Include="Resources\Images\AsNumberSet.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\AddToList.png" />
-    <Resource Include="Resources\Images\RemoveFromList.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\AsBoolean.png" />
-    <Resource Include="Resources\Images\AsNull.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.7.103.30</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>3.7.102.0</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.7.101.22</Version>
-    </PackageReference>
-    <PackageReference Include="log4net">
-      <Version>2.0.15</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

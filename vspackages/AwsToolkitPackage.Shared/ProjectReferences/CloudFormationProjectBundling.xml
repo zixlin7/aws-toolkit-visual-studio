@@ -8,6 +8,14 @@
   xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+
+    <!-- CloudFormationProjectVSIXSubPath
+      This path can NOT be changed. Any user that has ever created a CloudFormation project has a .cfproj
+      file that references this location on their system. It is where Visual Studio looks to find the 
+      dlls used to support this project with "compile" (validation) type functionality.
+     -->
+    <CloudFormationProjectVSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</CloudFormationProjectVSIXSubPath>
+    <CloudFormationMSBuildTasksOutput>$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\bin\$(Configuration)\net472</CloudFormationMSBuildTasksOutput>
   </PropertyGroup>
 
   <!-- This section defines the files that are installed by the extension into a folder that is referenced by CloudFormation projects. -->
@@ -17,21 +25,21 @@
       <Link>License.JsonChecker.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <VSIXSubPath>$(CloudFormationProjectVSIXSubPath)</VSIXSubPath>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>License.log4net.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <VSIXSubPath>$(CloudFormationProjectVSIXSubPath)</VSIXSubPath>
     </Content>
     <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\AWSToolkit.CloudFormation.MSBuildTasks.csproj">
       <Project>{fe98588c-7fee-414e-9eab-f36bf64c88c0}</Project>
       <Name>AWSToolkit.CloudFormation.MSBuildTasks</Name>
       <InstallRoot>MSBuild</InstallRoot>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <VSIXSubPath>$(CloudFormationProjectVSIXSubPath)</VSIXSubPath>
     </ProjectReference>
 
     <!-- Additional dependency content for the tasks, which we handle in the package project 
@@ -47,7 +55,7 @@
       <Link>AWSCloudFormationProject.ico</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <VSIXSubPath>$(CloudFormationProjectVSIXSubPath)</VSIXSubPath>
       <Visible>false</Visible>
     </Content>
     <Content Include="..\AwsToolkitPackageResources\AWSCloudFormationTemplate.ico">
@@ -55,23 +63,16 @@
       <Link>AWSCloudFormationTemplate.ico</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <VSIXSubPath>$(CloudFormationProjectVSIXSubPath)</VSIXSubPath>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(OutputRoot)\AWSSDK.Core.dll">
+    <Content
+      Include="$(CloudFormationMSBuildTasksOutput)\*.dll"
+      Exclude="$(CloudFormationMSBuildTasksOutput)\Newtonsoft.Json.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>AWSSDK.Core.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(OutputRoot)\log4net.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>log4net.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <VSIXSubPath>$(CloudFormationProjectVSIXSubPath)</VSIXSubPath>
       <Visible>false</Visible>
     </Content>
   </ItemGroup>

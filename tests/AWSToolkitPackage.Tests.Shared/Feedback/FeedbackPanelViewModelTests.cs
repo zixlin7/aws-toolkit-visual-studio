@@ -29,7 +29,7 @@ namespace AWSToolkitPackage.Tests.Feedback
 
         public FeedbackPanelViewModelTests()
         {
-            _sut = new FeedbackPanelViewModel();
+            _sut = new FeedbackPanelViewModel(_toolkitContextFixture.ToolkitContext);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace AWSToolkitPackage.Tests.Feedback
         {
             _sut.FeedbackSentiment = sentiment;
 
-            var result  = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext,null);
+            var result  = await _sut.SubmitFeedbackAsync(null);
 
             Assert.Equal(Result.Succeeded, result);
             AssertTelemetryFeedbackCall(expectedSentiment, null, null);
@@ -72,7 +72,7 @@ namespace AWSToolkitPackage.Tests.Feedback
             _toolkitContextFixture.TelemetryLogger
                 .Setup(mock => mock.SendFeedback(It.IsAny<Sentiment>(), It.IsAny<string>(), _metadata)).Throws<Exception>();
 
-            var result = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext, null);
+            var result = await _sut.SubmitFeedbackAsync(null);
 
             Assert.Equal(Result.Failed, result);
             AssertTelemetryFeedbackCall(Sentiment.Positive, null, null);
@@ -85,7 +85,7 @@ namespace AWSToolkitPackage.Tests.Feedback
             _sut.FeedbackSentiment = true;
             _sut.FeedbackComment = "good";
 
-            var result = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext, "publish to beanstalk");
+            var result = await _sut.SubmitFeedbackAsync( "publish to beanstalk");
 
             Assert.Equal(Result.Succeeded, result);
             AssertTelemetryFeedbackCall(Sentiment.Positive, "good", "publish to beanstalk");

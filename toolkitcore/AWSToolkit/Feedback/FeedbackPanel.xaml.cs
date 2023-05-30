@@ -13,7 +13,7 @@ namespace Amazon.AWSToolkit.Feedback
     /// </summary>
     public partial class FeedbackPanel : BaseAWSControl
     {
-        private readonly string _marker;
+       private readonly string _marker;
 
         public FeedbackPanel() : this("")
         {
@@ -22,11 +22,9 @@ namespace Amazon.AWSToolkit.Feedback
         public FeedbackPanel(string sourceMarker)
         {
             _marker = sourceMarker;
-
             InitializeComponent();
             Unloaded += OnUnloaded;
             DataContextChanged += OnDataContextChanged;
-            DataContext = new FeedbackPanelViewModel();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -50,7 +48,7 @@ namespace Amazon.AWSToolkit.Feedback
 
         public override bool SupportsDynamicOKEnablement => true;
 
-        public override string Title => CreateTitle("Feedback for AWS Toolkit for Visual Studio", _marker);
+        public override string Title => CreateTitle("Share Feedback: AWS Toolkit for Visual Studio", _marker);
 
         public override string AcceptButtonText => "Submit";
 
@@ -68,16 +66,6 @@ namespace Amazon.AWSToolkit.Feedback
             }
 
             NotifyPropertyChanged(e.PropertyName);
-        }
-
-
-        private void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            if (sender is Hyperlink link)
-            {
-                Process.Start(new ProcessStartInfo(link.NavigateUri.ToString()));
-                e.Handled = true;
-            }
         }
 
         private string CreateTitle(string title, string marker)
