@@ -1,0 +1,26 @@
+{
+  "Date": "2023-05-30",
+  "Version": "1.41.0.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Fix issue viewing Beanstalk Environments where the Resources tab would not show details. Health check information is no longer displayed in the load balancer details."
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Entering a local repo path on the CodeCatalyst Clone Repository dialog now validates the path on changes rather than clicking away from the textbox which did not always work consistently depending on where the user clicked."
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Clone CodeCatalyst Repository dialog now only lists repositories that are hosted on CodeCatalyst"
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Fix \"Unable to get IAM security credentials from EC2 Instance Metadata Service.\" error when trying to clone CodeCatalyst repos on a system that does not contain a default credentials profile."
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixes issue where the AWS Explorer would sometimes show both the connection status and the resource tree at once."
+    }
+  ]
+}
