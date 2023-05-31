@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\BeanstalkConfigurationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\FeedbackPanelViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\SendFeedbackCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\FirstRunControllerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\LegacyFirstRunControllerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Images\VsImageProviderTests.cs" />
