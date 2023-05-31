@@ -15,6 +15,7 @@ using log4net;
 
 namespace Amazon.AWSToolkit.Account.Model
 {
+    // TODO: IDE-10791 Remove legacy UX
     public class LegacyRegisterAccountModel : INotifyPropertyChanged, IHelpHandler
     {
         private const string CredentialsHelpUrl = "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/credentials.html";

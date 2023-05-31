@@ -25,6 +25,7 @@ namespace Amazon.AWSToolkit.Settings
             public const string LastSelectedRegion = "lastselectedregion";
             public const string ShowMetricsOutputWindow = "ShowMetricsOutputWindow";
             public const string Vs2017SunsetNoticeVersionShown = "Vs2017SunsetNoticeVersionShown";
+            public const string UseLegacyAccountUx = "UseLegacyAccountUx";
         }
 
         public static class DefaultValues
@@ -33,6 +34,7 @@ namespace Amazon.AWSToolkit.Settings
             public const bool HasUserSeenFirstRunForm = false;
             public const bool ShowMetricsOutputWindow = false;
             public const int Vs2017SunsetNoticeVersionNeverShown = 0;
+            public const bool UseLegacyAccountUx = true;
         }
 
         static ToolkitSettings()
@@ -112,6 +114,25 @@ namespace Amazon.AWSToolkit.Settings
             }
 
             set => SetMiscSetting(SettingNames.FirstRunFormShown, AsString(value));
+        }
+
+        /// <summary>
+        /// Gets or sets whether or not to use the legacy account UX
+        /// </summary>
+        public bool UseLegacyAccountUx
+        {
+            get
+            {
+                var valueStr = GetMiscSetting(SettingNames.UseLegacyAccountUx);
+                if (!bool.TryParse(valueStr, out var useLegacy))
+                {
+                    useLegacy = DefaultValues.UseLegacyAccountUx;
+                }
+
+                return useLegacy;
+            }
+
+            set => SetMiscSetting(SettingNames.UseLegacyAccountUx, AsString(value));
         }
 
         public string LastSelectedCredentialId

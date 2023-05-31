@@ -58,7 +58,7 @@
                     VerticalAlignment="Top"
                     HorizontalAlignment="Right"
                     Style="{DynamicResource awsTextBlock310PercentStyle}">
-                    Getting Started with the AWS Toolkit for Visual Studio
+                    NEW ONE!!! Getting Started with the AWS Toolkit for Visual Studio
                 </TextBlock>
             </Grid>
         </ScrollViewer>

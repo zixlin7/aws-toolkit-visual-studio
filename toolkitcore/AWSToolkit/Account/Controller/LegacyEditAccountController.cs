@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
+    // TODO: IDE-10791 Remove legacy UX
     public class LegacyEditAccountController : LegacyRegisterAccountController, IContextCommand
     {
         public const string NAME_CHANGE_PARAMETER = "nameChange";

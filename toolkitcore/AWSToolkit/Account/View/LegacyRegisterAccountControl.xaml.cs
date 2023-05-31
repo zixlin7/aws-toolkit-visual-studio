@@ -12,6 +12,8 @@ using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.Account.View
 {
+    // TODO: IDE-10791 Remove legacy UX
+
     /// <summary>
     /// Interaction logic for LegacyRegisterAccountControl.xaml
     /// </summary>

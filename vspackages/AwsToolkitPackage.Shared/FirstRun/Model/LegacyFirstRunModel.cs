@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 {
+    // TODO: IDE-10791 Remove legacy UX
     public class LegacyFirstRunModel : INotifyPropertyChanged
     {
         public string IamConsoleEndpoint => "https://console.aws.amazon.com/iam/home?region=us-east-1#/users";

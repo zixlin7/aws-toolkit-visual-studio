@@ -15,6 +15,8 @@ using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 {
+    // TODO: IDE-10791 Remove legacy UX
+
     /// <summary>
     /// Interaction logic for LegacyFirstRunControl.xaml
     /// </summary>

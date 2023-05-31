@@ -36,6 +36,7 @@ namespace Amazon.AWSToolkit.Account
             if (!results.Success)
                 return;
 
+            // TODO IDE-10814 Update when refactoring EditAccountController
             if (results.GetParameter<bool>(LegacyEditAccountController.NAME_CHANGE_PARAMETER, false))
             {
                 model.DisplayName = results.FocalName;

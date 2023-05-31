@@ -359,8 +359,15 @@ namespace Amazon.AWSToolkit.Navigator
 
         void AddAccount(object parameter)
         {
-            LegacyRegisterAccountController command = new LegacyRegisterAccountController(_toolkitContext);
-            ActionResults results = command.Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+            // TODO: IDE-10791 Remove legacy UX
+            if (ToolkitSettings.Instance.UseLegacyAccountUx)
+            {
+                new LegacyRegisterAccountController(_toolkitContext).Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+            }
+            else
+            {
+                new RegisterAccountController(_toolkitContext).Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+            }
         }
 
         private void RecordAwsModifyCredentialsMetric(ActionResults actionResults, CredentialModification modification)
@@ -515,7 +522,10 @@ namespace Amazon.AWSToolkit.Navigator
 
             try
             {
-                var command = new LegacyEditAccountController(_toolkitContext);
+                // TODO: IDE-10791 Remove legacy UX
+                var command = ToolkitSettings.Instance.UseLegacyAccountUx ?
+                    new LegacyEditAccountController(_toolkitContext) :
+                    new EditAccountController(_toolkitContext) as IContextCommand;
                 var results = command.Execute(viewModel);
                 RecordAwsModifyCredentialsMetric(results, CredentialModification.Edit);
             }

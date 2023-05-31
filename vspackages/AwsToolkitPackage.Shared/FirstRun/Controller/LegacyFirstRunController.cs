@@ -20,6 +20,8 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 {
+    // TODO: IDE-10791 Remove legacy UX
+
     /// <summary>
     /// Controller class for the 'first run' experience when the toolkit
     /// determines no credentials have been set up.

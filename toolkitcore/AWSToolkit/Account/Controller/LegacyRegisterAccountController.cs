@@ -20,6 +20,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
+    // TODO: IDE-10791 Remove legacy UX
     public class LegacyRegisterAccountController
     {
         private readonly LegacyRegisterAccountModel _model;
