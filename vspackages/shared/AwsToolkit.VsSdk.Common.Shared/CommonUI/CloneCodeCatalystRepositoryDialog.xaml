@@ -109,8 +109,7 @@
     </local:ThemedDialogWindow.Resources>
 
     <DockPanel
-        imageTheming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, ElementName=Root}"
-        Margin="24 0 24 24">
+        imageTheming:ImageThemingUtilities.ImageBackgroundColor="{Binding Background, ElementName=Root}">
         <Grid
             DockPanel.Dock="Top">
             <Grid.RowDefinitions>

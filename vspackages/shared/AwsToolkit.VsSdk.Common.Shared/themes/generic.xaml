@@ -5,6 +5,7 @@
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
 
+    <!-- https://learn.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio?view=vs-2022#BKMK_ThemedDialogLayout -->
     <Style TargetType="{x:Type local:ThemedDialogWindow}">
         <Setter Property="Template">
             <Setter.Value>
@@ -34,7 +35,8 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
-                                <ContentPresenter />
+                                <ContentPresenter
+                                    Margin="24 0 24 24" />
                             </DockPanel>
                         </Border>
                     </Grid>

@@ -64,7 +64,7 @@
         </ResourceDictionary>
     </local:ThemedDialogWindow.Resources>
 
-    <Grid Margin="24 0 24 24">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
