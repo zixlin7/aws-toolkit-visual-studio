@@ -3,10 +3,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
 
@@ -134,10 +134,8 @@ namespace Amazon.AWSToolkit.Account.View
             // When the Partition changes the list of Regions, the currently selected Region
             // is likely cleared (from databinding).
             // Make a reasonable region selection, if the currently selected region is not available.
-            var defaultRegion = RegionEndpoint.USEast1;
-
             var selectedRegion = this._controller.Model.GetRegion(ToolkitSettings.Instance.LastSelectedRegion)??
-                                 this._controller.Model.GetRegion(defaultRegion.SystemName) ??
+                                 this._controller.Model.GetRegion(ToolkitRegion.DefaultRegionId) ??
                                  this._controller.Model.Regions.FirstOrDefault();
 
             this._controller.Model.Region = selectedRegion;

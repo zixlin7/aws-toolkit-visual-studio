@@ -6,6 +6,8 @@ namespace Amazon.AWSToolkit.Regions
     [DebuggerDisplay("{PartitionId}: {Id} / {DisplayName}")]
     public class ToolkitRegion : IEquatable<ToolkitRegion>
     {
+        public const string DefaultRegionId = "us-east-1";
+
         /// <summary>
         /// Region Id (eg: "us-west-2")
         /// </summary>

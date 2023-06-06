@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Amazon.AWSToolkit.Regions
+﻿namespace Amazon.AWSToolkit.Regions
 {
     /// <summary>
     /// Represents partition ids for use in scenarios where Toolkit supports
@@ -14,6 +8,8 @@ namespace Amazon.AWSToolkit.Regions
     /// </summary>
     public static class PartitionIds
     {
+        public const string DefaultPartitionId = AWS;
+
         public const string AWS = "aws";
         public const string AWS_CHINA = "aws-cn";
         public const string AWS_GOV_CLOUD = "aws-us-gov";

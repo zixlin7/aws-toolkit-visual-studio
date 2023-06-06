@@ -417,8 +417,6 @@ namespace Amazon.AWSToolkit.Navigator
             // Make a reasonable region selection, if the currently selected region is not available.
 
             //Resolve region in following order: Last selected, fallback, profile region, default region, or first 
-            var defaultRegion = RegionEndpoint.USEast1;
-
             var previousRegion = _toolkitContext.RegionProvider.GetRegion(ToolkitSettings.Instance.LastSelectedRegion);
             var accountRegion = _navigatorViewModel.Account?.Region;
 
@@ -426,7 +424,7 @@ namespace Amazon.AWSToolkit.Navigator
                 (previousRegion != null ? _navigatorViewModel.GetRegion(previousRegion.Id) : null) ??
                 _navigatorViewModel.GetRegion(GetFallbackRegionId(_navigatorViewModel.PartitionId)) ??
                 (accountRegion != null ? _navigatorViewModel.GetRegion(accountRegion.Id) : null) ??
-                (defaultRegion != null ? _navigatorViewModel.GetRegion(defaultRegion.SystemName) : null) ??
+                _navigatorViewModel.GetRegion(ToolkitRegion.DefaultRegionId) ??
                 _navigatorViewModel.Regions.FirstOrDefault();
 
             _navigatorViewModel.Region = selectedRegion;
