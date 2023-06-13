@@ -1,0 +1,52 @@
+﻿<local:ProfileSubform
+    x:Class="Amazon.AWSToolkit.CommonUI.CredentialProfiles.StaticProfileSubform"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles"
+    xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
+    mc:Ignorable="d">
+
+    <local:ProfileSubform.Header>
+        <StackPanel>
+            <Expander
+                Header="Where to find or create an IAM User Role?">
+                <!-- TODO IDE-10914 -->
+                <TextBlock>
+                    1. Login to the <commonUi:BrowserHyperLink>IAM Users page in the AWS Console</commonUi:BrowserHyperLink>.<LineBreak />
+                    2. Add a new IAM user account with programmatic access.<LineBreak />
+                    3. Attach an administrator or power user policy to the user.<LineBreak />
+                    4. Copy and paste the credentials into the form or download<LineBreak />
+                    &#160;&#160;&#160;&#160;the CSV file containing the credentials and use the Import<LineBreak />
+                    &#160;&#160;&#160;&#160;button to locate and load the credentials from the<LineBreak />
+                    &#160;&#160;&#160;&#160;downloaded file.
+                </TextBlock>
+            </Expander>
+            <TextBlock>
+                <!-- TODO IDE-10794 -->
+                <Hyperlink
+                    Command="{Binding ImportCsvFileCommand}">
+                    Import from CSV File...
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </local:ProfileSubform.Header>
+
+    <local:ProfileSubform.Content>
+        <StackPanel>
+            <TextBlock
+                Text="Access Key" />
+            <PasswordBox
+                behaviors:PasswordBoxBehavior.BindPassword="true"
+                behaviors:PasswordBoxBehavior.Password="{Binding ProfileProperties.AccessKey}" />
+            <TextBlock
+                Text="Secret Key" />
+            <PasswordBox
+                behaviors:PasswordBoxBehavior.BindPassword="true"
+                behaviors:PasswordBoxBehavior.Password="{Binding ProfileProperties.SecretKey}" />
+        </StackPanel>
+    </local:ProfileSubform.Content>
+
+</local:ProfileSubform>
