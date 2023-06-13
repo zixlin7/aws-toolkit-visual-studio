@@ -24,7 +24,13 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Behaviors
         {
             if (d is Window window)
             {
-                window.DialogResult = (bool?)e.NewValue;
+                try
+                {
+                    // DialogResult can only be set between the call and completion of ShowDialog, otherwise the Window will
+                    // throw an exception.  There is no public state to indicate when a Window is in the ShowDialog method.
+                    window.DialogResult = (bool?) e.NewValue;
+                }
+                catch { }
             }
         }
     }
