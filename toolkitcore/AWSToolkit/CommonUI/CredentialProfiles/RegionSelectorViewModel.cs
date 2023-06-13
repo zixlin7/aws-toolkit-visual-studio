@@ -48,7 +48,12 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
                 if (!string.Equals(SelectedRegionId, value))
                 {
                     _regionIdSetter(value);
-                    SelectedPartitionId = _toolkitContext.RegionProvider.GetPartitionId(value);
+
+                    if (value != null)
+                    {
+                        SelectedPartitionId = _toolkitContext.RegionProvider.GetPartitionId(value);
+                    }
+
                     NotifyPropertyChanged(nameof(SelectedRegionId));
                 }
             }
