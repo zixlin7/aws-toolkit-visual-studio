@@ -12,7 +12,6 @@ namespace AWSToolkit.Tests.Lambda
         public static readonly IEnumerable<object[]> DotNetManagedRuntimes = new[]
         {
             new object[] { RuntimeOption.DotNet6 },
-            new object[] { RuntimeOption.NetCore_v3_1 },
         };
 
         [Theory]
@@ -35,9 +34,9 @@ namespace AWSToolkit.Tests.Lambda
         [Fact]
         public void RuntimeClass()
         {
-            var runtime = RuntimeOption.NetCore_v3_1;
-            Assert.Equal(".NET Core v3.1", runtime.DisplayName);
-            Assert.Equal("dotnetcore3.1", runtime.Value);
+            var runtime = RuntimeOption.DotNet6;
+            Assert.Equal(".NET 6", runtime.DisplayName);
+            Assert.Equal("dotnet6", runtime.Value);
         }
 
         [Fact]

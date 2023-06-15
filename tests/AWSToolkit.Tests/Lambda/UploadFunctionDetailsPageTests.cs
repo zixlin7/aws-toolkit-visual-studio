@@ -34,7 +34,7 @@ namespace AWSToolkit.Tests.Lambda
         {
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp10, RuntimeOption.PROVIDED);
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp21, RuntimeOption.PROVIDED);
-            AssertFrameworkSetsRuntime(Frameworks.NetCoreApp31, RuntimeOption.NetCore_v3_1);
+            AssertFrameworkSetsRuntime(Frameworks.NetCoreApp31, RuntimeOption.PROVIDED);
             AssertFrameworkSetsRuntime(Frameworks.Net50, RuntimeOption.PROVIDED);
             AssertFrameworkSetsRuntime(Frameworks.Net60, RuntimeOption.DotNet6);
         }
@@ -49,7 +49,6 @@ namespace AWSToolkit.Tests.Lambda
         [StaFact]
         public void RuntimeAffectsFramework()
         {
-            AssertRuntimeAffectsFramework(RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31);
             AssertRuntimeAffectsFramework(RuntimeOption.DotNet6, Frameworks.Net60);
         }
 
@@ -59,7 +58,6 @@ namespace AWSToolkit.Tests.Lambda
             var runtimesToShow = new RuntimeOption[]
             {
                 RuntimeOption.DotNet6,
-                RuntimeOption.NetCore_v3_1,
                 RuntimeOption.PROVIDED,
                 RuntimeOption.PROVIDED_AL2,
             };
@@ -71,18 +69,6 @@ namespace AWSToolkit.Tests.Lambda
                     AssertRuntimeAffectsConfigFrameworkSettingsVisibility(runtime,
                         runtimesToShow.Contains(runtime));
                 });
-        }
-
-        [StaFact]
-        public void DotNetHandlerComponentsAffectHandler_NetCore31()
-        {
-            _fixture.Page.ViewModel.Runtime = RuntimeOption.NetCore_v3_1;
-
-            _fixture.Page.ViewModel.HandlerAssembly = "aaa";
-            _fixture.Page.ViewModel.HandlerType = "ttt";
-            _fixture.Page.ViewModel.HandlerMethod = "mmm";
-
-            Assert.Equal("aaa::ttt::mmm", _fixture.Page.ViewModel.Handler);
         }
 
         [StaFact]
