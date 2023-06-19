@@ -4,11 +4,24 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Behaviors
 {
     public static class WindowBehavior
     {
+        /// <summary>
+        /// Allows binding from a view model to the Window.DialogResult property.
+        /// </summary>
+        /// <remarks>
+        /// Only binds from view model to Window.DialogResult.  As Window.DialogResult does not raise a property changed
+        /// event nor is it a DependencyProperty, it cannot update the view model property when it changes.  If the DialogResult
+        /// of the Window is needed, either use the value upon return from ShowDialog or listen for the Window.OnClosing/OnClosed
+        /// events.
+        /// </remarks>
         public static readonly DependencyProperty BindDialogResultProperty = DependencyProperty.RegisterAttached(
             "BindDialogResult",
             typeof(bool?),
             typeof(WindowBehavior),
-            new PropertyMetadata(BindDialogResult_PropertyChanged));
+            new FrameworkPropertyMetadata()
+            {
+                BindsTwoWayByDefault = false,
+                PropertyChangedCallback = BindDialogResult_PropertyChanged
+            });
 
         public static bool? GetBindDialogResult(DependencyObject d)
         {
