@@ -1,18 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Telemetry.Model;
+
+using log4net;
+
+using CredentialType = Amazon.AWSToolkit.Credentials.Utils.CredentialType;
 
 namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
 {
     public class CredentialProfileFormViewModel : BaseModel, IDisposable
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(CredentialProfileFormViewModel));
+
         private readonly ToolkitContext _toolkitContext;
 
         public ProfileProperties ProfileProperties { get; private set; }
@@ -74,36 +84,41 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
 
         public ICommand SaveCommand { get; }
 
-        private Task Save(object parameter)
+        private void Save(object parameter)
         {
             var credentialIdentifier = SelectedCredentialFileType == CredentialFileType.Shared ?
                 new SharedCredentialIdentifier(ProfileProperties.Name) as ICredentialIdentifier :
                 new SDKCredentialIdentifier(ProfileProperties.Name);
 
-            _toolkitContext.CredentialSettingsManager.CreateProfile(credentialIdentifier, ProfileProperties);
-            CredentialProfileSaved?.Invoke(this, new CredentialProfileSavedEventArgs());
-
-            return Task.CompletedTask;
+            try
+            {
+                _toolkitContext.CredentialSettingsManager.CreateProfile(credentialIdentifier, ProfileProperties);
+                RecordAddMetric(new ActionResults().WithSuccess(true), MetricSources.CredentialProfileFormMetricSource.CredentialProfileForm);
+                CredentialProfileSaved?.Invoke(this, new CredentialProfileSavedEventArgs());
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Unable to save credential profile.", ex);
+                RecordAddMetric(ActionResults.CreateFailed(ex), MetricSources.CredentialProfileFormMetricSource.CredentialProfileForm);
+            }
         }
         #endregion
 
         #region ImportCsvFile
         public ICommand ImportCsvFileCommand { get; }
 
-        private Task ImportCsvFile(object parameter)
+        private void ImportCsvFile(object parameter)
         {
             // TODO IDE-10794
-            return Task.CompletedTask;
         }
         #endregion
 
         #region OpenCredentialFile
         public ICommand OpenCredentialFileCommand { get; }
 
-        private Task OpenCredentialFile(object parameter)
+        private void OpenCredentialFile(object parameter)
         {
             // TODO IDE-10912
-            return Task.CompletedTask;
         }
         #endregion
 
@@ -117,9 +132,9 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
             ProfileRegionSelectorViewModel = new RegionSelectorViewModel(_toolkitContext, () => ProfileProperties.Region, (value) => ProfileProperties.Region = value);
             SsoRegionSelectorViewModel = new RegionSelectorViewModel(_toolkitContext, () => ProfileProperties.SsoRegion, (value) => ProfileProperties.SsoRegion = value);
 
-            SaveCommand = new AsyncRelayCommand(Save);
-            ImportCsvFileCommand = new AsyncRelayCommand(ImportCsvFile);
-            OpenCredentialFileCommand = new AsyncRelayCommand(OpenCredentialFile);
+            SaveCommand = new RelayCommand(Save);
+            ImportCsvFileCommand = new RelayCommand(ImportCsvFile);
+            OpenCredentialFileCommand = new RelayCommand(OpenCredentialFile);
         }
 
         private bool _disposed;
@@ -136,6 +151,20 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
                 SsoRegionSelectorViewModel?.Dispose();
                 SsoRegionSelectorViewModel = null;
             }
+        }
+
+        private void RecordAddMetric(ActionResults actionResults, BaseMetricSource source)
+        {
+            _toolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
+            {
+                AwsAccount = _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
+                AwsRegion = MetadataValue.NotApplicable,
+                Result = actionResults.AsTelemetryResult(),
+                CredentialModification = CredentialModification.Add,
+                Source = source.Location,
+                ServiceType = source.Service,
+                Reason = TelemetryHelper.GetMetricsReason(actionResults?.Exception)
+            });
         }
     }
 }
