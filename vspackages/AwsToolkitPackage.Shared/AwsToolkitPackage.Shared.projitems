@@ -9,6 +9,9 @@
     <Import_RootNamespace>Amazon.AWSToolkit.VisualStudio</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ArmPreview\ArmPreviewInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ArmPreview\ArmPreviewInfoBarManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ArmPreview\Commands\DismissArmPreviewCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AWSToolkitPackage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BeanstalkBuildAndDeployController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BeanstalkProjectPersistenceInfo.cs" />

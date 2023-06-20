@@ -64,7 +64,9 @@ namespace Amazon.AWSToolkit.Navigator
             _navigatorViewModel.AddAccountCommand = new RelayCommand(AddAccount);
             _navigatorViewModel.DeleteAccountCommand = new RelayCommand(DeleteAccount);
             _navigatorViewModel.EditAccountCommand = new RelayCommand(EditEnabledCallback, EditAccount);
-            
+            _navigatorViewModel.ShareArmPreviewFeedback = new ShareArmPreviewFeedbackCommand(_toolkitContext);
+            _navigatorViewModel.FileArmPreviewIssue = new FileArmPreviewIssueCommand(_toolkitContext.ToolkitHost);
+
             _toolkitContext.ConnectionManager.ConnectionSettingsChanged += OnConnectionManagerSettingsChanged;
             _toolkitContext.ConnectionManager.ConnectionStateChanged += OnConnectionStateChanged;
         }

@@ -44,6 +44,7 @@ namespace Amazon.AWSToolkit.Telemetry
             request.AWSProduct = productEnvironment.AwsProduct;
             request.AWSProductVersion = productEnvironment.AwsProductVersion;
             request.OS = productEnvironment.OperatingSystem;
+            request.OSArchitecture = productEnvironment.OperatingSystemArchitecture;
             request.OSVersion = productEnvironment.OperatingSystemVersion;
             request.ParentProduct = productEnvironment.ParentProduct;
             request.ParentProductVersion = productEnvironment.ParentProductVersion;
