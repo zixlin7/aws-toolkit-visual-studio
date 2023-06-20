@@ -13,7 +13,7 @@ namespace Amazon.AWSToolkit.Tasks
         /// Handy for calls that do not care about a Task's completion.
         /// Prevents unobserved Exceptions when firing and forgetting Tasks.
         /// </summary>
-        /// <see cref="https://github.com/microsoft/vs-threading/blob/master/doc/cookbook_vs.md#how-to-write-a-fire-and-forget-method-responsibly"/>
+        /// <see cref="https://github.com/microsoft/vs-threading/blob/main/doc/cookbook_vs.md#how-to-write-a-fire-and-forget-method-responsibly"/>
         /// <param name="task">The task to consume.</param>
         public static void LogExceptionAndForget(this Task task)
         {

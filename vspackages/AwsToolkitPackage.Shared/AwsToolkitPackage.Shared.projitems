@@ -75,6 +75,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Loggers\MSBuildLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messaging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NativeMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\Actions\DontShowAgainAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\Actions\INotificationAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationInfoBarManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\Actions\ShowMarketplaceAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\Actions\ShowUrlAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\VersionStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\VersionManifest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NuGet\CodeArtifactNuGetCredentialProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PkgCmdID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfoAwsSdkReferences.cs" />

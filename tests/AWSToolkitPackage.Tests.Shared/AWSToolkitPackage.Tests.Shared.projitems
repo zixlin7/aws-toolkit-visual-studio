@@ -19,12 +19,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUsageEmitterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUtilitiesTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Navigator\NavigatorViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationStrategyTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationInfoBarTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\VersionStrategyTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandSolutionExplorerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionInfoBarTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionStrategyTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInfoBarTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIThreadFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UseCultureAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\DteVersionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\ProjectExtensionMethodsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\WindowFrameNotificationControllerTests.cs" />
