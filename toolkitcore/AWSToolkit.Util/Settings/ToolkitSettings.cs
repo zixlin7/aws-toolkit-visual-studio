@@ -12,6 +12,7 @@ namespace Amazon.AWSToolkit.Settings
         public static ToolkitSettings Instance;
 
         private const int TelemetryNoticeNeverShown = 0;
+        private const int Arm64PreviewNoticeNeverShown = 0;
 
         private readonly SettingsPersistenceBase _settingsPersistence;
         private readonly DynamoDbSettings _dynamoDbSettings;
@@ -20,11 +21,13 @@ namespace Amazon.AWSToolkit.Settings
         {
             public const string TelemetryEnabled = "AnalyticsPermitted";
             public const string TelemetryNoticeVersionShown = "TelemetryNoticeVersionShown";
+            public const string Arm64PreviewNoticeVersionShown = "Arm64PreviewNoticeVersionShown";
             public const string FirstRunFormShown = "FirstRunFormShown";
             public const string TelemetryClientId = "AnalyticsAnonymousCustomerId";
             public const string LastSelectedRegion = "lastselectedregion";
             public const string ShowMetricsOutputWindow = "ShowMetricsOutputWindow";
             public const string Vs2017SunsetNoticeVersionShown = "Vs2017SunsetNoticeVersionShown";
+            public const string UseLegacyAccountUx = "UseLegacyAccountUx";
         }
 
         public static class DefaultValues
@@ -33,6 +36,7 @@ namespace Amazon.AWSToolkit.Settings
             public const bool HasUserSeenFirstRunForm = false;
             public const bool ShowMetricsOutputWindow = false;
             public const int Vs2017SunsetNoticeVersionNeverShown = 0;
+            public const bool UseLegacyAccountUx = true;
         }
 
         static ToolkitSettings()
@@ -96,6 +100,17 @@ namespace Amazon.AWSToolkit.Settings
         }
 
         /// <summary>
+        /// Gets or sets the "version" of the Arm64 Preview notice/InfoBar the user last saw and acknowledged.
+        /// </summary>
+        public int Arm64PreviewNoticeVersionShown
+        {
+            get =>
+                _settingsPersistence.GetInt(SettingNames.Arm64PreviewNoticeVersionShown,
+                    Arm64PreviewNoticeNeverShown);
+            set => _settingsPersistence.SetInt(SettingNames.Arm64PreviewNoticeVersionShown, value);
+        }
+
+        /// <summary>
         /// Gets or sets whether or not the user has seen the First Run form
         /// </summary>
         public bool HasUserSeenFirstRunForm
@@ -112,6 +127,25 @@ namespace Amazon.AWSToolkit.Settings
             }
 
             set => SetMiscSetting(SettingNames.FirstRunFormShown, AsString(value));
+        }
+
+        /// <summary>
+        /// Gets or sets whether or not to use the legacy account UX
+        /// </summary>
+        public bool UseLegacyAccountUx
+        {
+            get
+            {
+                var valueStr = GetMiscSetting(SettingNames.UseLegacyAccountUx);
+                if (!bool.TryParse(valueStr, out var useLegacy))
+                {
+                    useLegacy = DefaultValues.UseLegacyAccountUx;
+                }
+
+                return useLegacy;
+            }
+
+            set => SetMiscSetting(SettingNames.UseLegacyAccountUx, AsString(value));
         }
 
         public string LastSelectedCredentialId

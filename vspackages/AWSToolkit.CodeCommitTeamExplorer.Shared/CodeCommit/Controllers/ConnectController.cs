@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using log4net;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 {
@@ -17,7 +18,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
     /// </summary>
     public class ConnectController
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectController));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ConnectController));
 
         private ConnectControl _selectionControl;
 
@@ -34,7 +35,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
             {
                 // The Toolkit (extension) has not been loaded and initialized yet.
                 // Prevent a null access exception
-                Logger.Error("Tried to connect to CodeCommit, but the Toolkit has not been loaded yet.");
+                _logger.Error("Tried to connect to CodeCommit, but the Toolkit has not been loaded yet.");
                 return ActionResults.CreateFailed(new ToolkitException("Unable to find CodeCommit data", ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 
@@ -58,10 +59,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
         /// </summary>
         public static void OpenConnection()
         {
-            if (TeamExplorerConnection.ActiveConnection != null)
-            {
-                TeamExplorerConnection.ActiveConnection.Signout();
-            }
+            TeamExplorerConnection.ActiveConnection?.Signout();
 
             var controller = new ConnectController();
             var results = controller.Execute();
@@ -90,8 +88,10 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
                 return ActionResults.CreateFailed(new ToolkitException("Unable to find CodeCommit data", ToolkitException.CommonErrorCode.InternalMissingServiceState));
             }
 
-            var registrationController = new RegisterAccountController(ToolkitFactory.Instance.ToolkitContext);
-            var results = registrationController.Execute(MetricSources.CodeCommitMetricSource.ConnectPanel);
+            // TODO: IDE-10791 Remove legacy UX
+            var results = ToolkitSettings.Instance.UseLegacyAccountUx
+                ? new LegacyRegisterAccountController(ToolkitFactory.Instance.ToolkitContext).Execute(MetricSources.CodeCommitMetricSource.ConnectPanel)
+                : new RegisterAccountController(ToolkitFactory.Instance.ToolkitContext).Execute(MetricSources.CodeCommitMetricSource.ConnectPanel);
 
             if (results.Success)
             {

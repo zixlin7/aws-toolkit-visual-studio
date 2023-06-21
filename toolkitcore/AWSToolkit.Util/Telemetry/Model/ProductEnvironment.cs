@@ -14,6 +14,7 @@ namespace Amazon.AWSToolkit.Telemetry.Model
             AwsProduct = AWSProduct.AWSToolkitForVisualStudio.Value,
             AwsProductVersion = "unknown",
             OperatingSystem = Environment.OSVersion.Platform.ToString(),
+            OperatingSystemArchitecture = "unknown",
             OperatingSystemVersion = Environment.OSVersion.Version.ToString(), // eg: "10.0.18363.0"
             ParentProduct = "Visual Studio",
             ParentProductVersion = "unknown"
@@ -27,6 +28,7 @@ namespace Amazon.AWSToolkit.Telemetry.Model
         public string AwsProductVersion { get; set; }
 
         public string OperatingSystem { get; set; }
+        public string OperatingSystemArchitecture { get; set; }
         public string OperatingSystemVersion { get; set; }
 
         /// <summary>

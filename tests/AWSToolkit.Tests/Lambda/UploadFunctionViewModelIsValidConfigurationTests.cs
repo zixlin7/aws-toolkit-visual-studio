@@ -153,9 +153,6 @@ namespace AWSToolkit.Tests.Lambda
             _sut.HandlerMethod = method;
             _sut.Handler = "some-handler";
 
-            _sut.Runtime = RuntimeOption.NetCore_v3_1;
-            Assert.False(_sut.IsValidConfiguration());
-
             _sut.Runtime = RuntimeOption.DotNet6;
             Assert.False(_sut.IsValidConfiguration());
         }
@@ -189,9 +186,6 @@ namespace AWSToolkit.Tests.Lambda
             _sut.Handler = handler;
 
             // Handler can not be empty for non-Custom runtimes
-            _sut.Runtime = RuntimeOption.NetCore_v3_1;
-            Assert.False(_sut.IsValidConfiguration());
-
             _sut.Runtime = RuntimeOption.DotNet6;
             Assert.False(_sut.IsValidConfiguration());
 
@@ -241,7 +235,7 @@ namespace AWSToolkit.Tests.Lambda
         private void SetValidZipDeployValues(UploadFunctionViewModel viewModel)
         {
             viewModel.PackageType = PackageType.Zip;
-            viewModel.Runtime = RuntimeOption.NetCore_v3_1;
+            viewModel.Runtime = RuntimeOption.DotNet6;
             viewModel.Architecture = LambdaArchitecture.X86;
 
             viewModel.SourceCodeLocation = _fixture.TestLocation.TestFolder;

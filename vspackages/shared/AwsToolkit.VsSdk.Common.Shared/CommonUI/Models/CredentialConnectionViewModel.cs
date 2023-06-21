@@ -30,8 +30,6 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(CredentialConnectionViewModel));
 
-        private static readonly string DefaultRegionId = RegionEndpoint.USEast1.SystemName;
-
         /// <summary>
         /// Tracks the most recent non-null region that was used with a partition Id
         /// </summary>
@@ -237,7 +235,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
         {
             if (credentialIdentifier == null)
             {
-                return DefaultRegionId;
+                return ToolkitRegion.DefaultRegionId;
             }
 
             if (_idToRegion.TryGetValue(credentialIdentifier.Id, out string regionId))
@@ -322,12 +320,12 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
             try
             {
                 var properties = _toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-                return string.IsNullOrWhiteSpace(properties.Region) ? DefaultRegionId : properties.Region;
+                return string.IsNullOrWhiteSpace(properties.Region) ? ToolkitRegion.DefaultRegionId : properties.Region;
             }
             catch (Exception ex)
             {
                 _logger.Error($"Error occurred while trying to retrieve profile properties for {credentialIdentifier.Id}", ex);
-                return DefaultRegionId;
+                return ToolkitRegion.DefaultRegionId;
             }
         }
 

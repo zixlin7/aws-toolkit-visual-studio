@@ -39,7 +39,7 @@
             </Grid.RowDefinitions>
 
             <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=_ctlDisplayName}" 
-                   VerticalAlignment="Center">Profile _Name:</Label>
+                   VerticalAlignment="Center">NEW ONE!!! Profile _Name:</Label>
             <TextBox Name="_ctlDisplayName" Grid.Column="2" Grid.Row="0" 
                      Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" 
                      Tag="Required"/>

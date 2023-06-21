@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Clients;
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Regions.Manifest;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Moq;
 using Amazon.Runtime;
-using Amazon.AWSToolkit.CommonUI;
+
+using Moq;
 
 namespace Amazon.AWSToolkit.Tests.Common.Context
 {
@@ -52,6 +54,41 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         private void InitializeRegionProviderMocks()
         {
+            void addRegion(string partitionId, string regionId, List<ToolkitRegion> regions)
+            {
+                var region = new ToolkitRegion() { Id = regionId, DisplayName = regionId, PartitionId = partitionId };
+                regions.Add(region);
+
+                RegionProvider.Setup(mock => mock.GetRegion(It.Is<string>(id => id == regionId))).Returns(region);
+                RegionProvider.Setup(mock => mock.GetPartitionId(It.Is<string>(id => id == regionId))).Returns(partitionId);
+            }
+
+            var partitions = new List<Partition>();
+
+            // Add partitions
+            foreach (var pid in new List<string>() { PartitionIds.AWS, PartitionIds.AWS_CHINA, PartitionIds.AWS_GOV_CLOUD })
+            {
+                var partition = new Partition() { Id = pid, PartitionName = pid };
+                partitions.Add(partition);
+
+                RegionProvider.Setup(mock => mock.GetPartition(It.Is<string>(id => id == pid))).Returns(partition);
+
+                var regions = new List<ToolkitRegion>();
+
+                // Add regions for current partition
+                for (var r = 1; r <= 5; ++r)
+                {
+                    addRegion(pid, $"region{r}-{pid}", regions);
+                }
+
+                // While order shouldn't be important, RegionProvider adds local host at the end, so do the same here
+                addRegion(pid, $"{Regions.RegionProvider.LocalRegionIdPrefix}-{pid}", regions);
+
+                RegionProvider.Setup(mock => mock.GetRegions(It.Is<string>(id => id == pid))).Returns(regions);
+            }
+
+            RegionProvider.Setup(mock => mock.GetPartitions()).Returns(partitions);
+
             RegionProvider.Setup(mock => mock.IsRegionLocal(It.IsAny<string>())).Returns(false);
         }
 

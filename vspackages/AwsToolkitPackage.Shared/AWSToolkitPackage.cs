@@ -89,6 +89,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
 using Amazon.AWSToolkit.VisualStudio.SupportedVersion;
+using Amazon.AWSToolkit.VisualStudio.Notification;
 
 using Microsoft.VisualStudio.Threading;
 
@@ -96,6 +97,9 @@ using Debugger = System.Diagnostics.Debugger;
 using OutputWindow = Amazon.AwsToolkit.VsSdk.Common.OutputWindow.OutputWindow;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
+using Amazon.AWSToolkit.VisualStudio.ArmPreview;
+using Amazon.AWSToolkit.Notifications;
+
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -192,7 +196,10 @@ namespace Amazon.AWSToolkit.VisualStudio
         private ToolkitContext _toolkitContext;
         private TelemetryManager _telemetryManager;
         private TelemetryInfoBarManager _telemetryInfoBarManager;
+        private ArmPreviewInfoBarManager _armPreviewInfoBarManager;
         private SupportedVersionBarManager _supportedVersionBarManager;
+        private NotificationInfoBarManager _notificationInfoBarManager;
+        private ProductEnvironment _productEnvironment;
         private DateTime _startInitializeOn;
         private IPublishSettingsRepository _publishSettingsRepository;
         private ISettingsRepository<LoggingSettings> _loggingSettingsRepository;
@@ -496,9 +503,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 string dteVersion = null;
 
-                var productEnvironment = await CreateProductEnvironmentAsync();
+                _productEnvironment = await CreateProductEnvironmentAsync();
                 _metricsOutputWindow = await CreateMetricsOutputWindowAsync();
-                _telemetryManager = CreateTelemetryManager(productEnvironment);
+                _telemetryManager = CreateTelemetryManager(_productEnvironment);
                 // Give RegionProvider a chance to load data before it is needed later in Toolkit initialization
                 var regionProviderTask = CreateRegionProviderAsync(_telemetryManager?.TelemetryLogger);
 
@@ -560,7 +567,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 });
 
                 _toolkitOutputWindow = await CreateToolkitOutputWindowAsync();
-                OutputProductDetails(productEnvironment);
+                OutputProductDetails(_productEnvironment);
 
                 var hostInfo = DteVersion.AsHostInfo(dteVersion);
                 ThemeUtil.Initialize(dteVersion);
@@ -572,7 +579,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
-                InstantiateToolkitShellProviderService(hostInfo, productEnvironment);
+                InstantiateToolkitShellProviderService(hostInfo, _productEnvironment);
 
                 // Enable UIs to access VS-provided images
                 await InitializeImageProviderAsync();
@@ -1051,7 +1058,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _shellInitialized = true;
                 ShowFirstRun();
                 ShowTelemetryNotice();
+                ShowArmPreviewNotice();
                 ShowSupportedVersionNotice(ToolkitHosts.Vs2017);
+                ShowNotificationsAsync(_productEnvironment).LogExceptionAndForget();
             }
 
             return VSConstants.S_OK;
@@ -1071,8 +1080,15 @@ namespace Amazon.AWSToolkit.VisualStudio
                     {
                         if (!ToolkitSettings.Instance.HasUserSeenFirstRunForm)
                         {
-                            var controller = new FirstRunController(this, _toolkitSettingsWatcher, _toolkitContext);
-                            controller.Execute();
+                            // TODO: IDE-10791 Remove legacy UX
+                            if (ToolkitSettings.Instance.UseLegacyAccountUx)
+                            {
+                                new LegacyFirstRunController(this, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                            }
+                            else
+                            {
+                                new FirstRunController(this, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                            }
                         }
                     }
                     catch (Exception e)
@@ -1107,6 +1123,30 @@ namespace Amazon.AWSToolkit.VisualStudio
             });
         }
 
+        private void ShowArmPreviewNotice()
+        {
+            if (!ArmPreviewNotice.CanShowNotice())
+            {
+                return;
+            }
+
+            JoinableTaskFactory.Run(async () =>
+            {
+                try
+                {
+                    await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                    LOGGER.Debug("Attempting to show Arm64 Preview Banner");
+                    _armPreviewInfoBarManager = new ArmPreviewInfoBarManager(this, _toolkitContext);
+                    _armPreviewInfoBarManager.ShowArmPreviewInfoBar();
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Error("ShowArmPreviewNotice error", e);
+                }
+            });
+        }
+
         /// <summary>
         /// Displays an information bar indicating minimum supported version of the IDE
         /// </summary>
@@ -1136,6 +1176,18 @@ namespace Amazon.AWSToolkit.VisualStudio
                 }
             });
         }
+
+        /// <summary>
+        /// Displays the latest Toolkit Notifications sourced from Hosted Files
+        /// </summary>
+        private async Task ShowNotificationsAsync(ProductEnvironment productEnvironment)
+        {
+            await TaskScheduler.Default;
+            await Task.Delay(5000);
+            _notificationInfoBarManager = new NotificationInfoBarManager(this, ToolkitContext, productEnvironment.AwsProductVersion);
+            await _notificationInfoBarManager.ShowNotificationsAsync(S3FileFetcher.HOSTEDFILES_LOCATION + "Notifications/VisualStudio/VsInfoBar.json");
+        }
+
 
         static void SetupMenuCommand(OleMenuCommandService mcs, Guid cmdSetGuid, uint commandId, EventHandler command, EventHandler queryStatus)
         {
@@ -2588,7 +2640,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryManager?.Dispose();
 
             _telemetryInfoBarManager?.Dispose();
+            _armPreviewInfoBarManager?.Dispose();
             _supportedVersionBarManager?.Dispose();
+            _notificationInfoBarManager?.Dispose();
             _metricsOutputWindow?.Dispose();
             _toolkitOutputWindow?.Dispose();
 

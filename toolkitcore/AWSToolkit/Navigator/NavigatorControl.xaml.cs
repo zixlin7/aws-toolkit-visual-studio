@@ -64,7 +64,9 @@ namespace Amazon.AWSToolkit.Navigator
             _navigatorViewModel.AddAccountCommand = new RelayCommand(AddAccount);
             _navigatorViewModel.DeleteAccountCommand = new RelayCommand(DeleteAccount);
             _navigatorViewModel.EditAccountCommand = new RelayCommand(EditEnabledCallback, EditAccount);
-            
+            _navigatorViewModel.ShareArmPreviewFeedback = new ShareArmPreviewFeedbackCommand(_toolkitContext);
+            _navigatorViewModel.FileArmPreviewIssue = new FileArmPreviewIssueCommand(_toolkitContext.ToolkitHost);
+
             _toolkitContext.ConnectionManager.ConnectionSettingsChanged += OnConnectionManagerSettingsChanged;
             _toolkitContext.ConnectionManager.ConnectionStateChanged += OnConnectionStateChanged;
         }
@@ -359,8 +361,15 @@ namespace Amazon.AWSToolkit.Navigator
 
         void AddAccount(object parameter)
         {
-            RegisterAccountController command = new RegisterAccountController(_toolkitContext);
-            ActionResults results = command.Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+            // TODO: IDE-10791 Remove legacy UX
+            if (ToolkitSettings.Instance.UseLegacyAccountUx)
+            {
+                new LegacyRegisterAccountController(_toolkitContext).Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+            }
+            else
+            {
+                new RegisterAccountController(_toolkitContext).Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+            }
         }
 
         private void RecordAwsModifyCredentialsMetric(ActionResults actionResults, CredentialModification modification)
@@ -410,8 +419,6 @@ namespace Amazon.AWSToolkit.Navigator
             // Make a reasonable region selection, if the currently selected region is not available.
 
             //Resolve region in following order: Last selected, fallback, profile region, default region, or first 
-            var defaultRegion = RegionEndpoint.USEast1;
-
             var previousRegion = _toolkitContext.RegionProvider.GetRegion(ToolkitSettings.Instance.LastSelectedRegion);
             var accountRegion = _navigatorViewModel.Account?.Region;
 
@@ -419,7 +426,7 @@ namespace Amazon.AWSToolkit.Navigator
                 (previousRegion != null ? _navigatorViewModel.GetRegion(previousRegion.Id) : null) ??
                 _navigatorViewModel.GetRegion(GetFallbackRegionId(_navigatorViewModel.PartitionId)) ??
                 (accountRegion != null ? _navigatorViewModel.GetRegion(accountRegion.Id) : null) ??
-                (defaultRegion != null ? _navigatorViewModel.GetRegion(defaultRegion.SystemName) : null) ??
+                _navigatorViewModel.GetRegion(ToolkitRegion.DefaultRegionId) ??
                 _navigatorViewModel.Regions.FirstOrDefault();
 
             _navigatorViewModel.Region = selectedRegion;
@@ -515,7 +522,10 @@ namespace Amazon.AWSToolkit.Navigator
 
             try
             {
-                var command = new EditAccountController(_toolkitContext);
+                // TODO: IDE-10791 Remove legacy UX
+                var command = ToolkitSettings.Instance.UseLegacyAccountUx ?
+                    new LegacyEditAccountController(_toolkitContext) :
+                    new EditAccountController(_toolkitContext) as IContextCommand;
                 var results = command.Execute(viewModel);
                 RecordAwsModifyCredentialsMetric(results, CredentialModification.Edit);
             }

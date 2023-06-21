@@ -11,11 +11,6 @@ namespace Amazon.AWSToolkit.Lambda.Model
             IsDotNet = true,
         };
 
-        public static readonly RuntimeOption NetCore_v3_1 = new RuntimeOption(Amazon.Lambda.Runtime.Dotnetcore31.Value, ".NET Core v3.1")
-        {
-            IsDotNet = true,
-        };
-
         public static readonly RuntimeOption PROVIDED = new RuntimeOption(Amazon.Lambda.Runtime.Provided.Value, "Custom .NET Core Runtime")
         {
             IsDotNet = true,
@@ -26,7 +21,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             IsDotNet = true,
         };
 
-        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { DotNet6, NetCore_v3_1, NodeJS_v12_X, PROVIDED, PROVIDED_AL2};
+        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { DotNet6, NodeJS_v12_X, PROVIDED, PROVIDED_AL2};
 
         private RuntimeOption(string value, string displayName)
         {

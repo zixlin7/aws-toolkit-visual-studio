@@ -5,6 +5,7 @@
     xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
 
+    <!-- https://learn.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio?view=vs-2022#BKMK_ThemedDialogLayout -->
     <Style TargetType="{x:Type local:ThemedDialogWindow}">
         <Setter Property="Template">
             <Setter.Value>
@@ -18,10 +19,10 @@
                                 <!-- VS would use a GlyphButton in this case, but it's not available for extensions.
                                 See ThemedDialogWindow.OnApplyTemplate override for how this button event handler is wired. -->
                                 <Button
-                                    x:Name="PART_CloseWindowButton"
                                     DockPanel.Dock="Top"
                                     Content="&#x2715;"
                                     Foreground="{DynamicResource {x:Static platformUi:ThemedDialogColors.WindowButtonGlyphBrushKey}}"
+                                    IsCancel="true"
                                     IsEnabled="{Binding IsCloseButtonEnabled, RelativeSource={RelativeSource AncestorType={x:Type local:ThemedDialogWindow}}}"
                                     HorizontalAlignment="Right"
                                     Margin="9 6 9 6"
@@ -34,7 +35,8 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
-                                <ContentPresenter />
+                                <ContentPresenter
+                                    Margin="24 0 24 24" />
                             </DockPanel>
                         </Border>
                     </Grid>

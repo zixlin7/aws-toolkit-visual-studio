@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Notifications;
 using Amazon.AWSToolkit.Regions;
 using log4net;
 
@@ -40,6 +41,8 @@ namespace Amazon.AWSToolkit.Navigator
         private ICommand _addAccountCommand;
         private ICommand _deleteAccountCommand;
         private ICommand _editAccountCommand;
+        private ICommand _shareArmPreviewFeedback;
+        private ICommand _fileArmPreviewIssue;
 
         public string ErrorMessage
         {
@@ -219,6 +222,20 @@ namespace Amazon.AWSToolkit.Navigator
                 SetProperty(ref _editAccountCommand, value, () => EditAccountCommand);
             }
         }
+
+        public ICommand ShareArmPreviewFeedback
+        {
+            get => _shareArmPreviewFeedback;
+            set => SetProperty(ref _shareArmPreviewFeedback, value, () => ShareArmPreviewFeedback);
+        }
+
+        public ICommand FileArmPreviewIssue
+        {
+            get => _fileArmPreviewIssue;
+            set => SetProperty(ref _fileArmPreviewIssue, value, () => FileArmPreviewIssue);
+        }
+
+        public bool ShowArmPreviewBanner => ArmPreviewNotice.IsSupportedProcessor();
 
         public NavigatorViewModel(IRegionProvider regionProvider)
         {

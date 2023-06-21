@@ -520,6 +520,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// <returns></returns>
         protected CredentialProfile CreateCredentialProfile(string name, ProfileProperties properties)
         {
+            // TODO IDE-10947 Update for SSO profiles
             if (properties == null) return null;
             var profileOptions = new CredentialProfileOptions
             {

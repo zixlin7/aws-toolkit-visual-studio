@@ -39,14 +39,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         private static readonly IDictionary<string, RuntimeOption> RuntimeByFramework =
             new Dictionary<string, RuntimeOption>(StringComparer.OrdinalIgnoreCase)
             {
-                {Frameworks.NetCoreApp31, RuntimeOption.NetCore_v3_1},
                 {Frameworks.Net60, RuntimeOption.DotNet6},
             };
 
         private static readonly IDictionary<RuntimeOption, string> FrameworkByRuntime =
             new Dictionary<RuntimeOption, string>()
             {
-                {RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31},
                 {RuntimeOption.DotNet6, Frameworks.Net60},
             };
 
@@ -103,7 +101,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             ViewModel.ProjectIsExecutable = hostWizard.GetProperty<bool>(UploadFunctionWizardProperties.IsExecutable, false);
 
             ViewModel.Runtime = deploymentType == DeploymentType.NETCore
-                ? RuntimeOption.NetCore_v3_1
+                ? RuntimeOption.DotNet6
                 : RuntimeOption.NodeJS_v12_X;
 
             if (ViewModel.Runtime.IsDotNet)

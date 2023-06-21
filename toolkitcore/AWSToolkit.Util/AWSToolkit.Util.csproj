@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
@@ -11,8 +11,8 @@
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.123.0" />
-    <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.123.0" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.130.0" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.130.0" />
     <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.24" />
     <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.86" />
     <PackageReference Include="AWSSDK.EC2" Version="3.7.126.0" />
@@ -120,6 +120,19 @@
     </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ToolkitAMIs.xml">
       <Link>HostedFiles\ToolkitAMIs.xml</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Localization\Notification.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Notification.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Localization\Notification.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Notification.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup Condition="!Exists('$(BuildRoot)\hostedfiles\endpoints.json')">

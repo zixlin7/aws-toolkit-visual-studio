@@ -111,6 +111,31 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         }
 
         [Theory]
+        [InlineData(null, ToolkitSettings.DefaultValues.UseLegacyAccountUx)]
+        [InlineData("garbage", ToolkitSettings.DefaultValues.UseLegacyAccountUx)]
+        [InlineData("true", true)]
+        [InlineData("false", false)]
+        public void GetUseLegacyAccountUx(string persistedValue, bool expectedValue)
+        {
+            if (persistedValue != null)
+            {
+                _settingsPersistence.PersistenceData["UseLegacyAccountUx"] = persistedValue;
+            }
+
+            Assert.Equal(expectedValue, _sut.UseLegacyAccountUx);
+        }
+
+        [Theory]
+        [InlineData(true, "true")]
+        [InlineData(false, "false")]
+        public void SetUseLegacyAccountUx(bool value, string persistedValue)
+        {
+            _sut.UseLegacyAccountUx = value;
+
+            Assert.Equal(persistedValue, _settingsPersistence.PersistenceData["UseLegacyAccountUx"]);
+        }
+
+        [Theory]
         [InlineData(null, ToolkitSettings.DefaultValues.ShowMetricsOutputWindow)]
         [InlineData("garbage", ToolkitSettings.DefaultValues.ShowMetricsOutputWindow)]
         [InlineData("true", true)]

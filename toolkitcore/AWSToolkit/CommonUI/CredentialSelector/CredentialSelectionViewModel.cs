@@ -17,7 +17,6 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialSelector
     /// </summary>
     public class CredentialSelectionViewModel : BaseModel
     {
-        private static readonly string DefaultRegionId = RegionEndpoint.USEast1.SystemName;
         /// <summary>
         /// Tracks the most recent non-null region that was used with a partition Id
         /// </summary>
@@ -238,7 +237,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialSelector
         {
             if (credentialIdentifier == null)
             {
-                return DefaultRegionId;
+                return ToolkitRegion.DefaultRegionId;
             }
 
             if (_idToRegion.TryGetValue(credentialIdentifier.Id, out string regionId))
@@ -256,11 +255,11 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialSelector
             try
             {
                 var properties = _toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-                return string.IsNullOrWhiteSpace(properties.Region) ? DefaultRegionId : properties.Region;
+                return string.IsNullOrWhiteSpace(properties.Region) ? ToolkitRegion.DefaultRegionId : properties.Region;
             }
             catch (Exception)
             {
-                return DefaultRegionId;
+                return ToolkitRegion.DefaultRegionId;
             }
         }
 

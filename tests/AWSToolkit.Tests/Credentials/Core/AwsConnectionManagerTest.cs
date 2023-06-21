@@ -54,7 +54,7 @@ namespace AWSToolkit.Tests.Credentials.Core
 
         private readonly ToolkitRegion _defaultToolkitRegion = new ToolkitRegion
         {
-            Id = "DefaultRegion1", DisplayName = "default-Region", PartitionId = PartitionIds.AWS
+            Id = "DefaultRegion1", DisplayName = "default-Region", PartitionId = PartitionIds.DefaultPartitionId
         };
 
         private readonly ManualResetEvent _connectionStateIsTerminalEvent = new ManualResetEvent(false);

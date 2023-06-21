@@ -46,8 +46,15 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
         {
             try
             {
-                var controller = new FirstRunController(_toolkitPackage, _toolkitSettingsWatcher, _toolkitContext);
-                controller.Execute();
+                // TODO: IDE-10791 Remove legacy UX
+                if (ToolkitSettings.Instance.UseLegacyAccountUx)
+                {
+                    new LegacyFirstRunController(_toolkitPackage, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                }
+                else
+                {
+                    new FirstRunController(_toolkitPackage, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                }
             }
             catch (Exception e)
             {

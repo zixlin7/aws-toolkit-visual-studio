@@ -36,11 +36,12 @@ namespace Amazon.AWSToolkit.Account
             if (!results.Success)
                 return;
 
-            if (results.GetParameter<bool>(EditAccountController.NAME_CHANGE_PARAMETER, false))
+            // TODO IDE-10814 Update when refactoring EditAccountController
+            if (results.GetParameter<bool>(LegacyEditAccountController.NAME_CHANGE_PARAMETER, false))
             {
                 model.DisplayName = results.FocalName;
             }
-            if (results.GetParameter<bool>(EditAccountController.CREDENTIALS_CHANGE_PARAMETER, false))
+            if (results.GetParameter<bool>(LegacyEditAccountController.CREDENTIALS_CHANGE_PARAMETER, false))
             {
                 model.ReloadFromPersistence(model.DisplayName);
                 model.FullReload(true);

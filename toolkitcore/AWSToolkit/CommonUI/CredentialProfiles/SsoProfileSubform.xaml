@@ -1,0 +1,27 @@
+﻿<local:ProfileSubform
+    x:Class="Amazon.AWSToolkit.CommonUI.CredentialProfiles.SsoProfileSubform"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles"
+    mc:Ignorable="d">
+
+    <local:ProfileSubform.Content>
+        <StackPanel>
+            <TextBlock
+                Text="Sign-in URL" />
+            <TextBox
+                Text="{Binding ProfileProperties.SsoStartUrl}" />
+        </StackPanel>
+    </local:ProfileSubform.Content>
+
+    <local:ProfileSubform.Footer>
+        <Expander
+            Header="SSO Region">
+            <local:RegionSelector
+                DataContext="{Binding SsoRegionSelectorViewModel}" />
+        </Expander>
+    </local:ProfileSubform.Footer>
+
+</local:ProfileSubform>
