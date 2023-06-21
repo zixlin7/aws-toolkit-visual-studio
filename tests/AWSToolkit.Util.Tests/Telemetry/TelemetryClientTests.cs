@@ -31,6 +31,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             AwsProduct = AWSProduct.AWSToolkitForVisualStudio,
             AwsProductVersion = "testVersion",
             OperatingSystem = "testOs",
+            OperatingSystemArchitecture = "testArchitecture",
             OperatingSystemVersion = "1.2.3",
             ParentProduct = "testParent",
             ParentProductVersion = "4.5.6",

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.VisualStudio.Utilities.VsAppId;
@@ -19,6 +20,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities
                 AwsProduct = ProductEnvironment.Default.AwsProduct,
                 AwsProductVersion = typeof(ToolkitProductEnvironment).Assembly.GetName().Version.ToString(),
                 OperatingSystem = ProductEnvironment.Default.OperatingSystem,
+                OperatingSystemArchitecture = RuntimeInformation.OSArchitecture.ToString(),
                 OperatingSystemVersion = ProductEnvironment.Default.OperatingSystemVersion,
                 ParentProduct = GetParentProduct(vsAppId, dte),
                 ParentProductVersion = GetParentProductVersion(vsAppId, dte),
