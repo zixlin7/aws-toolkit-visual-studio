@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.Context;
 
 using AwsToolkit.VsSdk.Common.CommonUI;
 using AwsToolkit.VsSdk.Common.CommonUI.Ecr;
+using AwsToolkit.VsSdk.Common.CommonUI.Models;
 
 using Microsoft.VisualStudio.Threading;
 using Microsoft.Win32;
@@ -81,6 +82,14 @@ namespace Amazon.AWSToolkit.VisualStudio
         public ISsoLoginDialog CreateSsoLoginDialog()
         {
             return new SsoLoginDialog(_toolkitContext);
+        }
+
+        public ICredentialProfileDialog CreateCredentialProfileDialog()
+        {
+            return new CredentialProfileDialog()
+            {
+                DataContext = new CredentialProfileDialogViewModel(_toolkitContext)
+            };
         }
     }
 }
