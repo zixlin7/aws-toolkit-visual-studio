@@ -235,7 +235,7 @@ namespace Amazon.AWSToolkit.Navigator
             set => SetProperty(ref _fileArmPreviewIssue, value, () => FileArmPreviewIssue);
         }
 
-        public bool ShowArmPreviewBanner => ArmPreviewNotice.CanShowNotice();
+        public bool ShowArmPreviewBanner => ArmPreviewNotice.IsSupportedProcessor();
 
         public NavigatorViewModel(IRegionProvider regionProvider)
         {

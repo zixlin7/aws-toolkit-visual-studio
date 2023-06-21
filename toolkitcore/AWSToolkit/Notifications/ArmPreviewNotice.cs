@@ -19,8 +19,7 @@ namespace Amazon.AWSToolkit.Notifications
 
         public static bool CanShowNotice()
         {
-            var osArch = RuntimeInformation.OSArchitecture;
-            if (osArch != Architecture.Arm && osArch != Architecture.Arm64)
+            if (!IsSupportedProcessor())
             {
                 return false;
             }
@@ -31,6 +30,12 @@ namespace Amazon.AWSToolkit.Notifications
             }
 
             return true;
+        }
+
+        public static bool IsSupportedProcessor()
+        {
+            var osArch = RuntimeInformation.OSArchitecture;
+            return osArch == Architecture.Arm || osArch == Architecture.Arm64;
         }
 
         public static bool HasUserSeenNotice()
