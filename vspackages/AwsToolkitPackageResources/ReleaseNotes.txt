@@ -1,3 +1,7 @@
+v1.42.0.0 (2023-06-21)
+* Removed the dotnetcore3.1 runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details.
+* AWS Toolkit for Visual Studio is now available as a Preview for Arm64 Visual Studio. We're interested in hearing about your experience using the Toolkit on Arm systems! Share feedback from the banner shown in the AWS Explorer.
+
 v1.41.0.0 (2023-05-30)
 * Fix issue viewing Beanstalk Environments where the Resources tab would not show details. Health check information is no longer displayed in the load balancer details.
 * Entering a local repo path on the CodeCatalyst Clone Repository dialog now validates the path on changes rather than clicking away from the textbox which did not always work consistently depending on where the user clicked.
