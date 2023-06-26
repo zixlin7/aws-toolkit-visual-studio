@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
 {
     public class CredentialProfileFormViewModel : BaseModel, IDisposable
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(CredentialProfileFormViewModel));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CredentialProfileFormViewModel));
 
         private readonly ToolkitContext _toolkitContext;
 
@@ -98,7 +98,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
             }
             catch (Exception ex)
             {
-                Logger.Error("Unable to save credential profile.", ex);
+                _logger.Error("Unable to save credential profile.", ex);
                 RecordAddMetric(ActionResults.CreateFailed(ex), MetricSources.CredentialProfileFormMetricSource.CredentialProfileForm);
             }
         }
@@ -122,6 +122,15 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
         }
         #endregion
 
+        #region OpenIamUsersConsole
+        public ICommand OpenIamUsersConsoleCommand { get; }
+
+        private void OpenIamUsersConsole(object parameter)
+        {
+            _toolkitContext.ToolkitHost.OpenInBrowser("https://console.aws.amazon.com/iam/home?region=us-east-1#/users", false);
+        }
+        #endregion
+
         public CredentialProfileFormViewModel(ToolkitContext toolkitContext)
         {
             _toolkitContext = toolkitContext;
@@ -135,6 +144,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
             SaveCommand = new RelayCommand(Save);
             ImportCsvFileCommand = new RelayCommand(ImportCsvFile);
             OpenCredentialFileCommand = new RelayCommand(OpenCredentialFile);
+            OpenIamUsersConsoleCommand = new RelayCommand(OpenIamUsersConsole);
         }
 
         private bool _disposed;
