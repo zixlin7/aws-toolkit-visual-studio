@@ -15,7 +15,7 @@
                 Header="Where to find or create an IAM User Role?">
                 <!-- TODO IDE-10914 -->
                 <TextBlock>
-                    1. Login to the <commonUi:BrowserHyperLink>IAM Users page in the AWS Console</commonUi:BrowserHyperLink>.<LineBreak />
+                    1. Login to the <Hyperlink Command="{Binding OpenIamUsersConsoleCommand}">IAM Users page in the AWS Console</Hyperlink>.<LineBreak />
                     2. Add a new IAM user account with programmatic access.<LineBreak />
                     3. Attach an administrator or power user policy to the user.<LineBreak />
                     4. Copy and paste the credentials into the form or download<LineBreak />
