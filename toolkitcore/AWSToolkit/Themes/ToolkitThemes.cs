@@ -60,8 +60,12 @@ namespace Amazon.AWSToolkit.Themes
         /// This class is responsible for providing the backing value, so that
         /// each UI does not need to reference specific colors.
         /// </summary>
+        public static object ErrorBackgroundBrushKey => GetThemeBrushKeys().ErrorBackground;
         public static object ErrorBorderBrushKey => GetThemeBrushKeys().ErrorBorder;
-
+        public static object ErrorTextBrushKey => GetThemeBrushKeys().ErrorText;
+        public static object SuccessBackgroundBrushKey => GetThemeBrushKeys().SuccessBackground;
+        public static object SuccessBorderBrushKey => GetThemeBrushKeys().SuccessBorder;
+        public static object SuccessTextBrushKey => GetThemeBrushKeys().SuccessText;
         public static object HintTextBrushKey => GetThemeBrushKeys().HintText;
         public static object InfoTextBrushKey => GetThemeBrushKeys().InfoText;
         public static object InfoBackgroundKey => GetThemeBrushKeys().InfoBackground;
