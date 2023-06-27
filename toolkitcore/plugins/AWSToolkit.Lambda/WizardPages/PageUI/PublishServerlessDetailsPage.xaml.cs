@@ -1,22 +1,16 @@
-﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.CloudFormation;
-using Amazon.CloudFormation.Model;
-using Amazon.S3;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 
-using Amazon.AWSToolkit.CloudFormation;
 using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Lambda.View.Components;
+using Amazon.AWSToolkit.Lambda.ViewModel;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Util;
 using Amazon.Lambda;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 {
@@ -25,7 +19,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     /// </summary>
     public partial class PublishServerlessDetailsPage : INotifyPropertyChanged
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(PublishServerlessDetailsPage));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(PublishServerlessDetailsPage));
         public static readonly string LambdaServiceName = new AmazonLambdaConfig().RegionEndpointServiceName;
 
         private const int AccountRegionChangedDebounceMs = 250;
@@ -33,236 +27,98 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         public IAWSWizardPageController PageController { get; set; }
         public AccountAndRegionPickerViewModel Connection { get; }
 
+        public ToolkitContext ToolkitContext { get; set; }
+
+        public PublishServerlessViewModel ViewModel { get; }
+
         private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
 
-        private string SeedS3Bucket { get; set; }
-        private string SeedStackName { get; set; }
-
-        public PublishServerlessDetailsPage(IAWSWizardPageController pageController, ToolkitContext toolkitContext)
+        public PublishServerlessDetailsPage() : this(ToolkitFactory.Instance.ToolkitContext)
         {
-            Connection = new AccountAndRegionPickerViewModel(toolkitContext);
-            Connection.SetServiceFilter(new List<string>() {LambdaServiceName});
+        }
 
+        public PublishServerlessDetailsPage(ToolkitContext toolkitContext)
+        {
+            ToolkitContext = toolkitContext;
             InitializeComponent();
 
-            DataContext = this;
+            ViewModel = new PublishServerlessViewModel(toolkitContext);
 
+            ViewModel.Connection.SetServiceFilter(new List<string>() { LambdaServiceName });
+
+            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+
+            DataContext = this;
+        }
+
+
+        public PublishServerlessDetailsPage(IAWSWizardPageController pageController, ToolkitContext toolkitContext) :
+            this(toolkitContext)
+        {
             PageController = pageController;
             var hostWizard = PageController.HostingWizard;
 
             var userAccount = hostWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
             var region = hostWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
-            Connection.Account = userAccount;
-            Connection.Region = region;
-
-            this.SeedS3Bucket = hostWizard[UploadFunctionWizardProperties.S3Bucket] as string;
-            this.SeedStackName = hostWizard[UploadFunctionWizardProperties.StackName] as string;
+            ViewModel.Connection.Account = userAccount;
+            ViewModel.Connection.Region = region;
 
             UpdateExistingResources();
 
-            this._ctlPersistSettings.IsChecked = true;
-        }
-
-        public string StackName
-        {
-            get => this._ctlStackPicker.Text;
-            set => this._ctlStackPicker.Text = value;
-        }
-
-        public bool SaveSettings => this._ctlPersistSettings.IsChecked.GetValueOrDefault();
-
-        public bool IsNewStack => !this._ctlStackPicker.Items.Contains(this._ctlStackPicker.Text);
-
-        string _s3Bucket;
-        public string S3Bucket
-        {
-            get => _s3Bucket;
-            set
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.S3Bucket))
             {
-                _s3Bucket = value;
-                NotifyPropertyChanged("S3Bucket");
+                ViewModel.S3Bucket = hostWizard[UploadFunctionWizardProperties.S3Bucket] as string;
             }
+
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.StackName))
+            {
+                ViewModel.Stack = hostWizard[UploadFunctionWizardProperties.StackName] as string;
+            }
+
+            ViewModel.SaveSettings = true;
         }
 
-        void ConnectionChanged(object sender, EventArgs e)
+
+        private void ConnectionChanged(object sender, EventArgs e)
         {
-            if (!Connection.ConnectionIsValid)
+            if (!ViewModel.Connection.ConnectionIsValid)
             {
                 return;
             }
 
-            PageController.HostingWizard.SetSelectedAccount(Connection.Account, UploadFunctionWizardProperties.UserAccount);
-            PageController.HostingWizard.SetSelectedRegion(Connection.Region, UploadFunctionWizardProperties.Region);
+            PageController.HostingWizard.SetSelectedAccount(ViewModel.Connection.Account,
+                UploadFunctionWizardProperties.UserAccount);
+            PageController.HostingWizard.SetSelectedRegion(ViewModel.Connection.Region,
+                UploadFunctionWizardProperties.Region);
 
             // Prevent multiple loads caused by property changed events in rapid succession
             _accountRegionChangeDebounceDispatcher.Debounce(AccountRegionChangedDebounceMs, _ =>
             {
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
-                {
-                    this.UpdateExistingResources();
-                });
+                UpdateExistingResources();
             });
         }
 
-        void UpdateExistingResources()
+        private void UpdateExistingResources()
         {
-            this._ctlStackPicker.Items.Clear();
-            this._ctlBucketPicker.Items.Clear();
-
             try
             {
-                if (!Connection.ConnectionIsValid)
+                if (!ViewModel.Connection.ConnectionIsValid)
                 {
                     return;
                 }
 
-                var account = Connection.Account;
-                var region = Connection.Region;
-
-                var cloudFormationClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
-                var s3Client = account.CreateServiceClient<AmazonS3Client>(region);
-
-                Task task1 = Task.Run(() =>
-                {
-                    try
-                    {
-                        var items = new List<Stack>();
-                        var response = new DescribeStacksResponse();
-                        do
-                        {
-                            var request = new DescribeStacksRequest() { NextToken = response.NextToken };
-                            ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
-
-                            response = cloudFormationClient.DescribeStacks(request);
-
-                            foreach (var stack in response.Stacks)
-                            {
-                                if (stack.StackStatus == CloudFormationConstants.DeleteInProgressStatus ||
-                                    stack.StackStatus == CloudFormationConstants.DeleteCompleteStatus)
-                                    continue;
-
-
-                                items.Add(stack);
-                            }
-                        } while (!string.IsNullOrEmpty(response.NextToken));
-
-
-                        ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
-                        {
-                            foreach (var stack in items.OrderBy(x => x.StackName))
-                            {
-                                this._ctlStackPicker.Items.Add(stack.StackName);
-                            }
-
-                            if (!string.IsNullOrEmpty(this.SeedStackName))
-                                this._ctlStackPicker.Text = this.SeedStackName;
-                            else
-                                this._ctlStackPicker.Text = "";
-                        }));
-                    }
-                    catch(Exception e)
-                    {
-                        LOGGER.Error("Error refreshing existing CloudFormation stacks.", e);
-                    }
-                });
-
-                Task task2 = Task.Run(() =>
-                {
-                    try
-                    {
-                        var buckets = s3Client.ListBuckets().Buckets;
-
-                        ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
-                        {
-                            foreach (var bucket in buckets.OrderBy(x => x.BucketName))
-                            {
-                                this._ctlBucketPicker.Items.Add(bucket.BucketName);
-                            }
-
-                            if (!string.IsNullOrEmpty(this.SeedS3Bucket) && this._ctlBucketPicker.Items.Contains(this.SeedS3Bucket))
-                                this._ctlBucketPicker.SelectedValue = this.SeedS3Bucket;
-                        }));
-                    }
-                    catch(Exception e)
-                    {
-                        LOGGER.Error("Error refreshing existing S3 buckets.", e);
-                    }
-                });
-
-                Task.WaitAll(task1, task2);
-                cloudFormationClient.Dispose();
-                s3Client.Dispose();
-
+                ViewModel.UpdateExistingResourcesAsync().LogExceptionAndForget();
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error refreshing existing CloudFormation stacks.", e);
-            }
-
-        }
-
-
-        public bool AllRequiredFieldsAreSet
-        {
-            get
-            {
-                if (!Connection.ConnectionIsValid || Connection.IsValidating)
-                {
-                    return false;
-                }
-                if (string.IsNullOrEmpty(this.StackName))
-                {
-                    return false;
-                }
-                if (string.IsNullOrEmpty(this.S3Bucket))
-                {
-                    return false;
-                }
-
-                return true;
+                _logger.Error("Error refreshing existing resources", e);
             }
         }
 
-        private void _ctlStackPicker_TextChanged(object sender, RoutedEventArgs e)
+        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            NotifyPropertyChanged("StackName");
-        }
-
-        private void _ctlStackPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            NotifyPropertyChanged("StackName");
-        }
-
-        private void _ctlNewBucket_Click(object sender, RoutedEventArgs e)
-        {
-            var bucket = CreateBucket();
-            if (string.IsNullOrEmpty(bucket))
-                return;
-
-            int index = this._ctlBucketPicker.Items.Add(bucket);
-            this._ctlBucketPicker.SelectedIndex = index;
-        }
-
-        private string CreateBucket()
-        {
-            if (!Connection.ConnectionIsValid)
-            {
-                return null;
-            }
-
-            var account = Connection.Account;
-            var region = Connection.Region;
-
-            IAmazonS3 s3Client = account.CreateServiceClient<AmazonS3Client>(region);
-
-            var control = new NewS3Bucket(s3Client);
-            if(ToolkitFactory.Instance.ShellProvider.ShowModal(control))
-            {
-                return control.BucketName;
-            }
-
-            return null;
+            return;
         }
     }
 }
