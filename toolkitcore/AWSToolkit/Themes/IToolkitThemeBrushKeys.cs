@@ -7,7 +7,12 @@
     /// </summary>
     public interface IToolkitThemeBrushKeys
     {
+        object ErrorBackground { get; }
         object ErrorBorder { get; }
+        object ErrorText { get; }
+        object SuccessBackground { get; }
+        object SuccessBorder { get; }
+        object SuccessText { get; }
         /// <summary>
         /// Brush used for Hint Text in a UI (Foreground color)
         /// </summary>

@@ -10,11 +10,13 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <summary>Gets the key that can be used to get the <see cref="Thickness"/> to use for input controls.</summary>
         public static object InputPaddingKey { get; } = GenerateKeyName(nameof(InputPaddingKey));
 
-        /// <summary>Gets the key that can be used to get the <see cref="Brush"/> to use for errors in VS 2019.
-        /// EnvironmentColors.ToolWindowValidationErrorBorderBrushKey is only avialable for VS 2019+.
-        /// This is a temporary stopgap till we do not update all VSSDK related package references to v16 (VS2019) versions.
-        /// </summary>
-        public static object VS2019ErrorBrushKey { get; } = GenerateKeyName(nameof(VS2019ErrorBrushKey));
+        // VS2019... resource keys support use of brush keys that are not part of the VSSDK in VS2019. See ToolkitThemeBrushKeys
+        public static object VS2019ErrorBackgroundBrushKey { get; } = GenerateKeyName(nameof(VS2019ErrorBackgroundBrushKey));
+        public static object VS2019ErrorBorderBrushKey { get; } = GenerateKeyName(nameof(VS2019ErrorBorderBrushKey));
+        public static object VS2019ErrorTextBrushKey { get; } = GenerateKeyName(nameof(VS2019ErrorTextBrushKey));
+        public static object VS2019SuccessBackgroundBrushKey { get; } = GenerateKeyName(nameof(VS2019SuccessBackgroundBrushKey));
+        public static object VS2019SuccessBorderBrushKey { get; } = GenerateKeyName(nameof(VS2019SuccessBorderBrushKey));
+        public static object VS2019SuccessTextBrushKey { get; } = GenerateKeyName(nameof(VS2019SuccessTextBrushKey));
 
         private static string GenerateKeyName(string baseName)
         {

@@ -9,10 +9,17 @@ namespace Amazon.AWSToolkit.Themes
     /// </summary>
     public class DesignTimeToolkitThemeBrushKeys : IToolkitThemeBrushKeys
     {
+        private static readonly object FallbackBackgroundBrushKey = SystemColors.ControlBrushKey;
+        private static readonly object FallbackBorderBrushKey = SystemColors.ActiveBorderBrushKey;
         private static readonly object FallbackTextBrushKey = SystemColors.ControlTextBrushKey;
         private static readonly object FallbackInfoBrushKey = SystemColors.InfoBrushKey;
 
-        public object ErrorBorder => FallbackTextBrushKey;
+        public object ErrorBackground => FallbackBackgroundBrushKey;
+        public object ErrorBorder => FallbackBorderBrushKey;
+        public object ErrorText => FallbackTextBrushKey;
+        public object SuccessBackground => FallbackBackgroundBrushKey;
+        public object SuccessBorder => FallbackBorderBrushKey;
+        public object SuccessText => FallbackTextBrushKey;
         public object HintText => FallbackTextBrushKey;
         public object InfoText => FallbackTextBrushKey;
         public object InfoBackground => FallbackInfoBrushKey;
