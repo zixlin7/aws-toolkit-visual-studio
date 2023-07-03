@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.VisualStudio.ToolWindow;
+using Amazon.AWSToolkit.Commands;
+using Amazon.AWSToolkit.Context;
 
 using Microsoft.VisualStudio.Shell;
 
@@ -14,30 +15,27 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
     /// </summary>
     public class ViewAwsExplorerCommand : BaseCommand<ViewAwsExplorerCommand>
     {
+        private readonly OpenAwsExplorerCommand _wrappedCommand;
+
+        public ViewAwsExplorerCommand(ToolkitContext toolkitContext)
+        {
+            _wrappedCommand = new OpenAwsExplorerCommand(toolkitContext);
+        }
+
         public static Task<ViewAwsExplorerCommand> InitializeAsync(
+            ToolkitContext toolkitContext,
             Guid menuGroup, int commandId,
             AsyncPackage package)
         {
             return InitializeAsync(
-                () => new ViewAwsExplorerCommand(package),
+                () => new ViewAwsExplorerCommand(toolkitContext),
                 menuGroup, commandId,
                 package);
         }
 
-        private readonly AsyncPackage _package;
-
-        public ViewAwsExplorerCommand(AsyncPackage package)
+        protected override Task ExecuteAsync(object sender, OleMenuCmdEventArgs args)
         {
-            _package = package;
-        }
-
-        protected override async Task ExecuteAsync(object sender, OleMenuCmdEventArgs args)
-        {
-            await _package.ShowToolWindowAsync(
-                typeof(AWSNavigatorToolWindow),
-                0,
-                true,
-                _package.DisposalToken);
+            return _wrappedCommand.ExecuteAsync();
         }
     }
 }

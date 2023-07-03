@@ -100,7 +100,6 @@ using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 using Amazon.AWSToolkit.VisualStudio.ArmPreview;
 using Amazon.AWSToolkit.Notifications;
 
-
 namespace Amazon.AWSToolkit.VisualStudio
 {
     /// <summary>
@@ -618,6 +617,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 await InitializeAwsToolkitMenuCommandsAsync();
 
                 await ViewAwsExplorerCommand.InitializeAsync(
+                    _toolkitContext,
                     GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidAWSNavigator,
                     this);
 
