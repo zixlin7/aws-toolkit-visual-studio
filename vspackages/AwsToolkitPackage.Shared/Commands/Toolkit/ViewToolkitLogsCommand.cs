@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.Context;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
-
-using log4net;
-using log4net.Appender;
 
 using Microsoft.VisualStudio.Shell;
-
-using InvalidOperationException = System.InvalidOperationException;
 
 namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
 {
@@ -22,13 +13,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
     /// </summary>
     public class ViewToolkitLogsCommand : BaseCommand<ViewToolkitLogsCommand>
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ViewToolkitLogsCommand));
-
-        private readonly ToolkitContext _toolkitContext;
+        private readonly OpenToolkitLogsCommand _wrappedCommand;
 
         public ViewToolkitLogsCommand(ToolkitContext toolkitContext)
         {
-            _toolkitContext = toolkitContext;
+            _wrappedCommand = new OpenToolkitLogsCommand(toolkitContext);
         }
 
         public static Task<ViewToolkitLogsCommand> InitializeAsync(
@@ -44,29 +33,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
 
         protected override void Execute(object sender, EventArgs args)
         {
-            try
-            {
-                var appender = Logger.Logger.Repository
-                    .GetAppenders().OfType<FileAppender>().FirstOrDefault(f => f.Name.StartsWith("VsToolkitRolling"));
-                var logFile = appender?.File;
-
-                if (string.IsNullOrWhiteSpace(logFile) || !File.Exists(logFile))
-                {
-                    throw new InvalidOperationException($"Invalid log file path: {logFile}");
-                }
-
-                _toolkitContext.ToolkitHost.OpenInWindowsExplorer(logFile);
-                _toolkitContext.TelemetryLogger.RecordToolkitViewLogs(new ToolkitViewLogs()
-                {
-                    AwsAccount = MetadataValue.NotApplicable,
-                    AwsRegion = MetadataValue.NotApplicable,
-                });
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"Error viewing toolkit logs", e);
-                _toolkitContext.ToolkitHost.ShowError("Failed to view toolkit logs", e.Message);
-            }
+            _wrappedCommand.Execute(null);
         }
 
         protected override void BeforeQueryStatus(OleMenuCommand menuCommand, EventArgs e)

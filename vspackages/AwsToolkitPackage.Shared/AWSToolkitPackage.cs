@@ -99,7 +99,7 @@ using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 using Amazon.AWSToolkit.VisualStudio.ArmPreview;
 using Amazon.AWSToolkit.Notifications;
-
+using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -618,6 +618,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 await InitializeAwsToolkitMenuCommandsAsync();
 
                 await ViewAwsExplorerCommand.InitializeAsync(
+                    _toolkitContext,
                     GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidAWSNavigator,
                     this);
 
@@ -1087,7 +1088,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                             }
                             else
                             {
-                                new FirstRunController(this, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                                //new FirstRunController(this, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                                new ViewGettingStartedCommand(this, _toolkitContext, _toolkitSettingsWatcher);
                             }
                         }
                     }
