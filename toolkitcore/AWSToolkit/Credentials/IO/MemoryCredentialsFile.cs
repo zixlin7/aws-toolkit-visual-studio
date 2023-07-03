@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.Runtime.CredentialManagement;
 
 namespace Amazon.AWSToolkit.Credentials.IO
@@ -71,53 +72,8 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 throw new ArgumentException($"Cannot copy profile {fromProfileName} to {toProfileName}.");
             }
 
-            _profiles[toProfileName] = CopyProfile(toProfileName, fromProfile);
+            _profiles[toProfileName] = fromProfile.Clone(toProfileName);
             OnChanged();
-        }
-
-        private CredentialProfile CopyProfile(string toProfileName, CredentialProfile fromProfile)
-        {
-            return new CredentialProfile(toProfileName, CopyProfileOptions(fromProfile.Options))
-            {
-                DefaultConfigurationModeName = fromProfile.DefaultConfigurationModeName,
-                EC2MetadataServiceEndpoint = fromProfile.EC2MetadataServiceEndpoint,
-                EC2MetadataServiceEndpointMode = fromProfile.EC2MetadataServiceEndpointMode,
-                EndpointDiscoveryEnabled = fromProfile.EndpointDiscoveryEnabled,
-                MaxAttempts = fromProfile.MaxAttempts,
-                Region = fromProfile.Region,
-                RetryMode = fromProfile.RetryMode,
-                S3DisableMultiRegionAccessPoints = fromProfile.S3DisableMultiRegionAccessPoints,
-                S3RegionalEndpoint = fromProfile.S3RegionalEndpoint,
-                S3UseArnRegion = fromProfile.S3UseArnRegion,
-                StsRegionalEndpoints = fromProfile.StsRegionalEndpoints,
-                UseDualstackEndpoint = fromProfile.UseDualstackEndpoint,
-                UseFIPSEndpoint = fromProfile.UseFIPSEndpoint
-            };
-        }
-
-        private CredentialProfileOptions CopyProfileOptions(CredentialProfileOptions fromOptions)
-        {
-            return new CredentialProfileOptions()
-            {
-                AccessKey = fromOptions.AccessKey,
-                CredentialProcess = fromOptions.CredentialProcess,
-                CredentialSource = fromOptions.CredentialSource,
-                EndpointName = fromOptions.EndpointName,
-                ExternalID = fromOptions.ExternalID,
-                MfaSerial = fromOptions.MfaSerial,
-                RoleArn = fromOptions.RoleArn,
-                RoleSessionName = fromOptions.RoleSessionName,
-                SecretKey = fromOptions.SecretKey,
-                SourceProfile = fromOptions.SourceProfile,
-                SsoAccountId = fromOptions.SsoAccountId,
-                SsoRegion = fromOptions.SsoRegion,
-                SsoRoleName = fromOptions.SsoRoleName,
-                SsoSession = fromOptions.SsoSession,
-                SsoStartUrl = fromOptions.SsoStartUrl,
-                Token = fromOptions.Token,
-                UserIdentity = fromOptions.UserIdentity,
-                WebIdentityTokenFile = fromOptions.WebIdentityTokenFile
-            };
         }
         #endregion
 
