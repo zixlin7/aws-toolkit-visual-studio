@@ -47,6 +47,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         public string ActiveAccountId { get; private set; }
         public string ActiveAwsId { get; private set; }
+        public IIdentityResolver IdentityResolver => _identityResolver;
         public ICredentialManager CredentialManager { get; }
         public ToolkitCredentials ActiveCredentials { get; private set; }
 

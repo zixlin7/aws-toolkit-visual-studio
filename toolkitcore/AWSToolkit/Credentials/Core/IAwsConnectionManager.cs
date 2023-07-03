@@ -1,8 +1,8 @@
 ﻿using System;
+
 using Amazon.AWSToolkit.Credentials.State;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.Runtime;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.Credentials.Core
 {
@@ -11,6 +11,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         event EventHandler<ConnectionStateChangeArgs> ConnectionStateChanged;
         event EventHandler<ConnectionSettingsChangeArgs> ConnectionSettingsChanged;
 
+        IIdentityResolver IdentityResolver { get; }
         ICredentialManager CredentialManager { get; }
         ConnectionState ConnectionState { get; }
         ToolkitRegion ActiveRegion { get; }
