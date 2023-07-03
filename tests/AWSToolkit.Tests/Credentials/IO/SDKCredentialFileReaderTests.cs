@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+
 using Amazon.AWSToolkit.Credentials.IO;
 using Amazon.Runtime.CredentialManagement;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.IO
@@ -65,7 +68,7 @@ namespace AWSToolkit.Tests.Credentials.IO
             _fileReader.Load();
             var credentialProfileOptions = _fileReader.GetCredentialProfileOptions(TestProfile.Name);
 
-            Assert.Equal(2, _fileReader.ProfileNames.Count);
+            Assert.Equal(2, _fileReader.ProfileNames.Count());
             Assert.NotNull(credentialProfileOptions);
             Assert.NotNull(_fileReader.GetCredentialProfile(TestProfile.Name));
             Assert.Equal(TestProfile.Options.AccessKey, credentialProfileOptions.AccessKey);
@@ -82,7 +85,7 @@ namespace AWSToolkit.Tests.Credentials.IO
             var allProfileNames = _fileReader.ProfileNames;
             var expectedProfiles = new List<string> {"InvalidProfile", "TestProfile"};
 
-            Assert.Equal(2, allProfileNames.Count);
+            Assert.Equal(2, allProfileNames.Count());
             Assert.Equal(expectedProfiles, allProfileNames);
 
             Assert.Null(_fileReader.GetCredentialProfile("InvalidProfile"));

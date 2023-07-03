@@ -5,18 +5,18 @@ namespace Amazon.AWSToolkit.Credentials.IO
 {
     public abstract class CredentialFileReader : ICredentialFileReader
     {
-        public List<string> ProfileNames { get; set; }
+        public IEnumerable<string> ProfileNames { get; protected set; }
+
         public abstract void Load();
-        public abstract CredentialProfileOptions GetCredentialProfileOptions(string profileName);
+
+        public virtual CredentialProfileOptions GetCredentialProfileOptions(string profileName)
+        {
+            return GetCredentialProfile(profileName)?.Options;
+        }
 
         public CredentialProfile GetCredentialProfile(string profileName)
         {
-            if (GetProfileStore().TryGetProfile(profileName, out CredentialProfile profile) && profile.CanCreateAWSCredentials)
-            {
-                return profile;
-            }
-
-            return null;
+            return GetProfileStore().TryGetProfile(profileName, out var profile) && profile.CanCreateAWSCredentials ? profile : null;
         }
 
         protected abstract ICredentialProfileStore GetProfileStore();
