@@ -150,13 +150,12 @@ namespace Amazon.Lambda.Tools
                 // This value is the path inside of the container that will map directly to the out parameter "publishLocation" on the host machine
                 string relativeContainerPathToPublishLocation = Utilities.DeterminePublishLocation(null, relativeContainerPathToProjectLocation, configuration, targetFramework);
 
-                var publishCommand = "dotnet " + cli.GetPublishArguments(relativeContainerPathToProjectLocation, relativeContainerPathToPublishLocation, targetFramework, configuration, msbuildParameters, architecture, publishManifestPath, isNativeAot);
+                var publishCommand = "dotnet " + cli.GetPublishArguments(projectLocation, relativeContainerPathToPublishLocation, targetFramework, configuration, msbuildParameters, architecture, publishManifestPath, isNativeAot, relativeContainerPathToProjectLocation);
 
                 var runResult = dockerCli.Run(containerImageForBuild, containerName, publishCommand);
                 if (runResult != 0)
                 {
-                    logger?.WriteLine($"ERROR: Container build returned {runResult}");
-                    return false;
+                    throw new LambdaToolsException($"ERROR: Container build returned {runResult}", LambdaToolsException.LambdaErrorCode.ContainerBuildFailed);
                 }
             }
             else
@@ -170,7 +169,7 @@ namespace Amazon.Lambda.Tools
                     architecture: architecture,
                     publishManifests: publishManifestPath) != 0)
                 {
-                    return false;
+                    throw new LambdaToolsException($"ERROR: The dotnet publish command return unsuccessful error code", LambdaToolsException.CommonErrorCode.ShellOutToDotnetPublishFailed);
                 }
             }
 
@@ -589,7 +588,8 @@ namespace Amazon.Lambda.Tools
                 if (flattenRuntime && relativePath.StartsWith(RUNTIME_FOLDER_PREFIX))
                     continue;
 
-                if (relativePath.EndsWith(".dbg", StringComparison.OrdinalIgnoreCase) || relativePath.EndsWith(".pdb", StringComparison.OrdinalIgnoreCase)) // Don't include debugging symbols
+                // Native debug symbols are very large and are being excluded to keep deployment size down.
+                if (relativePath.EndsWith(".dbg", StringComparison.OrdinalIgnoreCase)) 
                     continue;
 
                 includedFiles[relativePath] = file;

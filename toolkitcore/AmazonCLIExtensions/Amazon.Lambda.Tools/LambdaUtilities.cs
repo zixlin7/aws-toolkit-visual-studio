@@ -85,14 +85,6 @@ namespace Amazon.Lambda.Tools
             var outputType = Utilities.LookupOutputTypeFromProjectFile(projectLocation);
             var ouputTypeIsExe = outputType != null && outputType.ToLower().Equals("exe");
 
-            // Target frameworks that are not supported as managed runtimes in Lambda must have an output type of exe to support being run as a custom runtime
-            var allManagedRuntimes = LambdaConstants.DEPRECATED_LAMBDA_MANAGED_RUNTIMES.Concat(LambdaConstants.SUPPORTED_LAMBDA_MANAGED_RUNTIMES);
-            if (!allManagedRuntimes.Contains(DetermineLambdaRuntimeFromTargetFramework(targetFramework)) && !ouputTypeIsExe)
-            {
-                throw new LambdaToolsException($"Target Framework of {targetFramework} must have output type 'exe' and run on a custom runtime, since this is not a Lambda-managed .NET runtime.",
-                    LambdaToolsException.LambdaErrorCode.InvalidOutputTypeForTargetFramework);
-            }
-
             if (isNativeAot && !ouputTypeIsExe)
             {
                 throw new LambdaToolsException($"Native AOT applications must have output type 'exe'.",
@@ -126,10 +118,8 @@ namespace Amazon.Lambda.Tools
 
             switch (targetFramework?.ToLower())
             {
-                case TargetFrameworkMonikers.net70:
-                    return architecture == LambdaConstants.ARCHITECTURE_ARM64 ?
-                        throw new LambdaToolsException(".NET 7 is not supported on ARM Amazon Linux 2. See https://github.com/dotnet/runtime/issues/76195", LambdaToolsException.LambdaErrorCode.Net7OnArmNotSupported)
-                        : $"public.ecr.aws/sam/build-dotnet7:latest-{architecture}";
+                case TargetFrameworkMonikers.net70:                    
+                    return $"public.ecr.aws/sam/build-dotnet7:latest-{architecture}";
                 case TargetFrameworkMonikers.net60:
                     return $"public.ecr.aws/sam/build-dotnet6:latest-{architecture}";
                 case TargetFrameworkMonikers.netcoreapp31:

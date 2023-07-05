@@ -390,7 +390,7 @@ namespace Amazon.ECS.Tools
                         {
                             containerDefinition.LogConfiguration.LogDriver = data["containerPath"].ToString();
                         }
-						
+                        
                         if (data["options"] != null)
                         {
                             foreach (var key in data["options"].PropertyNames)
