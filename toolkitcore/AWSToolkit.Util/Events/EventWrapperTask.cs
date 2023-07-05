@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.Exceptions;
-
 namespace Amazon.AWSToolkit.Events
 {
     /// <summary>

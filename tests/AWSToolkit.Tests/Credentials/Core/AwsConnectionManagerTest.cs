@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Amazon;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -185,6 +186,41 @@ namespace AWSToolkit.Tests.Credentials.Core
             Assert.IsType<ConnectionState.UserAction>(_awsConnectionManager.ConnectionState);
             Assert.Equal(_defaultSampleIdentifier.Id,
                 _awsConnectionManager.ActiveCredentialIdentifier.Id);
+        }
+
+        [Fact]
+        public void ChangeConnectionSettingsShouldUpdateCredentialIdentifierAndRegion()
+        {
+            _identifiers.Clear();
+            _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
+            _connectionStateIsTerminalEvent.Reset();
+            _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
+            WaitUntilConnectionStateIsStable();
+
+            _connectionStateIsTerminalEvent.Reset();
+            _availableCredentials.Add(_sampleIdentifier.Id);
+            _awsConnectionManager.ChangeConnectionSettings(_sampleIdentifier, _sampleRegion);
+            WaitUntilConnectionStateIsStable();
+
+            Assert.Equal(_sampleIdentifier, _awsConnectionManager.ActiveCredentialIdentifier);
+            Assert.Equal(_sampleRegion, _awsConnectionManager.ActiveRegion);
+        }
+
+        [Fact]
+        public async Task ChangeConnectionSettingsShouldUpdateCredentialIdentifierAndRegionAsync()
+        {
+            _identifiers.Clear();
+            _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
+            _connectionStateIsTerminalEvent.Reset();
+            _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
+            WaitUntilConnectionStateIsStable();
+
+            _connectionStateIsTerminalEvent.Reset();
+            _availableCredentials.Add(_sampleIdentifier.Id);
+            await _awsConnectionManager.ChangeConnectionSettingsAsync(_sampleIdentifier, _sampleRegion);
+
+            Assert.Equal(_sampleIdentifier, _awsConnectionManager.ActiveCredentialIdentifier);
+            Assert.Equal(_sampleRegion, _awsConnectionManager.ActiveRegion);
         }
 
         [Fact]

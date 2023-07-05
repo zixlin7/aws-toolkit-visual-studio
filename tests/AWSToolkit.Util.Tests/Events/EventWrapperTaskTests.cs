@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Events;
-using Amazon.AWSToolkit.Exceptions;
 
 using Xunit;
 
