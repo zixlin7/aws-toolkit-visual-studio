@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
@@ -124,7 +125,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
             var sut = CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.AsProfileProperties();
             sut.Region = "region1-aws";
 
-            Assert.True(await sut.ValidateConnectionAsync(toolkitContext));
+            Assert.True(ConnectionState.IsValid(await sut.ValidateConnectionAsync(toolkitContext)));
         }
 
         [Fact]
@@ -145,7 +146,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
             var sut = CredentialProfileTestHelper.Basic.Valid.AccessAndSecret.AsProfileProperties();
             sut.Region = "region1-aws";
 
-            Assert.False(await sut.ValidateConnectionAsync(toolkitContext));
+            Assert.False(ConnectionState.IsValid(await sut.ValidateConnectionAsync(toolkitContext)));
         }
 
         [Fact]
@@ -161,7 +162,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
             var sut = CredentialProfileTestHelper.Basic.Invalid.MissingAccessKey.AsProfileProperties();
             sut.Region = "region1-aws";
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => await sut.ValidateConnectionAsync(toolkitContext));
+            await Assert.ThrowsAsync<ArgumentException>(() => sut.ValidateConnectionAsync(toolkitContext));
         }
     }
 }

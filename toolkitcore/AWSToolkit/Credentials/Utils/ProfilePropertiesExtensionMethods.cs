@@ -8,6 +8,7 @@ using System;
 using Amazon.Runtime.CredentialManagement.Internal;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Events;
 
 namespace Amazon.AWSToolkit.Credentials.Utils
 {
@@ -76,7 +77,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
             return CredentialType.Unknown;
         }
 
-        public static Task<bool> ValidateConnectionAsync(this ProfileProperties @this, ToolkitContext toolkitContext)
+        public static Task<ConnectionState> ValidateConnectionAsync(this ProfileProperties @this, ToolkitContext toolkitContext)
         {
             // Use MemoryCredential classes to validate connection of ProfileProperties without having to persist a Credential
 
@@ -101,27 +102,12 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                 toolkitContext.RegionProvider,
                 new AppDataToolkitSettingsRepository());
 
-            // Setup a handler to listen for ConnectionStateChanged to update TaskCompletionSource to support blocking/await
-            var taskSource = new TaskCompletionSource<bool>();
-
-            EventHandler<ConnectionStateChangeArgs> handler = null;
-            handler = (object sender, ConnectionStateChangeArgs e) =>
-            {
-                if (e.State.IsTerminal || e.State.GetType() == typeof(ConnectionState.IncompleteConfiguration))
-                {
-                    connectionManager.ConnectionStateChanged -= handler;
-                    taskSource.SetResult(ConnectionState.IsValid(e.State));
-                }
-            };
-            connectionManager.ConnectionStateChanged += handler;
-
             // Create a memory profile from ProfileProperties and attempt to connect to it with the connection manager we just setup
             var credId = new MemoryCredentialIdentifier(@this.Name);
             var region = toolkitContext.RegionProvider.GetRegion(@this.Region);
             connectionManager.CredentialManager.CredentialSettingsManager.CreateProfile(credId, @this);
-            connectionManager.ChangeConnectionSettings(credId, region);
 
-            return taskSource.Task;
+            return connectionManager.ChangeConnectionSettingsAsync(credId, region);
         }
     }
 }
