@@ -24,10 +24,63 @@ namespace Amazon.AWSToolkit.VisualStudio
             _joinableTaskFactory = joinableTaskFactory;
         }
 
-        public OpenFileDialog CreateOpenFileDialog()
+        #region CreateOpenFileDialog
+        private class OpenFileDialogProxy : IOpenFileDialog
         {
-            return new OpenFileDialog();
+            private readonly OpenFileDialog _dialog;
+
+            public OpenFileDialogProxy()
+            {
+                _dialog = new OpenFileDialog();
+            }
+
+            public bool CheckFileExists
+            {
+                get => _dialog.CheckFileExists;
+                set => _dialog.CheckFileExists = value;
+            }
+
+            public bool CheckPathExists
+            {
+                get => _dialog.CheckPathExists;
+                set => _dialog.CheckPathExists = value;
+            }
+
+            public string DefaultExt
+            {
+                get => _dialog.DefaultExt;
+                set => _dialog.DefaultExt = value;
+            }
+
+            public string FileName
+            {
+                get => _dialog.FileName;
+                set => _dialog.FileName = value;
+            }
+
+            public string Filter
+            {
+                get => _dialog.Filter;
+                set => _dialog.Filter = value;
+            }
+
+            public string Title
+            {
+                get => _dialog.Title;
+                set => _dialog.Title = value;
+            }
+
+            public bool? ShowDialog()
+            {
+                return _dialog.ShowDialog();
+            }
         }
+
+        public IOpenFileDialog CreateOpenFileDialog()
+        {
+            return new OpenFileDialogProxy();
+        }
+        #endregion
 
         public IFolderBrowserDialog CreateFolderBrowserDialog()
         {
