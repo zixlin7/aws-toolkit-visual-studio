@@ -240,7 +240,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
             UpdateConnectionAndNotify(identifier, true, region, true);
         }
 
-        public Task<ConnectionState> ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
+        public Task<ConnectionState> ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier,
+            ToolkitRegion region, CancellationToken cancellationToken = default)
         {
             return EventWrapperTask.Create<ConnectionStateChangeArgs, ConnectionState>(
                 addHandler: handler => ConnectionStateChanged += handler,
@@ -255,7 +256,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
                         setResult(e.State);
                     }
                 },
-                removeHandler: handler => ConnectionStateChanged -= handler);
+                removeHandler: handler => ConnectionStateChanged -= handler,
+                cancellationToken);
         }
 
         private void HandleCredentialChanged(object sender, CredentialChangeEventArgs args)

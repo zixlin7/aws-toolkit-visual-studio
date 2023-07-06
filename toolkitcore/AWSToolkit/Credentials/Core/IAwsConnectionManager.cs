@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.State;
@@ -25,7 +26,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
         void ChangeRegion(ToolkitRegion region);
         void RefreshConnectionState();
         void ChangeConnectionSettings(ICredentialIdentifier identifier, ToolkitRegion region);
-        Task<ConnectionState> ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier, ToolkitRegion region);
+        Task<ConnectionState> ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier,
+            ToolkitRegion region, CancellationToken cancellationToken = default);
         bool IsValidConnectionSettings();
     }
 }

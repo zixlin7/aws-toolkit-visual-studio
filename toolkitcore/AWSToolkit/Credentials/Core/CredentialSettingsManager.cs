@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -30,7 +31,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             GetProfileProcessor(identifier).CreateProfile(identifier, properties);
         }
 
-        public Task CreateProfileAsync(ICredentialIdentifier credentialIdentifier, ProfileProperties properties)
+        public Task CreateProfileAsync(ICredentialIdentifier credentialIdentifier, ProfileProperties properties, CancellationToken cancellationToken = default)
         {
             var factory = GetProfileFactory(credentialIdentifier);
 
@@ -44,7 +45,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
                         setResult(null);
                     }
                 },
-                removeHandler: handler => factory.CredentialsChanged -= handler);
+                removeHandler: handler => factory.CredentialsChanged -= handler,
+                cancellationToken);
         }
 
         public void RenameProfile(ICredentialIdentifier oldIdentifier, ICredentialIdentifier newIdentifier)

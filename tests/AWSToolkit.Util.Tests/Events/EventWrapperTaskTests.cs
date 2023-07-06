@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Events;
@@ -106,6 +107,41 @@ namespace Amazon.AWSToolkit.Util.Tests.Events
                 handler => timer.Elapsed -= elapsedEventHandler));
 
             Assert.Equal(expectedCallCount, actualCallCount);
+        }
+
+        [Fact]
+        public async Task CancellationTokenCancelsTaskAndRemovesHandler()
+        {
+            using (var cancelSource = new CancellationTokenSource(500))
+            {
+                var cancelToken = cancelSource.Token;
+
+                await Assert.ThrowsAsync<TaskCanceledException>(() => EventWrapperTask.Create<EventArgs, bool>(
+                    handler => TestEvent += handler,
+                    () => OnTestEvent(),
+                    (sender, e, setResult) => { },
+                    handler => TestEvent -= handler,
+                    cancelToken));
+            }
+
+            AssertHandlerAsExpected();
+        }
+
+        [Fact]
+        public async Task StartNotRunWhenCancellationTokenAlreadyCanceled()
+        {
+            var startRun = false;
+            var cancelToken = new CancellationToken(true);
+
+            await Assert.ThrowsAsync<TaskCanceledException>(() => EventWrapperTask.Create<EventArgs, bool>(
+                handler => TestEvent += handler,
+                () => startRun = true,
+                (sender, e, setResult) => { },
+                handler => TestEvent -= handler,
+                cancelToken));
+
+            Assert.False(startRun);
+            AssertHandlerAsExpected();
         }
 
         [Fact]

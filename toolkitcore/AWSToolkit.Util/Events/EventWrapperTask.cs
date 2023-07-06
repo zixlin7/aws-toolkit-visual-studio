@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.Events
 {
@@ -17,6 +20,8 @@ namespace Amazon.AWSToolkit.Events
     /// </remarks>
     public static class EventWrapperTask
     {
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(EventWrapperTask));
+
         /// <summary>
         /// Wraps common generics EventHandler&lt;TEventArgs&gt; with event-specific delegate when needed for
         /// legacy events.
@@ -49,8 +54,9 @@ namespace Amazon.AWSToolkit.Events
                 && legacyParams[0].ParameterType == typeof(object)
                 && legacyParams[1].ParameterType.IsAssignableFrom(typeof(TEventArgs))))
             {
-                throw new InvalidCastException(
-                    $"EventHandler<{typeof(TEventArgs)}> signature must be equivalent to {typeof(TLegacyEventHandler)}");
+                var msg = $"EventHandler<{typeof(TEventArgs)}> signature must be equivalent to {typeof(TLegacyEventHandler)}";
+                _logger.Error(msg);
+                throw new InvalidCastException(msg);
             }
 
             return (TLegacyEventHandler) Delegate.CreateDelegate(typeof(TLegacyEventHandler), handler.Target, handler.Method);
@@ -69,6 +75,7 @@ namespace Amazon.AWSToolkit.Events
         /// <param name="handleEvent">Handles the event.  The third parameter setResult allows setting the Task result and
         /// returning the awaited Task.  See Remarks for more details.</param>
         /// <param name="removeHandler">Removes the passed handler from the event.  See Remarks section if ToEventDelegate used.</param>
+        /// <param name="cancellationToken">CancellationToken, if provided, to cancel running task.</param>
         /// <returns>The Task representing the wrapped event.</returns>
         /// <remarks>
         /// The parameters of this method form a strategy to implement the pattern to convert an Event-based asynchronous pattern
@@ -90,6 +97,13 @@ namespace Amazon.AWSToolkit.Events
         /// be called until either setResult is called or an exception is thrown.  The logic of handleEvent determines when to return
         /// from the awaited Task.  Exceptions are automatically captured and set on the Task if they occur.  While CancellationTokens
         /// aren't supported in the signature of this method, they can easily be added and used as captured variables.
+        ///
+        /// If a timeout or other reason to cancel the event handler is required.  Use a CancellationTokenSource to create a CancellationToken
+        /// with the desired timeout.  This will remove the event handler and set canceled on the task.  This will throw a TaskCanceledEvent
+        /// that should be caught and handled by the caller.  Do not use Task.Wait with a timeout as this only instructs the task to stop
+        /// waiting and return from await, but it does not terminate the task from running.  The event handler will continue to be called.
+        /// <see href="https://learn.microsoft.com/en-us/dotnet/standard/parallel-programming/task-cancellation">Task cancellation</see>
+        /// for more details.
         /// 
         /// See CredentialSettingsManager.CreateProfileAsync and AwsConnectionManager.ChangeConnectionSettingsAsync for
         /// examples.
@@ -98,41 +112,76 @@ namespace Amazon.AWSToolkit.Events
             Action<EventHandler<TEventArgs>> addHandler,
             Action start,
             Action<object, TEventArgs, Action<TResult>> handleEvent,
-            Action<EventHandler<TEventArgs>> removeHandler)
+            Action<EventHandler<TEventArgs>> removeHandler,
+            CancellationToken cancellationToken = default)
             where TEventArgs : EventArgs
         {
             var taskSource = new TaskCompletionSource<TResult>();
             Action<TResult> setResult = null;
             EventHandler<TEventArgs> handler = null;
 
+            void Finish(TaskStatus setStatus, object parameter = null)
+            {
+                removeHandler(handler);
+                switch (setStatus)
+                {
+                    case TaskStatus.Canceled:
+                        if (!taskSource.TrySetCanceled())
+                        {
+                            _logger.Warn($"Unable to set canceled on {nameof(EventWrapperTask)}.");
+                        }
+                        break;
+                    case TaskStatus.Faulted:
+                        if (!taskSource.TrySetException((Exception) parameter))
+                        {
+                            _logger.Warn($"Unable to set exception on {nameof(EventWrapperTask)}.");
+                        }
+                        break;
+                    case TaskStatus.RanToCompletion:
+                        if (!taskSource.TrySetResult((TResult) parameter))
+                        {
+                            _logger.Warn($"Unable to set result on {nameof(EventWrapperTask)}.");
+                        }
+                        break;
+                }
+            }
+
             handler = (object sender, TEventArgs e) =>
             {
                 try
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     handleEvent(sender, e, setResult);
+                }
+                catch (OperationCanceledException)
+                {
+                    Finish(TaskStatus.Canceled);
                 }
                 catch (Exception ex)
                 {
-                    removeHandler(handler);
-                    taskSource.SetException(ex);
+                    Finish(TaskStatus.Faulted, ex);
                 }
             };
 
-            setResult = result =>
-            {
-                removeHandler(handler);
-                taskSource.SetResult(result);
-            };
+            setResult = result => Finish(TaskStatus.RanToCompletion, result);
 
             try
             {
                 addHandler(handler);
-                start();
+
+                // Do this after addHandler as if the CancellationToken is already canceled, it will
+                // run the registered handler immediately and synchronously.  We want to be sure the
+                // handler has been removed.
+                cancellationToken.Register(() => Finish(TaskStatus.Canceled));
+
+                if (!taskSource.Task.IsCanceled)
+                {
+                    start();
+                }
             }
             catch (Exception ex)
             {
-                removeHandler(handler);
-                taskSource.SetException(ex);
+                Finish(TaskStatus.Faulted, ex);
             }
 
             return taskSource.Task;
