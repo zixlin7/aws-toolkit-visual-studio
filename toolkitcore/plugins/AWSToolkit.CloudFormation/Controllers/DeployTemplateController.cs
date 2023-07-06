@@ -15,15 +15,18 @@ using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.Util;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry;
+using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     public class DeployTemplateController : BaseStackController
     {
         private static readonly BaseMetricSource _deployMetricSource = MetricSources.CloudFormationMetricSource.Project;
-     
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(DeployTemplateController));
+
         public DeployTemplateController(ToolkitContext toolkitContext) : base(toolkitContext, _deployMetricSource)
         {
         }
@@ -32,7 +35,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         public DeployedTemplateData Execute(string templatePath, IDictionary<string, object> seedProperties,
             string templateName)
         {
-            var result = false;
+            ActionResults result = null;
             IAWSWizard wizard = null;
 
             void Invoke() => result = TryCreateWizard(templatePath, seedProperties, templateName, out wizard);
@@ -45,7 +48,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             _toolkitContext.TelemetryLogger.TimeAndRecord(Invoke, Record);
 
             //if user cancelled from the wizard return null, else deploy template
-            if (!result)
+            if (!result.Success)
             {
                 return null;
             }
@@ -54,11 +57,21 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         }
 
 
-        private bool TryCreateWizard(string templatePath, IDictionary<string, object> seedProperties, string templateName, out IAWSWizard wizard)
+        private ActionResults TryCreateWizard(string templatePath, IDictionary<string, object> seedProperties, string templateName, out IAWSWizard wizard)
         {
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_TemplateServiceOwner] = DeploymentServiceIdentifiers.CloudFormationServiceName;
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] = CloudFormationTemplateWrapper.FromLocalFile(templatePath);
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplateName] = templateName;
+
+            try
+            {
+                ValidateTemplate(templatePath);
+            }
+            catch (Exception ex)
+            {
+                wizard = null;
+                return ActionResults.CreateFailed(ex);
+            }
 
             wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.CloudFormation.View.DeployTemplate", seedProperties);
             wizard.Title = "Deploy Template";
@@ -72,7 +85,24 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
             wizard.RegisterPageControllers(defaultPages, 0);
 
-            return wizard.Run();
+            var success = wizard.Run();
+            return success ? new ActionResults().WithSuccess(true) : ActionResults.CreateCancelled();
+        }
+
+        private void ValidateTemplate(string templatePath)
+        {
+            try
+            {
+                var wrapper = CloudFormationTemplateWrapper.FromLocalFile(templatePath);
+                wrapper.LoadAndParse();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Failed to validate CloudFormation Template", ex);
+                _toolkitContext.ToolkitHost.ShowError("Error validating CloudFormation template", ex.Message);
+                throw new TemplateToolkitException(ex.Message, TemplateToolkitException.TemplateErrorCode.InvalidFormat,
+                    ex);
+            }
         }
 
         private DeployedTemplateData DeployTemplate(IAWSWizard wizard)
@@ -118,11 +148,10 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             return persistableData;
         }
 
-        private void RecordWizardMetric(bool success, double duration, IAWSWizard wizard)
+        private void RecordWizardMetric(ActionResults result, double duration, IAWSWizard wizard)
         {
             var account = GetAccount(wizard);
             var region = GetRegion(wizard);
-            var result = success ? new ActionResults().WithSuccess(true) : ActionResults.CreateCancelled();
 
             var connectionSettings = new AwsConnectionSettings(account?.Identifier, region);
             _toolkitContext.RecordCloudFormationPublishWizard(result, duration, connectionSettings, _deployMetricSource);
@@ -130,16 +159,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
         private static ToolkitRegion GetRegion(IAWSWizard wizard)
         {
-            return wizard.CollectedProperties[
-                    CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] as
-                ToolkitRegion;
+            return wizard?.CollectedProperties[
+                CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] as ToolkitRegion;
         }
 
         private static AccountViewModel GetAccount(IAWSWizard wizard)
         {
-            return wizard.CollectedProperties[
-                    CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount] as
-                AccountViewModel;
+            return wizard?.CollectedProperties[
+                CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount] as AccountViewModel;
         }
     }
 }

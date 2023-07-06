@@ -249,6 +249,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                         try
                         {
                             var wrapper = CloudFormationTemplateWrapper.FromLocalFile(templateFile);
+
+                            // this inherently loads and parses the template file
+                            // any validation errors encountered would be shown as an error
                             if (wrapper.ContainsUserVisibleParameters)
                             {
                                 // All the template parameters in the defaults file to the template
@@ -269,9 +272,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                         }
                         catch (Exception e)
                         {
-                            ToolkitFactory.Instance.ShellProvider.ShowMessage("Error parsing CloudFormation Template", $"Error parsing CloudFormation Template {templateFile}: {e.Message}");
                             _logger.Error($"Error parsing template {templateFile}", e);
-                            return ActionResults.CreateFailed(e);
+                            return ActionResults.CreateFailed(new TemplateToolkitException(e.Message, TemplateToolkitException.TemplateErrorCode.InvalidFormat,
+                                e));
                         }
 
 
@@ -419,7 +422,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             wizard.RegisterPageControllers(defaultPages, 0);
             wizard.SetNavigationButtonText(AWSWizardConstants.NavigationButtons.Finish, "Publish");
             wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
-
             // as the last page of the wizard performs the upload process, and invokes CancelRun
             // to shutdown the UI, we place no stock in the result of Run() and instead will look
             // for a specific property to be true on exit indicating successful upload vs user

@@ -31,6 +31,10 @@ namespace Amazon.AWSToolkit.Telemetry
                         toolkitException.ServiceStatusCode,
                         toolkitException.Code);
                 default:
+                    if (exception.InnerException != null)
+                    {
+                        return GetMetricsReason(exception.InnerException);
+                    }
                     return UnknownReason;
             }
         }
