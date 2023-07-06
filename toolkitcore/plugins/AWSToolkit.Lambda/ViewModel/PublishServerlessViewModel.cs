@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -22,7 +21,7 @@ using log4net;
 
 namespace Amazon.AWSToolkit.Lambda.ViewModel
 {
-    public class PublishServerlessViewModel : BaseModel, IDataErrorInfo
+    public class PublishServerlessViewModel : BaseModel
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(PublishServerlessViewModel));
         private readonly ToolkitContext _toolkitContext;
@@ -45,16 +44,26 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 
         public AccountAndRegionPickerViewModel Connection { get; }
 
+        public bool IsValid => !DataErrorInfo.HasErrors;
+
         public string S3Bucket
         {
             get => _s3Bucket;
-            set => SetProperty(ref _s3Bucket, value);
+            set
+            {
+                SetProperty(ref _s3Bucket, value);
+                ValidateS3Bucket(S3Bucket);
+            }
         }
 
         public string Stack
         {
             get => _stack;
-            set => SetProperty(ref _stack, value);
+            set
+            {
+                SetProperty(ref _stack, value);
+                ValidateStack(Stack);
+            }
         }
 
 
@@ -86,7 +95,23 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public bool Loading
         {
             get => _loading;
-            set => SetProperty(ref _loading, value);
+            set
+            {
+                if (object.Equals(_loading, value))
+                {
+                    return;
+                }
+
+                _loading = value;
+                // Validate required property values after loading completes
+                // This has been done to prevent showing the name error validation when loading is in progress
+                // and ensuring the finish button remains disabled until after the validation completes
+                if (!_loading)
+                {
+                    ValidateRequiredNames();
+                }
+                NotifyPropertyChanged(nameof(Loading));
+            }
         }
 
         public bool IsNewStack => !Stacks.Contains(Stack);
@@ -95,6 +120,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         {
             try
             {
+                DataErrorInfo.ClearErrors(nameof(S3Bucket), nameof(Stack));
                 using (CreateLoadingScope())
                 {
                     await Task.WhenAll(UpdateStacksAsync(), UpdateBucketsAsync()).ConfigureAwait(false);
@@ -113,6 +139,11 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                 return false;
             }
 
+            if (Loading)
+            {
+                return false;
+            }
+
             if (string.IsNullOrEmpty(Stack))
             {
                 return false;
@@ -123,12 +154,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                 return false;
             }
 
-            if (!string.IsNullOrWhiteSpace(Error))
-            {
-                return false;
-            }
-
-            return true;
+            return IsValid;
         }
 
 
@@ -194,7 +220,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                 {
                     var names = items.OrderBy(st => st.StackName).Select(x => x.StackName);
                     Stacks = new ObservableCollection<string>(names);
-                    Stack = Stacks.FirstOrDefault(stack => stack.Equals(currentStackName)) ?? currentStackName;
+                    Stack = Stacks.FirstOrDefault(stack => stack.Equals(currentStackName)) ?? currentStackName ?? string.Empty;
                 });
             }
             catch (Exception e)
@@ -270,36 +296,74 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             return null;
         }
 
-        #region IDataErrorInfo
-
-        public string this[string columnName]
+        private void ValidateS3Bucket(string bucket)
         {
-            get
-            {
-                if (columnName == nameof(S3Bucket))
-                {
-                    return ValidateS3Bucket(S3Bucket);
-                }
-
-                return null;
-            }
-        }
-
-        private string ValidateS3Bucket(string bucket)
-        {
+            DataErrorInfo.ClearErrors(nameof(S3Bucket));
             if (string.IsNullOrWhiteSpace(bucket))
             {
-                return Loading ? null : "Bucket name cannot be empty";
+                if (!Loading)
+                {
+                    DataErrorInfo.AddError("Bucket name cannot be empty", nameof(S3Bucket));
+                }
             }
 
             using (var s3Client = CreateServiceClient<AmazonS3Client>())
             {
-                return S3BucketLocationValidator.Validate(s3Client, bucket, Connection.Region.Id);
+                var result= S3BucketLocationValidator.Validate(s3Client, bucket, Connection.Region.Id);
+                if (!string.IsNullOrWhiteSpace(result))
+                {
+                    DataErrorInfo.AddError(result, nameof(S3Bucket));
+                }
+            }
+            NotifyPropertyChanged(nameof(IsValid));
+        }
+
+        private void ValidateStack(string stack)
+        {
+            try
+            {
+                DataErrorInfo.ClearErrors(nameof(Stack));
+
+                if (string.IsNullOrWhiteSpace(stack))
+                {
+                    if (!Loading)
+                    {
+                        DataErrorInfo.AddError("Stack name cannot be empty", nameof(Stack));
+                    }
+                }
+
+                if (!Stacks.Contains(stack))
+                {
+                    // don't validate if new stack is being created
+                    return;
+                }
+
+                using (var cfnClient = CreateServiceClient<AmazonCloudFormationClient>())
+                {
+                    var result = CfnStackStatusValidator.Validate(cfnClient, stack);
+                    if (!string.IsNullOrWhiteSpace(result))
+                    {
+                        DataErrorInfo.AddError(result, nameof(Stack));
+                    }
+                }
+            }
+            finally
+            {
+                NotifyPropertyChanged(nameof(IsValid));
             }
         }
 
-        public string Error { get => this[nameof(S3Bucket)]; }
+        private void ValidateRequiredNames()
+        {
+            if (string.IsNullOrWhiteSpace(S3Bucket))
+            {
+                DataErrorInfo.AddError("Bucket name cannot be empty", nameof(S3Bucket));
+            }
 
-        #endregion
+            if (string.IsNullOrWhiteSpace(Stack))
+            {
+                DataErrorInfo.AddError("Stack name cannot be empty", nameof(Stack));
+            }
+        }
     }
 }

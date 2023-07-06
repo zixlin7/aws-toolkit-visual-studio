@@ -87,6 +87,13 @@ namespace AWSToolkit.Tests.Lambda
         }
 
         [Fact]
+        public void VerifyInvalidConfiguration_WhenLoading()
+        {
+            _viewModel.Loading = true;
+            Assert.False(_viewModel.IsValidConfiguration());
+        }
+
+        [Fact]
         public async Task UpdateStacks()
         {
             Assert.Empty(_viewModel.Stacks);
@@ -184,6 +191,71 @@ namespace AWSToolkit.Tests.Lambda
             _viewModel.CreateBucketCommand.Execute(null);
 
             Assert.Empty(_viewModel.Buckets);
+        }
+
+
+        [Fact]
+        public void VerifyStackChangeTriggersValidation_WhenEmpty()
+        {
+           Assert.Equal(_sampleStack, _viewModel.Stack);
+           Assert.True(_viewModel.IsValid);
+
+           _viewModel.Stack = string.Empty;
+           Assert.False(_viewModel.IsValid);
+        }
+
+        [Fact]
+        public void VerifyStackChangeDoesNotTriggerValidation_WhenNew()
+        {
+            Assert.Equal(_sampleStack, _viewModel.Stack);
+            Assert.True(_viewModel.IsValid);
+
+            _viewModel.Stack = "testStack2";
+            Assert.True(_viewModel.IsValid);
+        }
+
+        [Fact]
+        public void VerifyStackChangeHasNoValidationError_WhenEmptyAndLoading()
+        {
+            Assert.Equal(_sampleStack, _viewModel.Stack);
+            Assert.True(_viewModel.IsValid);
+
+            _viewModel.Loading = true;
+            _viewModel.Stack = string.Empty;
+            Assert.True(_viewModel.IsValid);
+        }
+
+        [Fact]
+        public void VerifyBucketChangeTriggersValidation_WhenEmpty()
+        {
+            Assert.Equal(_sampleBucket, _viewModel.S3Bucket);
+            Assert.True(_viewModel.IsValid);
+
+            _viewModel.S3Bucket = string.Empty;
+            Assert.False(_viewModel.IsValid);
+        }
+
+        [Fact]
+        public void VerifyBucketChangeHasNoValidationError_WhenEmptyAndLoading()
+        {
+            Assert.Equal(_sampleBucket, _viewModel.S3Bucket);
+            Assert.True(_viewModel.IsValid);
+
+            _viewModel.Loading = true;
+            _viewModel.S3Bucket = string.Empty;
+            Assert.True(_viewModel.IsValid);
+        }
+
+
+        [Fact]
+        public void VerifyLoadingCompletionTriggersValidation()
+        {
+            _viewModel.Loading = true;
+            _viewModel.S3Bucket = string.Empty;
+            Assert.True(_viewModel.IsValid);
+
+            _viewModel.Loading = false;
+            Assert.False(_viewModel.IsValid);
         }
 
         private void SetupShowModal(bool result)
