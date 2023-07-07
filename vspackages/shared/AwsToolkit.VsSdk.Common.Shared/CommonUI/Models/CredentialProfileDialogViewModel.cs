@@ -1,21 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
 
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Telemetry;
-using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace AwsToolkit.VsSdk.Common.CommonUI.Models
 {
     public class CredentialProfileDialogViewModel : BaseModel, IDisposable
     {
-        private readonly ToolkitContext _toolkitContext;
-
         public CredentialProfileFormViewModel CredentialProfileFormViewModel { get; private set; }
 
         private bool? _dialogResult;
@@ -30,8 +22,6 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
 
         public CredentialProfileDialogViewModel(ToolkitContext toolkitContext)
         {
-            _toolkitContext = toolkitContext;
-
             CredentialProfileFormViewModel = new CredentialProfileFormViewModel(toolkitContext);
             CredentialProfileFormViewModel.CredentialProfileSaved += CredentialProfileFormViewModel_CredentialProfileSaved;
         }

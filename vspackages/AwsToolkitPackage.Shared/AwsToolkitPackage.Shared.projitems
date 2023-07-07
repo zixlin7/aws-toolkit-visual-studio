@@ -59,6 +59,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml.cs">
       <DependentUpon>LegacyFirstRunControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedView.xaml.cs">
+      <DependentUpon>GettingStartedView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Guids.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedEditorFactory.cs" />
@@ -152,6 +156,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

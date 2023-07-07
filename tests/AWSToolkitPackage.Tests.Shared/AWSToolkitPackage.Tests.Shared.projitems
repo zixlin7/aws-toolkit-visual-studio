@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\SendFeedbackCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\FirstRunControllerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\LegacyFirstRunControllerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Images\VsImageProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUsageEmitterTests.cs" />
