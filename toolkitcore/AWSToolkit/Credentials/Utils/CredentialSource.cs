@@ -8,6 +8,8 @@ namespace Amazon.AWSToolkit.Credentials.Utils
 {
     public static class CredentialSource
     {
+        private static readonly CredentialSourceId _memoryCredentialSourceId = new CredentialSourceId("memory");
+
         /// <summary>
         /// Returns the metrics based credential source for a given credential factory Id.
         /// Defaults to <see cref="CredentialSourceId.Other"/> if unknown.
@@ -16,6 +18,8 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         {
             switch (credentialFactoryId)
             {
+                case MemoryCredentialProviderFactory.MemoryProfileFactoryId:
+                    return _memoryCredentialSourceId;
                 case SharedCredentialProviderFactory.SharedProfileFactoryId:
                     return CredentialSourceId.SharedCredentials;
                 case SDKCredentialProviderFactory.SdkProfileFactoryId:

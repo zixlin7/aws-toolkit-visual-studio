@@ -9,6 +9,7 @@ using Amazon.Runtime.CredentialManagement.Internal;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Events;
+using System.Threading;
 
 namespace Amazon.AWSToolkit.Credentials.Utils
 {
@@ -77,7 +78,8 @@ namespace Amazon.AWSToolkit.Credentials.Utils
             return CredentialType.Unknown;
         }
 
-        public static Task<ConnectionState> ValidateConnectionAsync(this ProfileProperties @this, ToolkitContext toolkitContext)
+        public static Task<ConnectionState> ValidateConnectionAsync(this ProfileProperties @this,
+            ToolkitContext toolkitContext, CancellationToken cancellationToken = default)
         {
             // Use MemoryCredential classes to validate connection of ProfileProperties without having to persist a Credential
 
@@ -107,7 +109,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
             var region = toolkitContext.RegionProvider.GetRegion(@this.Region);
             connectionManager.CredentialManager.CredentialSettingsManager.CreateProfile(credId, @this);
 
-            return connectionManager.ChangeConnectionSettingsAsync(credId, region);
+            return connectionManager.ChangeConnectionSettingsAsync(credId, region, cancellationToken);
         }
     }
 }
