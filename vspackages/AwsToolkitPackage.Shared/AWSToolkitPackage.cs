@@ -99,6 +99,7 @@ using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 using Amazon.AWSToolkit.VisualStudio.ArmPreview;
 using Amazon.AWSToolkit.Notifications;
+using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -1087,7 +1088,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                             }
                             else
                             {
-                                new FirstRunController(this, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                                _toolkitContext.ToolkitHost.OpenInEditor(new GettingStartedView()
+                                {
+                                    DataContext = new GettingStartedViewModel(_toolkitContext)
+                                });
                             }
                         }
                     }

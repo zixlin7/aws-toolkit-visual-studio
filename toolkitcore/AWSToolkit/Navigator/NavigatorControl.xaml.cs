@@ -26,6 +26,7 @@ using Amazon.AWSToolkit.Telemetry.Model;
 
 using log4net;
 using CredentialType = Amazon.AWSToolkit.Credentials.Utils.CredentialType;
+using Amazon.AWSToolkit.Telemetry;
 
 namespace Amazon.AWSToolkit.Navigator
 {
@@ -368,7 +369,13 @@ namespace Amazon.AWSToolkit.Navigator
             }
             else
             {
-                new RegisterAccountController(_toolkitContext).Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+                using (var dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateCredentialProfileDialog())
+                {
+                    if (!dialog.Show())
+                    {
+                        RecordAwsModifyCredentialsMetric(ActionResults.CreateCancelled(), CredentialModification.Add);
+                    }
+                }
             }
         }
 
