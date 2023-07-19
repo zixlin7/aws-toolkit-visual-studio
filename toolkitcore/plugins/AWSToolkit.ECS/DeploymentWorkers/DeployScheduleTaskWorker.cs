@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -123,15 +124,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             try
             {
-                ToolkitContext.TelemetryLogger.RecordEcsDeployScheduledTask(new EcsDeployScheduledTask()
-                {
-                    Result = result.AsTelemetryResult(),
-                    EcsLaunchType = EcsTelemetryUtils.GetMetricsEcsLaunchType(awsWizard),
-                    AwsRegion = connectionSettings.Region?.Id ?? MetadataValue.Invalid,
-                    AwsAccount = connectionSettings.GetAccountId(ToolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                    Reason = EcsTelemetryUtils.GetReason(result?.Exception),
-                    Duration =  duration
-                });
+                var data = result.CreateMetricData<EcsDeployScheduledTask>(connectionSettings,
+                    ToolkitContext.ServiceClientManager);
+                data.Result = result.AsTelemetryResult();
+                data.EcsLaunchType = EcsTelemetryUtils.GetMetricsEcsLaunchType(awsWizard);
+                data.Duration = duration;
+                ToolkitContext.TelemetryLogger.RecordEcsDeployScheduledTask(data);
             }
             catch (Exception e)
             {
@@ -176,13 +174,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
             if (!result)
             {
-                string errorContents = command.LastToolsException?.Message ?? "Unknown";
+                string errorContents = command.LastException?.Message ?? "Unknown";
                 string errorMessage = $"Error while deploying scheduled ECS Task to AWS: {errorContents}";
 
                 Helper.AppendUploadStatus(errorMessage);
             }
 
-            var exception = DetermineErrorException(command.LastToolsException, "Failed to deploy scheduled ECS task to AWS");
+            var exception = DetermineErrorException(command.LastException, "Failed to deploy scheduled ECS task to AWS");
             return result ? new ActionResults().WithSuccess(true) : ActionResults.CreateFailed(exception);
         }
     }

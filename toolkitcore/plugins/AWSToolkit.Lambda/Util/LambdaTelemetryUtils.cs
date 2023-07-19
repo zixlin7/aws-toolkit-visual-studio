@@ -3,13 +3,13 @@
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 using Amazon.Lambda;
 
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry.Model;
 
 using LambdaArchitecture = Amazon.AwsToolkit.Telemetry.Events.Generated.LambdaArchitecture;
@@ -33,37 +33,60 @@ namespace Amazon.AWSToolkit.Lambda.Util
 
         public static void RecordLambdaDeploy(this ITelemetryLogger telemetryLogger, ActionResults result, double duration, BaseMetricSource metricSource, RecordLambdaDeployProperties lambdaDeploymentProperties)
         {
-            telemetryLogger.RecordLambdaDeploy(new LambdaDeploy()
+            var re = result.AsTelemetryResult();
+
+            var payload = new LambdaDeploy
             {
                 AwsAccount = lambdaDeploymentProperties.AccountId ?? MetadataValue.Invalid,
                 AwsRegion = lambdaDeploymentProperties.RegionId ?? MetadataValue.Invalid,
-                Result = result.AsTelemetryResult(),
-                LambdaPackageType = new LambdaPackageType(lambdaDeploymentProperties.LambdaPackageType?.Value ?? MetadataValue.NotSet),
+                Result = re,
+                LambdaPackageType =
+                    new LambdaPackageType(lambdaDeploymentProperties.LambdaPackageType?.Value ??
+                                          MetadataValue.NotSet),
                 InitialDeploy = lambdaDeploymentProperties.NewResource,
-                Runtime = new AwsToolkit.Telemetry.Events.Generated.Runtime(lambdaDeploymentProperties.Runtime?.Value ?? MetadataValue.NotSet),
+                Runtime =
+                    new AwsToolkit.Telemetry.Events.Generated.Runtime(lambdaDeploymentProperties.Runtime?.Value ??
+                                                                      MetadataValue.NotSet),
                 Platform = lambdaDeploymentProperties.TargetFramework,
-                LambdaArchitecture = new LambdaArchitecture(lambdaDeploymentProperties.LambdaArchitecture?.Value ?? MetadataValue.NotSet),
+                LambdaArchitecture =
+                    new LambdaArchitecture(lambdaDeploymentProperties.LambdaArchitecture?.Value ??
+                                           MetadataValue.NotSet),
                 Language = lambdaDeploymentProperties.Language,
                 XrayEnabled = lambdaDeploymentProperties.XRayEnabled,
-                Reason = LambdaHelpers.GetMetricsReason(result?.Exception),
                 Duration = duration,
                 ServiceType = metricSource?.Service,
                 Source = metricSource?.Location
-            });
+            };
+
+            if (re.Equals(Result.Failed))
+            {
+                payload.AddErrorMetadata(result?.Exception);
+            }
+
+            telemetryLogger.RecordLambdaDeploy(payload);
         }
 
-        public static void RecordServerlessApplicationDeploy(this ITelemetryLogger telemetryLogger, ActionResults result, double duration, BaseMetricSource metricSource, string accountId, string regionId)
+        public static void RecordServerlessApplicationDeploy(this ITelemetryLogger telemetryLogger,
+            ActionResults result, double duration, BaseMetricSource metricSource, string accountId, string regionId)
         {
-            telemetryLogger.RecordServerlessapplicationDeploy(new ServerlessapplicationDeploy()
+            var re = result.AsTelemetryResult();
+
+            var deploy = new ServerlessapplicationDeploy
             {
                 AwsAccount = accountId ?? MetadataValue.Invalid,
                 AwsRegion = regionId ?? MetadataValue.Invalid,
-                Result = result.AsTelemetryResult(),
-                Reason = LambdaHelpers.GetMetricsReason(result?.Exception),
+                Result = re,
                 Duration = duration,
                 ServiceType = metricSource?.Service,
                 Source = metricSource?.Location
-            });
+            };
+
+            if (re.Equals(Result.Failed))
+            {
+                deploy.AddErrorMetadata(result?.Exception);
+            }
+
+            telemetryLogger.RecordServerlessapplicationDeploy(deploy);
         }
 
         public static void RecordLambdaIamRoleCleanup(this ITelemetryLogger telemetryLogger, Result result, string reason, string accountId, string regionId)

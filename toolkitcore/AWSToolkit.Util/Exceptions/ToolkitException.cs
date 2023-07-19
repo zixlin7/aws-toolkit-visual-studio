@@ -31,7 +31,7 @@ namespace Amazon.AWSToolkit.Exceptions
         }
 
         protected ToolkitException(string message, string errorCode, Exception e)
-            : base(message)
+            : base(message, e)
         {
             this.Code = errorCode;
 

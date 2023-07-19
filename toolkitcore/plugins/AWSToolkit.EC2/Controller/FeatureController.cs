@@ -6,7 +6,7 @@ using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.EC2.Controller
@@ -64,13 +64,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         /// <param name="result">Operation result, used to populate some of the metric fields</param>
         protected T CreateMetricData<T>(ActionResults result, IAwsServiceClientManager serviceClientManager) where T : BaseTelemetryEvent, new()
         {
-            var metricData = new T();
-            metricData.AwsAccount = AwsConnectionSettings?.GetAccountId(serviceClientManager) ??
-                                    MetadataValue.Invalid;
-            metricData.AwsRegion = AwsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid;
-            metricData.Reason = TelemetryHelper.GetMetricsReason(result.Exception);
-
-            return metricData;
+            return result.CreateMetricData<T>(AwsConnectionSettings, serviceClientManager);
         }
     }
 }

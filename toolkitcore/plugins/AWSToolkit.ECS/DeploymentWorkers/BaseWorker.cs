@@ -293,11 +293,11 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return newRole.Arn;
         }
 
-        protected Exception DetermineErrorException(ToolsException lastToolsException, string errorMessage)
+        protected Exception DetermineErrorException(Exception lastException, string errorMessage)
         {
-            if (lastToolsException != null)
+            if (lastException != null)
             {
-                return lastToolsException;
+                return lastException;
             }
 
             return new ToolkitException(errorMessage, ToolkitException.CommonErrorCode.UnexpectedError);

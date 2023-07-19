@@ -4,7 +4,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Commands
 {
@@ -65,7 +65,12 @@ namespace Amazon.AWSToolkit.Commands
             metricData.AwsAccount = awsConnectionSettings?.GetAccountId(serviceClientManager) ??
                                     MetadataValue.Invalid;
             metricData.AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid;
-            metricData.Reason = TelemetryHelper.GetMetricsReason(result.Exception);
+
+            // add error metadata if failed result is encountered
+            if (result.AsTelemetryResult().Equals(Result.Failed))
+            {
+                metricData.AddErrorMetadata(result?.Exception);
+            }
 
             return metricData;
         }

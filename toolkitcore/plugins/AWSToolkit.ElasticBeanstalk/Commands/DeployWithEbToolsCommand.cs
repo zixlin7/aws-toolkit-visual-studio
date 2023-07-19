@@ -12,13 +12,13 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.ElasticBeanstalk.Tools.Commands;
 
 using AWSDeployment;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -133,14 +133,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                 success = command.ExecuteAsync().GetAwaiter().GetResult();
 
-                if (!success && command.LastToolsException != null)
+                if (!success && command.LastException != null)
                 {
-                    throw command.LastToolsException;
+                    throw command.LastException;
                 }
             }
             catch (Exception e)
             {
-                deployMetric.Reason = BeanstalkHelpers.GetMetricsReason(e);
+                deployMetric.AddErrorMetadata(e);
+
                 string errMsg = string.Format("Error publishing application: {0}", e.Message);
                 statusLogger.WriteLine(errMsg);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Publish Error", errMsg);

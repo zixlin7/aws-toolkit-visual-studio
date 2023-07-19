@@ -1,8 +1,6 @@
 ﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages;
-using Amazon.AWSToolkit.Telemetry;
-using Amazon.Common.DotNetCli.Tools;
 
 using log4net;
 using System;
@@ -39,16 +37,6 @@ namespace Amazon.AWSToolkit.ECS.Util
                 _logger.Error("Error determining ECS Launch Type", e);
                 return new EcsLaunchType("unknown");
             }
-        }
-
-        public static string GetReason(Exception e)
-        {
-            if (e is ToolsException toolsException)
-            {
-                return TelemetryHelper.ConcatenateReasonFragments(toolsException.ServiceCode, toolsException.Code);
-            }
-
-            return TelemetryHelper.GetMetricsReason(e);
         }
     }
 }

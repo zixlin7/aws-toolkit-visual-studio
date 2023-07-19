@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
@@ -156,16 +157,15 @@ namespace Amazon.AWSToolkit.Account.Controller
 
         private void RecordAddMetric(ActionResults actionResults, BaseMetricSource source)
         {
-            ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
-            {
-                AwsAccount = ToolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
-                AwsRegion = MetadataValue.NotApplicable,
-                Result = actionResults.AsTelemetryResult(),
-                CredentialModification = CredentialModification.Add,
-                Source = source.Location,
-                ServiceType = source.Service,
-                Reason = TelemetryHelper.GetMetricsReason(actionResults?.Exception)
-            });
+            var accountId = ToolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
+
+            var data = actionResults.CreateMetricData<AwsModifyCredentials>(accountId, MetadataValue.NotApplicable);
+            data.Result = actionResults.AsTelemetryResult();
+            data.CredentialModification = CredentialModification.Add;
+            data.Source = source.Location;
+            data.ServiceType = source.Service;
+
+            ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
         }
     }
 }

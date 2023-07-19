@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
@@ -13,12 +12,11 @@ using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -355,13 +353,9 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 
         private void RecordMetric(ActionResults results)
         {
-            var data = new DynamodbCreateTable()
-            {
-                AwsAccount = _awsConnectionSettings?.GetAccountId(_toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = _awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<DynamodbCreateTable>(_awsConnectionSettings,
+                _toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
 
             _toolkitContext.TelemetryLogger.RecordDynamodbCreateTable(data);
         }

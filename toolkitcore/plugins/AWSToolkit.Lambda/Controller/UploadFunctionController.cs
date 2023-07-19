@@ -27,6 +27,7 @@ using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -436,35 +437,29 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         private void RecordServerlessPublishWizard(ActionResults results, double duration, BaseMetricSource metricSource)
         {
             var connectionSettings = new AwsConnectionSettings(_credentialIdentifier, _region);
-            var accountId = connectionSettings.GetAccountId(_toolkitContext.ServiceClientManager);
-          
-            _toolkitContext.TelemetryLogger.RecordServerlessapplicationPublishWizard(new ServerlessapplicationPublishWizard()
-            {
-                AwsAccount = accountId ?? MetadataValue.Invalid,
-                AwsRegion = _region?.Id ?? MetadataValue.Invalid,
-                Result = results.AsTelemetryResult(),
-                Duration = duration,
-                Source = metricSource?.Location,
-                ServiceType = metricSource?.Service,
-                Reason = LambdaHelpers.GetMetricsReason(results?.Exception)
-            });
+
+            var data = results.CreateMetricData<ServerlessapplicationPublishWizard>(connectionSettings,
+                _toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
+            data.Duration = duration;
+            data.Source = metricSource?.Location;
+            data.ServiceType = metricSource?.Service;
+
+            _toolkitContext.TelemetryLogger.RecordServerlessapplicationPublishWizard(data);
         }
 
         private void RecordLambdaPublishWizard(ActionResults results, double duration, BaseMetricSource metricSource)
         {
             var connectionSettings = new AwsConnectionSettings(_credentialIdentifier, _region);
-            var accountId = connectionSettings.GetAccountId(_toolkitContext.ServiceClientManager);
 
-            _toolkitContext.TelemetryLogger.RecordLambdaPublishWizard(new LambdaPublishWizard()
-            {
-                AwsAccount = accountId ?? MetadataValue.Invalid,
-                AwsRegion = _region?.Id ?? MetadataValue.Invalid,
-                Result = results.AsTelemetryResult() ,
-                Duration = duration,
-                Source = metricSource?.Location,
-                ServiceType = metricSource?.Service,
-                Reason = LambdaHelpers.GetMetricsReason(results?.Exception)
-            });
+            var data = results.CreateMetricData<LambdaPublishWizard>(connectionSettings,
+                _toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
+            data.Duration = duration;
+            data.Source = metricSource?.Location;
+            data.ServiceType = metricSource?.Service;
+
+            _toolkitContext.TelemetryLogger.RecordLambdaPublishWizard(data);
         }
 
         private void ApplyConnectionIfMissing(IAWSWizard wizard)

@@ -8,7 +8,7 @@ using Amazon.ECR;
 using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
@@ -74,13 +74,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
         /// <param name="result">Operation result, used to populate some of the metric fields</param>
         protected T CreateMetricData<T>(ActionResults result, IAwsServiceClientManager serviceClientManager) where T : BaseTelemetryEvent, new()
         {
-            var metricData = new T();
-            metricData.AwsAccount = AwsConnectionSettings?.GetAccountId(serviceClientManager) ??
-                                    MetadataValue.Invalid;
-            metricData.AwsRegion = AwsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid;
-            metricData.Reason = TelemetryHelper.GetMetricsReason(result.Exception);
-
-            return metricData;
+            return result.CreateMetricData<T>(AwsConnectionSettings, serviceClientManager);
         }
     }
 }
