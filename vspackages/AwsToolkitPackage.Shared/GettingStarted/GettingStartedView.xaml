@@ -6,59 +6,57 @@
     xmlns:local="clr-namespace:Amazon.AWSToolkit.VisualStudio.GettingStarted"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:profiles="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles;assembly=AWSToolkit"
-    xmlns:root="clr-namespace:Amazon.AWSToolkit.VisualStudio"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+    themes:ToolkitThemes.UseToolkitTheme="True"
     d:DesignHeight="600"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    
     <commonUi:BaseAWSUserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary
-                    Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
-            <Style
-                x:Key="flowDocumentStyle"
-                TargetType="{x:Type FlowDocument}">
-                <Setter
-                    Property="FontFamily"
-                    Value="{DynamicResource {x:Static root:ThemeFontResources.EnvironmentFontFamilyKey}}" />
-                <Setter
-                    Property="FontSize"
-                    Value="{DynamicResource {x:Static root:ThemeFontResources.EnvironmentFontSizeKey}}" />
-            </Style>
+            <commonUi:ToolkitImages x:Key="ToolkitImages" />
+            <commonUi:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </commonUi:BaseAWSUserControl.Resources>
 
     <ScrollViewer>
-        <StackPanel>
+        <Grid Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="600" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
             <StackPanel
-                Orientation="Horizontal">
+                Orientation="Horizontal"
+                Grid.Row="0"
+                Grid.ColumnSpan="2"
+                Grid.Column="0">
 
-                <Image
-                    x:Name="_ctlLogoImage"
-                    Width="140"
-                    Height="84"
-                    Margin="2"
-                    HorizontalAlignment="Left"
+                <images:VsImage
+                    Source="{Binding Source={StaticResource ToolkitImages}, Path=Aws}"
+                    Width="64"
+                    Height="64"
+                    Margin="3"
                     VerticalAlignment="Center"
-                    Source="/AWSToolkit;component/Resources/Logos/logo_aws.png" />
+                    HorizontalAlignment="Left" />
 
                 <TextBlock
-                    Grid.Column="1"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    Style="{DynamicResource awsTextBlock310PercentStyle}">
-                Getting Started with the AWS Toolkit
-                </TextBlock>
+                    Margin="12 0 0 0"
+                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
+                    Text="Getting Started with the AWS Toolkit"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left" />
+
             </StackPanel>
 
-            <commonUi:CardControl
-                SelectedValue="{Binding ActiveCard}"
-                SelectedValuePath="Name">
+            <commonUi:CardControl Grid.Row="1"
+                                  Grid.Column="0"
+                                  SelectedValue="{Binding ActiveCard}"
+                                  SelectedValuePath="Name">
                 <!-- Names on items below is for CardControl selection, not access in code-behind -->
                 <profiles:CredentialProfileForm
                     x:Name="AddProfileCard"
@@ -69,7 +67,7 @@
                     x:FieldModifier="private">
                     <commonUi:StatusBox
                         Status="{Binding Status}">
-                        <Grid>
+                        <Grid Margin="12">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -80,121 +78,127 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Orientation="Horizontal">
+                            <WrapPanel Grid.Row="0" Grid.Column="0">
+                              <images:VsImage Height="16"
+                                       Width="16"
+                                       VerticalAlignment="Center">
+                                    <images:VsImage.Style>
+                                        <Style TargetType="{x:Type images:VsImage}">
+                                            <Setter Property="Source"
+                                                    Value="{Binding Source={StaticResource VsImages}, Path=StatusOK}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="False">
+                                                    <Setter Property="Source"
+                                                            Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </images:VsImage.Style>
+                                </images:VsImage>
+
                                 <TextBlock
-                                    Text="Connected to " />
-                                <TextBlock
-                                    Text="{Binding CredentialTypeName}" />
-                                <TextBlock
-                                    Text=": ">
+                                    Margin="3 0 0 0"
+                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}Connected to {0}: {1}">
+                                            <Binding Path="CredentialTypeName" FallbackValue="(not available)" />
+                                            <Binding Path="CredentialName" FallbackValue="(not available)" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
                                 </TextBlock>
-                                <TextBlock
-                                    Text="{Binding CredentialName}" />
-                            </StackPanel>
+                            </WrapPanel>
 
                             <TextBlock
                                 Grid.Row="1"
                                 Grid.Column="0"
-                                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}">
-                                Open the AWS Explorer to add and switch between additional profiles.
-                            </TextBlock>
+                                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}"
+                                Text="Open the AWS Explorer to add and switch between additional profiles." />
 
                             <Button
                                 Grid.Row="0"
                                 Grid.RowSpan="2"
                                 Grid.Column="2"
-                                Command="{Binding OpenAwsExplorerAsyncCommand}">
-                                Open AWS Explorer
-                            </Button>
+                                Command="{Binding OpenAwsExplorerAsyncCommand}"
+                                Content="Open AWS Explorer" />
+
                         </Grid>
                     </commonUi:StatusBox>
-                    
-                    <Border>
-                        <StackPanel>
+
+                    <Border BorderThickness="1" Margin="0 12 0 0">
+                        <StackPanel Margin="12">
                             <CheckBox
-                                Grid.Row="1"
-                                Margin="12,11,4,0"
+                                Margin="6 0 0 0"
                                 IsChecked="{Binding CollectAnalytics}"
-                                VerticalContentAlignment="Top"
-                                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-                                <TextBlock
-                                    TextWrapping="Wrap"
-                                    Style="{DynamicResource awsTextBlockBaseStyle}">
-                                    Allow AWS Toolkit to collect usage information
-                                </TextBlock>
+                                VerticalContentAlignment="Top">
+                                <TextBlock Margin="6 0 0 0"
+                                           TextWrapping="Wrap"
+                                           FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                                           Text="Allow AWS Toolkit to collect usage information" />
                             </CheckBox>
-                        
+
                             <TextBlock
-                                Grid.Row="2"
-                                Margin="32 11 0 0"
-                                TextWrapping="Wrap"
-                                Style="{DynamicResource awsTextBlockBaseStyle}">
-                                By letting us know which Toolkit features are used, this data helps improve the AWS Toolkit and other Amazon products and services. AWS handles this data in accordance with the
+                                Margin="6 3 0 0"
+                                TextWrapping="WrapWithOverflow">
+                                <Run
+                                    Text="By letting us know which Toolkit features are used, this data helps improve the AWS Toolkit and other Amazon products and services. AWS handles this data in accordance with the" />
                                 <Hyperlink
                                     Command="{Binding OpenPrivacyPolicyCommand}">
-                                    AWS Privacy Policy
-                                </Hyperlink>. When available, an AWS Account ID is associated with this information.
+                                    AWS Privacy Policy.
+                                </Hyperlink>
+                                <Run Text=" When available, an AWS Account ID is associated with this information." />
                             </TextBlock>
                         </StackPanel>
                     </Border>
 
-                    <Grid>
+                    <Grid Margin="15 30 0  0">
                         <Grid.RowDefinitions>
-                            <RowDefinition
-                                Height="Auto" />
-                            <RowDefinition
-                                Height="*" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <TextBlock
                             Grid.Row="0"
-                            Style="{DynamicResource awsTextBlock155PercentStyle}">
-                            Documentation and Tutorials
-                        </TextBlock>
+                            FontWeight="SemiBold"
+                            FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                            Text="Documentation and Tutorials" />
 
                         <FlowDocumentScrollViewer
                             Grid.Row="1"
                             VerticalScrollBarVisibility="Auto"
                             Margin="-20,0,4,0">
                             <FlowDocument
-                                Style="{StaticResource flowDocumentStyle}">
+                                Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.FlowDocumentStyle}}">
                                 <List>
                                     <ListItem>
                                         <Paragraph>
-                                            <Hyperlink
-                                                Command="{Binding OpenUsingToolkitDocsCommand}">
-                                                Using the Toolkit for Visual Studio
-                                            </Hyperlink>
+                                            <commonUi:HyperlinkText
+                                                HorizontalAlignment="Center"
+                                                OpenUrlCommand="{Binding OpenUsingToolkitDocsCommand}"
+                                                LinkText="Using the Toolkit for Visual Studio" />
                                         </Paragraph>
                                     </ListItem>
-                                    <ListItem
-                                        Margin="0,8,0,0">
+                                    <ListItem Margin="0 6 0 0">
                                         <Paragraph>
-                                            <Hyperlink
-                                                Command="{Binding OpenDeployLambdaDocsCommand}">
-                                                Deploying C# Functions to AWS Lambda
-                                            </Hyperlink>
+                                            <commonUi:HyperlinkText
+                                                HorizontalAlignment="Center"
+                                                OpenUrlCommand="{Binding OpenDeployLambdaDocsCommand}"
+                                                LinkText="Deploying C# Functions to AWS Lambda" />
                                         </Paragraph>
                                     </ListItem>
-                                    <ListItem
-                                        Margin="0,8,0,0">
+                                    <ListItem Margin="0 6 0 0">
                                         <Paragraph>
-                                            <Hyperlink
-                                                Command="{Binding OpenDeployBeanstalkDocsCommand}">
-                                                Deploying .NET Applications on AWS Elastic Beanstalk
-                                            </Hyperlink>
+                                            <commonUi:HyperlinkText
+                                                HorizontalAlignment="Center"
+                                                OpenUrlCommand="{Binding OpenDeployBeanstalkDocsCommand}"
+                                                LinkText="Deploying .NET Applications on AWS Elastic Beanstalk" />
                                         </Paragraph>
                                     </ListItem>
-                                    <ListItem
-                                        Margin="0,8,0,0">
+                                    <ListItem Margin="0 6  0 0">
                                         <Paragraph>
-                                            <Hyperlink
-                                                Command="{Binding OpenDevBlogCommand}">
-                                                AWS .NET Developer Blog
-                                            </Hyperlink>
+                                            <commonUi:HyperlinkText
+                                                HorizontalAlignment="Center"
+                                                OpenUrlCommand="{Binding OpenDevBlogCommand}"
+                                                LinkText="AWS .NET Developer Blog" />
                                         </Paragraph>
                                     </ListItem>
                                 </List>
@@ -203,7 +207,6 @@
                     </Grid>
                 </StackPanel>
             </commonUi:CardControl>
-        </StackPanel>
+        </Grid>
     </ScrollViewer>
 </commonUi:BaseAWSControl>
-

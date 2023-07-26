@@ -7,6 +7,7 @@
     {
         /// <summary>Key that references the "base" button style</summary>
         public static object ButtonStyle { get; } = GenerateKeyName(nameof(ButtonStyle));
+        public static object FlowDocumentStyle { get; } = GenerateKeyName(nameof(FlowDocumentStyle));
         public static object ExpanderStyle { get; } = GenerateKeyName(nameof(ExpanderStyle));
         public static object ListBoxStyle { get; } = GenerateKeyName(nameof(ListBoxStyle));
         public static object ListViewColumnHeaderStyle { get; } = GenerateKeyName(nameof(ListViewColumnHeaderStyle));

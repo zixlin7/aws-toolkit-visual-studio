@@ -5,21 +5,33 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d">
-
     <local:ProfileSubform.Content>
         <StackPanel>
             <TextBlock
+                Margin="0 9 0 0"
+                FontWeight="SemiBold"
+                HorizontalAlignment="Left"
+                TextWrapping="WrapWithOverflow"
                 Text="Sign-in URL" />
             <TextBox
+                Margin="0 5 0 0"
                 Text="{Binding ProfileProperties.SsoStartUrl}" />
         </StackPanel>
     </local:ProfileSubform.Content>
 
     <local:ProfileSubform.Footer>
         <Expander
+            HorizontalAlignment="Stretch"
+            Background="Transparent"
+            FontWeight="SemiBold"
+            Margin=" 0 9 0 0"
             Header="SSO Region">
             <local:RegionSelector
+                Margin="20 5 0 0"
+                FontWeight="Normal"
                 DataContext="{Binding SsoRegionSelectorViewModel}" />
         </Expander>
     </local:ProfileSubform.Footer>

@@ -31,4 +31,15 @@
         TargetType="commonUi:BrowserHyperLink" 
         BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ThemedDialogHyperlinkStyleKey}}" />
 
+    <Style
+        x:Key="{x:Static themes:ToolkitThemeResourceKeys.FlowDocumentStyle}" 
+        TargetType="{x:Type FlowDocument}">
+        <Setter
+            Property="FontFamily"
+            Value="{DynamicResource {x:Static toolkit:ThemeFontResources.EnvironmentFontFamilyKey}}" />
+        <Setter
+            Property="FontSize"
+            Value="{DynamicResource {x:Static toolkit:ThemeFontResources.EnvironmentFontSizeKey}}" />
+    </Style>
+
 </ResourceDictionary>
