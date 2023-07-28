@@ -21,10 +21,9 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         /// Produces an object that is configured to connect to Sono, and allows the Toolkit to
         /// prompt to start the SSO login flow.
         /// </summary>
-        public static ToolkitSsoTokenManagerOptions CreateSonoTokenManagerOptions(Action<SsoVerificationArguments> ssoCallback)
+        public static ToolkitSsoTokenManagerOptions CreateSonoTokenManagerOptions(Action<SsoVerificationArguments> ssoCallback, string[] scopes)
         {
-            return new ToolkitSsoTokenManagerOptions(SonoProperties.ClientName, SonoProperties.ClientType,
-                ssoCallback, SonoProperties.Scopes);
+            return new ToolkitSsoTokenManagerOptions(SonoProperties.ClientName, SonoProperties.ClientType, ssoCallback, scopes);
         }
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         /// the prompt.
         /// </summary>
         public static Action<SsoVerificationArguments> CreateSsoCallback(ICredentialIdentifier credentialIdentifier,
-            IAWSToolkitShellProvider toolkitShell)
+            IAWSToolkitShellProvider toolkitShell, bool isBuilderId)
         {
             return (SsoVerificationArguments ssoVerification) =>
             {
@@ -45,7 +44,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
                     toolkitShell.ExecuteOnUIThread(() =>
                     {
-                        var dialog = CreateDialog(toolkitShell, ssoVerification);
+                        var dialog = CreateDialog(toolkitShell, ssoVerification, isBuilderId);
 
                         if (!dialog.Show())
                         {
@@ -54,23 +53,23 @@ namespace Amazon.AWSToolkit.Credentials.Sono
                         }
                     });
 
-                    toolkitShell.OutputToHostConsole(
-                        $"AWS Builder ID Login flow started for Credentials: {credentialIdentifier.DisplayName}", false);
-                    Logger.Debug($"AWS Builder ID Login flow started for Credentials: {credentialIdentifier.Id}");
+                    var msgPrefix = $"{(isBuilderId ? "AWS Builder ID " : "")}Login flow started for Credentials: ";
+                    toolkitShell.OutputToHostConsole($"{msgPrefix}{credentialIdentifier.DisplayName}", false);
+                    Logger.Debug($"{msgPrefix}{credentialIdentifier.Id}");
 
                 }
                 catch (Exception e)
                 {
-                    Logger.Error($"Error starting AWS Builder ID Login flow for {credentialIdentifier.Id}", e);
+                    Logger.Error($"Error starting {(isBuilderId ? "AWS Builder ID " : "")}Login flow for {credentialIdentifier.Id}", e);
                     throw;
                 }
             };
         }
 
-        private static ISsoLoginDialog CreateDialog(IAWSToolkitShellProvider toolkitShell, SsoVerificationArguments ssoVerification)
+        private static ISsoLoginDialog CreateDialog(IAWSToolkitShellProvider toolkitShell, SsoVerificationArguments ssoVerification, bool isBuilderId)
         {
             var dialog = toolkitShell.GetDialogFactory().CreateSsoLoginDialog();
-            dialog.IsBuilderId = true;
+            dialog.IsBuilderId = isBuilderId;
             dialog.UserCode = ssoVerification.UserCode;
             dialog.LoginUri = ssoVerification.VerificationUri;
             return dialog;

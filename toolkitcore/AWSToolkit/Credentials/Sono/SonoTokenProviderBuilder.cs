@@ -21,6 +21,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         private RegionEndpoint _oidcRegion = SonoProperties.DefaultOidcRegion;
         private RegionEndpoint _tokenProviderRegion = SonoProperties.DefaultTokenProviderRegion;
         private string _startUrl = SonoProperties.StartUrl;
+        private bool _isBuilderId = true;
         private Action<SsoVerificationArguments> _ssoCallbackHandler;
 
         private IFile _tokenCacheFileHandler = new FileRetriever();
@@ -69,6 +70,12 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             return this;
         }
 
+        public SonoTokenProviderBuilder WithIsBuilderId(bool isBuilderId)
+        {
+            _isBuilderId = isBuilderId;
+            return this;
+        }
+
         public SonoTokenProviderBuilder WithSsoCallback(Action<SsoVerificationArguments> callbackHandler)
         {
             _ssoCallbackHandler = callbackHandler;
@@ -99,8 +106,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
             var tokenManager = CreateTokenManager();
 
-            return new SSOTokenProvider(tokenManager, _sessionName, SonoProperties.StartUrl,
-                _tokenProviderRegion.SystemName);
+            return new SSOTokenProvider(tokenManager, _sessionName, _startUrl, _tokenProviderRegion.SystemName);
         }
 
         /// <summary>
@@ -157,9 +163,13 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         private ISSOTokenManager CreateTokenManager()
         {
             Action<SsoVerificationArguments> ssoCallback =
-                _ssoCallbackHandler ?? SonoHelpers.CreateSsoCallback(_credentialIdentifier, _toolkitShell);
+                _ssoCallbackHandler ?? SonoHelpers.CreateSsoCallback(_credentialIdentifier, _toolkitShell, _isBuilderId);
 
-            var tokenManagerOptions = SonoHelpers.CreateSonoTokenManagerOptions(ssoCallback);
+            var scopes = _isBuilderId ?
+                SonoProperties.Scopes :
+                new string[] { SonoProperties.SsoAccountAccessScope };
+
+            var tokenManagerOptions = SonoHelpers.CreateSonoTokenManagerOptions(ssoCallback, scopes);
 
             var ssoOidcClient = SSOServiceClientHelpers.BuildSSOIDCClient(_oidcRegion);
 
