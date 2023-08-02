@@ -15,9 +15,11 @@ namespace AWSToolkit.Tests.Credentials.IO
 
         private readonly MemoryCredentialsFile _file;
 
-        private readonly CredentialProfile _sampleProfile = CredentialProfileTestHelper.Basic.Valid.AccessAndSecret;
+        private readonly CredentialProfile _sampleStaticProfile = CredentialProfileTestHelper.Basic.Valid.AccessAndSecret;
 
-        private readonly CredentialProfile _sampleAlternateProfile = CredentialProfileTestHelper.Basic.Valid.Token;
+        private readonly CredentialProfile _sampleAlternateStaticProfile = CredentialProfileTestHelper.Basic.Valid.Token;
+
+        private readonly CredentialProfile _sampleSsoWithSsoSessionProfile = CredentialProfileTestHelper.SsoWithSsoSession.ValidProfile;
 
         public MemoryCredentialFileWriterTests()
         {
@@ -28,49 +30,57 @@ namespace AWSToolkit.Tests.Credentials.IO
         }
 
         [Fact]
-        public void CreateProfileTest()
+        public void CreateProfileTestWithStaticProfile()
         {
             Assert.Empty(_fileReader.ProfileNames);
-            _sut.CreateOrUpdateProfile(_sampleProfile);
-            Assert.NotNull(_fileReader.GetCredentialProfile(_sampleProfile.Name));
+            _sut.CreateOrUpdateProfile(_sampleStaticProfile);
+            Assert.Equal(_sampleStaticProfile, _fileReader.GetCredentialProfile(_sampleStaticProfile.Name));
+        }
+
+        [Fact]
+        public void CreateProfileTestWithSsoSession()
+        {
+            Assert.Empty(_fileReader.ProfileNames);
+            _sut.CreateOrUpdateProfile(_sampleSsoWithSsoSessionProfile);
+            Assert.Equal(_sampleSsoWithSsoSessionProfile, _fileReader.GetCredentialProfile(_sampleSsoWithSsoSessionProfile.Name));
         }
 
         [Fact]
         public void DeleteProfileTest()
         {
-            _sut.CreateOrUpdateProfile(_sampleProfile);
-            Assert.NotNull(_fileReader.GetCredentialProfile(_sampleProfile.Name));
+            _sut.CreateOrUpdateProfile(_sampleStaticProfile);
+            Assert.NotNull(_fileReader.GetCredentialProfile(_sampleStaticProfile.Name));
 
-            _sut.DeleteProfile(_sampleProfile.Name);
-            Assert.Null(_fileReader.GetCredentialProfile(_sampleProfile.Name));
+            _sut.DeleteProfile(_sampleStaticProfile.Name);
+            Assert.Null(_fileReader.GetCredentialProfile(_sampleStaticProfile.Name));
         }
 
         [Fact]
         public void RenameProfileTest()
         {
-            _sut.CreateOrUpdateProfile(_sampleProfile);
-            Assert.NotNull(_fileReader.GetCredentialProfile(_sampleProfile.Name));
+            _sut.CreateOrUpdateProfile(_sampleStaticProfile);
+            Assert.NotNull(_fileReader.GetCredentialProfile(_sampleStaticProfile.Name));
 
-            _sut.RenameProfile(_sampleProfile.Name, _sampleAlternateProfile.Name);
+            _sut.RenameProfile(_sampleStaticProfile.Name, _sampleAlternateStaticProfile.Name);
             _fileReader.Load();
 
             Assert.Single(_fileReader.ProfileNames);
-            Assert.Equal(_sampleAlternateProfile.Name, _fileReader.ProfileNames.First());
-            Assert.Null(_fileReader.GetCredentialProfile(_sampleProfile.Name));
-            Assert.NotNull(_fileReader.GetCredentialProfile(_sampleAlternateProfile.Name));
+            Assert.Equal(_sampleAlternateStaticProfile.Name, _fileReader.ProfileNames.First());
+            Assert.Null(_fileReader.GetCredentialProfile(_sampleStaticProfile.Name));
+            Assert.NotNull(_fileReader.GetCredentialProfile(_sampleAlternateStaticProfile.Name));
         }
 
         [Fact]
         public void UpdateProfileTest()
         {
-            _sut.CreateOrUpdateProfile(_sampleProfile);
-            Assert.Equal("access_key", _fileReader.GetCredentialProfile(_sampleProfile.Name).Options.AccessKey);
+            _sut.CreateOrUpdateProfile(_sampleStaticProfile);
+            Assert.Equal("access_key", _fileReader.GetCredentialProfile(_sampleStaticProfile.Name).Options.AccessKey);
 
-            var profile = new CredentialProfile(_sampleProfile.Name,
+            var profile = new CredentialProfile(_sampleStaticProfile.Name,
             new CredentialProfileOptions { AccessKey = "access_key_changed", SecretKey = "secret_key" });
             _sut.CreateOrUpdateProfile(profile);
 
-            Assert.Equal("access_key_changed", _fileReader.GetCredentialProfile(_sampleProfile.Name).Options.AccessKey);
+            Assert.Equal("access_key_changed", _fileReader.GetCredentialProfile(_sampleStaticProfile.Name).Options.AccessKey);
             _fileReader.Load();
             Assert.Single(_fileReader.ProfileNames);
         }

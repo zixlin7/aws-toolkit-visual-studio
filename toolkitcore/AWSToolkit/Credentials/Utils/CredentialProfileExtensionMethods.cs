@@ -1,4 +1,6 @@
-﻿using Amazon.Runtime.CredentialManagement;
+﻿using System;
+
+using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
 
 namespace Amazon.AWSToolkit.Credentials.Utils
@@ -45,7 +47,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
 
         public static CredentialProfile Clone(this CredentialProfile @this, string toProfileName)
         {
-            return new CredentialProfile(toProfileName, @this.Options.Clone())
+            var cloned = new CredentialProfile(toProfileName, @this.Options.Clone())
             {
                 DefaultConfigurationModeName = @this.DefaultConfigurationModeName,
                 EC2MetadataServiceEndpoint = @this.EC2MetadataServiceEndpoint,
@@ -61,6 +63,13 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                 UseDualstackEndpoint = @this.UseDualstackEndpoint,
                 UseFIPSEndpoint = @this.UseFIPSEndpoint
             };
+
+            if (Guid.TryParse(CredentialProfileUtils.GetUniqueKey(@this), out var uniqueKey))
+            {
+                CredentialProfileUtils.SetUniqueKey(cloned, uniqueKey);
+            }
+
+            return cloned;
         }
 
         public static CredentialProfileOptions Clone(this CredentialProfileOptions @this)

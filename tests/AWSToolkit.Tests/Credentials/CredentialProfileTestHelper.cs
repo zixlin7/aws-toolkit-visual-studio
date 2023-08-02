@@ -128,6 +128,19 @@ namespace AWSToolkit.Tests.Credentials
             }
         }
 
+        public static class SsoWithSsoSession
+        {
+            public static readonly CredentialProfile ValidProfile = new CredentialProfile("sso_profile",
+                new CredentialProfileOptions
+                {
+                    SsoAccountId = "account-id",
+                    SsoRegion = "sso-region",
+                    SsoRoleName = "sso-role",
+                    SsoSession = "sso-session-name",
+                    SsoStartUrl = "sso-url",
+                });
+        }
+
         public static class SsoSession
         {
             public static class Valid

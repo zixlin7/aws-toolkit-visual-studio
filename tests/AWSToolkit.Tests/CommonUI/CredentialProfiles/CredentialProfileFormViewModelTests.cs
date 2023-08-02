@@ -80,7 +80,6 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles
         //[Fact]
         //public void SaveValidSsoProfileUpdatesProfileAndRaisesCredentialProfileSaved()
         //{
-        //    // Use CredentialFileType.SDK here for more coverage
         //}
 
         [Fact]
