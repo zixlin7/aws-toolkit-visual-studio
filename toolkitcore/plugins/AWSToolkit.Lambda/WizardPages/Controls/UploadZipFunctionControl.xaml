@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.WizardPages.Controls"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
     mc:Ignorable="d" 
     d:DesignHeight="350" d:DesignWidth="800">
 
@@ -17,12 +18,13 @@
 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <commonUi:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <converters:NullableInverseBooleanConverter x:Key="NullableInverseBooleanConverter" />
 
-            <Style TargetType="TextBox" BasedOn="{StaticResource awsTextBoxStyle}">
+            <Style x:Key="ControlTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource awsTextBoxStyle}">
                 <Setter Property="MinHeight" Value="23" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
-            <Style x:Key="controlComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource awsComboBoxStyle}">
+            <Style x:Key="ControlComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource awsComboBoxStyle}">
                 <Setter Property="MinHeight" Value="23" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
@@ -45,8 +47,10 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <!-- Source Code -->
         <Label
             Grid.Row="0" Grid.Column="0"
             Content="Source _Code:"
@@ -57,13 +61,13 @@
             Target="{Binding ElementName=SourceCodeLocation}"
             ToolTip="{Binding SourceCodeLocationTooltip}"
             />
+
         <Grid
             Grid.Row="0" Grid.Column="1"        
             Grid.ColumnSpan="4"
             Margin="9 0 0 0"
             Visibility="{Binding ShowSourceLocation, Converter={StaticResource BooleanToVisibilityConverter}}"
-            ToolTip="{Binding SourceCodeLocationTooltip}"
-            >
+            ToolTip="{Binding SourceCodeLocationTooltip}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -75,6 +79,7 @@
                 Margin="0 0 0 0"
                 Text="{Binding SourceCodeLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 ToolTip="{Binding SourceCodeLocationTooltip}"
+                Style="{StaticResource ControlTextBoxStyle}"
                 />
             <Button
                 Grid.Row="0" Grid.Column="1"
@@ -98,29 +103,71 @@
                 />
         </Grid>
 
+        <!-- Function Name -->
         <Label
             Grid.Row="1" Grid.Column="0"
             Content="_Function Name:"
-            Margin="0 9 0 0"
+            Margin="0 0 0 0"
             Style="{DynamicResource awsLabelBaseStyle}"
-            VerticalAlignment="Center"
+            VerticalAlignment="Top"
             Target="{Binding ElementName=FunctionName}"
             ToolTip="{Binding FunctionNameTooltip}"
             />
 
-        <ComboBox
-            Name="FunctionName" x:FieldModifier="private"
+        <RadioButton
+            Margin="9 5 0 0"
+            Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+            Content="_Create new function"
+            IsChecked="{Binding IsExistingFunction, Converter={StaticResource NullableInverseBooleanConverter}}"
+            x:Name="CreateNewFunctionRadioButton"
+            VerticalAlignment="Top"
+            Style="{DynamicResource awsRadioButtonBaseStyle}"
+            />
+
+        <TextBox
             Grid.Row="1" Grid.Column="1"
-            Grid.ColumnSpan="4"
-            Margin="9 9 0 0"
-            IsReadOnly="{Binding CanEditFunctionName, Converter={StaticResource InverseBooleanConverter}}"
-            IsEditable="True"
-            IsEnabled="{Binding LoadingFunctions, Converter={StaticResource InverseBooleanConverter}}"
-            ItemsSource="{Binding Functions}"
+            Margin="27,25,0,5"
             ToolTip="{Binding FunctionNameTooltip}"
-            >
+            x:Name="CreateNewFunctionTextBox"
+            IsEnabled="{Binding IsChecked, ElementName=CreateNewFunctionRadioButton}"
+            VerticalAlignment="Top">
+            <TextBox.Style>
+                <Style TargetType="TextBox" BasedOn="{StaticResource ControlTextBoxStyle}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LoadingFunctions}" Value="False">
+                            <Setter Property="Text" Value="{Binding FunctionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTrigger>
+                        <!--When TextBox is not enabled, make the text transparent to hide the FunctionName Binding-->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="Transparent" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+
+        <RadioButton
+            Margin="9 5 0 0"
+            Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+            Content="Re-deploy to existing"
+            x:Name="RedeployExistingFunctionRadioButton"
+            IsChecked="{Binding IsExistingFunction}"
+            VerticalAlignment="Top"
+            Style="{DynamicResource awsRadioButtonBaseStyle}"
+            />
+
+        <ComboBox
+            Grid.Row="2" Grid.Column="1"
+            Margin="27,25,0,35"
+            x:Name="RedeployExistingFunctionComboBox"
+            IsEditable="False"
+            ItemsSource="{Binding Functions}"
+            ToolTip="{Binding FunctionNameTooltip}" Grid.RowSpan="2">
+            <ComboBox.IsEnabled>
+                <Binding Path="IsChecked" ElementName="RedeployExistingFunctionRadioButton"/>
+            </ComboBox.IsEnabled>
             <ComboBox.Style>
-                <Style TargetType="ComboBox" BasedOn="{StaticResource controlComboBoxStyle}">
+                <Style TargetType="ComboBox" BasedOn="{StaticResource ControlComboBoxStyle}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding LoadingFunctions}" Value="True">
                             <Setter Property="Text" Value="Loading..." />
@@ -131,12 +178,49 @@
                     </Style.Triggers>
                 </Style>
             </ComboBox.Style>
+            <ComboBox.Text>
+                <Binding Path="FunctionName" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay" />
+            </ComboBox.Text>
         </ComboBox>
 
+        <!-- Handler -->
         <Label
-            Grid.Row="2" Grid.Column="0"
+            Grid.Row="3" Grid.Column="0"
+            Content="_Handler:"
+            Margin="0 0 0 0"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Bottom"
+            Target="{Binding ElementName=Handler}"
+            ToolTip="{Binding HandlerTooltip}"
+            />
+
+        <TextBox
+            Name="Handler" x:FieldModifier="private"
+            Grid.Row="3" Grid.Column="1"
+            Grid.ColumnSpan="4"
+            VerticalAlignment="Bottom"
+            Margin="9 0 0 0"
+            Text="{Binding Handler, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            ToolTip="{Binding HandlerTooltip}"
+            Style="{StaticResource ControlTextBoxStyle}"
+            />
+
+        <TextBox
+            Grid.Row="4" Grid.Column="1"
+            Grid.ColumnSpan="4"
+            Margin="9 3 0 0"
+            Style="{DynamicResource awsSelectableTextBoxStyle}"
+            Foreground="{DynamicResource awsFieldHintTextForegroundBrushKey}"
+            MinHeight="23"
+            TextWrapping="Wrap"
+            Text="{Binding HandlerHelpText}"
+        />
+
+        <!-- Description -->
+        <Label
+            Grid.Row="5" Grid.Column="0"
             Content="_Description:"
-            Margin="0 9 0 0"
+            Margin="0 0 0 0"
             Style="{DynamicResource awsLabelBaseStyle}"
             VerticalAlignment="Center"
             Target="{Binding ElementName=Description}"
@@ -144,17 +228,18 @@
 
         <TextBox
             Name="Description" x:FieldModifier="private"
-            Grid.Row="2" Grid.Column="1"
+            Grid.Row="5" Grid.Column="1"
             Grid.ColumnSpan="4"
-            Margin="9 9 0 0"
+            Margin="9 0 0 0"
             Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Style="{StaticResource ControlTextBoxStyle}"
             />
 
         <!-- Configuration -->
         <Label
-            Grid.Row="3" Grid.Column="0"
+            Grid.Row="6" Grid.Column="0"
             Content="Confi_guration:"
-            Margin="0 12 0 0"
+            Margin="0 9 0 0"
             Visibility="{Binding ConfigurationVisibility}"
             Style="{DynamicResource awsLabelBaseStyle}"
             VerticalAlignment="Center"
@@ -163,8 +248,8 @@
 
         <ComboBox
             Name="Configuration" x:FieldModifier="private"
-            Grid.Row="3" Grid.Column="1"
-            Margin="9 12 0 0"
+            Grid.Row="6" Grid.Column="1"
+            Margin="9 9 0 0"
             Visibility="{Binding ConfigurationVisibility}"
             Style="{DynamicResource awsComboBoxStyle}"
             IsEditable="False"
@@ -174,54 +259,24 @@
 
         <!-- Framework -->
         <Label
-            Grid.Row="3" Grid.Column="3"
+            Grid.Row="6" Grid.Column="3"
             Content="Frame_work:"
-            Margin="9 12 0 0"
+            Margin="9 9 0 0"
             Visibility="{Binding FrameworkVisibility}"
             Style="{DynamicResource awsLabelBaseStyle}"
             VerticalAlignment="Center"
             Target="{Binding ElementName=Framework}"
-        />
+            />
 
         <ComboBox
             Name="Framework" x:FieldModifier="private"
-            Grid.Row="3" Grid.Column="4"
-            Margin="9 12 0 0"
+            Grid.Row="6" Grid.Column="4"
+            Margin="9 9 0 0"
             Visibility="{Binding FrameworkVisibility}"
             Style="{DynamicResource awsComboBoxStyle}"
             IsEditable="False"
             ItemsSource="{Binding Frameworks}"
             SelectedItem="{Binding Framework, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            />
-
-        <Label
-            Grid.Row="4" Grid.Column="0"
-            Content="_Handler:"
-            Margin="0 12 0 0"
-            Style="{DynamicResource awsLabelBaseStyle}"
-            VerticalAlignment="Center"
-            Target="{Binding ElementName=Handler}"
-            ToolTip="{Binding HandlerTooltip}"
-            />
-
-        <TextBox
-            Name="Handler" x:FieldModifier="private"
-            Grid.Row="4" Grid.Column="1"
-            Grid.ColumnSpan="4"
-            Margin="9 12 0 0"
-            Text="{Binding Handler, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            ToolTip="{Binding HandlerTooltip}"
-            />
-
-        <TextBox
-            Grid.Row="5" Grid.Column="1"
-            Grid.ColumnSpan="4"
-            Margin="9 3 0 0"
-            Style="{DynamicResource awsSelectableTextBoxStyle}"
-            Foreground="{DynamicResource awsFieldHintTextForegroundBrushKey}"
-            MinHeight="23"
-            TextWrapping="Wrap"
-            Text="{Binding HandlerHelpText}"
             />
 
     </Grid>

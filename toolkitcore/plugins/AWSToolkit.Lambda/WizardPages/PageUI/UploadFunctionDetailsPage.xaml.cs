@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.ViewModel;
 using Amazon.AWSToolkit.Regions;
@@ -71,7 +70,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             };
 
             ViewModel.Connection.SetServiceFilter(new List<string>() {LambdaServiceName});
-            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
 
             DataContext = this;
         }
@@ -125,7 +124,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             ViewModel.SetFrameworkIfExists(targetFramework);
 
             if (UploadOriginator == UploadOriginator.FromSourcePath)
-                this.UpdateExistingFunctions();
+            {
+                UpdateExistingFunctions();
+            }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.FunctionName))
             {
@@ -217,13 +218,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             switch (UploadOriginator)
             {
-                case UploadFunctionController.UploadOriginator.FromSourcePath:
-                    this._ctlAccountPanel.Visibility = Visibility.Visible;
+                case UploadOriginator.FromSourcePath:
+                    _ctlAccountPanel.Visibility = Visibility.Visible;
                     ViewModel.ShowSourceLocation = false;
                     ViewModel.CanEditPackageType = true;
                     break;
-                case UploadFunctionController.UploadOriginator.FromAWSExplorer:
-                    this._ctlAccountPanel.Visibility = Visibility.Collapsed;
+                case UploadOriginator.FromAWSExplorer:
+                    _ctlAccountPanel.Visibility = Visibility.Collapsed;
                     ViewModel.ShowSourceLocation = true;
 
                     // Entering the Lambda Deploy Wizard from the AWS Explorer does not
@@ -231,8 +232,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     ViewModel.PackageType = Amazon.Lambda.PackageType.Zip;
                     ViewModel.CanEditPackageType = false;
                     break;
-                case UploadFunctionController.UploadOriginator.FromFunctionView:
-                    this._ctlAccountPanel.Visibility = Visibility.Collapsed;
+                case UploadOriginator.FromFunctionView:
+                    _ctlAccountPanel.Visibility = Visibility.Collapsed;
                     ViewModel.ShowSourceLocation = true;
                     ViewModel.CanEditFunctionName = false;
 
@@ -288,7 +289,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             ViewModel.Configurations.Add("Debug");
             ViewModel.Configuration = "Release";
 
-            var projectFrameworks = this.PageController.HostingWizard[UploadFunctionWizardProperties.ProjectTargetFrameworks] as IList<string>;
+            var projectFrameworks = PageController.HostingWizard[UploadFunctionWizardProperties.ProjectTargetFrameworks] as IList<string>;
             if(projectFrameworks != null && projectFrameworks.Count > 0)
             {
                 foreach(var framework in projectFrameworks)
@@ -352,9 +353,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             {
                 _shellProvider.ExecuteOnUIThread(() =>
                 {
-                    this.UpdateExistingFunctions();
-                    this.UpdateImageRepos().LogExceptionAndForget();
-                    this.UpdateImageTags().LogExceptionAndForget();
+                    UpdateExistingFunctions();
+                    UpdateImageRepos().LogExceptionAndForget();
+                    UpdateImageTags().LogExceptionAndForget();
                 });
             });
         }
@@ -420,7 +421,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ViewModel.PackageType))
             {
@@ -437,7 +438,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             if (e.PropertyName == nameof(ViewModel.Runtime))
             {
-                OnRuntimeChanged();
+                Runtime_PropertyChanged();
             }
 
             if (e.PropertyName == nameof(ViewModel.HandlerAssembly) ||
@@ -459,9 +460,17 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 ViewModel.ApplyDotNetHandler(ViewModel.Handler);
             }
 
+            if (e.PropertyName == nameof(ViewModel.IsExistingFunction))
+            {
+                IsExistingFunction_PropertyChanged();
+            }
+
             if (e.PropertyName == nameof(ViewModel.FunctionName))
             {
-                OnFunctionNameChanged();
+                if (ViewModel.IsExistingFunction)
+                {
+                    FunctionName_PropertyChanged();
+                }
             }
 
             if (e.PropertyName == nameof(ViewModel.ImageRepo))
@@ -475,7 +484,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             return ViewModel.RequiresDotNetHandlerComponents() && !ViewModel.ProjectIsExecutable;
         }
 
-        private void OnFunctionNameChanged()
+        /// <summary>
+        /// Resets Function Name value when switching between Create New Function
+        /// and Redeploy to Existing function selections
+        /// </summary>
+        private void IsExistingFunction_PropertyChanged()
+        {
+            ViewModel.FunctionName = string.Empty;
+        }
+
+        private void FunctionName_PropertyChanged()
         {
             if (ViewModel.TryGetFunctionConfig(this.ViewModel.FunctionName, out var existingConfig))
             {
@@ -486,7 +504,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
                 ViewModel.Handler = existingConfig.Handler;
 
-                IAWSWizard hostWizard = PageController.HostingWizard;
+                var hostWizard = PageController.HostingWizard;
                 hostWizard.SetProperty(UploadFunctionWizardProperties.Role, existingConfig.Role);
                 hostWizard.SetProperty(UploadFunctionWizardProperties.ManagedPolicy, null);
                 hostWizard.SetProperty(UploadFunctionWizardProperties.MemorySize, existingConfig.MemorySize);
@@ -500,7 +518,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     hostWizard.SetProperty(UploadFunctionWizardProperties.TracingMode, existingConfig.TracingConfig.Mode.ToString());
 
 
-                List<EnvironmentVariable> variables = new List<EnvironmentVariable>();
+                var variables = new List<EnvironmentVariable>();
                 if (existingConfig?.Environment?.Variables != null)
                 {
                     foreach (var kvp in existingConfig?.Environment?.Variables)
@@ -536,7 +554,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        private void OnRuntimeChanged()
+        private void Runtime_PropertyChanged()
         {
             ViewModel.UpdateArchitectureState();
 

@@ -229,16 +229,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     if (File.Exists(serverlessTemplatePath) || !string.IsNullOrEmpty(defaults.CloudFormationTemplate))
                     {
                         isServerless = true;
-                        string templateFile;
+
                         // If there is a template specified in the defaults then use that as way for a customer to use a template besides the hard coded serverless.template
-                        if (!string.IsNullOrEmpty(defaults.CloudFormationTemplate))
-                        {
-                            templateFile = Path.Combine(sourcePath, defaults.CloudFormationTemplate);
-                        }
-                        else
-                        {
-                            templateFile = serverlessTemplatePath;
-                        }
+                        var templateFile = !string.IsNullOrEmpty(defaults.CloudFormationTemplate)
+                            ? Path.Combine(sourcePath, defaults.CloudFormationTemplate)
+                            : serverlessTemplatePath;
 
                         seedValues[UploadFunctionWizardProperties.CloudFormationTemplate] = templateFile;
 

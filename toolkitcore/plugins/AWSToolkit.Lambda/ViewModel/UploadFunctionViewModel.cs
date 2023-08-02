@@ -66,6 +66,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         private string _framework;
         private Visibility _frameworkVisibility = Visibility.Visible;
         private string _functionName;
+        private bool _isExistingFunction;
         private string _handler;
         private string _handlerHelpText;
         private string _handlerTooltip;
@@ -175,6 +176,12 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         {
             get => _handler;
             set { SetProperty(ref _handler, value, () => Handler); }
+        }
+
+        public bool IsExistingFunction
+        {
+            get => _isExistingFunction;
+            set => SetProperty(ref _isExistingFunction, value);
         }
 
         public string HandlerHelpText
