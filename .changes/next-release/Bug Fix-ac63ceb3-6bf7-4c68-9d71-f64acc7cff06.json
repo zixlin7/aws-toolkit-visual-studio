@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Switched to signed version of the underlying cli tool used for zipping Lambda function deployment bundles"
+}
