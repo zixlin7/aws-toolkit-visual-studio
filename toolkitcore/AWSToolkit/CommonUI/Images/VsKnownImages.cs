@@ -36,6 +36,7 @@
         Save,
         Search,
         StatusError,
+        StatusHelpOutline,
         StatusInformation,
         StatusInformationOutline,
         StatusOK,
