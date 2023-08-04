@@ -27,7 +27,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MaxWidth="600" />
+                <ColumnDefinition Width="*" MaxWidth="650" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel
@@ -55,6 +55,7 @@
 
             <commonUi:CardControl Grid.Row="1"
                                   Grid.Column="0"
+                                  MaxWidth="650"
                                   SelectedValue="{Binding ActiveCard}"
                                   SelectedValuePath="Name">
                 <!-- Names on items below is for CardControl selection, not access in code-behind -->
@@ -67,61 +68,59 @@
                     x:FieldModifier="private">
                     <commonUi:StatusBox
                         Status="{Binding Status}">
-                        <Grid Margin="12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <WrapPanel Grid.Row="0" Grid.Column="0">
-                              <images:VsImage Height="16"
-                                       Width="16"
-                                       VerticalAlignment="Center">
-                                    <images:VsImage.Style>
-                                        <Style TargetType="{x:Type images:VsImage}">
-                                            <Setter Property="Source"
-                                                    Value="{Binding Source={StaticResource VsImages}, Path=StatusOK}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Status}" Value="False">
-                                                    <Setter Property="Source"
-                                                            Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </images:VsImage.Style>
-                                </images:VsImage>
-
-                                <TextBlock
-                                    Margin="3 0 0 0"
-                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}">
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat="{}Connected to {0}: {1}">
-                                            <Binding Path="CredentialTypeName" FallbackValue="(not available)" />
-                                            <Binding Path="CredentialName" FallbackValue="(not available)" />
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                            </WrapPanel>
-
-                            <TextBlock
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}"
-                                Text="Open the AWS Explorer to add and switch between additional profiles." />
-
+                        <DockPanel Margin="12">
                             <Button
-                                Grid.Row="0"
-                                Grid.RowSpan="2"
-                                Grid.Column="2"
+                                Margin="6 0 0 0"
+                                DockPanel.Dock="Right"
+                                MaxHeight="40"
                                 Command="{Binding OpenAwsExplorerAsyncCommand}"
-                                Content="Open AWS Explorer" />
+                                Content="Open AWS Explorer" 
+                                Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}"/>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        </Grid>
+                                <WrapPanel Grid.Row="0" Grid.Column="0">
+                                    <images:VsImage Height="16"
+                                                    Width="16"
+                                                    VerticalAlignment="Center">
+                                        <images:VsImage.Style>
+                                            <Style TargetType="{x:Type images:VsImage}">
+                                                <Setter Property="Source"
+                                                        Value="{Binding Source={StaticResource VsImages}, Path=StatusOK}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Status}" Value="False">
+                                                        <Setter Property="Source"
+                                                                Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </images:VsImage.Style>
+                                    </images:VsImage>
+                                    <TextBlock
+                                        Margin="3 0 0 0"
+                                        TextWrapping="Wrap"
+                                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}Connected to {0}: {1}">
+                                                <Binding Path="CredentialTypeName" FallbackValue="(not available)" />
+                                                <Binding Path="CredentialName" FallbackValue="(not available)" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </WrapPanel>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    TextWrapping="WrapWithOverflow"
+                                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}"
+                                    Text="Open the AWS Explorer to add and switch between additional profiles." />
+                            </Grid>
+
+
+                        </DockPanel>
                     </commonUi:StatusBox>
 
                     <Border BorderThickness="1" Margin="0 12 0 0">
