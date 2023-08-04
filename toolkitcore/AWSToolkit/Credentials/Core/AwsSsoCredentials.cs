@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Amazon.AWSToolkit.CommonUI.Dialogs;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
@@ -23,9 +24,18 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         public AwsSsoCredentials(CredentialProfile profile, IAWSToolkitShellProvider toolkitShell)
         {
-            var ssoCredentials = new SSOAWSCredentials(profile.Options.SsoAccountId, profile.Options.SsoRegion, profile.Options.SsoRoleName, profile.Options.SsoStartUrl);
-            ssoCredentials.Options.ClientName = "AWS Toolkit for Visual Studio";
-            ssoCredentials.Options.SsoVerificationCallback = StartSsoLogin;
+            var ssoCredentials = new SSOAWSCredentials(
+                profile.Options.SsoAccountId,
+                profile.Options.SsoRegion,
+                profile.Options.SsoRoleName,
+                profile.Options.SsoStartUrl,
+                new SSOAWSCredentialsOptions()
+                {
+                    ClientName = SonoProperties.ClientName,
+                    // Must match SSOTokenProvider session or will prompt to login through browser again
+                    SessionName = profile.Options.SsoSession,
+                    SsoVerificationCallback = StartSsoLogin
+                });
 
             _profile = profile;
             _ssoCredentials = ssoCredentials;

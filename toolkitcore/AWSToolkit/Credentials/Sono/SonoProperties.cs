@@ -2,6 +2,8 @@
 {
     internal static class SonoProperties
     {
+        // When making Sono* more generic as part of CW integration for SSO token, make
+        // ClientName and ClientType more generic as used by SSO as well.
         public const string ClientName = "AWS Toolkit for Visual Studio";
         public const string ClientType = "public";
         public const string DefaultSessionName = "aws-toolkit-visual-studio";
