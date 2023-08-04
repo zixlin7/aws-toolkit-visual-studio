@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
     themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d">
     <local:ProfileSubform.Content>
@@ -16,9 +17,15 @@
                 HorizontalAlignment="Left"
                 TextWrapping="WrapWithOverflow"
                 Text="Sign-in URL" />
+
             <TextBox
+                x:Name="SsoStartUrlBox"
+                x:FieldModifier="private"
                 Margin="0 5 0 0"
-                Text="{Binding ProfileProperties.SsoStartUrl}" />
+                Text="{Binding SsoStartUrl, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+            <commonUi:ValidationErrorText
+                SourceElement="{x:Reference SsoStartUrlBox}" />
         </StackPanel>
     </local:ProfileSubform.Content>
 

@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles"
     xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
     themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d">
     <local:ProfileSubform.Header>
@@ -68,6 +69,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <TextBlock
@@ -79,13 +82,19 @@
                 Text="Access Key" />
 
             <PasswordBox
+                x:Name="AccessKeyBox"
+                x:FieldModifier="private"
                 Grid.Row="1"
                 Margin="0 5 0 0"
                 behaviors:PasswordBoxBehavior.BindPassword="true"
-                behaviors:PasswordBoxBehavior.Password="{Binding ProfileProperties.AccessKey}" />
+                behaviors:PasswordBoxBehavior.Password="{Binding AccessKey, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+            <commonUi:ValidationErrorText
+                Grid.Row="2"
+                SourceElement="{x:Reference AccessKeyBox}" />
 
             <TextBlock
-                Grid.Row="2"
+                Grid.Row="3"
                 Margin="0 9 0 0"
                 FontWeight="SemiBold"
                 HorizontalAlignment="Left"
@@ -93,10 +102,16 @@
                 Text="Secret Key" />
 
             <PasswordBox
-                Grid.Row="3"
+                x:Name="SecretKeyBox"
+                x:FieldModifier="private"
+                Grid.Row="4"
                 Margin="0 5 0 0"
                 behaviors:PasswordBoxBehavior.BindPassword="true"
-                behaviors:PasswordBoxBehavior.Password="{Binding ProfileProperties.SecretKey}" />
+                behaviors:PasswordBoxBehavior.Password="{Binding SecretKey, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+            <commonUi:ValidationErrorText
+                Grid.Row="5"
+                SourceElement="{x:Reference SecretKeyBox}" />
         </Grid>
     </local:ProfileSubform.Content>
 

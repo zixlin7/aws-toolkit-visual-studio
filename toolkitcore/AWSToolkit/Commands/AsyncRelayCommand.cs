@@ -29,6 +29,7 @@ namespace Amazon.AWSToolkit.Commands
         {
             _canExecute = canExecute;
             _execute = execute;
+            CommandManager.RequerySuggested += (sender, e) => OnCanExecuteChanged(e);
         }
 
         public bool CanExecute(object parameter)
@@ -43,7 +44,7 @@ namespace Amazon.AWSToolkit.Commands
                 await _execute(parameter);
             }
 
-            RaiseCanExecuteChanged();
+            OnCanExecuteChanged();
         }
 
         public void Execute(object parameter)
@@ -51,9 +52,9 @@ namespace Amazon.AWSToolkit.Commands
             ExecuteAsync(parameter).LogExceptionAndForget();
         }
 
-        private void RaiseCanExecuteChanged()
+        protected virtual void OnCanExecuteChanged(EventArgs e = null)
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            CanExecuteChanged?.Invoke(this, e ?? EventArgs.Empty);
         }
     }
 }

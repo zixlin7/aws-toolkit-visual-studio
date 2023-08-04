@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -34,7 +37,13 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
 
         private readonly ToolkitContext _toolkitContext;
 
-        public ProfileProperties ProfileProperties { get; private set; }
+        private ProfileProperties _profileProperties;
+
+        public ProfileProperties ProfileProperties
+        {
+            get => _profileProperties;
+            private set => SetProperty(ref _profileProperties, value);
+        }
 
         public RegionSelectorViewModel ProfileRegionSelectorViewModel { get; private set; }
 
@@ -47,6 +56,53 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
             get => _subform;
             set => SetProperty(ref _subform, value);
         }
+        
+        public string ProfileName
+        {
+            get => ProfileProperties.Name;
+            set
+            {
+                ProfileProperties.Name = value;
+                ValidateProfileName();
+                NotifyPropertyChanged(nameof(ProfileName));
+            }
+        }
+
+        public string AccessKey
+        {
+            get => ProfileProperties.AccessKey;
+            set
+            {
+                ProfileProperties.AccessKey = value;
+                ValidateAccessKey();
+                NotifyPropertyChanged(nameof(AccessKey));
+            }
+        }
+
+
+        public string SecretKey
+        {
+            get => ProfileProperties.SecretKey;
+            set
+            {
+                ProfileProperties.SecretKey = value;
+                ValidateSecretKey();
+                NotifyPropertyChanged(nameof(SecretKey));
+            }
+        }
+
+
+        public string SsoStartUrl
+        {
+            get => ProfileProperties.SsoStartUrl;
+            set
+            {
+                ProfileProperties.SsoStartUrl = value;
+                ValidateSsoStartUrl();
+                NotifyPropertyChanged(nameof(SsoStartUrl));
+            }
+        }
+
 
         #region CredentialType
         public IEnumerable<KeyValuePair<string, CredentialType>> CredentialTypes { get; } = new ObservableCollection<KeyValuePair<string, CredentialType>>()
@@ -239,11 +295,17 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
             ProfileRegionSelectorViewModel = new RegionSelectorViewModel(_toolkitContext, () => ProfileProperties.Region, (value) => ProfileProperties.Region = value);
             SsoRegionSelectorViewModel = new RegionSelectorViewModel(_toolkitContext, () => ProfileProperties.SsoRegion, (value) => ProfileProperties.SsoRegion = value);
 
-            SaveCommand = new AsyncRelayCommand(SaveAsync);
+            SaveCommand = new AsyncRelayCommand(CanSave, SaveAsync);
             ImportCsvFileCommand = new RelayCommand(ImportCsvFile);
             OpenCredentialFileCommand = new RelayCommand(OpenCredentialFile);
             OpenIamUsersConsoleCommand = OpenUrlCommandFactory.Create(_toolkitContext, "https://console.aws.amazon.com/iam/home?region=us-east-1#/users");
             OpenLogsCommand = new OpenToolkitLogsCommand(_toolkitContext);
+            PropertyChanged += OnPropertyChanged;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            SaveCommand.CanExecute(null);
         }
 
         private bool _disposed;
@@ -273,6 +335,128 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
             data.ServiceType = source.Service;
 
             _toolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
+        }
+
+        private bool CanSave(object arg)
+        {
+            if (string.IsNullOrWhiteSpace(ProfileName))
+            {
+                return false;
+            }
+
+            switch (SelectedCredentialType)
+            {
+                case CredentialType.StaticProfile:
+                    return !string.IsNullOrWhiteSpace(AccessKey) && !string.IsNullOrWhiteSpace(SecretKey) && !HasStaticValidationErrors();
+
+                case CredentialType.SsoProfile:
+                    return !string.IsNullOrWhiteSpace(SsoStartUrl) && !HasSsoValidationErrors();
+
+                default:
+                    return !DataErrorInfo.HasErrors;
+            }
+        }
+
+        private void ValidateProfileName()
+        {
+            DataErrorInfo.ClearErrors(nameof(ProfileName));
+
+            if (string.IsNullOrWhiteSpace(ProfileName))
+            {
+                DataErrorInfo.AddError("Must not be empty and should contain alphanumeric characters, - or _", nameof(ProfileName));
+                return;
+            }
+            var pattern = new Regex("^([a-zA-Z0-9_-])*$");
+            var match = pattern.Match(ProfileName);
+            if (!match.Success)
+            {
+                DataErrorInfo.AddError("Must contain alphanumeric, - or _ characters", nameof(ProfileName));
+                return;
+            }
+
+            var allProfiles = _toolkitContext.CredentialManager.GetCredentialIdentifiers()
+                .Where(credId => credId.FactoryId.Equals(GetFactoryId(SelectedCredentialFileType)));
+            var result = allProfiles.Select(credId => credId.ProfileName).Any(x => x.Equals(ProfileName));
+             
+            if (result)
+            {
+                DataErrorInfo.AddError("Name is not unique", nameof(ProfileName));
+            }
+        }
+
+        private string GetFactoryId(CredentialFileType selectedCredentialType)
+        {
+            switch (selectedCredentialType)
+            {
+                case CredentialFileType.Sdk:
+                    return SDKCredentialProviderFactory.SdkProfileFactoryId;
+                case CredentialFileType.Shared:
+                    return SharedCredentialProviderFactory.SharedProfileFactoryId;
+            }
+            return null;
+        }
+
+        private void ValidateSecretKey()
+        {
+            DataErrorInfo.ClearErrors(nameof(SecretKey));
+
+            if (string.IsNullOrWhiteSpace(SecretKey))
+            {
+                DataErrorInfo.AddError("Must not be empty", nameof(SecretKey));
+            }
+        }
+
+        private void ValidateSsoStartUrl()
+        {
+            DataErrorInfo.ClearErrors(nameof(SsoStartUrl));
+
+            if (string.IsNullOrWhiteSpace(SsoStartUrl))
+            {
+                DataErrorInfo.AddError("Must not be empty", nameof(SsoStartUrl));
+                return;
+            }
+
+            var pattern = new Regex("^http(s)?://.*\\.awsapps\\.com/start$");
+            var match = pattern.Match(SsoStartUrl);
+            if (!match.Success)
+            {
+                DataErrorInfo.AddError("Url must be of format - `https://your_subdomain.awsapps.com/start`", nameof(SsoStartUrl));
+            }
+        }
+
+        private void ValidateAccessKey()
+        {
+            DataErrorInfo.ClearErrors(nameof(AccessKey));
+
+            if (string.IsNullOrWhiteSpace(AccessKey))
+            {
+                DataErrorInfo.AddError("Must be alphanumeric and between 16-128 characters", nameof(AccessKey));
+                return;
+            }
+
+            var pattern = new Regex("^([a-zA-Z0-9]{16,128})$");
+            var match = pattern.Match(AccessKey);
+            if (!match.Success)
+            {
+                DataErrorInfo.AddError("Must be alphanumeric and between 16-128 characters", nameof(AccessKey));
+            }
+        }
+
+        private bool HasStaticValidationErrors()
+        {
+            var profileNameErrors = DataErrorInfo.GetErrors(nameof(ProfileName)).OfType<object>().Any();
+            var accessKeyError = DataErrorInfo.GetErrors(nameof(AccessKey)).OfType<object>().Any();
+            var secretKeyErrors = DataErrorInfo.GetErrors(nameof(SecretKey)).OfType<object>().Any();
+
+            return profileNameErrors || accessKeyError || secretKeyErrors;
+        }
+
+        private bool HasSsoValidationErrors()
+        {
+            var profileNameErrors = DataErrorInfo.GetErrors(nameof(ProfileName)).OfType<object>().Any();
+            var ssoStartUrlError = DataErrorInfo.GetErrors(nameof(SsoStartUrl)).OfType<object>().Any();
+
+            return profileNameErrors || ssoStartUrlError;
         }
     }
 }
