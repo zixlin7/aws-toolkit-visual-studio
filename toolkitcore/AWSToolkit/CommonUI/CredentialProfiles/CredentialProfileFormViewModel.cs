@@ -420,7 +420,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles
             var match = pattern.Match(SsoStartUrl);
             if (!match.Success)
             {
-                DataErrorInfo.AddError("Url must be of format - `https://your_subdomain.awsapps.com/start`", nameof(SsoStartUrl));
+                DataErrorInfo.AddError("Url must be of format - `https://<YOUR_SUBDOMAIN>.awsapps.com/start`", nameof(SsoStartUrl));
             }
         }
 

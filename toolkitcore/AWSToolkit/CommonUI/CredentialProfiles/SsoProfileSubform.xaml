@@ -36,10 +36,11 @@
                     Text="Sign-in URL" />
                 <commonUi:HelpHyperlinkPopup HelpContent="{StaticResource SsoStartUrlToolTip}" />
             </WrapPanel>
-            <TextBox
+            <commonUi:HintTextBox
                 x:Name="SsoStartUrlBox"
                 x:FieldModifier="private"
                 Margin="0 5 0 0"
+                HintText="{Binding Source={x:Static local:SsoProfileSubform.StartUrlHintText}}"
                 Text="{Binding SsoStartUrl, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 
             <commonUi:ValidationErrorText
