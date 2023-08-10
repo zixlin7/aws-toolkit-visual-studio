@@ -71,7 +71,9 @@ namespace Amazon.AWSToolkit.CommonUI
             BindingOperations.SetBinding(@this.ErrorItemsControl, ItemsControl.ItemsSourceProperty,
                 new Binding()
                 {
-                    Mode = BindingMode.OneWay, Path = new PropertyPath("(Validation.Errors)"), Source = e.NewValue
+                    Mode = BindingMode.OneWay,
+                    Path = new PropertyPath("(Validation.Errors)"),
+                    Source = e.NewValue
                 });
             BindingOperations.GetBindingExpression(@this.ErrorItemsControl, ItemsControl.ItemsSourceProperty)
                 .UpdateTarget();

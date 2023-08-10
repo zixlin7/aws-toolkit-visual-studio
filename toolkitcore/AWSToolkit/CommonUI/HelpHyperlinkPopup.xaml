@@ -1,46 +1,52 @@
-﻿<ContentControl x:Class="Amazon.AWSToolkit.CommonUI.HelpHyperlinkPopup"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI"
-             xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images"
-             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
-             mc:Ignorable="d"
-             themes:ToolkitThemes.UseToolkitTheme="True"
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<ContentControl 
+    x:Class="Amazon.AWSToolkit.CommonUI.HelpHyperlinkPopup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI"
+    xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    mc:Ignorable="d"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    d:DesignHeight="450" d:DesignWidth="800">
+
     <ContentControl.Resources>
         <ResourceDictionary>
             <local:VsImages x:Key="VsImages" />
         </ResourceDictionary>
     </ContentControl.Resources>
-    <Grid Background="Transparent">
-        <images:VsImage x:Name="HelpAction"
-                        x:FieldModifier="private"
-                        Width="16"
-                        Height="16"
-                        Margin="6 0 0 0"
-                        VerticalAlignment="Center"
-                        MouseEnter="OnMouseEnter"
-                        HorizontalAlignment="Center"
-                        MouseLeave="OnMouseLeave"
-                        Source="{Binding Source={StaticResource VsImages}, Path=StatusHelpOutline}" />
 
-        <Popup x:Name="ToolTipPopup"
-               x:FieldModifier="private"
-               PlacementTarget="{Binding ElementName=HelpAction}"
-               Placement="Mouse"
-               MouseLeave="OnMouseLeave">
-            <Border
-                BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
-                BorderThickness="1"
-                Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}">
-                <ContentControl Margin="12" 
-                                MaxWidth="275"
-                                ContentTemplate="{Binding HelpContent, RelativeSource={RelativeSource AncestorType=ContentControl, AncestorLevel=1}}"/>
-            </Border>
-        </Popup>
+    <ContentControl.Template>
+        <ControlTemplate TargetType="{x:Type local:HelpHyperlinkPopup}">
+            <Grid Background="Transparent">
+                <images:VsImage 
+                    x:Name="PART_HelpImage"
+                    Width="16"
+                    Height="16"
+                    Margin="6 0 0 0"
+                    VerticalAlignment="Center"
+                    MouseEnter="OnMouseEnter"
+                    HorizontalAlignment="Center"
+                    MouseLeave="OnMouseLeave"
+                    Source="{Binding Source={StaticResource VsImages}, Path=StatusHelpOutline}" />
 
+                <Popup 
+                    x:Name="PART_ToolTipPopup"
+                    PlacementTarget="{Binding ElementName=PART_HelpImage}"
+                    Placement="Right"
+                    MouseLeave="OnMouseLeave">
 
-    </Grid>
+                    <Border
+                        BorderBrush="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBorderBrushKey}}"
+                        BorderThickness="1"
+                        Background="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipBackgroundBrushKey}}">
+                        <ContentPresenter
+                            Margin="12" 
+                            MaxWidth="275" />
+                    </Border>
+                </Popup>
+            </Grid>
+        </ControlTemplate>
+    </ContentControl.Template>
 </ContentControl>

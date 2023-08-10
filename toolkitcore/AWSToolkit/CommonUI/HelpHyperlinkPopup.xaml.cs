@@ -1,46 +1,65 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+
+using Amazon.AWSToolkit.CommonUI.Images;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
     /// <summary>
     /// Represents a help tooltip with the ability to surface a hyperlink
     /// </summary>
+    [TemplatePart(Name = _toolTipPopupPartName, Type = typeof(Popup))]
+    [TemplatePart(Name = _helpImagePartName, Type = typeof(VsImage))]
     public partial class HelpHyperlinkPopup : ContentControl
     {
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(HelpHyperlinkPopup));
+
+        protected const string _toolTipPopupPartName = "PART_ToolTipPopup";
+
+        protected const string _helpImagePartName = "PART_HelpImage";
+
+        protected Popup _toolTipPopup { get; set; }
+
+        protected VsImage _helpImage { get; set; }
+
         public HelpHyperlinkPopup()
         {
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Represents the content to be presented in the tooltip popup
-        /// </summary>
-        public DataTemplate HelpContent
+        public override void OnApplyTemplate()
         {
-            get => (DataTemplate) GetValue(HelpContentProperty);
-            set => SetValue(HelpContentProperty, value);
+            base.OnApplyTemplate();
+
+            _toolTipPopup = GetTemplateChild<Popup>(_toolTipPopupPartName);
+            _helpImage = GetTemplateChild<VsImage>(_helpImagePartName);
         }
 
-        /// <summary>
-        /// Identifies the HelpContent dependency property.
-        /// </summary>
-        public static readonly DependencyProperty HelpContentProperty = DependencyProperty.Register(
-            nameof(HelpContent),
-            typeof(DataTemplate),
-            typeof(HelpHyperlinkPopup));
+        private T GetTemplateChild<T>(string name) where T : DependencyObject
+        {
+            var child = GetTemplateChild(name) as T;
+            if (child == null)
+            {
+                _logger.Error($"Cannot find templated child {name} of type {typeof(T)}.");
+            }
+
+            return child;
+        }
 
         private void OnMouseEnter(object sender, MouseEventArgs e)
         {
-            ToolTipPopup.IsOpen = true;
+            _toolTipPopup.IsOpen = true;
         }
 
         private void OnMouseLeave(object sender, MouseEventArgs e)
         {
-            if (!ToolTipPopup.IsMouseOver && !HelpAction.IsMouseOver)
+            if (!_toolTipPopup.IsMouseOver && !_helpImage.IsMouseOver)
             {
-                ToolTipPopup.IsOpen = false;
+                _toolTipPopup.IsOpen = false;
             }
         }
     }

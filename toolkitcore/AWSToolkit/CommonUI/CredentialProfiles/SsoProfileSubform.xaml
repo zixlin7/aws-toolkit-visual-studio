@@ -34,7 +34,7 @@
                     HorizontalAlignment="Left"
                     TextWrapping="WrapWithOverflow"
                     Text="Sign-in URL" />
-                <commonUi:HelpHyperlinkPopup HelpContent="{StaticResource SsoStartUrlToolTip}" />
+                <commonUi:HelpHyperlinkPopup Content="{StaticResource SsoStartUrlToolTip}" />
             </WrapPanel>
             <commonUi:HintTextBox
                 x:Name="SsoStartUrlBox"
@@ -62,7 +62,7 @@
                     <TextBlock Text="SSO Region"
                                FontWeight="SemiBold" />
                     <commonUi:HelpHyperlinkPopup Background="Transparent"
-                                                 HelpContent="{StaticResource SsoRegionToolTip}" />
+                                                 Content="{StaticResource SsoRegionToolTip}" />
                 </WrapPanel>
             </Expander.Header>
         </Expander>
