@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         private string _framework;
         private Visibility _frameworkVisibility = Visibility.Visible;
         private string _functionName;
-        private bool _isExistingFunction;
+        private bool _isExistingFunction = true;
         private string _handler;
         private string _handlerHelpText;
         private string _handlerTooltip;
@@ -78,7 +78,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         private bool _showSaveSettings;
         private bool _showSourceLocation;
 
-        private bool _loadingFunctions;
+        private bool _loadingFunctions = true;
         private RuntimeOption _runtime;
         private LambdaArchitecture _architecture = LambdaArchitecture.X86;
         private bool _supportsArmArchitecture = true;
@@ -104,19 +104,19 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public bool CanEditFunctionName
         {
             get => _canEditFunctionName;
-            set { SetProperty(ref _canEditFunctionName, value, () => CanEditFunctionName); }
+            set => SetProperty(ref _canEditFunctionName, value);
         }
 
         public bool CanEditPackageType
         {
             get => _canEditPackageType;
-            set { SetProperty(ref _canEditPackageType, value, () => CanEditPackageType); }
+            set => SetProperty(ref _canEditPackageType, value);
         }
 
         public bool CanEditRuntime
         {
             get => _canEditRuntime;
-            set { SetProperty(ref _canEditRuntime, value, () => CanEditRuntime); }
+            set => SetProperty(ref _canEditRuntime, value);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string Configuration
         {
             get => _configuration;
-            set { SetProperty(ref _configuration, value, () => Configuration); }
+            set => SetProperty(ref _configuration, value);
         }
 
         public ObservableCollection<string> Configurations { get; } = new ObservableCollection<string>();
@@ -133,7 +133,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public Visibility ConfigurationVisibility
         {
             get => _configurationVisibility;
-            set { SetProperty(ref _configurationVisibility, value, () => ConfigurationVisibility); }
+            set => SetProperty(ref _configurationVisibility, value);
         }
 
         public AccountAndRegionPickerViewModel Connection
@@ -144,13 +144,13 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string Description
         {
             get => _description;
-            set { SetProperty(ref _description, value, () => Description); }
+            set => SetProperty(ref _description, value);
         }
 
         public string Framework
         {
             get => _framework;
-            set { SetProperty(ref _framework, value, () => Framework); }
+            set => SetProperty(ref _framework, value);
         }
 
         public ObservableCollection<string> Frameworks { get; } = new ObservableCollection<string>();
@@ -158,13 +158,13 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public Visibility FrameworkVisibility
         {
             get => _frameworkVisibility;
-            set { SetProperty(ref _frameworkVisibility, value, () => FrameworkVisibility); }
+            set => SetProperty(ref _frameworkVisibility, value);
         }
 
         public string FunctionName
         {
             get => _functionName;
-            set { SetProperty(ref _functionName, value, () => FunctionName); }
+            set => SetProperty(ref _functionName, value);
         }
 
         public string FunctionNameTooltip =>
@@ -175,7 +175,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string Handler
         {
             get => _handler;
-            set { SetProperty(ref _handler, value, () => Handler); }
+            set => SetProperty(ref _handler, value);
         }
 
         public bool IsExistingFunction
@@ -193,7 +193,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string HandlerTooltip
         {
             get => _handlerTooltip;
-            set { SetProperty(ref _handlerTooltip, value, () => HandlerTooltip); }
+            set => SetProperty(ref _handlerTooltip, value);
         }
 
         /// <summary>
@@ -209,13 +209,13 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string HandlerAssembly
         {
             get => _handlerAssembly;
-            set { SetProperty(ref _handlerAssembly, value, () => HandlerAssembly); }
+            set => SetProperty(ref _handlerAssembly, value);
         }
 
         public string HandlerMethod
         {
             get => _handlerMethod;
-            set { SetProperty(ref _handlerMethod, value, () => HandlerMethod); }
+            set => SetProperty(ref _handlerMethod, value);
         }
 
         public ObservableCollection<string> HandlerMethodSuggestions { get; } = new ObservableCollection<string>();
@@ -223,7 +223,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string HandlerType
         {
             get => _handlerType;
-            set { SetProperty(ref _handlerType, value, () => HandlerType); }
+            set => SetProperty(ref _handlerType, value);
         }
 
         public ObservableCollection<string> HandlerTypeSuggestions { get; } = new ObservableCollection<string>();
@@ -234,7 +234,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public bool LoadingFunctions
         {
             get => _loadingFunctions;
-            private set { SetProperty(ref _loadingFunctions, value, () => LoadingFunctions); }
+            private set => SetProperty(ref _loadingFunctions, value);
         }
 
         public ObservableCollection<string> Functions { get; } = new ObservableCollection<string>();
@@ -242,7 +242,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public PackageType PackageType
         {
             get => _packageType;
-            set { SetProperty(ref _packageType, value, () => PackageType); }
+            set => SetProperty(ref _packageType, value);
         }
 
         public ObservableCollection<PackageType> PackageTypes { get; } = new ObservableCollection<PackageType>()
@@ -256,7 +256,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public RuntimeOption Runtime
         {
             get => _runtime;
-            set { SetProperty(ref _runtime, value, () => Runtime); }
+            set => SetProperty(ref _runtime, value);
         }
 
         public ObservableCollection<RuntimeOption> Runtimes { get; } = new ObservableCollection<RuntimeOption>();
@@ -279,13 +279,13 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public bool SaveSettings
         {
             get => _saveSettings;
-            set { SetProperty(ref _saveSettings, value, () => SaveSettings); }
+            set => SetProperty(ref _saveSettings, value);
         }
 
         public bool ShowSaveSettings
         {
             get => _showSaveSettings;
-            set { SetProperty(ref _showSaveSettings, value, () => ShowSaveSettings); }
+            set => SetProperty(ref _showSaveSettings, value);
         }
 
         /// <summary>
@@ -295,22 +295,20 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public bool ShowSourceLocation
         {
             get => _showSourceLocation;
-            set { SetProperty(ref _showSourceLocation, value, () => ShowSourceLocation); }
+            set => SetProperty(ref _showSourceLocation, value);
         }
 
         public string SourceCodeLocation
         {
             get => _sourceCodeLocation;
-
-            set { SetProperty(ref _sourceCodeLocation, value, () => SourceCodeLocation); }
+            set => SetProperty(ref _sourceCodeLocation, value);
         }
 
 
         public string Dockerfile
         {
             get => _dockerfile;
-
-            set { SetProperty(ref _dockerfile, value, () => Dockerfile); }
+            set => SetProperty(ref _dockerfile, value);
         }
 
         public string DockerfileTooltip => "Dockerfile is used to produce the image that is uploaded to Lambda.";
@@ -318,7 +316,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string ImageCommand
         {
             get => _imageCommand;
-            set { SetProperty(ref _imageCommand, value, () => ImageCommand); }
+            set => SetProperty(ref _imageCommand, value);
         }
 
         public string ImageCommandTooltip =>
@@ -328,7 +326,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string ImageRepo
         {
             get => _imageRepo;
-            set { SetProperty(ref _imageRepo, value, () => ImageRepo); }
+            set => SetProperty(ref _imageRepo, value);
         }
 
 
@@ -338,7 +336,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public bool LoadingImageRepos
         {
             get => _loadingImageRepos;
-            private set { SetProperty(ref _loadingImageRepos, value, () => LoadingImageRepos); }
+            private set => SetProperty(ref _loadingImageRepos, value);
         }
 
         public string ImageRepoTooltip =>
@@ -349,7 +347,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public string ImageTag
         {
             get => _imageTag;
-            set { SetProperty(ref _imageTag, value, () => ImageTag); }
+            set => SetProperty(ref _imageTag, value);
         }
 
         public string ImageTagTooltip =>
@@ -363,7 +361,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public bool LoadingImageTags
         {
             get => _loadingImageTags;
-            private set { SetProperty(ref _loadingImageTags, value, () => LoadingImageTags); }
+            private set => SetProperty(ref _loadingImageTags, value);
         }
 
         public string SourceCodeLocationTooltip =>
@@ -373,59 +371,24 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// Prompts user to select a folder containing lambda files to publish
         /// </summary>
         public ICommand BrowseForSourceCodeFolder
-        {
-            get
-            {
-                if (_browseForSourceCodeFolder == null)
-                {
-                    _browseForSourceCodeFolder = new RelayCommand(BrowseSourceCodeFolder);
-                }
-
-                return _browseForSourceCodeFolder;
-            }
-        }
+        => _browseForSourceCodeFolder ?? (_browseForSourceCodeFolder = new RelayCommand(BrowseSourceCodeFolder));
 
         /// <summary>
         /// Prompts user to select a file containing lambda code to publish
         /// </summary>
-        public ICommand BrowseForSourceCodeFile
-        {
-            get
-            {
-                if (_browseForSourceCodeFile == null)
-                {
-                    _browseForSourceCodeFile = new RelayCommand(BrowseSourceCodeFile);
-                }
-
-                return _browseForSourceCodeFile;
-            }
-        }
+        public ICommand BrowseForSourceCodeFile => _browseForSourceCodeFile ?? (_browseForSourceCodeFile = new RelayCommand(BrowseSourceCodeFile));
 
         /// <summary>
         /// Prompts user to select dockerfile for image based lambda
         /// </summary>
-        public ICommand BrowseForDockerfile
-        {
-            get
-            {
-                if (_browseForDockerfile == null)
-                {
-                    _browseForDockerfile = new RelayCommand(BrowseDockerfile);
-                }
-
-                return _browseForDockerfile;
-            }
-        }
+        public ICommand BrowseForDockerfile => _browseForDockerfile ?? (_browseForDockerfile = new RelayCommand(BrowseDockerfile));
 
         /// <summary>
         /// Setter to set <see cref="FunctionName"/> on the UI Thread
         /// </summary>
         private string UiThreadFunctionName
         {
-            set
-            {
-                _shellProvider.ExecuteOnUIThread(() => { FunctionName = value; });
-            }
+            set => _shellProvider.ExecuteOnUIThread(() => FunctionName = value);
         }
 
         /// <summary>
@@ -433,10 +396,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// </summary>
         private bool UiThreadLoadingFunctions
         {
-            set
-            {
-                _shellProvider.ExecuteOnUIThread(() => { LoadingFunctions = value; });
-            }
+            set => _shellProvider.ExecuteOnUIThread(() => LoadingFunctions = value);
         }
 
         /// <summary>
@@ -444,10 +404,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// </summary>
         private bool UiThreadLoadingImageRepos
         {
-            set
-            {
-                _shellProvider.ExecuteOnUIThread(() => { LoadingImageRepos = value; });
-            }
+            set => _shellProvider.ExecuteOnUIThread(() => LoadingImageRepos = value);
         }
 
         /// <summary>
@@ -455,10 +412,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// </summary>
         private bool UiThreadLoadingImageTags
         {
-            set
-            {
-                _shellProvider.ExecuteOnUIThread(() => { LoadingImageTags = value; });
-            }
+            set => _shellProvider.ExecuteOnUIThread(() => LoadingImageTags = value);
         }
 
         public bool IsValidConfiguration()
@@ -524,9 +478,11 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             return true;
         }
 
-        public bool RequiresDotNetHandlerComponents() =>
-            Runtime != null && Runtime.IsDotNet && !Runtime.IsCustomRuntime
+        public bool RequiresDotNetHandlerComponents()
+        {
+            return Runtime != null && Runtime.IsDotNet && !Runtime.IsCustomRuntime
             && !ProjectIsExecutable;
+        }
 
         private bool IsValidImageConfiguration()
         {
@@ -590,8 +546,9 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// <example>MyAssembly::MyNamespace.MyClass::MyFunction</example>
         public string CreateDotNetHandler()
         {
-            if (string.IsNullOrEmpty(HandlerAssembly) && string.IsNullOrEmpty(HandlerType) &&
-                string.IsNullOrEmpty(HandlerMethod))
+            if (string.IsNullOrEmpty(HandlerAssembly)
+                && string.IsNullOrEmpty(HandlerType)
+                && string.IsNullOrEmpty(HandlerMethod))
             {
                 return string.Empty;
             }
@@ -646,7 +603,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                 do
                 {
                     var response = await lambda.ListFunctionsAsync(request);
-                    foreach (var function in response.Functions) _functionConfigs[function.FunctionName] = function;
+
+                    response.Functions.ForEach(function => _functionConfigs[function.FunctionName] = function);
 
                     request.Marker = response.NextMarker;
                 } while (!string.IsNullOrEmpty(request.Marker));
@@ -673,7 +631,14 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                 {
                     NotifyPropertyChanged(nameof(FunctionName));
                 }
+
+                UpdateIsExistingFunction();
             }
+        }
+
+        public void UpdateIsExistingFunction()
+        {
+            IsExistingFunction = FunctionExists;
         }
 
         public TServiceClient CreateServiceClient<TServiceClient>() where TServiceClient : class, IAmazonService
@@ -780,12 +745,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         public bool TryGetFunctionConfig(string functionName, out FunctionConfiguration config)
         {
             config = null;
-            if (!string.IsNullOrEmpty(functionName))
-            {
-                return _functionConfigs.TryGetValue(functionName, out config);
-            }
-
-            return false;
+            return !string.IsNullOrEmpty(functionName) && _functionConfigs.TryGetValue(functionName, out config);
         }
 
         /// <summary>
@@ -857,10 +817,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             var supportsArm = SupportsArm(Runtime);
             if (SupportsArmArchitecture != supportsArm)
             {
-                _shellProvider.ExecuteOnUIThread(() =>
-                {
-                    SupportsArmArchitecture = supportsArm;
-                });
+                _shellProvider.ExecuteOnUIThread(() => SupportsArmArchitecture = supportsArm);
             }
         }
 
@@ -868,21 +825,13 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         {
             if (!SupportsArm(Runtime) && Architecture == LambdaArchitecture.Arm)
             {
-                _shellProvider.ExecuteOnUIThread(() =>
-                {
-                    Architecture = LambdaArchitecture.X86;
-                });
+                _shellProvider.ExecuteOnUIThread(() => Architecture = LambdaArchitecture.X86);
             }
         }
 
         private bool SupportsArm(RuntimeOption runtime)
         {
-            if (runtime == null || RuntimesWithoutArmSupport.Contains(runtime))
-            {
-                return false;
-            }
-
-            return true;
+            return runtime != null && !RuntimesWithoutArmSupport.Contains(runtime);
         }
 
         private void BrowseSourceCodeFolder(object parameter)
@@ -944,7 +893,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// </summary>
         private void UiThreadClearFunctions()
         {
-            _shellProvider.ExecuteOnUIThread(() => { Functions.Clear(); });
+            _shellProvider.ExecuteOnUIThread(() => Functions.Clear());
         }
 
         /// <summary>
@@ -952,7 +901,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// </summary>
         private void UiThreadClearImageRepos()
         {
-            _shellProvider.ExecuteOnUIThread(() => { ImageRepos.Clear(); });
+            _shellProvider.ExecuteOnUIThread(() => ImageRepos.Clear());
         }
 
         /// <summary>
@@ -960,7 +909,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         /// </summary>
         private void UiThreadClearImageTags()
         {
-            _shellProvider.ExecuteOnUIThread(() => { ImageTags.Clear(); });
+            _shellProvider.ExecuteOnUIThread(() => ImageTags.Clear());
         }
 
         /// <summary>
@@ -976,7 +925,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                     .Select(x=>x.Key)
                     .OrderBy(x => x.ToLowerInvariant())
                     .ToList()
-                    .ForEach(functionName => { Functions.Add(functionName); });
+                    .ForEach(functionName => Functions.Add(functionName));
             });
         }
 

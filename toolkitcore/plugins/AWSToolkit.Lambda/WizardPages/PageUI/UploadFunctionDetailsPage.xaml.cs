@@ -441,8 +441,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 Runtime_PropertyChanged();
             }
 
-            if (e.PropertyName == nameof(ViewModel.HandlerAssembly) ||
-                e.PropertyName == nameof(ViewModel.HandlerType) || e.PropertyName == nameof(ViewModel.HandlerMethod))
+            if (e.PropertyName == nameof(ViewModel.HandlerAssembly)
+                || e.PropertyName == nameof(ViewModel.HandlerType)
+                || e.PropertyName == nameof(ViewModel.HandlerMethod))
             {
                 if (ShouldComponentsUpdateHandler())
                 {
@@ -495,7 +496,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         private void FunctionName_PropertyChanged()
         {
-            if (ViewModel.TryGetFunctionConfig(this.ViewModel.FunctionName, out var existingConfig))
+            if (ViewModel.TryGetFunctionConfig(ViewModel.FunctionName, out var existingConfig))
             {
                 // Retrieve some of the Existing Function config so that a new
                 // publish does not clobber existing settings.

@@ -124,7 +124,7 @@
             Margin="0 0 0 0"
             Style="{DynamicResource awsLabelBaseStyle}"
             VerticalAlignment="Top"
-            Target="{Binding ElementName=FunctionName}"
+            Target="{Binding ElementName=RedeployExistingFunctionComboBox}"
             ToolTip="{Binding FunctionNameTooltip}"
             />
 
@@ -175,7 +175,6 @@
             Margin="27,25,0,35"
             VerticalAlignment="Top"
             x:Name="RedeployExistingFunctionComboBox"
-            IsEditable="False"
             ItemsSource="{Binding Functions}"
             ToolTip="{Binding FunctionNameTooltip}" Grid.RowSpan="2">
             <ComboBox.IsEnabled>
@@ -186,16 +185,16 @@
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding LoadingFunctions}" Value="True">
                             <Setter Property="Text" Value="Loading..." />
+                            <Setter Property="IsEditable" Value="True" />
+                            <Setter Property="IsReadOnly" Value="True" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding LoadingFunctions}" Value="False">
                             <Setter Property="Text" Value="{Binding FunctionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Setter Property="IsEditable" Value="False" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </ComboBox.Style>
-            <ComboBox.Text>
-                <Binding Path="FunctionName" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay" />
-            </ComboBox.Text>
         </ComboBox>
 
         <Label
