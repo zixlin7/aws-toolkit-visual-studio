@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Amazon.AWSToolkit.Credentials.IO;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -9,18 +10,21 @@ using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
+
 using log4net;
+
 using static Amazon.Runtime.CredentialManagement.Internal.CredentialProfileType;
+
 using Environment = System.Environment;
 
-namespace Amazon.AWSToolkit.Credentials.Core 
+namespace Amazon.AWSToolkit.Credentials.Core
 {
     /// <summary>
     /// Class contains credential factory functionality common to <see cref= "SDKCredentialProviderFactory"/> and <see cref="SharedCredentialProviderFactory"/>
     /// </summary>
     public abstract class ProfileCredentialProviderFactory : ICredentialProviderFactory, ICredentialProfileProcessor
     {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ProfileCredentialProviderFactory));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ProfileCredentialProviderFactory));
 
         private bool _disposed = false;
 
@@ -113,7 +117,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             catch (Exception e)
             {
                 NotifyUserOfLoadFailure(e);
-                LOGGER.Error("Failed to load AWS Profiles.", e);
+                _logger.Error("Failed to load AWS Profiles.", e);
                 return;
             }
 
@@ -254,7 +258,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 if (!initialLoad)
                 {
                     //report no of profiles found with this dialog
-                    LOGGER.Info(baseMessage);
+                    _logger.Info(baseMessage);
                     ToolkitShell.OutputToHostConsole(baseMessage, false);
                 }
             }
@@ -267,8 +271,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 var errorLogMessage = string.Join(Environment.NewLine,
                     invalidProfiles.Select(x => $"{x.Key}: {x.Value}"));
                 var outputErrorMessage = string.Join(", ", invalidProfiles.Select(x => x.Key));
-                LOGGER.Info(baseMessage);
-                LOGGER.Error($"The following credentials could not be loaded: {Environment.NewLine}{errorLogMessage}");
+                _logger.Info(baseMessage);
+                _logger.Error($"The following credentials could not be loaded: {Environment.NewLine}{errorLogMessage}");
 
                 ToolkitShell.OutputToHostConsole(baseMessage, false);
                 ToolkitShell.OutputToHostConsole(
@@ -520,21 +524,43 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// <returns></returns>
         protected CredentialProfile CreateCredentialProfile(string name, ProfileProperties properties)
         {
-            // TODO IDE-10947 Update for SSO profiles
-            if (properties == null) return null;
-            var profileOptions = new CredentialProfileOptions
+            if (properties == null)
             {
-                AccessKey = properties.AccessKey,
-                SecretKey = properties.SecretKey
-            };
+                return null;
+            }
 
-            var profile = new CredentialProfile(name, profileOptions);
+            CredentialProfileOptions options;
+
+            var credentialType = properties.GetCredentialType();
+            switch (credentialType)
+            {
+                case CredentialType.SsoProfile:
+                    options = new CredentialProfileOptions
+                    {
+                        SsoAccountId = properties.SsoAccountId,
+                        SsoRegion = properties.SsoRegion,
+                        SsoRoleName = properties.SsoRoleName,
+                        SsoSession = properties.SsoSession,
+                        SsoStartUrl = properties.SsoStartUrl
+                    };
+                    break;
+                default:
+                    options = new CredentialProfileOptions
+                    {
+                        AccessKey = properties.AccessKey,
+                        SecretKey = properties.SecretKey
+                    };
+                    break;
+            }
+
+            var profile = new CredentialProfile(name, options);
+            SetUniqueKey(profile, properties.UniqueKey);
+
             if (!string.IsNullOrEmpty(properties.Region))
             {
                 profile.Region = RegionEndpoint.GetBySystemName(properties.Region);
             }
 
-            SetUniqueKey(profile, properties.UniqueKey);
             return profile;
         }
 

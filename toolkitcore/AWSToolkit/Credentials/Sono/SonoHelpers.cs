@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
                         if (!dialog.Show())
                         {
                             // Throw an exception to break out of the SDK IAWSTokenProvider.TryResolveToken call
-                            throw new UserCanceledException("User declined to start AWS Builder ID Login Flow");
+                            throw new UserCanceledException("User declined to start login flow.");
                         }
                     });
 

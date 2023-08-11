@@ -167,7 +167,10 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
             var scopes = _isBuilderId ?
                 SonoProperties.Scopes :
-                new string[] { SonoProperties.SsoAccountAccessScope };
+                // Necessary to get refreshToken from IAM Identity Center
+                // For more details, see sso_registration_scopes in:
+                // https://docs.aws.amazon.com/sdkref/latest/guide/feature-sso-credentials.html#feature-sso-credentials-profile
+                new string[] { SonoProperties.SsoAccountAccessScope }; 
 
             var tokenManagerOptions = SonoHelpers.CreateSonoTokenManagerOptions(ssoCallback, scopes);
 

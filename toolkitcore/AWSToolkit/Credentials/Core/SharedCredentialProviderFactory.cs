@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Amazon.AWSToolkit.Credentials.IO;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
-using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 
 namespace Amazon.AWSToolkit.Credentials.Core

@@ -19,7 +19,7 @@ using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.Core
 {
-    public class ProfileCredentialProviderFactoryTests :IDisposable
+    public class ProfileCredentialProviderFactoryTests : IDisposable
     {
         private readonly ProfileCredentialProviderFactory _factory;
         private readonly Dictionary<string, CredentialProfile> _profiles = new Dictionary<string, CredentialProfile>();
@@ -106,7 +106,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         }
 
         [Fact]
-        public void CreateCredentialProfile()
+        public void CreateStaticCredentialProfile()
         {
             var guid = Guid.NewGuid();
             var properties = new ProfileProperties
@@ -115,12 +115,46 @@ namespace AWSToolkit.Tests.Credentials.Core
                 UniqueKey = guid.ToString(),
                 Region = RegionEndpoint.USEast1.SystemName
             };
-            var profile = _exposedTestFactory.ExposeCreateCredentialProfile("sample", properties);
+            var profile = _exposedTestFactory.ExposeCreateCredentialProfile("static-sample", properties);
             Assert.NotNull(profile);
             Assert.Equal("access-key", profile.Options.AccessKey);
             Assert.Null(profile.Options.SecretKey);
             Assert.Equal(RegionEndpoint.USEast1, profile.Region);
             Assert.Equal(guid.ToString(), CredentialProfileUtils.GetUniqueKey(profile));
+        }
+
+        [Fact]
+        public void CreateSsoCredentialProfile()
+        {
+            var expectedSsoAccountId = "123456789012";
+            var expectedSsoRegion = RegionEndpoint.USWest2.SystemName;
+            var expectedSsoRoleName = "testSsoRole";
+            var expectedSsoSession = "test-sso-session";
+            var expectedSsoStartUrl = "https://d-1234567890.awsapps.com/start";
+            var expectedRegion = RegionEndpoint.USEast1;
+            var expectedUniqueKey = Guid.NewGuid().ToString();
+
+            var properties = new ProfileProperties
+            {
+                SsoAccountId = expectedSsoAccountId,
+                SsoRegion = expectedSsoRegion,
+                SsoRoleName = expectedSsoRoleName,
+                SsoSession = expectedSsoSession,
+                SsoStartUrl = expectedSsoStartUrl,
+                Region = expectedRegion.SystemName,
+                UniqueKey = expectedUniqueKey
+            };
+
+            var profile = _exposedTestFactory.ExposeCreateCredentialProfile("sso-sample", properties);
+
+            Assert.NotNull(profile);
+            Assert.Equal(expectedSsoAccountId, profile.Options.SsoAccountId);
+            Assert.Equal(expectedSsoRegion, profile.Options.SsoRegion);
+            Assert.Equal(expectedSsoRoleName, profile.Options.SsoRoleName);
+            Assert.Equal(expectedSsoSession, profile.Options.SsoSession);
+            Assert.Equal(expectedSsoStartUrl, profile.Options.SsoStartUrl);
+            Assert.Equal(expectedRegion, profile.Region);
+            Assert.Equal(expectedUniqueKey, CredentialProfileUtils.GetUniqueKey(profile));
         }
 
         [Fact]

@@ -169,9 +169,13 @@ namespace Amazon.AWSToolkit.Events
             {
                 addHandler(handler);
 
-                // Do this after addHandler as if the CancellationToken is already canceled, it will
-                // run the registered handler immediately and synchronously.  We want to be sure the
-                // handler has been removed.
+                // Register the callback to finish with cancelled immediately after
+                // adding the handler above.  If the CancellationToken is already
+                // canceled at this point, Register will run the callback synchronously
+                // right now.  We want to be sure the handler is removed from the
+                // event in the case that this operation is cancelled before it even 
+                // gets started. Otherwise, the callback will be run when cancellation
+                // has been requested on the token (for example, due to timeout).
                 cancellationToken.Register(() => Finish(TaskStatus.Canceled));
 
                 if (!taskSource.Task.IsCanceled)
