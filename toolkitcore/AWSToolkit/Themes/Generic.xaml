@@ -41,6 +41,7 @@
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Separators.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/DualListBox.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/StatusBox.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/RegionSelector.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
