@@ -51,13 +51,12 @@
                 <wizBehaviors:Mvvm.ViewModel>
                     <local:SsoConfigurationDetailsViewModel />
                 </wizBehaviors:Mvvm.ViewModel>
-            </local:SsoConfigurationDetailsView>
+            </local:SsoConfigurationDetailsView>-->
             <local:StaticConfigurationDetailsView>
                 <wizBehaviors:Mvvm.ViewModel>
                     <local:StaticConfigurationDetailsViewModel />
                 </wizBehaviors:Mvvm.ViewModel>
             </local:StaticConfigurationDetailsView>
-            -->
         </commonUi:CardControl>
     </StackPanel>
 </UserControl>

@@ -76,5 +76,17 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             await func.Compile()(_sut);
             _mockSut.Verify(func, Times.Once());
         }
+
+        public static async Task<T> BootstrapViewModel<T>(ServiceProvider serviceProvider = null) where T : ViewModel, new()
+        {
+            var viewModel = new T
+            {
+                ServiceProvider = serviceProvider ?? new ServiceProvider()
+            };
+            await viewModel.RegisterServicesAsync();
+            await viewModel.InitializeAsync();
+
+            return viewModel;
+        }
     }
 }

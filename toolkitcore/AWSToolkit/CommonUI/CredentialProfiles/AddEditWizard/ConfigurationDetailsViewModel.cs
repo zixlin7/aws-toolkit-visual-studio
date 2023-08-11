@@ -24,7 +24,13 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         public ProfileProperties ProfileProperties { get; } = new ProfileProperties();
 
-        public RegionSelectorMixin ProfileRegionSelectorMixin { get; }
+        private RegionSelectorMixin _profileRegionSelectorMixin;
+
+        public RegionSelectorMixin ProfileRegionSelectorMixin
+        {
+            get => _profileRegionSelectorMixin;
+            protected set => SetProperty(ref _profileRegionSelectorMixin, value);
+        }
 
         #region CredentialFileType
 
