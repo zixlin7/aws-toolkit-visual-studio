@@ -46,12 +46,11 @@
             x:FieldModifier="private"
             SelectedValue="{Binding SelectedValue, ElementName=SelectedCredentialTypeComboBox}"
             SelectedValuePath="DataContext.CredentialType">
-            <!-- Enabled in upcoming PR
             <local:SsoConfigurationDetailsView>
                 <wizBehaviors:Mvvm.ViewModel>
                     <local:SsoConfigurationDetailsViewModel />
                 </wizBehaviors:Mvvm.ViewModel>
-            </local:SsoConfigurationDetailsView>-->
+            </local:SsoConfigurationDetailsView>
             <local:StaticConfigurationDetailsView>
                 <wizBehaviors:Mvvm.ViewModel>
                     <local:StaticConfigurationDetailsViewModel />

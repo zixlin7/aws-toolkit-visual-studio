@@ -28,6 +28,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         public TelemetryFixture TelemetryFixture { get; } = new TelemetryFixture();
 
+        public Mock<IAwsConnectionManager> ConnectionManager { get; } = new Mock<IAwsConnectionManager>();
         public Mock<ICredentialManager> CredentialManager { get; } = new Mock<ICredentialManager>();
         public Mock<ICredentialSettingsManager> CredentialSettingsManager { get; } = new Mock<ICredentialSettingsManager>();
         public Mock<IRegionProvider> RegionProvider { get; } = new Mock<IRegionProvider>();
@@ -42,6 +43,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
             ToolkitContext = new ToolkitContext()
             {
+                ConnectionManager = ConnectionManager.Object,
                 CredentialManager = CredentialManager.Object,
                 CredentialSettingsManager = CredentialSettingsManager.Object,
                 RegionProvider = RegionProvider.Object,
