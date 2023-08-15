@@ -192,7 +192,7 @@
 
         <Button
             HorizontalAlignment="Right"
-            Content="Add"
+            Content="{Binding AddButtonText}"
             Margin="0 12 0 0"
             Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}"
             Command="{Binding SaveCommand}" />

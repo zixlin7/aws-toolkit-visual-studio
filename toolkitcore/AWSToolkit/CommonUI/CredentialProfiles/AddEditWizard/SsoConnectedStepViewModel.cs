@@ -71,6 +71,14 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         #region Save
 
+        private string _addButtonText = "Add";
+
+        public string AddButtonText
+        {
+            get => _addButtonText;
+            set => SetProperty(ref _addButtonText, value);
+        }
+
         private ICommand _saveCommand;
 
         public ICommand SaveCommand
@@ -81,22 +89,35 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         private async Task SaveAsync(object parameter)
         {
-            _addEditProfileWizard.InProgress = true;
-
-            var p = _propertiesProvider.ProfileProperties.ShallowClone();
-            var changeConnectionSettings = true;
-
-            foreach (var accountRoles in SelectedSsoAccountRoles)
+            try
             {
-                p.SsoAccountId = accountRoles.AccountId;
-                p.SsoRoleName = accountRoles.RoleName;
-                p.Name = ToProfileName(p.SsoRoleName, p.SsoAccountId);
+                _addEditProfileWizard.InProgress = true;
+                AddButtonText = "Adding profile(s)...";
 
-                await _addEditProfileWizard.SaveAsync(p, CredentialFileType.Shared, changeConnectionSettings);
-                changeConnectionSettings = false; // If multiple profiles created, just set the first one in AWS Explorer
+                var p = _propertiesProvider.ProfileProperties.ShallowClone();
+                var changeConnectionSettings = true;
+
+                foreach (var accountRoles in SelectedSsoAccountRoles)
+                {
+                    p.SsoAccountId = accountRoles.AccountId;
+                    p.SsoRoleName = accountRoles.RoleName;
+                    p.Name = ToProfileName(p.SsoRoleName, p.SsoAccountId);
+
+                    await _addEditProfileWizard.SaveAsync(p, CredentialFileType.Shared, changeConnectionSettings);
+                    changeConnectionSettings = false; // If multiple profiles created, just set the first one in AWS Explorer
+                }
             }
-
-            _addEditProfileWizard.InProgress = false;
+            catch (Exception ex)
+            {
+                var msg = "Failed to save SSO profiles.";
+                _logger.Error(msg, ex);
+                _toolkitContext.ToolkitHost.ShowError(msg);
+            }
+            finally
+            {
+                AddButtonText = "Add";
+                _addEditProfileWizard.InProgress = false;
+            }
         }
 
         private bool CanSave(object parameter)

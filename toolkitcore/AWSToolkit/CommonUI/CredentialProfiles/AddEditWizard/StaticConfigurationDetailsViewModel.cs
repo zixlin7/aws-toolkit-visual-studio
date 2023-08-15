@@ -188,6 +188,14 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             private set => SetProperty(ref _openIamUsersConsoleCommand, value);
         }
 
+        private string _addButtonText = "Add";
+
+        public string AddButtonText
+        {
+            get => _addButtonText;
+            set => SetProperty(ref _addButtonText, value);
+        }
+
         private ICommand _saveCommand;
 
         public ICommand SaveCommand
@@ -214,7 +222,24 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         private async Task SaveAsync(object parameter)
         {
-            await _addEditProfileWizard.SaveAsync(ProfileProperties, SelectedCredentialFileType);
+            try
+            {
+                _addEditProfileWizard.InProgress = true;
+                AddButtonText = "Adding profile...";
+
+                await _addEditProfileWizard.SaveAsync(ProfileProperties, SelectedCredentialFileType);
+            }
+            catch (Exception ex)
+            {
+                var msg = "Failed to save profile.";
+                _logger.Error(msg, ex);
+                _toolkitContext.ToolkitHost.ShowError(msg);
+            }
+            finally
+            {
+                AddButtonText = "Add";
+                _addEditProfileWizard.InProgress = false;
+            }
         }
 
         private bool CanSave(object parameter)
