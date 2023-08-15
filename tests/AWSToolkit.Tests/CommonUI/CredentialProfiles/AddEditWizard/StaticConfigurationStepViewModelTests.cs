@@ -6,14 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
-using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.Tests.Common.IO;
-
-using AWSToolkit.Tests.Credentials.Core;
 
 using Moq;
 
@@ -38,10 +34,6 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
         public async Task InitializeAsync()
         {
-            var connectionManagerMock = new Mock<IAwsConnectionManager>();
-            connectionManagerMock.SetupGet(mock => mock.IdentityResolver).Returns(new FakeIdentityResolver());
-
-            _toolkitContextFixture.ToolkitContext.ConnectionManager = connectionManagerMock.Object;
             _toolkitContextFixture.CredentialManager.Setup(mock => mock.GetCredentialIdentifiers()).Returns(new List<ICredentialIdentifier>());
 
             _serviceProvider.SetService(_toolkitContextFixture.ToolkitContext);

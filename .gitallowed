@@ -6,3 +6,6 @@
 \"accountId\"\: \"123456789012\"
 \"accountId\"\: \"012345678912\"
 \"account\"\: \"123456789012\"
+
+# Allowed for unit tests
+[aA]ccount(I[dD])? = "123456789012";

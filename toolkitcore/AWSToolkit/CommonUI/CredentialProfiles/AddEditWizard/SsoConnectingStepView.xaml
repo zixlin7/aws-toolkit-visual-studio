@@ -1,0 +1,29 @@
+﻿<UserControl 
+    x:Class="Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.SsoConnectingStepView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard"
+    xmlns:controls="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:RelayValueConverter
+            x:Key="NullToFalseConverter"
+            ConvertHandler="{x:Static local:ViewModel.NullToFalse}" />
+    </UserControl.Resources>
+
+    <controls:IsEnabledScope>
+        <Button
+            HorizontalAlignment="Right"
+            Content="Cancel"
+            Margin="0 12 0 0"
+            Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}"
+            Command="{Binding CancelConnectingCommand}"
+            IsEnabled="{Binding CancellationTokenSource, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}" />
+    </controls:IsEnabledScope>
+</UserControl>
