@@ -369,12 +369,10 @@ namespace Amazon.AWSToolkit.Navigator
             }
             else
             {
-                using (var dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateCredentialProfileDialog())
+                var dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateCredentialProfileDialog();
+                if (!dialog.Show())
                 {
-                    if (!dialog.Show())
-                    {
-                        RecordAwsModifyCredentialsMetric(ActionResults.CreateCancelled(), CredentialModification.Add);
-                    }
+                    RecordAwsModifyCredentialsMetric(ActionResults.CreateCancelled(), CredentialModification.Add);
                 }
             }
         }

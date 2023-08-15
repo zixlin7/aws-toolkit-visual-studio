@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -15,79 +18,79 @@ namespace AWSToolkitPackage.Tests.GettingStarted
 {
     public class GettingStartedViewModelTests
     {
+        private readonly GettingStartedViewModel _sut;
+
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
 
-        private List<ICredentialIdentifier> _credentialIdentifiers = new List<ICredentialIdentifier>();
+        private readonly Mock<IAddEditProfileWizard> _addEditProfileWizardMock = new Mock<IAddEditProfileWizard>();
+
+        private readonly List<ICredentialIdentifier> _credentialIdentifiers = new List<ICredentialIdentifier>();
 
         public GettingStartedViewModelTests()
         {
+            _credentialIdentifiers.Add(new SharedCredentialIdentifier("default"));
+
             _toolkitContextFixture.CredentialManager.Setup(mock => mock.GetCredentialIdentifiers())
                 .Returns(() => _credentialIdentifiers);
 
             _toolkitContextFixture.CredentialSettingsManager.Setup(mock => mock.GetProfileProperties(It.IsAny<ICredentialIdentifier>()))
                 .Returns(() => new ProfileProperties());
+
+            _sut = new GettingStartedViewModel(_toolkitContextFixture.ToolkitContext);
+            _sut.ServiceProvider.SetService(_addEditProfileWizardMock.Object);
+        }
+
+        private async Task RunViewModelLifecycle()
+        {
+            await _sut.RegisterServicesAsync();
+            await _sut.InitializeAsync();
+        }
+
+        private void SetupChangeConnectionSettingsAsync(ConnectionState state)
+        {
+            _toolkitContextFixture.ConnectionManager.Setup(mock => mock.ChangeConnectionSettingsAsync(
+                It.IsAny<ICredentialIdentifier>(), It.IsAny<ToolkitRegion>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(state);
         }
 
         [Fact]
-        public void ConnectionStateNonTerminalSetsStatusNull()
+        public async Task ConnectionStateIsValidSetsStatusTrue()
         {
-            var cnMgrMock = new Mock<IAwsConnectionManager>();
-            var sut = new GettingStartedViewModel(_toolkitContextFixture.ToolkitContext, cnMgrMock.Object)
-            {
-                Status = true // Change to ensure expected behavior as default is null
-            };
-
-            var e = new ConnectionStateChangeArgs() { State = new ConnectionState.InitializingToolkit() };
-            cnMgrMock.Raise(mock => mock.ConnectionStateChanged += null, e);
-
-            Assert.Null(sut.Status);
-        }
-
-        [Fact]
-        public void ConnectionStateIsValidSetsStatusTrue()
-        {
-            var cnMgrMock = new Mock<IAwsConnectionManager>();
-            var sut = new GettingStartedViewModel(_toolkitContextFixture.ToolkitContext, cnMgrMock.Object);
-
             var id = new FakeCredentialIdentifier() { DisplayName = "nobody" };
             var region = new ToolkitRegion() { DisplayName = "nowhere-east-6" };
-            var e = new ConnectionStateChangeArgs() { State = new ConnectionState.ValidConnection(id, region) };
-            cnMgrMock.Raise(mock => mock.ConnectionStateChanged += null, e);
+            SetupChangeConnectionSettingsAsync(new ConnectionState.ValidConnection(id, region));
 
-            Assert.True(sut.Status);
+            await RunViewModelLifecycle();
+
+            Assert.True(_sut.Status);
         }
 
         [Fact]
-        public void ConnectionStateIsInvalidSetsStatusFalse()
+        public async Task ConnectionStateIsInvalidSetsStatusFalse()
         {
-            var cnMgrMock = new Mock<IAwsConnectionManager>();
-            var sut = new GettingStartedViewModel(_toolkitContextFixture.ToolkitContext, cnMgrMock.Object);
+            SetupChangeConnectionSettingsAsync(new ConnectionState.InvalidConnection("kaboom"));
 
-            var e = new ConnectionStateChangeArgs() { State = new ConnectionState.InvalidConnection("kaboom") };
-            cnMgrMock.Raise(mock => mock.ConnectionStateChanged += null, e);
+            await RunViewModelLifecycle();
 
-            Assert.False(sut.Status);
+            Assert.False(_sut.Status);
         }
 
         [Fact]
-        public void NoCredentialsDefinedSetsActiveCardToAddProfileCard()
+        public async Task NoCredentialsDefinedSetsCurrentStepToAddEditProfileWizard()
         {
             _credentialIdentifiers.Clear();
-            var sut = new GettingStartedViewModel(_toolkitContextFixture.ToolkitContext);
 
-            Assert.Equal(GettingStartedViewModel.AddProfileCardName, sut.ActiveCard);
+            await RunViewModelLifecycle();
+
+            Assert.Equal(GettingStartedStep.AddEditProfileWizard, _sut.CurrentStep);
         }
 
         [Fact]
-        public void AnySharedOrSdkCredentialsDefinedSetsActiveCardToGettingStartedCard()
+        public async Task AnySharedOrSdkCredentialsDefinedSetsCurrentStepToGettingStarted()
         {
-            _credentialIdentifiers.Add(new FakeCredentialIdentifier() {
-                ProfileName = "default",
-                FactoryId = SharedCredentialProviderFactory.SharedProfileFactoryId
-            });
-            var sut = new GettingStartedViewModel(_toolkitContextFixture.ToolkitContext);
+            await RunViewModelLifecycle();
 
-            Assert.Equal(GettingStartedViewModel.GettingStartedCardName, sut.ActiveCard);
+            Assert.Equal(GettingStartedStep.GettingStarted, _sut.CurrentStep);
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.CredentialProfiles;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
@@ -16,27 +17,26 @@ using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 {
-    public class GettingStartedViewModel : BaseModel, IDisposable
+    public enum GettingStartedStep
+    {
+        AddEditProfileWizard,
+        GettingStarted
+    }
+
+    public class GettingStartedViewModel : RootViewModel
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GettingStartedViewModel));
 
-        private readonly ToolkitContext _toolkitContext;
+        private IAddEditProfileWizard _addEditProfileWizard => ServiceProvider.RequireService<IAddEditProfileWizard>();
 
-        private readonly IAwsConnectionManager _connectionManager;
+        #region GettingStartedStep
 
-        public CredentialProfileFormViewModel CredentialProfileFormViewModel { get; private set; }
+        private GettingStartedStep _currentStep;
 
-        #region ActiveCard
-        internal const string AddProfileCardName = "AddProfileCard";
-
-        internal const string GettingStartedCardName = "GettingStartedCard";
-
-        private string _activeCard;
-
-        public string ActiveCard
+        public GettingStartedStep CurrentStep
         {
-            get => _activeCard;
-            set => SetProperty(ref _activeCard, value);
+            get => _currentStep;
+            set => SetProperty(ref _currentStep, value);
         }
         #endregion
 
@@ -63,11 +63,6 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         {
             get => _status;
             set => SetProperty(ref _status, value);
-        }
-
-        private void _connectionManager_ConnectionStateChanged(object sender, ConnectionStateChangeArgs e)
-        {
-            Status = e.State.IsTerminal ? ConnectionState.IsValid(e.State) : (bool?) null;
         }
         #endregion
 
@@ -105,104 +100,117 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         }
         #endregion
 
-        public ICommand OpenAwsExplorerAsyncCommand { get; }
+        private ICommand _openAwsExplorerAsyncCommand;
 
-        public ICommand OpenUsingToolkitDocsCommand { get; }
-
-        public ICommand OpenDeployLambdaDocsCommand { get; }
-
-        public ICommand OpenDeployBeanstalkDocsCommand { get; }
-
-        public ICommand OpenDevBlogCommand { get; }
-
-        public ICommand OpenPrivacyPolicyCommand { get; }
-
-        public GettingStartedViewModel(ToolkitContext toolkitContext)
-            : this(
-                  toolkitContext,
-                  new AwsConnectionManager(
-                    toolkitContext.CredentialManager,
-                    toolkitContext.TelemetryLogger,
-                    toolkitContext.RegionProvider,
-                    new AppDataToolkitSettingsRepository()))
+        public ICommand OpenAwsExplorerAsyncCommand
         {
-
+            get => _openAwsExplorerAsyncCommand;
+            private set => SetProperty(ref _openAwsExplorerAsyncCommand, value);
         }
 
-        internal GettingStartedViewModel(ToolkitContext toolkitContext, IAwsConnectionManager connectionManager)
+        private ICommand _openUsingToolkitDocsCommand;
+
+        public ICommand OpenUsingToolkitDocsCommand
         {
-            _toolkitContext = toolkitContext;
-            _connectionManager = connectionManager;
+            get => _openUsingToolkitDocsCommand;
+            private set => SetProperty(ref _openUsingToolkitDocsCommand, value);
+        }
 
-            CredentialProfileFormViewModel = new CredentialProfileFormViewModel(_toolkitContext);
+        private ICommand _openDeployLambdaDocsCommand;
 
-            Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(_toolkitContext, url);
+        public ICommand OpenDeployLambdaDocsCommand
+        {
+            get => _openDeployLambdaDocsCommand;
+            private set => SetProperty(ref _openDeployLambdaDocsCommand, value);
+        }
+
+        private ICommand _openDeployBeanstalkDocsCommand;
+
+        public ICommand OpenDeployBeanstalkDocsCommand
+        {
+            get => _openDeployBeanstalkDocsCommand;
+            private set => SetProperty(ref _openDeployBeanstalkDocsCommand, value);
+        }
+
+        private ICommand _openDevBlogCommand;
+
+        public ICommand OpenDevBlogCommand
+        {
+            get => _openDevBlogCommand;
+            private set => SetProperty(ref _openDevBlogCommand, value);
+        }
+
+        private ICommand _openPrivacyPolicyCommand;
+
+        public ICommand OpenPrivacyPolicyCommand
+        {
+            get => _openPrivacyPolicyCommand;
+            private set => SetProperty(ref _openPrivacyPolicyCommand, value);
+        }
+
+        internal GettingStartedViewModel(ToolkitContext toolkitContext)
+            : base(toolkitContext) { }
+
+        public override async Task InitializeAsync()
+        {
+            await base.InitializeAsync();
+
+            ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
 
             OpenAwsExplorerAsyncCommand = new OpenAwsExplorerCommand(_toolkitContext);
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(_toolkitContext);
+
+            Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(_toolkitContext, url);
             OpenDeployLambdaDocsCommand = openUrl("https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/lambda-cli-publish.html");
             OpenDeployBeanstalkDocsCommand = openUrl("https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_NET.html");
             OpenDevBlogCommand = openUrl("https://aws.amazon.com/blogs/developer/category/net/");
             OpenPrivacyPolicyCommand = openUrl("https://aws.amazon.com/privacy/");
 
-            Initialize();
+            await ShowInitialCardAsync();
         }
 
-        private void Initialize()
+        private async Task ShowInitialCardAsync()
         {
-            ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
-
-            _connectionManager.ConnectionStateChanged += _connectionManager_ConnectionStateChanged;
-
             var credId = GetDefaultCredentialIdentifier();
-            if (credId != null)
+            if (credId == null)
             {
-                ShowGettingStartedCard(credId);
-                return;
+                _addEditProfileWizard.ConnectionSettingsChanged += (sender, e) =>
+                {
+                    Status = true;
+                    ShowGettingStarted(e.CredentialIdentifier);
+                };
+                CurrentStep = GettingStartedStep.AddEditProfileWizard;
             }
-
-            CredentialProfileFormViewModel.CredentialProfileSaved += CredentialProfileFormViewModel_CredentialProfileSaved;
-            ActiveCard = AddProfileCardName;
+            else
+            {
+                ShowGettingStarted(credId);
+                await ChangeConnectionSettingsAsync(credId);
+            }
         }
 
-        private void ChangeConnectionSettings(IAwsConnectionManager connectionManager, ICredentialIdentifier credentialIdentifier, ProfileProperties profileProperties)
+        private async Task ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier)
         {
-            connectionManager.ChangeConnectionSettings(credentialIdentifier, _toolkitContext.RegionProvider.GetRegion(profileProperties.Region ?? ToolkitRegion.DefaultRegionId));
+            var profileProperties = _toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+            var region = _toolkitContext.RegionProvider.GetRegion(profileProperties.Region ?? ToolkitRegion.DefaultRegionId);
+            try
+            {
+                var state = await _toolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credentialIdentifier, region);
+                Status = ConnectionState.IsValid(state);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Unable to set AWS Explorer to existing credential.", ex);
+                Status = false;
+            }
         }
 
-        private void ShowGettingStartedCard(ICredentialIdentifier credentialIdentifier)
+        private void ShowGettingStarted(ICredentialIdentifier credentialIdentifier)
         {
             var profileProperties = _toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
 
             CredentialTypeName = profileProperties.GetCredentialType().GetDescription();
             CredentialName = credentialIdentifier.ProfileName;
-            ActiveCard = GettingStartedCardName;
-
-            ChangeConnectionSettings(_connectionManager, credentialIdentifier, profileProperties);
-        }
-
-        private void CredentialProfileFormViewModel_CredentialProfileSaved(object sender, CredentialProfileFormViewModel.CredentialProfileSavedEventArgs e)
-        {
-            CredentialProfileFormViewModel.CredentialProfileSaved -= CredentialProfileFormViewModel_CredentialProfileSaved;
-            ShowGettingStartedCard(e.CredentialIdentifier);
-        }
-
-        private bool _disposed;
-
-        public void Dispose()
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-
-                _connectionManager.ConnectionStateChanged -= _connectionManager_ConnectionStateChanged;
-
-                if (CredentialProfileFormViewModel != null)
-                {
-                    CredentialProfileFormViewModel.Dispose();
-                    CredentialProfileFormViewModel = null;
-                }
-            }
+            CurrentStep = GettingStartedStep.GettingStarted;
         }
 
         private ICredentialIdentifier GetDefaultCredentialIdentifier()

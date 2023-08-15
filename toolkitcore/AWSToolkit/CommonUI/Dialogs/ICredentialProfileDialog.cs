@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Amazon.AWSToolkit.CommonUI.Dialogs
+﻿namespace Amazon.AWSToolkit.CommonUI.Dialogs
 {
-    public interface ICredentialProfileDialog : IDisposable
+    public interface ICredentialProfileDialog
     {
         bool Show();
     }

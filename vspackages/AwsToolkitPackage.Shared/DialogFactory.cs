@@ -1,5 +1,6 @@
 ﻿using Amazon.AwsToolkit.SourceControl;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
 using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
@@ -139,10 +140,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public ICredentialProfileDialog CreateCredentialProfileDialog()
         {
-            return new CredentialProfileDialog()
-            {
-                DataContext = new CredentialProfileDialogViewModel(_toolkitContext)
-            };
+            var dialog = new CredentialProfileDialog();
+            Mvvm.SetViewModel(dialog, new CredentialProfileDialogViewModel(_toolkitContext));
+            return dialog;
         }
     }
 }

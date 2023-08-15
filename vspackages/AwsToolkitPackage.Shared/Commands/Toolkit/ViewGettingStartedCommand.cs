@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
@@ -54,10 +55,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
                 }
                 else
                 {
-                    _toolkitContext.ToolkitHost.OpenInEditor(new GettingStartedView()
-                    {
-                        DataContext = new GettingStartedViewModel(_toolkitContext)
-                    });
+                    var view = new GettingStartedView();
+                    Mvvm.SetViewModel(view, new GettingStartedViewModel(_toolkitContext));
+                    _toolkitContext.ToolkitHost.OpenInEditor(view);
                 }
             }
             catch (Exception ex)

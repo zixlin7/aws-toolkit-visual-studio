@@ -1,6 +1,4 @@
-﻿using System;
-
-using Amazon.AWSToolkit.CommonUI.Dialogs;
+﻿using Amazon.AWSToolkit.CommonUI.Dialogs;
 
 namespace AwsToolkit.VsSdk.Common.CommonUI
 {
@@ -14,19 +12,6 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
         public new bool Show()
         {
             return ShowModal() == true;
-        }
-
-        private bool _disposed;
-
-        public void Dispose()
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-
-                (DataContext as IDisposable)?.Dispose();
-                DataContext = null;
-            }
         }
     }
 }

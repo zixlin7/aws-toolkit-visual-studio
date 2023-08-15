@@ -100,6 +100,7 @@ using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 using Amazon.AWSToolkit.VisualStudio.ArmPreview;
 using Amazon.AWSToolkit.Notifications;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -1088,10 +1089,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                             }
                             else
                             {
-                                _toolkitContext.ToolkitHost.OpenInEditor(new GettingStartedView()
-                                {
-                                    DataContext = new GettingStartedViewModel(_toolkitContext)
-                                });
+                                var view = new GettingStartedView();
+                                Mvvm.SetViewModel(view, new GettingStartedViewModel(_toolkitContext));
+                                _toolkitContext.ToolkitHost.OpenInEditor(view);
                             }
                         }
                     }

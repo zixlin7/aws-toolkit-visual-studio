@@ -1,15 +1,13 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.CredentialProfiles;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Context;
 
 namespace AwsToolkit.VsSdk.Common.CommonUI.Models
 {
-    public class CredentialProfileDialogViewModel : BaseModel, IDisposable
+    public class CredentialProfileDialogViewModel : RootViewModel
     {
-        public CredentialProfileFormViewModel CredentialProfileFormViewModel { get; private set; }
-
         private bool? _dialogResult;
 
         public bool? DialogResult
@@ -21,31 +19,15 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
         public string Heading { get; } = "Setup a Profile to Authenticate";
 
         public CredentialProfileDialogViewModel(ToolkitContext toolkitContext)
+            : base(toolkitContext) { }
+
+        public override async Task InitializeAsync()
         {
-            CredentialProfileFormViewModel = new CredentialProfileFormViewModel(toolkitContext);
-            CredentialProfileFormViewModel.CredentialProfileSaved += CredentialProfileFormViewModel_CredentialProfileSaved;
-        }
+            await base.InitializeAsync();
 
-        private bool _disposed;
-
-        public void Dispose()
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-
-                if (CredentialProfileFormViewModel != null)
-                {
-                    CredentialProfileFormViewModel.CredentialProfileSaved -= CredentialProfileFormViewModel_CredentialProfileSaved;
-                    CredentialProfileFormViewModel.Dispose();
-                    CredentialProfileFormViewModel = null;
-                }
-            }
-        }
-
-        private void CredentialProfileFormViewModel_CredentialProfileSaved(object sender, CredentialProfileFormViewModel.CredentialProfileSavedEventArgs e)
-        {
-            DialogResult = true;
+            var addEditProfileWizard = ServiceProvider.RequireService<IAddEditProfileWizard>();
+            addEditProfileWizard.CredentialsFileOpened += (sender, e) => DialogResult = false;
+            addEditProfileWizard.ConnectionSettingsChanged += (sender, e) => DialogResult = true;
         }
     }
 }
