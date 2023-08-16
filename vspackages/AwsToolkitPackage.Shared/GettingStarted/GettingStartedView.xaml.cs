@@ -1,4 +1,10 @@
-﻿using Amazon.AWSToolkit.CommonUI;
+﻿using System;
+using System.Diagnostics;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Navigation;
+
+using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 {
@@ -16,6 +22,14 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         public GettingStartedView()
         {
             InitializeComponent();
+        }
+
+        /// <summary>
+        /// Prevents any click events in the TextBlock from reaching the parent CheckBox
+        /// </summary>
+        private void TextBlock_SwallowEvents(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

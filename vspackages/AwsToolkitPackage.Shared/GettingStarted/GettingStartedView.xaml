@@ -142,10 +142,18 @@
                                 Margin="6 0 0 0"
                                 IsChecked="{Binding CollectAnalytics}"
                                 VerticalContentAlignment="Top">
-                                <TextBlock Margin="6 0 0 0"
-                                           TextWrapping="Wrap"
-                                           FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
-                                           Text="Allow AWS Toolkit to collect usage information" />
+                                <TextBlock
+                                    Margin="6 0 0 0"
+                                    TextWrapping="Wrap"
+                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                                    MouseDown="TextBlock_SwallowEvents">
+                                    <Run Text="Allow AWS Toolkit to collect usage information (" /><Span>
+                                        <Hyperlink
+                                            Command="{Binding OpenTelemetryDisclosureCommand}">
+                                            details
+                                        </Hyperlink>
+                                    </Span><Run Text=")"/>
+                                </TextBlock>
                             </CheckBox>
 
                             <TextBlock

@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Urls;
 
 using log4net;
 
@@ -148,6 +149,14 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             private set => SetProperty(ref _openPrivacyPolicyCommand, value);
         }
 
+        private ICommand _openTelemetryDisclosureCommand;
+
+        public ICommand OpenTelemetryDisclosureCommand
+        {
+            get => _openTelemetryDisclosureCommand;
+            private set => SetProperty(ref _openTelemetryDisclosureCommand, value);
+        }
+
         internal GettingStartedViewModel(ToolkitContext toolkitContext)
             : base(toolkitContext) { }
 
@@ -161,10 +170,11 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(_toolkitContext);
 
             Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(_toolkitContext, url);
-            OpenDeployLambdaDocsCommand = openUrl("https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/lambda-cli-publish.html");
-            OpenDeployBeanstalkDocsCommand = openUrl("https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_NET.html");
-            OpenDevBlogCommand = openUrl("https://aws.amazon.com/blogs/developer/category/net/");
-            OpenPrivacyPolicyCommand = openUrl("https://aws.amazon.com/privacy/");
+            OpenDeployLambdaDocsCommand = openUrl(AwsUrls.DeployLambdaDocs);
+            OpenDeployBeanstalkDocsCommand = openUrl(AwsUrls.DeployBeanstalkDocs);
+            OpenDevBlogCommand = openUrl(AwsUrls.DevBlog);
+            OpenPrivacyPolicyCommand = openUrl(AwsUrls.PrivacyPolicy);
+            OpenTelemetryDisclosureCommand = openUrl(AwsUrls.TelemetryDisclosure);
 
             await ShowInitialCardAsync();
         }

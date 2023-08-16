@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Navigation;
 
 using Amazon.AWSToolkit.Settings;
@@ -81,9 +82,17 @@ namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
             }
         }
 
-        void AWSPrivacyPolicyLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo((sender as Hyperlink).NavigateUri.ToString()));
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Prevents any click events in the TextBlock from reaching the parent CheckBox
+        /// </summary>
+        private void TextBlock_SwallowEvents(object sender, MouseButtonEventArgs e)
+        {
             e.Handled = true;
         }
     }
