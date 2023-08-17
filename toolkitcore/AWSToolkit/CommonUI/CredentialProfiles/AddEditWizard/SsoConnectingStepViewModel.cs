@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.Runtime;
 using Amazon.SSOOIDC.Model;
 
@@ -112,17 +113,36 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
                 // CancellationToken doesn't make it to CoreAmazonSSOOIDC.PollForSsoTokenAsync, so this won't actually stop
                 // the polling loop, but it is handled in other calls in the chain, so doesn't hurt to pass it.
-                var task = provider.TryResolveTokenAsync(cancellationToken);
+                var resolverTask = provider.TryResolveTokenAsync(cancellationToken);
                 try
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await task;
+                    while (true)
+                    {
+                        var delayTask = Task.Delay(TimeSpan.FromSeconds(1));
+                        var finishedTask = await Task.WhenAny(resolverTask, delayTask);
+
+                        if (finishedTask == resolverTask)
+                        {
+                            await resolverTask;
+                            break;
+                        }
+                        else
+                        {
+                            await delayTask;
+
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                resolverTask.LogExceptionAndForget();
+                                cancellationToken.ThrowIfCancellationRequested();
+                            }
+                        }
+                    }
                 }
                 catch (UserCanceledException)
                 {
                     // Just ignore if the user cancelled, any exception here will revert back to the SSO configuration details screen
                 }
-                catch (InvalidRequestException)
+                catch (InvalidRequestException ex)
                 {
                     _toolkitContext.ToolkitHost.ShowError("Unable to connect.  Verify SSO Start URL is correct.");
                 }
@@ -136,9 +156,9 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 }
 
                 return !cancellationTokenSource.IsCancellationRequested &&
-                    task.Status == TaskStatus.RanToCompletion &&
-                    task.Result?.Success == true ?
-                    task.Result.Value :
+                    resolverTask.Status == TaskStatus.RanToCompletion &&
+                    resolverTask.Result?.Success == true ?
+                    resolverTask.Result.Value :
                     null;
             });
         }
