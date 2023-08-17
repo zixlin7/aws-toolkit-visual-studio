@@ -16,5 +16,6 @@ namespace Amazon.AWSToolkit.Urls
         public const string FeatureRequestUrl = " https://github.com/aws/aws-toolkit-visual-studio/issues/new?assignees=&labels=feature-request&template=feature_request.md";
         public static readonly Uri FeatureRequestUri = new Uri(FeatureRequestUrl);
 
+        public const string RepositoryUrl = "https://github.com/aws/aws-toolkit-visual-studio";
     }
 }

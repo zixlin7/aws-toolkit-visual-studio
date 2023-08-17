@@ -21,7 +21,6 @@
     <StackPanel>
         <WrapPanel Margin="0 9 0 0">
             <TextBlock
-                FontWeight="SemiBold"
                 HorizontalAlignment="Left"
                 TextWrapping="Wrap"
                 Text="Profile Type" />

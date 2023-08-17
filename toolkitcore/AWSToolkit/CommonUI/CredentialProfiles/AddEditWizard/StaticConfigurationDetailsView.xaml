@@ -64,8 +64,6 @@
 
         <WrapPanel Margin="0 9 0 0">
             <TextBlock
-                Margin="0 9 0 0"
-                FontWeight="SemiBold"
                 HorizontalAlignment="Left"
                 TextWrapping="WrapWithOverflow"
                 Text="Profile Name" />
@@ -92,7 +90,6 @@
 
         <TextBlock
             Margin="0 9 0 0"
-            FontWeight="SemiBold"
             HorizontalAlignment="Left"
             TextWrapping="WrapWithOverflow"
             Text="Access Key ID" />
@@ -109,7 +106,6 @@
 
         <TextBlock
             Margin="0 9 0 0"
-            FontWeight="SemiBold"
             HorizontalAlignment="Left"
             TextWrapping="WrapWithOverflow"
             Text="Secret Key" />
@@ -148,8 +144,7 @@
             <Expander.Header>
                 <WrapPanel>
                     <TextBlock
-                        Text="Storage Location" 
-                        FontWeight="SemiBold" />
+                        Text="Storage Location (defaults to Shared Credentials File)" />
                     <commonUi:HelpHyperlinkPopup 
                         Background="Transparent">
                         <TextBlock 
@@ -176,8 +171,7 @@
             <Expander.Header>
                 <WrapPanel>
                     <TextBlock 
-                        Text="Profile Region" 
-                        FontWeight="SemiBold" />
+                        Text="Profile Region (defaults to us-east-1)" />
                     <commonUi:HelpHyperlinkPopup 
                         Background="Transparent">
                         <TextBlock 

@@ -31,13 +31,24 @@
                 <ColumnDefinition Width="*" MaxWidth="650" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <StackPanel
-                Orientation="Horizontal"
+
+            <Grid
                 Grid.Row="0"
                 Grid.ColumnSpan="2"
                 Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
                 <images:VsImage
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.RowSpan="2"
                     Source="{Binding Source={StaticResource ToolkitImages}, Path=Aws}"
                     Width="64"
                     Height="64"
@@ -46,13 +57,30 @@
                     HorizontalAlignment="Left" />
 
                 <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
                     Margin="12 0 0 0"
                     FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
                     Text="Getting Started with the AWS Toolkit"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Left" />
 
-            </StackPanel>
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="12 0 0 0">
+                    <Hyperlink
+                        Command="{Binding OpenUsingToolkitDocsCommand}">
+                        Documentation
+                    </Hyperlink>
+                    <Run Text="|" />
+                    <Hyperlink
+                        Command="{Binding OpenGitHubCommand}">
+                        GitHub
+                    </Hyperlink>
+                </TextBlock>
+
+            </Grid>
 
             <commonUi:CardControl 
                 Grid.Row="1"
@@ -143,7 +171,7 @@
                                 IsChecked="{Binding CollectAnalytics}"
                                 VerticalContentAlignment="Top">
                                 <TextBlock
-                                    Margin="6 0 0 0"
+                                    Margin="6 6 0 0"
                                     TextWrapping="Wrap"
                                     FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
                                     MouseDown="TextBlock_SwallowEvents">

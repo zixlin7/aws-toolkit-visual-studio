@@ -14,8 +14,6 @@
     <StackPanel>
         <WrapPanel Margin="0 9 0 0">
             <TextBlock
-                Margin="0 9 0 0"
-                FontWeight="SemiBold"
                 HorizontalAlignment="Left"
                 TextWrapping="WrapWithOverflow"
                 Text="Profile Name" />
@@ -42,7 +40,6 @@
 
         <WrapPanel Margin="0 9 0 0">
             <TextBlock
-                FontWeight="SemiBold"
                 HorizontalAlignment="Left"
                 TextWrapping="WrapWithOverflow"
                 Text="Sign-in URL" />
@@ -93,8 +90,7 @@
             <Expander.Header>
                 <WrapPanel>
                     <TextBlock
-                        Text="Storage Location" 
-                        FontWeight="SemiBold" />
+                        Text="Storage Location" />
                     <commonUi:HelpHyperlinkPopup 
                         Background="Transparent">
                         <TextBlock 
@@ -121,8 +117,7 @@
             <Expander.Header>
                 <WrapPanel>
                     <TextBlock 
-                        Text="Profile Region" 
-                        FontWeight="SemiBold" />
+                        Text="Profile Region (defaults to us-east-1)" />
                     <commonUi:HelpHyperlinkPopup 
                         Background="Transparent">
                         <TextBlock 
@@ -150,8 +145,7 @@
             <Expander.Header>
                 <WrapPanel>
                     <TextBlock 
-                        Text="SSO Region"
-                        FontWeight="SemiBold" />
+                        Text="SSO Region (defaults to us-east-1)" />
                     <commonUi:HelpHyperlinkPopup 
                         Background="Transparent">
                         <TextBlock 

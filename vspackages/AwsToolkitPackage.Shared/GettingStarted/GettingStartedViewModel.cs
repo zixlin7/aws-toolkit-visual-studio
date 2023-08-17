@@ -109,6 +109,14 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             private set => SetProperty(ref _openAwsExplorerAsyncCommand, value);
         }
 
+        private ICommand _openGitHubCommand;
+
+        public ICommand OpenGitHubCommand
+        {
+            get => _openGitHubCommand;
+            private set => SetProperty(ref _openGitHubCommand, value);
+        }
+
         private ICommand _openUsingToolkitDocsCommand;
 
         public ICommand OpenUsingToolkitDocsCommand
@@ -170,6 +178,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(_toolkitContext);
 
             Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(_toolkitContext, url);
+            OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);
             OpenDeployLambdaDocsCommand = openUrl(AwsUrls.DeployLambdaDocs);
             OpenDeployBeanstalkDocsCommand = openUrl(AwsUrls.DeployBeanstalkDocs);
             OpenDevBlogCommand = openUrl(AwsUrls.DevBlog);
