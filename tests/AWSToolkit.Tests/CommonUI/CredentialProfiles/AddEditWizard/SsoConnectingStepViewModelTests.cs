@@ -36,7 +36,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             _profileProperties.Name = "my-profile";
             _profileProperties.SsoRegion = RegionEndpoint.USWest2.SystemName;
             // Bad URLs will be accepted by AWSSDK if they follow the https://<...>.awsapps.com/start pattern
-            _profileProperties.SsoStartUrl = "https://d-92676313e7.awsapps.com/start";
+            _profileProperties.SsoStartUrl = "https://roadtonowhere.awsapps.com/start";
 
             _mockPropertiesProvider.SetupGet(mock => mock.ProfileProperties).Returns(_profileProperties);
 

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.Credentials.Internal;
 using Amazon.Runtime.Internal;
 using Amazon.Util;
@@ -176,7 +179,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
             var ssoOidcClient = SSOServiceClientHelpers.BuildSSOIDCClient(_oidcRegion);
 
-            var ssoTokenFileCache = new SSOTokenFileCache(
+            var ssoTokenFileCache = new ValidatingSSOTokenFileCache(
                 CryptoUtilFactory.CryptoInstance,
                 _tokenCacheFileHandler,
                 _tokenCacheDirectoryHandler);
@@ -184,6 +187,70 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             var ssoTokenManager = new SSOTokenManager(ssoOidcClient, ssoTokenFileCache);
 
             return new ToolkitSsoTokenManager(ssoTokenManager, tokenManagerOptions);
+        }
+
+        /// <summary>
+        /// Adapter for SSOTokenFileCache that verifies the region and start URL match the cached token
+        /// </summary>
+        /// <remarks>
+        /// Uses interface implementation instead of extending class because methods aren't virtual in SSOTokenFileCache.
+        /// </remarks>
+        private class ValidatingSSOTokenFileCache : ISSOTokenFileCache
+        {
+            private readonly ISSOTokenFileCache _cache;
+
+            public ValidatingSSOTokenFileCache(ICryptoUtil cryptoUtil, IFile file, IDirectory directory)
+            {
+                _cache = new SSOTokenFileCache(cryptoUtil, file, directory);
+            }
+
+            public bool Exists(CredentialProfileOptions options)
+            {
+                return _cache.Exists(options);
+            }
+
+            public void SaveSsoToken(SsoToken token, string ssoCacheDirectory)
+            {
+                _cache.SaveSsoToken(token, ssoCacheDirectory);
+            }
+
+            public Task SaveSsoTokenAsync(SsoToken token, string ssoCacheDirectory, CancellationToken cancellationToken = default)
+            {
+                return _cache.SaveSsoTokenAsync(token, ssoCacheDirectory, cancellationToken);
+            }
+
+            public bool TryGetSsoToken(SSOTokenManagerGetTokenOptions getSsoTokenOptions, string ssoCacheDirectory, out SsoToken ssoToken)
+            {
+                var tokenFound = _cache.TryGetSsoToken(getSsoTokenOptions, ssoCacheDirectory, out ssoToken);
+
+                if (tokenFound && !VerifyCachedMatchesOptions(getSsoTokenOptions, ssoToken))
+                {
+                    ssoToken = null;
+                    return false;
+                }
+
+                return tokenFound;
+            }
+
+            public async Task<TryResponse<SsoToken>> TryGetSsoTokenAsync(SSOTokenManagerGetTokenOptions getSsoTokenOptions, string ssoCacheDirectory, CancellationToken cancellationToken = default)
+            {
+                var tryResponse = await _cache.TryGetSsoTokenAsync(getSsoTokenOptions, ssoCacheDirectory, cancellationToken);
+
+                if (tryResponse.Success && !VerifyCachedMatchesOptions(getSsoTokenOptions, tryResponse.Value))
+                {
+                    tryResponse.Value = null;
+                    tryResponse.Success = false;
+                }
+
+                return tryResponse;
+            }
+
+            private bool VerifyCachedMatchesOptions(SSOTokenManagerGetTokenOptions getSsoTokenOptions, SsoToken ssoToken)
+            {
+                // See SsoTokenUtils in AWSSDK, but session is not stored in JSON, so do not compare session here
+                return ssoToken.StartUrl == getSsoTokenOptions.StartUrl &&
+                    ssoToken.Region == getSsoTokenOptions.Region;
+            }
         }
     }
 }
