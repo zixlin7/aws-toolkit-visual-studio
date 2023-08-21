@@ -70,15 +70,26 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         {
             // Touch the credentials file or OpenInEditor will fail with an error if it doesn't exist
             var credentialsFilePath = new SharedCredentialsFile().FilePath;
-            Touch(credentialsFilePath);
+            EnsureFileExists(credentialsFilePath);
             _toolkitContext.ToolkitHost.OpenInEditor(credentialsFilePath);
             OnCredentialsFileOpened();
         }
 
-        private void Touch(string path)
+        private void EnsureFileExists(string path)
         {
-            using (var _ = File.Open(path, FileMode.OpenOrCreate))
-            { }
+            if (!File.Exists(path) || new FileInfo(path).Length == 0)
+            {
+                File.WriteAllText(path,
+@"# AWS credentials file used by AWS CLI, SDKs, and tools.
+# Created by AWS Toolkit for Visual Studio. https://aws.amazon.com/visualstudio/
+#
+# Each [section] in this file declares a named ""profile"", which can be selected
+# in tools like AWS Toolkit to choose which credentials you want to use.
+#
+# See also:
+#   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+#   https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html");
+            }
         }
         #endregion
 
