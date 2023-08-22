@@ -238,7 +238,10 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
                 ci.FactoryId == SDKCredentialProviderFactory.SdkProfileFactoryId ||
                 ci.FactoryId == SharedCredentialProviderFactory.SharedProfileFactoryId);
 
-            return credIds.FirstOrDefault(ci => ci.ProfileName == "default") ?? credIds.FirstOrDefault();
+            return
+                _toolkitContext.ConnectionManager.ActiveCredentialIdentifier ??
+                credIds.FirstOrDefault(ci => ci.ProfileName == "default") ??
+                credIds.FirstOrDefault();
         }
     }
 }
