@@ -48,21 +48,5 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             set => SetProperty(ref _selectedCredentialFileType, value);
         }
         #endregion
-
-        private ICommand _openCredentialsFileCommand;
-
-        public ICommand OpenCredentialsFileCommand
-        {
-            get => _openCredentialsFileCommand;
-            private set => SetProperty(ref _openCredentialsFileCommand, value);
-        }
-
-        public override async Task InitializeAsync()
-        {
-            await base.InitializeAsync();
-
-            OpenCredentialsFileCommand = new RelayCommand(parameter =>
-                _addEditProfileWizard.OpenCredentialsFile());
-        }
     }
 }

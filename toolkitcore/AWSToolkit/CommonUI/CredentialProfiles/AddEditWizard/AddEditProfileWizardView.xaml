@@ -32,6 +32,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -40,15 +41,25 @@
             Margin="0 0 0 6"
             FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
             Text="Setup a Profile to Authenticate" />
-
+       
         <ProgressBar
             Visibility="{Binding InProgress, Converter={StaticResource FalseToHiddenConverter}}"
             Grid.Row="1"
             Height="3"
             IsIndeterminate="True" />
 
-        <ScrollViewer
+        <TextBlock
             Grid.Row="2"
+            Margin="0 5 0 0"
+            FontWeight="Normal">
+            <Hyperlink
+                Command="{Binding OpenCredentialsFileCommand}">
+                Edit credentials file directly...
+            </Hyperlink>
+        </TextBlock>
+
+        <ScrollViewer
+            Grid.Row="3"
             Padding="0 0 12 0"
             VerticalScrollBarVisibility="Auto">
             <StackPanel>

@@ -66,17 +66,26 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             CredentialsFileOpened?.Invoke(this, e ?? CredentialsFileOpenedEventArgs.Empty);
         }
 
-        public void OpenCredentialsFile()
+        private ICommand _openCredentialsFileCommand;
+
+        public ICommand OpenCredentialsFileCommand
         {
-            // Touch the credentials file or OpenInEditor will fail with an error if it doesn't exist
-            var credentialsFilePath = new SharedCredentialsFile().FilePath;
-            EnsureFileExists(credentialsFilePath);
-            _toolkitContext.ToolkitHost.OpenInEditor(credentialsFilePath);
+            get => _openCredentialsFileCommand;
+            private set => SetProperty(ref _openCredentialsFileCommand, value);
+        }
+
+        private void OpenCredentialsFile(object parameter)
+        {
+            var shared = new SharedCredentialsFile();
+            OpenFileInEditor(shared.ConfigFilePath);
+            OpenFileInEditor(shared.FilePath);
+
             OnCredentialsFileOpened();
         }
 
-        private void EnsureFileExists(string path)
+        private void OpenFileInEditor(string path)
         {
+            // Touch the credentials file or OpenInEditor will fail with an error if it doesn't exist
             if (!File.Exists(path) || new FileInfo(path).Length == 0)
             {
                 File.WriteAllText(path,
@@ -90,6 +99,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 #   https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
 #   https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html");
             }
+
+            _toolkitContext.ToolkitHost.OpenInEditor(path);
         }
         #endregion
 
@@ -197,6 +208,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             await base.InitializeAsync();
 
             OpenLogsCommand = new OpenToolkitLogsCommand(_toolkitContext);
+            OpenCredentialsFileCommand = new RelayCommand(OpenCredentialsFile);
+
         }
 
         private void RecordAddMetric(ActionResults actionResults, BaseMetricSource source)
