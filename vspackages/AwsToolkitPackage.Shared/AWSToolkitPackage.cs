@@ -101,6 +101,8 @@ using Amazon.AWSToolkit.VisualStudio.ArmPreview;
 using Amazon.AWSToolkit.Notifications;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.LanguageServer.Client;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -655,13 +657,27 @@ namespace Amazon.AWSToolkit.VisualStudio
                         ShowFirstRun();
                     });
 
+                // TODO : IDE-11469 : phase out SignalShellInitializationComplete by replacing reliance on static globals with MEF & IToolkitContextProvider
                 ToolkitFactory.SignalShellInitializationComplete();
+                await InitializeToolkitContextProviderAsync();
                 RunLogCleanupAsync().LogExceptionAndForget();
             }
             finally
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        /// <summary>
+        /// Makes the ToolkitContext object available to MEF components (through IToolkitContextProvider)
+        /// </summary>
+        private async Task InitializeToolkitContextProviderAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+            var componentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
+
+            var toolkitContextProvider = componentModel.GetService<IToolkitContextProvider>() as ToolkitContextProvider;
+            toolkitContextProvider?.Initialize(_toolkitContext);
         }
 
         private async Task RunLogCleanupAsync()

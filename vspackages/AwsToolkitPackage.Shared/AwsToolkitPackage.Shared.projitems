@@ -102,6 +102,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Services\AWSLegacyDeploymentPersistenceService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\AWSToolkitShellProviderService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ToolkitContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
