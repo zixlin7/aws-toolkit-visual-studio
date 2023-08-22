@@ -101,6 +101,8 @@ using Amazon.AWSToolkit.VisualStudio.ArmPreview;
 using Amazon.AWSToolkit.Notifications;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
+using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+using AwsToolkit.VsSdk.Common.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.LanguageServer.Client;
 
@@ -151,10 +153,15 @@ namespace Amazon.AWSToolkit.VisualStudio
                            "cfproj",
                            ".\\NullPath",
                            LanguageVsTemplate = "AWS")]
-    [ProvideOptionPage(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true)]
-    [ProvideProfile(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true, DescriptionResourceID = 150)]
-    [ProvideOptionPage(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true)]
-    [ProvideProfile(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true, DescriptionResourceID = 150)]
+    [ProvideOptionPage(typeof(GeneralOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.General, 150, 160, true)]
+    [ProvideProfile(typeof(GeneralOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.General, 150, 160, true, DescriptionResourceID = 150)]
+    [ProvideOptionPage(typeof(ProxyOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.Proxy, 150, 170, true)]
+    [ProvideProfile(typeof(ProxyOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.Proxy, 150, 170, true, DescriptionResourceID = 150)]
+#if VS2022_OR_LATER
+    // Show CodeWhisperer Settings in VS "Tools > Options" dialog
+    [ProvideOptionPage(typeof(CodeWhispererSettingsProvider), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.CodeWhisperer, 0, 0, true)]
+    [ProvideProfile(typeof(CodeWhispererSettingsProvider), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.CodeWhisperer, 0, 0, true)]
+#endif
     [ProvideToolWindow(typeof(Amazon.AWSToolkit.VisualStudio.LogGroupsToolWindow), Style = VsDockStyle.Tabbed,
         Orientation = ToolWindowOrientation.Right,
         Transient = true,
