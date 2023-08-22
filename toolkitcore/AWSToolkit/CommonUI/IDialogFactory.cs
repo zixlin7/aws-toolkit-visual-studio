@@ -1,5 +1,6 @@
 ﻿using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -20,6 +21,6 @@ namespace Amazon.AWSToolkit.CommonUI
         ICloneCodeCommitRepositoryDialog CreateCloneCodeCommitRepositoryDialog();
         ICloneCodeCatalystRepositoryDialog CreateCloneCodeCatalystRepositoryDialog();
         ISsoLoginDialog CreateSsoLoginDialog();
-        ICredentialProfileDialog CreateCredentialProfileDialog();
+        ICredentialProfileDialog CreateCredentialProfileDialog(BaseMetricSource saveMetricSource);
     }
 }

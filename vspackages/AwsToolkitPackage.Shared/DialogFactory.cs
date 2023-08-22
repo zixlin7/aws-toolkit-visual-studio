@@ -4,6 +4,7 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
 using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 using AwsToolkit.VsSdk.Common.CommonUI;
 using AwsToolkit.VsSdk.Common.CommonUI.Ecr;
@@ -138,10 +139,10 @@ namespace Amazon.AWSToolkit.VisualStudio
             return new SsoLoginDialog(_toolkitContext);
         }
 
-        public ICredentialProfileDialog CreateCredentialProfileDialog()
+        public ICredentialProfileDialog CreateCredentialProfileDialog(BaseMetricSource saveMetricSource)
         {
             var dialog = new CredentialProfileDialog();
-            Mvvm.SetViewModel(dialog, new CredentialProfileDialogViewModel(_toolkitContext));
+            Mvvm.SetViewModel(dialog, new CredentialProfileDialogViewModel(_toolkitContext, saveMetricSource));
             return dialog;
         }
     }

@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using AWSToolkit.Tests.Credentials.Core;
@@ -43,7 +44,8 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
             _sut = new AddEditProfileWizardViewModel
             {
-                ServiceProvider = _serviceProvider
+                ServiceProvider = _serviceProvider,
+                SaveMetricSource = CommonMetricSources.AwsExplorerMetricSource.ServiceNode // Doesn't matter, not enabling telemetry anyway
             };
         }
 
