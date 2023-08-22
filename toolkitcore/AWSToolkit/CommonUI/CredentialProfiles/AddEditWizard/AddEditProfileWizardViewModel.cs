@@ -163,7 +163,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             }
             finally
             {
-                RecordAddMetric(actionResults, MetricSources.AddEditProfileWizardViewModelMetricSource.AddEditProfileWizard);
+                RecordAddMetric(actionResults);
                 InProgress = false;
             }
         }
@@ -212,15 +212,23 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         }
 
-        private void RecordAddMetric(ActionResults actionResults, BaseMetricSource source)
+        public BaseMetricSource SaveMetricSource { get; set; }
+
+        private void RecordAddMetric(ActionResults actionResults)
         {
+#if DEBUG
+            if (SaveMetricSource == null)
+            {
+                throw new InvalidOperationException($"{nameof(SaveMetricSource)} must be set by wizard host before calling save.");
+            }
+#endif
             var accountId = _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
 
             var data = actionResults.CreateMetricData<AwsModifyCredentials>(accountId, MetadataValue.NotApplicable);
             data.Result = actionResults.AsTelemetryResult();
             data.CredentialModification = CredentialModification.Add;
-            data.Source = source.Location;
-            data.ServiceType = source.Service;
+            data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+            data.ServiceType = SaveMetricSource?.Service ?? MetadataValue.NotSet;
 
             _toolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
         }

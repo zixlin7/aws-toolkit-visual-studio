@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
 {
@@ -34,5 +35,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
         event EventHandler<CredentialsFileOpenedEventArgs> CredentialsFileOpened;
 
         event EventHandler<ConnectionSettingsChangeArgs> ConnectionSettingsChanged;
+
+        BaseMetricSource SaveMetricSource { get; set; }
     }
 }

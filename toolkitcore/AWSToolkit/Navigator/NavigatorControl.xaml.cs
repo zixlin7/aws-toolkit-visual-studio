@@ -369,7 +369,7 @@ namespace Amazon.AWSToolkit.Navigator
             }
             else
             {
-                var dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateCredentialProfileDialog();
+                var dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateCredentialProfileDialog(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
                 if (!dialog.Show())
                 {
                     RecordAwsModifyCredentialsMetric(ActionResults.CreateCancelled(), CredentialModification.Add);
@@ -527,10 +527,7 @@ namespace Amazon.AWSToolkit.Navigator
 
             try
             {
-                // TODO: IDE-10791 Remove legacy UX
-                var command = ToolkitSettings.Instance.UseLegacyAccountUx ?
-                    new LegacyEditAccountController(_toolkitContext) :
-                    new EditAccountController(_toolkitContext) as IContextCommand;
+                var command = new LegacyEditAccountController(_toolkitContext);
                 var results = command.Execute(viewModel);
                 RecordAwsModifyCredentialsMetric(results, CredentialModification.Edit);
             }
