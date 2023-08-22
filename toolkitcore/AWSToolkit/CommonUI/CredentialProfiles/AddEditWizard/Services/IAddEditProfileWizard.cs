@@ -29,8 +29,6 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
 
         bool InProgress { get; set; }
 
-        void OpenCredentialsFile();
-
         Task SaveAsync(ProfileProperties profileProperties, CredentialFileType fileType, bool changeConnectionSettings = true);
 
         event EventHandler<CredentialsFileOpenedEventArgs> CredentialsFileOpened;

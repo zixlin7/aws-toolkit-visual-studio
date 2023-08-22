@@ -67,43 +67,6 @@
 
         <Expander
             Margin="0 9 0 0"
-            Background="Transparent"
-            HorizontalAlignment="Stretch">
-            <StackPanel Margin="20 0 0 0">
-                <ComboBox
-                    Margin="0 5 0 0"
-                    FontWeight="Normal"
-                    DisplayMemberPath="Key"
-                    IsEnabled="False"
-                    ItemsSource="{Binding CredentialFileTypes}"
-                    SelectedValuePath="Value"
-                    SelectedValue="{Binding SelectedCredentialFileType}" />
-                <TextBlock
-                    Margin="0 5 0 0"
-                    FontWeight="Normal">
-                    <Hyperlink
-                        Command="{Binding OpenCredentialsFileCommand}">
-                        Edit credentials file directly...
-                    </Hyperlink>
-                </TextBlock>
-            </StackPanel>
-            <Expander.Header>
-                <WrapPanel>
-                    <TextBlock
-                        Text="Storage Location" />
-                    <commonUi:HelpHyperlinkPopup 
-                        Background="Transparent">
-                        <TextBlock 
-                            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                            TextWrapping="WrapWithOverflow"
-                            Text="With the Shared Credentials file, credentials will be added as a profile to your local %home-directory%\aws\credentials file and be accessible to all AWS SDKs and tools." />
-                    </commonUi:HelpHyperlinkPopup>
-                </WrapPanel>
-            </Expander.Header>            
-        </Expander>
-
-        <Expander
-            Margin="0 9 0 0"
             HorizontalAlignment="Stretch"
             Background="Transparent">
             <controls:RegionSelector

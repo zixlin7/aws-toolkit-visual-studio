@@ -124,23 +124,13 @@
             Margin="0 9 0 0"
             Background="Transparent"
             HorizontalAlignment="Stretch">
-            <StackPanel Margin="20 0 0 0">
-                <ComboBox
-                    Margin="0 5 0 0"
-                    FontWeight="Normal"
-                    DisplayMemberPath="Key"
-                    ItemsSource="{Binding CredentialFileTypes}"
-                    SelectedValuePath="Value"
-                    SelectedValue="{Binding SelectedCredentialFileType}" />
-                <TextBlock
-                    Margin="0 5 0 0"
-                    FontWeight="Normal">
-                    <Hyperlink
-                        Command="{Binding OpenCredentialsFileCommand}">
-                        Edit credentials file directly...
-                    </Hyperlink>
-                </TextBlock>
-            </StackPanel>
+            <ComboBox
+                Margin="20 5 0 0"
+                FontWeight="Normal"
+                DisplayMemberPath="Key"
+                ItemsSource="{Binding CredentialFileTypes}"
+                SelectedValuePath="Value"
+                SelectedValue="{Binding SelectedCredentialFileType}" />
             <Expander.Header>
                 <WrapPanel>
                     <TextBlock
