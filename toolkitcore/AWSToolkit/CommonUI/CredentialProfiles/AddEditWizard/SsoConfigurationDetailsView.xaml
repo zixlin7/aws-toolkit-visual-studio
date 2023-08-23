@@ -8,6 +8,7 @@
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
     xmlns:controls="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls"
     themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d">
     
@@ -21,9 +22,9 @@
                 <TextBlock 
                     Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
                     TextWrapping="WrapWithOverflow">
-                    <Run Text="TODO: Add description explaining how these two are different (short term vs long term)."></Run>
+                    <Run Text="Name of this profile stored in the local configuration file."></Run>
                     <commonUi:BrowserHyperLink
-                        NavigateUri="https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html">
+                        NavigateUriFromStatic="{x:Static urls:AwsUrls.IamIdC}">
                         <Run Text="Learn more about IAM Identity center" />
                     </commonUi:BrowserHyperLink>
                 </TextBlock>
@@ -42,14 +43,14 @@
             <TextBlock
                 HorizontalAlignment="Left"
                 TextWrapping="WrapWithOverflow"
-                Text="Sign-in URL" />
+                Text="Start URL" />
             <commonUi:HelpHyperlinkPopup>
                 <TextBlock 
                     Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
                     TextWrapping="WrapWithOverflow">
-                    <Run Text="TODO: Add description for sso start url" />
+                    <Run Text="The Start URL for your organization provided by an admin or help desk." />
                     <commonUi:BrowserHyperLink
-                        NavigateUri="https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html">
+                        NavigateUriFromStatic="{x:Static urls:AwsUrls.IamIdC}">
                         <Run Text="Learn more about IAM Identity center" />
                     </commonUi:BrowserHyperLink>
                 </TextBlock>
@@ -85,9 +86,8 @@
                         Background="Transparent">
                         <TextBlock 
                             Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                            TextWrapping="WrapWithOverflow">
-                            <Run Text="TODO: Add description and hyperlink if required" />
-                        </TextBlock>
+                            TextWrapping="WrapWithOverflow"
+                            Text="Specifies the AWS Region to send requests to for commands requested using this profile." />
                     </commonUi:HelpHyperlinkPopup>
                 </WrapPanel>
             </Expander.Header>
@@ -114,7 +114,7 @@
                         <TextBlock 
                             Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
                             TextWrapping="WrapWithOverflow"
-                            Text="TODO: Add description and hyperlink if required. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." />
+                            Text="Specifies the AWS Region that contains the AWS access portal host. This is separate from, and can be different than Profile Region." />
                     </commonUi:HelpHyperlinkPopup>
                 </WrapPanel>
             </Expander.Header>            
