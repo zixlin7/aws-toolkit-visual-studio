@@ -9,6 +9,7 @@
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls"
     themes:ToolkitThemes.UseToolkitTheme="True"    
     mc:Ignorable="d">
 
@@ -27,8 +28,13 @@
             <commonUi:HelpHyperlinkPopup>
                 <TextBlock 
                     Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                    TextWrapping="WrapWithOverflow"
-                    Text="TODO: Add description for profile name" />
+                    TextWrapping="WrapWithOverflow">
+                    <Run>The authentication method used to validate this profile's credentials.</Run>
+                    <commonUi:BrowserHyperLink
+                        NavigateUriFromStatic="{x:Static urls:AwsUrls.UserGuideAuth}">
+                        <Run Text="Learn more about authentication options" />
+                    </commonUi:BrowserHyperLink>
+                </TextBlock>
             </commonUi:HelpHyperlinkPopup>
         </WrapPanel>
         <ComboBox
