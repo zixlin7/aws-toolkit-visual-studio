@@ -165,6 +165,14 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             private set => SetProperty(ref _openTelemetryDisclosureCommand, value);
         }
 
+        private ICommand _openLogsCommand;
+
+        public ICommand OpenLogsCommand
+        {
+            get => _openLogsCommand;
+            private set => SetProperty(ref _openLogsCommand, value);
+        }
+
         internal GettingStartedViewModel(ToolkitContext toolkitContext)
             : base(toolkitContext) { }
 
@@ -178,6 +186,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
             OpenAwsExplorerAsyncCommand = new OpenAwsExplorerCommand(_toolkitContext);
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(_toolkitContext);
+            OpenLogsCommand = new OpenToolkitLogsCommand(_toolkitContext);
 
             Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(_toolkitContext, url);
             OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);

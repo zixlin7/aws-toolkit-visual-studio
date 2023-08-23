@@ -100,68 +100,114 @@
                     Tag="{x:Static local:GettingStartedStep.GettingStarted}">
                     <commonUi:StatusBox
                         Status="{Binding Status}">
-                        <DockPanel
-                            Margin="12"
-                            LastChildFill="True">
-                            <Button
-                                Margin="6 0 0 0"
-                                DockPanel.Dock="Right"
-                                MaxHeight="40"
-                                Command="{Binding OpenAwsExplorerAsyncCommand}"
-                                Content="Open AWS Explorer"
-                                Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}" />
-                            <StackPanel>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <images:VsImage 
-                                        Grid.Column="0"
-                                        Height="16"
-                                        Width="16"
-                                        VerticalAlignment="Center">
-                                        <images:VsImage.Style>
-                                            <Style TargetType="{x:Type images:VsImage}">
-                                                <Setter 
-                                                    Property="Source"
-                                                    Value="{Binding Source={StaticResource VsImages}, Path=StatusOK}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Status}" Value="False">
-                                                        <Setter 
-                                                            Property="Source"
-                                                            Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </images:VsImage.Style>
-                                    </images:VsImage>
+                        <commonUi:StatusBox.Style>
+                            <Style TargetType="{x:Type commonUi:StatusBox}">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding Status}"
+                                        Value="False">
+                                        <Setter
+                                            Property="Content">
+                                            <Setter.Value>
+                                                <StackPanel
+                                                    Margin="12">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
 
-                                    <WrapPanel
-                                        Grid.Column="1">
-                                        <TextBlock
-                                            Margin="3 0 0 0"
-                                            TextWrapping="Wrap"
-                                            FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}">
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}Connected to {0}: {1}">
-                                                    <Binding Path="CredentialTypeName" FallbackValue="(not available)" />
-                                                    <Binding Path="CredentialName" FallbackValue="(not available)" />
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                    </WrapPanel>
-                                </Grid>
+                                                        <images:VsImage 
+                                                            Grid.Column="0"
+                                                            Height="16"
+                                                            Source="{Binding Source={StaticResource VsImages}, Path=StatusError}"
+                                                            Width="16"
+                                                            VerticalAlignment="Center" />
 
-                                <TextBlock
-                                    Grid.Row="1"
-                                    Grid.Column="0"
-                                    TextWrapping="WrapWithOverflow"
-                                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}"
-                                    Text="Open the AWS Explorer to add and switch between additional profiles." />
-                            </StackPanel>
-                        </DockPanel>
+                                                        <TextBlock
+                                                            Grid.Column="1"
+                                                            Margin="3 0 0 0"
+                                                            TextWrapping="Wrap"
+                                                            FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                                                            Text="An error has occurred while attempting to connect to your profile." />
+                                                    </Grid>
+
+                                                    <TextBlock
+                                                        Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        TextWrapping="WrapWithOverflow"
+                                                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorTextBrushKey}}">
+                                                        <TextBlock.Inlines>
+                                                            <Run>The Toolkit was unable to connect to your AWS profile and your local AWS credentials
+                                                            file hasn’t been updated. Please check the information below to connect to AWS and update
+                                                            your local AWS credentials file.  For additional details about this error</Run>
+                                                            <Hyperlink Command="{Binding OpenLogsCommand}">open logs.</Hyperlink>
+                                                        </TextBlock.Inlines>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding Status}"
+                                        Value="True">
+                                        <Setter
+                                            Property="Content">
+                                            <Setter.Value>
+                                                <DockPanel
+                                                    Margin="12"
+                                                    LastChildFill="True">
+                                                    <Button
+                                                        Margin="6 0 0 0"
+                                                        DockPanel.Dock="Right"
+                                                        MaxHeight="40"
+                                                        Command="{Binding OpenAwsExplorerAsyncCommand}"
+                                                        Content="Open AWS Explorer"
+                                                        Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}" />
+                                                    <StackPanel>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <images:VsImage 
+                                                                Grid.Column="0"
+                                                                Height="16"
+                                                                Source="{Binding Source={StaticResource VsImages}, Path=StatusOK}"
+                                                                Width="16"
+                                                                VerticalAlignment="Center" />
+
+                                                            <WrapPanel
+                                                                Grid.Column="1">
+                                                                <TextBlock
+                                                                    Margin="3 0 0 0"
+                                                                    TextWrapping="Wrap"
+                                                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}">
+                                                                    <TextBlock.Text>
+                                                                        <MultiBinding StringFormat="{}Connected to {0}: {1}">
+                                                                            <Binding Path="CredentialTypeName" FallbackValue="(not available)" />
+                                                                            <Binding Path="CredentialName" FallbackValue="(not available)" />
+                                                                        </MultiBinding>
+                                                                    </TextBlock.Text>
+                                                                </TextBlock>
+                                                            </WrapPanel>
+                                                        </Grid>
+
+                                                        <TextBlock
+                                                            Grid.Row="1"
+                                                            Grid.Column="0"
+                                                            TextWrapping="WrapWithOverflow"
+                                                            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}"
+                                                            Text="Open the AWS Explorer to add and switch between additional profiles." />
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </commonUi:StatusBox.Style>
                     </commonUi:StatusBox>
 
                     <Border BorderThickness="1" Margin="0 12 0 0">
