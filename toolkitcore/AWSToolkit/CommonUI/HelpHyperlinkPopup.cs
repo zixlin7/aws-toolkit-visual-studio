@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.CommonUI
     /// </summary>
     [TemplatePart(Name = _toolTipPopupPartName, Type = typeof(Popup))]
     [TemplatePart(Name = _helpImagePartName, Type = typeof(VsImage))]
-    public partial class HelpHyperlinkPopup : ContentControl
+    public class HelpHyperlinkPopup : ContentControl
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(HelpHyperlinkPopup));
 
@@ -26,9 +26,11 @@ namespace Amazon.AWSToolkit.CommonUI
 
         protected VsImage _helpImage { get; set; }
 
-        public HelpHyperlinkPopup()
+        static HelpHyperlinkPopup()
         {
-            InitializeComponent();
+            DefaultStyleKeyProperty.OverrideMetadata(
+                typeof(HelpHyperlinkPopup),
+                new FrameworkPropertyMetadata(typeof(HelpHyperlinkPopup)));
         }
 
         public override void OnApplyTemplate()
@@ -36,7 +38,11 @@ namespace Amazon.AWSToolkit.CommonUI
             base.OnApplyTemplate();
 
             _toolTipPopup = GetTemplateChild<Popup>(_toolTipPopupPartName);
+            _toolTipPopup.MouseLeave += OnMouseLeave;
+
             _helpImage = GetTemplateChild<VsImage>(_helpImagePartName);
+            _helpImage.MouseEnter += OnMouseEnter;
+            _helpImage.MouseLeave += OnMouseLeave;
         }
 
         private T GetTemplateChild<T>(string name) where T : DependencyObject
