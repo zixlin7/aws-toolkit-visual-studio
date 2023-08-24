@@ -53,7 +53,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 return;
             }
 
-            var allProfiles = _toolkitContext.CredentialManager.GetCredentialIdentifiers()
+            var allProfiles = ToolkitContext.CredentialManager.GetCredentialIdentifiers()
                 .Where(credId => credId.FactoryId.Equals(GetFactoryId(SelectedCredentialFileType)));
             var result = allProfiles.Select(credId => credId.ProfileName).Any(x => x.Equals(ProfileName));
 
@@ -160,13 +160,13 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             {
                 var msg = "Unable to import CSV file.";
                 _logger.Error(msg, ex);
-                _toolkitContext.ToolkitHost.ShowError(msg);
+                ToolkitContext.ToolkitHost.ShowError(msg);
             }
         }
 
         private bool PromptForImportCsvFile(out string filename)
         {
-            var dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateOpenFileDialog();
+            var dialog = ToolkitContext.ToolkitHost.GetDialogFactory().CreateOpenFileDialog();
             dialog.CheckFileExists = true;
             dialog.CheckPathExists = true;
             dialog.DefaultExt = ".csv";
@@ -208,11 +208,11 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         {
             await base.InitializeAsync();
 
-            ProfileRegionSelectorMixin = new RegionSelectorMixin(_toolkitContext, region => ProfileProperties.Region = region.Id);
+            ProfileRegionSelectorMixin = new RegionSelectorMixin(ToolkitContext, region => ProfileProperties.Region = region.Id);
 
             ImportCsvFileCommand = new RelayCommand(ImportCsvFile);
             SaveCommand = new AsyncRelayCommand(CanSave, SaveAsync);
-            OpenIamUsersConsoleCommand = OpenUrlCommandFactory.Create(_toolkitContext, _iamUserConsoleUrl);
+            OpenIamUsersConsoleCommand = OpenUrlCommandFactory.Create(ToolkitContext, _iamUserConsoleUrl);
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -233,7 +233,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             {
                 var msg = "Failed to save profile.";
                 _logger.Error(msg, ex);
-                _toolkitContext.ToolkitHost.ShowError(msg);
+                ToolkitContext.ToolkitHost.ShowError(msg);
             }
             finally
             {

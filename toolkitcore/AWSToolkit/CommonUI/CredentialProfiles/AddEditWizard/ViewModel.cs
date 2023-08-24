@@ -77,7 +77,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         /// may be used by many of their subclasses. These are typically added as expression-bodied members
         /// with the service type name (without the leading "I" for interfaces) as the property name.
         /// </remarks>
-        protected ToolkitContext _toolkitContext => ServiceProvider.RequireService<ToolkitContext>();
+        public ToolkitContext ToolkitContext => ServiceProvider.RequireService<ToolkitContext>();
 
         /// <summary>
         /// Creates a new view model.
