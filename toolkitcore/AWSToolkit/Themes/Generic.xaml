@@ -42,6 +42,7 @@
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/DualListBox.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/StatusBox.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/RegionSelector.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/HelpHyperlinkPopup.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
