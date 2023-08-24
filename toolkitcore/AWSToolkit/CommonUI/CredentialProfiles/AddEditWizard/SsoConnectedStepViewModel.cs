@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         {
             DataErrorInfo.ClearErrors(nameof(SelectedSsoAccountRoles));
 
-            var profileNames = _toolkitContext.CredentialManager.GetCredentialIdentifiers()
+            var profileNames = ToolkitContext.CredentialManager.GetCredentialIdentifiers()
                 .Where(credId => credId.FactoryId.Equals(SharedCredentialProviderFactory.SharedProfileFactoryId))
                 .Select(credId => credId.ProfileName);
 
@@ -111,7 +111,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             {
                 var msg = "Failed to save SSO profiles.";
                 _logger.Error(msg, ex);
-                _toolkitContext.ToolkitHost.ShowError(msg);
+                ToolkitContext.ToolkitHost.ShowError(msg);
             }
             finally
             {
@@ -203,7 +203,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
             if (!SsoAccountRoles.Any())
             {
-                _toolkitContext.ToolkitHost.ShowError("No roles found, please verify settings are correct.");
+                ToolkitContext.ToolkitHost.ShowError("No roles found, please verify settings are correct.");
                 _addEditProfileWizard.CurrentStep = WizardStep.Configuration;
             }
 

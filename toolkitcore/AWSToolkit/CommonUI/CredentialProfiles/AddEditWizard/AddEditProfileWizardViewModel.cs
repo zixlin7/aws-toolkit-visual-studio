@@ -100,7 +100,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 #   https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html");
             }
 
-            _toolkitContext.ToolkitHost.OpenInEditor(path);
+            ToolkitContext.ToolkitHost.OpenInEditor(path);
         }
         #endregion
 
@@ -140,14 +140,14 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 var credId = fileType == CredentialFileType.Shared ?
                 new SharedCredentialIdentifier(profileProperties.Name) as ICredentialIdentifier :
                 new SDKCredentialIdentifier(profileProperties.Name);
-                var region = _toolkitContext.RegionProvider.GetRegion(profileProperties.Region);
+                var region = ToolkitContext.RegionProvider.GetRegion(profileProperties.Region);
 
                 using (var cancelSource = new CancellationTokenSource(_saveTimeoutMillis))
                 {
-                    await _toolkitContext.CredentialSettingsManager.CreateProfileAsync(credId, profileProperties, cancelSource.Token);
+                    await ToolkitContext.CredentialSettingsManager.CreateProfileAsync(credId, profileProperties, cancelSource.Token);
                     if (changeConnectionSettings)
                     {
-                        await _toolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credId, region, cancelSource.Token);
+                        await ToolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credId, region, cancelSource.Token);
                         OnConnectionSettingsChanged(credId, region);
                     }
                 }
@@ -163,7 +163,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             }
             finally
             {
-                RecordAddMetric(actionResults);
+                RecordAwsModifyCredentialsMetric(actionResults);
                 InProgress = false;
             }
         }
@@ -174,7 +174,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             {
                 try
                 {
-                    return ConnectionState.IsValid(await profileProperties.ValidateConnectionAsync(_toolkitContext, cancelSource.Token));
+                    return ConnectionState.IsValid(await profileProperties.ValidateConnectionAsync(ToolkitContext, cancelSource.Token));
                 }
                 catch (TaskCanceledException ex)
                 {
@@ -207,30 +207,79 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         {
             await base.InitializeAsync();
 
-            OpenLogsCommand = new OpenToolkitLogsCommand(_toolkitContext);
+            OpenLogsCommand = new OpenToolkitLogsCommand(ToolkitContext);
             OpenCredentialsFileCommand = new RelayCommand(OpenCredentialsFile);
 
         }
 
         public BaseMetricSource SaveMetricSource { get; set; }
 
-        private void RecordAddMetric(ActionResults actionResults)
+        private T CreateMetricData<T>(ActionResults actionResults) where T : BaseTelemetryEvent, new()
         {
 #if DEBUG
             if (SaveMetricSource == null)
             {
-                throw new InvalidOperationException($"{nameof(SaveMetricSource)} must be set by wizard host before calling save.");
+                throw new InvalidOperationException($"{nameof(SaveMetricSource)} must be set by wizard host.");
             }
 #endif
-            var accountId = _toolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
+            var accountId = ToolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
 
-            var data = actionResults.CreateMetricData<AwsModifyCredentials>(accountId, MetadataValue.NotApplicable);
+            return actionResults.CreateMetricData<T>(accountId, MetadataValue.NotApplicable);
+        }
+
+        private void RecordAwsModifyCredentialsMetric(ActionResults actionResults)
+        {
+            var data = CreateMetricData<AwsModifyCredentials>(actionResults);
             data.Result = actionResults.AsTelemetryResult();
             data.CredentialModification = CredentialModification.Add;
             data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
             data.ServiceType = SaveMetricSource?.Service ?? MetadataValue.NotSet;
 
-            _toolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
+            ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
         }
+
+    // TODO Add as part of IDE-11499 & IDE-11500
+    //    private void RecordAuthAddConnectionMetric(ActionResults actionResults)
+    //    {
+    //        var data = CreateMetricData<AuthAddConnection>(actionResults);
+    //        data.Attempts = 0;
+    //        data.CredentialSourceId = CredentialSourceId.IamIdentityCenter;
+    //        data.FeatureId = FeatureId.AwsExplorer;
+    //        data.InvalidInputFields = "";
+    //        data.IsAggregated = true;
+    //        data.Result = actionResults.AsTelemetryResult();
+    //        data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+
+    //        ToolkitContext.TelemetryLogger.RecordAuthAddConnection(data);
+    //    }
+
+    //    private void RecordAuthAddedConnectionsMetric(ActionResults actionResults)
+    //    {
+    //        var data = CreateMetricData<AuthAddedConnections>(actionResults);
+    //        data.Attempts = 0;
+    //        data.AuthConnectionsCount = 0;
+    //        data.EnabledAuthConnections = "";
+    //        data.NewAuthConnectionsCount = 0;
+    //        data.NewEnabledAuthConnections = "";
+    //        data.Result = actionResults.AsTelemetryResult();
+    //        data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+
+    //        ToolkitContext.TelemetryLogger.RecordAuthAddedConnections(data);
+    //    }
     }
+
+    //// See AuthFormId https://github.com/aws/aws-toolkit-vscode/blob/262bd392ae57fc61df9d429c3e6957103a52ebb8/src/auth/ui/vue/authForms/types.ts#L6
+    //public static class AuthConnectionTypes
+    //{
+    //    public const string IamCredentials = "credentials";
+    //    public const string IamIdentityCenterAwsExplorer = "identityCenterExplorer";
+    //}
+
+    //public static class InputFieldNames
+    //{
+    //    public const string ProfileName = "profileName";
+    //    public const string AccessKeyId = "accessKey";
+    //    public const string SecretKey = "secret";
+    //    public const string StartUrl = "startURL";
+    //}
 }

@@ -184,11 +184,11 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
             _addEditProfileWizard.SaveMetricSource = MetricSources.GettingStartedMetricSource.GettingStarted;
 
-            OpenAwsExplorerAsyncCommand = new OpenAwsExplorerCommand(_toolkitContext);
-            OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(_toolkitContext);
-            OpenLogsCommand = new OpenToolkitLogsCommand(_toolkitContext);
+            OpenAwsExplorerAsyncCommand = new OpenAwsExplorerCommand(ToolkitContext);
+            OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);
+            OpenLogsCommand = new OpenToolkitLogsCommand(ToolkitContext);
 
-            Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(_toolkitContext, url);
+            Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(ToolkitContext, url);
             OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);
             OpenDeployLambdaDocsCommand = openUrl(AwsUrls.DeployLambdaDocs);
             OpenDeployBeanstalkDocsCommand = openUrl(AwsUrls.DeployBeanstalkDocs);
@@ -220,11 +220,11 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private async Task ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier)
         {
-            var profileProperties = _toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-            var region = _toolkitContext.RegionProvider.GetRegion(profileProperties.Region ?? ToolkitRegion.DefaultRegionId);
+            var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+            var region = ToolkitContext.RegionProvider.GetRegion(profileProperties.Region ?? ToolkitRegion.DefaultRegionId);
             try
             {
-                var state = await _toolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credentialIdentifier, region);
+                var state = await ToolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credentialIdentifier, region);
                 Status = ConnectionState.IsValid(state);
             }
             catch (Exception ex)
@@ -236,7 +236,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private void ShowGettingStarted(ICredentialIdentifier credentialIdentifier)
         {
-            var profileProperties = _toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+            var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
 
             CredentialTypeName = profileProperties.GetCredentialType().GetDescription();
             CredentialName = credentialIdentifier.ProfileName;
@@ -245,12 +245,12 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private ICredentialIdentifier GetDefaultCredentialIdentifier()
         {
-            var credIds = _toolkitContext.CredentialManager.GetCredentialIdentifiers().Where(ci =>
+            var credIds = ToolkitContext.CredentialManager.GetCredentialIdentifiers().Where(ci =>
                 ci.FactoryId == SDKCredentialProviderFactory.SdkProfileFactoryId ||
                 ci.FactoryId == SharedCredentialProviderFactory.SharedProfileFactoryId);
 
             return
-                _toolkitContext.ConnectionManager.ActiveCredentialIdentifier ??
+                ToolkitContext.ConnectionManager.ActiveCredentialIdentifier ??
                 credIds.FirstOrDefault(ci => ci.ProfileName == "default") ??
                 credIds.FirstOrDefault();
         }

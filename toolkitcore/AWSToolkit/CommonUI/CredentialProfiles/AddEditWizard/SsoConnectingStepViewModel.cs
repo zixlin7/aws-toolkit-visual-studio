@@ -101,7 +101,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 .WithSessionName(p.SsoSession)
                 .WithStartUrl(p.SsoStartUrl)
                 .WithTokenProviderRegion(ssoRegion)
-                .WithToolkitShell(_toolkitContext.ToolkitHost)
+                .WithToolkitShell(ToolkitContext.ToolkitHost)
                 .Build();
 
             return Task.Run(async () =>
@@ -144,7 +144,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 }
                 catch (InvalidRequestException ex)
                 {
-                    _toolkitContext.ToolkitHost.ShowError("Unable to connect.  Verify SSO Start URL is correct.");
+                    ToolkitContext.ToolkitHost.ShowError("Unable to connect.  Verify SSO Start URL is correct.");
                 }
                 catch (Exception ex)
                 {

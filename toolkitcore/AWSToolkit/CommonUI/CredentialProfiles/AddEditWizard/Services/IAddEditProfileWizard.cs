@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
 
     public class CredentialsFileOpenedEventArgs : EventArgs
     {
-        public static readonly CredentialsFileOpenedEventArgs Empty = new CredentialsFileOpenedEventArgs();
+        public static new readonly CredentialsFileOpenedEventArgs Empty = new CredentialsFileOpenedEventArgs();
     }
 
     public interface IAddEditProfileWizard

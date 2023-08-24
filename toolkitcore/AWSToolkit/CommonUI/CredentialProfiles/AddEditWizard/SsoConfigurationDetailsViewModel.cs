@@ -52,7 +52,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 return;
             }
 
-            var allProfiles = _toolkitContext.CredentialManager.GetCredentialIdentifiers()
+            var allProfiles = ToolkitContext.CredentialManager.GetCredentialIdentifiers()
                 .Where(credId => credId.FactoryId.Equals(SharedCredentialProviderFactory.SharedProfileFactoryId));
             var result = allProfiles.Select(credId => credId.ProfileName).Any(x => x.Equals(ProfileName));
 
@@ -140,8 +140,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         {
             await base.InitializeAsync();
 
-            ProfileRegionSelectorMixin = new RegionSelectorMixin(_toolkitContext, region => ProfileProperties.Region = region.Id);
-            SsoRegionSelectorMixin = new RegionSelectorMixin(_toolkitContext, region => ProfileProperties.SsoRegion = region.Id);
+            ProfileRegionSelectorMixin = new RegionSelectorMixin(ToolkitContext, region => ProfileProperties.Region = region.Id);
+            SsoRegionSelectorMixin = new RegionSelectorMixin(ToolkitContext, region => ProfileProperties.SsoRegion = region.Id);
 
             ConnectToIamIdentityCenterCommand = new RelayCommand(CanConnectToIamIdentityCenter, ConnectToIamIdentityCenter);
 
