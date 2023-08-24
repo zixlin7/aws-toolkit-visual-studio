@@ -6,8 +6,13 @@
     <SharedGUID>6d5c0c8e-e5fd-44d4-94bc-00ed69a70eb6</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>AwsToolkit.CodeWhisperer.Shared</Import_RootNamespace>
+    <Import_RootNamespace>Amazon.AwsToolkit.CodeWhisperer</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ToolkitLspClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryptionInitialization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\CodeWhispererLspSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\ICodeWhispererLspSettingsRepository.cs" />
   </ItemGroup>
 </Project>

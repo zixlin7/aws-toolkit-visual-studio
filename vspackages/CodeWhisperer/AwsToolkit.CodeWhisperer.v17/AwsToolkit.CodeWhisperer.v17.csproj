@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <PropertyGroup>
@@ -11,6 +11,10 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Community.VisualStudio.Toolkit - Keep this version in sync with AwsToolkitPackage.v17.csproj -->
+    <PackageReference Include="Community.VisualStudio.Toolkit.17" ExcludeAssets="Runtime">
+      <Version>17.0.486</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Client" Version="17.0.5165" />
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.0.32112.339</Version>
@@ -22,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
+    <ProjectReference Include="..\..\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj" />
   </ItemGroup>
   <Import Project="..\AwsToolkit.CodeWhisperer.Shared\AwsToolkit.CodeWhisperer.Shared.projitems" Label="Shared" />
 </Project>
