@@ -641,6 +641,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 await InitializePublishToAwsAsync(hostInfo);
 
+                await UiClickMetric.InitializeAsync(_toolkitContext);
+
                 await ToolkitFactory.InitializeToolkit(
                     navigator,
                     _toolkitContext,

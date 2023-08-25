@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard"
+    xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
     xmlns:controls="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
@@ -25,7 +26,11 @@
                     <Run Text="Name of this profile stored in the local configuration file."></Run>
                     <commonUi:BrowserHyperLink
                         NavigateUriFromStatic="{x:Static urls:AwsUrls.IamIdC}">
-                        <Run Text="Learn more about IAM Identity center" />
+                        Learn more about IAM Identity center
+                        <wizBehaviors:UiClickMetric.Configure>
+                            <wizBehaviors:UiClickMetricConfig
+                                ElementId="auth_infoIAMIdentityCenter" />
+                        </wizBehaviors:UiClickMetric.Configure>                        
                     </commonUi:BrowserHyperLink>
                 </TextBlock>
             </commonUi:HelpHyperlinkPopup>            
@@ -51,7 +56,11 @@
                     <Run Text="The Start URL for your organization provided by an admin or help desk." />
                     <commonUi:BrowserHyperLink
                         NavigateUriFromStatic="{x:Static urls:AwsUrls.IamIdC}">
-                        <Run Text="Learn more about IAM Identity center" />
+                        Learn more about IAM Identity center
+                        <wizBehaviors:UiClickMetric.Configure>
+                            <wizBehaviors:UiClickMetricConfig
+                                ElementId="auth_infoIAMIdentityCenter" />
+                        </wizBehaviors:UiClickMetric.Configure>                        
                     </commonUi:BrowserHyperLink>
                 </TextBlock>
             </commonUi:HelpHyperlinkPopup>
