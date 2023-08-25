@@ -138,8 +138,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             try
             {
                 var credId = fileType == CredentialFileType.Shared ?
-                new SharedCredentialIdentifier(profileProperties.Name) as ICredentialIdentifier :
-                new SDKCredentialIdentifier(profileProperties.Name);
+                    new SharedCredentialIdentifier(profileProperties.Name) as ICredentialIdentifier :
+                    new SDKCredentialIdentifier(profileProperties.Name);
                 var region = ToolkitContext.RegionProvider.GetRegion(profileProperties.Region);
 
                 using (var cancelSource = new CancellationTokenSource(_saveTimeoutMillis))
@@ -168,19 +168,30 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             }
         }
 
+        private int _connectionAttempts = 0;
+
         internal async Task<bool> ValidateConnectionAsync(ProfileProperties profileProperties)
         {
+            ++_connectionAttempts;
+
             using (var cancelSource = new CancellationTokenSource(_validateConnectionTimeoutMillis))
             {
+                var actionResults = ActionResults.CreateFailed();
+
                 try
                 {
-                    return ConnectionState.IsValid(await profileProperties.ValidateConnectionAsync(ToolkitContext, cancelSource.Token));
+                    var isValid = ConnectionState.IsValid(await profileProperties.ValidateConnectionAsync(ToolkitContext, cancelSource.Token));
+                    actionResults = new ActionResults().WithSuccess(isValid);
                 }
                 catch (TaskCanceledException ex)
                 {
                     _logger.Error($"Unable to validate credentials for {profileProperties?.Name}.", ex);
-                    return false;
+                    actionResults = ActionResults.CreateCancelled();
                 }
+
+                RecordAuthAddConnectionMetric(actionResults);
+
+                return actionResults.Success;
             }
         }
         #endregion
@@ -238,48 +249,43 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
         }
 
-    // TODO Add as part of IDE-11499 & IDE-11500
-    //    private void RecordAuthAddConnectionMetric(ActionResults actionResults)
-    //    {
-    //        var data = CreateMetricData<AuthAddConnection>(actionResults);
-    //        data.Attempts = 0;
-    //        data.CredentialSourceId = CredentialSourceId.IamIdentityCenter;
-    //        data.FeatureId = FeatureId.AwsExplorer;
-    //        data.InvalidInputFields = "";
-    //        data.IsAggregated = true;
-    //        data.Result = actionResults.AsTelemetryResult();
-    //        data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+        private void RecordAuthAddConnectionMetric(ActionResults actionResults)
+        {
+            var data = CreateMetricData<AuthAddConnection>(actionResults);
+            data.Attempts = _connectionAttempts;
+            // Called from ValidateConnectionAsync which is always memory
+            data.CredentialSourceId = CredentialSourceId.Memory;
+            // When CodeWhisperer is implemented this will be variable
+            data.FeatureId = FeatureId.AwsExplorer;
+            // The access key ID/secret key fields can be detected from AmazonServiceException.ErrorCode where
+            // InvalidClientTokenId is a bad access key ID and SignatureDoesNotMatch is a bad secret key.
+            // This currently throws in AwsConnectionManager.PerformValidation.  There isn't a feasible way to
+            // get that information from there to here with the way the credential subsystem is written today.
+            // It's also not practical to emit this metric from that location as other fields that are known in
+            // this context are unavailable there.  InvalidInputFields cannot be set at this time.
+            data.InvalidInputFields = "";
+            data.IsAggregated = false;
+            // Same explanation as InvalidInputFields above.
+            data.Reason = "";
+            data.Result = actionResults.AsTelemetryResult();
+            data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
 
-    //        ToolkitContext.TelemetryLogger.RecordAuthAddConnection(data);
-    //    }
+            ToolkitContext.TelemetryLogger.RecordAuthAddConnection(data);
+        }
 
-    //    private void RecordAuthAddedConnectionsMetric(ActionResults actionResults)
-    //    {
-    //        var data = CreateMetricData<AuthAddedConnections>(actionResults);
-    //        data.Attempts = 0;
-    //        data.AuthConnectionsCount = 0;
-    //        data.EnabledAuthConnections = "";
-    //        data.NewAuthConnectionsCount = 0;
-    //        data.NewEnabledAuthConnections = "";
-    //        data.Result = actionResults.AsTelemetryResult();
-    //        data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+        // TODO Add as part of IDE-11500
+        //    private void RecordAuthAddedConnectionsMetric(ActionResults actionResults)
+        //    {
+        //        var data = CreateMetricData<AuthAddedConnections>(actionResults);
+        //        data.Attempts = _connectionAttempts;
+        //        data.AuthConnectionsCount = 0;
+        //        data.EnabledAuthConnections = "";
+        //        data.NewAuthConnectionsCount = 0;
+        //        data.NewEnabledAuthConnections = "";
+        //        data.Result = actionResults.AsTelemetryResult();
+        //        data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
 
-    //        ToolkitContext.TelemetryLogger.RecordAuthAddedConnections(data);
-    //    }
+        //        ToolkitContext.TelemetryLogger.RecordAuthAddedConnections(data);
+        //    }
     }
-
-    //// See AuthFormId https://github.com/aws/aws-toolkit-vscode/blob/262bd392ae57fc61df9d429c3e6957103a52ebb8/src/auth/ui/vue/authForms/types.ts#L6
-    //public static class AuthConnectionTypes
-    //{
-    //    public const string IamCredentials = "credentials";
-    //    public const string IamIdentityCenterAwsExplorer = "identityCenterExplorer";
-    //}
-
-    //public static class InputFieldNames
-    //{
-    //    public const string ProfileName = "profileName";
-    //    public const string AccessKeyId = "accessKey";
-    //    public const string SecretKey = "secret";
-    //    public const string StartUrl = "startURL";
-    //}
 }
