@@ -219,13 +219,16 @@
                         <StackPanel Margin="12">
                             <CheckBox
                                 Margin="6 0 0 0"
+                                Padding="0"
                                 IsChecked="{Binding CollectAnalytics}"
                                 VerticalContentAlignment="Top">
                                 <TextBlock
-                                    Margin="6 6 0 0"
+                                    Margin="6 0 0 0"
+                                    Padding="0"
                                     TextWrapping="Wrap"
                                     FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
-                                    MouseDown="TextBlock_SwallowEvents">
+                                    MouseDown="TextBlock_SwallowEvents"
+                                    VerticalAlignment="Top">
                                     <Run Text="Allow AWS Toolkit to collect usage information (" /><Span>
                                         <Hyperlink
                                             Command="{Binding OpenTelemetryDisclosureCommand}">
