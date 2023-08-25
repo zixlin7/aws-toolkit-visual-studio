@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,6 +11,7 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Util;
 
 using log4net;
@@ -222,21 +224,29 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         private async Task SaveAsync(object parameter)
         {
+            var actionResults = ActionResults.CreateFailed();
+
             try
             {
                 _addEditProfileWizard.InProgress = true;
                 AddButtonText = "Adding profile...";
 
-                await _addEditProfileWizard.SaveAsync(ProfileProperties, SelectedCredentialFileType);
+                actionResults = await _addEditProfileWizard.SaveAsync(ProfileProperties, SelectedCredentialFileType);
             }
             catch (Exception ex)
             {
                 var msg = "Failed to save profile.";
                 _logger.Error(msg, ex);
                 ToolkitContext.ToolkitHost.ShowError(msg);
+                actionResults = ActionResults.CreateFailed(ex);
             }
             finally
             {
+                _addEditProfileWizard.RecordAuthAddedConnectionsMetric(actionResults, actionResults.Success ? 1 : 0,
+                    actionResults.Success ?
+                        new HashSet<string>() { EnabledAuthConnectionTypes.StaticCredentials } :
+                        Enumerable.Empty<string>());
+
                 AddButtonText = "Add";
                 _addEditProfileWizard.InProgress = false;
             }

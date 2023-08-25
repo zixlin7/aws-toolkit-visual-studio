@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -122,19 +124,19 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             ConnectionSettingsChanged?.Invoke(this, e);
         }
 
-        public async Task SaveAsync(ProfileProperties profileProperties, CredentialFileType fileType, bool changeConnectionSettings = true)
+        public async Task<ActionResults> SaveAsync(ProfileProperties profileProperties, CredentialFileType fileType, bool changeConnectionSettings = true)
         {
             Status = null;
             InProgress = true;
 
-            if (!await ValidateConnectionAsync(profileProperties))
+            var actionResults = await ValidateConnectionAsync(profileProperties);
+            if (!actionResults.Success)
             {
                 Status = false;
                 InProgress = false;
-                return;
+                return actionResults;
             }
 
-            ActionResults actionResults = null;
             try
             {
                 var credId = fileType == CredentialFileType.Shared ?
@@ -166,11 +168,13 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 RecordAwsModifyCredentialsMetric(actionResults);
                 InProgress = false;
             }
+
+            return actionResults;
         }
 
         private int _connectionAttempts = 0;
 
-        internal async Task<bool> ValidateConnectionAsync(ProfileProperties profileProperties)
+        internal async Task<ActionResults> ValidateConnectionAsync(ProfileProperties profileProperties)
         {
             ++_connectionAttempts;
 
@@ -191,7 +195,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
                 RecordAuthAddConnectionMetric(actionResults);
 
-                return actionResults.Success;
+                return actionResults;
             }
         }
         #endregion
@@ -273,19 +277,61 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             ToolkitContext.TelemetryLogger.RecordAuthAddConnection(data);
         }
 
-        // TODO Add as part of IDE-11500
-        //    private void RecordAuthAddedConnectionsMetric(ActionResults actionResults)
-        //    {
-        //        var data = CreateMetricData<AuthAddedConnections>(actionResults);
-        //        data.Attempts = _connectionAttempts;
-        //        data.AuthConnectionsCount = 0;
-        //        data.EnabledAuthConnections = "";
-        //        data.NewAuthConnectionsCount = 0;
-        //        data.NewEnabledAuthConnections = "";
-        //        data.Result = actionResults.AsTelemetryResult();
-        //        data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+        public void RecordAuthAddedConnectionsMetric(ActionResults actionResults, int newConnectionCount, IEnumerable<string> newEnabledConnections)
+        {
+            var authConnectionsCount = 0;
+            var enabledAuthConnections = new HashSet<string>();
 
-        //        ToolkitContext.TelemetryLogger.RecordAuthAddedConnections(data);
-        //    }
+            foreach (var credId in ToolkitContext.ConnectionManager.CredentialManager.GetCredentialIdentifiers())
+            {
+                ++authConnectionsCount;
+
+                switch (ToolkitContext.CredentialSettingsManager.GetProfileProperties(credId).GetCredentialType())
+                {
+                    // This may change as bearer token handling evolves
+                    case Credentials.Utils.CredentialType.BearerToken:
+                        enabledAuthConnections.Add(EnabledAuthConnectionTypes.BuilderIdCodeCatalyst);
+                        break;
+                    case Credentials.Utils.CredentialType.SsoProfile:
+                        enabledAuthConnections.Add(EnabledAuthConnectionTypes.IamIdentityCenterAwsExplorer);
+                        break;
+                    case Credentials.Utils.CredentialType.StaticProfile:
+                        enabledAuthConnections.Add(EnabledAuthConnectionTypes.StaticCredentials);
+                        break;
+                }
+            }
+
+            var data = CreateMetricData<AuthAddedConnections>(actionResults);
+            data.Attempts = _connectionAttempts;
+            data.AuthConnectionsCount = authConnectionsCount;
+            data.EnabledAuthConnections = BuildEnabledAuthConnectionsString(enabledAuthConnections);
+            // SSO for AWS Explorer allows multiple roles to be added at once, so this isn't always one
+            data.NewAuthConnectionsCount = newConnectionCount;
+            // As this is called when adding a connection(s) it will always only contain one type
+            data.NewEnabledAuthConnections = BuildEnabledAuthConnectionsString(newEnabledConnections);
+            data.Result = actionResults.AsTelemetryResult();
+            data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+
+            ToolkitContext.TelemetryLogger.RecordAuthAddedConnections(data);
+        }
+
+        private string BuildEnabledAuthConnectionsString(IEnumerable<string> enabledAuthConnections)
+        {
+            return string.Join(",", enabledAuthConnections.OrderBy(s => s));
+        }
+    }
+
+    // See AuthFormId for values https://github.com/aws/aws-toolkit-vscode/blob/master/src/auth/ui/vue/authForms/types.ts
+    public static class EnabledAuthConnectionTypes
+    {
+        public const string StaticCredentials = "credentials";
+
+        public const string BuilderIdCodeWhisperer = "builderIdCodeWhisperer";
+
+        public const string BuilderIdCodeCatalyst = "builderIdCodeCatalyst";
+
+        public const string IamIdentityCenterCodeWhisperer = "identityCenterCodeWhisperer";
+
+        public const string IamIdentityCenterAwsExplorer = "identityCenterExplorer";
     }
 }

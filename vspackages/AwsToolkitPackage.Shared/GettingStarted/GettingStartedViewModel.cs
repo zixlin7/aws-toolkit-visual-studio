@@ -180,9 +180,11 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         {
             await base.InitializeAsync();
 
-            ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
+            _addEditProfileWizard.SaveMetricSource = ToolkitSettings.Instance.HasUserSeenFirstRunForm ?
+                MetricSources.GettingStartedMetricSource.GettingStarted :
+                MetricSources.GettingStartedMetricSource.FirstStartup;
 
-            _addEditProfileWizard.SaveMetricSource = MetricSources.GettingStartedMetricSource.GettingStarted;
+            ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
 
             OpenAwsExplorerAsyncCommand = new OpenAwsExplorerCommand(ToolkitContext);
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.Runtime;
 using Amazon.SSO;
 using Amazon.SSO.Model;
@@ -89,6 +91,9 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         private async Task SaveAsync(object parameter)
         {
+            var actionResults = ActionResults.CreateFailed();
+            var newConnectionCount = 0;
+
             try
             {
                 _addEditProfileWizard.InProgress = true;
@@ -103,18 +108,30 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                     p.SsoRoleName = accountRoles.RoleName;
                     p.Name = ToProfileName(p.SsoRoleName, p.SsoAccountId);
 
-                    await _addEditProfileWizard.SaveAsync(p, CredentialFileType.Shared, changeConnectionSettings);
+                    actionResults = await _addEditProfileWizard.SaveAsync(p, CredentialFileType.Shared, changeConnectionSettings);
+                    if (!actionResults.Success)
+                    {
+                        throw new Exception($"Cannot save profile {p.Name}", actionResults.Exception);
+                    }
+
+                    ++newConnectionCount;
                     changeConnectionSettings = false; // If multiple profiles created, just set the first one in AWS Explorer
                 }
             }
             catch (Exception ex)
             {
-                var msg = "Failed to save SSO profiles.";
+                var msg = "Failed to save all SSO profiles.";
                 _logger.Error(msg, ex);
                 ToolkitContext.ToolkitHost.ShowError(msg);
+                actionResults = ActionResults.CreateFailed(ex);
             }
             finally
             {
+                _addEditProfileWizard.RecordAuthAddedConnectionsMetric(actionResults, newConnectionCount,
+                    newConnectionCount > 0 ?
+                        new HashSet<string>() { EnabledAuthConnectionTypes.IamIdentityCenterAwsExplorer } :
+                        Enumerable.Empty<string>());
+
                 AddButtonText = "Add";
                 _addEditProfileWizard.InProgress = false;
             }

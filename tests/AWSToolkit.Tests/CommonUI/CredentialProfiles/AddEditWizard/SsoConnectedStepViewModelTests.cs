@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.Runtime;
 using Amazon.SSO;
@@ -43,6 +44,9 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
             var ssoProfilePropertiesMock = new Mock<ISsoProfilePropertiesProvider>();
             ssoProfilePropertiesMock.Setup(mock => mock.ProfileProperties).Returns(new ProfileProperties());
+
+            _addEditProfileWizardMock.Setup(m => m.SaveAsync(It.IsAny<ProfileProperties>(), It.IsAny<CredentialFileType>(),
+                It.IsAny<bool>())).Returns(Task.FromResult(new ActionResults().WithSuccess(true)));
 
             _serviceProvider.SetService(_toolkitContextFixture.ToolkitContext);
             _serviceProvider.SetService(_addEditProfileWizardMock.Object);
