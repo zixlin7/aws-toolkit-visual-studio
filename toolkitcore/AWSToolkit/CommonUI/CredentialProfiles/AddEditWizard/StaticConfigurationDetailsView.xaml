@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard"
     xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors"
+    xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
     xmlns:controls="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
@@ -74,7 +75,11 @@
                     TextWrapping="WrapWithOverflow">
                     <Run Text="Name of this profile stored in the local configuration file."></Run>
                     <commonUi:BrowserHyperLink
+                        x:Name="auth_learnMoreAWSResources"
                         NavigateUriFromStatic="{x:Static urls:AwsUrls.UserGuideAuthIamCreds}">
+                        <wizBehaviors:UiClickMetric.Configure>
+                            <wizBehaviors:UiClickMetricConfig />
+                        </wizBehaviors:UiClickMetric.Configure>
                         <Run Text="Learn more about AWS IAM Credentials" />
                     </commonUi:BrowserHyperLink>
                 </TextBlock>

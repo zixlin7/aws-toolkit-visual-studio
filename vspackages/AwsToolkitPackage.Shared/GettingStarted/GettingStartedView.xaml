@@ -158,12 +158,17 @@
                                                     Margin="12"
                                                     LastChildFill="True">
                                                     <Button
+                                                        x:Name="auth_openAWSExplorer"
                                                         Margin="6 0 0 0"
                                                         DockPanel.Dock="Right"
                                                         MaxHeight="40"
                                                         Command="{Binding OpenAwsExplorerAsyncCommand}"
                                                         Content="Open AWS Explorer"
-                                                        Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}" />
+                                                        Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
+                                                        <wizBehaviors:UiClickMetric.Configure>
+                                                            <wizBehaviors:UiClickMetricConfig />
+                                                        </wizBehaviors:UiClickMetric.Configure>
+                                                    </Button>
                                                     <StackPanel>
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>

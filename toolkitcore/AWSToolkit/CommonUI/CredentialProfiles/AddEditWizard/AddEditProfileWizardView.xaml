@@ -53,8 +53,12 @@
             Margin="0 5 0 0"
             FontWeight="Normal">
             <Hyperlink
+                x:Name="auth_editCredentials"
                 Command="{Binding OpenCredentialsFileCommand}">
                 Edit credentials file directly...
+                <wizBehaviors:UiClickMetric.Configure>
+                    <wizBehaviors:UiClickMetricConfig />
+                </wizBehaviors:UiClickMetric.Configure>                
             </Hyperlink>
         </TextBlock>
 
