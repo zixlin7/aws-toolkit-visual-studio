@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Lsp;
 
 using log4net;
 
@@ -17,6 +18,8 @@ using Microsoft.VisualStudio.Threading;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+
+using StreamJsonRpc;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 {
@@ -35,7 +38,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     /// When we have more than one language server, this class will need to get moved to some sort of
     /// "Shared Language Server" project.
     /// </remarks>
-    public abstract class ToolkitLspClient : ILanguageClient
+    public abstract class ToolkitLspClient : IToolkitLspClient, ILanguageClient, ILanguageClientCustomMessage2
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(ToolkitLspClient));
 
@@ -53,9 +56,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         protected readonly bool _initializeServerWithCredentials = false;
 
+        /// <summary>
+        /// Used to send notifications and requests to the language server
+        /// </summary>
+        protected JsonRpc _rpc { get; private set; }
+
         public ToolkitLspClient(bool initializeServerWithCredentials = false)
         {
             _initializeServerWithCredentials = initializeServerWithCredentials;
+        }
+
+        public TProxy CreateProxy<TProxy>() where TProxy : class
+        {
+            var proxyOptions = new JsonRpcProxyOptions()
+            {
+                MethodNameTransform = JsonRpcProxy.MethodNameTransform<TProxy>,
+            };
+
+            return _rpc.Attach<TProxy>(proxyOptions);
         }
 
         public event AsyncEventHandler<EventArgs> StartAsync;
@@ -266,5 +284,25 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
             return Task.FromResult(failureInfo);
         }
+
+        #region ILanguageClientCustomMessage2
+
+
+        public object MiddleLayer => null;
+
+        /// <summary>
+        /// Allows extensions to handle LSP messages
+        /// Must be set before starting the language server (occurs in the base class OnLoadedAsync)
+        /// https://learn.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.languageserver.client.ilanguageclientcustommessage2.custommessagetarget?view=visualstudiosdk-2022#microsoft-visualstudio-languageserver-client-ilanguageclientcustommessage2-custommessagetarget
+        /// </summary>
+        public object CustomMessageTarget => throw new NotImplementedException();
+
+        public Task AttachForCustomMessageAsync(JsonRpc rpc)
+        {
+            _rpc = rpc;
+            return Task.CompletedTask;
+        }
+
+        #endregion
     }
 }
