@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "The Getting Started experience has been improved, making it easier to add IAM Identity Center authentication to the AWS Toolkit for Visual Studio."
+}
