@@ -97,8 +97,6 @@ using Debugger = System.Diagnostics.Debugger;
 using OutputWindow = Amazon.AwsToolkit.VsSdk.Common.OutputWindow.OutputWindow;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
-using Amazon.AWSToolkit.VisualStudio.ArmPreview;
-using Amazon.AWSToolkit.Notifications;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -199,7 +197,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         private ToolkitContext _toolkitContext;
         private TelemetryManager _telemetryManager;
         private TelemetryInfoBarManager _telemetryInfoBarManager;
-        private ArmPreviewInfoBarManager _armPreviewInfoBarManager;
         private SupportedVersionBarManager _supportedVersionBarManager;
         private NotificationInfoBarManager _notificationInfoBarManager;
         private ProductEnvironment _productEnvironment;
@@ -1078,7 +1075,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _shellInitialized = true;
                 ShowFirstRun();
                 ShowTelemetryNotice();
-                ShowArmPreviewNotice();
                 ShowSupportedVersionNotice(ToolkitHosts.Vs2017);
                 ShowNotificationsAsync(_productEnvironment).LogExceptionAndForget();
             }
@@ -1141,30 +1137,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 catch (Exception e)
                 {
                     LOGGER.Error("ShowTelemetryNotice error", e);
-                }
-            });
-        }
-
-        private void ShowArmPreviewNotice()
-        {
-            if (!ArmPreviewNotice.CanShowNotice())
-            {
-                return;
-            }
-
-            JoinableTaskFactory.Run(async () =>
-            {
-                try
-                {
-                    await JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                    LOGGER.Debug("Attempting to show Arm64 Preview Banner");
-                    _armPreviewInfoBarManager = new ArmPreviewInfoBarManager(this, _toolkitContext);
-                    _armPreviewInfoBarManager.ShowArmPreviewInfoBar();
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error("ShowArmPreviewNotice error", e);
                 }
             });
         }
@@ -2662,7 +2634,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryManager?.Dispose();
 
             _telemetryInfoBarManager?.Dispose();
-            _armPreviewInfoBarManager?.Dispose();
             _supportedVersionBarManager?.Dispose();
             _notificationInfoBarManager?.Dispose();
             _metricsOutputWindow?.Dispose();

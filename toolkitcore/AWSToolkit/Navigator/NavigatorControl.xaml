@@ -201,53 +201,10 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
-            <!-- ARM Preview Banner -->
-            <!-- The banner is temporary. Banner colors have been hardcoded as part of the UX design, and are 
-                    deliberately different from InfoBars. -->
-            <Border Grid.Row="0"
-                    Visibility="{Binding ShowArmPreviewBanner, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Background="#E9F0FF" 
-                    BorderBrush="#C4D5FF" 
-                    BorderThickness="1"
-                    Padding="6">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <TextBlock 
-                        Grid.Row="0" Grid.Column="0"
-                        Foreground="#1E1E1E"
-                        VerticalAlignment="Center"
-                        Text="Arm64 support is in Preview"
-                        TextWrapping="Wrap"
-                        />
-                    <StackPanel Grid.Row="0" Grid.Column="1">
-                        <commonui:HyperlinkText
-                            HorizontalAlignment="Right"
-                            Background="Transparent"
-                            LinkText="Share feedback" 
-                            OpenUrlCommand="{Binding ShareArmPreviewFeedback}"
-                            />
-                        <commonui:HyperlinkText
-                            HorizontalAlignment="Right"
-                            Background="Transparent"
-                            LinkText="File issue"
-                            OpenUrlCommand="{Binding FileArmPreviewIssue}"
-                            />
-                    </StackPanel>
-                </Grid>
-            </Border>
-            <!-- END ARM Preview Banner -->
-
-            <Grid Grid.Row="1"
+            <Grid Grid.Row="0"
                   x:Name="ConnectionMsgGrid"
                   x:FieldModifier="private"
                   Visibility="{Binding IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
@@ -325,7 +282,7 @@
                     </ItemsControl>
                 </StackPanel>
             </Grid>
-            <TreeView Grid.Row="2"
+            <TreeView Grid.Row="1"
                       Name="_ctlResourceTree"
                       Style="{DynamicResource awsTreeViewStyle}"
                       VerticalAlignment="Stretch"
