@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.Settings
             public const bool HasUserSeenFirstRunForm = false;
             public const bool ShowMetricsOutputWindow = false;
             public const int Vs2017SunsetNoticeVersionNeverShown = 0;
-            public const bool UseLegacyAccountUx = true;
+            public const bool UseLegacyAccountUx = false;
         }
 
         static ToolkitSettings()
