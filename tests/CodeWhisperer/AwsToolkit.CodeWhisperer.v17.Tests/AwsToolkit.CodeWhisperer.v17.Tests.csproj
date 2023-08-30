@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+	</PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>Amazon.AwsToolkit.CodeWhisperer.Tests</RootNamespace>
+	</PropertyGroup>
+	<Import Project="..\AwsToolkit.CodeWhisperer.Tests.Shared\AwsToolkit.CodeWhisperer.Tests.Shared.projitems" Label="Shared" />
+	<ItemGroup>
+	  <PackageReference Include="FluentAssertions" Version="6.12.0" />
+	  <PackageReference Include="xunit" Version="2.4.1" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\vspackages\CodeWhisperer\AwsToolkit.CodeWhisperer.v17\AwsToolkit.CodeWhisperer.v17.csproj" />
+	  <ProjectReference Include="..\..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj" />
+	</ItemGroup>
+</Project>
