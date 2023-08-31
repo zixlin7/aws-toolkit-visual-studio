@@ -15,7 +15,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
             InitializeComponent();
         }
 
-        void AWSPrivacyPolicyLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             if (sender is Hyperlink link)
             {
