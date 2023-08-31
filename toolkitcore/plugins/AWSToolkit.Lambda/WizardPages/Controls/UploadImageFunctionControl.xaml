@@ -192,6 +192,10 @@
                             <Setter Property="Text" Value="{Binding FunctionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Setter Property="IsEditable" Value="False" />
                         </DataTrigger>
+                        <!--When ComboBox is not enabled, make the text transparent to hide the FunctionName Binding-->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="Transparent" />
+                        </Trigger>
                     </Style.Triggers>
                 </Style>
             </ComboBox.Style>
