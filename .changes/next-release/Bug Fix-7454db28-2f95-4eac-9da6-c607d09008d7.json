@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Improvements have been made to the Lambda publish dialog to differentiate between creating a new function and publishing to an existing function. This fixes an issue where typing a function name could cause the function's configuration to be overwritten with a different function's configuration."
+}
