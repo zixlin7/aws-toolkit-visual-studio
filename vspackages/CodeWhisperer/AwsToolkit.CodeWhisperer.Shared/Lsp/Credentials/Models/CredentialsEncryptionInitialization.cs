@@ -1,4 +1,4 @@
-﻿namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
+﻿namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models
 {
     /// <summary>
     /// Model for the payload sent to the language server when passing

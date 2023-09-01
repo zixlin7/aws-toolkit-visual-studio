@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lsp;
 

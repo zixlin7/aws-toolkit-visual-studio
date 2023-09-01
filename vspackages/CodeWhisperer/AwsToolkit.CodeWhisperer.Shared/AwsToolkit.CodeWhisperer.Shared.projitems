@@ -12,10 +12,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\IToolkitLspClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ToolkitLspClient.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryptionInitialization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ILspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\UpdateCredentialsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsEncryptionInitialization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\CodeWhispererLspSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\ICodeWhispererLspSettingsRepository.cs" />
   </ItemGroup>

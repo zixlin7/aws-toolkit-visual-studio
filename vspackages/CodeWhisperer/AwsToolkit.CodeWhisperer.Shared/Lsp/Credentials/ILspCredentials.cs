@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.Lsp;
+﻿using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
+using Amazon.AWSToolkit.Lsp;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
 {

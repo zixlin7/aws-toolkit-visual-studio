@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
+namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models
 {
     public class UpdateCredentialsRequest
     {
