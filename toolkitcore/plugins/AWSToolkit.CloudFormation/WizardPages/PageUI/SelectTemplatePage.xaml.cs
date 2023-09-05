@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             catch (Exception ex)
             {
                 LOGGER.Error("Failed to parse CloudFormation Template: " + dlg.FileName, ex);
-                ToolkitFactory.Instance.ShellProvider.ShowError("File is not a valid CloudFormation template");
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error validating CloudFormation template", ex.Message);
                 setFileToModel(null);
                 return;
             }

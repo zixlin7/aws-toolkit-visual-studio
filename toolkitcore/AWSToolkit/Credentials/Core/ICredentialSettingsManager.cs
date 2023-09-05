@@ -1,4 +1,7 @@
-﻿using Amazon.AWSToolkit.Credentials.Utils;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Credentials.Utils;
 
 namespace Amazon.AWSToolkit.Credentials.Core
 {
@@ -9,6 +12,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
     public interface ICredentialSettingsManager
     {
         void CreateProfile(ICredentialIdentifier identifier, ProfileProperties properties);
+        Task CreateProfileAsync(ICredentialIdentifier identifier, ProfileProperties properties, CancellationToken cancellationToken = default);
         void RenameProfile(ICredentialIdentifier oldIdentifier, ICredentialIdentifier newIdentifier);
         void DeleteProfile(ICredentialIdentifier identifier);
 

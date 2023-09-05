@@ -1,9 +1,8 @@
-﻿using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model;
-using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+﻿using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 {
@@ -45,25 +44,20 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit
 
         public static void RecordCodeCommitSetCredentialsMetric(ActionResults results)
         {
-            ToolkitFactory.Instance.TelemetryLogger.RecordCodecommitSetCredentials(new CodecommitSetCredentials
-            {
-                AwsAccount = GetAccountId(),
-                AwsRegion = GetRegionId(),
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results?.Exception)
-            });
+            var payload = results.CreateMetricData<CodecommitSetCredentials>(GetAccountId(), GetRegionId());
+            payload.Result = results.AsTelemetryResult();
+
+            ToolkitFactory.Instance.TelemetryLogger.RecordCodecommitSetCredentials(payload);
         }
 
         public static void RecordOpenUrl(ActionResults results, string url)
         {
-            ToolkitFactory.Instance.TelemetryLogger.RecordAwsOpenUrl(new AwsOpenUrl()
-            {
-                AwsAccount = GetAccountId(),
-                AwsRegion = GetRegionId(),
-                Url = url,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results?.Exception)
-            });
+            var payload = results.CreateMetricData<AwsOpenUrl>(GetAccountId(), GetRegionId());
+            payload.Url = url;
+            payload.Result = results.AsTelemetryResult();
+
+            ToolkitFactory.Instance.TelemetryLogger.RecordAwsOpenUrl(payload);
+
         }
 
         private static string GetAccountId()

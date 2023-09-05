@@ -278,13 +278,19 @@ namespace Amazon.Lambda.Tools
             string msbuildParameters, 
             string architecture, 
             IList<string> publishManifests,
-            bool isNativeAot = false)
+            bool isNativeAot = false,
+            string projectLocationInsideContainer = null)
         {
             StringBuilder arguments = new StringBuilder("publish");
-            if (!string.IsNullOrEmpty(projectLocation))
+            if (!string.IsNullOrEmpty(projectLocationInsideContainer))
+            {
+                arguments.Append($" \"{projectLocationInsideContainer}\"");
+            }
+            else if (!string.IsNullOrEmpty(projectLocation))
             {
                 arguments.Append($" \"{projectLocation}\"");
             }
+
             if (!string.IsNullOrEmpty(outputLocation))
             {
                 arguments.Append($" --output \"{outputLocation}\"");
@@ -318,12 +324,10 @@ namespace Amazon.Lambda.Tools
                         arguments.Append($" --runtime {LambdaUtilities.DetermineRuntimeParameter(targetFramework, architecture)}");
                     }
 
-                    if (msbuildParameters == null ||
-                        msbuildParameters.IndexOf("--self-contained", StringComparison.InvariantCultureIgnoreCase) == -1)
+                    if (!Utilities.HasExplicitSelfContainedFlag(projectLocation, msbuildParameters))
                     {
                         arguments.Append($" --self-contained {isNativeAot} ");
                     }
-
                 });
 
                 // This is here to not change existing behavior for the 2.0 and 2.1 runtimes. For those runtimes if

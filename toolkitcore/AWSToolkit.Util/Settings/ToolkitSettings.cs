@@ -12,7 +12,6 @@ namespace Amazon.AWSToolkit.Settings
         public static ToolkitSettings Instance;
 
         private const int TelemetryNoticeNeverShown = 0;
-        private const int Arm64PreviewNoticeNeverShown = 0;
 
         private readonly SettingsPersistenceBase _settingsPersistence;
         private readonly DynamoDbSettings _dynamoDbSettings;
@@ -21,7 +20,6 @@ namespace Amazon.AWSToolkit.Settings
         {
             public const string TelemetryEnabled = "AnalyticsPermitted";
             public const string TelemetryNoticeVersionShown = "TelemetryNoticeVersionShown";
-            public const string Arm64PreviewNoticeVersionShown = "Arm64PreviewNoticeVersionShown";
             public const string FirstRunFormShown = "FirstRunFormShown";
             public const string TelemetryClientId = "AnalyticsAnonymousCustomerId";
             public const string LastSelectedRegion = "lastselectedregion";
@@ -36,7 +34,7 @@ namespace Amazon.AWSToolkit.Settings
             public const bool HasUserSeenFirstRunForm = false;
             public const bool ShowMetricsOutputWindow = false;
             public const int Vs2017SunsetNoticeVersionNeverShown = 0;
-            public const bool UseLegacyAccountUx = true;
+            public const bool UseLegacyAccountUx = false;
         }
 
         static ToolkitSettings()
@@ -97,17 +95,6 @@ namespace Amazon.AWSToolkit.Settings
                 _settingsPersistence.GetInt(SettingNames.TelemetryNoticeVersionShown,
                     TelemetryNoticeNeverShown);
             set => _settingsPersistence.SetInt(SettingNames.TelemetryNoticeVersionShown, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the "version" of the Arm64 Preview notice/InfoBar the user last saw and acknowledged.
-        /// </summary>
-        public int Arm64PreviewNoticeVersionShown
-        {
-            get =>
-                _settingsPersistence.GetInt(SettingNames.Arm64PreviewNoticeVersionShown,
-                    Arm64PreviewNoticeNeverShown);
-            set => _settingsPersistence.SetInt(SettingNames.Arm64PreviewNoticeVersionShown, value);
         }
 
         /// <summary>

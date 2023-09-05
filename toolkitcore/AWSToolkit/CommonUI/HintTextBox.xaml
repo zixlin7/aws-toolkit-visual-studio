@@ -27,7 +27,7 @@
                  AcceptsReturn="{Binding AcceptsReturn, RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
         <TextBlock HorizontalAlignment="Left"
-                   Padding="6 8 6 8"
+                   Padding="8 8 6 8"
                    VerticalAlignment="Top"
                    IsHitTestVisible="False"
                    Text="{Binding HintText, RelativeSource={RelativeSource AncestorType=UserControl}}"

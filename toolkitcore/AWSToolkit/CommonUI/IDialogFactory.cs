@@ -1,7 +1,6 @@
 ﻿using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
-
-using Microsoft.Win32;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -10,7 +9,7 @@ namespace Amazon.AWSToolkit.CommonUI
     /// </summary>
     public interface IDialogFactory
     {
-        OpenFileDialog CreateOpenFileDialog();
+        IOpenFileDialog CreateOpenFileDialog();
         IFolderBrowserDialog CreateFolderBrowserDialog();
         ISelectionDialog CreateSelectionDialog();
         IIamRoleSelectionDialog CreateIamRoleSelectionDialog();
@@ -22,5 +21,6 @@ namespace Amazon.AWSToolkit.CommonUI
         ICloneCodeCommitRepositoryDialog CreateCloneCodeCommitRepositoryDialog();
         ICloneCodeCatalystRepositoryDialog CreateCloneCodeCatalystRepositoryDialog();
         ISsoLoginDialog CreateSsoLoginDialog();
+        ICredentialProfileDialog CreateCredentialProfileDialog(BaseMetricSource saveMetricSource);
     }
 }

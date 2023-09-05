@@ -9,11 +9,17 @@ namespace Amazon.AWSToolkit.CommonUI
 {
     public class BrowserHyperLink : Hyperlink
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(BrowserHyperLink));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(BrowserHyperLink));
 
         public BrowserHyperLink()
         {
             RequestNavigate += OnRequestNavigate;
+        }
+
+        public string NavigateUriFromStatic
+        {
+            get => NavigateUri.OriginalString;
+            set => NavigateUri = new Uri(value);
         }
 
         private void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -30,7 +36,7 @@ namespace Amazon.AWSToolkit.CommonUI
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                _logger.Error(e);
             }
         }
     }

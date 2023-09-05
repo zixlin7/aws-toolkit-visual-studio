@@ -1,12 +1,11 @@
 ﻿using System;
 
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 using Amazon.DynamoDBv2.Model;
 
 namespace Amazon.AWSToolkit.DynamoDB.Controller
@@ -67,13 +66,9 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             var tableModel = viewModel as DynamoDBTableViewModel;
             var awsConnectionSettings = tableModel?.DynamoDBRootViewModel.AwsConnectionSettings;
 
-            var data = new DynamodbDeleteTable()
-            {
-                AwsAccount = awsConnectionSettings?.GetAccountId(_toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<DynamodbDeleteTable>(awsConnectionSettings,
+                _toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
 
             _toolkitContext.TelemetryLogger.RecordDynamodbDeleteTable(data);
         }

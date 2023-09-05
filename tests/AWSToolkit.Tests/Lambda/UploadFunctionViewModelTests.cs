@@ -198,6 +198,19 @@ namespace AWSToolkit.Tests.Lambda
         }
 
         [Theory]
+        [InlineData(SampleFunctionName, true)]
+        [InlineData("fakeFunction", false)]
+        [InlineData(null, false)]
+        public async Task IsExistingFunction(string functionName, bool expected)
+        {
+            _sut.FunctionName = functionName;
+
+            await _sut.UpdateFunctionsList(_lambdaClient.Object);
+
+            Assert.Equal(expected, _sut.IsExistingFunction);
+        }
+
+        [Theory]
         [MemberData(nameof(DotNetRuntimes))]
         public void CreateHandlerHelpText_DotNetRuntime(RuntimeOption runtime)
         {

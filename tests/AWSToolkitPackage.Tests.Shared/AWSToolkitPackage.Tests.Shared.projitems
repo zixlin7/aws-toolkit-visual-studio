@@ -12,8 +12,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\BeanstalkConfigurationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\FeedbackPanelViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\SendFeedbackCommandTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\FirstRunControllerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\LegacyFirstRunControllerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Images\VsImageProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUsageEmitterTests.cs" />
@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Notification\VersionStrategyTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandSolutionExplorerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ToolkitContextProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionInfoBarTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionStrategyTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInfoBarTests.cs" />

@@ -11,7 +11,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
         /// <summary>
         /// Represents the list of names of profiles present in the credential file
         /// </summary>
-        List<string> ProfileNames { get; set; }
+        IEnumerable<string> ProfileNames { get; }
 
         /// <summary>
         /// Loads the credential files and determines all profile names present in it

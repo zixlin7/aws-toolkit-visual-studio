@@ -27,6 +27,7 @@ using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -228,16 +229,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     if (File.Exists(serverlessTemplatePath) || !string.IsNullOrEmpty(defaults.CloudFormationTemplate))
                     {
                         isServerless = true;
-                        string templateFile;
+
                         // If there is a template specified in the defaults then use that as way for a customer to use a template besides the hard coded serverless.template
-                        if (!string.IsNullOrEmpty(defaults.CloudFormationTemplate))
-                        {
-                            templateFile = Path.Combine(sourcePath, defaults.CloudFormationTemplate);
-                        }
-                        else
-                        {
-                            templateFile = serverlessTemplatePath;
-                        }
+                        var templateFile = !string.IsNullOrEmpty(defaults.CloudFormationTemplate)
+                            ? Path.Combine(sourcePath, defaults.CloudFormationTemplate)
+                            : serverlessTemplatePath;
 
                         seedValues[UploadFunctionWizardProperties.CloudFormationTemplate] = templateFile;
 
@@ -249,6 +245,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                         try
                         {
                             var wrapper = CloudFormationTemplateWrapper.FromLocalFile(templateFile);
+
+                            // this inherently loads and parses the template file
+                            // any validation errors encountered would be shown as an error
                             if (wrapper.ContainsUserVisibleParameters)
                             {
                                 // All the template parameters in the defaults file to the template
@@ -269,9 +268,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                         }
                         catch (Exception e)
                         {
-                            ToolkitFactory.Instance.ShellProvider.ShowMessage("Error parsing CloudFormation Template", $"Error parsing CloudFormation Template {templateFile}: {e.Message}");
                             _logger.Error($"Error parsing template {templateFile}", e);
-                            return ActionResults.CreateFailed(e);
+                            return ActionResults.CreateFailed(new TemplateToolkitException(e.Message, TemplateToolkitException.TemplateErrorCode.InvalidFormat,
+                                e));
                         }
 
 
@@ -419,7 +418,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             wizard.RegisterPageControllers(defaultPages, 0);
             wizard.SetNavigationButtonText(AWSWizardConstants.NavigationButtons.Finish, "Publish");
             wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
-
             // as the last page of the wizard performs the upload process, and invokes CancelRun
             // to shutdown the UI, we place no stock in the result of Run() and instead will look
             // for a specific property to be true on exit indicating successful upload vs user
@@ -434,35 +432,29 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         private void RecordServerlessPublishWizard(ActionResults results, double duration, BaseMetricSource metricSource)
         {
             var connectionSettings = new AwsConnectionSettings(_credentialIdentifier, _region);
-            var accountId = connectionSettings.GetAccountId(_toolkitContext.ServiceClientManager);
-          
-            _toolkitContext.TelemetryLogger.RecordServerlessapplicationPublishWizard(new ServerlessapplicationPublishWizard()
-            {
-                AwsAccount = accountId ?? MetadataValue.Invalid,
-                AwsRegion = _region?.Id ?? MetadataValue.Invalid,
-                Result = results.AsTelemetryResult(),
-                Duration = duration,
-                Source = metricSource?.Location,
-                ServiceType = metricSource?.Service,
-                Reason = LambdaHelpers.GetMetricsReason(results?.Exception)
-            });
+
+            var data = results.CreateMetricData<ServerlessapplicationPublishWizard>(connectionSettings,
+                _toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
+            data.Duration = duration;
+            data.Source = metricSource?.Location;
+            data.ServiceType = metricSource?.Service;
+
+            _toolkitContext.TelemetryLogger.RecordServerlessapplicationPublishWizard(data);
         }
 
         private void RecordLambdaPublishWizard(ActionResults results, double duration, BaseMetricSource metricSource)
         {
             var connectionSettings = new AwsConnectionSettings(_credentialIdentifier, _region);
-            var accountId = connectionSettings.GetAccountId(_toolkitContext.ServiceClientManager);
 
-            _toolkitContext.TelemetryLogger.RecordLambdaPublishWizard(new LambdaPublishWizard()
-            {
-                AwsAccount = accountId ?? MetadataValue.Invalid,
-                AwsRegion = _region?.Id ?? MetadataValue.Invalid,
-                Result = results.AsTelemetryResult() ,
-                Duration = duration,
-                Source = metricSource?.Location,
-                ServiceType = metricSource?.Service,
-                Reason = LambdaHelpers.GetMetricsReason(results?.Exception)
-            });
+            var data = results.CreateMetricData<LambdaPublishWizard>(connectionSettings,
+                _toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
+            data.Duration = duration;
+            data.Source = metricSource?.Location;
+            data.ServiceType = metricSource?.Service;
+
+            _toolkitContext.TelemetryLogger.RecordLambdaPublishWizard(data);
         }
 
         private void ApplyConnectionIfMissing(IAWSWizard wizard)

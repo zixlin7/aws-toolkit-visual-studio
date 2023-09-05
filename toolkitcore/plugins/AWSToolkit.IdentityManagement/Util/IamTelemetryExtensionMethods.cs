@@ -1,9 +1,8 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Util
 {
@@ -12,15 +11,10 @@ namespace Amazon.AWSToolkit.IdentityManagement.Util
         public static void RecordIamCreate(this ToolkitContext toolkitContext, IamResourceType resource,
            ActionResults results, AwsConnectionSettings awsConnectionSettings)
         {
-            var data = new IamCreate()
-            {
-                AwsAccount =
-                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                IamResourceType = resource,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<IamCreate>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
+            data.IamResourceType = resource;
 
             toolkitContext.TelemetryLogger.RecordIamCreate(data);
         }
@@ -28,15 +22,10 @@ namespace Amazon.AWSToolkit.IdentityManagement.Util
         public static void RecordIamDelete(this ToolkitContext toolkitContext, IamResourceType resource,
            ActionResults results, AwsConnectionSettings awsConnectionSettings)
         {
-            var data = new IamDelete()
-            {
-                AwsAccount =
-                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                IamResourceType = resource,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<IamDelete>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
+            data.IamResourceType = resource;
 
             toolkitContext.TelemetryLogger.RecordIamDelete(data);
         }
@@ -44,15 +33,10 @@ namespace Amazon.AWSToolkit.IdentityManagement.Util
         public static void RecordIamEdit(this ToolkitContext toolkitContext, IamResourceType resource,
          ActionResults results, AwsConnectionSettings awsConnectionSettings)
         {
-            var data = new IamEdit()
-            {
-                AwsAccount =
-                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                IamResourceType = resource,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<IamEdit>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
+            data.IamResourceType = resource;
 
             toolkitContext.TelemetryLogger.RecordIamEdit(data);
         }
@@ -60,14 +44,9 @@ namespace Amazon.AWSToolkit.IdentityManagement.Util
         public static void RecordIamCreateAccessKey(this ToolkitContext toolkitContext,
             ActionResults results, AwsConnectionSettings awsConnectionSettings)
         {
-            var data = new IamCreateUserAccessKey()
-            {
-                AwsAccount =
-                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<IamCreateUserAccessKey>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
 
             toolkitContext.TelemetryLogger.RecordIamCreateUserAccessKey(data);
         }
@@ -75,14 +54,9 @@ namespace Amazon.AWSToolkit.IdentityManagement.Util
         public static void RecordIamDeleteAccessKey(this ToolkitContext toolkitContext,
             ActionResults results, AwsConnectionSettings awsConnectionSettings)
         {
-            var data = new IamDeleteUserAccessKey()
-            {
-                AwsAccount =
-                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<IamDeleteUserAccessKey>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
 
             toolkitContext.TelemetryLogger.RecordIamDeleteUserAccessKey(data);
         }

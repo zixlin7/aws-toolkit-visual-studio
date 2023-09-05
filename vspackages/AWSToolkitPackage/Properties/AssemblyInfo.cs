@@ -1,7 +1,11 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+using Amazon.AWSToolkit;
+
 using Microsoft.VisualStudio.Shell;
 
 // General Information about an assembly is controlled through the following
@@ -18,3 +22,5 @@ using Microsoft.VisualStudio.Shell;
 [assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\Community.VisualStudio.Toolkit.dll")]
 [assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\LiveCharts.dll")]
 [assembly: ProvideCodeBase(CodeBase = "$PackageFolder$\\LiveCharts.Wpf.dll")]
+
+[assembly: InternalsVisibleTo("AWSToolkitPackage.Tests, PublicKey=" + ToolkitGlobalConstants.StrongNamePublicKey)]

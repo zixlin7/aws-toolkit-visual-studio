@@ -7,6 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.WizardPages.PageUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
     d:DesignHeight="400"
     d:DesignWidth="600"
     mc:Ignorable="d">
@@ -16,7 +18,21 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converters:HasValueVisibilityConverter x:Key="HasValueVisibilityConverter" />
+            <commonUi:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <converters:InverseVisibilityConverter x:Key="InverseVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <commonUi:ToolkitImages x:Key="ToolkitImages" />
+
+            <ControlTemplate x:Key="LoadingComboBox">
+                <ComboBox
+                    Margin="16,2,4,2"
+                    IsEditable="True"
+                    IsEnabled="{Binding ViewModel.Loading, Converter={StaticResource InverseBooleanConverter}}"
+                    Visibility="{Binding ViewModel.Loading, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{DynamicResource awsComboBoxStyle}"
+                    Text="Loading..." />
+            </ControlTemplate>
         </ResourceDictionary>
     </commonUi:BaseAWSUserControl.Resources>
 
@@ -49,13 +65,11 @@
 
             <commoncomponents:AccountAndRegionPicker
                 Grid.Row="1"
-                Margin="10,2,4,2" 
-                DataContext="{Binding Connection}"
-                ConnectionChanged="ConnectionChanged"
-                />
+                Margin="10,2,4,2"
+                DataContext="{Binding ViewModel.Connection}"
+                ConnectionChanged="ConnectionChanged" />
 
         </Grid>
-
 
 
         <Grid x:Name="_serverlessPublishingPanel" Grid.Row="2">
@@ -84,6 +98,7 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="110" />
@@ -106,14 +121,47 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     Margin="16,2,4,2"
+                    IsEnabled="{Binding ViewModel.Loading, Converter={StaticResource InverseBooleanConverter}}"
                     IsEditable="True"
-                    SelectedIndex="0"
-                    SelectionChanged="_ctlStackPicker_SelectionChanged"
-                    Style="{DynamicResource awsComboBoxStyle}"
-                    TextBoxBase.TextChanged="_ctlStackPicker_TextChanged" />
+                    Visibility="{Binding ElementName=StackLoadingIndicator, Converter={StaticResource InverseVisibilityConverter}}"
+                    ItemsSource="{Binding ViewModel.Stacks}"
+                    Text="{Binding ViewModel.Stack, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    Style="{DynamicResource awsComboBoxStyle}">
+                </ComboBox>
+                <!--The loading combobox has been intentionally added as a workaround. Having a loading trigger as part of the styling of the picker caused the previously 
+                selected resource to be cleared out and set to null. That in turn messed up the error validation against the picker.
+                Keeping the loading operation separate from the selection process provided an easier path forward-->
 
-                <Label
+                <ContentControl  x:Name="StackLoadingIndicator" 
+                                 x:FieldModifier="private"
+                                 Template="{StaticResource LoadingComboBox}"
+                                 Grid.Row="0"
+                                 Grid.Column="1"/>
+
+
+                <TextBlock
+                    Margin="16,2,4,2"
+                    TextWrapping="Wrap"
                     Grid.Row="1"
+                    Grid.Column="1"
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+                    Text="{Binding ElementName=_ctlStackPicker, 
+                       Path=(Validation.Errors)/ErrorContent}">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility"
+                                    Value="{Binding ElementName=_ctlStackPicker, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ViewModel.Loading}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+
+                </TextBlock>
+                <Label
+                    Grid.Row="2"
                     Grid.Column="0"
                     Margin="10,2,4,2"
                     VerticalAlignment="Center"
@@ -123,22 +171,38 @@
 
                 <ComboBox
                     Name="_ctlBucketPicker"
-                    Grid.Row="1"
+                    x:FieldModifier="private"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Margin="16,2,4,2"
-                    SelectedIndex="0"
-                    SelectedItem="{Binding S3Bucket, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Visibility="{Binding ElementName=BucketLoadingIndicator, Converter={StaticResource InverseVisibilityConverter}}"
+                    ItemsSource="{Binding ViewModel.Buckets}"
+                    IsEnabled="{Binding ViewModel.Loading, Converter={StaticResource InverseBooleanConverter}}"
+                    SelectedItem="{Binding ViewModel.S3Bucket, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     Style="{DynamicResource awsComboBoxStyle}" />
+
+                <!--The loading combobox has been intentionally added as a workaround. Having a loading trigger as part of the styling of the picker caused the previously 
+                selected resource to be cleared out and set to null. That in turn messed up the error validation against the picker.
+                Keeping the loading operation separate from the selection process provided an easier path forward-->
+
+
+                <ContentControl x:Name="BucketLoadingIndicator"
+                                x:FieldModifier="private"
+                                Template="{StaticResource LoadingComboBox}"
+                                Grid.Row="2"
+                                Grid.Column="1"
+                               
+                />
 
                 <Button
                     Name="_ctlNewBucket"
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="2"
                     Margin="5,0,5,0"
                     Padding="5,2"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
-                    Click="_ctlNewBucket_Click">
+                    Command="{Binding ViewModel.CreateBucketCommand}">
                     <Button.Content>
                         <WrapPanel>
                             <Image
@@ -149,7 +213,26 @@
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-
+                <TextBlock
+                    Margin="16,2,4,2"
+                    TextWrapping="Wrap"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorBorderBrushKey}}"
+                    Text="{Binding ElementName=_ctlBucketPicker, 
+                       Path=(Validation.Errors)/ErrorContent}">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility"
+                                    Value="{Binding ElementName=__ctlBucketPicker, Path=(Validation.HasError), Converter={StaticResource HasValueVisibilityConverter}}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ViewModel.Loading}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
         </Grid>
 
@@ -157,6 +240,7 @@
             <CheckBox
                 Name="_ctlPersistSettings"
                 Margin="18,10,4,4"
+                IsChecked="{Binding ViewModel.SaveSettings}"
                 Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                 Save settings to aws-lambda-tools-defaults.json for future deployments.
             </CheckBox>

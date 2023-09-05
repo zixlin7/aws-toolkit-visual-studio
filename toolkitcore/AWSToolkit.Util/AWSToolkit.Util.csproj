@@ -11,8 +11,8 @@
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.130.0" />
-    <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.130.0" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.138.0" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.138.0" />
     <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.24" />
     <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.86" />
     <PackageReference Include="AWSSDK.EC2" Version="3.7.126.0" />
@@ -121,6 +121,9 @@
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ToolkitAMIs.xml">
       <Link>HostedFiles\ToolkitAMIs.xml</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AmazonCLIExtensions\AmazonCLIExtensions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Localization\Notification.Designer.cs">

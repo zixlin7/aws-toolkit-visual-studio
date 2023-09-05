@@ -98,14 +98,23 @@
                                   Margin="0 3 0 0" VerticalAlignment="Top" 
                                   IsChecked="True" 
                                   ClickMode="Press">
-                            <TextBlock TextWrapping="Wrap">
-                                Allow AWS Toolkit to collect usage information
+                            <TextBlock
+                                TextWrapping="Wrap"
+                                MouseDown="TextBlock_SwallowEvents">
+                                <Run Text="Allow AWS Toolkit to collect usage information (" /><Span>
+                                    <Hyperlink
+                                        IsEnabled="True"
+                                        RequestNavigate="Hyperlink_OnRequestNavigate"
+                                        NavigateUri="https://docs.aws.amazon.com/sdkref/latest/guide/support-maint-idetoolkits.html">
+                                        details
+                                    </Hyperlink>
+                                </Span><Run Text=")"/>
                             </TextBlock>
                         </CheckBox>
                         <TextBlock Margin="20 4 0 0" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
                             By letting us know which Toolkit features are used, this data helps improve the AWS Toolkit and other Amazon products and services. AWS handles this data in accordance with the
                             <Hyperlink IsEnabled="True"
-                                       RequestNavigate="AWSPrivacyPolicyLink_RequestNavigate" 
+                                       RequestNavigate="Hyperlink_OnRequestNavigate"
                                        NavigateUri="https://aws.amazon.com/privacy/">
                                 AWS Privacy Policy
                             </Hyperlink>. When available, an AWS Account ID is associated with this information.

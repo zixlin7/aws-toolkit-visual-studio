@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Amazon.AWSToolkit.Credentials.IO;
@@ -52,7 +53,7 @@ namespace AWSToolkit.Tests.Credentials.IO
             var credentialProfileOptions =
                 _fileReader.GetCredentialProfileOptions(SampleProfile.Name);
 
-            Assert.Equal(2, _fileReader.ProfileNames.Count);
+            Assert.Equal(2, _fileReader.ProfileNames.Count());
             Assert.NotNull(credentialProfileOptions);
             Assert.NotNull(_fileReader.GetCredentialProfile(SampleAlternateProfile.Name));
             Assert.Equal(SampleProfile.Options.AccessKey,
@@ -70,7 +71,7 @@ namespace AWSToolkit.Tests.Credentials.IO
             var allProfileNames = _fileReader.ProfileNames;
             var expectedProfiles = new List<string> {InvalidProfileName, SampleProfile.Name};
 
-            Assert.Equal(2, allProfileNames.Count);
+            Assert.Equal(2, allProfileNames.Count());
             Assert.Equal(expectedProfiles, allProfileNames);
 
             Assert.Null(_fileReader.GetCredentialProfile(InvalidProfileName));

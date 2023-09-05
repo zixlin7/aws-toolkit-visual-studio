@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows;
 
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
@@ -10,7 +9,6 @@ using Amazon.AWSToolkit.EC2.ConnectionUtils;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Util;
 using Amazon.EC2;
 using Amazon.EC2.Model;
@@ -197,17 +195,12 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         protected void RecordMetric(ActionResults result)
         {
-            var accountId = _connectionSettings?.GetAccountId(_toolkitContext.ServiceClientManager) ??
-                            MetadataValue.Invalid;
+            var data = result.CreateMetricData<Ec2ConnectToInstance>(_connectionSettings,
+                _toolkitContext.ServiceClientManager);
+            data.Result = result.AsTelemetryResult();
+            data.Ec2ConnectionType = _ec2ConnectionType;
 
-            _toolkitContext.TelemetryLogger.RecordEc2ConnectToInstance(new Ec2ConnectToInstance()
-            {
-                Result = result.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(result.Exception),
-                Ec2ConnectionType = _ec2ConnectionType,
-                AwsAccount = accountId,
-                AwsRegion = _connectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-            });
+            _toolkitContext.TelemetryLogger.RecordEc2ConnectToInstance(data);
         }
     }
 }

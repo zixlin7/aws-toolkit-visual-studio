@@ -1,0 +1,54 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls">
+    <Style 
+        TargetType="local:RegionSelector">
+        <Setter 
+            Property="Template">
+            <Setter.Value>
+                <ControlTemplate 
+                    TargetType="local:RegionSelector">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Margin="0 5 0 0"
+                            Text="Partition" />
+
+                        <ComboBox
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Margin="0 5 0 0"
+                            DisplayMemberPath="DisplayName"
+                            ItemsSource="{TemplateBinding Partitions}"
+                            SelectedItem="{Binding SelectedPartition, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Margin="12 5 0 0"
+                            Text="Region" />
+
+                        <ComboBox
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Margin="12 5 0 0"
+                            DisplayMemberPath="DisplayName"
+                            ItemsSource="{TemplateBinding Regions}"
+                            SelectedItem="{Binding SelectedRegion, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

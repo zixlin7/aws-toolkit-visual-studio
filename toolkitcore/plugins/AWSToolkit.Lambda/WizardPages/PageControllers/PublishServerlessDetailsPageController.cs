@@ -1,7 +1,9 @@
 ﻿using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
+
 using log4net;
+
 using System;
 using System.Windows.Controls;
 
@@ -32,7 +34,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         public void ResetPage()
         {
-
         }
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
@@ -45,8 +46,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             if (_pageUI == null)
             {
                 _pageUI = new PublishServerlessDetailsPage(this, ToolkitFactory.Instance.ToolkitContext);
+                _pageUI.ViewModel.PropertyChanged += _pageUI_PropertyChanged;
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
-                _pageUI.Connection.PropertyChanged += _pageUI_PropertyChanged;
+                _pageUI.ViewModel.Connection.PropertyChanged += _pageUI_PropertyChanged;
             }
 
             return _pageUI;
@@ -67,7 +69,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         public bool QueryTemplateParametersPageButtonEnablement()
         {
-            var wrapper = HostingWizard[UploadFunctionWizardProperties.CloudFormationTemplateWrapper] as CloudFormationTemplateWrapper;
+            var wrapper =
+                HostingWizard[UploadFunctionWizardProperties.CloudFormationTemplateWrapper] as
+                    CloudFormationTemplateWrapper;
             return wrapper != null && wrapper.ContainsUserVisibleParameters;
         }
 
@@ -80,8 +84,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         {
             // if we have no parameters, disable Next to try and indicate this is the last page, 
             // and the Upload page will start processing
-            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, QueryTemplateParametersPageButtonEnablement());
-            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish, QueryFinishButtonEnablement());
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward,
+                QueryTemplateParametersPageButtonEnablement());
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish,
+                QueryFinishButtonEnablement());
         }
 
         public bool IsForwardsNavigationAllowed
@@ -91,7 +97,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 if (_pageUI == null)
                     return false;
 
-                return _pageUI.AllRequiredFieldsAreSet;
+                return _pageUI.ViewModel.IsValidConfiguration();
             }
         }
 
@@ -100,18 +106,20 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-            HostingWizard.SetSelectedAccount(_pageUI.Connection.Account, UploadFunctionWizardProperties.UserAccount);
-            HostingWizard.SetSelectedRegion(_pageUI.Connection.Region, UploadFunctionWizardProperties.Region);
+            HostingWizard.SetSelectedAccount(_pageUI.ViewModel.Connection.Account,
+                UploadFunctionWizardProperties.UserAccount);
+            HostingWizard.SetSelectedRegion(_pageUI.ViewModel.Connection.Region, UploadFunctionWizardProperties.Region);
 
             var previousSetStackName = HostingWizard[UploadFunctionWizardProperties.StackName] as string;
 
-            if(!this._pageUI.IsNewStack && !string.IsNullOrEmpty(previousSetStackName) && !string.Equals(previousSetStackName, _pageUI.StackName, StringComparison.Ordinal))
+            if (!_pageUI.ViewModel.IsNewStack && !string.IsNullOrEmpty(previousSetStackName) &&
+                !string.Equals(previousSetStackName, _pageUI.ViewModel.Stack, StringComparison.Ordinal))
                 HostingWizard[UploadFunctionWizardProperties.CloudFormationTemplateParameters] = null;
 
-            HostingWizard[UploadFunctionWizardProperties.StackName] = _pageUI.StackName;
-            HostingWizard[UploadFunctionWizardProperties.IsNewStack] = _pageUI.IsNewStack;
-            HostingWizard[UploadFunctionWizardProperties.S3Bucket] = _pageUI.S3Bucket;
-            HostingWizard[UploadFunctionWizardProperties.SaveSettings] = _pageUI.SaveSettings;
+            HostingWizard[UploadFunctionWizardProperties.StackName] = _pageUI.ViewModel.Stack;
+            HostingWizard[UploadFunctionWizardProperties.IsNewStack] = _pageUI.ViewModel.IsNewStack;
+            HostingWizard[UploadFunctionWizardProperties.S3Bucket] = _pageUI.ViewModel.S3Bucket;
+            HostingWizard[UploadFunctionWizardProperties.SaveSettings] = _pageUI.ViewModel.SaveSettings;
 
 
             return true;
@@ -119,6 +127,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         private void _pageUI_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(_pageUI.ViewModel.Stack))
+            {
+                HostingWizard.SetProperty(UploadFunctionWizardProperties.IsNewStack,
+                    _pageUI.ViewModel.IsNewStack);
+            }
+
             TestForwardTransitionEnablement();
         }
     }

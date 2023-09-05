@@ -1,9 +1,8 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.DynamoDB.Util
 {
@@ -12,15 +11,10 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
         public static void RecordDynamoDbEdit(this ToolkitContext toolkitContext, DynamoDbTarget target,
             ActionResults results, AwsConnectionSettings awsConnectionSettings)
         {
-            var data = new DynamodbEdit()
-            {
-                AwsAccount =
-                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                DynamoDbTarget = target,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<DynamodbEdit>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
+            data.DynamoDbTarget = target;
 
             toolkitContext.TelemetryLogger.RecordDynamodbEdit(data);
         }
@@ -28,15 +22,9 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
         public static void RecordDynamoDbView(this ToolkitContext toolkitContext, DynamoDbTarget target,
             ActionResults results, AwsConnectionSettings awsConnectionSettings)
         {
-            var data = new DynamodbView()
-            {
-                AwsAccount =
-                    awsConnectionSettings?.GetAccountId(toolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                AwsRegion = awsConnectionSettings?.Region?.Id ?? MetadataValue.Invalid,
-                DynamoDbTarget = target,
-                Result = results.AsTelemetryResult(),
-                Reason = TelemetryHelper.GetMetricsReason(results.Exception),
-            };
+            var data = results.CreateMetricData<DynamodbView>(awsConnectionSettings,
+                toolkitContext.ServiceClientManager);
+            data.Result = results.AsTelemetryResult();
 
             toolkitContext.TelemetryLogger.RecordDynamodbView(data);
         }

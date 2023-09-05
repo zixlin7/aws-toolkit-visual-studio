@@ -1,0 +1,189 @@
+﻿<UserControl
+    x:Class="Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.StaticConfigurationDetailsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard"
+    xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors"
+    xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
+    xmlns:controls="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls"
+    themes:ToolkitThemes.UseToolkitTheme="True"
+    mc:Ignorable="d">
+
+    <StackPanel>
+        <Expander
+            Margin="0 9 0 0"
+            Background="Transparent"
+            Header="Where to find or create an IAM User Role?">
+            <FlowDocumentScrollViewer
+                VerticalScrollBarVisibility="Auto"
+                Margin="-20,0,4,0">
+                <FlowDocument
+                    Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.FlowDocumentStyle}}">
+                    <List MarkerStyle="Decimal">
+                        <ListItem>
+                            <Paragraph>
+                                <Run Text="Login to the" />
+                                <TextBlock>
+                                    <Hyperlink Command="{Binding OpenIamUsersConsoleCommand}">IAM Users page in the AWS Console.</Hyperlink>
+                                </TextBlock>
+                            </Paragraph>
+                        </ListItem>
+
+                        <ListItem Margin="0 6 0 0">
+                            <Paragraph>
+                                <Run Text="Add a new IAM user account with programmatic access." />
+                            </Paragraph>
+                        </ListItem>
+
+                        <ListItem Margin="0 6 0 0">
+                            <Paragraph>
+                                <Run Text="Attach an administrator or power user policy to the user." />
+                            </Paragraph>
+                        </ListItem>
+
+                        <ListItem Margin="0 6  0 0">
+                            <Paragraph>
+                                <Run
+                                    Text="Copy and paste the credentials into the form or download the CSV file containing the credentials and use the Import button to locate and load the credentials from the downloaded file." />
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+                </FlowDocument>
+            </FlowDocumentScrollViewer>
+        </Expander>
+
+        <TextBlock Margin="0 3 0 0">
+            <Hyperlink
+                Command="{Binding ImportCsvFileCommand}">
+                Import from CSV File...
+            </Hyperlink>
+        </TextBlock>
+
+        <WrapPanel Margin="0 9 0 0">
+            <TextBlock
+                HorizontalAlignment="Left"
+                TextWrapping="WrapWithOverflow"
+                Text="Profile Name" />
+            <commonUi:HelpHyperlinkPopup>
+                <TextBlock 
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                    TextWrapping="WrapWithOverflow">
+                    <Run Text="Name of this profile stored in the local configuration file."></Run>
+                    <commonUi:BrowserHyperLink
+                        x:Name="auth_learnMoreAWSResources"
+                        NavigateUriFromStatic="{x:Static urls:AwsUrls.UserGuideAuthIamCreds}">
+                        <wizBehaviors:UiClickMetric.Configure>
+                            <wizBehaviors:UiClickMetricConfig />
+                        </wizBehaviors:UiClickMetric.Configure>
+                        <Run Text="Learn more about AWS IAM Credentials" />
+                    </commonUi:BrowserHyperLink>
+                </TextBlock>
+            </commonUi:HelpHyperlinkPopup>
+        </WrapPanel>
+        <TextBox
+            x:Name="ProfileNameBox"
+            x:FieldModifier="private"
+            Margin="0 5 0 0"
+            Text="{Binding ProfileName, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+        <commonUi:ValidationErrorText
+            SourceElement="{x:Reference ProfileNameBox}" />
+
+        <TextBlock
+            Margin="0 9 0 0"
+            HorizontalAlignment="Left"
+            TextWrapping="WrapWithOverflow"
+            Text="Access Key ID" />
+
+        <PasswordBox
+            x:Name="AccessKeyIDBox"
+            x:FieldModifier="private"
+            Margin="0 5 0 0"
+            behaviors:PasswordBoxBehavior.BindPassword="true"
+            behaviors:PasswordBoxBehavior.Password="{Binding AccessKeyID, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+        <commonUi:ValidationErrorText
+            SourceElement="{x:Reference AccessKeyIDBox}" />
+
+        <TextBlock
+            Margin="0 9 0 0"
+            HorizontalAlignment="Left"
+            TextWrapping="WrapWithOverflow"
+            Text="Secret Key" />
+
+        <PasswordBox
+            x:Name="SecretKeyBox"
+            x:FieldModifier="private"
+            Margin="0 5 0 0"
+            behaviors:PasswordBoxBehavior.BindPassword="true"
+            behaviors:PasswordBoxBehavior.Password="{Binding SecretKey, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+        <commonUi:ValidationErrorText
+            SourceElement="{x:Reference SecretKeyBox}" />
+        
+        <Expander
+            Margin="0 9 0 0"
+            Background="Transparent"
+            HorizontalAlignment="Stretch">
+            <ComboBox
+                Margin="20 5 0 0"
+                FontWeight="Normal"
+                DisplayMemberPath="Key"
+                ItemsSource="{Binding CredentialFileTypes}"
+                SelectedValuePath="Value"
+                SelectedValue="{Binding SelectedCredentialFileType}" />
+            <Expander.Header>
+                <WrapPanel>
+                    <TextBlock
+                        Text="Storage Location (defaults to Shared Credentials File)" />
+                    <commonUi:HelpHyperlinkPopup 
+                        Background="Transparent">
+                        <TextBlock 
+                            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                            TextWrapping="WrapWithOverflow"
+                            Text="Shared Credentials are stored locally for use with the AWS CLI. The .NET Encrypted credentials are stored and encrypted, but not available for use with the AWS CLI." />
+                    </commonUi:HelpHyperlinkPopup>
+                </WrapPanel>
+            </Expander.Header>
+        </Expander>
+
+        <Expander
+            Margin="0 9 0 0"
+            HorizontalAlignment="Stretch"
+            Background="Transparent">
+            <controls:RegionSelector
+                Margin="20 5 0 0"
+                FontWeight="Normal"
+                DataContext="{Binding ProfileRegionSelectorMixin}"
+                Partitions="{Binding Partitions}"
+                Regions="{Binding Regions}"
+                SelectedPartition="{Binding SelectedPartition}"
+                SelectedRegion="{Binding SelectedRegion}" />
+            <Expander.Header>
+                <WrapPanel>
+                    <TextBlock 
+                        Text="Profile Region (defaults to us-east-1)" />
+                    <commonUi:HelpHyperlinkPopup 
+                        Background="Transparent">
+                        <TextBlock 
+                            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                            TextWrapping="WrapWithOverflow"
+                            Text="Specifies the AWS Region to send requests to for commands requested using this profile." />
+                    </commonUi:HelpHyperlinkPopup>
+                </WrapPanel>
+            </Expander.Header>            
+        </Expander>
+
+        <Button
+            HorizontalAlignment="Right"
+            Content="{Binding AddButtonText}"
+            Margin="0 12 0 0"
+            Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}"
+            Command="{Binding SaveCommand}" />
+    </StackPanel>
+</UserControl>

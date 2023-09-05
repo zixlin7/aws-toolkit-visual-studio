@@ -97,9 +97,10 @@ using Debugger = System.Diagnostics.Debugger;
 using OutputWindow = Amazon.AwsToolkit.VsSdk.Common.OutputWindow.OutputWindow;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
-using Amazon.AWSToolkit.VisualStudio.ArmPreview;
-using Amazon.AWSToolkit.Notifications;
-
+using Amazon.AWSToolkit.VisualStudio.GettingStarted;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.LanguageServer.Client;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -196,7 +197,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         private ToolkitContext _toolkitContext;
         private TelemetryManager _telemetryManager;
         private TelemetryInfoBarManager _telemetryInfoBarManager;
-        private ArmPreviewInfoBarManager _armPreviewInfoBarManager;
         private SupportedVersionBarManager _supportedVersionBarManager;
         private NotificationInfoBarManager _notificationInfoBarManager;
         private ProductEnvironment _productEnvironment;
@@ -618,6 +618,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 await InitializeAwsToolkitMenuCommandsAsync();
 
                 await ViewAwsExplorerCommand.InitializeAsync(
+                    _toolkitContext,
                     GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidAWSNavigator,
                     this);
 
@@ -637,6 +638,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 await InitializePublishToAwsAsync(hostInfo);
 
+                await UiClickMetric.InitializeAsync(_toolkitContext);
+
                 await ToolkitFactory.InitializeToolkit(
                     navigator,
                     _toolkitContext,
@@ -653,13 +656,27 @@ namespace Amazon.AWSToolkit.VisualStudio
                         ShowFirstRun();
                     });
 
+                // TODO : IDE-11469 : phase out SignalShellInitializationComplete by replacing reliance on static globals with MEF & IToolkitContextProvider
                 ToolkitFactory.SignalShellInitializationComplete();
+                await InitializeToolkitContextProviderAsync();
                 RunLogCleanupAsync().LogExceptionAndForget();
             }
             finally
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        /// <summary>
+        /// Makes the ToolkitContext object available to MEF components (through IToolkitContextProvider)
+        /// </summary>
+        private async Task InitializeToolkitContextProviderAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+            var componentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
+
+            var toolkitContextProvider = componentModel.GetService<IToolkitContextProvider>() as ToolkitContextProvider;
+            toolkitContextProvider?.Initialize(_toolkitContext);
         }
 
         private async Task RunLogCleanupAsync()
@@ -1058,7 +1075,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _shellInitialized = true;
                 ShowFirstRun();
                 ShowTelemetryNotice();
-                ShowArmPreviewNotice();
                 ShowSupportedVersionNotice(ToolkitHosts.Vs2017);
                 ShowNotificationsAsync(_productEnvironment).LogExceptionAndForget();
             }
@@ -1087,7 +1103,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                             }
                             else
                             {
-                                new FirstRunController(this, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                                var view = new GettingStartedView();
+                                Mvvm.SetViewModel(view, new GettingStartedViewModel(_toolkitContext));
+                                _toolkitContext.ToolkitHost.OpenInEditor(view);
                             }
                         }
                     }
@@ -1119,30 +1137,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 catch (Exception e)
                 {
                     LOGGER.Error("ShowTelemetryNotice error", e);
-                }
-            });
-        }
-
-        private void ShowArmPreviewNotice()
-        {
-            if (!ArmPreviewNotice.CanShowNotice())
-            {
-                return;
-            }
-
-            JoinableTaskFactory.Run(async () =>
-            {
-                try
-                {
-                    await JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                    LOGGER.Debug("Attempting to show Arm64 Preview Banner");
-                    _armPreviewInfoBarManager = new ArmPreviewInfoBarManager(this, _toolkitContext);
-                    _armPreviewInfoBarManager.ShowArmPreviewInfoBar();
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error("ShowArmPreviewNotice error", e);
                 }
             });
         }
@@ -2640,7 +2634,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryManager?.Dispose();
 
             _telemetryInfoBarManager?.Dispose();
-            _armPreviewInfoBarManager?.Dispose();
             _supportedVersionBarManager?.Dispose();
             _notificationInfoBarManager?.Dispose();
             _metricsOutputWindow?.Dispose();

@@ -8,6 +8,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Events;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
@@ -47,6 +48,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         public string ActiveAccountId { get; private set; }
         public string ActiveAwsId { get; private set; }
+        public IIdentityResolver IdentityResolver => _identityResolver;
         public ICredentialManager CredentialManager { get; }
         public ToolkitCredentials ActiveCredentials { get; private set; }
 
@@ -236,6 +238,26 @@ namespace Amazon.AWSToolkit.Credentials.Core
         public void ChangeConnectionSettings(ICredentialIdentifier identifier, ToolkitRegion region)
         {
             UpdateConnectionAndNotify(identifier, true, region, true);
+        }
+
+        public Task<ConnectionState> ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier,
+            ToolkitRegion region, CancellationToken cancellationToken = default)
+        {
+            return EventWrapperTask.Create<ConnectionStateChangeArgs, ConnectionState>(
+                addHandler: handler => ConnectionStateChanged += handler,
+                start: () => ChangeConnectionSettings(credentialIdentifier, region),
+                handleEvent: (sender, e, setResult) =>
+                {
+                    // See UpdateConnectionSettings for effectively terminal states
+                    if (e.State.IsTerminal
+                        || e.State.GetType() == typeof(ConnectionState.IncompleteConfiguration)
+                        || e.State.GetType() == typeof(ConnectionState.UserAction))
+                    {
+                        setResult(e.State);
+                    }
+                },
+                removeHandler: handler => ConnectionStateChanged -= handler,
+                cancellationToken);
         }
 
         private void HandleCredentialChanged(object sender, CredentialChangeEventArgs args)

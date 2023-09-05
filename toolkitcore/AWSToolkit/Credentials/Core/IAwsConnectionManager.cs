@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Credentials.State;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.Runtime;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.Credentials.Core
 {
@@ -11,6 +13,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         event EventHandler<ConnectionStateChangeArgs> ConnectionStateChanged;
         event EventHandler<ConnectionSettingsChangeArgs> ConnectionSettingsChanged;
 
+        IIdentityResolver IdentityResolver { get; }
         ICredentialManager CredentialManager { get; }
         ConnectionState ConnectionState { get; }
         ToolkitRegion ActiveRegion { get; }
@@ -23,6 +26,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
         void ChangeRegion(ToolkitRegion region);
         void RefreshConnectionState();
         void ChangeConnectionSettings(ICredentialIdentifier identifier, ToolkitRegion region);
+        Task<ConnectionState> ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier,
+            ToolkitRegion region, CancellationToken cancellationToken = default);
         bool IsValidConnectionSettings();
     }
 }

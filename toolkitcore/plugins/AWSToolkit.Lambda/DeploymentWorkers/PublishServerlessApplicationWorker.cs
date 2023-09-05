@@ -108,9 +108,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 }
                 else
                 {
-                    if (command.LastToolsException != null)
+                    if (command.LastException != null)
                     {
-                        throw command.LastToolsException;
+                        throw command.LastException;
                     }
                     else
                     {

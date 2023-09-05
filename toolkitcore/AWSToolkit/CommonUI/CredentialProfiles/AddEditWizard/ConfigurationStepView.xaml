@@ -1,0 +1,71 @@
+﻿<UserControl 
+    x:Class="Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.ConfigurationStepView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard"
+    xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls"
+    themes:ToolkitThemes.UseToolkitTheme="True"    
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:RelayValueConverter
+            x:Key="ViewToViewModelConverter"
+            ConvertHandler="{x:Static local:ViewModel.ViewToViewModel}" />
+    </UserControl.Resources>
+    
+    <StackPanel>
+        <WrapPanel Margin="0 9 0 0">
+            <TextBlock
+                HorizontalAlignment="Left"
+                TextWrapping="Wrap"
+                Text="Profile Type" />
+            <commonUi:HelpHyperlinkPopup>
+                <TextBlock 
+                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                    TextWrapping="WrapWithOverflow">
+                    <Run>The authentication method used to validate this profile's credentials.</Run>
+                    <commonUi:BrowserHyperLink
+                        NavigateUriFromStatic="{x:Static urls:AwsUrls.UserGuideAuth}">
+                        <Run Text="Learn more about authentication options" />
+                    </commonUi:BrowserHyperLink>
+                </TextBlock>
+            </commonUi:HelpHyperlinkPopup>
+        </WrapPanel>
+        <ComboBox
+            x:Name="auth_openConnectionSelector"
+            x:FieldModifier="private"
+            Margin="0 5 0 0"
+            DisplayMemberPath="CredentialTypeDescription"
+            ItemsSource="{Binding Items, ElementName=ConfigurationDetailsCardControl, Converter={StaticResource ViewToViewModelConverter}}"
+            SelectedValue="{Binding SelectedCredentialType}"
+            SelectedValuePath="CredentialType">
+            <wizBehaviors:UiClickMetric.Configure>
+                <wizBehaviors:UiClickMetricConfig
+                    EventName="DropDownOpened" />
+            </wizBehaviors:UiClickMetric.Configure>
+        </ComboBox>
+
+        <commonUi:CardControl
+            x:Name="ConfigurationDetailsCardControl"
+            x:FieldModifier="private"
+            SelectedValue="{Binding SelectedValue, ElementName=auth_openConnectionSelector}"
+            SelectedValuePath="DataContext.CredentialType">
+            <local:SsoConfigurationDetailsView>
+                <wizBehaviors:Mvvm.ViewModel>
+                    <local:SsoConfigurationDetailsViewModel />
+                </wizBehaviors:Mvvm.ViewModel>
+            </local:SsoConfigurationDetailsView>
+            <local:StaticConfigurationDetailsView>
+                <wizBehaviors:Mvvm.ViewModel>
+                    <local:StaticConfigurationDetailsViewModel />
+                </wizBehaviors:Mvvm.ViewModel>
+            </local:StaticConfigurationDetailsView>
+        </commonUi:CardControl>
+    </StackPanel>
+</UserControl>

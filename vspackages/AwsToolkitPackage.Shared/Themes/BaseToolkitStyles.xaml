@@ -8,7 +8,12 @@
     <!-- This is the same padding used by Visual Studio Text Box controls (like TextBox and WatermarkedTextBox). -->
     <Thickness x:Key="{x:Static toolkit:ThemeResourceKeys.InputPaddingKey}">6,8,6,8</Thickness>
 
-    <Brush x:Key="{x:Static toolkit:ThemeResourceKeys.VS2019ErrorBrushKey}">Red</Brush>
+    <Brush x:Key="{x:Static toolkit:ThemeResourceKeys.VS2019ErrorBackgroundBrushKey}">MistyRose</Brush>
+    <Brush x:Key="{x:Static toolkit:ThemeResourceKeys.VS2019ErrorBorderBrushKey}">Red</Brush>
+    <Brush x:Key="{x:Static toolkit:ThemeResourceKeys.VS2019ErrorTextBrushKey}">Black</Brush>
+    <Brush x:Key="{x:Static toolkit:ThemeResourceKeys.VS2019SuccessBackgroundBrushKey}">MintCream</Brush>
+    <Brush x:Key="{x:Static toolkit:ThemeResourceKeys.VS2019SuccessBorderBrushKey}">Green</Brush>
+    <Brush x:Key="{x:Static toolkit:ThemeResourceKeys.VS2019SuccessTextBrushKey}">Black</Brush>
 
     <!-- Apply the VS Button Theme as the default Button theme -->
     <Style 
@@ -25,5 +30,16 @@
     <Style
         TargetType="commonUi:BrowserHyperLink" 
         BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ThemedDialogHyperlinkStyleKey}}" />
+
+    <Style
+        x:Key="{x:Static themes:ToolkitThemeResourceKeys.FlowDocumentStyle}" 
+        TargetType="{x:Type FlowDocument}">
+        <Setter
+            Property="FontFamily"
+            Value="{DynamicResource {x:Static toolkit:ThemeFontResources.EnvironmentFontFamilyKey}}" />
+        <Setter
+            Property="FontSize"
+            Value="{DynamicResource {x:Static toolkit:ThemeFontResources.EnvironmentFontSizeKey}}" />
+    </Style>
 
 </ResourceDictionary>

@@ -8,7 +8,7 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.View;
 
@@ -147,16 +147,15 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         internal void RecordAwsAddCredentialsMetric(ActionResults result)
         {
             var metricSource = MetricSources.GettingStartedMetricSource.GettingStarted;
-            ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(new AwsModifyCredentials()
-            {
-                AwsAccount = ToolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet,
-                AwsRegion = MetadataValue.NotApplicable,
-                Result = result.AsTelemetryResult(),
-                CredentialModification = CredentialModification.Add,
-                Source = metricSource.Location,
-                ServiceType = metricSource.Service,
-                Reason = TelemetryHelper.GetMetricsReason(result?.Exception)
-            });
+            var accountId = ToolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
+
+            var data = result.CreateMetricData<AwsModifyCredentials>(accountId, MetadataValue.NotApplicable);
+            data.Result = result.AsTelemetryResult();
+            data.CredentialModification = CredentialModification.Add;
+            data.Source = metricSource.Location;
+            data.ServiceType = metricSource.Service;
+
+            ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
         }
 
         public async Task ShowAwsExplorerAsync()

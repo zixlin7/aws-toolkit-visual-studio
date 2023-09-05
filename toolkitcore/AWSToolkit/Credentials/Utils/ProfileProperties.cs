@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Amazon.AWSToolkit.Credentials.Utils
+﻿namespace Amazon.AWSToolkit.Credentials.Utils
 {
     /// <summary>
     /// Class representing properties associated with a credential profile
@@ -30,5 +28,10 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         public string SsoRegion { get; set; }
         public string SsoRoleName { get; set; }
         public string SsoStartUrl { get; set; }
+
+        public ProfileProperties ShallowClone()
+        {
+            return MemberwiseClone() as ProfileProperties;
+        }
     }
 }

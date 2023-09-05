@@ -257,27 +257,32 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             var hostWizard = PageController.HostingWizard;
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.MemorySize))
+            {
                 _ctlMemory.SelectedValue = hostWizard[UploadFunctionWizardProperties.MemorySize];
+            }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Timeout))
+            {
                 _ctlTimeout.Text = ((int)hostWizard[UploadFunctionWizardProperties.Timeout]).ToString();
+            }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.EnvironmentVariables))
-                _ctlTimeout.Text = ((int)hostWizard[UploadFunctionWizardProperties.Timeout]).ToString();
-
-            var variables = hostWizard[UploadFunctionWizardProperties.EnvironmentVariables] as ICollection<EnvironmentVariable>;
-            if(variables != null)
             {
-                this.EnvironmentVariables.Clear();
-                foreach(var v in variables)
+                if (hostWizard[UploadFunctionWizardProperties.EnvironmentVariables] is ICollection<EnvironmentVariable> variables)
                 {
-                    this.EnvironmentVariables.Add(v);
+                    EnvironmentVariables.Clear();
+                    foreach (var v in variables)
+                    {
+                        EnvironmentVariables.Add(v);
+                    }
                 }
             }
 
             string role = null;
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Role))
+            {
                 role = hostWizard[UploadFunctionWizardProperties.Role] as string;
+            }
 
             IntializeIAMPickerForAccountAsync(role);
         }

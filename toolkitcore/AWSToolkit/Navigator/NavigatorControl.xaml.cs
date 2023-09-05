@@ -26,6 +26,7 @@ using Amazon.AWSToolkit.Telemetry.Model;
 
 using log4net;
 using CredentialType = Amazon.AWSToolkit.Credentials.Utils.CredentialType;
+using Amazon.AWSToolkit.Telemetry;
 
 namespace Amazon.AWSToolkit.Navigator
 {
@@ -64,8 +65,6 @@ namespace Amazon.AWSToolkit.Navigator
             _navigatorViewModel.AddAccountCommand = new RelayCommand(AddAccount);
             _navigatorViewModel.DeleteAccountCommand = new RelayCommand(DeleteAccount);
             _navigatorViewModel.EditAccountCommand = new RelayCommand(EditEnabledCallback, EditAccount);
-            _navigatorViewModel.ShareArmPreviewFeedback = new ShareArmPreviewFeedbackCommand(_toolkitContext);
-            _navigatorViewModel.FileArmPreviewIssue = new FileArmPreviewIssueCommand(_toolkitContext.ToolkitHost);
 
             _toolkitContext.ConnectionManager.ConnectionSettingsChanged += OnConnectionManagerSettingsChanged;
             _toolkitContext.ConnectionManager.ConnectionStateChanged += OnConnectionStateChanged;
@@ -368,7 +367,11 @@ namespace Amazon.AWSToolkit.Navigator
             }
             else
             {
-                new RegisterAccountController(_toolkitContext).Execute(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+                var dialog = _toolkitContext.ToolkitHost.GetDialogFactory().CreateCredentialProfileDialog(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+                if (!dialog.Show())
+                {
+                    RecordAwsModifyCredentialsMetric(ActionResults.CreateCancelled(), CredentialModification.Add);
+                }
             }
         }
 
@@ -522,10 +525,7 @@ namespace Amazon.AWSToolkit.Navigator
 
             try
             {
-                // TODO: IDE-10791 Remove legacy UX
-                var command = ToolkitSettings.Instance.UseLegacyAccountUx ?
-                    new LegacyEditAccountController(_toolkitContext) :
-                    new EditAccountController(_toolkitContext) as IContextCommand;
+                var command = new LegacyEditAccountController(_toolkitContext);
                 var results = command.Execute(viewModel);
                 RecordAwsModifyCredentialsMetric(results, CredentialModification.Edit);
             }

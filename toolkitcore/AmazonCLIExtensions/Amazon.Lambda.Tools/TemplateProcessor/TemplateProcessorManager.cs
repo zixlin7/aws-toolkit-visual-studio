@@ -142,12 +142,18 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
             UpdateResourceResults results;
             var localPath = field.GetLocalPath();
 
-            if (!Path.IsPathRooted(localPath))
+            if (!field.IsImagePushed && !Path.IsPathRooted(localPath))
                 localPath = Path.Combine(templateDirectory, localPath);
 
             bool deleteArchiveAfterUploaded = false;
+
+            // If ImageUri needs to be processed.
+            if (field.IsImagePushed)
+            {
+                results = new UpdateResourceResults { ImageUri = localPath };
+            }
             // Uploading a single file as the code for the resource. If the single file is not a zip file then zip the file first.
-            if(File.Exists(localPath))
+            else if (File.Exists(localPath))
             {
                 if(field.IsCode && !string.Equals(Path.GetExtension(localPath), ".zip", StringComparison.OrdinalIgnoreCase))
                 {
@@ -268,7 +274,7 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
                     if (command.LastToolsException != null)
                         message += $": {command.LastToolsException.Message}";
 
-                    throw new LambdaToolsException(message, ToolsException.CommonErrorCode.DotnetPublishFailed);
+                    throw new LambdaToolsException(message, ToolsException.CommonErrorCode.DotnetPublishFailed, command.LastToolsException);
                 }
 
                 var results = new UpdateResourceResults() { ZipArchivePath = outputPackage };

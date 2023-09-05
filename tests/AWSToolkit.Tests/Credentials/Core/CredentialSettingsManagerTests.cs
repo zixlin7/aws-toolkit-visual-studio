@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -53,6 +54,25 @@ namespace AWSToolkit.Tests.Credentials.Core
             var identifier = new SDKCredentialIdentifier(SampleProfileName);
             var properties = new ProfileProperties();
             _credentialSettingsManager.CreateProfile(identifier, properties);
+            _sdkProcessor.Verify(x => x.CreateProfile(identifier, properties), Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateProfileTestAsync()
+        {
+            var identifier = new SDKCredentialIdentifier(SampleProfileName);
+            var properties = new ProfileProperties();
+
+            var e = new CredentialChangeEventArgs()
+            {
+                Added = new List<ICredentialIdentifier>() { identifier }
+            };
+
+            _sdkProcessor.Setup(x => x.CreateProfile(It.IsAny<ICredentialIdentifier>(), It.IsAny<ProfileProperties>()))
+                .Callback(() => _sdkFactory.Raise(x => x.CredentialsChanged += null, e));
+
+            await _credentialSettingsManager.CreateProfileAsync(identifier, properties);
+
             _sdkProcessor.Verify(x => x.CreateProfile(identifier, properties), Times.Once);
         }
 

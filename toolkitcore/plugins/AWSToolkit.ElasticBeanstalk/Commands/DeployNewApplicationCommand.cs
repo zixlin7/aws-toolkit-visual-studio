@@ -17,8 +17,8 @@ using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
 using Amazon.AWSToolkit.Telemetry.Model;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -246,7 +246,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
             catch (Exception e)
             {
-                deployMetric.Reason = BeanstalkHelpers.GetMetricsReason(e);
+                deployMetric.AddErrorMetadata(e);
+
                 string errMsg = string.Format("Error publishing application: {0}", e.Message);
                 Observer.Error(errMsg);
                 _toolkitContext.ToolkitHost.ShowError("Publish Error", errMsg);

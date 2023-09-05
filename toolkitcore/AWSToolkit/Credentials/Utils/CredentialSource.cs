@@ -16,6 +16,8 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         {
             switch (credentialFactoryId)
             {
+                case MemoryCredentialProviderFactory.MemoryProfileFactoryId:
+                    return CredentialSourceId.Memory;
                 case SharedCredentialProviderFactory.SharedProfileFactoryId:
                     return CredentialSourceId.SharedCredentials;
                 case SDKCredentialProviderFactory.SdkProfileFactoryId:

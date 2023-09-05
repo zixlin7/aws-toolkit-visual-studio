@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
+using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 
 using log4net;
 
@@ -42,7 +44,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
                 package);
         }
 
-        protected override void Execute(object sender, EventArgs args)
+        protected override void Execute(object sender, EventArgs e)
         {
             try
             {
@@ -53,13 +55,15 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
                 }
                 else
                 {
-                    new FirstRunController(_toolkitPackage, _toolkitSettingsWatcher, _toolkitContext).Execute();
+                    var view = new GettingStartedView();
+                    Mvvm.SetViewModel(view, new GettingStartedViewModel(_toolkitContext));
+                    _toolkitContext.ToolkitHost.OpenInEditor(view);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.Error($"Error showing Getting Started dialog", e);
-                _toolkitContext.ToolkitHost.ShowError("Failed to open the Getting Started screen", e.Message);
+                Logger.Error($"Error showing Getting Started dialog", ex);
+                _toolkitContext.ToolkitHost.ShowError("Failed to open the Getting Started screen", ex.Message);
             }
         }
 

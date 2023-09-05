@@ -7,10 +7,10 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.ECS.Util;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -82,14 +82,11 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             try
             {
-                ToolkitContext.TelemetryLogger.RecordEcrDeployImage(new EcrDeployImage()
-                {
-                    Result = result.AsTelemetryResult(),
-                    AwsRegion = connectionSettings.Region?.Id ?? MetadataValue.Invalid,
-                    AwsAccount = connectionSettings.GetAccountId(ToolkitContext.ServiceClientManager) ?? MetadataValue.Invalid,
-                    Reason = EcsTelemetryUtils.GetReason(result?.Exception),
-                    Duration = duration
-                });
+                var data = result.CreateMetricData<EcrDeployImage>(connectionSettings,
+                    ToolkitContext.ServiceClientManager);
+                data.Result = result.AsTelemetryResult();
+                data.Duration = duration;
+                ToolkitContext.TelemetryLogger.RecordEcrDeployImage(data);
             }
             catch (Exception e)
             {
@@ -120,13 +117,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
             if (!result)
             {
-                string errorContents = command.LastToolsException?.Message ?? "Unknown";
+                string errorContents = command.LastException?.Message ?? "Unknown";
                 string errorMessage = $"Error publishing container to AWS: {errorContents}";
 
                 Helper.AppendUploadStatus(errorMessage);
             }
 
-            var exception = DetermineErrorException(command.LastToolsException, "Failed to push image to AWS");
+            var exception = DetermineErrorException(command.LastException, "Failed to push image to AWS");
             return result ? new ActionResults().WithSuccess(true) : ActionResults.CreateFailed(exception);
         }
     }

@@ -9,9 +9,6 @@
     <Import_RootNamespace>Amazon.AWSToolkit.VisualStudio</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ArmPreview\ArmPreviewInfoBar.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ArmPreview\ArmPreviewInfoBarManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ArmPreview\Commands\DismissArmPreviewCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AWSToolkitPackage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BeanstalkBuildAndDeployController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BeanstalkProjectPersistenceInfo.cs" />
@@ -48,17 +45,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\CloudFormationTemplateProjectNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateEditorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateFileNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Controller\FirstRunController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Controller\LegacyFirstRunController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Model\FirstRunModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Model\LegacyFirstRunModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)firstrun\model\MetricSources.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml.cs">
-      <DependentUpon>FirstRunControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml.cs">
       <DependentUpon>LegacyFirstRunControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedView.xaml.cs">
+      <DependentUpon>GettingStartedView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\MetricSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Guids.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedEditorFactory.cs" />
@@ -98,6 +95,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Services\AWSLegacyDeploymentPersistenceService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\AWSToolkitShellProviderService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ToolkitContextProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -147,11 +145,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\FirstRunControl.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

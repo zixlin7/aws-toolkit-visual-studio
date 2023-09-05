@@ -8,6 +8,9 @@ using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using log4net;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 {
@@ -89,9 +92,18 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
             }
 
             // TODO: IDE-10791 Remove legacy UX
-            var results = ToolkitSettings.Instance.UseLegacyAccountUx
-                ? new LegacyRegisterAccountController(ToolkitFactory.Instance.ToolkitContext).Execute(MetricSources.CodeCommitMetricSource.ConnectPanel)
-                : new RegisterAccountController(ToolkitFactory.Instance.ToolkitContext).Execute(MetricSources.CodeCommitMetricSource.ConnectPanel);
+            ActionResults results;
+            if (ToolkitSettings.Instance.UseLegacyAccountUx)
+            {
+                results = new LegacyRegisterAccountController(ToolkitFactory.Instance.ToolkitContext).Execute(MetricSources.CodeCommitMetricSource.ConnectPanel);
+            }
+            else
+            {
+                var dialog = ToolkitFactory.Instance.ToolkitContext.ToolkitHost.GetDialogFactory().CreateCredentialProfileDialog(MetricSources.CodeCommitMetricSource.ConnectPanel);
+                results = dialog.Show() ?
+                    new ActionResults().WithSuccess(true) :
+                    ActionResults.CreateCancelled();
+            }
 
             if (results.Success)
             {

@@ -12,6 +12,7 @@ namespace AWSToolkit.Tests.Credentials.IO
     {
         private static readonly CredentialProfile SampleProfile = CredentialProfileTestHelper.Basic.Valid.AccessAndSecret;
         private static readonly CredentialProfile SampleAlternateProfile = CredentialProfileTestHelper.Basic.Valid.Token;
+        private static readonly CredentialProfile SampleSsoWithSsoSessionProfile = CredentialProfileTestHelper.SsoWithSsoSession.ValidProfile;
 
         private readonly SharedCredentialFileReader _fileReader;
         private readonly SharedCredentialFileWriter _fileWriter;
@@ -25,11 +26,19 @@ namespace AWSToolkit.Tests.Credentials.IO
         }
 
         [Fact]
-        public void CreateProfileTest()
+        public void CreateProfileTestWithStaticProfile()
         {
             Assert.Empty(_fileReader.ProfileNames);
             _fileWriter.CreateOrUpdateProfile(SampleProfile);
-            Assert.NotNull( _fileReader.GetCredentialProfile(SampleProfile.Name));
+            Assert.Equal(SampleProfile, _fileReader.GetCredentialProfile(SampleProfile.Name));
+        }
+
+        [Fact]
+        public void CreateProfileTestWithSsoSession()
+        {
+            Assert.Empty(_fileReader.ProfileNames);
+            _fileWriter.CreateOrUpdateProfile(SampleSsoWithSsoSessionProfile);
+            Assert.Equal(SampleSsoWithSsoSessionProfile, _fileReader.GetCredentialProfile(SampleSsoWithSsoSessionProfile.Name));
         }
 
         [Fact]

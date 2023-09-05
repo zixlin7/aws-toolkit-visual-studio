@@ -23,6 +23,7 @@ namespace Amazon.Common.DotNetCli.Tools
             InvalidCredentialConfiguration,
 
             DotnetPublishFailed,
+            ShellOutToDotnetPublishFailed, // Return for the specific shell out to dotnet publish
 
             DockerBuildFailed,
             FailedToFindSolutionDirectory,
@@ -61,7 +62,7 @@ namespace Amazon.Common.DotNetCli.Tools
         }
 
         protected ToolsException(string message, string errorCode, Exception e)
-            : base(message)
+            : base(message, e)
         {
             this.Code = errorCode;
 
