@@ -28,5 +28,21 @@
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
     <ProjectReference Include="..\..\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- jose-jwt doesn't have a strong-signed NuGet package. We sign it ourselves using a 
+    "before ResolveAssemblyReferences" target, lower in this file. -->
+    <Reference Include="jose-jwt">
+      <HintPath>$(BuildRoot)\thirdparty\jose-jwt.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="..\AwsToolkit.CodeWhisperer.Shared\AwsToolkit.CodeWhisperer.Shared.projitems" Label="Shared" />
+
+  <!-- This is activated when msbuild or Visual Studio attempt to resolve assembly references.
+    This means that the IDE will briefly complain that this assembly's symbols cannot be found, 
+    but we will not get a compilation error. 
+    
+    See the "Jose-jwt" section of ./CONTRIBUTING.md for more details. -->
+  <Target Name="SelfSignJoseJwt" BeforeTargets="ResolveAssemblyReferences">
+    <MSBuild Projects="$(BuildRoot)\buildtools\signJoseJwt.proj" Targets="sign-jose-jwt" />
+  </Target>
 </Project>

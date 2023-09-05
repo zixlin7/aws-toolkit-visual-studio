@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Jose;
+
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
@@ -8,9 +10,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
     /// We want payload property names to use camelCase by default, rather than .NET's PascalCase.
     /// Otherwise recipients (language servers) will not locate the fields they are looking for.
     /// </summary>
-    // TODO : Add a reference to a strongly signed version of the jose-jwt NuGet package
-    //internal class JwtJsonMapper : IJsonMapper
-    internal class JwtJsonMapper
+    internal class JwtJsonMapper : IJsonMapper
     {
         private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings()
         {

@@ -7,11 +7,18 @@
 	</PropertyGroup>
 	<Import Project="..\AwsToolkit.CodeWhisperer.Tests.Shared\AwsToolkit.CodeWhisperer.Tests.Shared.projitems" Label="Shared" />
 	<ItemGroup>
+		<Reference Include="jose-jwt">
+		<HintPath>$(BuildRoot)\thirdparty\jose-jwt.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+	<ItemGroup>
 	  <PackageReference Include="FluentAssertions" Version="6.12.0" />
 	  <PackageReference Include="xunit" Version="2.4.1" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\vspackages\CodeWhisperer\AwsToolkit.CodeWhisperer.v17\AwsToolkit.CodeWhisperer.v17.csproj" />
+	  <ProjectReference Include="..\..\..\vspackages\CodeWhisperer\AwsToolkit.CodeWhisperer.v17\AwsToolkit.CodeWhisperer.v17.csproj">
+	    <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
+	  </ProjectReference>
 	  <ProjectReference Include="..\..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj" />
 	</ItemGroup>
 </Project>
