@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <InternalBuildTools Condition="'$(InternalBuildTools)'==''">$(MSBuildProjectDirectory)\..\buildtasks</InternalBuildTools>
+    <FailIfNoChanges Condition="'$(FailIfNoChanges)'==''">true</FailIfNoChanges>
   </PropertyGroup>
 
   <Import Project="$(InternalBuildTools)\references.targets"
@@ -17,14 +18,14 @@
     <Exec Command="git add $(nextReleasePath)" />
   </Target>
   <Target Name="createRelease" DependsOnTargets="build-buildtasks">
-    <CreateReleaseTask RepositoryRoot="$(MSBuildProjectDirectory)\.." ReleaseVersion="$(ReleaseVersion)">
+    <CreateReleaseTask RepositoryRoot="$(MSBuildProjectDirectory)\.." ReleaseVersion="$(ReleaseVersion)" FailIfNoChanges="$(FailIfNoChanges)">
       <Output TaskParameter="ChangeDirectoryPath" PropertyName="changeDirectory" />
       <Output TaskParameter="NextReleasePath" PropertyName="nextRelease" />
       <Output TaskParameter="ChangelogPath" PropertyName="changelog" />
       <Output TaskParameter="ReleaseNotesPath" PropertyName="releaseNotes" />
     </CreateReleaseTask>
     <Exec Command="git add $(changeDirectory)" />
-    <Exec Command="git rm -rf $(nextRelease)" />
+    <Exec Command="git rm -rf $(nextRelease) --ignore-unmatch" />
     <Exec Command="git add $(changelog)" />
     <Exec Command="git add $(releaseNotes)" />
   </Target>
