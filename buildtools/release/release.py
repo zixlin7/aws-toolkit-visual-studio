@@ -652,7 +652,7 @@ def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig, remo
 
     repo.head.reference = config.commit
     index = repo.index
-    index.reset(working_tree=True)
+    repo.head.reset(working_tree=True)
 
     for file in repo.untracked_files:
         os.remove(file)
@@ -846,7 +846,7 @@ if __name__ == '__main__':
     print()
 
     repo.head.reference = development_commit
-    repo.index.reset(working_tree=True)
+    repo.head.reset(working_tree=True)
 
     # clean (potentially add warning, though we're already in a detached state so all changes would be committed)
     for file in repo.untracked_files:
