@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lsp;
 
@@ -56,6 +56,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         protected readonly bool _initializeServerWithCredentials = false;
 
+        private readonly CredentialsEncryption _credentialsEncryption = new CredentialsEncryption();
+
         /// <summary>
         /// Used to send notifications and requests to the language server
         /// </summary>
@@ -66,7 +68,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             _initializeServerWithCredentials = initializeServerWithCredentials;
         }
 
-        public TProxy CreateProxy<TProxy>() where TProxy : class
+        /// <summary>
+        /// Requests a JSON-PRC Proxy that is used to access set of
+        /// notifications/requests on the language server.
+        /// See also: https://github.com/microsoft/vs-streamjsonrpc/blob/main/doc/index.md
+        /// </summary>
+        /// <typeparam name="TProxy">The interface proxy to request</typeparam>
+        protected TProxy CreateProxy<TProxy>() where TProxy : class
         {
             var proxyOptions = new JsonRpcProxyOptions()
             {
@@ -74,6 +82,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             };
 
             return _rpc.Attach<TProxy>(proxyOptions);
+        }
+
+        public IToolkitLspCredentials CreateToolkitLspCredentials()
+        {
+            return new ToolkitLspCredentials(_credentialsEncryption, CreateProxy<ILspCredentials>());
         }
 
         public event AsyncEventHandler<EventArgs> StartAsync;
@@ -238,11 +251,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         private void WriteCredentialsEncryptionInit(StreamWriter writer)
         {
-            var message = new CredentialsEncryptionInitialization()
-            {
-                Mode = CredentialsEncryptionInitialization.Modes.Jwt,
-                Key = "FOO", // TODO : Implement when setting up Auth
-            };
+            var message = _credentialsEncryption.CreateEncryptionInitializationRequest();
 
             var json = JsonConvert.SerializeObject(message, _jsonSerializerSettings);
 

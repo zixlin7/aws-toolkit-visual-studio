@@ -12,9 +12,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\IToolkitLspClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ToolkitLspClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryption.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ILspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\IToolkitLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsEncryptionInitialization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsEncryptionInitializationRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\JwtFieldNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\CodeWhispererLspSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\ICodeWhispererLspSettingsRepository.cs" />

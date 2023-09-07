@@ -1,4 +1,6 @@
-﻿namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
+﻿using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+
+namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 {
     /// <summary>
     /// General encapsulation for a language client.
@@ -11,12 +13,6 @@
         // Start()
         // Stop()
 
-        /// <summary>
-        /// Requests a JSON-PRC Proxy that is used to access set of
-        /// notifications/requests on the language server.
-        /// See also: https://github.com/microsoft/vs-streamjsonrpc/blob/main/doc/index.md
-        /// </summary>
-        /// <typeparam name="TProxy">The interface proxy to request</typeparam>
-        TProxy CreateProxy<TProxy>() where TProxy : class;
+        IToolkitLspCredentials CreateToolkitLspCredentials();
     }
 }

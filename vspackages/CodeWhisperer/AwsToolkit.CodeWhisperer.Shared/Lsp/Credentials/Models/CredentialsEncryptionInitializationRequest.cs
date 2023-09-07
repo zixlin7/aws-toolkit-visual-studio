@@ -4,7 +4,7 @@
     /// Model for the payload sent to the language server when passing
     /// credentials encryption details at startup.
     /// </summary>
-    internal class CredentialsEncryptionInitialization
+    internal class CredentialsEncryptionInitializationRequest
     {
         internal static class Modes
         {

@@ -9,6 +9,9 @@
     <Import_RootNamespace>Amazon.AwsToolkit.CodeWhisperer.Tests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryptionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\FakeLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapperTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentialsTests.cs" />
   </ItemGroup>
 </Project>
