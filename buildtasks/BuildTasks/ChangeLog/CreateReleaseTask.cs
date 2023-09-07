@@ -25,6 +25,11 @@ namespace BuildTasks.ChangeLog
         public string ReleaseVersion { get; set; }
 
         /// <summary>
+        /// Raise an error if there are no changes
+        /// </summary>
+        public bool FailIfNoChanges { get; set; } = true;
+
+        /// <summary>
         /// The location for changes sub-directory containing release versions and next-release changelogs
         /// </summary>
         [Output]
@@ -79,8 +84,15 @@ namespace BuildTasks.ChangeLog
             //no change files in next-release directory
             if (!Directory.Exists(NextReleasePath) || (Directory.GetFiles(NextReleasePath).Length == 0))
             {
-                Console.WriteLine("Error: no changes to release!");
-                return false;
+                if (FailIfNoChanges)
+                {
+                    Console.WriteLine("Error: no changes to release!");
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("There are no changes, but error has been suppressed.");
+                }
             }
 
             //changelog file already exists
@@ -113,8 +125,18 @@ namespace BuildTasks.ChangeLog
         /// <returns>List of ChangeLogEntry objects</returns>
         public List<ChangeLogEntry> RetrieveChangeLogObjects()
         {
-            return Directory.EnumerateFiles(NextReleasePath, "*.*").Select(File.ReadAllText)
-                .Select(JsonConvert.DeserializeObject<ChangeLogEntry>).ToList();
+            var changeLogEntries = new List<ChangeLogEntry>();
+
+            if (Directory.Exists(NextReleasePath))
+            {
+                changeLogEntries.AddRange(
+                    Directory.EnumerateFiles(NextReleasePath, "*.*")
+                       .Select(File.ReadAllText)
+                        .Select(JsonConvert.DeserializeObject<ChangeLogEntry>)
+                    );
+            }
+
+            return changeLogEntries;
         }
 
         /// <summary>
