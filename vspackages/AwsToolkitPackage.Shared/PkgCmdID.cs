@@ -34,6 +34,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         public const uint cmdidLinkToDotNetOnAws = 0x0609;
         public const uint cmdidLinkToDotNetOnAwsCommunity = 0x0611;
         public const uint cmdidViewToolkitLogs = 0x0612;
+        // TEMPORARY - Menu item ID for Login to AWS Builder ID for CodeWhisperer development, remove before merging to main
+        public const uint cmdidLoginAwsBuilderIdForCodeWhisperer = 0x0613;
 
         // Groups
         public const uint IDG_AWS_CLOUDFORMATION_DEPLOYMENT = 0x1005;

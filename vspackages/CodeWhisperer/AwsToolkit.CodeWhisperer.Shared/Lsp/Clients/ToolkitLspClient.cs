@@ -304,7 +304,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// Must be set before starting the language server (occurs in the base class OnLoadedAsync)
         /// https://learn.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.languageserver.client.ilanguageclientcustommessage2.custommessagetarget?view=visualstudiosdk-2022#microsoft-visualstudio-languageserver-client-ilanguageclientcustommessage2-custommessagetarget
         /// </summary>
-        public object CustomMessageTarget => throw new NotImplementedException();
+        /// <remarks>
+        /// If left null, then custom messages won't be delivered.
+        /// </remarks>
+        public object CustomMessageTarget => null;
 
         public Task AttachForCustomMessageAsync(JsonRpc rpc)
         {

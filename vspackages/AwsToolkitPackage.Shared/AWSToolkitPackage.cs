@@ -924,63 +924,59 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
         private async Task InitializeAwsToolkitMenuCommandsAsync()
         {
-            var tasks = new List<Task>();
-
-            tasks.Add(
+            var tasks = new List<Task>
+            {
                 ViewUserGuideCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewUserGuide,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewUrlCommand.InitializeAsync(
                     AwsUrls.DotNetOnAws, ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidLinkToDotNetOnAws,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewUrlCommand.InitializeAsync(
                     AwsUrls.DotNetOnAwsCommunity, ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewGettingStartedCommand.InitializeAsync(
                     this, _toolkitContext, _toolkitSettingsWatcher,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewGettingStarted,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 CreateIssueCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidCreateIssue,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewFeedbackPanelCommand.InitializeAsync(
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidSubmitFeedback,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
-                 ViewToolkitLogsCommand.InitializeAsync(
+                ViewToolkitLogsCommand.InitializeAsync(
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewToolkitLogs,
+                    this),
+
+#if VS2022
+                // TEMPORARY - Menu item ID for Login to AWS Builder ID for CodeWhisperer development, remove before merging to main
+                TemporaryLoginToAwsBuilderIdForCodeWhispererCommand.InitializeAsync(
+                    _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) PkgCmdIDList.cmdidLoginAwsBuilderIdForCodeWhisperer,
                     this)
-            );
+#endif
+            };
 
             await Task.WhenAll(tasks);
         }

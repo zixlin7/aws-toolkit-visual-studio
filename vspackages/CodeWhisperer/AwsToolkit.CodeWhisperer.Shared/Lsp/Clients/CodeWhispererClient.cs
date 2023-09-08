@@ -19,6 +19,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     /// <summary>
     /// MEF component picked up by Visual Studio to define and orchestrate the CodeWhisperer language server.
     /// </summary>
+    [Export(typeof(IToolkitLspClient))]
     [Export(typeof(ILanguageClient))]
     [ContentType(ContentTypes.CSharp)]
     public class CodeWhispererClient : ToolkitLspClient
@@ -32,6 +33,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         }
 
         public override string Name => "Amazon CodeWhisperer Language Client";
+
+        // TODO IDE-11602
+        // Emitting as an anonymous type during early development, but consider options such as proxies, generated code, or hand-managed
+        // POCOs to keep the InitializationOptions in sync with AwsInitializationOptions.
+        // See https://github.com/aws/aws-language-servers/blob/main/core/aws-lsp-core/src/initialization/awsInitializationOptions.ts
+        public override object InitializationOptions => new
+        {
+            credentials = new
+            {
+                providesBearerToken = true
+            }
+        };
 
         protected override async Task<string> GetServerPathAsync()
         {
