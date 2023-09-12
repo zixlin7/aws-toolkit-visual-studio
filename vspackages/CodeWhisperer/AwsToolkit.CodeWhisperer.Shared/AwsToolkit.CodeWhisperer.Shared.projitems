@@ -9,6 +9,16 @@
     <Import_RootNamespace>Amazon.AwsToolkit.CodeWhisperer</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\BaseCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GetSuggestionsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GettingStartedCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SecurityScanCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewUserGuideCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\IToolkitLspClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ToolkitLspClient.cs" />
@@ -16,12 +26,25 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ILspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\IToolkitLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsEncryptionInitializationRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\JwtFieldNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\CodeWhispererLspSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\ICodeWhispererLspSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMargin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>CodeWhispererMarginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
