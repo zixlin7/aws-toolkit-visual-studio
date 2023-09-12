@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Windows;
 
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -25,6 +24,7 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
     public class ToolkitContextFixture
     {
         public ToolkitContext ToolkitContext { get; }
+        public FakeToolkitContextProvider ToolkitContextProvider { get; }
 
         public TelemetryFixture TelemetryFixture { get; } = new TelemetryFixture();
 
@@ -51,6 +51,8 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
                 TelemetryLogger = TelemetryLogger.Object,
                 ToolkitHost = ToolkitHost.Object
             };
+
+            ToolkitContextProvider = new FakeToolkitContextProvider(ToolkitContext);
 
             InitializeRegionProviderMocks();
         }
