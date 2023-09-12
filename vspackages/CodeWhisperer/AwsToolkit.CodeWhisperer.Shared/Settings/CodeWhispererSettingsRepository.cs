@@ -3,19 +3,19 @@ using System.Threading.Tasks;
 
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 
-namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Settings
+namespace Amazon.AwsToolkit.CodeWhisperer.Settings
 {
     /// <summary>
-    /// Repository to retrieve and store CodeWhisperer language server related settings.
+    /// Repository to retrieve and store CodeWhisperer related settings.
     /// Gives MEF components some separation from the actual CodeWhispererSettings I/O.
     ///
     /// Settings are backed by Visual Studio's own settings system.
     /// </summary>
-    [Export(typeof(ICodeWhispererLspSettingsRepository))]
-    public class CodeWhispererLspSettingsRepository : ICodeWhispererLspSettingsRepository
+    [Export(typeof(ICodeWhispererSettingsRepository))]
+    public class CodeWhispererSettingsRepository : ICodeWhispererSettingsRepository
     {
         [ImportingConstructor]
-        public CodeWhispererLspSettingsRepository()
+        public CodeWhispererSettingsRepository()
         {
         }
 

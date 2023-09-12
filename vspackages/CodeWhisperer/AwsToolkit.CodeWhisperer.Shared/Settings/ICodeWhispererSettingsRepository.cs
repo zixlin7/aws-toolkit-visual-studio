@@ -2,12 +2,12 @@
 
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 
-namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Settings
+namespace Amazon.AwsToolkit.CodeWhisperer.Settings
 {
     /// <summary>
-    /// Repository to retrieve and store CodeWhisperer language server related settings
+    /// Repository to retrieve and store CodeWhisperer related settings
     /// </summary>
-    public interface ICodeWhispererLspSettingsRepository
+    public interface ICodeWhispererSettingsRepository
     {
         /// <summary>
         /// Load the current CodeWhisperer settings

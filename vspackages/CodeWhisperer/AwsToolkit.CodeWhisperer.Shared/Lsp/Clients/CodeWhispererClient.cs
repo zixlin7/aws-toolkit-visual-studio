@@ -3,7 +3,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading.Tasks;
 
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Settings;
+using Amazon.AwsToolkit.CodeWhisperer.Settings;
 
 using Community.VisualStudio.Toolkit;
 
@@ -25,7 +25,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     public class CodeWhispererClient : ToolkitLspClient
     {
         [Import]
-        private ICodeWhispererLspSettingsRepository _settingsRepository;
+        private ICodeWhispererSettingsRepository _settingsRepository;
 
         [ImportingConstructor]
         public CodeWhispererClient() : base(initializeServerWithCredentials: true)

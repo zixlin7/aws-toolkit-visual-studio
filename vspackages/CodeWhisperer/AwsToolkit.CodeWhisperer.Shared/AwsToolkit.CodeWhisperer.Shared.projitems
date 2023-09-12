@@ -31,8 +31,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\JwtFieldNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\CodeWhispererLspSettingsRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Settings\ICodeWhispererLspSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ICodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMargin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml.cs">
       <SubType>Code</SubType>
