@@ -85,6 +85,10 @@
       <Project>{9aa7dd53-7bc4-4971-bc0c-0540a391dc22}</Project>
       <Name>AWSToolkit.CodeCommit</Name>
     </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
+      <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
+      <Name>AwsToolkit.VsSdk.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.SDK">

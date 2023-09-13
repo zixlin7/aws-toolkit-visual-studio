@@ -2,10 +2,8 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Timers;
-using Microsoft.TeamFoundation.Controls;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+
+using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.Base;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
@@ -13,6 +11,11 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Navigator;
 
 using log4net;
+
+using Microsoft.TeamFoundation.Controls;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 {
@@ -35,14 +38,17 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
         private const int TimerIntervalMs = 2000;
         private const string _signUpUrl = "https://aws.amazon.com/";
 
+        private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private IVsShell _vsShell = null;
         private readonly Timer _packageLoadedTimer;
         private bool _toolkitPackageLoaded = false;
 
         [ImportingConstructor]
-        public InvitationSection()
+        public InvitationSection(
+            [Import] ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             LOGGER.Debug("Creating CodeCommit InvitationSection");
+            _taskFactoryProvider = taskFactoryProvider;
 
             _packageLoadedTimer = new Timer()
             {
@@ -82,9 +88,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
             // could negatively impact the startup performance of the IDE, especially
             // if we block for the package load here.
             // Instead, we'll poll until the Package is loaded, and gate the "Connect" label.
-            ThreadHelper.JoinableTaskFactory.Run(async () =>
+            _taskFactoryProvider.JoinableTaskFactory.Run(async () =>
             {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                await _taskFactoryProvider.JoinableTaskFactory.SwitchToMainThreadAsync(_taskFactoryProvider.DisposalToken);
                 _vsShell = ServiceProvider.GetService(typeof(SVsShell)) as IVsShell;
             });
             _packageLoadedTimer.Start();
@@ -172,9 +178,9 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
                 var packageGuid = GetToolkitPackageGuid();
                 int isLoaded = VSConstants.S_FALSE;
 
-                ThreadHelper.JoinableTaskFactory.Run(async () =>
+                _taskFactoryProvider.JoinableTaskFactory.Run(async () =>
                 {
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    await _taskFactoryProvider.JoinableTaskFactory.SwitchToMainThreadAsync(_taskFactoryProvider.DisposalToken);
                     isLoaded = _vsShell.IsPackageLoaded(ref packageGuid, out var _);
                 });
 
