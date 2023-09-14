@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.ResourceFetchers;
 using Xunit;
 
@@ -11,9 +13,9 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         private readonly AssemblyResourceFetcher _sut = new AssemblyResourceFetcher();
 
         [Fact]
-        public void Get()
+        public async Task Get()
         {
-            var stream = _sut.Get(_samplePath);
+            var stream = await _sut.GetAsync(_samplePath);
             Assert.NotNull(stream);
 
             var text = _fixture.GetStreamContents(stream);
@@ -22,9 +24,9 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void Get_NoPathExists()
+        public async Task Get_NoPathExists()
         {
-            var stream = _sut.Get($"some-random-file-{Guid.NewGuid()}.txt");
+            var stream = await _sut.GetAsync($"some-random-file-{Guid.NewGuid()}.txt");
             Assert.Null(stream);
         }
 

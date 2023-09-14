@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.ResourceFetchers
@@ -41,21 +44,18 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         /// to successfully return non-null contents.
         /// </summary>
         /// <returns>Stream of contents, null if there was an error or no contents were available.</returns>
-        public Stream Get(string path)
+        public async Task<Stream> GetAsync(string path, CancellationToken token = default)
         {
             try
             {
                 foreach (var resourceFetcher in _fetchers)
                 {
-                    if (TryGet(path, resourceFetcher, out var stream))
+                    var stream = await TryGetAsync(path, resourceFetcher, token);
+                    if (stream != null)
                     {
-                        if (stream != null)
-                        {
-                            return stream;
-                        }
+                        return stream;
                     }
                 }
-
                 return null;
             }
             catch (Exception e)
@@ -65,18 +65,17 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             }
         }
 
-        private static bool TryGet(string path, IResourceFetcher resourceFetcher, out Stream stream)
+        private static async Task<Stream> TryGetAsync(string path, IResourceFetcher resourceFetcher, CancellationToken token)
         {
             try
             {
-                stream = resourceFetcher.Get(path);
-                return true;
+                var stream = await resourceFetcher.GetAsync(path, token);
+                return stream;
             }
             catch (Exception e)
             {
                 Logger.Error("Failure during Resource Fetcher chain", e);
-                stream = null;
-                return false;
+                return null;
             }
         }
     }

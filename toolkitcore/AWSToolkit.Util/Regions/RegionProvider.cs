@@ -76,9 +76,9 @@ namespace Amazon.AWSToolkit.Regions
         /// then loaded from online sources asynchronously. The event <see cref="RegionProviderUpdated"/>
         /// informs interested components when there are updates.
         /// </summary>
-        public void Initialize()
+        public async Task InitializeAsync()
         {
-            LoadLocalResource();
+            await LoadLocalResourceAsync();
             LoadRemoteResourceAsync().LogExceptionAndForget();
         }
 
@@ -241,9 +241,16 @@ namespace Amazon.AWSToolkit.Regions
         /// <summary>
         /// Responsible for loading endpoints data from local sources
         /// </summary>
-        private void LoadLocalResource()
+        private async Task LoadLocalResourceAsync()
         {
-            FetchEndpoints(_localEndpointsFetcher);
+            try
+            {
+                await FetchEndpointsAsync(_localEndpointsFetcher);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error encountered while loading endpoints data from local sources", e);
+            }
         }
 
         /// <summary>
@@ -251,23 +258,27 @@ namespace Amazon.AWSToolkit.Regions
         /// </summary>
         private async Task LoadRemoteResourceAsync()
         {
-            await Task.Run(() =>
+            try
             {
-                FetchEndpoints(_remoteEndpointsFetcher);
-            });
+                await FetchEndpointsAsync(_remoteEndpointsFetcher);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error encountered while loading endpoints data from remote sources", e);
+            }
         }
 
         /// <summary>
         /// Retrieves endpoints manifest and applies it to the provider.
         /// </summary>
-        private void FetchEndpoints(IResourceFetcher endpointsFetcher)
+        private async Task FetchEndpointsAsync(IResourceFetcher endpointsFetcher)
         {
             try
             {
-                using (var stream = endpointsFetcher.Get(EndpointsFile))
+                using (var stream = await endpointsFetcher.GetAsync(EndpointsFile))
                 using (var streamCopy = new MemoryStream())
                 {
-                    stream.CopyTo(streamCopy);
+                    await stream.CopyToAsync(streamCopy);
                     streamCopy.Position = 0;
 
                     Endpoints endpoints = null;
@@ -275,7 +286,7 @@ namespace Amazon.AWSToolkit.Regions
                     // Endpoints.Load destroys the stream, give it a copy
                     using (var endpointsStream = new MemoryStream(streamCopy.GetBuffer()))
                     {
-                        endpoints = Endpoints.Load(endpointsStream);
+                        endpoints = await Endpoints.LoadAsync(endpointsStream);
                         if (endpoints == null)
                         {
                             throw new Exception("No endpoints data received.");
@@ -297,11 +308,11 @@ namespace Amazon.AWSToolkit.Regions
         /// <summary>
         /// Indicates whether or not the stream contains a valid endpoints file
         /// </summary>
-        private static bool IsValidStream(Stream stream)
+        private static async Task<bool> IsValidStream(Stream stream)
         {
             try
             {
-                var endpoints = Endpoints.Load(stream);
+                var endpoints = await Endpoints.LoadAsync(stream);
                 return endpoints != null && endpoints.Version == EndpointsVersion;
             }
             catch

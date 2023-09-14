@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.ResourceFetchers;
 using Moq;
 using Xunit;
@@ -22,15 +25,15 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void Get()
+        public async Task Get()
         {
-            _fetcher.Setup(mock => mock.Get(It.IsAny<string>())).Returns<string>((path) =>
+            _fetcher.Setup(mock => mock.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(
                 new MemoryStream(Encoding.UTF8.GetBytes(_fixture.SampleData)));
 
-            var stream = _sut.Get(_samplePath);
+            var stream = await _sut.GetAsync(_samplePath);
             Assert.NotNull(stream);
 
-            _fetcher.Verify(mock => mock.Get(_samplePath), Times.Once);
+            _fetcher.Verify(mock => mock.GetAsync(_samplePath, It.IsAny<CancellationToken>()), Times.Once);
 
             // Did the fixture return the stream contents we expected?
             var text = _fixture.GetStreamContents(stream);
@@ -43,18 +46,18 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void Get_FetcherHasNoData()
+        public async Task Get_FetcherHasNoData()
         {
-            _fetcher.Setup(mock => mock.Get(It.IsAny<string>())).Returns<string>(null);
-            var stream = _sut.Get(_samplePath);
+            _fetcher.Setup(mock => mock.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns<string>(null);
+            var stream = await _sut.GetAsync(_samplePath);
             Assert.Null(stream);
         }
 
         [Fact]
-        public void Get_FetcherThrows()
+        public async Task Get_FetcherThrows()
         {
-            _fetcher.Setup(mock => mock.Get(It.IsAny<string>())).Throws(new Exception("simulating inner fetcher error"));
-            var stream = _sut.Get(_samplePath);
+            _fetcher.Setup(mock => mock.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws(new Exception("simulating inner fetcher error"));
+            var stream = await _sut.GetAsync(_samplePath);
             Assert.Null(stream);
         }
 

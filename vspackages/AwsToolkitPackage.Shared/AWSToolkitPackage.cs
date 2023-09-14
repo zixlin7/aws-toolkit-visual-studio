@@ -697,7 +697,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             await TaskScheduler.Default;
 
             var regionProvider = new RegionProvider(telemetryLogger);
-            regionProvider.Initialize();
+            await regionProvider.InitializeAsync();
 
             return regionProvider;
         }
