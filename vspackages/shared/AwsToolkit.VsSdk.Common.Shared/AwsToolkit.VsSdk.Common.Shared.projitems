@@ -76,6 +76,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhisperer\CodeWhispererSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhisperer\CodeWhispererSettingsProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsText.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tasks\ToolkitJoinableTaskFactoryProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsHierarchyHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSLambdaUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSUtility.cs" />

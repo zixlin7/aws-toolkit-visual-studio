@@ -113,6 +113,7 @@
 
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="PublishToAws" Path="|PublishToAws;PkgdefProjectOutputGroup|" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.SourceControl.v16" TargetVersion="[16.0,17.0)" Path="|AwsToolkit.SourceControl.v16|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.VsSdk.Common" TargetVersion="[16.0,17.0)" Path="|AwsToolkit.VsSdk.Common|" />
 
     </Assets>
     <Prerequisites>
