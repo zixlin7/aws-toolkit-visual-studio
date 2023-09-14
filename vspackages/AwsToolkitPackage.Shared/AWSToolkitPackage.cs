@@ -99,6 +99,8 @@ using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
+using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+using AwsToolkit.VsSdk.Common.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.LanguageServer.Client;
 
@@ -149,10 +151,15 @@ namespace Amazon.AWSToolkit.VisualStudio
                            "cfproj",
                            ".\\NullPath",
                            LanguageVsTemplate = "AWS")]
-    [ProvideOptionPage(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true)]
-    [ProvideProfile(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true, DescriptionResourceID = 150)]
-    [ProvideOptionPage(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true)]
-    [ProvideProfile(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true, DescriptionResourceID = 150)]
+    [ProvideOptionPage(typeof(GeneralOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.General, 150, 160, true)]
+    [ProvideProfile(typeof(GeneralOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.General, 150, 160, true, DescriptionResourceID = 150)]
+    [ProvideOptionPage(typeof(ProxyOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.Proxy, 150, 170, true)]
+    [ProvideProfile(typeof(ProxyOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.Proxy, 150, 170, true, DescriptionResourceID = 150)]
+#if VS2022_OR_LATER
+    // Show CodeWhisperer Settings in VS "Tools > Options" dialog
+    [ProvideOptionPage(typeof(CodeWhispererSettingsProvider), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.CodeWhisperer, 0, 0, true)]
+    [ProvideProfile(typeof(CodeWhispererSettingsProvider), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.CodeWhisperer, 0, 0, true)]
+#endif
     [ProvideToolWindow(typeof(Amazon.AWSToolkit.VisualStudio.LogGroupsToolWindow), Style = VsDockStyle.Tabbed,
         Orientation = ToolWindowOrientation.Right,
         Transient = true,
@@ -917,63 +924,59 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
         private async Task InitializeAwsToolkitMenuCommandsAsync()
         {
-            var tasks = new List<Task>();
-
-            tasks.Add(
+            var tasks = new List<Task>
+            {
                 ViewUserGuideCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewUserGuide,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewUrlCommand.InitializeAsync(
                     AwsUrls.DotNetOnAws, ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidLinkToDotNetOnAws,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewUrlCommand.InitializeAsync(
                     AwsUrls.DotNetOnAwsCommunity, ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewGettingStartedCommand.InitializeAsync(
                     this, _toolkitContext, _toolkitSettingsWatcher,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewGettingStarted,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 CreateIssueCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidCreateIssue,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewFeedbackPanelCommand.InitializeAsync(
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidSubmitFeedback,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
-                 ViewToolkitLogsCommand.InitializeAsync(
+                ViewToolkitLogsCommand.InitializeAsync(
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewToolkitLogs,
+                    this),
+
+#if VS2022
+                // TEMPORARY - Menu item ID for Login to AWS Builder ID for CodeWhisperer development, remove before merging to main
+                TemporaryLoginToAwsBuilderIdForCodeWhispererCommand.InitializeAsync(
+                    _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) PkgCmdIDList.cmdidLoginAwsBuilderIdForCodeWhisperer,
                     this)
-            );
+#endif
+            };
 
             await Task.WhenAll(tasks);
         }
