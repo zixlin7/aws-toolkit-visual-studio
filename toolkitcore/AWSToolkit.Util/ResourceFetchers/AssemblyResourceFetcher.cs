@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.ResourceFetchers
@@ -19,7 +22,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         /// Requests contents from a specific resource in this assembly (AWSToolkit.Util)
         /// </summary>
         /// <returns>Stream of contents, null if there was an error or no contents were available.</returns>
-        public Stream Get(string relativePath)
+        public Task<Stream> GetAsync(string relativePath, CancellationToken token = default)
         {
             try
             {
@@ -35,7 +38,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
                     Logger.Info($"Resource loaded from Assembly: {relativePath} ({assemblyPath})");
                 }
 
-                return stream;
+                return Task.FromResult(stream);
             }
             catch (Exception e)
             {

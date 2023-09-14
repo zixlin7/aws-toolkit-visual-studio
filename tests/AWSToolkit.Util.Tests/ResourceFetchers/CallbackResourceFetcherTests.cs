@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.ResourceFetchers;
 using Moq;
 using Xunit;
@@ -22,19 +25,19 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
             _callback = (text, stream) =>
             {
                 _callbackTimesCalled++;
-                return stream;
+                return Task.FromResult(stream);
             };
 
-            _fetcher.Setup(mock => mock.Get(It.IsAny<string>())).Returns<string>((path) =>
+            _fetcher.Setup(mock => mock.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(
                 new MemoryStream(Encoding.UTF8.GetBytes(_fixture.SampleData)));
 
             _sut = new CallbackResourceFetcher(_fetcher.Object, _callback);
         }
 
         [Fact]
-        public void Get_First()
+        public async Task Get_First()
         {
-            var stream = _sut.Get(_samplePath);
+            var stream = await _sut.GetAsync(_samplePath);
             Assert.NotNull(stream);
 
             Assert.Equal(1, _callbackTimesCalled);
@@ -44,23 +47,23 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void Get_FetcherThrows()
+        public async Task Get_FetcherThrows()
         {
-            _fetcher.Setup(mock => mock.Get(It.IsAny<string>()))
+            _fetcher.Setup(mock => mock.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception("simulating inner fetcher error"));
 
-            var stream = _sut.Get(_samplePath);
+            var stream = await _sut.GetAsync(_samplePath);
 
             Assert.Null(stream);
             Assert.Equal(0, _callbackTimesCalled);
         }
 
         [Fact]
-        public void Get_CallbackReturnsNull()
+        public async Task Get_CallbackReturnsNull()
         {
             var sut = new CallbackResourceFetcher(_fetcher.Object, (text, stream) => null);
 
-            Assert.Null(sut.Get(_samplePath));
+            Assert.Null(await sut.GetAsync(_samplePath));
         }
 
         public void Dispose()

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.ResourceFetchers;
 using Xunit;
 
@@ -19,27 +21,27 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void Get_FileExists()
+        public async Task Get_FileExists()
         {
-            AssertGetReturnsSampleData(new RelativeFileResourceFetcher(_fixture.TestLocation.TestFolder));
-            AssertGetReturnsSampleData(new RelativeFileResourceFetcher(_fixture.TestLocation.TestFolder + "/"));
+            await AssertGetReturnsSampleData(new RelativeFileResourceFetcher(_fixture.TestLocation.TestFolder));
+            await AssertGetReturnsSampleData(new RelativeFileResourceFetcher(_fixture.TestLocation.TestFolder + "/"));
         }
 
         [Fact]
-        public void Get_NoFileExists()
+        public async Task Get_NoFileExists()
         {
-            var stream = _sut.Get("aaa/bbb/bees.txt");
+            var stream = await _sut.GetAsync("aaa/bbb/bees.txt");
             Assert.Null(stream);
         }
 
-        private void AssertGetReturnsSampleData(RelativeFileResourceFetcher sut)
+        private async Task AssertGetReturnsSampleData(RelativeFileResourceFetcher sut)
         {
-            var stream = sut.Get(_sampleFileRelativePath);
+            var stream = await sut.GetAsync(_sampleFileRelativePath);
             Assert.NotNull(stream);
 
             using (var reader = new StreamReader(stream))
             {
-                var text = reader.ReadToEnd();
+                var text = await reader.ReadToEndAsync();
                 Assert.Equal(_fixture.SampleData, text);
             }
         }

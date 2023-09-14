@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.ResourceFetchers
 {
@@ -12,6 +14,6 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         /// The returned stream is not guaranteed to support seek.
         /// </summary>
         /// <returns>Stream of contents, null if there was an error or no contents were available.</returns>
-        Stream Get(string path);
+        Task<Stream> GetAsync(string path, CancellationToken token = default);
     }
 }

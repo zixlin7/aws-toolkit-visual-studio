@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.ResourceFetchers;
 using Xunit;
 
@@ -22,25 +24,25 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void Get_ValidUrl()
+        public async Task Get_ValidUrl()
         {
             var url = "VersionInfo.xml";
-            var stream = _sut.Get(url);
+            var stream = await _sut.GetAsync(url);
 
             Assert.NotNull(stream);
 
             using (var reader = new StreamReader(stream))
             {
-                var text = reader.ReadToEnd();
+                var text = await reader.ReadToEndAsync();
                 Assert.NotEmpty(text);
             }
         }
 
         [Fact]
-        public void Get_NoUrlExists()
+        public async Task Get_NoUrlExists()
         {
             var url = $"random-file-{Guid.NewGuid()}.xml";
-            Assert.Null(_sut.Get(url));
+            Assert.Null(await _sut.GetAsync(url));
         }
     }
 }

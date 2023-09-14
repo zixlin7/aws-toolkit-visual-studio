@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Amazon.AWSToolkit.ResourceFetchers
 {
@@ -26,10 +28,10 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         /// Requests contents from a specified url, relative to this object's base path.
         /// </summary>
         /// <returns>Stream of contents, null if there was an error or no contents were available.</returns>
-        public override Stream Get(string relativeUrl)
+        public override async Task<Stream> GetAsync(string relativeUrl, CancellationToken token = default)
         {
             var path = BaseUrl + relativeUrl;
-            return base.Get(path);
+            return await base.GetAsync(path, token);
         }
     }
 }
