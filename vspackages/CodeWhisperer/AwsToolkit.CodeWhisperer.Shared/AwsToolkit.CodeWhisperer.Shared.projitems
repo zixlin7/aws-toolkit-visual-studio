@@ -9,6 +9,7 @@
     <Import_RootNamespace>Amazon.AwsToolkit.CodeWhisperer</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeWhispererManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\BaseCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\GetSuggestionsCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\GettingStartedCommand.cs" />
@@ -19,6 +20,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewUserGuideCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\Connection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatusChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ExpirationNotificationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\IConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\IExpirationNotificationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICodeWhispererManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\IToolkitLspClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ToolkitLspClient.cs" />
@@ -32,6 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\ICodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMargin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml.cs">
@@ -40,6 +49,10 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ISuggestionProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\Suggestion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\PauseStateChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml">

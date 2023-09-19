@@ -269,6 +269,12 @@ Properly leveraging UI and Background threads reduces the chances of negatively 
 * Definitive article on the subject: https://devblogs.microsoft.com/premier-developer/asynchronous-and-multithreaded-programming-within-vs-using-the-joinabletaskfactory/
 * Additional supporting material: https://github.com/microsoft/vs-threading/blob/main/doc/index.md
 
+### MEF
+
+Portions of the Toolkit are built as [Managed Extensibility Framework (MEF)](https://learn.microsoft.com/en-us/dotnet/framework/mef/) components. Think of it as a simplified dependency injection system. The VS SDK contains MEF interfaces, which Visual Studio automatically searches for and instantiates. See [Managed Extensibility Framework in the editor](https://learn.microsoft.com/en-us/visualstudio/extensibility/managed-extensibility-framework-in-the-editor?view=vs-2022) for more details.
+
+If you find one or more MEF components missing while you're developing the Toolkit, MEF may have been unable to instantiate a component and its imported dependencies. Often this will result in a silent failure, and Visual Studio will continue to operate as if that component doesn't exist. The MEF Composition Error Log can help you diagnose issues. It is located at `%localappdata%\Microsoft\VisualStudio\[yourVSVersion]\ComponentModelCache\Microsoft.VisualStudio.Default.err`, and contains a log for your most recent Visual Studio session. If you're working with an experimental instance of Visual Studio, `yourVSVersion` will be decorated with `Exp`. For example, a VS 2022 experimental folder could look something like `17.0_2ad3394eExp`.
+
 ### Extension examples and Prior Art
 
 [Mads Kristensen](https://twitter.com/mkristensen) is a PM on the Visual Studio team, and one of (if not) the most [prolific](https://marketplace.visualstudio.com/publishers/MadsKristensen) Visual Studio extension authors. He has a YouTube series [Writing Visual Studio Extensions with Mads](https://www.youtube.com/playlist?list=PLReL099Y5nRdG2n1PrY_tbCsUznoYvqkS), which covers many aspects (and undocumented concepts!) of extension development with the VS SDK. Source code for many of Mads' extensions can be found [on GitHub](https://github.com/madskristensen), which makes for great reference material.

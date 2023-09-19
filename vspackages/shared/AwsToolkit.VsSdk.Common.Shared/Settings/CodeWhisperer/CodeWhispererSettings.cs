@@ -20,5 +20,14 @@ namespace AwsToolkit.VsSdk.Common.Settings.CodeWhisperer
         [Description("When set, overrides the default location the AWS Toolkit launches the language server from.")]
         [DefaultValue("")]
         public string LanguageServerPath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Enables and disables (pauses) CodeWhisperer features.
+        /// </summary>
+        [Category("General")]
+        [DisplayName("Pause Automatic Suggestions")]
+        [Description("When true, CodeWhisperer will not automatically provide code suggestions (you can still get suggestions on-demand). When false, CodeWhisperer will offer suggestions while you write code.")]
+        [DefaultValue(false)]
+        public bool PauseAutomaticSuggestions { get; set; } = false;
     }
 }

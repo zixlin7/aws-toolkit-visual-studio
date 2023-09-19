@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 
@@ -7,8 +8,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
     /// <summary>
     /// Repository to retrieve and store CodeWhisperer related settings
     /// </summary>
-    public interface ICodeWhispererSettingsRepository
+    public interface ICodeWhispererSettingsRepository : IDisposable
     {
+        event EventHandler<CodeWhispererSettingsSavedEventArgs> SettingsSaved;
+
         /// <summary>
         /// Load the current CodeWhisperer settings
         /// </summary>

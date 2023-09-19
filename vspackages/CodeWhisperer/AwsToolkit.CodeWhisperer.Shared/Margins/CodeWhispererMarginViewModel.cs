@@ -9,13 +9,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
     public class CodeWhispererMarginViewModel : BaseModel
     {
         private readonly IToolkitContextProvider _toolkitContextProvider;
+        private readonly ICodeWhispererManager _manager;
 
-        public CodeWhispererMarginViewModel(IToolkitContextProvider toolkitContextProvider)
+        public CodeWhispererMarginViewModel(ICodeWhispererManager manager,
+            IToolkitContextProvider toolkitContextProvider)
         {
+            _manager = manager;
             _toolkitContextProvider = toolkitContextProvider;
 
-            SignIn = new SignInCommand(_toolkitContextProvider);
-            SignOut = new SignOutCommand(_toolkitContextProvider);
+            SignIn = new SignInCommand(_manager, _toolkitContextProvider);
+            SignOut = new SignOutCommand(_manager, _toolkitContextProvider);
 
             Pause = new PauseCommand(_toolkitContextProvider);
             Resume = new ResumeCommand(_toolkitContextProvider);

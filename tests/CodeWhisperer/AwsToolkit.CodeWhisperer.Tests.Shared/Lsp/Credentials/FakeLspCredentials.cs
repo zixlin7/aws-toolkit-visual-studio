@@ -8,22 +8,22 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Credentials
         public string CredentialsPayload;
         public string TokenPayload;
 
-        public void DeleteIamCredentials()
+        public virtual void DeleteIamCredentials()
         {
             CredentialsPayload = null;
         }
 
-        public void DeleteTokenCredentials()
+        public virtual void DeleteTokenCredentials()
         {
             TokenPayload = null;
         }
 
-        public void UpdateIamCredentials(UpdateCredentialsRequest request)
+        public virtual void UpdateIamCredentials(UpdateCredentialsRequest request)
         {
             CredentialsPayload = request.Data;
         }
 
-        public void UpdateTokenCredentials(UpdateCredentialsRequest request)
+        public virtual void UpdateTokenCredentials(UpdateCredentialsRequest request)
         {
             TokenPayload = request.Data;
         }

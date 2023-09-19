@@ -18,11 +18,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         private readonly UserControl _control;
         private readonly CodeWhispererMarginViewModel _viewModel;
 
-        public CodeWhispererMargin(IToolkitContextProvider toolkitContextProvider)
+        public CodeWhispererMargin(
+            ICodeWhispererManager manager,
+            IToolkitContextProvider toolkitContextProvider)
         {
             _toolkitContextProvider = toolkitContextProvider;
 
-            _viewModel = new CodeWhispererMarginViewModel(_toolkitContextProvider);
+            _viewModel = new CodeWhispererMarginViewModel(manager, _toolkitContextProvider);
 
             _control = new CodeWhispererMarginControl()
             {

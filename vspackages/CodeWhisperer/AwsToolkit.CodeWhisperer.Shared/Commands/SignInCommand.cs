@@ -1,20 +1,28 @@
 ﻿using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 {
     public class SignInCommand : BaseCommand
     {
-        public SignInCommand(IToolkitContextProvider toolkitContextProvider)
+        private readonly ICodeWhispererManager _manager;
+
+        public SignInCommand(ICodeWhispererManager manager, IToolkitContextProvider toolkitContextProvider)
             : base(toolkitContextProvider)
         {
+            _manager = manager;
         }
 
-        protected override Task ExecuteCoreAsync(object parameter)
+        protected override bool CanExecuteCore(object parameter)
         {
-            // TODO : Sign in
-            return Task.CompletedTask;
+            return _manager.GetStatus() == ConnectionStatus.Disconnected && base.CanExecuteCore(parameter);
+        }
+
+        protected override async Task ExecuteCoreAsync(object parameter)
+        {
+            await _manager.SignInAsync();
         }
     }
 }
