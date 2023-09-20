@@ -118,7 +118,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// language server as part of the "Initialize" request.
         /// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initialize
         /// </summary>
-        public virtual object InitializationOptions { get; } = new {};
+        public virtual object InitializationOptions { get; } = new { };
 
         public virtual IEnumerable<string> FilesToWatch { get; } = Enumerable.Empty<string>();
 
@@ -312,6 +312,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         public Task AttachForCustomMessageAsync(JsonRpc rpc)
         {
             _rpc = rpc;
+
+            // This is intended for development assistance only!
+            // Uncomment this when you need to diagnose messages sent to/from the language server.
+// #if DEBUG
+//             _rpc.LogJsonRpcMessages(this, _toolkitContext.ToolkitHost);
+// #endif
+
             return Task.CompletedTask;
         }
 
