@@ -140,9 +140,8 @@ namespace AWSToolkit.Tests.CommonUI
                 Assert.True(false, userMessage);
             };
 
-            var ex = Record.Exception(() => _sut.AddError("Error")) as TrueException;
-            Assert.NotNull(ex);
-            Assert.Equal(userMessage, ex.UserMessage);
+            var ex = Assert.Throws<TrueException>(() => _sut.AddError("Error"));
+            Assert.Equal(userMessage, ex.Message);
         }
 
         [Fact]

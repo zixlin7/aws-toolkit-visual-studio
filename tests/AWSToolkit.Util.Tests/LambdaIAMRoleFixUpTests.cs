@@ -98,22 +98,25 @@ namespace AWSToolkit.Util.Tests
             Assert.Equal(2, statements.Count);
             Assert.True(statements.IsArray);
 
-            foreach(JsonData statement in statements)
+            foreach (JsonData statement in statements)
             {
                 var principal = statement["Principal"] as JsonData;
                 Assert.NotNull(principal);
 
-                if(principal["Service"] != null)
+                var servicePrincipal = principal["Service"];
+                var awsPrincipal = principal["AWS"];
+
+                if (servicePrincipal != null)
                 {
-                    Assert.Equal("lambda.amazonaws.com", principal["Service"]);
+                    Assert.Equal("lambda.amazonaws.com", servicePrincipal.ToString());
                 }
-                else if (principal["AWS"] != null)
+                else if (awsPrincipal != null)
                 {
-                    Assert.Equal("arn:aws:iam::111122223333:root", principal["AWS"]);
+                    Assert.Equal("arn:aws:iam::111122223333:root", awsPrincipal.ToString());
                 }
                 else
                 {
-                    Assert.True(false, "Unknown principal type");
+                    Assert.Fail("Unknown principal type");
                 }
             }
         }
