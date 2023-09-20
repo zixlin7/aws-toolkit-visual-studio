@@ -22,6 +22,18 @@ namespace AwsToolkit.VsSdk.Common.Settings.CodeWhisperer
         public string LanguageServerPath { get; set; } = string.Empty;
 
         /// <summary>
+        /// Provides Toolkit developers a way to load the lsp version manifest from a local folder
+        /// This provides a way to test things locally while the remote version is still under development
+        /// </summary>
+        // TODO: Un-comment browsable when developer testing is completed to hide the setting from users
+        // [Browsable(false)]
+        [Category("Language Server")]
+        [DisplayName("Version manifest folder")]
+        [Description("When set, attempts to use the specified folder to fetch the relevant LSP Version Manifest.")]
+        [DefaultValue("")]
+        public string VersionManifestFolder { get; set; } = string.Empty;
+
+        /// <summary>
         /// Enables and disables (pauses) CodeWhisperer features.
         /// </summary>
         [Category("General")]

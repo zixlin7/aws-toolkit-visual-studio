@@ -48,6 +48,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         {
             try
             {
+                token.ThrowIfCancellationRequested();
                 foreach (var resourceFetcher in _fetchers)
                 {
                     var stream = await TryGetAsync(path, resourceFetcher, token);

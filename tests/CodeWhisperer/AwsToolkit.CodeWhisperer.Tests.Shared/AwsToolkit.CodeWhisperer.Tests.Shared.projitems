@@ -8,7 +8,7 @@
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>Amazon.AwsToolkit.CodeWhisperer.Tests</Import_RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
+   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CodeWhispererManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommandTests.cs" />
@@ -18,6 +18,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\FakeLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapperTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentialsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\ManifestSchemaUtilTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\TestResources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcherTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestManagerTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lsp\Manifest\sample-invalid-manifest.json" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lsp\Manifest\sample-manifest.json" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\FakeCodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeSuggestionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProviderTests.cs" />

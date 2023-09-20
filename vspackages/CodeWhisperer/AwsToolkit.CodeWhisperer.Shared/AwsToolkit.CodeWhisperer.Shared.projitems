@@ -39,6 +39,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\JwtFieldNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\ILspInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\ManifestSchemaUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\ICodeWhispererSettingsRepository.cs" />
@@ -59,5 +62,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\IResourceManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\VersionManifestManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\LspVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\ManifestSchema.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\TargetContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\VersionTarget.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\" />
   </ItemGroup>
 </Project>

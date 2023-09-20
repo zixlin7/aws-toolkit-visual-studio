@@ -20,5 +20,6 @@
 	    <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
 	  </ProjectReference>
 	  <ProjectReference Include="..\..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj" />
+	  <ProjectReference Include="..\..\AWSToolkit.Util.Tests\AWSToolkit.Util.Tests.csproj" />
 	</ItemGroup>
 </Project>
