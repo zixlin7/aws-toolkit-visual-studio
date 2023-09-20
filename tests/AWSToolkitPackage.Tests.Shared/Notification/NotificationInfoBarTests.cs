@@ -105,7 +105,6 @@ namespace AWSToolkitPackage.Tests.Notification
             Assert.Equal("Don't Show Again", _sut.GetLocalizedDontShowAgainDisplayText());
         }
 
-        [Fact]
         public static TheoryData<IToolkitHostInfo> GetToolkitHostData()
         {
             var data = new TheoryData<IToolkitHostInfo>();
