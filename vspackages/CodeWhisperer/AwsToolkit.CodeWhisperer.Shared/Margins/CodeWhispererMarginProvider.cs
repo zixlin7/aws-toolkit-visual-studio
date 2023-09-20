@@ -45,7 +45,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(
                 typeof(CodeWhispererMargin),
-                () => new CodeWhispererMargin(_manager, _toolkitContextProvider));
+                () => new CodeWhispererMargin(wpfTextViewHost.TextView, _manager, _toolkitContextProvider));
         }
     }
 }

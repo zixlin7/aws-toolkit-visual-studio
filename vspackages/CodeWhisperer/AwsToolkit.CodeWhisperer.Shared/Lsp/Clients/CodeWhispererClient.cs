@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 
 using Community.VisualStudio.Toolkit;
@@ -16,13 +17,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 #pragma warning disable CS0649 // Field 'Foo' is never assigned to, and will always have its default value null
 #pragma warning disable IDE0044 // Add readonly modifier
 
+    public interface ICodeWhispererLspClient : IToolkitLspClient
+    {
+        IInlineCompletions CreateInlineCompletions();
+    }
+
     /// <summary>
     /// MEF component picked up by Visual Studio to define and orchestrate the CodeWhisperer language server.
     /// </summary>
-    [Export(typeof(IToolkitLspClient))]
+    [Export(typeof(ICodeWhispererLspClient))]
     [Export(typeof(ILanguageClient))]
     [ContentType(ContentTypes.CSharp)]
-    public class CodeWhispererClient : ToolkitLspClient
+    public class CodeWhispererClient : ToolkitLspClient, ICodeWhispererLspClient
     {
         [Import]
         private ICodeWhispererSettingsRepository _settingsRepository;
@@ -62,6 +68,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             // For now, Toolkit developers will point at a binary using an env var.
             var settings = await _settingsRepository.GetAsync();
             return !string.IsNullOrWhiteSpace(settings.LanguageServerPath) ? settings.LanguageServerPath : throw new Exception($"Configure a CodeWhisperer language server location");
+        }
+
+        public IInlineCompletions CreateInlineCompletions()
+        {
+            return new InlineCompletions.InlineCompletions(_rpc);
         }
     }
 #pragma warning restore IDE0044 // Add readonly modifier

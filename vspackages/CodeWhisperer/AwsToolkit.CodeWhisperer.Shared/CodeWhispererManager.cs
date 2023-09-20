@@ -98,13 +98,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         /// <summary>
         /// Queries code suggestions from CodeWhisperer
         /// </summary>
-        /// <param name="isAutoSuggestion">true: the request was auto-triggered, false: the request was user triggered</param>
-        // TODO : define the request model
-        public async Task<IEnumerable<Suggestion>> GetSuggestionsAsync(bool isAutoSuggestion = true)
+        public async Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request)
         {
-            return isAutoSuggestion && await IsAutoSuggestPausedAsync()
+            return request.IsAutoSuggestion && await IsAutoSuggestPausedAsync()
                 ? Enumerable.Empty<Suggestion>()
-                : await _suggestionProvider.GetSuggestionsAsync();
+                : await _suggestionProvider.GetSuggestionsAsync(request);
         }
     }
 }

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
+using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Settings;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using FluentAssertions;
-
-using Moq;
 
 using Xunit;
 
@@ -21,12 +20,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         private readonly FakeCodeWhispererSettingsRepository _settingsRepository =
             new FakeCodeWhispererSettingsRepository();
 
-        private readonly Mock<IToolkitLspClient> _lspClient = new Mock<IToolkitLspClient>();
+        private readonly FakeCodeWhispererClient _lspClient = new FakeCodeWhispererClient();
         private readonly SuggestionProvider _sut;
 
         public SuggestionProviderTests()
         {
-            _sut = new SuggestionProvider(_lspClient.Object, _settingsRepository,
+            _sut = new SuggestionProvider(_lspClient, _settingsRepository,
                 _toolkitContextFixture.ToolkitContextProvider);
         }
 
@@ -59,7 +58,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         {
             // todo : mock or fake the CWSPR language client
 
-            var suggestions = await _sut.GetSuggestionsAsync();
+            var suggestions = await _sut.GetSuggestionsAsync(new GetSuggestionsRequest());
 
             suggestions.Should().BeEmpty();
         }

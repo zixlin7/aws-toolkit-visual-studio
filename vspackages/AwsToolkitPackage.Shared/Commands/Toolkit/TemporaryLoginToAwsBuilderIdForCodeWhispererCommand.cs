@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Commands.Toolkit
                 }
 
                 var componentModel = Package.GetService<SComponentModel, IComponentModel>();
-                var cwClient = componentModel.GetService<IToolkitLspClient>();
+                var cwClient = componentModel.GetService<ICodeWhispererLspClient>();
 
                 IToolkitLspCredentials lspCreds = null;
                 try

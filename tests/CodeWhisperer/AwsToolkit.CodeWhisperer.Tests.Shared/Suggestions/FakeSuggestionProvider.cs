@@ -31,7 +31,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
 
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
 
-        public virtual Task<IEnumerable<Suggestion>> GetSuggestionsAsync()
+        public virtual Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request)
         {
             return Task.FromResult<IEnumerable<Suggestion>>(Suggestions);
         }

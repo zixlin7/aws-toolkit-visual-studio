@@ -95,7 +95,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         {
             _suggestionProvider.Suggestions.Add(new Suggestion());
 
-            var suggestions = await _sut.GetSuggestionsAsync();
+            var suggestions = await _sut.GetSuggestionsAsync(new GetSuggestionsRequest());
 
             suggestions.Should().BeEquivalentTo(_suggestionProvider.Suggestions);
         }
@@ -106,7 +106,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             _suggestionProvider.Suggestions.Add(new Suggestion());
 
             await _sut.PauseAutoSuggestAsync();
-            var suggestions = await _sut.GetSuggestionsAsync();
+            var suggestions = await _sut.GetSuggestionsAsync(new GetSuggestionsRequest()
+            {
+                IsAutoSuggestion = true,
+            });
 
             suggestions.Should().BeEmpty();
         }

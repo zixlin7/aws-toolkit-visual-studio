@@ -40,9 +40,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\JwtFieldNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\InlineCompletions\InlineCompletions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\ILspInstaller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstaller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\ManifestSchemaUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\ICodeWhispererSettingsRepository.cs" />
@@ -54,6 +56,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ISuggestionProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\GetSuggestionsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\Suggestion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\PauseStateChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProvider.cs" />

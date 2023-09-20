@@ -56,7 +56,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             return Task.FromResult(PauseAutomaticSuggestions);
         }
 
-        public virtual Task<IEnumerable<Suggestion>> GetSuggestionsAsync(bool isAutoSuggestion = true)
+        public virtual Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request)
         {
             return Task.FromResult<IEnumerable<Suggestion>>(Suggestions);
         }

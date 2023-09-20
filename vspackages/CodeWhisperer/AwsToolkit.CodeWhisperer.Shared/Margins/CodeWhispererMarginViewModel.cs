@@ -4,16 +4,20 @@ using Amazon.AwsToolkit.CodeWhisperer.Commands;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 
+using Microsoft.VisualStudio.Text.Editor;
+
 namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 {
     public class CodeWhispererMarginViewModel : BaseModel
     {
         private readonly IToolkitContextProvider _toolkitContextProvider;
+        private readonly IWpfTextView _textView;
         private readonly ICodeWhispererManager _manager;
 
-        public CodeWhispererMarginViewModel(ICodeWhispererManager manager,
+        public CodeWhispererMarginViewModel(IWpfTextView textView, ICodeWhispererManager manager,
             IToolkitContextProvider toolkitContextProvider)
         {
+            _textView = textView;
             _manager = manager;
             _toolkitContextProvider = toolkitContextProvider;
 
@@ -26,7 +30,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             ViewUserGuide = new ViewUserGuideCommand(_toolkitContextProvider);
             GettingStarted = new GettingStartedCommand(_toolkitContextProvider);
 
-            GenerateSuggestions = new GetSuggestionsCommand(_toolkitContextProvider);
+            GenerateSuggestions = new GetSuggestionsCommand(_textView, _manager, _toolkitContextProvider);
             ViewCodeReferences = new ViewCodeReferencesCommand(_toolkitContextProvider);
             SecurityScan = new SecurityScanCommand(_toolkitContextProvider);
         }

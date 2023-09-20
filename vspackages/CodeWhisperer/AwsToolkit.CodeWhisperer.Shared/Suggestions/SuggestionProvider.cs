@@ -5,23 +5,31 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AWSToolkit.Context;
+
+using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+
+using log4net;
+
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 {
     [Export(typeof(ISuggestionProvider))]
     internal class SuggestionProvider : ISuggestionProvider
     {
-        // TODO : IDE-11522 : create and use a CodeWhispererLspClient instead of the generalized ToolkitLspClient
-        private readonly IToolkitLspClient _lspClient;
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(SuggestionProvider));
+
+        private readonly ICodeWhispererLspClient _lspClient;
         private readonly ICodeWhispererSettingsRepository _settingsRepository;
         private readonly IToolkitContextProvider _toolkitContextProvider;
 
         [ImportingConstructor]
         public SuggestionProvider(
-            IToolkitLspClient lspClient,
+            ICodeWhispererLspClient lspClient,
             ICodeWhispererSettingsRepository settingsRepository,
             IToolkitContextProvider toolkitContextProvider)
         {
@@ -49,10 +57,35 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
 
-        public Task<IEnumerable<Suggestion>> GetSuggestionsAsync() // TODO : IDE-11522 : define the request model
+        public async Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request)
         {
-            // todo : IDE-11522 : get proxy from _lspClient and make a "get suggestions" request
-            return Task.FromResult(Enumerable.Empty<Suggestion>());
+            try
+            {
+                var inlineCompletions = _lspClient.CreateInlineCompletions();
+
+                var inlineCompletionRequest = new InlineCompletionParams()
+                {
+                    TextDocument = new TextDocumentIdentifier() { Uri = new Uri(request.FilePath), },
+                    Context = new InlineCompletionContext()
+                    {
+                        TriggerKind = request.IsAutoSuggestion
+                            ? InlineCompletionTriggerKind.Automatic
+                            : InlineCompletionTriggerKind.Invoke,
+                    },
+                    Position =
+                        new Position() { Line = request.CursorLine, Character = request.CursorColumn, },
+                };
+
+                // TODO : IDE-11522 : convert responses to return values
+                var response = await inlineCompletions.GetInlineCompletionsAsync(inlineCompletionRequest);
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Failure getting suggestions from language server", e);
+                _toolkitContextProvider.GetToolkitContext().ToolkitHost.OutputToHostConsole($"AWS Toolkit was unable to get CodeWhisperer suggestions: {e.Message}", false);
+            }
+
+            return Enumerable.Empty<Suggestion>();
         }
 
         public void Dispose()
