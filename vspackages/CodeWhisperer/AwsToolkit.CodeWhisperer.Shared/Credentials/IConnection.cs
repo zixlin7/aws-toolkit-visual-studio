@@ -8,7 +8,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// <summary>
         /// Gets the current status
         /// </summary>
-        ConnectionStatus GetStatus();
+        ConnectionStatus Status { get; }
 
         /// <summary>
         /// Event signaling that the status has changed

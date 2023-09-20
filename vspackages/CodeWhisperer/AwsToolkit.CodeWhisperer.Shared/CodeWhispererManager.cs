@@ -49,17 +49,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         }
 
         /// <summary>
-        /// Gets the current status
+        /// Gets the current connection status
         /// </summary>
-        public ConnectionStatus GetStatus()
-        {
-            return _connection.GetStatus();
-        }
+        public ConnectionStatus ConnectionStatus => _connection.Status;
 
         /// <summary>
-        /// Event signaling that the status has changed
+        /// Event signaling that the connection status has changed
         /// </summary>
-        public event EventHandler<ConnectionStatusChangedEventArgs> StatusChanged
+        public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged
         {
             add => _connection.StatusChanged += value;
             remove => _connection.StatusChanged -= value;

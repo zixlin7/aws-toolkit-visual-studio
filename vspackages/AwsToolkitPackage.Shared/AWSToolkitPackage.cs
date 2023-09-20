@@ -966,16 +966,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewToolkitLogs,
-                    this),
-
-#if VS2022
-                // TEMPORARY - Menu item ID for Login to AWS Builder ID for CodeWhisperer development, remove before merging to main
-                TemporaryLoginToAwsBuilderIdForCodeWhispererCommand.InitializeAsync(
-                    _toolkitContext,
-                    GuidList.CommandSetGuid,
-                    (int) PkgCmdIDList.cmdidLoginAwsBuilderIdForCodeWhisperer,
                     this)
-#endif
             };
 
             await Task.WhenAll(tasks);

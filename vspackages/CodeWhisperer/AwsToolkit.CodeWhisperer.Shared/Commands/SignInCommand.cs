@@ -17,7 +17,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 
         protected override bool CanExecuteCore(object parameter)
         {
-            return _manager.GetStatus() == ConnectionStatus.Disconnected && base.CanExecuteCore(parameter);
+            return _manager.ConnectionStatus == ConnectionStatus.Disconnected && base.CanExecuteCore(parameter);
         }
 
         protected override async Task ExecuteCoreAsync(object parameter)

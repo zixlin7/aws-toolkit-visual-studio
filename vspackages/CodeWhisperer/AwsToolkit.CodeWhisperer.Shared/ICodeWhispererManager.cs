@@ -21,14 +21,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         Task SignOutAsync();
 
         /// <summary>
-        /// Gets the current status
+        /// Gets the current connection status
         /// </summary>
-        ConnectionStatus GetStatus();
+        ConnectionStatus ConnectionStatus { get; }
 
         /// <summary>
-        /// Event signaling that the status has changed
+        /// Event signaling that the connection status has changed
         /// </summary>
-        event EventHandler<ConnectionStatusChangedEventArgs> StatusChanged;
+        event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
 
         /// <summary>
         /// Pauses automatic code suggestions

@@ -8,7 +8,7 @@
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>Amazon.AwsToolkit.CodeWhisperer.Tests</Import_RootNamespace>
   </PropertyGroup>
-   <ItemGroup>
+  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CodeWhispererManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommandTests.cs" />

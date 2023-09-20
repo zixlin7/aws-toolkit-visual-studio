@@ -25,21 +25,21 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         [Fact]
         public async Task SignInAsync()
         {
-            _connection.ConnectionStatus = ConnectionStatus.Disconnected;
+            _connection.Status = ConnectionStatus.Disconnected;
 
             await _sut.SignInAsync();
 
-            _sut.GetStatus().Should().Be(ConnectionStatus.Connected);
+            _sut.ConnectionStatus.Should().Be(ConnectionStatus.Connected);
         }
 
         [Fact]
         public async Task SignOutAsync()
         {
-            _connection.ConnectionStatus = ConnectionStatus.Connected;
+            _connection.Status = ConnectionStatus.Connected;
 
             await _sut.SignOutAsync();
 
-            _sut.GetStatus().Should().Be(ConnectionStatus.Disconnected);
+            _sut.ConnectionStatus.Should().Be(ConnectionStatus.Disconnected);
         }
 
         [Theory]
@@ -48,22 +48,22 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         [InlineData(ConnectionStatus.Disconnected)]
         public void GetStatus(ConnectionStatus expectedStatus)
         {
-            _connection.ConnectionStatus = expectedStatus;
+            _connection.Status = expectedStatus;
 
-            _sut.GetStatus().Should().Be(expectedStatus);
+            _sut.ConnectionStatus.Should().Be(expectedStatus);
         }
 
         [Fact]
         public void StatusChanged()
         {
-            _connection.ConnectionStatus = ConnectionStatus.Disconnected;
+            _connection.Status = ConnectionStatus.Disconnected;
 
             var eventArgs = Assert.Raises<ConnectionStatusChangedEventArgs>(
-                attach => _sut.StatusChanged += attach,
-                detach => _sut.StatusChanged -= detach,
+                attach => _sut.ConnectionStatusChanged += attach,
+                detach => _sut.ConnectionStatusChanged -= detach,
                 () =>
                 {
-                    _connection.ConnectionStatus = ConnectionStatus.Connected;
+                    _connection.Status = ConnectionStatus.Connected;
                     _connection.RaiseStatusChanged();
                 });
 

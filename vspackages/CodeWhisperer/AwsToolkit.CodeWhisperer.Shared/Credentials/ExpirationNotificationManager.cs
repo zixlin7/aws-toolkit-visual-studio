@@ -16,7 +16,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         {
             _manager = manager;
 
-            _manager.StatusChanged += OnConnectionStatusChanged;
+            _manager.ConnectionStatusChanged += OnConnectionStatusChanged;
         }
 
         private void OnConnectionStatusChanged(object sender, ConnectionStatusChangedEventArgs e)
@@ -27,7 +27,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         public void Dispose()
         {
-            _manager.StatusChanged -= OnConnectionStatusChanged;
+            _manager.ConnectionStatusChanged -= OnConnectionStatusChanged;
         }
     }
 }

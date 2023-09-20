@@ -4,6 +4,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 {
     public class ConnectionStatusChangedEventArgs : EventArgs
     {
-        public ConnectionStatus ConnectionStatus { get; set; }
+        public ConnectionStatusChangedEventArgs(ConnectionStatus status)
+        {
+            ConnectionStatus = status;
+        }
+
+        public ConnectionStatus ConnectionStatus { get; }
     }
 }

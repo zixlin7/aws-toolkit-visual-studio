@@ -368,18 +368,6 @@
         </Strings>
       </Button>
 
-      <!-- TEMPORARY - Menu item for Login to AWS Builder ID for CodeWhisperer development, remove before merging to main -->
-      <Button guid="guid_VSPackageCmdSet" id="cmdidLoginAwsBuilderIdForCodeWhisperer" priority="0x0003" type="Button">
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
-        <CommandFlag>TextChanges</CommandFlag>
-        <Strings>
-          <CommandName>AWS.View.LoginAwsBuilderIdForCodeWhisperer</CommandName>
-          <ButtonText>Login to AWS Builder ID for CodeWhisperer</ButtonText>
-        </Strings>
-      </Button>
-
       <Button guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001" type="Button">
         <Icon guid="ImageCatalogGuid" id="NewBug" />
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -650,11 +638,6 @@
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidViewToolkitLogs" priority="0x0003">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW" />
     </CommandPlacement>
-
-    <!-- TEMPORARY - Menu item for Login to AWS Builder ID for CodeWhisperer development, remove before merging to main -->
-    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidLoginAwsBuilderIdForCodeWhisperer" priority="0x0004">
-      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW" />
-    </CommandPlacement>
     
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT" />
@@ -731,8 +714,6 @@
       <IDSymbol name="cmdidLinkToDotNetOnAws" value="0x0609" />
       <IDSymbol name="cmdidLinkToDotNetOnAwsCommunity" value="0x0611" />
       <IDSymbol name="cmdidViewToolkitLogs" value="0x0612" />
-      <!-- TEMPORARY - Menu item for Login to AWS Builder ID for CodeWhisperer development, remove before merging to main -->
-      <IDSymbol name="cmdidLoginAwsBuilderIdForCodeWhisperer" value="0x0613" />
       <!-- END Commands within the "AWS Toolkit" Menu -->
 
       <IDSymbol name="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" value="0x1000" />

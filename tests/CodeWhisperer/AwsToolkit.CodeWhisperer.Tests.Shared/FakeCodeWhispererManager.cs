@@ -16,10 +16,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
     {
         public bool IsSignedIn = false;
         public bool PauseAutomaticSuggestions = false;
-        public ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
         public readonly List<Suggestion> Suggestions = new List<Suggestion>();
 
-        public event EventHandler<ConnectionStatusChangedEventArgs> StatusChanged;
+        public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
 
         public virtual Task SignInAsync()
@@ -34,10 +33,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             return Task.CompletedTask;
         }
 
-        public ConnectionStatus GetStatus()
-        {
-            return ConnectionStatus;
-        }
+        public ConnectionStatus ConnectionStatus { get; set; } = ConnectionStatus.Disconnected;
 
         public virtual Task PauseAutoSuggestAsync()
         {
@@ -63,10 +59,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
 
         public void RaiseStatusChanged()
         {
-            StatusChanged?.Invoke(this, new ConnectionStatusChangedEventArgs()
-            {
-                ConnectionStatus = ConnectionStatus,
-            });
+            ConnectionStatusChanged?.Invoke(this, new ConnectionStatusChangedEventArgs(ConnectionStatus));
         }
 
         public void RaisePauseAutoSuggestChanged()
