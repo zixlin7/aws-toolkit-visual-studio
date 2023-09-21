@@ -21,13 +21,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         private readonly IToolkitContextProvider _toolkitContextProvider;
 
-        private readonly IToolkitLspClient _toolkitLspClient;
+        private readonly IToolkitLspClient _codeWhispererLspClient;
 
         [ImportingConstructor]
-        public Connection(IToolkitContextProvider toolkitContextProvider, IToolkitLspClient toolkitLspClient)
+        public Connection(IToolkitContextProvider toolkitContextProvider, ICodeWhispererLspClient codeWhispererLspClient)
         {
             _toolkitContextProvider = toolkitContextProvider;
-            _toolkitLspClient = toolkitLspClient;
+            _codeWhispererLspClient = codeWhispererLspClient;
         }
 
         private ConnectionStatus _status = ConnectionStatus.Disconnected;
@@ -90,7 +90,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     return;
                 }
 
-                var lspCreds = _toolkitLspClient.CreateToolkitLspCredentials();
+                var lspCreds = _codeWhispererLspClient.CreateToolkitLspCredentials();
                 lspCreds.UpdateToken(new BearerToken() { Token = awsToken.Token });
 
                 Status = ConnectionStatus.Connected;
