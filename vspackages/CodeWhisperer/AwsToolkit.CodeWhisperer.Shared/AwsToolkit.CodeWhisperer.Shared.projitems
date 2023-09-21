@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>6d5c0c8e-e5fd-44d4-94bc-00ed69a70eb6</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Amazon.AwsToolkit.CodeWhisperer</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeWhispererManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\BaseCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GetSuggestionsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GettingStartedCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SecurityScanCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewUserGuideCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\Connection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatusChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ExpirationNotificationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\IConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\IExpirationNotificationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICodeWhispererManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\IToolkitLspClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\JsonRpcExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ToolkitLspClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ILspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\IToolkitLspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsEncryptionInitializationRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\JwtFieldNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\InlineCompletions\InlineCompletions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\ILspInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\ManifestSchemaUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ICodeWhispererSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMargin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>CodeWhispererMarginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ISuggestionProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\GetSuggestionsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\Suggestion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\PauseStateChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\IResourceManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\VersionManifestManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\LspVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\ManifestSchema.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\TargetContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\VersionTarget.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\" />
+  </ItemGroup>
+</Project>

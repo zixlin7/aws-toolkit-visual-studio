@@ -92,6 +92,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <!-- Community.VisualStudio.Toolkit - Keep this version in sync with AwsToolkitPackage.csproj -->
+    <PackageReference Include="Community.VisualStudio.Toolkit.16" Version="16.0.486" ExcludeAssets="Runtime" />
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
     </PackageReference>

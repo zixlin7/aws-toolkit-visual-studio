@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyTitle>AWS Toolkit CodeWhisperer integration</AssemblyTitle>
+    <RootNamespace>Amazon.AwsToolkit.CodeWhisperer</RootNamespace>
+    <DefineConstants>$(DefineConstants);VS2022;VS2022_OR_LATER</DefineConstants>
+    <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Community.VisualStudio.Toolkit - Keep this version in sync with AwsToolkitPackage.v17.csproj -->
+    <PackageReference Include="Community.VisualStudio.Toolkit.17" ExcludeAssets="Runtime">
+      <Version>17.0.486</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Client" Version="17.0.5165" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK">
+      <Version>17.0.32112.339</Version>
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="17.0.32112.339" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
+    <ProjectReference Include="..\..\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- jose-jwt doesn't have a strong-signed NuGet package. We sign it ourselves using a 
+    "before ResolveAssemblyReferences" target, lower in this file. -->
+    <Reference Include="jose-jwt">
+      <HintPath>$(BuildRoot)\thirdparty\jose-jwt.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="..\AwsToolkit.CodeWhisperer.Shared\AwsToolkit.CodeWhisperer.Shared.projitems" Label="Shared" />
+
+  <!-- This is activated when msbuild or Visual Studio attempt to resolve assembly references.
+    This means that the IDE will briefly complain that this assembly's symbols cannot be found, 
+    but we will not get a compilation error. 
+    
+    See the "Jose-jwt" section of ./CONTRIBUTING.md for more details. -->
+  <Target Name="SelfSignJoseJwt" BeforeTargets="ResolveAssemblyReferences">
+    <MSBuild Projects="$(BuildRoot)\buildtools\signJoseJwt.proj" Targets="sign-jose-jwt" />
+  </Target>
+</Project>

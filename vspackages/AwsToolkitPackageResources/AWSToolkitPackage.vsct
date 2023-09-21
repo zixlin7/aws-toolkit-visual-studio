@@ -638,7 +638,7 @@
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidViewToolkitLogs" priority="0x0003">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW" />
     </CommandPlacement>
-
+    
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT" />
     </CommandPlacement>

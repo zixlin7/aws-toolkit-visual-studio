@@ -27,6 +27,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
 
             try
             {
+                token.ThrowIfCancellationRequested();
                 _logger.Info($"Loading resource: {fullPath}");
                 var fileStream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
                 return Task.FromResult<Stream>(fileStream);
