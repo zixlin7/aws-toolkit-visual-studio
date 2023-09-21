@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" />
   <PropertyGroup>
@@ -49,12 +50,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>17.0.32112.339</Version>
-    </PackageReference>
-    <PackageReference Include="Moq">
-      <Version>4.17.2</Version>
-    </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.5.1</Version>
     </PackageReference>
@@ -108,9 +103,12 @@
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
       <Name>AWSToolkit.Tests.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common\AwsToolkit.Tests.Common.VsSdk.v17\AwsToolkit.Tests.Common.VsSdk.v17.csproj">
+      <Project>{9479ec23-e329-4b7b-9a1a-4eaeb7bf0c59}</Project>
+      <Name>AwsToolkit.Tests.Common.VsSdk.v17</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\AwsToolkit.Vs.Tests.Shared\AwsToolkit.Vs.Tests.Shared.projitems" Label="Shared" />
-  <Import Project="..\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems" Label="Shared" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
