@@ -11,5 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\ImageMoniker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SolutionExplorer\SolutionExplorerFixture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsTestFramework\VsMockCollection.cs" />
   </ItemGroup>
 </Project>
