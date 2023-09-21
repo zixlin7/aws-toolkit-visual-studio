@@ -76,12 +76,10 @@
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
       <Name>AWSToolkit.Lambda.Interface</Name>
     </ProjectReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>17.0.32112.339</Version>
-    </PackageReference>
-    <PackageReference Include="Moq">
-      <Version>4.17.2</Version>
-    </PackageReference>
+    <ProjectReference Include="..\Common\AwsToolkit.Tests.Common.VsSdk.v17\AwsToolkit.Tests.Common.VsSdk.v17.csproj">
+      <Project>{9479ec23-e329-4b7b-9a1a-4eaeb7bf0c59}</Project>
+      <Name>AwsToolkit.Tests.Common.VsSdk.v17</Name>
+    </ProjectReference>
     <PackageReference Include="xunit">
       <Version>2.5.1</Version>
     </PackageReference>
@@ -98,7 +96,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
-  <Import Project="..\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems" Label="Shared" />
   <Import Project="..\AWSToolkitPackage.Tests.Shared\AWSToolkitPackage.Tests.Shared.projitems" Label="Shared" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -13,6 +13,7 @@
       "..\\tests\\AmazonCLIExtensions.Tests\\AmazonCLIExtensions.Tests.csproj",
       "..\\tests\\AwsToolkit.Vs.Tests.Shared\\AwsToolkit.Vs.Tests.Shared.shproj",
       "..\\tests\\AwsToolkit.Vs.v16.Tests\\AwsToolkit.Vs.v16.Tests.csproj",
+      "..\\tests\\Common\\AwsToolkit.Tests.Common.VsSdk.v16\\AwsToolkit.Tests.Common.VsSdk.v16.csproj",
       "..\\tests\\Integration\\AwsToolkit.Tests.Integration.Shared\\AwsToolkit.Tests.Integration.Shared.shproj",
       "..\\tests\\Integration\\AwsToolkit.Tests.v16.Integration\\AwsToolkit.Tests.v16.Integration.csproj",
       "..\\tests\\PublishToAws.Tests.Shared\\PublishToAws.Tests.Shared.shproj",

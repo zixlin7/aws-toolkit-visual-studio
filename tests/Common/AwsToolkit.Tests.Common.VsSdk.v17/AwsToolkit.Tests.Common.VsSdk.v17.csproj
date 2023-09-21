@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>AWSToolkit.Tests.Common.VS</RootNamespace>
+    <DefineConstants>$(DefineConstants);VS2022;VS2022_OR_LATER</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.SDK">
+      <Version>17.0.32112.339</Version>
+    </PackageReference>
+    <PackageReference Include="Moq">
+      <Version>4.17.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="..\..\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems" Label="Shared" />
+</Project>
