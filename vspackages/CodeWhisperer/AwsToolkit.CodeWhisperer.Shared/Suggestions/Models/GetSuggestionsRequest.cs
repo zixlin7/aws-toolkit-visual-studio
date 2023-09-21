@@ -1,4 +1,6 @@
-﻿namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models
+﻿using Amazon.AWSToolkit.Models.Text;
+
+namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models
 {
     /// <summary>
     /// Request model for the CodeWhisperer integration to obtain code suggestions
@@ -11,14 +13,9 @@
         public string FilePath { get; set; }
 
         /// <summary>
-        /// 0-indexed line number of the cursor position
+        /// 0-indexed line and column number of the cursor position
         /// </summary>
-        public int CursorLine { get; set; }
-
-        /// <summary>
-        /// 0-indexed column number of the cursor position
-        /// </summary>
-        public int CursorColumn { get; set; }
+        public Position CursorPosition { get; set; }
 
         /// <summary>
         /// Whether or not this request was auto-invoked

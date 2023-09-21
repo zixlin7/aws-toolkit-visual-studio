@@ -10,8 +10,6 @@ using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AWSToolkit.Context;
 
-using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
-
 using log4net;
 
 using Microsoft.VisualStudio.LanguageServer.Protocol;
@@ -59,6 +57,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
         public async Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request)
         {
+            var suggestions = new List<Suggestion>();
+
             try
             {
                 var inlineCompletions = _lspClient.CreateInlineCompletions();
@@ -72,12 +72,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                             ? InlineCompletionTriggerKind.Automatic
                             : InlineCompletionTriggerKind.Invoke,
                     },
-                    Position =
-                        new Position() { Line = request.CursorLine, Character = request.CursorColumn, },
+                    Position = request.CursorPosition.AsLspPosition(),
                 };
 
-                // TODO : IDE-11522 : convert responses to return values
                 var response = await inlineCompletions.GetInlineCompletionsAsync(inlineCompletionRequest);
+
+                suggestions.AddRange(response.Items.Select(AsSuggestion));
             }
             catch (Exception e)
             {
@@ -85,7 +85,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                 _toolkitContextProvider.GetToolkitContext().ToolkitHost.OutputToHostConsole($"AWS Toolkit was unable to get CodeWhisperer suggestions: {e.Message}", false);
             }
 
-            return Enumerable.Empty<Suggestion>();
+            return suggestions;
+        }
+
+        private Suggestion AsSuggestion(InlineCompletionItem inlineCompletion)
+        {
+            return new Suggestion()
+            {
+                Text = inlineCompletion.InsertText,
+                ReplacementRange = inlineCompletion.Range.AsToolkitRange(),
+            };
         }
 
         public void Dispose()

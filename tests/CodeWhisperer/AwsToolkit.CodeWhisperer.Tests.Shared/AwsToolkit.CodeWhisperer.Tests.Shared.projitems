@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\TestResources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestManagerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethodsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lsp\Manifest\sample-invalid-manifest.json" />

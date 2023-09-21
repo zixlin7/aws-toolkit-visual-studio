@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Settings;
+using Amazon.AWSToolkit.Models.Text;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using FluentAssertions;
@@ -56,11 +59,35 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         [Fact]
         public async Task GetSuggestionsAsync()
         {
-            // todo : mock or fake the CWSPR language client
+            var sampleCompletions = 3;
+            _lspClient.InlineCompletions.InlineCompletions = CreateInlineCompletionList(sampleCompletions);
 
-            var suggestions = await _sut.GetSuggestionsAsync(new GetSuggestionsRequest());
+            var request = new GetSuggestionsRequest()
+            {
+                FilePath = @"c:\sample\file.cs",
+                CursorPosition = new Position(0, 0),
+                IsAutoSuggestion = false,
+            };
 
-            suggestions.Should().BeEmpty();
+            var suggestions = (await _sut.GetSuggestionsAsync(request)).ToList();
+
+            suggestions.Should().HaveCount(sampleCompletions);
+            for (var i = 0; i < sampleCompletions; i++)
+            {
+                suggestions.Should().Contain(suggestion => suggestion.Text == $"Sample Suggestion {i}");
+            }
+        }
+
+        private InlineCompletionList CreateInlineCompletionList(int sampleCompletions)
+        {
+            var completions = Enumerable.Range(0, sampleCompletions).Select(i => CreateSampleCompletionItem($"Sample Suggestion {i}"));
+
+            return new InlineCompletionList() { Items = completions.ToArray(), };
+        }
+
+        private InlineCompletionItem CreateSampleCompletionItem(string text)
+        {
+            return new InlineCompletionItem() { InsertText = text, };
         }
     }
 }

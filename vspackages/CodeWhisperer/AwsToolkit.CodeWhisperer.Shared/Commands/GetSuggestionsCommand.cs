@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Models.Text;
 
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -28,10 +30,28 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 
         protected override async Task ExecuteCoreAsync(object parameter)
         {
-            var request = CreateGetSuggestionsRequest();
-            var suggestions = await _manager.GetSuggestionsAsync(request);
+            var toolkitHost = _toolkitContextProvider.GetToolkitContext().ToolkitHost;
 
-            // TODO : IDE-11521 : display suggestions to user
+            // TODO : IDE-11363 : using a task notifier is temporary. It helps during development to know that a query is running.
+            var taskNotifier = await toolkitHost.CreateTaskStatusNotifier();
+            taskNotifier.Title = "Retrieving CodeWhisperer suggestions";
+            taskNotifier.CanCancel = false;
+            taskNotifier.ShowTaskStatus(async _ =>
+            {
+                var request = CreateGetSuggestionsRequest();
+                var suggestions = (await _manager.GetSuggestionsAsync(request)).ToList();
+
+                // TODO : IDE-11521 : display suggestions to user
+                // Until then, output the suggestions in the Output pane
+
+                toolkitHost.OutputToHostConsole($"---------- Suggestions: {suggestions.Count} ----------");
+
+                foreach (var suggestion in suggestions)
+                {
+                    toolkitHost.OutputToHostConsole(suggestion.Text);
+                    toolkitHost.OutputToHostConsole("------------------------------");
+                }
+            });
         }
 
         private GetSuggestionsRequest CreateGetSuggestionsRequest()
@@ -43,8 +63,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
             return new GetSuggestionsRequest()
             {
                 FilePath = GetFilePath(),
-                CursorLine = caretLine.LineNumber,
-                CursorColumn = caretColumn,
+                CursorPosition = new Position(caretLine.LineNumber, caretColumn),
                 IsAutoSuggestion = false,
             };
         }
