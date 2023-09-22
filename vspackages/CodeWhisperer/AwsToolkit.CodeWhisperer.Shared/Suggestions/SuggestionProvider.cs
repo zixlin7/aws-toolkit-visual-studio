@@ -38,19 +38,26 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             _settingsRepository.SettingsSaved += SettingsRepositoryOnSettingsSaved;
         }
 
-        public Task PauseAutoSuggestAsync()
+        public async Task PauseAutoSuggestAsync()
         {
-            throw new NotImplementedException();
+            var settings = await _settingsRepository.GetAsync();
+            settings.PauseAutomaticSuggestions = true;
+            _settingsRepository.Save(settings);
+            OutputStatus("CodeWhisperer's automatic suggestions have been paused.");
         }
 
-        public Task ResumeAutoSuggestAsync()
+        public async Task ResumeAutoSuggestAsync()
         {
-            throw new NotImplementedException();
+            var settings = await _settingsRepository.GetAsync();
+            settings.PauseAutomaticSuggestions = false;
+            _settingsRepository.Save(settings);
+            OutputStatus("CodeWhisperer's automatic suggestions will be displayed.");
         }
 
-        public Task<bool> IsAutoSuggestPausedAsync()
+        public async Task<bool> IsAutoSuggestPausedAsync()
         {
-            throw new NotImplementedException();
+            var settings = await _settingsRepository.GetAsync();
+            return settings.PauseAutomaticSuggestions;
         }
 
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
@@ -119,6 +126,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             {
                 IsPaused = e.Settings.PauseAutomaticSuggestions,
             });
+        }
+
+        private void OutputStatus(string message)
+        {
+            _toolkitContextProvider.GetToolkitContext().ToolkitHost.OutputToHostConsole(message, true);
         }
     }
 }

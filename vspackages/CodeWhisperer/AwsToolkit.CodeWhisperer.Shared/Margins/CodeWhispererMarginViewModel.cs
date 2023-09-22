@@ -1,4 +1,6 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Input;
 
 using Amazon.AwsToolkit.CodeWhisperer.Commands;
 using Amazon.AWSToolkit.CommonUI;
@@ -8,11 +10,12 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 {
-    public class CodeWhispererMarginViewModel : BaseModel
+    public class CodeWhispererMarginViewModel : BaseModel, IDisposable
     {
         private readonly IToolkitContextProvider _toolkitContextProvider;
         private readonly IWpfTextView _textView;
         private readonly ICodeWhispererManager _manager;
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         public CodeWhispererMarginViewModel(IWpfTextView textView, ICodeWhispererManager manager,
             IToolkitContextProvider toolkitContextProvider)
@@ -24,8 +27,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             SignIn = new SignInCommand(_manager, _toolkitContextProvider);
             SignOut = new SignOutCommand(_manager, _toolkitContextProvider);
 
-            Pause = new PauseCommand(_toolkitContextProvider);
-            Resume = new ResumeCommand(_toolkitContextProvider);
+            var pauseCommand = new PauseCommand(_manager, _toolkitContextProvider);
+            _disposables.Add(pauseCommand);
+            Pause = pauseCommand;
+
+            var resumeCommand = new ResumeCommand(_manager, _toolkitContextProvider);
+            _disposables.Add(resumeCommand);
+            Resume = resumeCommand;
 
             ViewUserGuide = new ViewUserGuideCommand(_toolkitContextProvider);
             GettingStarted = new GettingStartedCommand(_toolkitContextProvider);
@@ -96,6 +104,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             get => _gettingStarted;
             set => SetProperty(ref _gettingStarted, value);
+        }
+
+        public void Dispose()
+        {
+            foreach (var disposable in _disposables)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }

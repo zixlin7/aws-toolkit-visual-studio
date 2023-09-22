@@ -1,20 +1,43 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 {
-    public class ResumeCommand : BaseCommand
+    public class ResumeCommand : BaseCommand, IDisposable
     {
-        public ResumeCommand(IToolkitContextProvider toolkitContextProvider)
+        private readonly ICodeWhispererManager _manager;
+        private bool _isPaused;
+
+        public ResumeCommand(ICodeWhispererManager manager, IToolkitContextProvider toolkitContextProvider)
             : base(toolkitContextProvider)
         {
+            _manager = manager;
+
+            _manager.PauseAutoSuggestChanged += ManagerOnPauseAutoSuggestChanged;
+            _isPaused = _manager.IsAutoSuggestPaused();
         }
 
-        protected override Task ExecuteCoreAsync(object parameter)
+        private void ManagerOnPauseAutoSuggestChanged(object sender, PauseStateChangedEventArgs e)
         {
-            // TODO : Resume suggestions
-            return Task.CompletedTask;
+            _isPaused = e.IsPaused;
+        }
+
+        protected override bool CanExecuteCore(object parameter)
+        {
+            return _isPaused && base.CanExecuteCore(parameter);
+        }
+
+        protected override async Task ExecuteCoreAsync(object parameter)
+        {
+            await _manager.ResumeAutoSuggestAsync();
+        }
+
+        public void Dispose()
+        {
+            _manager.PauseAutoSuggestChanged -= ManagerOnPauseAutoSuggestChanged;
         }
     }
 }

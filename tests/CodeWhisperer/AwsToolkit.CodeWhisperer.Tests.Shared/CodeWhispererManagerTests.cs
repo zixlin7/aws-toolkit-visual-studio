@@ -4,22 +4,31 @@ using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.TestUtilities;
+using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 using FluentAssertions;
+
+using Microsoft.VisualStudio.Sdk.TestFramework;
+using Microsoft.VisualStudio.Shell;
 
 using Xunit;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests
 {
+    [Collection(VsMockCollection.CollectionName)]
     public class CodeWhispererManagerTests
     {
         private readonly FakeConnection _connection = new FakeConnection();
         private readonly FakeSuggestionProvider _suggestionProvider = new FakeSuggestionProvider();
         private readonly CodeWhispererManager _sut;
 
-        public CodeWhispererManagerTests()
+        public CodeWhispererManagerTests(GlobalServiceProvider serviceProvider)
         {
-            _sut = new CodeWhispererManager(_connection, _suggestionProvider);
+            serviceProvider.Reset();
+
+            var taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
+            _sut = new CodeWhispererManager(_connection, _suggestionProvider, taskFactoryProvider);
         }
 
         [Fact]
@@ -78,6 +87,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             await _sut.PauseAutoSuggestAsync();
 
             (await _sut.IsAutoSuggestPausedAsync()).Should().BeTrue();
+#pragma warning disable VSTHRD103
+            // ReSharper disable once MethodHasAsyncOverload
+            _sut.IsAutoSuggestPaused().Should().BeTrue();
+#pragma warning restore VSTHRD103
         }
 
         [Fact]
@@ -88,6 +101,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             await _sut.ResumeAutoSuggestAsync();
 
             (await _sut.IsAutoSuggestPausedAsync()).Should().BeFalse();
+#pragma warning disable VSTHRD103
+            // ReSharper disable once MethodHasAsyncOverload
+            _sut.IsAutoSuggestPaused().Should().BeFalse();
+#pragma warning restore VSTHRD103
         }
 
         [Fact]

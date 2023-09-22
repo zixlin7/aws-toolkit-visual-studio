@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
+using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 namespace Amazon.AwsToolkit.CodeWhisperer
 {
@@ -22,14 +23,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer
     {
         private readonly IConnection _connection;
         private readonly ISuggestionProvider _suggestionProvider;
+        private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
 
         [ImportingConstructor]
         public CodeWhispererManager(
             IConnection connection,
-            ISuggestionProvider suggestionProvider)
+            ISuggestionProvider suggestionProvider,
+            ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _connection = connection;
             _suggestionProvider = suggestionProvider;
+            _taskFactoryProvider = taskFactoryProvider;
         }
 
         /// <summary>
@@ -76,6 +80,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         public async Task ResumeAutoSuggestAsync()
         {
             await _suggestionProvider.ResumeAutoSuggestAsync();
+        }
+
+        /// <summary>
+        /// Use <see cref="IsAutoSuggestPausedAsync"/> when possible.
+        /// This is provided for places where async is not an option, like in ctor and "can execute" calls,
+        /// and encapsulates blocking the current thread to run the async version.
+        /// </summary>
+        public bool IsAutoSuggestPaused()
+        {
+            return _taskFactoryProvider.JoinableTaskFactory.Run(async () => await IsAutoSuggestPausedAsync());
         }
 
         public async Task<bool> IsAutoSuggestPausedAsync()

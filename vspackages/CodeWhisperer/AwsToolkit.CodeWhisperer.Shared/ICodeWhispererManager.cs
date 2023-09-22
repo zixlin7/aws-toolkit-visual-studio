@@ -40,6 +40,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         /// </summary>
         Task ResumeAutoSuggestAsync();
 
+        /// <summary>
+        /// Use <see cref="IsAutoSuggestPausedAsync"/> when possible.
+        /// This is provided for places where async is not an option, like in ctor and "can execute" calls,
+        /// and encapsulates blocking the current thread to run the async version.
+        /// </summary>
+        bool IsAutoSuggestPaused();
+
         Task<bool> IsAutoSuggestPausedAsync();
 
         /// <summary>

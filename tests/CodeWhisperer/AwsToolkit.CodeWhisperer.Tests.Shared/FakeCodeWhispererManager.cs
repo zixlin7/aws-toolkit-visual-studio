@@ -47,6 +47,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             return Task.CompletedTask;
         }
 
+        public virtual bool IsAutoSuggestPaused()
+        {
+            return PauseAutomaticSuggestions;
+        }
+
         public virtual Task<bool> IsAutoSuggestPausedAsync()
         {
             return Task.FromResult(PauseAutomaticSuggestions);

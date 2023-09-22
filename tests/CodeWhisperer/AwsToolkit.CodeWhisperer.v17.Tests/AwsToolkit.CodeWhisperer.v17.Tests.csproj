@@ -21,5 +21,6 @@
 	  </ProjectReference>
 	  <ProjectReference Include="..\..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj" />
 	  <ProjectReference Include="..\..\AWSToolkit.Util.Tests\AWSToolkit.Util.Tests.csproj" />
+	  <ProjectReference Include="..\..\Common\AwsToolkit.Tests.Common.VsSdk.v17\AwsToolkit.Tests.Common.VsSdk.v17.csproj" />
 	</ItemGroup>
 </Project>

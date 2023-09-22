@@ -35,25 +35,32 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         [Fact]
         public async Task PauseAutoSuggestAsync()
         {
-            Func<Task> operation = () => _sut.PauseAutoSuggestAsync();
+            _settingsRepository.Settings.PauseAutomaticSuggestions = false;
 
-            await operation.Should().ThrowAsync<NotImplementedException>();
+            await _sut.PauseAutoSuggestAsync();
+            (await _sut.IsAutoSuggestPausedAsync()).Should().BeTrue();
+            _settingsRepository.Settings.PauseAutomaticSuggestions.Should().BeTrue();
         }
 
         [Fact]
         public async Task ResumeAutoSuggestAsync()
         {
-            Func<Task> operation = () => _sut.ResumeAutoSuggestAsync();
+            _settingsRepository.Settings.PauseAutomaticSuggestions = true;
 
-            await operation.Should().ThrowAsync<NotImplementedException>();
+            await _sut.ResumeAutoSuggestAsync();
+
+            (await _sut.IsAutoSuggestPausedAsync()).Should().BeFalse();
+            _settingsRepository.Settings.PauseAutomaticSuggestions.Should().BeFalse();
         }
 
-        [Fact]
-        public async Task IsAutoSuggestPausedAsync()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task IsAutoSuggestPausedAsync(bool isPaused)
         {
-            Func<Task<bool>> operation = () => _sut.IsAutoSuggestPausedAsync();
+            _settingsRepository.Settings.PauseAutomaticSuggestions = isPaused;
 
-            await operation.Should().ThrowAsync<NotImplementedException>();
+            (await _sut.IsAutoSuggestPausedAsync()).Should().Be(isPaused);
         }
 
         [Fact]

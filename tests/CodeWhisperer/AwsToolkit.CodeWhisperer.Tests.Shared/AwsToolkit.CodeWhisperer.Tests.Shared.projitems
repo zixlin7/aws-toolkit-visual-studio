@@ -10,6 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CodeWhispererManagerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\FakeConnection.cs" />
@@ -26,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestUtilities\VsMockCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lsp\Manifest\sample-invalid-manifest.json" />

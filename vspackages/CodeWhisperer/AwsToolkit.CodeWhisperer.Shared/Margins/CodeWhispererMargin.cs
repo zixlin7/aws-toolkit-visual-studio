@@ -46,6 +46,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 
         public void Dispose()
         {
+            _viewModel.Dispose();
         }
     }
 }
