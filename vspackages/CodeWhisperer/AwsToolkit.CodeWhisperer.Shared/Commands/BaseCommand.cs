@@ -10,7 +10,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
     {
         protected readonly IToolkitContextProvider _toolkitContextProvider;
 
-        public BaseCommand(IToolkitContextProvider toolkitContextProvider)
+        protected BaseCommand(IToolkitContextProvider toolkitContextProvider)
         {
             _toolkitContextProvider = toolkitContextProvider;
         }

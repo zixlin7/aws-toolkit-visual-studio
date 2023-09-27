@@ -99,6 +99,8 @@ using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
+using Amazon.AwsToolkit.VsSdk.Common.Services;
+
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 using AwsToolkit.VsSdk.Common.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -666,12 +668,25 @@ namespace Amazon.AWSToolkit.VisualStudio
                 // TODO : IDE-11469 : phase out SignalShellInitializationComplete by replacing reliance on static globals with MEF & IToolkitContextProvider
                 ToolkitFactory.SignalShellInitializationComplete();
                 await InitializeToolkitContextProviderAsync();
+                await InitializePluginCommandsAsync();
                 RunLogCleanupAsync().LogExceptionAndForget();
             }
             finally
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        private async Task InitializePluginCommandsAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var componentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
+
+            componentModel
+                .GetExtensions<IPluginCommand>()?
+                .ToList()
+                .ForEach(pluginCommand => pluginCommand.RegisterAsync(this));
         }
 
         /// <summary>

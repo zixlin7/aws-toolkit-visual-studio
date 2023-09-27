@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CodeWhispererManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\BaseCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\GetSuggestionsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GetSuggestionsPluginCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\GettingStartedCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommand.cs" />
