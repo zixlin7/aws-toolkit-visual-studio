@@ -27,6 +27,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             SignIn = new SignInCommand(_manager, _toolkitContextProvider);
             SignOut = new SignOutCommand(_manager, _toolkitContextProvider);
 
+            ViewOptions = new ViewOptionsCommand(_toolkitContextProvider);
+
             var pauseCommand = new PauseCommand(_manager, _toolkitContextProvider);
             _disposables.Add(pauseCommand);
             Pause = pauseCommand;
@@ -76,6 +78,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             get => _resume;
             set => SetProperty(ref _resume, value);
+        }
+
+        private ICommand _viewOptions;
+        public ICommand ViewOptions
+        {
+            get => _viewOptions;
+            set => SetProperty(ref _viewOptions, value);
         }
 
         private ICommand _viewCodeReferences;

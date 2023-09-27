@@ -39,6 +39,7 @@
                     <Separator />
                     <MenuItem Header="View User Guide" Command="{Binding ViewUserGuide}" />
                     <MenuItem Header="Getting Started" Command="{Binding GettingStarted}" />
+                    <MenuItem Header="View Options" Command="{Binding ViewOptions}" />
                     <Separator />
                     <MenuItem Header="Sign Out" Command="{Binding SignOut}" />
                 </ContextMenu>

@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewOptionsCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewUserGuideCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\Connection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatus.cs" />
