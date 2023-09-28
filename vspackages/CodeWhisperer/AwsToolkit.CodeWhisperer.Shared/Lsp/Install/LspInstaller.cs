@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
+using Amazon.AWSToolkit.Context;
 
 using log4net;
 
@@ -12,9 +13,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(LspInstaller));
         private readonly ICodeWhispererSettingsRepository _codeWhispererSettingsRepository;
+        private readonly ToolkitContext _toolkitContext;
 
-        public LspInstaller(ICodeWhispererSettingsRepository codeWhispererSettingsRepository)
+        public LspInstaller(ToolkitContext toolkitContext,
+            ICodeWhispererSettingsRepository codeWhispererSettingsRepository)
         {
+            _toolkitContext = toolkitContext;
             _codeWhispererSettingsRepository = codeWhispererSettingsRepository;
         }
 
@@ -28,8 +32,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 {
                     throw new Exception("Error retrieving lsp version manifest");
                 }
-                // TODO: Use the schema to download, validate and manage the Language server
 
+                var lspManager = new LspManager(_codeWhispererSettingsRepository, manifestSchema, _toolkitContext);
+                var downloadPath = await lspManager.DownloadAsync(token);
+
+                // TODO: Return download Path for installation process
                 // TODO: Handle cancellations for long loading for install operation
             }
             catch (Exception ex)

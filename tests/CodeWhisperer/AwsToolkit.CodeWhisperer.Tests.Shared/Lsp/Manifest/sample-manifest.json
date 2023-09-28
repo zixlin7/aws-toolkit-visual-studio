@@ -17,13 +17,13 @@
                         {
                             "filename": "bar.exe",
                             "url": "https://qwerty...foo.biz/foo/1.2.1/bar.exe",
-                            "hash": [ "sha384:ababababababab" ],
+                            "hashes": [ "sha384:ababababababab" ],
                             "bytes": 123123123
                         },
                         {
                             "filename": "bar.exe.sig",
                             "url": "https://qwerty...foo.biz/foo/1.2.1/bar.exe.sig",
-                            "hash": [ "sha384:ababababababab" ],
+                            "hashes": [ "sha384:ababababababab" ],
                             "bytes": 1231
                         }
                     ]
@@ -35,7 +35,7 @@
                         {
                             "filename": "bar",
                             "url": "https://qwerty...foo.biz/foo/1.2.1/bar",
-                            "hash": [ "sha384:cdcdcdcdcdcdcd" ],
+                            "hashes": [ "sha384:cdcdcdcdcdcdcd" ],
                             "bytes": 234234234
                         }
                     ]
@@ -52,7 +52,7 @@
                         {
                             "filename": "bar.exe",
                             "url": "https://qwerty...foo.biz/foo/2.0.0/bar.exe",
-                            "hash": [ "sha384:ababababababab" ],
+                            "hashes": [ "sha384:ababababababab" ],
                             "bytes": 123123123
                         }
                     ]

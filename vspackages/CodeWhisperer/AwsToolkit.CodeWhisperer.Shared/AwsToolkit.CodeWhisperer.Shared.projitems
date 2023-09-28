@@ -44,7 +44,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\InlineCompletions\InlineCompletions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\ILspInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspFetcher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstallUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\ManifestSchemaUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethods.cs" />
