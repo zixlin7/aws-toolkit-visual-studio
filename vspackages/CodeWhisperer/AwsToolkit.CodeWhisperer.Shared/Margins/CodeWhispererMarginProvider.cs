@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.Context;
 
 using Microsoft.VisualStudio.Text.Editor;
@@ -26,6 +27,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
     {
         private readonly ICodeWhispererManager _manager;
         private readonly IToolkitContextProvider _toolkitContextProvider;
+        private readonly ISuggestionUiManager _suggestionUiManager;
 
         [ImportingConstructor]
         public CodeWhispererMarginProvider(
@@ -35,17 +37,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             // CodeWhisperer component that gets activated by Visual Studio, so we
             // import ExpirationNotificationManager here to auto instantiate it.
             IExpirationNotificationManager expirationNotificationManager,
-            IToolkitContextProvider toolkitContextProvider)
+            IToolkitContextProvider toolkitContextProvider,
+            ISuggestionUiManager suggestionUiManager)
         {
             _manager = manager;
             _toolkitContextProvider = toolkitContextProvider;
+            _suggestionUiManager = suggestionUiManager;
         }
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(
                 typeof(CodeWhispererMargin),
-                () => new CodeWhispererMargin(wpfTextViewHost.TextView, _manager, _toolkitContextProvider));
+                () => new CodeWhispererMargin(wpfTextViewHost.TextView, _manager, _suggestionUiManager, _toolkitContextProvider));
         }
     }
 }

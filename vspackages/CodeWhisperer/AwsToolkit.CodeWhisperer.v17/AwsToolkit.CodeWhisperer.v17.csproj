@@ -15,6 +15,7 @@
     <PackageReference Include="Community.VisualStudio.Toolkit.17" ExcludeAssets="Runtime">
       <Version>17.0.486</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Language" Version="17.7.188" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Client" Version="17.0.5165" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />
     <PackageReference Include="Microsoft.VisualStudio.SDK">
@@ -23,6 +24,12 @@
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="17.0.32112.339" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.7.30" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StreamJsonRpc" Version="2.16.36" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />

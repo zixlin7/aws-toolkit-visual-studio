@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Input;
 
 using Amazon.AwsToolkit.CodeWhisperer.Commands;
+using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
 
@@ -18,6 +19,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         public CodeWhispererMarginViewModel(IWpfTextView textView, ICodeWhispererManager manager,
+            ISuggestionUiManager suggestionUiManager,
             IToolkitContextProvider toolkitContextProvider)
         {
             _textView = textView;
@@ -40,7 +42,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             ViewUserGuide = new ViewUserGuideCommand(_toolkitContextProvider);
             GettingStarted = new GettingStartedCommand(_toolkitContextProvider);
 
-            GenerateSuggestions = new GetSuggestionsCommand(_textView, _manager, _toolkitContextProvider);
+            GenerateSuggestions = new GetSuggestionsCommand(_textView, _manager, suggestionUiManager, _toolkitContextProvider);
             ViewCodeReferences = new ViewCodeReferencesCommand(_toolkitContextProvider);
             SecurityScan = new SecurityScanCommand(_toolkitContextProvider);
         }
