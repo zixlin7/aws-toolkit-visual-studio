@@ -73,6 +73,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\TaskStatusNotifier.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OutputWindow\OutputWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RunningDocumentEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IPluginCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhisperer\CodeWhispererSettings.cs" />

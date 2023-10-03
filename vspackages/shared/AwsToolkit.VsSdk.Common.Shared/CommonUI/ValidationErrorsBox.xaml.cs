@@ -9,7 +9,7 @@ using Amazon.AWSToolkit.CommonUI.Converters;
 
 using log4net;
 
-namespace AwsToolkit.VsSdk.Common.CommonUI
+namespace Amazon.AwsToolkit.VsSdk.Common.CommonUI
 {
     /// <summary>
     /// Represents a control that can be used to display validation error messages of another control.

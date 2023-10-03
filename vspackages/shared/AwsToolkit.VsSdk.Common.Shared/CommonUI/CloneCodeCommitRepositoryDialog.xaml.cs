@@ -16,7 +16,7 @@ using CommonUI.Models;
 
 using Microsoft.VisualStudio.Threading;
 
-namespace AwsToolkit.VsSdk.Common.CommonUI
+namespace Amazon.AwsToolkit.VsSdk.Common.CommonUI
 {
     public partial class CloneCodeCommitRepositoryDialog : ThemedDialogWindow, ICloneCodeCommitRepositoryDialog
     {

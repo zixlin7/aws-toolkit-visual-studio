@@ -1,4 +1,5 @@
 ﻿using Amazon.AwsToolkit.SourceControl;
+using Amazon.AwsToolkit.VsSdk.Common.CommonUI;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
 using Amazon.AWSToolkit.CommonUI.CredentialSelector;
