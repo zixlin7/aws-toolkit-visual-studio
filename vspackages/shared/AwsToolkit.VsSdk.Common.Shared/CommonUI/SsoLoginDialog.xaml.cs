@@ -3,7 +3,7 @@ using Amazon.AWSToolkit.Context;
 
 using AwsToolkit.VsSdk.Common.CommonUI.Models;
 
-namespace AwsToolkit.VsSdk.Common.CommonUI
+namespace Amazon.AwsToolkit.VsSdk.Common.CommonUI
 {
     public partial class SsoLoginDialog : ThemedDialogWindow, ISsoLoginDialog
     {

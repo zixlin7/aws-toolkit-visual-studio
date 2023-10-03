@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 using Microsoft.VisualStudio.PlatformUI;
 
-namespace AwsToolkit.VsSdk.Common.CommonUI
+namespace Amazon.AwsToolkit.VsSdk.Common.CommonUI
 {
     /// <summary>
     /// Base class for themed dialog windows.

@@ -1,6 +1,6 @@
 ﻿using Amazon.AWSToolkit.CommonUI.Dialogs;
 
-namespace AwsToolkit.VsSdk.Common.CommonUI
+namespace Amazon.AwsToolkit.VsSdk.Common.CommonUI
 {
     public partial class CredentialProfileDialog : ThemedDialogWindow, ICredentialProfileDialog
     {
