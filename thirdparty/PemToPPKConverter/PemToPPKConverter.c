@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PuTTY is copyright 1997-2007 Simon Tatham.
 
  * Portions copyright Robert de Bath, Joris van Rantwijk, Delian
@@ -44,49 +44,75 @@
 #include "main_putty_funcs.h"
 
 
-int APIENTRY _tWinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPTSTR    lpCmdLine,
-                     int       nCmdShow)
+int APIENTRY _tWinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPTSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
 	const char *errorMessage;
 	const char *passphrase = NULL;
 	struct ssh2_userkey* key;
 
-   int    argc;
-    char** argv;
 	char* firstArg;
 	char* secondArg;
-
-    int    index;
-    int    result;
 
     // count the arguments
     
     char* arg  = (char*)lpCmdLine;
+	int totalArgLength = strnlen_s(arg, 50000);
     
-
-	int startPos = 1;
-	int endPos = 2;
-	while(arg[endPos] != '"')
+	if (totalArgLength == 0)
 	{
-		endPos++;
+		return -1;
 	}
 
-	firstArg = malloc(endPos - startPos);
-	strncpy(firstArg, arg + 1, endPos - startPos + 1);
-	firstArg[endPos - startPos] = '\0';
-
-	startPos = endPos + 2;
-	endPos = startPos + 1;
-	while(arg[endPos] != '"')
-	{
-		endPos++;
+	// Assumption: args are in format: "input-file" "output-file"
+	// Look for the double quotes that surround the first arg (input file)
+	char* argStart = strchr(arg, '"');
+	if (argStart == NULL) 
+	{ 
+		return -2; 
 	}
 
-	secondArg = malloc(endPos - startPos);
-	strncpy(secondArg, arg + strlen(firstArg) + 4, endPos - startPos - 1);
-	secondArg[endPos - startPos - 1] = '\0';
+	argStart++;
+	char* argEnd = strchr(argStart, '"');
+	if (argEnd == NULL) 
+	{ 
+		return -2; 
+	}
+
+	int argLen = argEnd - argStart;
+	int argSize = argLen + 1;
+	firstArg = malloc(argSize);
+	if (firstArg)
+	{
+		strncpy_s(firstArg, argSize, argStart, argLen);
+		firstArg[argLen] = '\0';
+	}
+
+	// Look for the double quotes that surround the second arg (input file)
+	argStart = strchr(argEnd + 1, '"');
+	if (argStart == NULL) 
+	{ 
+		return -3; 
+	}
+
+	argStart++;
+	argEnd = strchr(argStart, '"');
+	if (argEnd == NULL) 
+	{ 
+		return -3; 
+	}
+
+	argLen = argEnd - argStart;
+	argSize = argLen + 1;
+	secondArg = malloc(argSize);
+	if (secondArg) 
+	{
+		strncpy_s(secondArg, argSize, argStart, argLen);
+		secondArg[argLen] = '\0';
+	}
 
 	printf("Converting from %s to %s\n", firstArg, secondArg);
 
