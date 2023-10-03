@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\FakeConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FakeCodeWhispererManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\FakeCodeWhispererClient.cs" />

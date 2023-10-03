@@ -6,15 +6,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 {
     public class ViewCodeReferencesCommand : BaseCommand
     {
-        public ViewCodeReferencesCommand(IToolkitContextProvider toolkitContextProvider)
+        private readonly ICodeWhispererManager _manager;
+
+        public ViewCodeReferencesCommand(ICodeWhispererManager manager,
+            IToolkitContextProvider toolkitContextProvider)
             : base(toolkitContextProvider)
         {
+            _manager = manager;
         }
 
-        protected override Task ExecuteCoreAsync(object parameter)
+        protected override async Task ExecuteCoreAsync(object parameter)
         {
-            // TODO : Display code references
-            return Task.CompletedTask;
+            await _manager.ShowReferenceLoggerAsync();
         }
     }
 }

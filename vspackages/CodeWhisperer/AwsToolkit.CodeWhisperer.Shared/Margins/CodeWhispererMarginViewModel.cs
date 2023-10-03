@@ -43,7 +43,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             GettingStarted = new GettingStartedCommand(_toolkitContextProvider);
 
             GenerateSuggestions = new GetSuggestionsCommand(_textView, _manager, suggestionUiManager, _toolkitContextProvider);
-            ViewCodeReferences = new ViewCodeReferencesCommand(_toolkitContextProvider);
+            ViewCodeReferences = new ViewCodeReferencesCommand(_manager, _toolkitContextProvider);
             SecurityScan = new SecurityScanCommand(_toolkitContextProvider);
         }
 
