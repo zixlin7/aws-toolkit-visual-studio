@@ -21,6 +21,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
     {
         private readonly FakeConnection _connection = new FakeConnection();
         private readonly FakeSuggestionProvider _suggestionProvider = new FakeSuggestionProvider();
+        private readonly FakeReferenceLogger _referenceLogger = new FakeReferenceLogger();
         private readonly CodeWhispererManager _sut;
 
         public CodeWhispererManagerTests(GlobalServiceProvider serviceProvider)
@@ -28,7 +29,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             serviceProvider.Reset();
 
             var taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
-            _sut = new CodeWhispererManager(_connection, _suggestionProvider, taskFactoryProvider);
+            _sut = new CodeWhispererManager(_connection, _suggestionProvider, _referenceLogger, taskFactoryProvider);
         }
 
         [Fact]
@@ -129,6 +130,26 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             });
 
             suggestions.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ShowReferenceLoggerAsync()
+        {
+            _referenceLogger.DidShowReferenceLogger = false;
+
+            await _sut.ShowReferenceLoggerAsync();
+
+            _referenceLogger.DidShowReferenceLogger.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task LogReferenceAsync()
+        {
+            var request = new LogReferenceRequest();
+
+            await _sut.LogReferenceAsync(request);
+
+            _referenceLogger.LoggedReferences.Should().Contain(request);
         }
     }
 }

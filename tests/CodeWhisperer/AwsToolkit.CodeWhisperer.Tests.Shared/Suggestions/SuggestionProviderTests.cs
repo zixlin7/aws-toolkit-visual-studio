@@ -12,6 +12,8 @@ using Amazon.AWSToolkit.Tests.Common.Context;
 
 using FluentAssertions;
 
+using Microsoft.VisualStudio.Project;
+
 using Xunit;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
@@ -79,10 +81,28 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
             var suggestions = (await _sut.GetSuggestionsAsync(request)).ToList();
 
             suggestions.Should().HaveCount(sampleCompletions);
-            for (var i = 0; i < sampleCompletions; i++)
+            foreach (var suggestion in suggestions)
             {
-                suggestions.Should().Contain(suggestion => suggestion.Text == $"Sample Suggestion {i}");
+                var expectedCompletion =
+                    _lspClient.InlineCompletions.InlineCompletions.Items.FirstOrDefault(x =>
+                        x.InsertText == suggestion.Text);
+                expectedCompletion.Should().NotBeNull();
+
+                suggestion.References.Should().HaveCount(expectedCompletion.References.Length);
+                foreach (var expectedReference in expectedCompletion.References)
+                {
+                    suggestion.References.Should().Contain(actualReference => IsMatch(expectedReference, actualReference));
+                }
             }
+        }
+
+        private bool IsMatch(InlineCompletionReference expectedReference, SuggestionReference actualReference)
+        {
+            return expectedReference.ReferenceName == actualReference.Name
+                && expectedReference.ReferenceUrl == actualReference.Url
+                && expectedReference.LicenseName == actualReference.LicenseName
+                && expectedReference.Position.StartCharacter == actualReference.StartIndex
+                && expectedReference.Position.EndCharacter == actualReference.EndIndex;
         }
 
         private InlineCompletionList CreateInlineCompletionList(int sampleCompletions)
@@ -94,7 +114,26 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
 
         private InlineCompletionItem CreateSampleCompletionItem(string text)
         {
-            return new InlineCompletionItem() { InsertText = text, };
+            return new InlineCompletionItem()
+            {
+                InsertText = text,
+                References = new[]
+                {
+                    CreateSampleInlineCompletionReference(),
+                }
+            };
+        }
+
+        private InlineCompletionReference CreateSampleInlineCompletionReference()
+        {
+            var id = Guid.NewGuid().ToString();
+            return new InlineCompletionReference()
+            {
+                ReferenceName = $"reference-{id}",
+                ReferenceUrl = $"url-{id}",
+                LicenseName = $"license-{id}",
+                Position = new ReferencePosition() { StartCharacter = 0, EndCharacter = 0, },
+            };
         }
     }
 }

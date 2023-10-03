@@ -39,5 +39,16 @@ namespace Amazon.AwsToolkit.VsSdk.Common.Documents
 
             return new Position(caretLine.LineNumber, caretColumn);
         }
+
+        /// <summary>
+        /// Converts the given absolute position in a text view
+        /// to the line and character index within the document.
+        /// </summary>
+        public static Position GetDocumentPosition(this IVsTextView textView, int position)
+        {
+            textView.GetBuffer(out var buffer);
+            buffer.GetLineIndexOfPosition(position, out var line, out var column);
+            return new Position(line, column);
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
+using Amazon.AWSToolkit.Models.Text;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 namespace Amazon.AwsToolkit.CodeWhisperer
@@ -23,16 +24,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer
     {
         private readonly IConnection _connection;
         private readonly ISuggestionProvider _suggestionProvider;
+        private readonly IReferenceLogger _referenceLogger;
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
 
         [ImportingConstructor]
         public CodeWhispererManager(
             IConnection connection,
             ISuggestionProvider suggestionProvider,
+            IReferenceLogger referenceLogger,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _connection = connection;
             _suggestionProvider = suggestionProvider;
+            _referenceLogger = referenceLogger;
             _taskFactoryProvider = taskFactoryProvider;
         }
 
@@ -114,6 +118,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer
             return request.IsAutoSuggestion && await IsAutoSuggestPausedAsync()
                 ? Enumerable.Empty<Suggestion>()
                 : await _suggestionProvider.GetSuggestionsAsync(request);
+        }
+
+        public async Task ShowReferenceLoggerAsync()
+        {
+            await _referenceLogger.ShowAsync();
+        }
+
+        public async Task LogReferenceAsync(LogReferenceRequest request)
+        {
+            await _referenceLogger.LogReferenceAsync(request);
         }
     }
 }

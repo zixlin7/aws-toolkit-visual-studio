@@ -31,6 +31,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeOutputWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeReferenceLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ReferenceLoggerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestUtilities\VsMockCollection.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.LanguageServer.Protocol;
+﻿using System;
+
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using Newtonsoft.Json;
 
@@ -131,6 +133,147 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols
         /// If omitted defaults to `InsertTextFormat.PlainText`.
         /// </summary>
         public InsertTextFormat InsertTextFormat { get; set; } = InsertTextFormat.PlainText;
+
+        /// <summary>
+        /// Optional
+        ///
+        /// Attributes licenses to portions of the suggested text contained in <see cref="InsertText"/>
+        /// </summary>
+        [JsonProperty("references")]
+        public InlineCompletionReference[] References { get; set; }
+    }
+
+    /// <summary>
+    /// Indicates that a portion of a suggestion in <see cref="InlineCompletionItem"/>
+    /// has a license attributed to it.
+    /// </summary>
+    public class InlineCompletionReference : IEquatable<InlineCompletionReference>
+    {
+        /// <summary>
+        /// "Friendly" or compact name associated with <see cref="ReferenceUrl"/>
+        /// </summary>
+        [JsonProperty("referenceName")]
+        public string ReferenceName { get; set; }
+
+        /// <summary>
+        /// Location associated with the license attribution
+        /// </summary>
+        [JsonProperty("referenceUrl")]
+        public string ReferenceUrl { get; set; }
+
+        /// <summary>
+        /// Simple name of the license attributed to the referenced text
+        /// </summary>
+        [JsonProperty("licenseName")]
+        public string LicenseName { get; set; }
+
+        /// <summary>
+        /// 0-indexed range within <see cref="InlineCompletionItem.InsertText"/>
+        /// of the text associated with this license attribution.
+        /// </summary>
+        [JsonProperty("position")]
+        public ReferencePosition Position { get; set; }
+
+#region IEquatable
+
+#pragma warning disable IDE0046 // Convert to conditional expression
+        public bool Equals(InlineCompletionReference other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return ReferenceName == other.ReferenceName && ReferenceUrl == other.ReferenceUrl && LicenseName == other.LicenseName && Equals(Position, other.Position);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            return obj.GetType() == GetType() && Equals((InlineCompletionReference)obj);
+        }
+#pragma warning restore IDE0046 // Convert to conditional expression
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = ReferenceName != null ? ReferenceName.GetHashCode() : 0;
+                hashCode = (hashCode * 397) ^ (ReferenceUrl != null ? ReferenceUrl.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (LicenseName != null ? LicenseName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Position != null ? Position.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
+#endregion
+    }
+
+    /// <summary>
+    /// A range of suggested text associated with a license attribution
+    /// </summary>
+    public class ReferencePosition : IEquatable<ReferencePosition>
+    {
+        [JsonProperty("startCharacter")] public int StartCharacter { get; set; }
+
+        [JsonProperty("endCharacter")] public int EndCharacter { get; set; }
+
+#region IEquatable
+
+#pragma warning disable IDE0046 // Convert to conditional expression
+        public bool Equals(ReferencePosition other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return StartCharacter == other.StartCharacter && EndCharacter == other.EndCharacter;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            return obj.GetType() == GetType() && Equals((ReferencePosition) obj);
+        }
+#pragma warning restore IDE0046 // Convert to conditional expression
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (StartCharacter * 397) ^ EndCharacter;
+            }
+        }
+
+#endregion
     }
 
     public enum InsertTextFormat

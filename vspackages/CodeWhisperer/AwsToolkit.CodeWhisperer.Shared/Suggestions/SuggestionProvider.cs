@@ -97,10 +97,26 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
         private Suggestion AsSuggestion(InlineCompletionItem inlineCompletion)
         {
+            var references = inlineCompletion.References?.Select(reference =>
+            {
+                var data = new SuggestionReference()
+                {
+                    Name = reference.ReferenceName,
+                    LicenseName = reference.LicenseName,
+                    Url = reference.ReferenceUrl,
+                    // Assume the full suggestion text is attributed if position details are missing
+                    StartIndex = reference.Position?.StartCharacter ?? 0,
+                    EndIndex = reference.Position?.EndCharacter ?? inlineCompletion.InsertText.Length,
+                };
+
+                return data;
+            });
+
             return new Suggestion()
             {
                 Text = inlineCompletion.InsertText,
                 ReplacementRange = inlineCompletion.Range.AsToolkitRange(),
+                References = references?.ToList(),
             };
         }
 

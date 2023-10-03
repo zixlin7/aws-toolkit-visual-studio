@@ -58,5 +58,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         /// Queries code suggestions from CodeWhisperer
         /// </summary>
         Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request);
+
+        /// <summary>
+        /// Displays the log of licenses attributed to accepted suggestions
+        /// </summary>
+        Task ShowReferenceLoggerAsync();
+
+        /// <summary>
+        /// Logs a license attribution associated with an accepted suggestion
+        /// </summary>
+        Task LogReferenceAsync(LogReferenceRequest request);
     }
 }

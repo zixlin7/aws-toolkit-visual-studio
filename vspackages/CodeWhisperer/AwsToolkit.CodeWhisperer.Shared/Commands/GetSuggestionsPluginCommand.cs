@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
-using Amazon.AwsToolkit.VsSdk.Common.Services;
-using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Models.Text;
 using Amazon.AwsToolkit.VsSdk.Common.Documents;
+using Amazon.AwsToolkit.VsSdk.Common.Services;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.TextManager.Interop;
+using Amazon.AWSToolkit.Context;
+
 using Microsoft;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 {

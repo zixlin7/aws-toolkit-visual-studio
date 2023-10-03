@@ -62,12 +62,16 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\IReferenceLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ISuggestionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ISuggestionUiManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\GetSuggestionsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\LogReferenceRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\Suggestion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\SuggestionContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\SuggestionReference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\PauseStateChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ReferenceLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionUiManager.cs" />
   </ItemGroup>

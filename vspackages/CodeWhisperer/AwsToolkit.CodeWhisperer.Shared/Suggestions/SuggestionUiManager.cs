@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
-using Amazon.AwsToolkit.VsSdk.Common.Documents;
 
-using Microsoft;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Suggestions;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 {
     [Export(typeof(ISuggestionUiManager))]
-    public class SuggestionUiManager : ISuggestionUiManager, IDisposable
+    internal class SuggestionUiManager : ISuggestionUiManager, IDisposable
     {
         private readonly SuggestionServiceBase _serviceBase;
         private readonly SuggestionProviderBase _suggestionProviderBase = new SuggestionProviderBase();
@@ -30,13 +22,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private readonly Dictionary<IWpfTextView, SuggestionManagerBase> _textViewManagers =
             new Dictionary<IWpfTextView, SuggestionManagerBase>();
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
+        private readonly ICodeWhispererManager _manager;
 
         [ImportingConstructor]
         public SuggestionUiManager(
+            ICodeWhispererManager manager,
             SVsServiceProvider serviceProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider,
             SuggestionServiceBase serviceBase)
         {
+            _manager = manager;
             _serviceBase = serviceBase;
             
             _taskFactoryProvider = taskFactoryProvider;
@@ -46,7 +41,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         {
             await _taskFactoryProvider.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var suggestionContainer = new SuggestionContainer(suggestions, textView, _taskFactoryProvider.DisposalToken);
+            var suggestionContainer = new SuggestionContainer(suggestions, textView, _manager, _taskFactoryProvider.DisposalToken);
 
             var suggestionManager = await CreateSuggestionManagerAsync(textView);
 

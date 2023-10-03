@@ -5,11 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
+using Amazon.AwsToolkit.VsSdk.Common.Documents;
+using Amazon.AWSToolkit.Models.Text;
 
 using Microsoft.VisualStudio.Language.Proposals;
 using Microsoft.VisualStudio.Language.Suggestions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
@@ -25,13 +28,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private readonly Suggestion[] _suggestions;
         private readonly CancellationToken _disposalToken;
         private readonly IWpfTextView _view;
+        private readonly ICodeWhispererManager _manager;
 
         public SuggestionContainer(IEnumerable<Suggestion> suggestions,
             IWpfTextView view,
+            ICodeWhispererManager manager,
             CancellationToken disposalToken)
         {
             _suggestions = suggestions.ToArray();
             _view = view;
+            _manager = manager;
             _disposalToken = disposalToken;
             CurrentProposal = CreateProposal(_currentSuggestionIndex);
         }
@@ -42,11 +48,49 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         public override TipStyle TipStyle => TipStyle.AlwaysShowTip | TipStyle.TipTopRightJustifiedPlacement;
 
         // TODO: add metrics for these user actions
-        public override Task OnAcceptedAsync(SuggestionSessionBase session, ProposalBase originalProposal, ProposalBase currentProposal,
+        public override async Task OnAcceptedAsync(SuggestionSessionBase session, ProposalBase originalProposal, ProposalBase currentProposal,
             ReasonForAccept reason, CancellationToken cancel)
         {
-            // TODO (IDE-11380): reconcile any reference tracking
-            return Task.CompletedTask;
+            if (_currentSuggestionIndex >= _suggestions.Length)
+            {
+                return;
+            }
+
+            var suggestion = _suggestions[_currentSuggestionIndex];
+
+            var cursorPosition = currentProposal.Caret.Position.Position;
+
+            await LogReferencesAsync(suggestion, cursorPosition);
+        }
+
+        private async Task LogReferencesAsync(Suggestion suggestion, int cursorPosition)
+        {
+            if (suggestion.References?.Count > 0)
+            {
+                var filePath = _view.GetFilePath();
+                var textView = await _view.ToIVsTextViewAsync();
+
+                foreach (var reference in suggestion.References)
+                {
+                    var referencePosition = cursorPosition + reference.StartIndex;
+                    var position = textView.GetDocumentPosition(referencePosition);
+                    await LogReferenceAsync(suggestion, reference, filePath, position);
+                }
+            }
+        }
+
+        private async Task LogReferenceAsync(Suggestion suggestion, SuggestionReference reference, string filePath,
+            Position position)
+        {
+            var logReferenceRequest = new LogReferenceRequest()
+            {
+                Suggestion = suggestion,
+                SuggestionReference = reference,
+                Filename = filePath,
+                Position = position,
+            };
+
+            await _manager.LogReferenceAsync(logReferenceRequest);
         }
 
         public override Task OnDismissedAsync(SuggestionSessionBase session, ProposalBase originalProposal, ProposalBase currentProposal,
@@ -104,13 +148,41 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             }
 
             var suggestion = _suggestions[suggestionIndex];
-
-            return new Proposal($"Suggestion {suggestionIndex + 1} / {_suggestions.Length}",
+            return new Proposal(CreateProposalDescription(suggestion, suggestionIndex),
                 GetProposedEdits(suggestion.Text), _view.Caret.Position.VirtualBufferPosition, null,ProposalFlags.ShowCommitHighlight);
+        }
+
+        private string CreateProposalDescription(Suggestion suggestion, int suggestionIndex)
+        {
+            // Produce a description that looks like:
+            // When there is no licenses: "Suggestion 3 / 4"
+            // When there are licenses: "Suggestion (License: Foo) 3 / 4"
+
+            var chunks = new List<string>() { "Suggestion", };
+
+            var licenses = suggestion.References?
+                .Select(r => r.LicenseName)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Distinct()
+                .OrderBy(name => name)
+                .ToArray();
+
+            if (licenses?.Length > 0)
+            {
+                // Produce a string like "(License: Foo)" or "(Licenses: Bar, Baz)"
+                var licenseHeading = licenses.Length > 1 ? "Licenses" : "License";
+                chunks.Add($"({licenseHeading}: {string.Join(", ", licenses)})");
+            }
+
+            // We signal that there is pagination by displaying the current position within all suggestions
+            chunks.Add($"{suggestionIndex + 1} / {_suggestions.Length}");
+
+            return string.Join(" ", chunks);
         }
 
         private List<ProposedEdit> GetProposedEdits(string text)
         {
+            // We want to adjust the code at all current cursor locations
             return _view.GetMultiSelectionBroker().AllSelections.Select(selection => new ProposedEdit(selection.Extent.SnapshotSpan, text, null)).ToList();
         }
     }

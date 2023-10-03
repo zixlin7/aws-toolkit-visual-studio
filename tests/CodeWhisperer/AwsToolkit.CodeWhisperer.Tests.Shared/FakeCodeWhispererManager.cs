@@ -16,7 +16,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
     {
         public bool IsSignedIn = false;
         public bool PauseAutomaticSuggestions = false;
+        public bool DidShowReferenceLogger = false;
         public readonly List<Suggestion> Suggestions = new List<Suggestion>();
+        public readonly List<LogReferenceRequest> LoggedReferences = new List<LogReferenceRequest>();
 
         public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
@@ -73,6 +75,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             {
                 IsPaused = PauseAutomaticSuggestions,
             });
+        }
+
+        public Task ShowReferenceLoggerAsync()
+        {
+            DidShowReferenceLogger = true;
+            return Task.CompletedTask;
+        }
+
+        public Task LogReferenceAsync(LogReferenceRequest request)
+        {
+            LoggedReferences.Add(request);
+            return Task.CompletedTask;
         }
     }
 }

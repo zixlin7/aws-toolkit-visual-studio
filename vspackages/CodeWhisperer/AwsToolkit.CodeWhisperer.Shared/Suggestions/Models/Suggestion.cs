@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Models.Text;
+﻿using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Models.Text;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models
 {
@@ -13,5 +15,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models
         /// Optional - indicates what text should be replaced by <see cref="Text"/>
         /// </summary>
         public Range ReplacementRange { get; set; }
+
+        /// <summary>
+        /// Optional - indicates that portions of the suggestion contain attributable licenses
+        /// </summary>
+        public IList<SuggestionReference> References { get; set; }
     }
 }
