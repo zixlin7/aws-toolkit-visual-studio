@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\FakeConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Documents\FakeCodeWhispererTextView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FakeCodeWhispererManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\FakeCodeWhispererClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\FakeToolkitLspClient.cs" />
@@ -35,6 +36,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeOutputWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeReferenceLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ReferenceLoggerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SampleSuggestionProducer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionContainerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestUtilities\VsMockCollection.cs" />
   </ItemGroup>
   <ItemGroup>

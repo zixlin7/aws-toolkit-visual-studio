@@ -4,15 +4,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
-using Amazon.AwsToolkit.VsSdk.Common.Documents;
 using Amazon.AWSToolkit.Models.Text;
 
 using Microsoft.VisualStudio.Language.Proposals;
 using Microsoft.VisualStudio.Language.Suggestions;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
@@ -27,11 +25,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private int _currentSuggestionIndex = 0;
         private readonly Suggestion[] _suggestions;
         private readonly CancellationToken _disposalToken;
-        private readonly IWpfTextView _view;
+        private readonly ICodeWhispererTextView _view;
         private readonly ICodeWhispererManager _manager;
 
         public SuggestionContainer(IEnumerable<Suggestion> suggestions,
-            IWpfTextView view,
+            ICodeWhispererTextView view,
             ICodeWhispererManager manager,
             CancellationToken disposalToken)
         {
@@ -68,12 +66,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             if (suggestion.References?.Count > 0)
             {
                 var filePath = _view.GetFilePath();
-                var textView = await _view.ToIVsTextViewAsync();
 
                 foreach (var reference in suggestion.References)
                 {
                     var referencePosition = cursorPosition + reference.StartIndex;
-                    var position = textView.GetDocumentPosition(referencePosition);
+                    var position = _view.GetDocumentPosition(referencePosition);
                     await LogReferenceAsync(suggestion, reference, filePath, position);
                 }
             }
@@ -148,8 +145,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             }
 
             var suggestion = _suggestions[suggestionIndex];
-            return new Proposal(CreateProposalDescription(suggestion, suggestionIndex),
-                GetProposedEdits(suggestion.Text), _view.Caret.Position.VirtualBufferPosition, null,ProposalFlags.ShowCommitHighlight);
+            var description = CreateProposalDescription(suggestion, suggestionIndex);
+            return _view.CreateProposal(suggestion.Text, description);
         }
 
         private string CreateProposalDescription(Suggestion suggestion, int suggestionIndex)
@@ -178,12 +175,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             chunks.Add($"{suggestionIndex + 1} / {_suggestions.Length}");
 
             return string.Join(" ", chunks);
-        }
-
-        private List<ProposedEdit> GetProposedEdits(string text)
-        {
-            // We want to adjust the code at all current cursor locations
-            return _view.GetMultiSelectionBroker().AllSelections.Select(selection => new ProposedEdit(selection.Extent.SnapshotSpan, text, null)).ToList();
         }
     }
 }

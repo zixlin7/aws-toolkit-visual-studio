@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
@@ -40,8 +41,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         public async Task ShowAsync(IEnumerable<Suggestion> suggestions, IWpfTextView textView)
         {
             await _taskFactoryProvider.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var codeWhispererTextView = await CodeWhispererTextView.CreateAsync(textView);
 
-            var suggestionContainer = new SuggestionContainer(suggestions, textView, _manager, _taskFactoryProvider.DisposalToken);
+            var suggestionContainer = new SuggestionContainer(suggestions, codeWhispererTextView, _manager, _taskFactoryProvider.DisposalToken);
 
             var suggestionManager = await CreateSuggestionManagerAsync(textView);
 

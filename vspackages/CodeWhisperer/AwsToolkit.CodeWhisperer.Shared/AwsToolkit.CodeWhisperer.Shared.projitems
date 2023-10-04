@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\ExpirationNotificationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\IConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\IExpirationNotificationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Documents\CodeWhispererTextView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICodeWhispererManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\IToolkitLspClient.cs" />
