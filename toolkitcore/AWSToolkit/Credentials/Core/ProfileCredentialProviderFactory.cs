@@ -439,11 +439,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
             // we will need to redesign the system to handle different token provider resolution.
             var tokenProvider = SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(credentialIdentifier)
-                // TODO IDE-11737 Enable once SsoRegistrationScopes is available in AWSSDK
-                //.WithScopes(profile.Options.SsoRegistrationScopes.Split(","))
-                .WithStartUrl(profile.Options.SsoStartUrl)
-                .WithTokenProviderRegion(RegionEndpoint.GetBySystemName(profile.Options.SsoRegion))
                 .WithToolkitShell(ToolkitShell)
+                .WithTokenProviderRegion(RegionEndpoint.GetBySystemName(profile.Options.SsoRegion))
+                .WithStartUrl(profile.Options.SsoStartUrl)
                 .Build();
 
             return new ToolkitCredentials(credentialIdentifier, tokenProvider);

@@ -62,15 +62,5 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         {
             throw new Exception("SSO Token requires a login flow");
         }
-
-        /// <summary>
-        /// Returns default session name.
-        /// </summary>
-        /// <param name="@this">Credential identifier to create session name from.</param>
-        /// <returns>The default session name.</returns>
-        public static string ToDefaultSessionName(this ICredentialIdentifier @this)
-        {
-            return $"{SonoCredentialProviderFactory.FactoryId}-{@this.ProfileName}";
-        }
     }
 }

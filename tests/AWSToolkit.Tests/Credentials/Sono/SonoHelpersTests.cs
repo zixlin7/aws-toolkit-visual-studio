@@ -16,8 +16,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
 {
     public class SonoHelpersTests
     {
-        private static readonly ICredentialIdentifier _sonoCredentialId =
-            new SonoCredentialIdentifier(SonoCredentialProviderFactory.CodeCatalystProfileName);
+        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("default");
 
         private readonly Mock<IAWSToolkitShellProvider> _toolkitShell = new Mock<IAWSToolkitShellProvider>();
 
@@ -26,7 +25,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         {
             void DoNothingCallback(SsoVerificationArguments verificationArgs) { }
 
-            var options = SonoHelpers.CreateSonoTokenManagerOptions(DoNothingCallback, SonoProperties.CodeCatalystScopes);
+            var options = SonoHelpers.CreateSonoTokenManagerOptions(DoNothingCallback, SonoProperties.Scopes);
 
             Assert.Contains("AWS Toolkit for Visual Studio", options.ClientName);
             Assert.Contains("public", options.ClientType);
@@ -39,7 +38,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         public void CreateSsoCallbackShouldThrowOnCancel()
         {
             SetupDialogForCancellation();
-            var ssoCallback = SonoHelpers.CreateSsoCallback(_sonoCredentialId, _toolkitShell.Object, true);
+            var ssoCallback = SonoHelpers.CreateSsoCallback(SonoCredentialId, _toolkitShell.Object, true);
             var callbackArgs = new SsoVerificationArguments();
 
             Assert.Throws<UserCanceledException>(() => ssoCallback(callbackArgs));

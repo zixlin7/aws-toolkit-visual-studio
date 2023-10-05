@@ -39,8 +39,7 @@ namespace CommonUI.Models
         private readonly JoinableTaskFactory _joinableTaskFactory;
         private readonly IAWSCodeCatalyst _codeCatalyst;
         private readonly IGitService _git;
-        private readonly ICredentialIdentifier _awsIdIdentifier =
-            new SonoCredentialIdentifier(SonoCredentialProviderFactory.CodeCatalystProfileName);
+        private readonly ICredentialIdentifier _awsIdIdentifier = new SonoCredentialIdentifier("default");
 
         private AwsConnectionSettings _connectionSettings;
         private CodeCatalystConnectionStatus _connectionStatus;
@@ -326,7 +325,7 @@ namespace CommonUI.Models
 
         public bool IsAuthenticated()
         {
-            return _awsIdIdentifier.HasValidToken(_toolkitContext.ToolkitHost);
+           return _awsIdIdentifier.HasValidToken(_toolkitContext.ToolkitHost);
         }
 
         public void InvalidateCache()

@@ -15,7 +15,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
     {
         public static readonly TheoryData<string> NullOrWhitespaceText = new TheoryData<string>() { string.Empty, " ", null };
 
-        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier(SonoCredentialProviderFactory.CodeCatalystProfileName);
+        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("default");
         
         private readonly Mock<IAWSToolkitShellProvider> _toolkitShell = new Mock<IAWSToolkitShellProvider>();
 

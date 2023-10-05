@@ -15,7 +15,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
     /// </summary>
     public static class SonoHelpers
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(SonoHelpers));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(SonoHelpers));
 
         /// <summary>
         /// Produces an object that is configured to connect to Sono, and allows the Toolkit to
@@ -41,6 +41,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
                 try
                 {
                     // Prompt the user to start the AWS Builder ID Login flow
+
                     toolkitShell.ExecuteOnUIThread(() =>
                     {
                         var dialog = CreateDialog(toolkitShell, ssoVerification, isBuilderId);
@@ -54,11 +55,12 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
                     var msgPrefix = $"{(isBuilderId ? "AWS Builder ID " : "")}Login flow started for Credentials: ";
                     toolkitShell.OutputToHostConsole($"{msgPrefix}{credentialIdentifier.DisplayName}", false);
-                    _logger.Debug($"{msgPrefix}{credentialIdentifier.Id}");
+                    Logger.Debug($"{msgPrefix}{credentialIdentifier.Id}");
+
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    _logger.Error($"Error starting {(isBuilderId ? "AWS Builder ID " : "")}Login flow for {credentialIdentifier.Id}", ex);
+                    Logger.Error($"Error starting {(isBuilderId ? "AWS Builder ID " : "")}Login flow for {credentialIdentifier.Id}", e);
                     throw;
                 }
             };

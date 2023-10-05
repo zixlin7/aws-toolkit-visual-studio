@@ -16,10 +16,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
         private readonly HashSet<ICredentialIdentifier> _credentialIdentifiers = new HashSet<ICredentialIdentifier>();
 
-        public IEnumerable<ICredentialIdentifier> GetCredentialIdentifiers()
-        {
-            return _credentialIdentifiers;
-        }
+        public IEnumerable<ICredentialIdentifier> GetCredentialIdentifiers() => _credentialIdentifiers;
 
         public void CreateProfile(ICredentialIdentifier identifier, ProfileProperties properties)
         {
@@ -50,7 +47,12 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
         public ProfileProperties GetProfileProperties(ICredentialIdentifier identifier)
         {
-            return _sonoProfiles.TryGetValue(identifier.Id, out var profileProperties) ? profileProperties : null;
+            if (_sonoProfiles.TryGetValue(identifier.Id, out ProfileProperties profileProperties))
+            {
+                return profileProperties;
+            }
+
+            return null;
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
@@ -21,10 +20,9 @@ namespace Amazon.AWSToolkit.Credentials.Sono
     {
         private IAWSToolkitShellProvider _toolkitShell;
         private ICredentialIdentifier _credentialIdentifier;
-        private string _sessionName;
+        private string _sessionName = SonoProperties.DefaultSessionName;
         private RegionEndpoint _oidcRegion = SonoProperties.DefaultOidcRegion;
         private RegionEndpoint _tokenProviderRegion = SonoProperties.DefaultTokenProviderRegion;
-        private string[] _scopes = new string[] { SonoProperties.SsoAccountAccessScope };
         private string _startUrl = SonoProperties.StartUrl;
         private bool _isBuilderId = true;
         private Action<SsoVerificationArguments> _ssoCallbackHandler;
@@ -48,13 +46,6 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         public SonoTokenProviderBuilder WithCredentialIdentifier(ICredentialIdentifier credentialIdentifier)
         {
             _credentialIdentifier = credentialIdentifier;
-
-            // Set default session name based on credential identifer, can be overriden by calling WithSessionName
-            if (_sessionName == null && credentialIdentifier != null)
-            {
-                _sessionName = credentialIdentifier.ToDefaultSessionName();
-            }
-
             return this;
         }
 
@@ -85,12 +76,6 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         public SonoTokenProviderBuilder WithIsBuilderId(bool isBuilderId)
         {
             _isBuilderId = isBuilderId;
-            return this;
-        }
-
-        public SonoTokenProviderBuilder WithScopes(params string[] scopes)
-        {
-            _scopes = scopes;
             return this;
         }
 
@@ -167,11 +152,6 @@ namespace Amazon.AWSToolkit.Credentials.Sono
                 throw new InvalidOperationException("OIDC region is missing");
             }
 
-            if (_scopes == null)
-            {
-                throw new InvalidOperationException("Scopes is missing");
-            }
-
             if (_tokenCacheFileHandler == null)
             {
                 throw new InvalidOperationException("Token cache file handler is missing");
@@ -185,10 +165,17 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
         private ISSOTokenManager CreateTokenManager()
         {
-            var ssoCallback = _ssoCallbackHandler
-                ?? SonoHelpers.CreateSsoCallback(_credentialIdentifier, _toolkitShell, _isBuilderId);
+            Action<SsoVerificationArguments> ssoCallback =
+                _ssoCallbackHandler ?? SonoHelpers.CreateSsoCallback(_credentialIdentifier, _toolkitShell, _isBuilderId);
 
-            var tokenManagerOptions = SonoHelpers.CreateSonoTokenManagerOptions(ssoCallback, _scopes);
+            var scopes = _isBuilderId ?
+                SonoProperties.Scopes :
+                // Necessary to get refreshToken from IAM Identity Center
+                // For more details, see sso_registration_scopes in:
+                // https://docs.aws.amazon.com/sdkref/latest/guide/feature-sso-credentials.html#feature-sso-credentials-profile
+                new string[] { SonoProperties.SsoAccountAccessScope }; 
+
+            var tokenManagerOptions = SonoHelpers.CreateSonoTokenManagerOptions(ssoCallback, scopes);
 
             var ssoOidcClient = SSOServiceClientHelpers.BuildSSOIDCClient(_oidcRegion);
 
