@@ -106,7 +106,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         {
             var cachePath = Path.Combine(
                 _testLocation.TestFolder,
-                TokenCache.GetCacheFilename(SonoProperties.StartUrl, SonoProperties.DefaultSessionName));
+                TokenCache.GetCacheFilename(SonoProperties.StartUrl, SonoCredentialId.ToDefaultSessionName()));
 
             File.WriteAllText(cachePath, "a sample file that will be deleted");
 
