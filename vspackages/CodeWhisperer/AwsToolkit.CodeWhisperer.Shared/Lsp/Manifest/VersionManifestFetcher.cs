@@ -3,12 +3,10 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
-using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AWSToolkit.ResourceFetchers;
 using Amazon.Runtime.Internal.Settings;
 
-using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+using AwsToolkit.VsSdk.Common.Settings;
 
 using log4net;
 
@@ -41,7 +39,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
         }
 
         private static readonly ILog _logger = LogManager.GetLogger(typeof(VersionManifestFetcher));
-        private readonly ICodeWhispererSettingsRepository _settingsRepository;
+        private readonly ILspSettingsRepository _settingsRepository;
         private readonly Options _options;
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
         /// </summary>
         public string DownloadedCacheFolder { get; }
 
-        public VersionManifestFetcher(Options options, ICodeWhispererSettingsRepository settingsRepository)
+        public VersionManifestFetcher(Options options, ILspSettingsRepository settingsRepository)
         {
             _options = options;
             _settingsRepository = settingsRepository;
@@ -57,11 +55,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
                 $"lsp/manifest/{_options.CompatibleMajorVersion}");
         }
 
-
         private async Task<ChainedResourceFetcher> CreateResourceFetcherChainAsync(string relativePath)
         {
-            var cwSettings = await _settingsRepository.GetAsync();
-            var lspManifestSource = GetManifestLocationAsUri(cwSettings);
+            var lspSettings = await _settingsRepository.GetLspSettingsAsync();
+            var lspManifestSource = GetManifestLocationAsUri(lspSettings);
 
             var downloadCacheFetcher = new RelativeFileResourceFetcher(DownloadedCacheFolder);
 
@@ -113,9 +110,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
         /// could be null (use system defaults), or a Uri that points to
         /// either a location on disk or online.
         /// </summary>
-        private Uri GetManifestLocationAsUri(CodeWhispererSettings codeWhispererSettings)
+        private Uri GetManifestLocationAsUri(ILspSettings lspSettings)
         {
-            var location = codeWhispererSettings?.VersionManifestFolder;
+            var location = lspSettings?.VersionManifestFolder;
 
             if (string.IsNullOrWhiteSpace(location))
             {

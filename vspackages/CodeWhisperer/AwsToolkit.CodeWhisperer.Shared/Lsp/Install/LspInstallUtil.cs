@@ -21,7 +21,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
             // filter folders containing toolkit compatible lsp versions and sort them to determine the most compatible lsp version
             var expectedVersion = Version.Parse(expectedVersionString);
-            var sortedVersions = cachedVersions.Where(x => LspConstants.LspCompatibleVersionRange.ContainsVersion(x) && x <= expectedVersion).OrderByDescending(x => x);
+            var sortedVersions = cachedVersions.Where(x => CodeWhispererConstants.LspCompatibleVersionRange.ContainsVersion(x) && x <= expectedVersion).OrderByDescending(x => x);
             var fallbackVersionFolder = sortedVersions.FirstOrDefault()?.ToString();
             if (string.IsNullOrWhiteSpace(fallbackVersionFolder))
             {

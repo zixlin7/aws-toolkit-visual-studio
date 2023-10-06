@@ -49,10 +49,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         {
             SetupDirectories();
             var expectedFallbackPath =
-                Path.Combine(TestLocation.TestFolder, $"{LspConstants.LspCompatibleVersionRange.Start.Major}.1.1");
+                Path.Combine(TestLocation.TestFolder, $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.1.1");
 
             var fallbackPath = LspInstallUtil.GetFallbackVersionFolder(TestLocation.TestFolder,
-                $"{LspConstants.LspCompatibleVersionRange.Start.Major}.2.0");
+                $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.2.0");
             Assert.Equal(expectedFallbackPath, fallbackPath);
         }
 
@@ -60,15 +60,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         [Fact]
         public void GetFallbackVersionFolder_WhenNoMatchingVersions()
         {
-            CreateDirectoryForVersion(LspConstants.LspCompatibleVersionRange.End.Major + 1);
+            CreateDirectoryForVersion(CodeWhispererConstants.LspCompatibleVersionRange.End.Major + 1);
             var fallbackPath = LspInstallUtil.GetFallbackVersionFolder(TestLocation.TestFolder,
-                $"{LspConstants.LspCompatibleVersionRange.Start.Major}.2.0");
+                $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.2.0");
             Assert.Null(fallbackPath);
         }
 
         private void SetupDirectories()
         {
-            Enumerable.Range(LspConstants.LspCompatibleVersionRange.Start.Major - 1, 3)
+            Enumerable.Range(CodeWhispererConstants.LspCompatibleVersionRange.Start.Major - 1, 3)
                 .ToList().ForEach(CreateDirectoryForVersion);
         }
 

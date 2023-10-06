@@ -24,7 +24,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
         public VersionManifestManagerTests()
         {
             SetupFetcher(_validManifestFileName);
-            _sut = new VersionManifestManager(_sampleManifestFetcher.Object);
+            var options = new VersionManifestManager.Options()
+            {
+                FileName = _validManifestFileName,
+                MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion
+            };
+            _sut = new VersionManifestManager(options, _sampleManifestFetcher.Object);
         }
 
         private void SetupFetcher(string fileName)
@@ -40,7 +45,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             var manifestSchema = await _sut.DownloadAsync();
 
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
-                VersionManifestManager.ManifestFile, It.IsAny<CancellationToken>()), Times.Exactly(1));
+                _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
 
             Assert.NotNull(manifestSchema);
             Assert.Equal("0.1", manifestSchema.SchemaVersion);
@@ -54,7 +59,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             await Assert.ThrowsAsync<JsonSerializationException>(async () => await _sut.DownloadAsync());
 
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
-                VersionManifestManager.ManifestFile, It.IsAny<CancellationToken>()), Times.Exactly(1));
+                _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
         }
 
         [Fact]
@@ -64,7 +69,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             var exception = await Assert.ThrowsAsync<ToolkitException>(async () => await _sut.DownloadAsync());
 
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
-                VersionManifestManager.ManifestFile, It.IsAny<CancellationToken>()), Times.Exactly(1));
+                _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
             Assert.Equal(exception.Code, ToolkitException.CommonErrorCode.UnsupportedState.ToString());
         }
 
@@ -78,7 +83,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             var exception = await Assert.ThrowsAsync<Exception>(async () => await _sut.DownloadAsync());
 
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
-                VersionManifestManager.ManifestFile, It.IsAny<CancellationToken>()), Times.Exactly(1));
+                _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
             Assert.Equal("test error", exception.Message);
         }
     }

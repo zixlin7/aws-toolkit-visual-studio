@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 
 using Community.VisualStudio.Toolkit;
@@ -52,22 +53,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             }
         };
 
-        protected override async Task<string> GetServerPathAsync()
+        protected override string GetServerPath()
         {
-            return await GetLanguageServerPathAsync();
+            return !string.IsNullOrWhiteSpace(_serverPath) ? _serverPath : throw new Exception("Error finding CodeWhisperer LSP location");
         }
 
-        protected override async Task<string> GetServerWorkingDirAsync()
+        protected override async Task<string> InstallServerAsync()
         {
-            return Path.GetDirectoryName(await GetLanguageServerPathAsync());
+            var installer = new CodeWhispererInstaller(_toolkitContext, _settingsRepository);
+            return await installer.ExecuteAsync();
         }
 
-        private async Task<string> GetLanguageServerPathAsync()
+        protected override string GetServerWorkingDir()
         {
-            // TODO : We will need to know where the Toolkit stores the language server.
-            // For now, Toolkit developers will point at a binary using an env var.
-            var settings = await _settingsRepository.GetAsync();
-            return !string.IsNullOrWhiteSpace(settings.LanguageServerPath) ? settings.LanguageServerPath : throw new Exception($"Configure a CodeWhisperer language server location");
+            return Path.GetDirectoryName(GetServerPath());
         }
 
         public IInlineCompletions CreateInlineCompletions()

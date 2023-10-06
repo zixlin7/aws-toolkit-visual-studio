@@ -8,6 +8,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
     /// </summary>
     public interface ILspInstaller
     {
-        Task ExecuteAsync(CancellationToken token = default);
+        /// <summary>
+        /// Installs the Lsp and returns the path where it is installed
+        /// </summary>
+        /// <param name="token"></param>
+        Task<string> ExecuteAsync(CancellationToken token = default);
     }
 }

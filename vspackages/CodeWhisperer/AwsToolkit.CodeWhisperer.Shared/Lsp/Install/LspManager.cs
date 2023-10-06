@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
-using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.ResourceFetchers;
+
+using AwsToolkit.VsSdk.Common.Settings;
 
 using log4net;
 
@@ -21,33 +23,37 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
     /// </summary>
     public class LspManager : IResourceManager<string>
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(LspManager));
-        private readonly ToolkitContext _toolkitContext;
-        private readonly ICodeWhispererSettingsRepository _codeWhispererSettingsRepository;
-        private readonly ManifestSchema _manifestSchema;
-
-        /// <summary>
-        /// Indicates the parent storage folder where lsp is downloaded 
-        /// </summary>
-        public string DownloadParentFolder { get; }
-
-        public LspManager(ICodeWhispererSettingsRepository codeWhispererSettingsRepository,
-            ManifestSchema manifestSchema, ToolkitContext toolkitContext) : this(codeWhispererSettingsRepository,
-            manifestSchema,
-            toolkitContext, LspConstants.LspDownloadParentFolder)
+        public class Options
         {
+            /// <summary>
+            /// Specifies the compatible version range within which the LSP to be downloaded must be
+            /// </summary>
+            public VersionRange VersionRange { get; set; }
+
+            /// <summary>
+            /// Specifies the name of the file that represents the LSP binary
+            /// </summary>
+            public string Filename { get; set; }
+
+            /// <summary>
+            /// Indicates the parent storage folder where lsp is downloaded 
+            /// </summary>
+            public string DownloadParentFolder { get; set; }
+
+            public ToolkitContext ToolkitContext { get; set; }
         }
 
-        /// <summary>
-        /// Test overload to specify a configurable download folder
-        /// </summary>
-        public LspManager(ICodeWhispererSettingsRepository codeWhispererSettingsRepository,
-            ManifestSchema manifestSchema, ToolkitContext toolkitContext, string downloadParentFolder)
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(LspManager));
+        private readonly ILspSettingsRepository _lspSettingsRepository;
+        private readonly ManifestSchema _manifestSchema;
+        private readonly Options _options;
+
+        public LspManager(Options options, ILspSettingsRepository lspSettingsRepository,
+            ManifestSchema manifestSchema)
         {
-            _toolkitContext = toolkitContext;
-            _codeWhispererSettingsRepository = codeWhispererSettingsRepository;
+            _options = options;
+            _lspSettingsRepository = lspSettingsRepository;
             _manifestSchema = manifestSchema;
-            DownloadParentFolder = downloadParentFolder;
         }
 
         public async Task<string> DownloadAsync(CancellationToken token = default)
@@ -67,7 +73,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var targetContent = GetLspTargetContent(latestCompatibleLspVersion);
 
                 // if the latest version is stored locally already, return that, else fetch the latest version
-                var downloadCachePath = GetDownloadPath(latestCompatibleLspVersion.Version, targetContent.FileName);
+                var downloadCachePath = GetDownloadPath(latestCompatibleLspVersion.Version, targetContent.Filename);
                 if (File.Exists(downloadCachePath))
                 {
                     return downloadCachePath;
@@ -110,8 +116,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// </summary>
         private async Task<string> GetLocalLspPathAsync()
         {
-            var cwSettings = await _codeWhispererSettingsRepository.GetAsync();
-            return cwSettings.LanguageServerPath;
+            var settings = await _lspSettingsRepository.GetLspSettingsAsync();
+            return settings.LanguageServerPath;
         }
 
         /// <summary>
@@ -135,7 +141,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             if (latestCompatibleLspVersion == null)
             {
                 throw new ToolkitException(
-                    $"Unable to find a language server that satisfies one or more of these conditions: version in range [{LspConstants.LspCompatibleVersionRange.Start} - {LspConstants.LspCompatibleVersionRange.End}), matching system's architecture and platform or containing the file: {LspConstants.FileName}  ",
+                    $"Unable to find a language server that satisfies one or more of these conditions: version in range [{_options.VersionRange.Start} - {_options.VersionRange.End}), matching system's architecture and platform or containing the file: {_options.Filename}  ",
                     ToolkitException.CommonErrorCode.UnsupportedState);
             }
 
@@ -162,7 +168,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             if (targetContent == null)
             {
                 throw new ToolkitException(
-                    $"No matching target content found containing the specified filename: {LspConstants.FileName}",
+                    $"No matching target content found containing the specified filename: {_options.Filename}",
                     ToolkitException.CommonErrorCode.UnsupportedState);
             }
 
@@ -188,8 +194,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <returns></returns>
         private VersionTarget GetCompatibleLspTarget(LspVersion lspVersion)
         {
-            var systemArch = _toolkitContext.ToolkitHost.ProductEnvironment.OperatingSystemArchitecture;
-            var lspTarget = lspVersion.Targets.FirstOrDefault(x =>
+            var systemArch = _options.ToolkitContext?.ToolkitHost.ProductEnvironment.OperatingSystemArchitecture;
+            var lspTarget = lspVersion.Targets?.FirstOrDefault(x =>
                 LspInstallUtil.HasMatchingArchitecture(systemArch, x.Arch) &&
                 LspInstallUtil.HasMatchingPlatform(x.Platform));
             return lspTarget;
@@ -201,7 +207,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <param name="lspTarget"></param>
         private TargetContent GetCompatibleTargetContent(VersionTarget lspTarget)
         {
-            var targetContent = lspTarget?.Contents.FirstOrDefault(x => x.FileName.Equals(LspConstants.FileName));
+            var targetContent = lspTarget?.Contents.FirstOrDefault(x => x.Filename.Equals(_options.Filename));
             return targetContent;
         }
 
@@ -221,7 +227,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 return Task.FromResult(string.Equals(hash, expectedHash));
             }
 
-            var fetcher = CreateLspFetcher(lspVersion, targetContent.FileName, Validate);
+            var fetcher = CreateLspFetcher(lspVersion, targetContent.Filename, Validate);
 
             // if lsp can be successfully downloaded, return true else false
             using (var stream = await fetcher.GetAsync(targetContent.Url, token))
@@ -242,7 +248,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 ResourceValidator = validate,
                 DownloadedCachePath = GetDownloadPath(version, filename),
                 Version = version,
-                TelemetryLogger = _toolkitContext.TelemetryLogger
+                TelemetryLogger = _options.ToolkitContext.TelemetryLogger
             };
 
             return new LspFetcher(options);
@@ -250,13 +256,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
         private string GetDownloadPath(string version, string filename)
         {
-            return Path.Combine(DownloadParentFolder, version, filename);
+            return Path.Combine(_options.DownloadParentFolder, version, filename);
         }
 
         private bool IsCompatibleVersion(string versionString)
         {
             Version.TryParse(versionString, out var version);
-            return LspConstants.LspCompatibleVersionRange.ContainsVersion(version);
+            return _options.VersionRange.ContainsVersion(version);
         }
 
         private string GetExpectedHash(TargetContent targetContent)
@@ -279,7 +285,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <param name="lspVersion">the lsp version with which the fallback version must be the most compatible to</param>
         private string GetFallbackPath(string lspVersion)
         {
-            var fallbackFolder = LspInstallUtil.GetFallbackVersionFolder(DownloadParentFolder,
+            var fallbackFolder = LspInstallUtil.GetFallbackVersionFolder(_options.DownloadParentFolder,
                 lspVersion);
 
             if (fallbackFolder == null)
@@ -289,7 +295,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                     ToolkitException.CommonErrorCode.UnexpectedError);
             }
 
-            return Path.Combine(fallbackFolder, LspConstants.FileName);
+            return Path.Combine(fallbackFolder, _options.Filename);
         }
     }
 }

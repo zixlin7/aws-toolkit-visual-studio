@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
-using Amazon.AwsToolkit.CodeWhisperer.Settings;
+
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.ResourceFetchers;
+
+using AwsToolkit.VsSdk.Common.Settings;
 
 using log4net;
 
@@ -18,33 +20,58 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
     /// </summary>
     public class VersionManifestManager: IResourceManager<ManifestSchema>
     {
-        // Each toolkit release is expected to be compatible per major version (eg: 0.x, 1.x, ...) of the version manifest schema
-        public const int CompatibleMajorVersion = 0;
-        public const string ManifestFile = "lspManifest.json";
+        public class Options
+        {
+            /// <summary>
+            /// Each toolkit release is expected to be compatible per major version (eg: 0.x, 1.x, ...) of the version manifest schema
+            /// </summary>
+            public int MajorVersion { get; set; } = 0;
+
+            /// <summary>
+            /// Specifies the name of the file that represents the LSP binary
+            /// </summary>
+            public string FileName { get; set; }
+        }
 
         private static readonly ILog _logger = LogManager.GetLogger(typeof(VersionManifestManager));
         private readonly IResourceFetcher _versionManifestFetcher;
+        private readonly Options _options;
 
-        public static VersionManifestManager Create(ICodeWhispererSettingsRepository settingsRepository)
+        public static VersionManifestManager Create(Options options, ILspSettingsRepository settingsRepository)
         {
-            var fetcher = CreateVersionManifestFetcher(settingsRepository);
-            return new VersionManifestManager(fetcher);
+            var fetcher = CreateVersionManifestFetcher(options, settingsRepository);
+            return new VersionManifestManager(options, fetcher);
         }
 
-        internal VersionManifestManager(IResourceFetcher versionManifestFetcher)
+        internal VersionManifestManager(Options options, IResourceFetcher versionManifestFetcher)
         {
+            _options = options;
             _versionManifestFetcher = versionManifestFetcher;
         }
 
         /// <summary>
         /// Creates a resource fetcher that gets the version manifest
         /// </summary>
-        private static IResourceFetcher CreateVersionManifestFetcher(ICodeWhispererSettingsRepository settingsRepository)
+        private static IResourceFetcher CreateVersionManifestFetcher(Options managerOptions, ILspSettingsRepository settingsRepository)
         {
+            // Indicates whether or not the stream contains a valid lsp version manifest file
+            async Task<bool> IsValidAsync(Stream stream)
+            {
+                try
+                {
+                    var manifestSchema = await ManifestSchemaUtil.LoadAsync(stream);
+                    return manifestSchema != null && new Version(manifestSchema.SchemaVersion).Major == managerOptions.MajorVersion;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
             var options = new VersionManifestFetcher.Options()
             {
                 ResourceValidator = IsValidAsync,
-                CompatibleMajorVersion = CompatibleMajorVersion
+                CompatibleMajorVersion = managerOptions.MajorVersion
             };
 
             return new VersionManifestFetcher(options, settingsRepository);
@@ -54,7 +81,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         {
             try
             {
-                using (var stream = await _versionManifestFetcher.GetAsync("lspManifest.json", token))
+                using (var stream = await _versionManifestFetcher.GetAsync(_options.FileName, token))
                 using (var streamCopy = new MemoryStream())
                 {
                     if (stream == null)
@@ -66,9 +93,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
                     ManifestSchema schema = null;
                     // ManifestSchemaUtil.Load destroys the stream, give it a copy
-                    using (var endpointsStream = new MemoryStream(streamCopy.GetBuffer()))
+                    using (var manifestStream = new MemoryStream(streamCopy.GetBuffer()))
                     {
-                        schema = await ManifestSchemaUtil.LoadAsync(endpointsStream);
+                        schema = await ManifestSchemaUtil.LoadAsync(manifestStream);
                         if (schema == null)
                         {
                             throw new ToolkitException("Error retrieving version manifest data.", ToolkitException.CommonErrorCode.UnsupportedState);
@@ -84,22 +111,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                     "Error downloading version manifest data. The Toolkit may have trouble accessing the CodeWhisperer service.",
                     e);
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// Indicates whether or not the stream contains a valid lsp version manifest file
-        /// </summary>
-        private static async Task<bool> IsValidAsync(Stream stream)
-        {
-            try
-            {
-                var manifestSchema = await ManifestSchemaUtil.LoadAsync(stream);
-                return manifestSchema != null && new Version(manifestSchema.SchemaVersion).Major == CompatibleMajorVersion;
-            }
-            catch
-            {
-                return false;
             }
         }
     }

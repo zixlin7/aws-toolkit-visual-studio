@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 
+using AwsToolkit.VsSdk.Common.Settings;
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
@@ -36,6 +37,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             {
                 Settings = Settings,
             });
+        }
+
+        public Task<ILspSettings> GetLspSettingsAsync()
+        {
+            return Task.FromResult((ILspSettings)Settings);
         }
     }
 }

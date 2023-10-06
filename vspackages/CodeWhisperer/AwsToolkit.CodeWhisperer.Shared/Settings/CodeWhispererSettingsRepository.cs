@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
+using AwsToolkit.VsSdk.Common.Settings;
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Settings
@@ -33,6 +34,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
         public Task<CodeWhispererSettings> GetAsync()
         {
             return CodeWhispererSettings.GetLiveInstanceAsync();
+        }
+
+        public async Task<ILspSettings> GetLspSettingsAsync()
+        {
+            ILspSettings settings = await CodeWhispererSettings.GetLiveInstanceAsync();
+            return settings;
         }
 
         public void Save(CodeWhispererSettings settings)

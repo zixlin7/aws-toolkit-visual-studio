@@ -58,6 +58,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
         private readonly CredentialsEncryption _credentialsEncryption = new CredentialsEncryption();
 
+        protected string _serverPath { get; set; }
+
         /// <summary>
         /// Used to send notifications and requests to the language server
         /// </summary>
@@ -138,8 +140,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Initializing: {Name}");
 
-            // TODO : Determine the latest version of the language server, and download+validate+store it if necessary
-            // TODO : Wrap the download in ITaskStatusNotifier
+            // TODO IDE-11743: Wrap the download in ITaskStatusNotifier
+            // TODO IDE-11743: Handle long loading cancellations
+            // Determines the latest version of the language server, install and return it's path
+            _serverPath = await InstallServerAsync();
 
             // TODO : Have a separate controller responsible for starting the language server
             // (move the line below; call it elsewhere once we have a place in the UI that users can "turn it on and off")
@@ -162,7 +166,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
             await TaskScheduler.Default;
 
-            var serverProcess = await CreateLspProcessAsync();
+            var serverProcess = CreateLspProcess();
 
             _logger.Info($"Launching language server: {Name}");
             if (!serverProcess.Start())
@@ -180,12 +184,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// Creates the child process representing the language server.
         /// Caller is responsible for starting the process.
         /// </summary>
-        private async Task<Process> CreateLspProcessAsync()
+        private Process CreateLspProcess()
         {
             var info = new ProcessStartInfo
             {
-                WorkingDirectory = await GetServerWorkingDirAsync(),
-                FileName = await GetServerPathAsync(),
+                WorkingDirectory = GetServerWorkingDir(),
+                FileName = GetServerPath(),
                 Arguments = string.Join(" ", GetLspProcessArgs()),
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -202,15 +206,22 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         }
 
         /// <summary>
+        /// Installs the language server and returns the install location
+        /// </summary>
+        /// <returns></returns>
+
+        protected abstract Task<string> InstallServerAsync();
+
+        /// <summary>
         /// The folder the language server process should be started from
         /// </summary>
-        protected abstract Task<string> GetServerWorkingDirAsync();
+        protected abstract string GetServerWorkingDir();
 
         /// <summary>
         /// The command to launch the language server
         /// </summary>
         /// <returns></returns>
-        protected abstract Task<string> GetServerPathAsync();
+        protected abstract string GetServerPath();
 
         /// <summary>
         /// Command line arguments to pass into the language server

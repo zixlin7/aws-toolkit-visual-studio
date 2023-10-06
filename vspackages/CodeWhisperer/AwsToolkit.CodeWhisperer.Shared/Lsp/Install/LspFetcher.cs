@@ -29,7 +29,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             /// <summary>
             /// Specifies the name of the file that represents the LSP binary
             /// </summary>
-            public string Filename { get; set; } = LspConstants.FileName;
+            public string Filename { get; set; }
 
             /// <summary>
             /// Path where LSP is stored after download
@@ -79,7 +79,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 fetcherChain.Add(fileFetcher);
             }
             // else if the lsp location is a remote location, use the http fetcher
-            else if (string.Equals(source.Scheme, "http", StringComparison.OrdinalIgnoreCase))
+            else if (source.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase))
             {
                 var httpFetcher =
                     new HttpResourceFetcher(

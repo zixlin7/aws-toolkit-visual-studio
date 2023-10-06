@@ -27,8 +27,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         private readonly LspManager _sut;
         private readonly ManifestSchema _sampleSchema = new ManifestSchema();
         private readonly LspVersion _sampleLspVersion;
-        private readonly string _sampleVersion = $"{LspConstants.LspCompatibleVersionRange.Start.Major}.0.2";
+        private readonly string _sampleVersion = $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.2";
         private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
+        private readonly LspManager.Options _options;
 
 
         public LspManagerTests()
@@ -37,8 +38,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
                 new ProductEnvironment() { OperatingSystemArchitecture = Architecture.X64.ToString() };
             _contextFixture.ToolkitHost.Setup(x => x.ProductEnvironment)
                 .Returns(productEnvironment);
-           _sut = new LspManager(_settingsRepository, _sampleSchema, _contextFixture.ToolkitContext, TestLocation.OutputFolder);
-            Directory.CreateDirectory(_sut.DownloadParentFolder);
+
+            _options = CreateOptions();
+           _sut = new LspManager(_options, _settingsRepository, _sampleSchema);
+            Directory.CreateDirectory(_options.DownloadParentFolder);
             _sampleLspVersion = CreateSampleLspVersion(_sampleVersion);
             _sampleSchema.Versions = new List<LspVersion>() { _sampleLspVersion };
         }
@@ -56,7 +59,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         [Fact]
         public async Task DownloadAsync_WhenManifestSchemaNullAndNoLocalOverride()
         {
-            var manager = new LspManager(_settingsRepository, null, _contextFixture.ToolkitContext);
+            var manager = new LspManager(_options, _settingsRepository, null);
             var exception = await Assert.ThrowsAsync<ToolkitException>(async () => await manager.DownloadAsync());
 
             Assert.Contains("No valid manifest", exception.InnerException.Message);
@@ -65,8 +68,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
         public static readonly IEnumerable<object[]> IncompatibleManifestVersions = new[]
         {
-            new object[] { "0.0.0" }, new object[] { $"{LspConstants.LspCompatibleVersionRange.End.Major + 1}.0.2" },
-            new object[] { $"{LspConstants.LspCompatibleVersionRange.End.Major + 2}.0.2" }
+            new object[] { "0.0.0" }, new object[] { $"{CodeWhispererConstants.LspCompatibleVersionRange.End.Major + 1}.0.2" },
+            new object[] { $"{CodeWhispererConstants.LspCompatibleVersionRange.End.Major + 2}.0.2" }
         };
 
         [Theory]
@@ -91,7 +94,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         [Fact]
         public async Task DownloadAsync_WhenNoMatchingFile()
         {
-            _sampleLspVersion.Targets.First().Contents.First().FileName = "abc.exe";
+            _sampleLspVersion.Targets.First().Contents.First().Filename = "abc.exe";
 
             await AssertDownloadAsyncThrowsWithMessage("language server that satisfies one or more of these conditions");
         }
@@ -100,7 +103,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         [Fact]
         public async Task DownloadAsync_WhenVersionCacheAlreadyExists()
         {
-            var expectedPath = Path.Combine(_sut.DownloadParentFolder, _sampleVersion, LspConstants.FileName);
+            var expectedPath = Path.Combine(_options.DownloadParentFolder, _sampleVersion, CodeWhispererConstants.Filename);
             SetupFile(expectedPath);
 
             var path = await _sut.DownloadAsync();
@@ -127,11 +130,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             SetupTargetContent("sha384:1234", _sampleLspVersion);
 
             // setup fallback cache
-            var expectedFallbackLocation = Path.Combine(_sut.DownloadParentFolder,
-                $"{LspConstants.LspCompatibleVersionRange.Start.Major}.0.1", LspConstants.FileName);
+            var expectedFallbackLocation = Path.Combine(_options.DownloadParentFolder,
+                $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.1", CodeWhispererConstants.Filename);
             SetupFile(expectedFallbackLocation);
-            var additionalFallbackLocation = Path.Combine(_sut.DownloadParentFolder,
-                $"{LspConstants.LspCompatibleVersionRange.Start.Major}.0.0", LspConstants.FileName);
+            var additionalFallbackLocation = Path.Combine(_options.DownloadParentFolder,
+                $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.0", CodeWhispererConstants.Filename);
             SetupFile(additionalFallbackLocation);
 
 
@@ -144,7 +147,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         public async Task DownloadAsync_WhenHashesMatch()
         {
             // setup manifest specified fetch location
-            var lspFetchLocation = Path.Combine(TestLocation.InputFolder, _sampleVersion, LspConstants.FileName);
+            var lspFetchLocation = Path.Combine(TestLocation.InputFolder, _sampleVersion, CodeWhispererConstants.Filename);
             SetupFile(lspFetchLocation);
 
             var expectedHash = GetHash(lspFetchLocation);
@@ -152,7 +155,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             // setup target content with required params
             SetupTargetContent($"sha384:{expectedHash}", _sampleLspVersion);
 
-            var expectedPath = Path.Combine(_sut.DownloadParentFolder, _sampleVersion, LspConstants.FileName);
+            var expectedPath = Path.Combine(_options.DownloadParentFolder, _sampleVersion, CodeWhispererConstants.Filename);
             var downloadPath = await _sut.DownloadAsync();
 
             Assert.Equal(expectedPath, downloadPath);
@@ -162,12 +165,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         public async Task DownloadAsync_WhenMultipleVersionsChooseLatest()
         {
             // add additional compatible lsp versions 
-            var latestExpectedVersion = $"{LspConstants.LspCompatibleVersionRange.Start.Major}.1.1";
+            var latestExpectedVersion = $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.1.1";
             var latestLspVersion = CreateSampleLspVersion(latestExpectedVersion);
             _sampleSchema.Versions.Add(latestLspVersion);
 
             // setup fetch location
-            var lspFetchLocation = Path.Combine(TestLocation.InputFolder, latestExpectedVersion, LspConstants.FileName);
+            var lspFetchLocation = Path.Combine(TestLocation.InputFolder, latestExpectedVersion, CodeWhispererConstants.Filename);
             SetupFile(lspFetchLocation);
 
             var expectedHash = GetHash(lspFetchLocation);
@@ -176,7 +179,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             SetupTargetContent($"sha384:{expectedHash}", latestLspVersion);
 
             // verify latest compatible lsp version is chosen amongst multiple available for eg. between 1.1.1 and 1.0.2, 1.1.1 is chosen
-            var expectedPath = Path.Combine(_sut.DownloadParentFolder, latestExpectedVersion, LspConstants.FileName);
+            var expectedPath = Path.Combine(_options.DownloadParentFolder, latestExpectedVersion, CodeWhispererConstants.Filename);
             var downloadPath = await _sut.DownloadAsync();
 
             Assert.Equal(expectedPath, downloadPath);
@@ -207,12 +210,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         private void SetupTargetContent(string hashString, LspVersion lspVersion)
         {
             var version = lspVersion.Version;
-            var lspFetchLocation = Path.Combine(TestLocation.InputFolder, version, LspConstants.FileName);
+            var lspFetchLocation = Path.Combine(TestLocation.InputFolder, version, CodeWhispererConstants.Filename);
             SetupFile(lspFetchLocation);
 
             var content = lspVersion.Targets.First().Contents.First();
             content.Hashes = new List<string>() { hashString };
             content.Url = lspFetchLocation;
+        }
+
+        private LspManager.Options CreateOptions()
+        {
+            return new LspManager.Options()
+            {
+                Filename = CodeWhispererConstants.Filename,
+                ToolkitContext = _contextFixture.ToolkitContext,
+                VersionRange = CodeWhispererConstants.LspCompatibleVersionRange,
+                DownloadParentFolder = TestLocation.OutputFolder
+            };
         }
 
         public static LspVersion CreateSampleLspVersion(string version)
@@ -223,7 +237,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
                 Targets = new List<VersionTarget>()
                 {
                     CreateVersionTarget(Architecture.X64.ToString(), OSPlatform.Windows.ToString(),
-                        LspConstants.FileName)
+                        CodeWhispererConstants.Filename)
                 }
             };
         }
@@ -234,7 +248,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             {
                 Arch = arch,
                 Platform = platform,
-                Contents = new List<TargetContent>() { new TargetContent() { FileName = filename } }
+                Contents = new List<TargetContent>() { new TargetContent() { Filename = filename } }
             };
         }
 

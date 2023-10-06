@@ -7,7 +7,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models
     /// </summary>
     public class TargetContent
     {
-        public string FileName { get; set; }
+        public string Filename { get; set; }
         public string Url { get; set; }
         /// <summary>
         /// List containing one or more computed hashes for the file
