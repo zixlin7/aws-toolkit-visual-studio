@@ -9,11 +9,11 @@
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CodeCommit" Version="3.7.100.86" />
-    <PackageReference Include="AWSSDK.Core" Version="3.7.105.15" />
+    <PackageReference Include="AWSSDK.CodeCommit" Version="3.7.201.31" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.203.0" />
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.138.0" />
     <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.138.0" />
-    <PackageReference Include="AWSSDK.XRay" Version="3.7.102.67" />
+    <PackageReference Include="AWSSDK.XRay" Version="3.7.201.14" />
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Moq" Version="4.17.2" />
     <PackageReference Include="xunit" Version="2.5.1" />

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
@@ -13,7 +13,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CodeArtifact" Version="3.7.102.23" />
+    <PackageReference Include="AWSSDK.CodeArtifact" Version="3.7.201.9" />
     <PackageReference Include="Moq" Version="4.17.2" />
     <PackageReference Include="xunit" Version="2.5.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.1">

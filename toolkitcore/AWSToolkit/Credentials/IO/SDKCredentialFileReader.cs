@@ -18,6 +18,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 {ProfilePropertyConstants.AccessKey, SettingsConstants.AccessKeyField},
                 {ProfilePropertyConstants.CredentialSource, SettingsConstants.CredentialSourceField},
                 {ProfilePropertyConstants.EndpointName, SettingsConstants.EndpointNameField},
+                {ProfilePropertyConstants.EndpointUrl, SettingsConstants.EndpointUrl},
                 {ProfilePropertyConstants.ExternalID, SettingsConstants.ExternalIDField},
                 {ProfilePropertyConstants.MfaSerial, SettingsConstants.MfaSerialField},
                 {ProfilePropertyConstants.RoleArn, SettingsConstants.RoleArnField},
@@ -28,8 +29,10 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 {ProfilePropertyConstants.UserIdentity, SettingsConstants.UserIdentityField},
                 {ProfilePropertyConstants.CredentialProcess, SettingsConstants.CredentialProcess},
                 {ProfilePropertyConstants.WebIdentityTokenFile, SettingsConstants.WebIdentityTokenFile},
+                {ProfilePropertyConstants.Services, SettingsConstants.Services},
                 {ProfilePropertyConstants.SsoAccountId, "sso_account_id"},
                 {ProfilePropertyConstants.SsoRegion, "sso_region"},
+                {ProfilePropertyConstants.SsoRegistrationScopes, "sso_registration_scopes"},
                 {ProfilePropertyConstants.SsoRoleName, "sso_role_name"},
                 {ProfilePropertyConstants.SsoSession, "sso_session"},
                 {ProfilePropertyConstants.SsoStartUrl, "sso_start_url"}
