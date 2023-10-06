@@ -26,6 +26,7 @@
         public string SsoSession { get; set; }
         public string SsoAccountId { get; set; }
         public string SsoRegion { get; set; }
+        public string[] SsoRegistrationScopes { get; set; }
         public string SsoRoleName { get; set; }
         public string SsoStartUrl { get; set; }
 

@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="Amazon.AwsToolkit.CodeWhisperer.Margins.CodeWhispererMarginControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+             xmlns:local="clr-namespace:Amazon.AwsToolkit.CodeWhisperer.Margins"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit" xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+             themes:ToolkitThemes.UseToolkitTheme="False"
+             mc:Ignorable="d" 
+             d:DesignHeight="26" d:DesignWidth="64">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <commonUi:ToolkitImages x:Key="ToolkitImages" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel 
+        Orientation="Horizontal" 
+        VerticalAlignment="Center"
+        Background="{DynamicResource {x:Static platformUi:EnvironmentColors.ScrollBarBackgroundBrushKey}}">
+        <Button 
+            Height="19" MinWidth="50" 
+            Margin="0" Padding="0"
+            Background="Transparent"
+            Click="OnClickButton">
+            <Button.ContextMenu>
+                <ContextMenu themes:ToolkitThemes.UseToolkitTheme="True">
+                    <MenuItem Header="Sign In" Command="{Binding SignIn}" />
+                    <Separator />
+                    <MenuItem Header="Generate Code Suggestions" Command="{Binding GenerateSuggestions}" />
+                    <Separator />
+                    <MenuItem Header="Pause CodeWhisperer Suggestions" Command="{Binding Pause}" />
+                    <MenuItem Header="Resume CodeWhisperer Suggestions" Command="{Binding Resume}" />
+                    <MenuItem Header="Open Code Reference Log" Command="{Binding ViewCodeReferences}" />
+                    <MenuItem Header="Perform Security Scan" Command="{Binding SecurityScan}" />
+                    <Separator />
+                    <MenuItem Header="View User Guide" Command="{Binding ViewUserGuide}" />
+                    <MenuItem Header="Getting Started" Command="{Binding GettingStarted}" />
+                    <MenuItem Header="View Options" Command="{Binding ViewOptions}" />
+                    <Separator />
+                    <MenuItem Header="Sign Out" Command="{Binding SignOut}" />
+                </ContextMenu>
+            </Button.ContextMenu>
+            <imaging:CrispImage
+                Height="14"
+                Width="14"
+                VerticalAlignment="Center"
+                Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeWhisperer}"
+                />
+        </Button>
+    </StackPanel>
+</UserControl>

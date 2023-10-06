@@ -15,23 +15,26 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         /// </summary>
         /// <returns>true if the credentials have a currently valid token, false if the token is not cached, or has expired</returns>
         public static bool HasValidToken(this ICredentialIdentifier credentialsId,
+            string ssoSession,
             IAWSToolkitShellProvider toolkitShell)
         {
-            return HasValidToken(credentialsId, toolkitShell, null, null);
+            return HasValidToken(credentialsId, ssoSession, toolkitShell, null, null);
         }
 
         /// <summary>
         /// Overload used for testing purposes
         /// </summary>
         public static bool HasValidToken(this ICredentialIdentifier credentialsId,
+            string ssoSession,
             IAWSToolkitShellProvider toolkitShell,
             IFile tokenCacheFileProvider,
             IDirectory tokenCacheDirectoryProvider)
         {
             SonoTokenProviderBuilder builder = SonoTokenProviderBuilder.Create()
-                .WithToolkitShell(toolkitShell)
                 .WithCredentialIdentifier(credentialsId)
-                .WithSsoCallback(StubTokenCallback);
+                .WithSessionName(ssoSession)
+                .WithSsoCallback(StubTokenCallback)
+                .WithToolkitShell(toolkitShell);
 
             if (tokenCacheFileProvider != null)
             {

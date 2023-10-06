@@ -41,6 +41,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         {
             try
             {
+                token.ThrowIfCancellationRequested();
                 var stream = await _resourceFetcher.GetAsync(path, token);
                 return await _postProcessStream.Invoke(path, stream);
             }

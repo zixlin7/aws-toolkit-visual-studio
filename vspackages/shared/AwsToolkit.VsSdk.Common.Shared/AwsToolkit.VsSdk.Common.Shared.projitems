@@ -67,6 +67,7 @@
       <DependentUpon>SelectionDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\VsFolderBrowserDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Documents\TextViewExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
@@ -74,6 +75,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)OutputWindow\OutputWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RunningDocumentEvents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IPluginCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhisperer\CodeWhispererSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhisperer\CodeWhispererSettingsProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tasks\ToolkitJoinableTaskFactoryProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsHierarchyHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSLambdaUtility.cs" />
