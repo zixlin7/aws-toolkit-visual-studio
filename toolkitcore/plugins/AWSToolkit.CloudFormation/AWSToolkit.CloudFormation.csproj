@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <UseWPF>true</UseWPF>
@@ -9,14 +9,14 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.103.14" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.24" />
-    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.103.30" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.7.126.0" />
-    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.100.86" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.114.34" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.103.23" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.101.22" />
+    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.202.46" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.203.46" />
+    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.200.53" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.7.218.3" />
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.200.52" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.209.3" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.205.8" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.200.52" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>
@@ -29,9 +29,7 @@
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SNS.Interface\AWSToolkit.SNS.Interface.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource 
-      Include="Resources\EmbeddedImages\*.png" 
-      Exclude="Resources\EmbeddedImages\Failed.png;Resources\EmbeddedImages\Validated.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\*.png" Exclude="Resources\EmbeddedImages\Failed.png;Resources\EmbeddedImages\Validated.png" />
     <Resource Include="Resources\EmbeddedImages\Failed.png" />
     <Resource Include="Resources\EmbeddedImages\Validated.png" />
     <Resource Include="Resources\Images\*.png" />

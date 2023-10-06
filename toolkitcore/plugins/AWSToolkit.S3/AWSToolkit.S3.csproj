@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <UseWPF>true</UseWPF>
@@ -9,12 +9,12 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudFront" Version="3.7.105.8" />
-    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.100.87" />
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.105.6" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.103.23" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.101.22" />
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.100.86" />
+    <PackageReference Include="AWSSDK.CloudFront" Version="3.7.201.46" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.200.52" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.201.48" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.205.8" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.200.52" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.200.53" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>
@@ -26,9 +26,7 @@
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource 
-      Include="Resources\EmbeddedImages\*.png"
-      Exclude="Resources\EmbeddedImages\cloudfront-distribution.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\*.png" Exclude="Resources\EmbeddedImages\cloudfront-distribution.png" />
     <Resource Include="Resources\EmbeddedImages\cloudfront-distribution.png" />
     <Resource Include="Resources\Images\*.png" />
   </ItemGroup>
