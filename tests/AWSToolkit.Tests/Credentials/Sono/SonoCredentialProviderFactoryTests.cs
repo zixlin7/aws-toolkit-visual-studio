@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
@@ -22,7 +23,8 @@ namespace AWSToolkit.Tests.Credentials.Sono
             Id = "sample-region",
         };
 
-        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("default");
+        private static readonly ICredentialIdentifier SonoCredentialId =
+            new SonoCredentialIdentifier(SonoCredentialProviderFactory.CodeCatalystProfileName);
         private static readonly ICredentialIdentifier OtherSonoCredentialId = new SonoCredentialIdentifier("other-sono");
         private static readonly ICredentialIdentifier NonSonoCredentialId = new SDKCredentialIdentifier("non-sono-sample");
         private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation(false);
@@ -35,14 +37,20 @@ namespace AWSToolkit.Tests.Credentials.Sono
             _sut.Initialize();
         }
 
-        [Fact]
-        public void GetCredentialIdentifiers()
+        [Theory]
+        [InlineData(SonoCredentialProviderFactory.CodeCatalystProfileName)]
+        [InlineData(SonoCredentialProviderFactory.CodeWhispererProfileName)]
+        public void GetCredentialIdentifiers(string profileName)
         {
             var ids = _sut.GetCredentialIdentifiers();
 
-            var credentialId = Assert.Single<ICredentialIdentifier>(ids);
-            Assert.Equal(SonoCredentialId.FactoryId, credentialId.FactoryId);
-            Assert.Equal(SonoCredentialId.Id, credentialId.Id);
+            Assert.Equal(2, ids.Count);
+
+            var id = ids.FirstOrDefault(i => i.ProfileName == profileName);
+
+            Assert.NotNull(id);
+            Assert.Equal(SonoCredentialId.FactoryId, id.FactoryId);
+            Assert.Equal($"{SonoCredentialProviderFactory.FactoryId}:{profileName}", id.Id);
         }
 
         [Fact]
@@ -104,9 +112,11 @@ namespace AWSToolkit.Tests.Credentials.Sono
         [Fact]
         public void Invalidate()
         {
+            var ssoSession = _sut.GetCredentialProfileProcessor().GetProfileProperties(SonoCredentialId).SsoSession;
+
             var cachePath = Path.Combine(
                 _testLocation.TestFolder,
-                TokenCache.GetCacheFilename(SonoProperties.StartUrl, SonoProperties.DefaultSessionName));
+                TokenCache.GetCacheFilename(SonoProperties.StartUrl, ssoSession));
 
             File.WriteAllText(cachePath, "a sample file that will be deleted");
 
