@@ -80,7 +80,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 toolkitContext.ToolkitHost.OutputToHostConsole("Attempting to update AWS Builder ID bearer token on LSP.");
 
                 // See SonoCredentialProviderFactory.Initialize and SonoCredentialIdentifier ctor for credId name details
-                var credId = toolkitContext.CredentialManager.GetCredentialIdentifierById($"{SonoCredentialProviderFactory.FactoryId}:default");
+                var credId = toolkitContext.CredentialManager.GetCredentialIdentifierById($"{SonoCredentialProviderFactory.FactoryId}:{SonoCredentialProviderFactory.CodeWhispererProfileName}");
                 var region = toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
                 var toolkitCreds = toolkitContext.CredentialManager.GetToolkitCredentials(credId, region);
 
