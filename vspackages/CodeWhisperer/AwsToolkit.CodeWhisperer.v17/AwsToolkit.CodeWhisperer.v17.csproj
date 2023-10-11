@@ -15,6 +15,7 @@
     <PackageReference Include="Community.VisualStudio.Toolkit.17" ExcludeAssets="Runtime">
       <Version>17.0.486</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="17.7.37355" />
     <PackageReference Include="Microsoft.VisualStudio.Language" Version="17.7.188" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Client" Version="17.0.5165" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />

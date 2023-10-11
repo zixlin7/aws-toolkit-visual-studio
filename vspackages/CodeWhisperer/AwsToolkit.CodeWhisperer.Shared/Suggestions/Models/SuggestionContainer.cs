@@ -8,6 +8,11 @@ using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AWSToolkit.Models.Text;
 
+using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Core.Imaging;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Language.Proposals;
 using Microsoft.VisualStudio.Language.Suggestions;
 using Microsoft.VisualStudio.Text;
@@ -37,6 +42,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             _view = view;
             _manager = manager;
             _disposalToken = disposalToken;
+
+            Elements = new[]
+            {
+                new TipElement(
+                    KnownMonikers.Settings.ToImageId(),
+                    null,
+                    typeof(VSConstants.VSStd97CmdID).GUID,
+                    (uint) VSConstants.VSStd97CmdID.ToolsOptions,
+                    commandArg: typeof(CodeWhispererSettingsProvider).GUID.ToString())
+            };
+
             CurrentProposal = CreateProposal(_currentSuggestionIndex);
         }
 
@@ -120,7 +136,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         }
 
         public override bool HasMultipleSuggestions => _suggestions.Length > 1;
-
+        public override IReadOnlyList<TipElement> Elements { get; }
 #pragma warning disable CS0067 // The event 'SuggestionContainer.PropertyChanged' is never used
         public override event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore CS0067 // The event 'SuggestionContainer.PropertyChanged' is never used
