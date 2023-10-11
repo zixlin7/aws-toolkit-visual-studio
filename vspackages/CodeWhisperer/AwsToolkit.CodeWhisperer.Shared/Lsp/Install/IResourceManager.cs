@@ -14,5 +14,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// </summary>
         /// <returns></returns>
         Task<T> DownloadAsync(CancellationToken token = default);
+
+        /// <summary>
+        /// Cleans up extra cached versions of the resource being managed eg. language server
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task CleanupAsync(CancellationToken token= default);
     }
 }

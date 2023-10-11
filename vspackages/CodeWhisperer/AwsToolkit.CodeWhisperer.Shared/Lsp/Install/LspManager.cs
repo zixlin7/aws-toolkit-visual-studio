@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -124,13 +125,34 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             }
         }
 
+        public Task CleanupAsync(CancellationToken token = default)
+        {
+            _logger.Info($"Cleaning up cached versions of {_options.Name} Language Server");
+            if (!_manifestSchema?.Versions.Any() ?? true)
+            {
+                return Task.CompletedTask;
+            }
+
+            // delete de-listed versions in toolkit compatible version range
+            DeleteDeListedVersions();
+
+            // delete extra versions in the compatible toolkit version range except highest 2 versions
+            DeleteExtraVersions();
+
+            _logger.Info($"Finished cleanup for cached versions of {_options.Name} Language Server");
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Displays the message in the toolkit output pane
+        /// </summary>
+        /// <param name="message"></param>
         private void ShowMessage(string message)
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
                 _logger.Info(message);
                 _options.ToolkitContext?.ToolkitHost.OutputToHostConsole(message, true);
-
             }
         }
 
@@ -144,7 +166,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         }
 
         /// <summary>
-        /// Gets latest lsp version matching the toolkit compatible version range and required target content(architecture, platform and files)
+        /// Gets latest lsp version matching the toolkit compatible version range, not de-listed and contains required target content(architecture, platform and files)
         /// </summary>
         /// <returns></returns>
         /// <exception cref="ToolkitException"></exception>
@@ -158,7 +180,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             }
 
             var latestCompatibleLspVersion = _manifestSchema.Versions
-                .Where(ver => IsCompatibleVersion(ver.Version) && HasRequiredTargetContent(ver))
+                .Where(ver => IsCompatibleVersion(ver) && HasRequiredTargetContent(ver))
                 .OrderByDescending(obj => Version.Parse(obj.Version)).FirstOrDefault();
 
             if (latestCompatibleLspVersion == null)
@@ -282,12 +304,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             return Path.Combine(_options.DownloadParentFolder, version, filename);
         }
 
-        private bool IsCompatibleVersion(string versionString)
-        {
-            Version.TryParse(versionString, out var version);
-            return _options.VersionRange.ContainsVersion(version);
-        }
-
         private string GetExpectedHash(TargetContent targetContent)
         {
             var expectedHashKeyPair = targetContent.Hashes.FirstOrDefault(x => x.Contains("sha384"));
@@ -303,13 +319,33 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         }
 
         /// <summary>
+        /// Determine if given lsp version is toolkit compatible i.e in version range and not de-listed
+        /// </summary>
+        /// <param name="lspVersion"></param>
+        private bool IsCompatibleVersion(LspVersion lspVersion)
+        {
+            Version.TryParse(lspVersion.Version, out var version);
+            return _options.VersionRange.ContainsVersion(version) && !lspVersion.IsDelisted;
+        }
+
+
+        /// <summary>
+        /// Determines list of toolkit compatible versions from the manifest i.e in version range and not de-listed
+        /// </summary>
+        private IList<Version> GetCompatibleVersions()
+        {
+            return _manifestSchema.Versions.Where(IsCompatibleVersion).Select(x => Version.Parse(x.Version)).ToList();
+        }
+
+        /// <summary>
         /// Get fallback location representing the most compatible cached lsp version
         /// </summary>
         /// <param name="lspVersion">the lsp version with which the fallback version must be the most compatible to</param>
         private string GetFallbackPath(string lspVersion)
         {
+            var compatibleVersions = GetCompatibleVersions();
             var fallbackFolder = LspInstallUtil.GetFallbackVersionFolder(_options.DownloadParentFolder,
-                lspVersion);
+                lspVersion, compatibleVersions);
 
             if (fallbackFolder == null)
             {
@@ -320,6 +356,48 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             }
 
             return Path.Combine(fallbackFolder, _options.Filename);
+        }
+
+        private void DeleteDeListedVersions()
+        {
+            var compatibleVersions = GetCompatibleVersions();
+            var cachedVersions = LspInstallUtil.GetAllCachedVersions(_options.DownloadParentFolder);
+
+            // delete de-listed versions in the toolkit compatible version range
+            var deListedVersions = cachedVersions
+                .Where(x => !compatibleVersions.Contains(x) && _options.VersionRange.ContainsVersion(x)).ToList();
+
+            _logger.Info($"Cleaning up {deListedVersions.Count} cached de-listed versions for {_options.Name} Language Server");
+            deListedVersions.ForEach(DeleteCachedVersion);
+        }
+
+        private void DeleteExtraVersions()
+        {
+            var cachedVersions = LspInstallUtil.GetAllCachedVersions(_options.DownloadParentFolder);
+
+            // delete extra versions in the compatible toolkit version range except highest 2 versions
+            var extraVersions = cachedVersions.Where(x => _options.VersionRange.ContainsVersion(x))
+                .OrderByDescending(x => x).Skip(2).ToList();
+
+            _logger.Info($"Cleaning up {extraVersions.Count} cached versions for {_options.Name} Language Server");
+            extraVersions.ForEach(DeleteCachedVersion);
+        }
+
+        private void DeleteCachedVersion(Version version)
+        {
+            var path = Path.Combine(_options.DownloadParentFolder, version.ToString(),
+                _options.Filename);
+            try
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error cleaning up cached version: {path}", e);
+            }
         }
     }
 }

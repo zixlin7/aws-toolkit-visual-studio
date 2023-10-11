@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,17 +12,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <summary>
         /// Determine most compatible fallback lsp version folder 
         /// </summary>
-        public static string GetFallbackVersionFolder(string downloadParentFolder, string expectedVersionString)
+        /// <param name="downloadParentFolder"> the fallback parent folder</param>
+        /// <param name="expectedVersionString"> the highest version to fallback to</param>
+        /// <param name="compatibleVersions"> list of toolkit compatible lsp versions</param>
+        public static string GetFallbackVersionFolder(string downloadParentFolder, string expectedVersionString,
+            IList<Version> compatibleVersions)
         {
             // determine all folders containing lsp versions in the fallback parent folder
-            var searchPattern = "*.*.*";
-            var cachedVersions = Directory.GetDirectories(downloadParentFolder,
-                    searchPattern, SearchOption.AllDirectories)
-                .Select(GetVersionedName);
+            var cachedVersions = GetAllCachedVersions(downloadParentFolder);
 
             // filter folders containing toolkit compatible lsp versions and sort them to determine the most compatible lsp version
             var expectedVersion = Version.Parse(expectedVersionString);
-            var sortedVersions = cachedVersions.Where(x => CodeWhispererConstants.LspCompatibleVersionRange.ContainsVersion(x) && x <= expectedVersion).OrderByDescending(x => x);
+            var sortedVersions = cachedVersions.Where(x => compatibleVersions.Contains(x) && x <= expectedVersion)
+                .OrderByDescending(x => x);
             var fallbackVersionFolder = sortedVersions.FirstOrDefault()?.ToString();
             if (string.IsNullOrWhiteSpace(fallbackVersionFolder))
             {
@@ -30,6 +33,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
             return Path.Combine(downloadParentFolder, fallbackVersionFolder);
         }
+
+        /// <summary>
+        /// Get all cached versions under the download directory
+        /// </summary>
+        /// <param name="downloadParentFolder"></param>
+        public static IEnumerable<Version> GetAllCachedVersions(string downloadParentFolder)
+        {
+            var searchPattern = "*.*.*";
+            var cachedVersions = Directory.GetDirectories(downloadParentFolder,
+                    searchPattern, SearchOption.TopDirectoryOnly)
+                .Select(GetVersionedName).Where(x => x != null);
+            return cachedVersions;
+        }
+
 
         /// <summary>
         /// Get version represented by the folder contained in this path

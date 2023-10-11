@@ -123,5 +123,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 throw;
             }
         }
+
+        public Task CleanupAsync(CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

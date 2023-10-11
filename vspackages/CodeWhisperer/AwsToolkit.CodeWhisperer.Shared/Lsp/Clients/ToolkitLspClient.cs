@@ -11,6 +11,7 @@ using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lsp;
+using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 using log4net;
 
@@ -51,6 +52,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         [Import]
         protected IToolkitContextProvider _toolkitContextProvider;
         protected ToolkitContext _toolkitContext => _toolkitContextProvider.GetToolkitContext();
+
+        [Import]
+        protected ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
+        protected CancellationToken _disposalToken => _taskFactoryProvider.DisposalToken;
 
         /// <summary>
         /// Implementations should set this to true if they want this class to orchestrate Credentials initialization.
@@ -145,10 +150,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             var taskStatusNotifier = await CreateTaskStatusNotifierAsync();
             taskStatusNotifier.ShowTaskStatus(async _ =>
             {
-                _serverPath = await InstallServerAsync(taskStatusNotifier);
+                using (var token = CreateCancellationTokenSource(taskStatusNotifier))
+                {
+                    _serverPath = await InstallServerAsync(taskStatusNotifier, token.Token);
 
-                // TODO : Have a separate controller responsible for starting the language server
-                await LaunchServerAsync(taskStatusNotifier);
+                    // TODO : Have a separate controller responsible for starting the language server
+                    await LaunchServerAsync(taskStatusNotifier);
+                }
             });
         }
 
@@ -159,6 +167,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         }
 
         /// <summary>
+        /// Creates a cancellation token source representing the task status notifier's cancellation token and the toolkit package.
+        /// </summary>
+        /// <remarks>
+        /// Caller is responsible for disposing the created token source.
+        /// </remarks>
+        private CancellationTokenSource CreateCancellationTokenSource(ITaskStatusNotifier notifier)
+        {
+            return CancellationTokenSource.CreateLinkedTokenSource(
+                notifier.CancellationToken,
+                _disposalToken);
+        }
+
         /// <inheritdoc/>
         /// 
         /// VS Calls this to start up the Language Server and get the communications streams
@@ -218,7 +238,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         /// <returns></returns>
 
-        protected abstract Task<string> InstallServerAsync(ITaskStatusNotifier taskNotifier);
+        protected abstract Task<string> InstallServerAsync(ITaskStatusNotifier taskNotifier, CancellationToken token = default);
 
         /// <summary>
         /// Creates the task status notifier

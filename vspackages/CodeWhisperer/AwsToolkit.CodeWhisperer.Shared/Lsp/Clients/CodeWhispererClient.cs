@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions;
@@ -59,12 +60,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             return !string.IsNullOrWhiteSpace(_serverPath) ? _serverPath : throw new Exception("Error finding CodeWhisperer Language Server location");
         }
 
-        protected override async Task<string> InstallServerAsync(ITaskStatusNotifier taskNotifier)
+        protected override async Task<string> InstallServerAsync(ITaskStatusNotifier taskNotifier, CancellationToken token = default)
         {
             taskNotifier.ProgressText = "Installing CodeWhisperer Language Server...";
             taskNotifier.CanCancel = true;
             var installer = new CodeWhispererInstaller(_toolkitContext, _settingsRepository);
-            return await installer.ExecuteAsync(taskNotifier);
+            return await installer.ExecuteAsync(taskNotifier, token);
         }
 
         protected override async Task<ITaskStatusNotifier> CreateTaskStatusNotifierAsync()

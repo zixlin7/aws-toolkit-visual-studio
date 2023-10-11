@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Tasks;
 
 using AwsToolkit.VsSdk.Common.Settings;
 
@@ -18,6 +20,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
     public class CodeWhispererInstaller : ILspInstaller
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(CodeWhispererInstaller));
+        private const int _cleanupDelay = 10000;
         private readonly ILspSettingsRepository _lspSettingsRepository;
         private readonly ToolkitContext _toolkitContext;
 
@@ -28,15 +31,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             _lspSettingsRepository = lspSettingsRepository;
         }
 
-        public async Task<string> ExecuteAsync(ITaskStatusNotifier notifier)
+        public async Task<string> ExecuteAsync(ITaskStatusNotifier notifier, CancellationToken token = default)
         {
             var statusMsg = "Successfully installed CodeWhisperer Language Server";
             try
             {
-                notifier.CancellationToken.ThrowIfCancellationRequested();
+                token.ThrowIfCancellationRequested();
 
                 var versionManifestManager = CreateVersionManifestManager();
-                var manifestSchema = await versionManifestManager.DownloadAsync(notifier.CancellationToken);
+                var manifestSchema = await versionManifestManager.DownloadAsync(token);
 
                 if (manifestSchema == null)
                 {
@@ -45,7 +48,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 }
 
                 var lspManager = CreateLspManager(manifestSchema);
-                return await lspManager.DownloadAsync(notifier.CancellationToken);
+                var result = await lspManager.DownloadAsync(token);
+
+                // start cleanup on a background thread
+                InitiateCleanup(lspManager, token);
+                return result;
             }
             catch (Exception ex)
             {
@@ -71,6 +78,21 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             {
                 _toolkitContext.ToolkitHost.UpdateStatus(statusMsg);
             }
+        }
+
+        /// <summary>
+        /// Initiate cleanup for cached versions of language server
+        /// </summary>
+        /// <param name="lspManager"></param>
+        /// <param name="token"></param>
+        private void InitiateCleanup(LspManager lspManager, CancellationToken token)
+        {
+            Task.Run(async () =>
+            {
+                // start cleanup on a background thread after a delay of 10sec
+                await Task.Delay(_cleanupDelay, token);
+                await lspManager.CleanupAsync(token);
+            }, token).LogExceptionAndForget();
         }
 
         /// <summary>

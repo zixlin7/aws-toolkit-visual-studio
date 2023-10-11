@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -9,11 +8,22 @@ using Amazon.AWSToolkit.Tests.Common.IO;
 
 using Xunit;
 
+using Directory = System.IO.Directory;
+using Path = System.IO.Path;
+
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 {
     public class LspInstallUtilTests : IDisposable
     {
         public readonly TemporaryTestLocation TestLocation = new TemporaryTestLocation();
+        private readonly string _lspVersion = "2.2.0";
+        private readonly int _majorLspVersion = 2;
+
+        private readonly IList<Version> _validVersions =
+            new List<Version>()
+            {
+                new Version("2.0.0"), new Version("2.1.1"), new Version("2.1.9"), new Version("2.2.2")
+            };
 
         public static readonly IEnumerable<object[]> ArchitectureData = new[]
         {
@@ -49,10 +59,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         {
             SetupDirectories();
             var expectedFallbackPath =
-                Path.Combine(TestLocation.TestFolder, $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.1.1");
+                Path.Combine(TestLocation.TestFolder, $"{_majorLspVersion}.1.1");
 
-            var fallbackPath = LspInstallUtil.GetFallbackVersionFolder(TestLocation.TestFolder,
-                $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.2.0");
+            var fallbackPath =
+                LspInstallUtil.GetFallbackVersionFolder(TestLocation.TestFolder, _lspVersion, _validVersions);
             Assert.Equal(expectedFallbackPath, fallbackPath);
         }
 
@@ -60,21 +70,42 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         [Fact]
         public void GetFallbackVersionFolder_WhenNoMatchingVersions()
         {
-            CreateDirectoryForVersion(CodeWhispererConstants.LspCompatibleVersionRange.End.Major + 1);
-            var fallbackPath = LspInstallUtil.GetFallbackVersionFolder(TestLocation.TestFolder,
-                $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.2.0");
+            CreateDirectoryForVersion(_majorLspVersion + 1);
+            var fallbackPath =
+                LspInstallUtil.GetFallbackVersionFolder(TestLocation.TestFolder, _lspVersion, _validVersions);
             Assert.Null(fallbackPath);
+        }
+
+
+        [Fact]
+        public void GetAllCachedVersions()
+        {
+            CreateDirectoryForVersion(1);
+            CreateDirectoryForVersion(2);
+            //setup non-version pattern directory
+            CreateDirectory(Path.Combine(TestLocation.TestFolder, "sample-directory"));
+
+            var expectedVersions = new List<string> { "1.1.1", "2.1.1" };
+
+            var versions = LspInstallUtil.GetAllCachedVersions(TestLocation.TestFolder).Select(x => x.ToString());
+
+            Assert.Equal(expectedVersions, versions);
         }
 
         private void SetupDirectories()
         {
-            Enumerable.Range(CodeWhispererConstants.LspCompatibleVersionRange.Start.Major - 1, 3)
+            Enumerable.Range(_majorLspVersion - 1, 3)
                 .ToList().ForEach(CreateDirectoryForVersion);
         }
 
         private void CreateDirectoryForVersion(int version)
         {
             var path = Path.Combine(TestLocation.TestFolder, $"{version}.1.1");
+            CreateDirectory(path);
+        }
+
+        private void CreateDirectory(string path)
+        {
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
