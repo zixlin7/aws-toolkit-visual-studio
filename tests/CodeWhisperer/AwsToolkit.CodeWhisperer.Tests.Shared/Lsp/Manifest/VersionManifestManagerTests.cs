@@ -39,6 +39,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
         }
 
         [Fact]
+        public async Task DownloadAsync_WhenCancelled()
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.Cancel();
+
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await _sut.DownloadAsync(tokenSource.Token));
+
+            _sampleManifestFetcher.Verify(mock => mock.GetAsync(
+                _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(0));
+        }
+
+        [Fact]
         public async Task DownloadAsync()
         {
             SetupFetcher(_validManifestFileName);

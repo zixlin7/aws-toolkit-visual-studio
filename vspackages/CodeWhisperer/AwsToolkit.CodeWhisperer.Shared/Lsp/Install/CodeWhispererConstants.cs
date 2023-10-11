@@ -14,6 +14,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         public const int ManifestCompatibleMajorVersion = 0;
         public static string LspDownloadParentFolder => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "aws/toolkits/language-server/");
+            "aws", "toolkits", "language-server");
     }
 }

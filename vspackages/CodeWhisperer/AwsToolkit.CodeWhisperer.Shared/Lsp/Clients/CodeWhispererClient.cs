@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 
 using Community.VisualStudio.Toolkit;
 
@@ -55,13 +56,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
         protected override string GetServerPath()
         {
-            return !string.IsNullOrWhiteSpace(_serverPath) ? _serverPath : throw new Exception("Error finding CodeWhisperer LSP location");
+            return !string.IsNullOrWhiteSpace(_serverPath) ? _serverPath : throw new Exception("Error finding CodeWhisperer Language Server location");
         }
 
-        protected override async Task<string> InstallServerAsync()
+        protected override async Task<string> InstallServerAsync(ITaskStatusNotifier taskNotifier)
         {
+            taskNotifier.ProgressText = "Installing CodeWhisperer Language Server...";
+            taskNotifier.CanCancel = true;
             var installer = new CodeWhispererInstaller(_toolkitContext, _settingsRepository);
-            return await installer.ExecuteAsync();
+            return await installer.ExecuteAsync(taskNotifier);
+        }
+
+        protected override async Task<ITaskStatusNotifier> CreateTaskStatusNotifierAsync()
+        {
+            var taskStatus = await _toolkitContext.ToolkitHost.CreateTaskStatusNotifier();
+            taskStatus.Title = "AWS Toolkit is setting up CodeWhisperer features";
+            taskStatus.ProgressText = "Loading...";
+            taskStatus.CanCancel = true;
+            return taskStatus;
         }
 
         protected override string GetServerWorkingDir()

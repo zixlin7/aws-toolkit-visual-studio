@@ -1,5 +1,6 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.CommonUI.Notifications;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 {
@@ -11,7 +12,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <summary>
         /// Installs the Lsp and returns the path where it is installed
         /// </summary>
-        /// <param name="token"></param>
-        Task<string> ExecuteAsync(CancellationToken token = default);
+        /// <param name="notifier"></param>
+        Task<string> ExecuteAsync(ITaskStatusNotifier notifier);
     }
 }

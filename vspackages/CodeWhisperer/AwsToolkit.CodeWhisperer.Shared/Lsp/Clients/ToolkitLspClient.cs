@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lsp;
 
@@ -140,13 +141,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Initializing: {Name}");
 
-            // TODO IDE-11743: Wrap the download in ITaskStatusNotifier
-            // TODO IDE-11743: Handle long loading cancellations
             // Determines the latest version of the language server, install and return it's path
-            _serverPath = await InstallServerAsync();
+            var taskStatusNotifier = await CreateTaskStatusNotifierAsync();
+            taskStatusNotifier.ShowTaskStatus(async _ =>
+            {
+                _serverPath = await InstallServerAsync(taskStatusNotifier);
 
-            // TODO : Have a separate controller responsible for starting the language server
-            // (move the line below; call it elsewhere once we have a place in the UI that users can "turn it on and off")
+                // TODO : Have a separate controller responsible for starting the language server
+                await LaunchServerAsync(taskStatusNotifier);
+            });
+        }
+
+        private async Task LaunchServerAsync(ITaskStatusNotifier taskNotifier)
+        {
+            taskNotifier.ProgressText = "Launching Language Server...";
             await StartAsync.InvokeAsync(this, EventArgs.Empty);
         }
 
@@ -210,7 +218,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         /// <returns></returns>
 
-        protected abstract Task<string> InstallServerAsync();
+        protected abstract Task<string> InstallServerAsync(ITaskStatusNotifier taskNotifier);
+
+        /// <summary>
+        /// Creates the task status notifier
+        /// </summary>
+        protected abstract Task<ITaskStatusNotifier> CreateTaskStatusNotifierAsync();
 
         /// <summary>
         /// The folder the language server process should be started from

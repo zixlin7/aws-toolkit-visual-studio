@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
-
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.ResourceFetchers;
 
@@ -18,7 +17,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
     /// <summary>
     /// Manages the lsp version manifest file 
     /// </summary>
-    public class VersionManifestManager: IResourceManager<ManifestSchema>
+    public class VersionManifestManager : IResourceManager<ManifestSchema>
     {
         public class Options
         {
@@ -31,6 +30,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             /// Specifies the name of the file that represents the LSP binary
             /// </summary>
             public string FileName { get; set; }
+
+            /// <summary>
+            /// Specifies the name of the Language Server
+            /// </summary>
+            public string Name { get; set; } = string.Empty;
         }
 
         private static readonly ILog _logger = LogManager.GetLogger(typeof(VersionManifestManager));
@@ -52,7 +56,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <summary>
         /// Creates a resource fetcher that gets the version manifest
         /// </summary>
-        private static IResourceFetcher CreateVersionManifestFetcher(Options managerOptions, ILspSettingsRepository settingsRepository)
+        private static IResourceFetcher CreateVersionManifestFetcher(Options managerOptions,
+            ILspSettingsRepository settingsRepository)
         {
             // Indicates whether or not the stream contains a valid lsp version manifest file
             async Task<bool> IsValidAsync(Stream stream)
@@ -60,7 +65,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 try
                 {
                     var manifestSchema = await ManifestSchemaUtil.LoadAsync(stream);
-                    return manifestSchema != null && new Version(manifestSchema.SchemaVersion).Major == managerOptions.MajorVersion;
+                    return manifestSchema != null &&
+                           new Version(manifestSchema.SchemaVersion).Major == managerOptions.MajorVersion;
                 }
                 catch
                 {
@@ -70,8 +76,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
             var options = new VersionManifestFetcher.Options()
             {
-                ResourceValidator = IsValidAsync,
-                CompatibleMajorVersion = managerOptions.MajorVersion
+                ResourceValidator = IsValidAsync, CompatibleMajorVersion = managerOptions.MajorVersion
             };
 
             return new VersionManifestFetcher(options, settingsRepository);
@@ -81,13 +86,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         {
             try
             {
+                token.ThrowIfCancellationRequested();
                 using (var stream = await _versionManifestFetcher.GetAsync(_options.FileName, token))
                 using (var streamCopy = new MemoryStream())
                 {
                     if (stream == null)
                     {
-                        throw new ToolkitException("No manifest data was received. An error could have caused this. Please check logs.", ToolkitException.CommonErrorCode.UnsupportedState);
+                        throw new ToolkitException(
+                            $"No {_options.Name} Language Server version manifest data was received. An error could have caused this. Please check AWS Toolkit logs.",
+                            ToolkitException.CommonErrorCode.UnsupportedState);
                     }
+
                     await stream.CopyToAsync(streamCopy);
                     streamCopy.Position = 0;
 
@@ -98,7 +107,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                         schema = await ManifestSchemaUtil.LoadAsync(manifestStream);
                         if (schema == null)
                         {
-                            throw new ToolkitException("Error retrieving version manifest data.", ToolkitException.CommonErrorCode.UnsupportedState);
+                            throw new ToolkitException($"Error parsing {_options.Name} Language Server version manifest data.",
+                                ToolkitException.CommonErrorCode.UnsupportedState);
                         }
                     }
 
@@ -108,7 +118,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             catch (Exception e)
             {
                 _logger.Error(
-                    "Error downloading version manifest data. The Toolkit may have trouble accessing the CodeWhisperer service.",
+                    $"Error downloading {_options.Name} Language Server version manifest data. The AWS Toolkit may have trouble accessing the {_options.Name} service.",
                     e);
                 throw;
             }

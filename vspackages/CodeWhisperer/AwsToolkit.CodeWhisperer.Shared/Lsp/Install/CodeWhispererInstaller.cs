@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Exceptions;
 
 using AwsToolkit.VsSdk.Common.Settings;
 
@@ -27,34 +28,66 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             _lspSettingsRepository = lspSettingsRepository;
         }
 
-        public async Task<string> ExecuteAsync(CancellationToken token = default)
+        public async Task<string> ExecuteAsync(ITaskStatusNotifier notifier)
         {
+            var statusMsg = "Successfully installed CodeWhisperer Language Server";
             try
             {
+                notifier.CancellationToken.ThrowIfCancellationRequested();
+
                 var versionManifestManager = CreateVersionManifestManager();
-                var manifestSchema = await versionManifestManager.DownloadAsync(token);
+                var manifestSchema = await versionManifestManager.DownloadAsync(notifier.CancellationToken);
+
                 if (manifestSchema == null)
                 {
-                    throw new Exception("Error retrieving lsp version manifest");
+                    throw new ToolkitException("Error retrieving CodeWhisperer Language Server version manifest",
+                        ToolkitException.CommonErrorCode.UnsupportedState);
                 }
 
                 var lspManager = CreateLspManager(manifestSchema);
-                return await lspManager.DownloadAsync(token);
-
-                // TODO: Return download Path for installation process
-                // TODO: Handle cancellations for long loading for install operation
+                return await lspManager.DownloadAsync(notifier.CancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.Error("Error installing the Language server", ex);
-                return null;
+                statusMsg = "Error installing CodeWhisperer Language Server";
+                var notifierMsg =
+                    "Error installing CodeWhisperer Language Server. CodeWhisperer functionality is unavailable. See AWS Toolkit logs for details.";
+
+                if (ex is OperationCanceledException)
+                {
+                    notifierMsg =
+                        "CodeWhisperer Language Server install canceled. CodeWhisperer functionality is unavailable";
+                    statusMsg = "CodeWhisperer Language Server install canceled";
+                }
+
+                // show install status
+                notifier.ProgressText = notifierMsg;
+                _toolkitContext.ToolkitHost.OutputToHostConsole(notifierMsg, true);
+                _logger.Error(statusMsg, ex);
+
+                throw GetException(statusMsg, ex);
             }
+            finally
+            {
+                _toolkitContext.ToolkitHost.UpdateStatus(statusMsg);
+            }
+        }
+
+        /// <summary>
+        /// If operation is cancelled, return exception as is, else wrap it as toolkit exception for appropriate indication with the task notifier
+        /// </summary>
+        private Exception GetException(string message, Exception exception)
+        {
+            return exception is OperationCanceledException
+                ? exception
+                : new ToolkitException(message, ToolkitException.CommonErrorCode.UnexpectedError, exception);
         }
 
         private VersionManifestManager CreateVersionManifestManager()
         {
             var options = new VersionManifestManager.Options()
             {
+                Name = "CodeWhisperer",
                 FileName = CodeWhispererConstants.ManifestFilename,
                 MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion
             };
@@ -65,10 +98,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         {
             var options = new LspManager.Options()
             {
-               Filename = CodeWhispererConstants.Filename,
-               ToolkitContext = _toolkitContext,
-               VersionRange = CodeWhispererConstants.LspCompatibleVersionRange,
-               DownloadParentFolder = CodeWhispererConstants.LspDownloadParentFolder
+                Name = "CodeWhisperer",
+                Filename = CodeWhispererConstants.Filename,
+                ToolkitContext = _toolkitContext,
+                VersionRange = CodeWhispererConstants.LspCompatibleVersionRange,
+                DownloadParentFolder = CodeWhispererConstants.LspDownloadParentFolder
             };
             return new LspManager(options, _lspSettingsRepository, manifestSchema);
         }

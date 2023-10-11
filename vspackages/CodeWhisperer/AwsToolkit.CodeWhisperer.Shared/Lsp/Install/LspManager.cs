@@ -36,6 +36,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             public string Filename { get; set; }
 
             /// <summary>
+            /// Specifies the name of the Language Server
+            /// </summary>
+            public string Name { get; set; } = string.Empty;
+
+            /// <summary>
             /// Indicates the parent storage folder where lsp is downloaded 
             /// </summary>
             public string DownloadParentFolder { get; set; }
@@ -60,10 +65,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         {
             try
             {
+                token.ThrowIfCancellationRequested();
                 var localLspPath = await GetLocalLspPathAsync();
                 // if language server local override exists, return that location
                 if (!string.IsNullOrWhiteSpace(localLspPath))
                 {
+                    ShowMessage(
+                        $"Launching {_options.Name} Language Server from local override location: {localLspPath}");
                     return localLspPath;
                 }
 
@@ -76,38 +84,53 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var downloadCachePath = GetDownloadPath(latestCompatibleLspVersion.Version, targetContent.Filename);
                 if (File.Exists(downloadCachePath))
                 {
+                    ShowMessage(
+                        $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.Version} from local cache location: {downloadCachePath}");
                     return downloadCachePath;
                 }
 
                 // if lsp can be successfully downloaded from remote location, return the download path else attempt fallback location
-                var downloadResult = await DownloadFromRemoteAsync(targetContent, latestCompatibleLspVersion.Version, token);
+                var downloadResult =
+                    await DownloadFromRemoteAsync(targetContent, latestCompatibleLspVersion.Version, token);
                 if (downloadResult)
                 {
+                    ShowMessage(
+                        $"Installing {_options.Name} Language Server v{latestCompatibleLspVersion.Version} to: {downloadCachePath}");
                     return downloadCachePath;
                 }
 
                 // if unable to retrieve contents from specified remote location, use the most compatible fallback cached lsp version
                 _logger.Info(
-                    "Unable to download language server version from remote server. Attempting to fetch from fallback location");
+                    $"Unable to download {_options.Name} language server version v{latestCompatibleLspVersion.Version}. Attempting to fetch from fallback location");
 
                 var fallbackPath = GetFallbackPath(latestCompatibleLspVersion.Version);
                 if (!File.Exists(fallbackPath))
                 {
                     throw new ToolkitException(
-                            $"Unable to download language server version from fallback location: {fallbackPath}",
-                            ToolkitException.CommonErrorCode.UnexpectedError);
+                        $"Unable to launch language server from fallback location: {fallbackPath}",
+                        ToolkitException.CommonErrorCode.UnexpectedError);
                 }
 
+                ShowMessage(
+                    $"Unable to install {_options.Name} Language Server v{latestCompatibleLspVersion.Version}. Launching a previous version from: {fallbackPath}");
                 return fallbackPath;
             }
             catch (Exception e)
             {
                 var msg =
-                    "Error downloading language server.The Toolkit may have trouble accessing the CodeWhisperer service.";
+                    $"Error installing {_options.Name} language server. The AWS Toolkit may have trouble accessing the {_options.Name} service.";
                 _logger.Error(msg, e);
+                throw;
+            }
+        }
 
-                // TODO: Introduce custom LSP Toolkit exceptions
-                throw new ToolkitException(msg, ToolkitException.CommonErrorCode.UnexpectedError, e);
+        private void ShowMessage(string message)
+        {
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _logger.Info(message);
+                _options.ToolkitContext?.ToolkitHost.OutputToHostConsole(message, true);
+
             }
         }
 
@@ -159,7 +182,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             if (lspTarget == null)
             {
                 throw new ToolkitException(
-                    "No lsp target found matching the system's architecture and platform",
+                    "No language server target found matching the system's architecture and platform",
                     ToolkitException.CommonErrorCode.UnsupportedState);
             }
 
@@ -236,7 +259,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 return stream != null;
             }
         }
-
+         
         /// <summary>
         /// Create LSP fetcher using the manifest specified location
         /// </summary>
@@ -290,8 +313,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
             if (fallbackFolder == null)
             {
+                ShowMessage($"AWS Toolkit was unable to find a compatible version of {_options.Name} Language Server.");
                 throw new ToolkitException(
-                    "Unable to find a suitable language server fallback location.",
+                    $"AWS Toolkit was unable to find a compatible version of {_options.Name} Language Server.",
                     ToolkitException.CommonErrorCode.UnexpectedError);
             }
 

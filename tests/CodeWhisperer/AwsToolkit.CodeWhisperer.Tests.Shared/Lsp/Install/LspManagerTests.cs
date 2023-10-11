@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
@@ -46,6 +47,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             _sampleSchema.Versions = new List<LspVersion>() { _sampleLspVersion };
         }
 
+        [Fact]
+        public async Task DownloadAsync_WhenCancelled()
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.Cancel();
+
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await _sut.DownloadAsync(tokenSource.Token));
+        }
 
         [Fact]
         public async Task DownloadAsync_WhenLocalOverride()
@@ -62,7 +71,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             var manager = new LspManager(_options, _settingsRepository, null);
             var exception = await Assert.ThrowsAsync<ToolkitException>(async () => await manager.DownloadAsync());
 
-            Assert.Contains("No valid manifest", exception.InnerException.Message);
+            Assert.Contains("No valid manifest", exception.Message);
         }
 
 
@@ -120,7 +129,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         {
             // setup target content with required params
             SetupTargetContent(hashString, _sampleLspVersion);
-            await AssertDownloadAsyncThrowsWithMessage("language server fallback");
+            await AssertDownloadAsyncThrowsWithMessage("compatible version of");
         }
 
         [Fact]
@@ -256,7 +265,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         {
             var exception = await Assert.ThrowsAsync<ToolkitException>(async () => await _sut.DownloadAsync());
 
-            Assert.Contains(exceptionMessage, exception.InnerException.Message);
+            Assert.Contains(exceptionMessage, exception.Message);
         }
 
 
