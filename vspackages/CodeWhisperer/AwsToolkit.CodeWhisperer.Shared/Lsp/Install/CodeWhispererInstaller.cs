@@ -38,6 +38,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             {
                 token.ThrowIfCancellationRequested();
 
+                var localLspPath = await GetLocalLspPathAsync();
+                // if language server local override exists, return that location
+                if (!string.IsNullOrWhiteSpace(localLspPath))
+                {
+                    var msg = $"Launching CodeWhisperer Language Server from local override location: {localLspPath}";
+                    _logger.Info(msg);
+                    _toolkitContext.ToolkitHost.OutputToHostConsole(msg, true);
+                    return localLspPath;
+                }
+
                 var versionManifestManager = CreateVersionManifestManager();
                 var manifestSchema = await versionManifestManager.DownloadAsync(token);
 
@@ -78,6 +88,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             {
                 _toolkitContext.ToolkitHost.UpdateStatus(statusMsg);
             }
+        }
+
+
+        /// <summary>
+        /// Get local language server path if one exists
+        /// </summary>
+        private async Task<string> GetLocalLspPathAsync()
+        {
+            var settings = await _lspSettingsRepository.GetLspSettingsAsync();
+            return settings.LanguageServerPath;
         }
 
         /// <summary>
@@ -126,7 +146,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 VersionRange = CodeWhispererConstants.LspCompatibleVersionRange,
                 DownloadParentFolder = CodeWhispererConstants.LspDownloadParentFolder
             };
-            return new LspManager(options, _lspSettingsRepository, manifestSchema);
+            return new LspManager(options, manifestSchema);
         }
     }
 }

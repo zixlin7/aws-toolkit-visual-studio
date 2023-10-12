@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
-using Amazon.AwsToolkit.CodeWhisperer.Tests.Settings;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Tests.Common.Context;
@@ -21,10 +20,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
     public class LspManagerTests : IDisposable
     {
         public readonly TemporaryTestLocation TestLocation = new TemporaryTestLocation();
-
-        private readonly FakeCodeWhispererSettingsRepository _settingsRepository =
-            new FakeCodeWhispererSettingsRepository();
-
         private readonly LspManager _sut;
         private readonly ManifestSchema _sampleSchema = new ManifestSchema();
         private readonly LspVersion _sampleLspVersion;
@@ -45,7 +40,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
                 .Returns(productEnvironment);
 
             _options = CreateOptions();
-            _sut = new LspManager(_options, _settingsRepository, _sampleSchema);
+            _sut = new LspManager(_options, _sampleSchema);
             Directory.CreateDirectory(_options.DownloadParentFolder);
             _sampleLspVersion = CreateSampleLspVersion(_sampleVersion);
             _sampleSchema.Versions = new List<LspVersion>() { _sampleLspVersion };
@@ -61,18 +56,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         }
 
         [Fact]
-        public async Task DownloadAsync_WhenLocalOverride()
+        public async Task DownloadAsync_WhenManifestSchemaNull()
         {
-            _settingsRepository.Settings.LanguageServerPath = "test-local-path/abc.exe";
-            var path = await _sut.DownloadAsync();
-
-            Assert.Equal(_settingsRepository.Settings.LanguageServerPath, path);
-        }
-
-        [Fact]
-        public async Task DownloadAsync_WhenManifestSchemaNullAndNoLocalOverride()
-        {
-            var manager = new LspManager(_options, _settingsRepository, null);
+            var manager = new LspManager(_options, null);
             var exception = await Assert.ThrowsAsync<ToolkitException>(async () => await manager.DownloadAsync());
 
             Assert.Contains("No valid manifest", exception.Message);
@@ -369,7 +355,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         public void Dispose()
         {
             TestLocation?.Dispose();
-            _settingsRepository?.Dispose();
         }
     }
 }

@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapperTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentialsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\InlineCompletions\FakeInlineCompletions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\CodeWhispererInstallerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspFetcherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstallUtilTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspManagerTests.cs" />

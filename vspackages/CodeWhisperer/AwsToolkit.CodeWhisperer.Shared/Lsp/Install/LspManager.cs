@@ -11,8 +11,6 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.ResourceFetchers;
 
-using AwsToolkit.VsSdk.Common.Settings;
-
 using log4net;
 
 using Version = System.Version;
@@ -50,15 +48,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         }
 
         private static readonly ILog _logger = LogManager.GetLogger(typeof(LspManager));
-        private readonly ILspSettingsRepository _lspSettingsRepository;
         private readonly ManifestSchema _manifestSchema;
         private readonly Options _options;
 
-        public LspManager(Options options, ILspSettingsRepository lspSettingsRepository,
-            ManifestSchema manifestSchema)
+        public LspManager(Options options, ManifestSchema manifestSchema)
         {
             _options = options;
-            _lspSettingsRepository = lspSettingsRepository;
             _manifestSchema = manifestSchema;
         }
 
@@ -67,14 +62,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             try
             {
                 token.ThrowIfCancellationRequested();
-                var localLspPath = await GetLocalLspPathAsync();
-                // if language server local override exists, return that location
-                if (!string.IsNullOrWhiteSpace(localLspPath))
-                {
-                    ShowMessage(
-                        $"Launching {_options.Name} Language Server from local override location: {localLspPath}");
-                    return localLspPath;
-                }
 
                 // get latest lsp version from the manifest matching the required toolkit compatible version range
                 // and required target content(architecture, platform and files)
@@ -156,14 +143,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             }
         }
 
-        /// <summary>
-        /// Get local language server path if one exists
-        /// </summary>
-        private async Task<string> GetLocalLspPathAsync()
-        {
-            var settings = await _lspSettingsRepository.GetLspSettingsAsync();
-            return settings.LanguageServerPath;
-        }
+     
 
         /// <summary>
         /// Gets latest lsp version matching the toolkit compatible version range, not de-listed and contains required target content(architecture, platform and files)
