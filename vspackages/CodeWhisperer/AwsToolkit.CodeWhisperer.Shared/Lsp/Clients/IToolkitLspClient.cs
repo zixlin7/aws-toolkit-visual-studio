@@ -1,4 +1,9 @@
-﻿using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+﻿using System;
+
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+
+using Microsoft.VisualStudio.Threading;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 {
@@ -13,6 +18,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         // Start()
         // Stop()
 
+        /// <summary>
+        /// Raised when the language client has successfully completed the initialization handshake with the language server.
+        /// </summary>
+        event AsyncEventHandler<EventArgs> InitializedAsync;
+
+        /// <summary>
+        /// Raised when the language server requests the current workspace configuration.
+        /// </summary>
+        event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
+
+        /// <summary>
+        /// Produces the abstraction capable of handling the language server's credentials messages 
+        /// </summary>
         IToolkitLspCredentials CreateToolkitLspCredentials();
+
+        /// <summary>
+        /// Produces the abstraction capable of handling the language server's configuration messages 
+        /// </summary>
+        ILspConfiguration CreateLspConfiguration();
     }
 }

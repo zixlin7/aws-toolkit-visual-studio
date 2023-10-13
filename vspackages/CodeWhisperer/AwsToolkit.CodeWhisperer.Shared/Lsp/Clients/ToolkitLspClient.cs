@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
@@ -76,6 +77,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             _initializeServerWithCredentials = initializeServerWithCredentials;
         }
 
+        public event AsyncEventHandler<EventArgs> InitializedAsync;
+#pragma warning disable CS0067 // The event 'ToolkitLspClient.RequestWorkspaceConfigurationAsync' is never used
+        public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
+#pragma warning restore CS0067 // The event 'ToolkitLspClient.RequestWorkspaceConfigurationAsync' is never used
+
         /// <summary>
         /// Requests a JSON-PRC Proxy that is used to access set of
         /// notifications/requests on the language server.
@@ -92,9 +98,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             return _rpc.Attach<TProxy>(proxyOptions);
         }
 
+        /// <summary>
+        /// Produces the abstraction capable of handling the language server's credentials messages 
+        /// </summary>
         public IToolkitLspCredentials CreateToolkitLspCredentials()
         {
             return new ToolkitLspCredentials(_credentialsEncryption, CreateProxy<ILspCredentials>());
+        }
+
+        /// <summary>
+        /// Produces the abstraction capable of handling the language server's configuration messages 
+        /// </summary>
+        public ILspConfiguration CreateLspConfiguration()
+        {
+            return new LspConfiguration(_rpc);
         }
 
         public event AsyncEventHandler<EventArgs> StartAsync;
@@ -306,11 +323,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// VS calls this after successfully making initialization calls with the language server
         /// </summary>
         /// <inheritdoc cref="ILanguageClient.OnServerInitializedAsync"/>
-        public Task OnServerInitializedAsync()
+        public async Task OnServerInitializedAsync()
         {
             _logger.Info($"Language server initialization handshake completed: {Name}");
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Initialized: {Name}");
-            return Task.CompletedTask;
+
+            await RaiseInitializedAsync();
+        }
+
+        /// <summary>
+        /// Signals to any listeners that the language server has successfully completed the Initialization handshake.
+        /// </summary>
+        private async Task RaiseInitializedAsync()
+        {
+            var initializedAsync = InitializedAsync;
+            if (initializedAsync != null)
+            {
+                await initializedAsync.InvokeAsync(this, EventArgs.Empty);
+            }
         }
 
         /// <summary>

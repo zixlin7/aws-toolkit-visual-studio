@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.Context;
 
@@ -37,6 +38,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             // CodeWhisperer component that gets activated by Visual Studio, so we
             // import ExpirationNotificationManager here to auto instantiate it.
             IExpirationNotificationManager expirationNotificationManager,
+            // CodeWhispererSettingsPublisher is not related to the VSSDK, so it isn't
+            // auto-created by Visual Studio. This margin provider is a central
+            // CodeWhisperer component that gets activated by Visual Studio, so we
+            // import ICodeWhispererSettingsPublisher here to auto instantiate it.
+            ICodeWhispererSettingsPublisher codeWhispererSettingsPublisher,
             IToolkitContextProvider toolkitContextProvider,
             ISuggestionUiManager suggestionUiManager)
         {

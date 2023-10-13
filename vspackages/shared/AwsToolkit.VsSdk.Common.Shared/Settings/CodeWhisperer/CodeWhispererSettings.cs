@@ -32,5 +32,14 @@ namespace AwsToolkit.VsSdk.Common.Settings.CodeWhisperer
         [Description("When true, CodeWhisperer will not automatically provide code suggestions (you can still get suggestions on-demand). When false, CodeWhisperer will offer suggestions while you write code.")]
         [DefaultValue(false)]
         public bool PauseAutomaticSuggestions { get; set; } = false;
+
+        /// <summary>
+        /// Include (true) or filter out (false) suggestions that contain license attribution
+        /// </summary>
+        [Category("General")]
+        [DisplayName("Include Suggestions with References")]
+        [Description("When set to false, CodeWhisperer will only make suggestions that do not have license attribution.")]
+        [DefaultValue(true)]
+        public bool IncludeSuggestionsWithReferences { get; set; } = true;
     }
 }

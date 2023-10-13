@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)FakeCodeWhispererManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\FakeCodeWhispererClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\FakeToolkitLspClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Configuration\FakeLspConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryptionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\FakeLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapperTests.cs" />
@@ -34,6 +35,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisherTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsPublisherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeOutputWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeReferenceLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ReferenceLoggerTests.cs" />
