@@ -25,6 +25,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\Connection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatusChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialog.xaml.cs">
+      <DependentUpon>CredentialSelectionDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialogViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\ExpirationNotificationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\IConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\IExpirationNotificationManager.cs" />
@@ -82,6 +87,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionUiManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

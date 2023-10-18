@@ -439,8 +439,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
             // we will need to redesign the system to handle different token provider resolution.
             var tokenProvider = SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(credentialIdentifier)
-                // TODO IDE-11737 Enable once SsoRegistrationScopes is available in AWSSDK
-                //.WithScopes(profile.Options.SsoRegistrationScopes.Split(","))
+                .WithIsBuilderId(false)
+                .WithOidcRegion(RegionEndpoint.GetBySystemName(profile.Options.SsoRegion))
+                .WithScopes(ProfileProperties.ParseSsoRegistrationScopes(profile.Options.SsoRegistrationScopes))
                 .WithSessionName(profile.Options.SsoSession)
                 .WithStartUrl(profile.Options.SsoStartUrl)
                 .WithTokenProviderRegion(RegionEndpoint.GetBySystemName(profile.Options.SsoRegion))
@@ -496,7 +497,12 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         public virtual void Invalidate(ICredentialIdentifier credentialIdentifier)
         {
-            // Profile-related credentials do not have invalidation handling at this time.
+            var profile = GetProfileProperties(credentialIdentifier);
+
+            if (profile?.GetCredentialType() == CredentialType.BearerToken)
+            {
+                TokenCache.RemoveCacheFile(profile.SsoStartUrl, profile.SsoSession, null);
+            }
         }
 
         public void Dispose()

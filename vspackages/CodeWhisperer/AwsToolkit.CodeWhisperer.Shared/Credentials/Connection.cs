@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Credentials.Core;
 
 using log4net;
 
@@ -22,6 +22,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         private readonly IToolkitContextProvider _toolkitContextProvider;
 
         private readonly IToolkitLspClient _codeWhispererLspClient;
+
+        private ICredentialIdentifier _signedInCredentialIdentifier;
 
         [ImportingConstructor]
         public Connection(IToolkitContextProvider toolkitContextProvider, ICodeWhispererLspClient codeWhispererLspClient)
@@ -66,40 +68,48 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         public Task SignInAsync()
         {
-            SignInToAwsBuilderId();
-            return Task.CompletedTask;
-        }
-
-        // TODO IDE-11603 When adding IdC consider if it is another method or subtypes are more appropriate.
-        private void SignInToAwsBuilderId()
-        {
-            try
+            var viewModel = new CredentialSelectionDialogViewModel(_toolkitContextProvider);
+            var dlg = new CredentialSelectionDialog
             {
-                var toolkitContext = _toolkitContextProvider.GetToolkitContext();
+                DataContext = viewModel
+            };
 
-                toolkitContext.ToolkitHost.OutputToHostConsole("Attempting to update AWS Builder ID bearer token on LSP.");
+            var credentialIdentifier = dlg.ShowModal() == true ? viewModel.SelectedCredentialIdentifier : null;
 
-                // See SonoCredentialProviderFactory.Initialize and SonoCredentialIdentifier ctor for credId name details
-                var credId = toolkitContext.CredentialManager.GetCredentialIdentifierById($"{SonoCredentialProviderFactory.FactoryId}:{SonoCredentialProviderFactory.CodeWhispererProfileName}");
-                var region = toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
-                var toolkitCreds = toolkitContext.CredentialManager.GetToolkitCredentials(credId, region);
+            if (credentialIdentifier != null)
+            {
+                var displayName = credentialIdentifier?.DisplayName ?? "unknown";
 
-                if (!toolkitCreds.GetTokenProvider().TryResolveToken(out var awsToken))
+                try
                 {
-                    NotifyErrorAndDisconnect("Cannot resolve AWS Builder ID bearer token.");
-                    return;
+                    var toolkitContext = _toolkitContextProvider.GetToolkitContext();
+                    var profile = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+                    var region = toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
+                    var toolkitCreds = toolkitContext.CredentialManager.GetToolkitCredentials(credentialIdentifier, region);
+
+                    if (!toolkitCreds.GetTokenProvider().TryResolveToken(out var awsToken))
+                    {
+                        var msg = $"Cannot sign in to CodeWhisperer.  Unable to resolve bearer token {displayName}.";
+                        NotifyErrorAndDisconnect(msg);
+                        throw new InvalidOperationException(msg);
+                    }
+
+                    var lspCreds = _codeWhispererLspClient.CreateToolkitLspCredentials();
+                    lspCreds.UpdateToken(new BearerToken() { Token = awsToken.Token });
+
+                    _signedInCredentialIdentifier = credentialIdentifier;
+                    Status = ConnectionStatus.Connected;
+                    toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
                 }
-
-                var lspCreds = _codeWhispererLspClient.CreateToolkitLspCredentials();
-                lspCreds.UpdateToken(new BearerToken() { Token = awsToken.Token });
-
-                Status = ConnectionStatus.Connected;
-                toolkitContext.ToolkitHost.OutputToHostConsole("Updated AWS Builder ID bearer token on LSP.");
+                catch (Exception ex)
+                {
+                    var msg = $"Failed to sign in to CodeWhisperer with {displayName}.";
+                    NotifyErrorAndDisconnect(msg, ex);
+                    throw new InvalidOperationException(msg, ex);
+                }
             }
-            catch (Exception ex)
-            {
-                NotifyErrorAndDisconnect("Failed to update AWS Builder ID bearer token on LSP.", ex);
-            }
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -107,14 +117,29 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         public Task SignOutAsync()
         {
-            // TODO : Implement
-            Status = ConnectionStatus.Disconnected;
-            return Task.CompletedTask;
-        }
+            var displayName = _signedInCredentialIdentifier?.DisplayName ?? "<unknown>";
 
-        private Task SignOutFromAwsBuilderIdAsync()
-        {
-            return Task.CompletedTask;
+            try
+            {
+                var toolkitContext = _toolkitContextProvider.GetToolkitContext();
+
+                var lspCreds = _codeWhispererLspClient.CreateToolkitLspCredentials();
+                lspCreds.DeleteToken();
+
+                _toolkitContextProvider.GetToolkitContext().CredentialManager.Invalidate(_signedInCredentialIdentifier);
+
+                _signedInCredentialIdentifier = null;
+                Status = ConnectionStatus.Disconnected;
+                toolkitContext.ToolkitHost.OutputToHostConsole($"Sign out of CodeWhisperer with {displayName}.");
+
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Failed to sign out of CodeWhisperer with {displayName}.";
+                NotifyError(msg, ex);
+                throw new InvalidOperationException(msg, ex);
+            }
         }
 
         private void NotifyErrorAndDisconnect(string message, Exception ex = null)
