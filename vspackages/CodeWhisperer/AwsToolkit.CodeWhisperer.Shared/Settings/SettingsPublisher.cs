@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
@@ -43,9 +44,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
                 return;
             }
 
-            var configuration = await GetConfigurationAsync();
-
-            await _lspConfiguration.RaiseDidChangeConfigurationAsync(configuration);
+            // DEXP contract: send an empty payload to the server. The server will then
+            // send a request back to the client to fetch the state.
+            // This is based on current lsp protocol guidance.
+            await _lspConfiguration.RaiseDidChangeConfigurationAsync(new object());
         }
 
         /// <summary>
@@ -64,13 +66,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
         /// </summary>
         private async Task OnLspClientRequestWorkspaceConfigurationAsync(object sender, WorkspaceConfigurationEventArgs e)
         {
-            e.Configuration = await GetConfigurationAsync();
+            await LoadConfigurationStateAsync(e.Response);
         }
 
         /// <summary>
         /// Hook for service implementations to load their configuration state
         /// </summary>
-        internal abstract Task<object> GetConfigurationAsync();
+        /// <param name="configurationState">Populate with configuration key-value pairings to be sent to the language server</param>
+        internal abstract Task LoadConfigurationStateAsync(Dictionary<string, object> configurationState);
 
         /// <summary>
         /// Standardized handler that service implementations can use to push the configuration state to

@@ -50,6 +50,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
+        /// <summary>
+        /// Responds to JSON-RPC messages sent from the language server.
+        /// Exposed to Visual Studio via <see cref="CustomMessageTarget"/>
+        /// Set with <see cref="SetLspMessageHandler"/>
+        /// </summary>
+        private LspMessageHandler _messageHandler;
+
         [Import]
         protected IToolkitContextProvider _toolkitContextProvider;
         protected ToolkitContext _toolkitContext => _toolkitContextProvider.GetToolkitContext();
@@ -72,15 +79,21 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         protected JsonRpc _rpc { get; private set; }
 
-        public ToolkitLspClient(bool initializeServerWithCredentials = false)
+        protected ToolkitLspClient(bool initializeServerWithCredentials = false)
         {
             _initializeServerWithCredentials = initializeServerWithCredentials;
+
+            StopAsync += OnStopAsync;
+        }
+
+        private Task OnStopAsync(object sender, EventArgs args)
+        {
+            UnRegisterLspMessageHandler();
+            return Task.CompletedTask;
         }
 
         public event AsyncEventHandler<EventArgs> InitializedAsync;
-#pragma warning disable CS0067 // The event 'ToolkitLspClient.RequestWorkspaceConfigurationAsync' is never used
         public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
-#pragma warning restore CS0067 // The event 'ToolkitLspClient.RequestWorkspaceConfigurationAsync' is never used
 
         /// <summary>
         /// Requests a JSON-PRC Proxy that is used to access set of
@@ -163,6 +176,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Initializing: {Name}");
 
+            SetupLspMessageHandler();
+
             // Determines the latest version of the language server, install and return it's path
             var taskStatusNotifier = await CreateTaskStatusNotifierAsync();
             taskStatusNotifier.ShowTaskStatus(async _ =>
@@ -184,6 +199,55 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         }
 
         /// <summary>
+        /// Configures the language client with handlers for custom messages originating from the language server
+        /// </summary>
+        private void SetupLspMessageHandler()
+        {
+            var messageHandler = CreateLspMessageHandler();
+            messageHandler.WorkspaceConfigurationAsync += OnRequestWorkspaceConfigurationAsync;
+            SetLspMessageHandler(messageHandler);
+        }
+
+        /// <summary>
+        /// Produces the custom message handler.
+        /// Clients can override this method in order to handle service-specific messages
+        /// in addition to the standard messages supported by <see cref="LspMessageHandler"/>.
+        /// </summary>
+        protected virtual LspMessageHandler CreateLspMessageHandler()
+        {
+            return new LspMessageHandler();
+        }
+
+        /// <summary>
+        /// Handles when the language server sends a request for the configuration state, and
+        /// we want to send a response back. The contents of <see cref="WorkspaceConfigurationEventArgs.Response"/>
+        /// are sent after this handler completes.
+        /// </summary>
+        private async Task OnRequestWorkspaceConfigurationAsync(object sender, WorkspaceConfigurationEventArgs args)
+        {
+            var asyncHandler = RequestWorkspaceConfigurationAsync;
+            if (asyncHandler != null)
+            {
+                await asyncHandler.InvokeAsync(this, args);
+            }
+        }
+
+        private void SetLspMessageHandler(LspMessageHandler messageHandler)
+        {
+            UnRegisterLspMessageHandler();
+            _messageHandler = messageHandler;
+        }
+
+        private void UnRegisterLspMessageHandler()
+        {
+            var messageHandler = _messageHandler;
+            if (messageHandler != null)
+            {
+                messageHandler.WorkspaceConfigurationAsync -= OnRequestWorkspaceConfigurationAsync;
+            }
+        }
+
+        /// <summary>
         /// Creates a cancellation token source representing the task status notifier's cancellation token and the toolkit package.
         /// </summary>
         /// <remarks>
@@ -196,6 +260,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
                 _disposalToken);
         }
 
+        /// <summary>
         /// <inheritdoc/>
         /// 
         /// VS Calls this to start up the Language Server and get the communications streams
@@ -381,7 +446,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// <remarks>
         /// If left null, then custom messages won't be delivered.
         /// </remarks>
-        public object CustomMessageTarget => null;
+        public object CustomMessageTarget => _messageHandler;
 
         public Task AttachForCustomMessageAsync(JsonRpc rpc)
         {

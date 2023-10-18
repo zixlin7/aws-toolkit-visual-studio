@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
@@ -18,7 +20,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
 {
     internal class FakeSettingsPublisher : SettingsPublisher
     {
-        public object Configuration;
+        public readonly Dictionary<string, object> ConfigurationState = new Dictionary<string, object>();
 
         public FakeSettingsPublisher(
             IToolkitLspClient lspClient,
@@ -26,9 +28,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
         {
         }
 
-        internal override Task<object> GetConfigurationAsync()
+        internal override Task LoadConfigurationStateAsync(Dictionary<string, object> configurationState)
         {
-            return Task.FromResult(Configuration);
+            foreach (var keyValuePair in ConfigurationState)
+            {
+                configurationState[keyValuePair.Key] = keyValuePair.Value;
+            }
+
+            return Task.CompletedTask;
         }
     }
 
@@ -43,10 +50,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             serviceProvider.Reset();
 
             var taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
-            _sut = new FakeSettingsPublisher(_lspClient, taskFactoryProvider)
-            {
-                Configuration = new { Name = "sample-name", Value = 1234, }
-            };
+            _sut = new FakeSettingsPublisher(_lspClient, taskFactoryProvider);
+            _sut.ConfigurationState["sample-name"] = 1234;
         }
 
         [Fact]
@@ -55,7 +60,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             await _lspClient.RaiseInitializedAsync();
 
             _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Should().HaveCount(1);
-            _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Should().Contain(_sut.Configuration);
         }
 
         [Fact]
@@ -65,7 +69,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
 
             await _lspClient.RaiseRequestWorkspaceConfigurationAsync(eventArgs);
 
-            eventArgs.Configuration.Should().Be(_sut.Configuration);
+            eventArgs.Response.Should().BeEquivalentTo(_sut.ConfigurationState);
         }
 
         [Fact]
@@ -85,7 +89,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             await _sut.RaiseDidChangeConfigurationAsync();
 
             _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Should().HaveCount(1);
-            _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Should().Contain(_sut.Configuration);
         }
     }
 }

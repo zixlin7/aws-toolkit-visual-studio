@@ -38,8 +38,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\IToolkitLspClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\JsonRpcExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\LspMessageHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ToolkitLspClient.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Configuration\ConfigurationResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Configuration\LspConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Configuration\WorkspaceConfigurationEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryption.cs" />

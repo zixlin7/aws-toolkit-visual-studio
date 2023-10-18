@@ -6,8 +6,6 @@ using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.TestUtilities;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
-using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
-
 using FluentAssertions;
 
 using Microsoft.VisualStudio.Sdk.TestFramework;
@@ -42,9 +40,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             _settingsRepository.RaiseSettingsSaved();
 
             _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Should().HaveCount(1);
-            AssertConfigurationMatches(
-                _lspClient.LspConfiguration.RaisedDidChangeConfigurations[0],
-                _settingsRepository.Settings);
         }
 
         [Fact]
@@ -55,9 +50,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             await _sut.RaiseDidChangeConfigurationAsync();
 
             _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Should().HaveCount(1);
-            AssertConfigurationMatches(
-                _lspClient.LspConfiguration.RaisedDidChangeConfigurations[0],
-                _settingsRepository.Settings);
+        }
+
+        [Fact]
+        public async Task RequestWorkspaceConfigurationAsync()
+        {
+            var eventArgs = new WorkspaceConfigurationEventArgs();
+
+            await _lspClient.RaiseRequestWorkspaceConfigurationAsync(eventArgs);
+
+            eventArgs.Response.Should().Contain(
+                CodeWhispererSettingsNames.IncludeSuggestionsWithCodeReferences,
+                _settingsRepository.Settings.IncludeSuggestionsWithReferences);
         }
 
         private async Task InitializeLspClientAsync()
@@ -68,16 +72,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
 
             // flush the raised object, so we test from a clean state
             _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Clear();
-        }
-
-        private void AssertConfigurationMatches(object actualConfiguration, CodeWhispererSettings expectedSettings)
-        {
-            actualConfiguration.Should()
-                .BeOfType<ConfigurationResponse>();
-
-            var configurationResponse = actualConfiguration as ConfigurationResponse;
-            configurationResponse.Aws.CodeWhisperer.IncludeSuggestionsWithCodeReferences
-                .Should().Be(expectedSettings.IncludeSuggestionsWithReferences);
         }
     }
 }

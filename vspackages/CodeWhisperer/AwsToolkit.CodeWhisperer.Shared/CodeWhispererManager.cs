@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
-using Amazon.AWSToolkit.Models.Text;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 namespace Amazon.AwsToolkit.CodeWhisperer

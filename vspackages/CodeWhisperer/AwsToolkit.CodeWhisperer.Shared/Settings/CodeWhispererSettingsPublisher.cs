@@ -1,12 +1,17 @@
-﻿using System.ComponentModel.Composition;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Settings
 {
+    public static class CodeWhispererSettingsNames
+    {
+        public const string IncludeSuggestionsWithCodeReferences = "includeSuggestionsWithCodeReferences";
+    }
+
     /// <summary>
     /// MEF Component interface responsible for pushing configuration state to the language server.
     /// The publisher's implementation is largely internal, but this interface provides us with
@@ -37,17 +42,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
         /// <summary>
         /// Retrieves the CodeWhisperer configuration state that the language server is interested in.
         /// </summary>
-        internal override async Task<object> GetConfigurationAsync()
+        internal override async Task LoadConfigurationStateAsync(Dictionary<string, object> configurationState)
         {
             var settings = await _settingsRepository.GetAsync();
 
-            var response = new ConfigurationResponse();
-            response.Aws.CodeWhisperer = new CodeWhispererConfigurationResponse()
-            {
-                IncludeSuggestionsWithCodeReferences = settings.IncludeSuggestionsWithReferences,
-            };
-
-            return response;
+            configurationState[CodeWhispererSettingsNames.IncludeSuggestionsWithCodeReferences] = settings.IncludeSuggestionsWithReferences;
         }
 
         protected override void Dispose(bool disposing)
