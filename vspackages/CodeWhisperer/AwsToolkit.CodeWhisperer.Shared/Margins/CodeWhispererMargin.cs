@@ -3,7 +3,9 @@ using System.Windows.Controls;
 
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Margins
@@ -23,11 +25,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             IWpfTextView textView,
             ICodeWhispererManager manager,
             ISuggestionUiManager suggestionUiManager,
-            IToolkitContextProvider toolkitContextProvider)
+            SVsServiceProvider serviceProvider,
+            IToolkitContextProvider toolkitContextProvider,
+            ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _toolkitContextProvider = toolkitContextProvider;
-
-            _viewModel = new CodeWhispererMarginViewModel(textView, manager, suggestionUiManager, _toolkitContextProvider);
+            _viewModel = new CodeWhispererMarginViewModel(textView, manager, suggestionUiManager, serviceProvider, _toolkitContextProvider, taskFactoryProvider);
 
             _control = new CodeWhispererMarginControl()
             {

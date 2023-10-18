@@ -25,12 +25,12 @@
             Height="19" MinWidth="50" 
             Margin="0" Padding="0"
             Background="Transparent"
-            Click="OnClickButton">
+            PreviewMouseDown="OnPreviewMouseDown">
             <Button.ContextMenu>
                 <ContextMenu themes:ToolkitThemes.UseToolkitTheme="True">
                     <MenuItem Header="Sign In" Command="{Binding SignIn}" />
                     <Separator />
-                    <MenuItem Header="Generate Code Suggestions" Command="{Binding GenerateSuggestions}" />
+                    <MenuItem Header="Generate Code Suggestions" InputGestureText="{Binding GenerateSuggestionsKeyBinding}" Command="{Binding GenerateSuggestions}" />
                     <Separator />
                     <MenuItem Header="Pause CodeWhisperer Suggestions" Command="{Binding Pause}" />
                     <MenuItem Header="Resume CodeWhisperer Suggestions" Command="{Binding Resume}" />

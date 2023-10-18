@@ -4,7 +4,9 @@ using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -27,8 +29,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
     internal class CodeWhispererMarginProvider : IWpfTextViewMarginProvider
     {
         private readonly ICodeWhispererManager _manager;
-        private readonly IToolkitContextProvider _toolkitContextProvider;
         private readonly ISuggestionUiManager _suggestionUiManager;
+        private readonly IToolkitContextProvider _toolkitContextProvider;
+        private readonly SVsServiceProvider _serviceProvider;
+        private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
 
         [ImportingConstructor]
         public CodeWhispererMarginProvider(
@@ -43,19 +47,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             // CodeWhisperer component that gets activated by Visual Studio, so we
             // import ICodeWhispererSettingsPublisher here to auto instantiate it.
             ICodeWhispererSettingsPublisher codeWhispererSettingsPublisher,
+            ISuggestionUiManager suggestionUiManager,
+            SVsServiceProvider serviceProvider,
             IToolkitContextProvider toolkitContextProvider,
-            ISuggestionUiManager suggestionUiManager)
+            ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _manager = manager;
-            _toolkitContextProvider = toolkitContextProvider;
             _suggestionUiManager = suggestionUiManager;
+            _serviceProvider = serviceProvider;
+            _toolkitContextProvider = toolkitContextProvider;
+            _taskFactoryProvider = taskFactoryProvider;
         }
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(
                 typeof(CodeWhispererMargin),
-                () => new CodeWhispererMargin(wpfTextViewHost.TextView, _manager, _suggestionUiManager, _toolkitContextProvider));
+                () => new CodeWhispererMargin(wpfTextViewHost.TextView, _manager, _suggestionUiManager, _serviceProvider, _toolkitContextProvider, _taskFactoryProvider));
         }
     }
 }

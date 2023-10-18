@@ -9,6 +9,7 @@
     <Import_RootNamespace>AwsToolkit.VsSdk.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\KeyBindingUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\CredentialProfileDialog.xaml.cs">
       <DependentUpon>CredentialProfileDialog.xaml</DependentUpon>
     </Compile>

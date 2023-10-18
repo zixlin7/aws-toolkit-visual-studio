@@ -8,17 +8,27 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
     /// </summary>
     public partial class CodeWhispererMarginControl : UserControl
     {
+        private CodeWhispererMarginViewModel _viewModel => DataContext as CodeWhispererMarginViewModel;
+
         public CodeWhispererMarginControl()
         {
             InitializeComponent();
         }
 
-        private void OnClickButton(object sender, RoutedEventArgs e)
+        private void OnPreviewMouseDown(object sender, RoutedEventArgs e)
         {
-            if (sender is FrameworkElement button)
+            if (sender is Button button)
             {
-                button.ContextMenu.IsOpen = true;
+                if (button.ContextMenu != null)
+                {
+                    _viewModel.UpdateKeyBindings();
+                    button.ContextMenu.PlacementTarget = button;
+                    button.ContextMenu.IsOpen = true;
+                }
+
+                e.Handled = true;
             }
         }
+
     }
 }

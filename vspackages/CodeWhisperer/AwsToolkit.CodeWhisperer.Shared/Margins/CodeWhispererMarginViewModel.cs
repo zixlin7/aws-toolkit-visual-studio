@@ -1,30 +1,51 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 
 using Amazon.AwsToolkit.CodeWhisperer.Commands;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.VsSdk.Common.Commands;
+using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
+using EnvDTE;
+
+using Microsoft;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
+using log4net;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 {
     public class CodeWhispererMarginViewModel : BaseModel, IDisposable
     {
+        private const string _generateSuggestionsCommandName = "AWSToolkit.CodeWhisperer.GetSuggestion";
+
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CodeWhispererMarginViewModel));
         private readonly IToolkitContextProvider _toolkitContextProvider;
+        private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private readonly IWpfTextView _textView;
         private readonly ICodeWhispererManager _manager;
+        private readonly SVsServiceProvider _serviceProvider;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         public CodeWhispererMarginViewModel(IWpfTextView textView, ICodeWhispererManager manager,
             ISuggestionUiManager suggestionUiManager,
-            IToolkitContextProvider toolkitContextProvider)
+            SVsServiceProvider serviceProvider,
+            IToolkitContextProvider toolkitContextProvider,
+            ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _textView = textView;
             _manager = manager;
+            _serviceProvider = serviceProvider;
             _toolkitContextProvider = toolkitContextProvider;
+            _taskFactoryProvider = taskFactoryProvider;
 
             SignIn = new SignInCommand(_manager, _toolkitContextProvider);
             SignOut = new SignOutCommand(_manager, _toolkitContextProvider);
@@ -43,8 +64,43 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             GettingStarted = new GettingStartedCommand(_toolkitContextProvider);
 
             GenerateSuggestions = new GetSuggestionsCommand(_textView, _manager, suggestionUiManager, _toolkitContextProvider);
+            GenerateSuggestionsKeyBinding = GetKeyBindingFrom(_generateSuggestionsCommandName);
+
             ViewCodeReferences = new ViewCodeReferencesCommand(_manager, _toolkitContextProvider);
             SecurityScan = new SecurityScanCommand(_toolkitContextProvider);
+        }
+
+        public void UpdateKeyBindings()
+        {
+            GenerateSuggestionsKeyBinding = GetKeyBindingFrom(_generateSuggestionsCommandName);
+        }
+
+        private string GetKeyBindingFrom(string commandName)
+        {
+            return _taskFactoryProvider.JoinableTaskFactory.Run(async () =>
+            {
+                try
+                {
+                    await _taskFactoryProvider.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                    var dte = (DTE) _serviceProvider.GetService(typeof(DTE));
+
+                    Assumes.Present(dte);
+
+                    var binding = ((IEnumerable) dte.Commands.Item(commandName).Bindings)
+                        .Cast<object>()
+                        .ToList()
+                        .LastOrDefault()?
+                        .ToString();
+
+                    return KeyBindingUtilities.FormatKeyBindingDisplayText(binding);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error($"Error getting key binding for command {commandName}", e);
+                    return string.Empty;
+                }
+            });
         }
 
         private ICommand _signIn;
@@ -115,6 +171,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             get => _gettingStarted;
             set => SetProperty(ref _gettingStarted, value);
+        }
+
+        private string _generateSuggestionsKeyBinding;
+        public string GenerateSuggestionsKeyBinding
+        {
+            get => _generateSuggestionsKeyBinding;
+            set => SetProperty(ref _generateSuggestionsKeyBinding, value);
         }
 
         public void Dispose()
