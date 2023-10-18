@@ -1,4 +1,6 @@
-﻿using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
+﻿using System.Threading.Tasks;
+
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AWSToolkit.Lsp;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
@@ -19,9 +21,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
     internal interface ILspCredentials
     {
         [JsonRpcMessageMapping(MessageNames.UpdateIamCredenitals)]
-        void UpdateIamCredentials(UpdateCredentialsRequest request);
+        Task UpdateIamCredentialsAsync(UpdateCredentialsRequest request);
         [JsonRpcMessageMapping(MessageNames.UpdateTokenCredenitals)]
-        void UpdateTokenCredentials(UpdateCredentialsRequest request);
+        Task UpdateTokenCredentialsAsync(UpdateCredentialsRequest request);
 
         [JsonRpcMessageMapping(MessageNames.DeleteIamCredenitals)]
         void DeleteIamCredentials();

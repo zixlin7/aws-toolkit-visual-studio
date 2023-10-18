@@ -1,4 +1,6 @@
-﻿using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+﻿using System.Threading.Tasks;
+
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.Runtime;
 
@@ -39,17 +41,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Credentials
         }
 
         [Fact]
-        public void UpdateCredentials()
+        public async Task UpdateCredentials()
         {
-            _sut.UpdateCredentials(new ImmutableCredentials("access", "secret", "token"));
+            await _sut.UpdateCredentialsAsync(new ImmutableCredentials("access", "secret", "token"));
 
             _credentialsProtocol.CredentialsPayload.Should().NotBeNull();
         }
 
         [Fact]
-        public void UpdateToken()
+        public async Task UpdateToken()
         {
-            _sut.UpdateToken(new BearerToken() { Token = "token" });
+            await _sut.UpdateTokenAsync(new BearerToken() { Token = "token" });
 
             _credentialsProtocol.TokenPayload.Should().NotBeNull();
         }

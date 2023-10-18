@@ -351,7 +351,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
             if (_initializeServerWithCredentials)
             {
-                args.Add("--pre-init-encryption");
+                args.Add("--set-credentials-encryption-key");
             }
 
             return args;

@@ -30,7 +30,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     /// </summary>
     [Export(typeof(ICodeWhispererLspClient))]
     [Export(typeof(ILanguageClient))]
-    [ContentType(ContentTypes.CSharp)]
+    [ContentType(ContentTypes.Code)]
     public class CodeWhispererClient : ToolkitLspClient, ICodeWhispererLspClient
     {
         [Import]

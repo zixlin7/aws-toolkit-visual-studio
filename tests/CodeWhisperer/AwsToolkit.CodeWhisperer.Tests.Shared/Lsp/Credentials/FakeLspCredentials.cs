@@ -1,4 +1,6 @@
-﻿using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+﻿using System.Threading.Tasks;
+
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Credentials
@@ -18,14 +20,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Credentials
             TokenPayload = null;
         }
 
-        public virtual void UpdateIamCredentials(UpdateCredentialsRequest request)
+        public virtual Task UpdateIamCredentialsAsync(UpdateCredentialsRequest request)
         {
             CredentialsPayload = request.Data;
+            return Task.CompletedTask;
         }
 
-        public virtual void UpdateTokenCredentials(UpdateCredentialsRequest request)
+        public virtual Task UpdateTokenCredentialsAsync(UpdateCredentialsRequest request)
         {
             TokenPayload = request.Data;
+            return Task.CompletedTask;
         }
     }
 }

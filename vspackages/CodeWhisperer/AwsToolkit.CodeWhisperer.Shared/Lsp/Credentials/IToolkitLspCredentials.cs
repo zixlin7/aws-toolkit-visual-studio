@@ -1,4 +1,6 @@
-﻿using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
+﻿using System.Threading.Tasks;
+
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.Runtime;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
@@ -8,7 +10,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
         void DeleteCredentials();
         void DeleteToken();
 
-        void UpdateCredentials(ImmutableCredentials credentials);
-        void UpdateToken(BearerToken token);
+        Task UpdateCredentialsAsync(ImmutableCredentials credentials);
+        Task UpdateTokenAsync(BearerToken token);
     }
 }

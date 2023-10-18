@@ -1,4 +1,6 @@
-﻿using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
+﻿using System.Threading.Tasks;
+
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.Runtime;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
@@ -17,19 +19,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
         /// <summary>
         /// Encrypt and transmit SigV4 credentials to language server
         /// </summary>
-        public void UpdateCredentials(ImmutableCredentials credentials)
+        public async Task UpdateCredentialsAsync(ImmutableCredentials credentials)
         {
             var request = _encryptor.CreateUpdateCredentialsRequest(credentials);
-            _credentialsProtocol.UpdateIamCredentials(request);
+            await _credentialsProtocol.UpdateIamCredentialsAsync(request);
         }
 
         /// <summary>
         /// Encrypt and transmit bearer token to language server
         /// </summary>
-        public void UpdateToken(BearerToken token)
+        public async Task UpdateTokenAsync(BearerToken token)
         {
             var request = _encryptor.CreateUpdateCredentialsRequest(token);
-            _credentialsProtocol.UpdateTokenCredentials(request);
+            await _credentialsProtocol.UpdateTokenCredentialsAsync(request);
         }
 
         /// <summary>

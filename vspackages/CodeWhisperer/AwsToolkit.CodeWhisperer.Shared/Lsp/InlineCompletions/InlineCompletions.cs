@@ -8,7 +8,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions
 {
     internal static class MessageNames
     {
-        public const string GetInlineCompletions = "aws/textDocument/inlineCompletion";
+        public const string GetInlineCompletions = "aws/textDocument/inlineCompletionWithReferences";
     }
 
     /// <summary>

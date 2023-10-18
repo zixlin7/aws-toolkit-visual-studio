@@ -66,7 +66,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// Connects the user to CodeWhisperer.
         /// User may go through modal dialogs and login flows as a result.
         /// </summary>
-        public Task SignInAsync()
+        public async Task SignInAsync()
         {
             var viewModel = new CredentialSelectionDialogViewModel(_toolkitContextProvider);
             var dlg = new CredentialSelectionDialog
@@ -85,17 +85,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     var toolkitContext = _toolkitContextProvider.GetToolkitContext();
                     var profile = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
                     var region = toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
-                    var toolkitCreds = toolkitContext.CredentialManager.GetToolkitCredentials(credentialIdentifier, region);
+                    var toolkitCredentials = toolkitContext.CredentialManager.GetToolkitCredentials(credentialIdentifier, region);
 
-                    if (!toolkitCreds.GetTokenProvider().TryResolveToken(out var awsToken))
+                    if (!toolkitCredentials.GetTokenProvider().TryResolveToken(out var awsToken))
                     {
                         var msg = $"Cannot sign in to CodeWhisperer.  Unable to resolve bearer token {displayName}.";
                         NotifyErrorAndDisconnect(msg);
                         throw new InvalidOperationException(msg);
                     }
 
-                    var lspCreds = _codeWhispererLspClient.CreateToolkitLspCredentials();
-                    lspCreds.UpdateToken(new BearerToken() { Token = awsToken.Token });
+                    var credentialsProtocol = _codeWhispererLspClient.CreateToolkitLspCredentials();
+                    await credentialsProtocol.UpdateTokenAsync(new BearerToken() { Token = awsToken.Token });
 
                     _signedInCredentialIdentifier = credentialIdentifier;
                     Status = ConnectionStatus.Connected;
@@ -108,8 +108,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     throw new InvalidOperationException(msg, ex);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
