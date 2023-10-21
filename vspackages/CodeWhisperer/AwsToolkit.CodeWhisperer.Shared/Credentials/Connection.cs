@@ -68,13 +68,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         public async Task SignInAsync()
         {
-            var viewModel = new CredentialSelectionDialogViewModel(_toolkitContextProvider);
-            var dlg = new CredentialSelectionDialog
-            {
-                DataContext = viewModel
-            };
-
-            var credentialIdentifier = dlg.ShowModal() == true ? viewModel.SelectedCredentialIdentifier : null;
+            var credentialIdentifier = PromptUserForCredentialId();
 
             if (credentialIdentifier != null)
             {
@@ -108,6 +102,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     throw new InvalidOperationException(msg, ex);
                 }
             }
+        }
+
+        /// <summary>
+        /// Prompts user for credential Id to use to sign-in to CodeWhisperer.
+        /// </summary>
+        /// <remarks>
+        /// This function isolates the prompt and UI related code, so that we can stub it in testing.
+        /// </remarks>
+        /// <returns>User-selected credentialId, null if user cancelled.</returns>
+        protected virtual ICredentialIdentifier PromptUserForCredentialId()
+        {
+            var viewModel = new CredentialSelectionDialogViewModel(_toolkitContextProvider);
+            var dlg = new CredentialSelectionDialog
+            {
+                DataContext = viewModel
+            };
+
+            return dlg.ShowModal() == true ? viewModel.SelectedCredentialIdentifier : null;
         }
 
         /// <summary>

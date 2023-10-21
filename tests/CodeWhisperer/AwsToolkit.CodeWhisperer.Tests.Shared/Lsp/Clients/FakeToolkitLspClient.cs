@@ -5,6 +5,7 @@ using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Configuration;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Credentials;
 
 using Microsoft.VisualStudio.Threading;
 
@@ -13,14 +14,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients
     public class FakeToolkitLspClient : IToolkitLspClient
     {
         public readonly FakeLspConfiguration LspConfiguration = new FakeLspConfiguration();
+        public readonly FakeToolkitLspCredentials CredentialsProtocol = new FakeToolkitLspCredentials();
 
         public event AsyncEventHandler<EventArgs> InitializedAsync;
         public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
 
         public IToolkitLspCredentials CreateToolkitLspCredentials()
         {
-            // todo : implement a fake IToolkitLspCredentials when it is needed in testing
-            throw new System.NotImplementedException();
+            return CredentialsProtocol;
         }
 
         public ILspConfiguration CreateLspConfiguration()

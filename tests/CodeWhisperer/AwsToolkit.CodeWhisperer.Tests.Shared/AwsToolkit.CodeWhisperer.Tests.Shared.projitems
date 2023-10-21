@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialogViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\FakeConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Documents\FakeCodeWhispererTextView.cs" />
@@ -24,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Configuration\FakeLspConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryptionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\FakeLspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\FakeToolkitLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapperTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentialsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\InlineCompletions\FakeInlineCompletions.cs" />
