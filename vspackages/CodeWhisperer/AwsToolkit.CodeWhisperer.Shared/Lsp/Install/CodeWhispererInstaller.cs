@@ -127,7 +127,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
         private VersionManifestManager CreateVersionManifestManager()
         {
-            var options = new VersionManifestManager.Options()
+            var options = new VersionManifestOptions()
             {
                 Name = "CodeWhisperer",
                 FileName = CodeWhispererConstants.ManifestFilename,

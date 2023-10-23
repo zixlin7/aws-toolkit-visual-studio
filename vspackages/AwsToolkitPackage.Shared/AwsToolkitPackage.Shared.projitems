@@ -136,7 +136,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\DteVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\ProjectExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\WindowExtensionMethods.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\InfoBarUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ToolkitProductEnvironment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\VsAppId\IVsAppId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\WindowFrameNotificationController.cs" />

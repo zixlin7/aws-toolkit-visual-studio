@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.ResourceFetchers;
 
@@ -24,7 +25,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
         public VersionManifestManagerTests()
         {
             SetupFetcher(_validManifestFileName);
-            var options = new VersionManifestManager.Options()
+            var options = new VersionManifestOptions()
             {
                 FileName = _validManifestFileName,
                 MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion

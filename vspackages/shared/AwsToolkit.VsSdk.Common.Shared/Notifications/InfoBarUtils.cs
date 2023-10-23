@@ -3,7 +3,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Amazon.AWSToolkit.VisualStudio.Utilities
+namespace AwsToolkit.VsSdk.Common.Notifications
 {
     public static class InfoBarUtils
     {

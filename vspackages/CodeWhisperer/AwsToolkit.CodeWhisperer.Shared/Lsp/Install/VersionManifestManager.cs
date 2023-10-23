@@ -19,35 +19,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
     /// </summary>
     public class VersionManifestManager : IResourceManager<ManifestSchema>
     {
-        public class Options
-        {
-            /// <summary>
-            /// Each toolkit release is expected to be compatible per major version (eg: 0.x, 1.x, ...) of the version manifest schema
-            /// </summary>
-            public int MajorVersion { get; set; } = 0;
-
-            /// <summary>
-            /// Specifies the name of the file that represents the LSP binary
-            /// </summary>
-            public string FileName { get; set; }
-
-            /// <summary>
-            /// Specifies the name of the Language Server
-            /// </summary>
-            public string Name { get; set; } = string.Empty;
-        }
-
         private static readonly ILog _logger = LogManager.GetLogger(typeof(VersionManifestManager));
         private readonly IResourceFetcher _versionManifestFetcher;
-        private readonly Options _options;
+        private readonly VersionManifestOptions _options;
 
-        public static VersionManifestManager Create(Options options, ILspSettingsRepository settingsRepository)
+        public static VersionManifestManager Create(VersionManifestOptions options, ILspSettingsRepository settingsRepository)
         {
             var fetcher = CreateVersionManifestFetcher(options, settingsRepository);
             return new VersionManifestManager(options, fetcher);
         }
 
-        internal VersionManifestManager(Options options, IResourceFetcher versionManifestFetcher)
+        internal VersionManifestManager(VersionManifestOptions options, IResourceFetcher versionManifestFetcher)
         {
             _options = options;
             _versionManifestFetcher = versionManifestFetcher;
@@ -56,7 +38,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <summary>
         /// Creates a resource fetcher that gets the version manifest
         /// </summary>
-        private static IResourceFetcher CreateVersionManifestFetcher(Options managerOptions,
+        private static IResourceFetcher CreateVersionManifestFetcher(VersionManifestOptions managerOptions,
             ILspSettingsRepository settingsRepository)
         {
             // Indicates whether or not the stream contains a valid lsp version manifest file

@@ -1,36 +1,47 @@
 ﻿using System;
 using System.Timers;
 
+using Amazon.AWSToolkit.Context;
+
 using AwsToolkit.VsSdk.Common.Notifications;
 
 using log4net;
+
 using Microsoft.VisualStudio.Shell;
 
-namespace Amazon.AWSToolkit.VisualStudio.Telemetry
+namespace Amazon.AWSToolkit.CommonUI
 {
     /// <summary>
-    /// Orchestrates the life cycle of a Telemetry InfoBar
+    /// Common toolkit component for managing info bars
     /// </summary>
-    public class TelemetryInfoBarManager : IDisposable
+    public abstract class ToolkitInfoBarManager : IDisposable
     {
-        static readonly ILog Logger = LogManager.GetLogger(typeof(TelemetryInfoBarManager));
-        private const int SetupRetryIntervalMs = 3000;
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ToolkitInfoBarManager));
+        private const int _setupRetryIntervalMs = 3000;
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
-        private readonly IServiceProvider _serviceProvider;
+        protected readonly IServiceProvider _serviceProvider;
+        protected readonly ToolkitContext _toolkitContext;
         private readonly Timer _timer;
 
-        public TelemetryInfoBarManager(IServiceProvider serviceProvider)
+        protected ToolkitInfoBarManager(IServiceProvider serviceProvider, ToolkitContext toolkitContext)
         {
             _serviceProvider = serviceProvider;
+            _toolkitContext = toolkitContext;
             _timer = new Timer()
             {
                 AutoReset = false,
-                Interval = SetupRetryIntervalMs,
+                Interval = _setupRetryIntervalMs,
             };
             _timer.Elapsed += TimerOnElapsed;
         }
+
+        /// <summary>
+        /// Unique identifier/name for info bar
+        /// </summary>
+        protected abstract string _identifier { get; }
+
 
         /// <summary>
         /// Responsible for displaying the InfoBar.
@@ -39,7 +50,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
         /// may run before the main window shows, because 2019
         /// shows a project selection dialog first by default)
         /// </summary>
-        public void ShowTelemetryInfoBar()
+        public void ShowInfoBar()
         {
             _timer.Start();
         }
@@ -48,52 +59,44 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
         {
             try
             {
-                if (disposed)
-                {
-                    return;
-                }
-
-                _timer.Stop();
                 _timer.Elapsed -= TimerOnElapsed;
                 _timer.Dispose();
             }
             catch (Exception e)
             {
-                Logger.Error(e);
+                _logger.Error(e);
             }
             finally
             {
-                disposed = true;
+                _disposed = true;
             }
         }
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            if (ToolkitFactory.Instance == null)
+            if (_toolkitContext.ToolkitHost == null)
             {
                 _timer.Start();
                 return;
             }
 
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread(() =>
             {
-                ThreadHelper.ThrowIfNotOnUIThread();
-
                 try
                 {
-                    AddTelemetryInfoBarToMainWindow();
+                    AddInfoBarToMainWindow();
                 }
                 catch (Exception exception)
                 {
                     _timer.Start();
-                    Logger.Error(exception);
+                    _logger.Error(exception);
                 }
             });
         }
 
-        private void AddTelemetryInfoBarToMainWindow()
+        protected virtual void AddInfoBarToMainWindow()
         {
-            Logger.Debug("Trying to show Telemetry Banner");
+            _logger.Debug($"Trying to show info bar for {_identifier}");
             ThreadHelper.ThrowIfNotOnUIThread();
 
             var infoBarHost = InfoBarUtils.GetMainWindowInfoBarHost(_serviceProvider);
@@ -102,18 +105,22 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
                 throw new Exception("Unable to get main window InfoBar host");
             }
 
-            var telemetryInfoBar = new TelemetryInfoBar();
-
-            var infoBarUiElement = InfoBarUtils.CreateInfoBar(telemetryInfoBar.InfoBarModel, _serviceProvider);
+            var infoBar = CreateInfoBar();
+            var infoBarUiElement = InfoBarUtils.CreateInfoBar(infoBar.InfoBarModel, _serviceProvider);
             if (infoBarUiElement == null)
             {
-                throw new Exception("Unable to create InfoBar parent element");
+                throw new Exception(
+                    $"Unable to create info bar parent element for {_identifier}");
             }
 
-            telemetryInfoBar.RegisterInfoBarEvents(infoBarUiElement);
+            infoBar.RegisterInfoBarEvents(infoBarUiElement);
 
             infoBarHost.AddInfoBar(infoBarUiElement);
-            Logger.Debug("Telemetry Banner displayed");
+
+            _logger.Debug($"Info bar displayed for {_identifier}");
         }
+
+
+        protected abstract ToolkitInfoBar CreateInfoBar();
     }
 }

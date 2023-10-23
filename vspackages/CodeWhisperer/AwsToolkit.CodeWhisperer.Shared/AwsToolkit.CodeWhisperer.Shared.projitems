@@ -59,6 +59,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstallUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\ManifestSchemaUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\VersionManifestOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationInfoBarManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationStrategy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisher.cs" />
@@ -102,8 +106,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\TargetContent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\VersionTarget.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\" />
   </ItemGroup>
 </Project>
