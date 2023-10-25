@@ -8,8 +8,6 @@ using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Sono;
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
@@ -30,6 +28,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         private readonly IToolkitLspClient _codeWhispererLspClient;
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
+        private readonly ICodeWhispererSsoTokenProvider _tokenProvider;
 
         private ICredentialIdentifier _signedInCredentialIdentifier;
         private ToolkitRegion _signedInCredentialsSsoRegion;
@@ -41,7 +40,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             IToolkitContextProvider toolkitContextProvider,
             ICodeWhispererLspClient codeWhispererLspClient,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
-        : this(toolkitContextProvider, codeWhispererLspClient, taskFactoryProvider, new ToolkitTimer())
+        : this(
+            toolkitContextProvider, codeWhispererLspClient,
+            new CodeWhispererSsoTokenProvider(toolkitContextProvider),
+            taskFactoryProvider, new ToolkitTimer())
         {
         }
 
@@ -51,11 +53,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         internal Connection(
             IToolkitContextProvider toolkitContextProvider,
             ICodeWhispererLspClient codeWhispererLspClient,
+            ICodeWhispererSsoTokenProvider tokenProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider,
             IToolkitTimer tokenRefreshTimer)
         {
             _toolkitContextProvider = toolkitContextProvider;
             _codeWhispererLspClient = codeWhispererLspClient;
+            _tokenProvider = tokenProvider;
             _taskFactoryProvider = taskFactoryProvider;
 
             _tokenRefreshTimer = tokenRefreshTimer;
@@ -110,9 +114,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     var toolkitContext = _toolkitContextProvider.GetToolkitContext();
                     var profile = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
                     var region = toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
-                    var toolkitCredentials = toolkitContext.CredentialManager.GetToolkitCredentials(credentialIdentifier, region);
 
-                    if (!toolkitCredentials.GetTokenProvider().TryResolveToken(out var awsToken))
+                    if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, region, out var awsToken))
                     {
                         var msg = $"Cannot sign in to CodeWhisperer.  Unable to resolve bearer token {displayName}.";
                         NotifyErrorAndDisconnect(msg);
@@ -306,7 +309,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         private async Task OnTokenRefreshTimerElapsedAsync()
         {
-            if (!TrySilentRefresh(out var refreshToken))
+            if (!_tokenProvider.TrySilentGetSsoToken(
+                    _signedInCredentialIdentifier, _signedInCredentialsSsoRegion, out var refreshToken))
             {
                 // Unable to refresh the token (or retrieve the current one)
                 // Move the connection state to Expired, then disconnect.
@@ -330,30 +334,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     ResetTokenRefreshTimer(refreshToken.ExpiresAt.Value);
                 }
             }
-        }
-
-        /// <summary>
-        /// Attempts to refresh the SSO token for the current signed-in credentialId without
-        /// prompting the user for an SSO login flow.
-        /// </summary>
-        private bool TrySilentRefresh(out AWSToken refreshToken)
-        {
-            refreshToken = null;
-
-            var toolkitContext = _toolkitContextProvider.GetToolkitContext();
-
-            // Try to refresh the token in a way that fails if the user would need to be prompted for a SSO Login
-            if (!_signedInCredentialIdentifier.HasValidToken(SonoCredentialProviderFactory.CodeWhispererSsoSession, toolkitContext.ToolkitHost))
-            {
-                return false;
-            }
-
-            // The token has been refreshed. We can now obtain it through the credentials engine
-            // with confidence that the user will not get prompted to perform an SSO login.
-            var toolkitCredentials = toolkitContext.CredentialManager.GetToolkitCredentials(
-                _signedInCredentialIdentifier, _signedInCredentialsSsoRegion);
-
-            return toolkitCredentials.GetTokenProvider().TryResolveToken(out refreshToken);
         }
 
         public void Dispose()

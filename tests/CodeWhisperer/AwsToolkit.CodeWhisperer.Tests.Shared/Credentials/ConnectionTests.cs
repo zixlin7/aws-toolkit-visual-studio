@@ -14,6 +14,7 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.Tests.Common.Time;
 using Amazon.AWSToolkit.Util;
+using Amazon.Runtime;
 
 using FluentAssertions;
 
@@ -31,9 +32,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         public StubConnection(
             IToolkitContextProvider toolkitContextProvider,
             ICodeWhispererLspClient codeWhispererLspClient,
+            ICodeWhispererSsoTokenProvider ssoTokenProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider,
             IToolkitTimer timer)
-            : base(toolkitContextProvider, codeWhispererLspClient, taskFactoryProvider, timer)
+            : base(toolkitContextProvider, codeWhispererLspClient,
+                ssoTokenProvider, taskFactoryProvider, timer)
         {
         }
 
@@ -49,10 +52,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private readonly FakeCodeWhispererClient _codeWhispererClient = new FakeCodeWhispererClient();
+        private readonly FakeCodeWhispererSsoTokenProvider _ssoTokenProvider = new FakeCodeWhispererSsoTokenProvider();
         private readonly FakeToolkitTimer _timer = new FakeToolkitTimer();
 
         private readonly ICredentialIdentifier _sampleCredentialId = FakeCredentialIdentifier.Create("AwsBuilderId");
-        private readonly FakeTokenProvider _tokenProvider = new FakeTokenProvider("secret-token-123");
 
         private readonly ToolkitRegion _sampleRegion = new ToolkitRegion()
         {
@@ -76,14 +79,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
 
             _taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
 
-            var toolkitCredentials = new ToolkitCredentials(_sampleCredentialId, _tokenProvider);
-            _toolkitContextFixture.SetupGetToolkitCredentials(toolkitCredentials);
+            _ssoTokenProvider.CanGetTokenSilently = false;
+            _ssoTokenProvider.Token = new AWSToken()
+            {
+                Token = "secret-token-123", ExpiresAt = DateTime.UtcNow.AddHours(6),
+            };
 
             _toolkitContextFixture.DefineRegion(_sampleRegion);
             _toolkitContextFixture.DefineCredentialIdentifiers(new[] { _sampleCredentialId });
             _toolkitContextFixture.DefineCredentialProperties(_sampleCredentialId, _sampleProfileProperties);
 
-            _sut = new StubConnection(_toolkitContextFixture.ToolkitContextProvider, _codeWhispererClient, _taskFactoryProvider, _timer);
+            _sut = new StubConnection(_toolkitContextFixture.ToolkitContextProvider, _codeWhispererClient,
+                _ssoTokenProvider, _taskFactoryProvider, _timer);
         }
 
         [Fact]
@@ -101,7 +108,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _sut.CredentialIdPromptResponse = _sampleCredentialId;
             await _sut.SignInAsync();
 
-            _codeWhispererClient.CredentialsProtocol.TokenPayload.Token.Should().Be(_tokenProvider.Token);
+            _codeWhispererClient.CredentialsProtocol.TokenPayload.Token.Should().Be(_ssoTokenProvider.Token.Token);
         }
 
         [Fact]
@@ -109,7 +116,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         {
             // set up: Sign in with a token expiring in 6 hours
             const int tokenDurationHours = 6;
-            _tokenProvider.ExpiresAt = DateTime.UtcNow.AddHours(tokenDurationHours);
+            _ssoTokenProvider.Token.ExpiresAt = DateTime.UtcNow.AddHours(tokenDurationHours);
 
             _sut.CredentialIdPromptResponse = _sampleCredentialId;
             await _sut.SignInAsync();
@@ -127,7 +134,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         {
             // set up: Sign in will occur with a token expiring in 6 hours
             const int tokenDurationHours = 6;
-            _tokenProvider.ExpiresAt = DateTime.UtcNow.AddHours(tokenDurationHours);
+            _ssoTokenProvider.Token.ExpiresAt = DateTime.UtcNow.AddHours(tokenDurationHours);
 
             _sut.CredentialIdPromptResponse = _sampleCredentialId;
 
@@ -149,7 +156,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         {
             // set up: Sign in will occur with a token expiring in 4 minutes (eg: sooner than the system's 5 minute buffer)
             const int tokenDurationMinutes = 4;
-            _tokenProvider.ExpiresAt = DateTime.UtcNow.AddMinutes(tokenDurationMinutes);
+            _ssoTokenProvider.Token.ExpiresAt = DateTime.UtcNow.AddMinutes(tokenDurationMinutes);
 
             _sut.CredentialIdPromptResponse = _sampleCredentialId;
 
@@ -171,7 +178,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         {
             // set up: Sign in will occur with a token expiring extremely soon (sooner than the system's smallest refresh window of 1 minute)
             const int tokenDurationSeconds = 20;
-            _tokenProvider.ExpiresAt = DateTime.UtcNow.AddSeconds(tokenDurationSeconds);
+            _ssoTokenProvider.Token.ExpiresAt = DateTime.UtcNow.AddSeconds(tokenDurationSeconds);
 
             _sut.CredentialIdPromptResponse = _sampleCredentialId;
 
@@ -192,7 +199,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         public async Task ExpiredTokenRefreshesImmediately()
         {
             // set up: Sign in will occur with a token that has expired (this is more to exercise the handling logic than sign in)
-            _tokenProvider.ExpiresAt = DateTime.UtcNow.AddMinutes(-1);
+            _ssoTokenProvider.Token.ExpiresAt = DateTime.UtcNow.AddMinutes(-1);
 
             _sut.CredentialIdPromptResponse = _sampleCredentialId;
 
@@ -207,6 +214,49 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             var expectedMaxInterval = new TimeSpan(0, 0, 0, 3).TotalMilliseconds;
 
             _timer.Interval.Should().BeInRange(expectedMinInterval, expectedMaxInterval);
+        }
+
+        [Fact]
+        public async Task RefreshSetsUpNextRefresh()
+        {
+            _ssoTokenProvider.CanGetTokenSilently = true;
+
+            // set up: Simulate signing in, but then the Token has expired
+            _ssoTokenProvider.Token.ExpiresAt = DateTime.UtcNow.AddMinutes(-1);
+
+            _sut.CredentialIdPromptResponse = _sampleCredentialId;
+            await _sut.SignInAsync();
+
+            // set up: The refreshed token expires well into the future
+            const int tokenDurationHours = 6;
+            _ssoTokenProvider.Token.ExpiresAt = DateTime.UtcNow.AddHours(tokenDurationHours);
+
+            // Act: Invoke the Connection component's refresh mechanics. This should refresh, and set up the next refresh timer.
+            _timer.RaiseElapsed();
+
+            _timer.IsStarted.Should().BeTrue();
+
+            // Should refresh "five minutes before expiration"
+            var expectedMinInterval = new TimeSpan(0, tokenDurationHours - 1, 53, 0).TotalMilliseconds;
+            var expectedMaxInterval = new TimeSpan(0, tokenDurationHours - 1, 55, 0).TotalMilliseconds;
+
+            _timer.Interval.Should().BeInRange(expectedMinInterval, expectedMaxInterval);
+        }
+
+        [Fact]
+        public async Task Refresh_LoginRequired()
+        {
+            _ssoTokenProvider.CanGetTokenSilently = false;
+
+            // set up: Simulate signing in
+            _sut.CredentialIdPromptResponse = _sampleCredentialId;
+            await _sut.SignInAsync();
+
+            // Act: Invoke the Connection component's refresh mechanics. This should fail to refresh, and then sign out
+            _timer.RaiseElapsed();
+
+            _timer.IsStarted.Should().BeFalse();
+            _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
         }
 
         public void Dispose()
