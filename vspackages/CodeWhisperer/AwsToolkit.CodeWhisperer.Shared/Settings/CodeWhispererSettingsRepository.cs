@@ -36,15 +36,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
             return CodeWhispererSettings.GetLiveInstanceAsync();
         }
 
-        public async Task<ILspSettings> GetLspSettingsAsync()
+        public async Task<LspSettings> GetLspSettingsAsync()
         {
-            ILspSettings settings = await CodeWhispererSettings.GetLiveInstanceAsync();
-            return settings;
+            var settings = await GetAsync();
+            return settings.LspSettings;
         }
 
         public void Save(CodeWhispererSettings settings)
         {
             settings.Save();
+        }
+
+        public async Task SaveLspSettingsAsync(LspSettings lspSettings)
+        {
+            var cwSettings = await CodeWhispererSettings.GetLiveInstanceAsync();
+            cwSettings.LspSettings = lspSettings;
+
+            Save(cwSettings);
         }
 
         public void Dispose()

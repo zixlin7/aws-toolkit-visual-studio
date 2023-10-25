@@ -61,7 +61,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             var localManifestPath = $"input/{_versionManifestFileName}";
 
             _fixture.WriteToFile(_versionManifestSampleData, localManifestPath);
-            _settingsRepository.Settings.VersionManifestFolder = _fixture.TestLocation.InputFolder;
+            _settingsRepository.Settings.LspSettings.VersionManifestFolder = _fixture.TestLocation.InputFolder;
 
             var stream = await _sut.GetAsync(_versionManifestFileName);
             Assert.NotNull(stream);

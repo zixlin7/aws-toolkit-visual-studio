@@ -110,7 +110,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
         /// could be null (use system defaults), or a Uri that points to
         /// either a location on disk or online.
         /// </summary>
-        private Uri GetManifestLocationAsUri(ILspSettings lspSettings)
+        private Uri GetManifestLocationAsUri(LspSettings lspSettings)
         {
             var location = lspSettings?.VersionManifestFolder;
 

@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 using StreamJsonRpc;
+using Microsoft.VisualStudio.Shell;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 {
@@ -64,6 +65,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         [Import]
         protected ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         protected CancellationToken _disposalToken => _taskFactoryProvider.DisposalToken;
+
+        [Import] protected SVsServiceProvider _serviceProvider;
 
         /// <summary>
         /// Implementations should set this to true if they want this class to orchestrate Credentials initialization.

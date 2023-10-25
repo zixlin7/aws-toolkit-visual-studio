@@ -12,6 +12,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         public const string Filename = "dexp-runtime-server-build-configuration-win.exe";
         public const string ManifestFilename = "lspManifest.json";
         public const int ManifestCompatibleMajorVersion = 0;
+        public static string ManifestCloudFrontUrl = $"placeholderurl/{ManifestCompatibleMajorVersion}/{ManifestFilename}";
         public static string LspDownloadParentFolder => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "aws", "toolkits", "language-server");

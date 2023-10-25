@@ -64,7 +64,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         {
             taskNotifier.ProgressText = "Installing CodeWhisperer Language Server...";
             taskNotifier.CanCancel = true;
-            var installer = new CodeWhispererInstaller(_toolkitContext, _settingsRepository);
+            var installer = new CodeWhispererInstaller(_serviceProvider, _settingsRepository, _toolkitContext);
             return await installer.ExecuteAsync(taskNotifier, token);
         }
 

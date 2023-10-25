@@ -12,6 +12,11 @@ namespace AwsToolkit.VsSdk.Common.Settings
         /// Load the current LSP settings
         /// </summary>
         /// <returns></returns>
-        Task<ILspSettings> GetLspSettingsAsync();
+        Task<LspSettings> GetLspSettingsAsync();
+
+        /// <summary>
+        /// Saves the current LSP settings
+        /// </summary>
+        Task SaveLspSettingsAsync(LspSettings lspSettings);
     }
 }

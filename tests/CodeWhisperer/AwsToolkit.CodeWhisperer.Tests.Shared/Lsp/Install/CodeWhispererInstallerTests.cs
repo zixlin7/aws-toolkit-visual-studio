@@ -24,7 +24,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
         public CodeWhispererInstallerTests()
         {
-            _sut = new CodeWhispererInstaller(_contextFixture.ToolkitContext, _settingsRepository);
+            _sut = new CodeWhispererInstaller(null, _settingsRepository, _contextFixture.ToolkitContext);
         }
 
         [Fact]
@@ -40,10 +40,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         [Fact]
         public async Task DownloadAsync_WhenLocalOverride()
         {
-            _settingsRepository.Settings.LanguageServerPath = "test-local-path/abc.exe";
+            _settingsRepository.Settings.LspSettings.LanguageServerPath = "test-local-path/abc.exe";
             var path = await _sut.ExecuteAsync(_taskNotifier.Object);
 
-            Assert.Equal(_settingsRepository.Settings.LanguageServerPath, path);
+            Assert.Equal(_settingsRepository.Settings.LspSettings.LanguageServerPath, path);
         }
 
         public void Dispose()

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Notification;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
@@ -11,6 +12,8 @@ using Amazon.AWSToolkit.Tasks;
 using AwsToolkit.VsSdk.Common.Settings;
 
 using log4net;
+
+using Microsoft.VisualStudio.Threading;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 {
@@ -23,12 +26,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         private const int _cleanupDelay = 10000;
         private readonly ILspSettingsRepository _lspSettingsRepository;
         private readonly ToolkitContext _toolkitContext;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CodeWhispererInstaller(ToolkitContext toolkitContext,
-            ILspSettingsRepository lspSettingsRepository)
+        public CodeWhispererInstaller(IServiceProvider serviceProvider, ILspSettingsRepository lspSettingsRepository, ToolkitContext toolkitContext)
         {
-            _toolkitContext = toolkitContext;
+            _serviceProvider = serviceProvider;
             _lspSettingsRepository = lspSettingsRepository;
+            _toolkitContext = toolkitContext;
         }
 
         public async Task<string> ExecuteAsync(ITaskStatusNotifier notifier, CancellationToken token = default)
@@ -60,6 +64,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var lspManager = CreateLspManager(manifestSchema);
                 var result = await lspManager.DownloadAsync(token);
 
+                // show deprecation message if schema is deprecated
+                ShowDeprecationAsync(manifestSchema, token).LogExceptionAndForget();
                 // start cleanup on a background thread
                 InitiateCleanup(lspManager, token);
                 return result;
@@ -101,6 +107,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         }
 
         /// <summary>
+        /// Shows a deprecation notice if the version manifest has been marked deprecated
+        /// </summary>
+        private async Task ShowDeprecationAsync(ManifestSchema manifestSchema, CancellationToken token)
+        {
+            await TaskScheduler.Default;
+            var strategy = new ManifestDeprecationStrategy(CreateVersionManifestOptions(), _lspSettingsRepository, _toolkitContext);
+            var manifestDeprecationBarManager = new ManifestDeprecationInfoBarManager(
+                strategy, _serviceProvider, _toolkitContext);
+            await manifestDeprecationBarManager.ShowInfoBarAsync(manifestSchema, token);
+        }
+
+        /// <summary>
         /// Initiate cleanup for cached versions of language server
         /// </summary>
         /// <param name="lspManager"></param>
@@ -127,13 +145,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
         private VersionManifestManager CreateVersionManifestManager()
         {
+            var options = CreateVersionManifestOptions();
+            return VersionManifestManager.Create(options, _lspSettingsRepository);
+        }
+
+        private VersionManifestOptions CreateVersionManifestOptions()
+        {
             var options = new VersionManifestOptions()
             {
                 Name = "CodeWhisperer",
                 FileName = CodeWhispererConstants.ManifestFilename,
-                MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion
+                MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion,
+                CloudFrontUrl = CodeWhispererConstants.ManifestCloudFrontUrl
             };
-            return VersionManifestManager.Create(options, _lspSettingsRepository);
+            return options;
         }
 
         private LspManager CreateLspManager(ManifestSchema manifestSchema)

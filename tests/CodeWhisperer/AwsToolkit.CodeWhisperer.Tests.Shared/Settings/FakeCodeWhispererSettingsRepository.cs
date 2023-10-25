@@ -39,9 +39,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             });
         }
 
-        public Task<ILspSettings> GetLspSettingsAsync()
+        public Task<LspSettings> GetLspSettingsAsync()
         {
-            return Task.FromResult((ILspSettings)Settings);
+            return Task.FromResult(Settings.LspSettings);
+        }
+
+        public Task SaveLspSettingsAsync(LspSettings lspSettings)
+        {
+
+            Settings.LspSettings = lspSettings;
+            Save(Settings);
+            return Task.CompletedTask;
         }
     }
 }

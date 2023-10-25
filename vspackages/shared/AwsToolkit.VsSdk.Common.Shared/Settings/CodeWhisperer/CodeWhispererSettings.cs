@@ -8,21 +8,13 @@ namespace AwsToolkit.VsSdk.Common.Settings.CodeWhisperer
     /// CodeWhisperer settings
     /// Reference: https://www.vsixcookbook.com/recipes/settings-and-options.html
     /// </summary>
-    public class CodeWhispererSettings : BaseOptionModel<CodeWhispererSettings>, ILspSettings
+    public class CodeWhispererSettings : BaseOptionModel<CodeWhispererSettings>
     {
-        [Category("Language Server")]
-        [DisplayName("Language server path")]
-        [Description("When set, overrides the default location the AWS Toolkit launches the language server from.")]
-        [DefaultValue("")]
-        public string LanguageServerPath { get; set; } = string.Empty;
-
-        // TODO: Un-comment browsable when developer testing is completed to hide the setting from users
-        // [Browsable(false)]
-        [Category("Language Server")]
-        [DisplayName("Version manifest folder")]
-        [Description("When set, attempts to use the specified folder to fetch the relevant LSP Version Manifest.")]
-        [DefaultValue("")]
-        public string VersionManifestFolder { get; set; } = string.Empty;
+        [Category("General")]
+        [DisplayName("Language Server Settings")]
+        [Description("Represents language server specific settings")]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public LspSettings LspSettings { get; set; } = new LspSettings();
 
         /// <summary>
         /// Enables and disables (pauses) CodeWhisperer features.
