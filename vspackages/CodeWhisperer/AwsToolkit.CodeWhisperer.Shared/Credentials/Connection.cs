@@ -128,11 +128,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                         throw new InvalidOperationException(msg);
                     }
 
-                    if (await UseAwsTokenAsync(awsToken, credentialIdentifier, region))
+                    if (!await UseAwsTokenAsync(awsToken, credentialIdentifier, region))
                     {
-                        toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
+                        var msg = "Credentials are valid, but the bearer token could not be sent to the language server. You will be signed out, try again.";
+                        NotifyErrorAndDisconnect(msg);
+                        throw new InvalidOperationException(msg);
                     }
 
+                    toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
                     await SaveCredentialIdAsync(credentialIdentifier.Id);
                 }
                 catch (Exception ex)
@@ -247,7 +250,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     return;
                 }
 
-                await UseAwsTokenAsync(token, credentialId, ssoRegion);
+                if (!await UseAwsTokenAsync(token, credentialId, ssoRegion))
+                {
+                    // Toolkit could not pass token over to language server. Remain in signed-out state.
+                    _logger.Error("Failed to update bearer token after language server initialized. Remaining signed out.");
+                    return;
+                }
+
                 toolkitContext.ToolkitHost.OutputToHostConsole($"Reconnected to CodeWhisperer with {credentialId.DisplayName}");
             }
             catch (Exception e)
@@ -391,7 +400,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 // Unable to refresh the token (or retrieve the current one)
                 // Move the connection state to Expired, then disconnect.
                 Status = ConnectionStatus.Expired; // event handlers react to this
-                await ClearAwsTokenAsync();
+                if (!await ClearAwsTokenAsync())
+                {
+                    // Not much else we can do. Things are in a bad state here. We tried to log out.
+                    _logger.Error("Unexpected failure when clearing the bearer token");
+                }
 
                 return;
             }
@@ -400,7 +413,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             if (refreshToken.ExpiresAt > _tokenExpiresAt)
             {
                 // Token Refresh was successful
-                await UseAwsTokenAsync(refreshToken, _signedInCredentialIdentifier, _signedInCredentialsSsoRegion);
+                if (!await UseAwsTokenAsync(refreshToken, _signedInCredentialIdentifier, _signedInCredentialsSsoRegion))
+                {
+                    // Unable to update the token on the language server.
+                    // If we do nothing, the token will soon expire, and the user would be unable
+                    // to use CodeWhisperer. Consider the connection expired now.
+                    // Move the connection state to Expired, then disconnect.
+                    Status = ConnectionStatus.Expired; // event handlers react to this
+                    if (!await ClearAwsTokenAsync())
+                    {
+                        // Not much else we can do. Things are in a bad state here. We tried to log out.
+                        _logger.Error("Unexpected failure when clearing the bearer token");
+                    }
+                }
             }
             else
             {
