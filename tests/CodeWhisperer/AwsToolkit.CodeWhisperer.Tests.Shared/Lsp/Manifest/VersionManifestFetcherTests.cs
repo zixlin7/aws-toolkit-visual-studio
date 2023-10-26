@@ -32,7 +32,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             _options = new VersionManifestFetcher.Options()
             {
                 DownloadedCacheParentFolder = _fixture.TestLocation.OutputFolder,
-                ToolkitContext = _contextFixture.ToolkitContext
+                ToolkitContext = _contextFixture.ToolkitContext,
+                Name = "sample-server",
+                CompatibleMajorVersion = 0
             };
             _sut = new VersionManifestFetcher(_options, _settingsRepository);
             Directory.CreateDirectory(_sut.DownloadedCacheFolder);

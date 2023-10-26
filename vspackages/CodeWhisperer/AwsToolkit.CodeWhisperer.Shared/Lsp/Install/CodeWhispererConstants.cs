@@ -16,6 +16,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         public static string ManifestCloudFrontUrl = $"https://aws-toolkit-language-servers.us-east-1.amazonaws.com/{ManifestCompatibleMajorVersion}/{ManifestFilename}";
         public static string LspDownloadParentFolder => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "aws", "toolkits", "language-server");
+            "aws", "toolkits", "language-servers", "CodeWhisperer");
     }
 }

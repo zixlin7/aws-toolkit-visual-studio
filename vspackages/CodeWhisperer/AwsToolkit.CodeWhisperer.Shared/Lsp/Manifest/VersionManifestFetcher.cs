@@ -24,6 +24,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
     {
         public class Options
         {
+
+            /// <summary>
+            /// Specifies the name of the Language Server associated with the version manifest
+            /// </summary>
+            public string Name { get; set; } = string.Empty;
+
             /// <summary>
             /// Specifies the major version of the manifest schema with which a given toolkit release is compatible with eg. 0.x, 1.x
             /// </summary>
@@ -62,7 +68,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
             _options = options;
             _settingsRepository = settingsRepository;
             DownloadedCacheFolder = Path.Combine(_options.DownloadedCacheParentFolder,
-                $"lsp/manifest/{_options.CompatibleMajorVersion}");
+                "lsp", "manifest", _options.Name, _options.CompatibleMajorVersion.ToString());
         }
 
         public async Task<Stream> GetAsync(string relativePath, CancellationToken token = default)

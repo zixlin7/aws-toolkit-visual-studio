@@ -61,6 +61,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 ResourceValidator = IsValidAsync,
                 CompatibleMajorVersion = managerOptions.MajorVersion,
                 CloudFrontBaseUrl = managerOptions.CloudFrontUrl,
+                Name = managerOptions.Name,
                 ToolkitContext = managerOptions.ToolkitContext
             };
 
