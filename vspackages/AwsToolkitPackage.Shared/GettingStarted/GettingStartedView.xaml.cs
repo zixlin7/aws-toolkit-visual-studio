@@ -23,13 +23,5 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         {
             InitializeComponent();
         }
-
-        /// <summary>
-        /// Prevents any click events in the TextBlock from reaching the parent CheckBox
-        /// </summary>
-        private void TextBlock_SwallowEvents(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-        }
     }
 }
