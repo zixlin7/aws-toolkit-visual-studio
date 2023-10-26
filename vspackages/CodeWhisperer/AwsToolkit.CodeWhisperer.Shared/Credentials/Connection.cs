@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
+using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
@@ -26,6 +27,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         private readonly IToolkitContextProvider _toolkitContextProvider;
 
+        private readonly ICodeWhispererSettingsRepository _settingsRepository;
         private readonly IToolkitLspClient _codeWhispererLspClient;
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private readonly ICodeWhispererSsoTokenProvider _tokenProvider;
@@ -38,10 +40,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         [ImportingConstructor]
         public Connection(
             IToolkitContextProvider toolkitContextProvider,
+            ICodeWhispererSettingsRepository settingsRepository,
             ICodeWhispererLspClient codeWhispererLspClient,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         : this(
-            toolkitContextProvider, codeWhispererLspClient,
+            toolkitContextProvider, settingsRepository, codeWhispererLspClient,
             new CodeWhispererSsoTokenProvider(toolkitContextProvider),
             taskFactoryProvider, new ToolkitTimer())
         {
@@ -52,12 +55,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         internal Connection(
             IToolkitContextProvider toolkitContextProvider,
+            ICodeWhispererSettingsRepository settingsRepository,
             ICodeWhispererLspClient codeWhispererLspClient,
             ICodeWhispererSsoTokenProvider tokenProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider,
             IToolkitTimer tokenRefreshTimer)
         {
             _toolkitContextProvider = toolkitContextProvider;
+            _settingsRepository = settingsRepository;
             _codeWhispererLspClient = codeWhispererLspClient;
             _tokenProvider = tokenProvider;
             _taskFactoryProvider = taskFactoryProvider;
@@ -65,6 +70,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             _tokenRefreshTimer = tokenRefreshTimer;
             _tokenRefreshTimer.AutoReset = false;
             _tokenRefreshTimer.Elapsed += OnTokenRefreshTimerElapsed;
+
+            _codeWhispererLspClient.InitializedAsync += OnLspClientInitializedAsync;
         }
 
         private ConnectionStatus _status = ConnectionStatus.Disconnected;
@@ -112,8 +119,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 try
                 {
                     var toolkitContext = _toolkitContextProvider.GetToolkitContext();
-                    var profile = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-                    var region = toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
+                    var region = GetSsoRegion(credentialIdentifier);
 
                     if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, region, out var awsToken))
                     {
@@ -126,6 +132,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     {
                         toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
                     }
+
+                    await SaveCredentialIdAsync(credentialIdentifier.Id);
                 }
                 catch (Exception ex)
                 {
@@ -134,6 +142,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     throw new InvalidOperationException(msg, ex);
                 }
             }
+        }
+
+        /// <summary>
+        /// Looks up the SSO Region configured for the given credentialId
+        /// </summary>
+        private ToolkitRegion GetSsoRegion(ICredentialIdentifier credentialIdentifier)
+        {
+            var toolkitContext = _toolkitContextProvider.GetToolkitContext();
+            var profile = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+
+            return toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
         }
 
         /// <summary>
@@ -171,12 +190,69 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     _toolkitContextProvider.GetToolkitContext().CredentialManager.Invalidate(credentialId);
                     toolkitContext.ToolkitHost.OutputToHostConsole($"Signed out of CodeWhisperer with {displayName}.");
                 }
+
+                await SaveCredentialIdAsync(null);
             }
             catch (Exception ex)
             {
                 var msg = $"Failed to sign out of CodeWhisperer with {displayName}.";
                 NotifyError(msg, ex);
                 throw new InvalidOperationException(msg, ex);
+            }
+        }
+
+        /// <summary>
+        /// Store the given credentialsId as part of the CodeWhisperer settings.
+        /// </summary>
+        private async Task SaveCredentialIdAsync(string credentialIdentifierId)
+        {
+            var settings = await _settingsRepository.GetAsync();
+            settings.CredentialIdentifier = credentialIdentifierId;
+            _settingsRepository.Save(settings);
+        }
+
+        /// <summary>
+        /// Raised when the Language Client has completed its initialization handshake with the
+        /// language server.
+        /// </summary>
+        private async Task OnLspClientInitializedAsync(object sender, EventArgs args)
+        {
+            try
+            {
+                // If user was signed in to CodeWhisperer in their previous IDE session,
+                // attempt to silently re-connect using the same credentials.
+                // If user interaction would be required (eg: sso login), remain signed out.
+                var settings = await _settingsRepository.GetAsync();
+
+                if (string.IsNullOrWhiteSpace(settings.CredentialIdentifier))
+                {
+                    // User was previously logged out
+                    return;
+                }
+
+                var toolkitContext = _toolkitContextProvider.GetToolkitContext();
+
+                var credentialId = toolkitContext.CredentialManager.GetCredentialIdentifierById(settings.CredentialIdentifier);
+
+                if (credentialId == null)
+                {
+                    // Credentials entry no longer exists. Remain in signed-out state.
+                    return;
+                }
+
+                var ssoRegion = GetSsoRegion(credentialId);
+                if (!_tokenProvider.TrySilentGetSsoToken(credentialId, ssoRegion, out var token))
+                {
+                    // Toolkit cannot automatically log in. Remain in signed-out state.
+                    return;
+                }
+
+                await UseAwsTokenAsync(token, credentialId, ssoRegion);
+                toolkitContext.ToolkitHost.OutputToHostConsole($"Reconnected to CodeWhisperer with {credentialId.DisplayName}");
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Unable to auto-login to CodeWhisperer", e);
             }
         }
 
@@ -338,6 +414,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         public void Dispose()
         {
+            _codeWhispererLspClient.InitializedAsync -= OnLspClientInitializedAsync;
+
             _tokenRefreshTimer.Elapsed -= OnTokenRefreshTimerElapsed;
             _tokenRefreshTimer?.Dispose();
         }

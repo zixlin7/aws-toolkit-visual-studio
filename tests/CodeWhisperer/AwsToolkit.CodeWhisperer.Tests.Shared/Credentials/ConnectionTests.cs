@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.TestUtilities;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.Context;
@@ -31,12 +33,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
 
         public StubConnection(
             IToolkitContextProvider toolkitContextProvider,
+            ICodeWhispererSettingsRepository settingsRepository,
             ICodeWhispererLspClient codeWhispererLspClient,
             ICodeWhispererSsoTokenProvider ssoTokenProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider,
             IToolkitTimer timer)
-            : base(toolkitContextProvider, codeWhispererLspClient,
-                ssoTokenProvider, taskFactoryProvider, timer)
+            : base(
+                toolkitContextProvider,
+                settingsRepository,
+                codeWhispererLspClient,
+                ssoTokenProvider,
+                taskFactoryProvider,
+                timer)
         {
         }
 
@@ -51,6 +59,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
     {
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
+        private readonly FakeCodeWhispererSettingsRepository _settingsRepository = new FakeCodeWhispererSettingsRepository();
         private readonly FakeCodeWhispererClient _codeWhispererClient = new FakeCodeWhispererClient();
         private readonly FakeCodeWhispererSsoTokenProvider _ssoTokenProvider = new FakeCodeWhispererSsoTokenProvider();
         private readonly FakeToolkitTimer _timer = new FakeToolkitTimer();
@@ -85,30 +94,41 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
                 Token = "secret-token-123", ExpiresAt = DateTime.UtcNow.AddHours(6),
             };
 
+            _settingsRepository.Settings.CredentialIdentifier = _sampleCredentialId.Id;
+
             _toolkitContextFixture.DefineRegion(_sampleRegion);
             _toolkitContextFixture.DefineCredentialIdentifiers(new[] { _sampleCredentialId });
             _toolkitContextFixture.DefineCredentialProperties(_sampleCredentialId, _sampleProfileProperties);
 
-            _sut = new StubConnection(_toolkitContextFixture.ToolkitContextProvider, _codeWhispererClient,
-                _ssoTokenProvider, _taskFactoryProvider, _timer);
+            _sut = new StubConnection(
+                _toolkitContextFixture.ToolkitContextProvider,
+                _settingsRepository,
+                _codeWhispererClient,
+                _ssoTokenProvider,
+                _taskFactoryProvider,
+                _timer);
         }
 
         [Fact]
         public async Task SignInAsync_UserCancel()
         {
+            _settingsRepository.Settings.CredentialIdentifier = null;
             _sut.CredentialIdPromptResponse = null;
             await _sut.SignInAsync();
 
             _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
+            _settingsRepository.Settings.CredentialIdentifier.Should().BeNull();
         }
 
         [Fact]
         public async Task SignInAsync()
         {
+            _settingsRepository.Settings.CredentialIdentifier = null;
             _sut.CredentialIdPromptResponse = _sampleCredentialId;
             await _sut.SignInAsync();
 
             _codeWhispererClient.CredentialsProtocol.TokenPayload.Token.Should().Be(_ssoTokenProvider.Token.Token);
+            _settingsRepository.Settings.CredentialIdentifier.Should().Be(_sampleCredentialId.Id);
         }
 
         [Fact]
@@ -127,6 +147,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _sut.Status.Should().Be(ConnectionStatus.Disconnected);
             _timer.IsStarted.Should().BeFalse();
             _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
+            _settingsRepository.Settings.CredentialIdentifier.Should().BeNull();
         }
 
         [Fact]
@@ -256,6 +277,44 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _timer.RaiseElapsed();
 
             _timer.IsStarted.Should().BeFalse();
+            _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task LspInit_NoPreviousSignIn()
+        {
+            _settingsRepository.Settings.CredentialIdentifier = null;
+
+            await _codeWhispererClient.RaiseInitializedAsync();
+
+            _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task LspInit_PreviousCredentialsIdNotFound()
+        {
+            _settingsRepository.Settings.CredentialIdentifier = "nonexistent-credentials-id";
+
+            await _codeWhispererClient.RaiseInitializedAsync();
+
+            _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task LspInit_PreviouslySignedIn()
+        {
+            _ssoTokenProvider.CanGetTokenSilently = true;
+            await _codeWhispererClient.RaiseInitializedAsync();
+
+            _codeWhispererClient.CredentialsProtocol.TokenPayload.Token.Should().Be(_ssoTokenProvider.Token.Token);
+        }
+
+        [Fact]
+        public async Task LspInit_CannotRefreshPreviousToken()
+        {
+            _ssoTokenProvider.CanGetTokenSilently = false;
+            await _codeWhispererClient.RaiseInitializedAsync();
+
             _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
         }
 
