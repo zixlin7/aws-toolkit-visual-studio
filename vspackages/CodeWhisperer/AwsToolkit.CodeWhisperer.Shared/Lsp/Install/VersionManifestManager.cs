@@ -48,7 +48,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 {
                     var manifestSchema = await ManifestSchemaUtil.LoadAsync(stream);
                     return manifestSchema != null &&
-                           new Version(manifestSchema.SchemaVersion).Major == managerOptions.MajorVersion;
+                           new Version(manifestSchema.ManifestSchemaVersion).Major == managerOptions.MajorVersion;
                 }
                 catch
                 {
@@ -58,7 +58,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
             var options = new VersionManifestFetcher.Options()
             {
-                ResourceValidator = IsValidAsync, CompatibleMajorVersion = managerOptions.MajorVersion
+                ResourceValidator = IsValidAsync,
+                CompatibleMajorVersion = managerOptions.MajorVersion,
+                CloudFrontBaseUrl = managerOptions.CloudFrontUrl,
+                ToolkitContext = managerOptions.ToolkitContext
             };
 
             return new VersionManifestFetcher(options, settingsRepository);

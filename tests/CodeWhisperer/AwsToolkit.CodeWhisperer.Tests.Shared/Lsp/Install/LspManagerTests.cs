@@ -6,12 +6,14 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.Tests.Common.IO;
+using Amazon.AWSToolkit.Util;
 
 using Xunit;
 
@@ -23,10 +25,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         private readonly LspManager _sut;
         private readonly ManifestSchema _sampleSchema = new ManifestSchema();
         private readonly LspVersion _sampleLspVersion;
-        private readonly string _sampleVersion = $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.2";
+        private static readonly VersionRange _sampleVersionRange = VersionRangeUtil.Create("1.0.0", "2.0.0");
+        private readonly string _sampleVersion = $"{_sampleVersionRange.Start.Major}.0.2";
 
-        private readonly string _additionalVersion =
-            $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.1";
+        private readonly string _additionalVersion = $"{_sampleVersionRange.Start.Major}.0.1";
 
         private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
         private readonly LspManager.Options _options;
@@ -67,16 +69,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
         public static readonly IEnumerable<object[]> IncompatibleManifestVersions = new[]
         {
-            new object[] { "0.0.0" },
-            new object[] { $"{CodeWhispererConstants.LspCompatibleVersionRange.End.Major + 1}.0.2" },
-            new object[] { $"{CodeWhispererConstants.LspCompatibleVersionRange.End.Major + 2}.0.2" }
+            new object[] { $"{_sampleVersionRange.Start.Major - 1}.0.2" },
+            new object[] { $"{_sampleVersionRange.End.Major + 1}.0.2" },
+            new object[] { $"{_sampleVersionRange.End.Major + 2}.0.2" }
         };
 
         [Theory]
         [MemberData(nameof(IncompatibleManifestVersions))]
         public async Task DownloadAsync_WhenNoMatchingVersionsFound(string version)
         {
-            _sampleLspVersion.Version = version;
+            _sampleLspVersion.ServerVersion = version;
 
             await AssertDownloadAsyncThrowsWithMessage(
                 "language server that satisfies one or more of these conditions");
@@ -138,7 +140,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             // setup fallback cache
             var expectedFallbackLocation = SetupFileInCache(_additionalVersion);
             var additionalFallbackLocation =
-                SetupFileInCache($"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.0");
+                SetupFileInCache($"{_sampleVersionRange.Start.Major}.0.0");
             SetupFile(additionalFallbackLocation);
 
 
@@ -162,7 +164,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             // setup fallback cache
             var deListedFallbackLocation = SetupFileInCache(_additionalVersion);
             var additionalFallbackLocation =
-                SetupFileInCache($"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.0");
+                SetupFileInCache($"{_sampleVersionRange.Start.Major}.0.0");
 
             await AssertDownloadAsyncThrowsWithMessage("compatible version of");
         }
@@ -191,7 +193,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         public async Task DownloadAsync_WhenMultipleVersionsChooseLatest()
         {
             // add additional compatible lsp versions 
-            var latestExpectedVersion = $"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.1.1";
+            var latestExpectedVersion = $"{_sampleVersionRange.Start.Major}.1.1";
             var latestLspVersion = CreateSampleLspVersion(latestExpectedVersion);
             _sampleSchema.Versions.Add(latestLspVersion);
 
@@ -236,7 +238,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             var deListedVersion = CreateSampleLspVersion(_additionalVersion);
             deListedVersion.IsDelisted = true;
             _sampleSchema.Versions.Add(deListedVersion);
-            var deListedPath = SetupFileInCache(deListedVersion.Version);
+            var deListedPath = SetupFileInCache(deListedVersion.ServerVersion);
 
             await _sut.CleanupAsync();
 
@@ -250,15 +252,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         {
             // setup cache with extra versions
             var extraVersion1 =
-                CreateSampleLspVersion($"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.1");
+                CreateSampleLspVersion($"{_sampleVersionRange.Start.Major}.0.1");
             var extraVersion2 =
-                CreateSampleLspVersion($"{CodeWhispererConstants.LspCompatibleVersionRange.Start.Major}.0.3");
+                CreateSampleLspVersion($"{_sampleVersionRange.Start.Major}.0.3");
             _sampleSchema.Versions.Add(extraVersion1);
             _sampleSchema.Versions.Add(extraVersion2);
 
             var versionPath = SetupFileInCache(_sampleVersion);
-            var versionPath1 = SetupFileInCache(extraVersion1.Version);
-            var versionPath2 = SetupFileInCache(extraVersion2.Version);
+            var versionPath1 = SetupFileInCache(extraVersion1.ServerVersion);
+            var versionPath2 = SetupFileInCache(extraVersion2.ServerVersion);
 
             await _sut.CleanupAsync();
 
@@ -301,7 +303,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
         private void SetupTargetContent(string hashString, LspVersion lspVersion)
         {
-            var version = lspVersion.Version;
+            var version = lspVersion.ServerVersion;
             var lspFetchLocation = Path.Combine(TestLocation.InputFolder, version, CodeWhispererConstants.Filename);
             SetupFile(lspFetchLocation);
 
@@ -316,7 +318,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             {
                 Filename = CodeWhispererConstants.Filename,
                 ToolkitContext = _contextFixture.ToolkitContext,
-                VersionRange = CodeWhispererConstants.LspCompatibleVersionRange,
+                VersionRange = _sampleVersionRange,
                 DownloadParentFolder = TestLocation.OutputFolder
             };
         }
@@ -325,7 +327,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         {
             return new LspVersion()
             {
-                Version = version,
+                ServerVersion = version,
                 Targets = new List<VersionTarget>()
                 {
                     CreateVersionTarget(Architecture.X64.ToString(), OSPlatform.Windows.ToString(),

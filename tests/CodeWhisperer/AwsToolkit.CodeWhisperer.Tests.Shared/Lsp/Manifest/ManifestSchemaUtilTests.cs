@@ -21,7 +21,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
                 var sut = await ManifestSchemaUtil.LoadAsync(stream);
 
                 Assert.NotNull(sut);
-                Assert.Equal("0.1", sut.SchemaVersion);
+                Assert.Equal("0.1", sut.ManifestSchemaVersion);
                 Assert.Equal(3, sut.Versions.Count);
             }
         }

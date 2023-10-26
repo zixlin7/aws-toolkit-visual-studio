@@ -1,4 +1,6 @@
-﻿namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models
+﻿using Amazon.AWSToolkit.Context;
+
+namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models
 {
     public class VersionManifestOptions
     {
@@ -21,5 +23,7 @@
         /// CloudFront location to fetch manifest from
         /// </summary>
         public string CloudFrontUrl { get; set; } = string.Empty;
+
+        public ToolkitContext ToolkitContext { get; set; }
     }
 }

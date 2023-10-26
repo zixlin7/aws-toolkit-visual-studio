@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 {
@@ -65,10 +66,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
         public static string GetHash(Stream stream)
         {
+            // as per spec: use sha384 hash to verify validity of LSP binary
             using (var sha384 = SHA384.Create())
             {
-                var hash = Convert.ToBase64String(sha384.ComputeHash(stream));
-                return hash;
+                var val = sha384.ComputeHash(stream);
+                var hash = BitConverter.ToString(val).Replace("-", String.Empty);
+                // lower casing to match the remote version manifest hash casing 
+                return hash.ToLowerInvariant();
             }
         }
 

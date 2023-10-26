@@ -61,7 +61,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
                 _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
 
             Assert.NotNull(manifestSchema);
-            Assert.Equal("0.1", manifestSchema.SchemaVersion);
+            Assert.Equal("0.1", manifestSchema.ManifestSchemaVersion);
             Assert.Equal(3, manifestSchema.Versions.Count);
         }
 

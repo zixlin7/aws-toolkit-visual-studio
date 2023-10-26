@@ -23,7 +23,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
         private readonly ManifestDeprecationStrategy _sut;
 
         private readonly ManifestSchema _schema =
-            new ManifestSchema() { SchemaVersion = "1.2", IsManifestDeprecated = false };
+            new ManifestSchema() { ManifestSchemaVersion = "1.2", IsManifestDeprecated = false };
 
         private static readonly int _toolkitCompatibleMajorVersion = 1;
         private static readonly string _manifestUrl = "abc/1/manifest.json";

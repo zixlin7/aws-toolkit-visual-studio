@@ -46,6 +46,15 @@ namespace AwsToolkit.VsSdk.Common.Settings
          EditorBrowsable(EditorBrowsableState.Never)]
         public List<DismissedManifestDeprecation> DismissedManifestDeprecations { get; set; } = new List<DismissedManifestDeprecation>();
 
+        ///<summary>
+        /// Represents list of version manifests and their associated cached etag values
+        /// </summary>
+        [DisplayName("Cached manifest E-Tags")]
+        [Description("Represents list of version manifests and their associated cached etag values")]
+        [Browsable(false), NotifyParentProperty(true),
+         EditorBrowsable(EditorBrowsableState.Never)]
+        public List<ManifestCachedEtag> ManifestCachedEtags { get; set; } = new List<ManifestCachedEtag>();
+
         public override string ToString()
         {
             return string.Empty;

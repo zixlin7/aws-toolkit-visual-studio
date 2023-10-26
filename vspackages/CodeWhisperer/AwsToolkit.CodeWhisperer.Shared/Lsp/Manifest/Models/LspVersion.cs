@@ -13,7 +13,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models
         /// Version of the lsp, in format x.x.x eg. 1.2.3
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string Version { get; set; }
+        public string ServerVersion { get; set; }
         /// <summary>
         /// When set to true indicates that this version should no longer be used and the contents may be empty
         /// </summary>

@@ -112,7 +112,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         private async Task ShowDeprecationAsync(ManifestSchema manifestSchema, CancellationToken token)
         {
             await TaskScheduler.Default;
-            var strategy = new ManifestDeprecationStrategy(CreateVersionManifestOptions(), _lspSettingsRepository, _toolkitContext);
+            var strategy = new ManifestDeprecationStrategy(CreateVersionManifestOptions(true), _lspSettingsRepository, _toolkitContext);
             var manifestDeprecationBarManager = new ManifestDeprecationInfoBarManager(
                 strategy, _serviceProvider, _toolkitContext);
             await manifestDeprecationBarManager.ShowInfoBarAsync(manifestSchema, token);
@@ -145,20 +145,26 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
         private VersionManifestManager CreateVersionManifestManager()
         {
-            var options = CreateVersionManifestOptions();
+            var options = CreateVersionManifestOptions(false);
             return VersionManifestManager.Create(options, _lspSettingsRepository);
         }
 
-        private VersionManifestOptions CreateVersionManifestOptions()
+        private VersionManifestOptions CreateVersionManifestOptions(bool isFullUrl)
         {
             var options = new VersionManifestOptions()
             {
                 Name = "CodeWhisperer",
                 FileName = CodeWhispererConstants.ManifestFilename,
                 MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion,
-                CloudFrontUrl = CodeWhispererConstants.ManifestCloudFrontUrl
+                CloudFrontUrl = GetCloudFrontUrl(isFullUrl),
+                ToolkitContext = _toolkitContext
             };
             return options;
+        }
+
+        private static string GetCloudFrontUrl(bool isFullUrl)
+        {
+            return isFullUrl ? CodeWhispererConstants.ManifestCloudFrontUrl :CodeWhispererConstants.ManifestBaseCloudFrontUrl;
         }
 
         private LspManager CreateLspManager(ManifestSchema manifestSchema)

@@ -14,7 +14,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models
         /// Schema format version
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string SchemaVersion { get; set; }
+        public string ManifestSchemaVersion { get; set; }
         /// <summary>
         /// Unique ID for the system represented by the manifest
         /// </summary>

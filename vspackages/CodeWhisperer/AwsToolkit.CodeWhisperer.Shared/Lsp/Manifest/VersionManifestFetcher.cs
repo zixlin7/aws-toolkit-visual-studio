@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ResourceFetchers;
 using Amazon.Runtime.Internal.Settings;
 
@@ -36,6 +39,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
             /// or if contents should be retrieved from a fallback location.
             /// </summary>
             public Func<Stream, Task<bool>> ResourceValidator { get; set; } = null;
+
+            /// <summary>
+            /// CloudFront-backed base location to fetch manifest from
+            /// </summary>
+            public string CloudFrontBaseUrl { get; set; }
+
+            public ToolkitContext ToolkitContext { get; set; }
         }
 
         private static readonly ILog _logger = LogManager.GetLogger(typeof(VersionManifestFetcher));
@@ -55,30 +65,66 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
                 $"lsp/manifest/{_options.CompatibleMajorVersion}");
         }
 
-        private async Task<ChainedResourceFetcher> CreateResourceFetcherChainAsync(string relativePath)
+        public async Task<Stream> GetAsync(string relativePath, CancellationToken token = default)
         {
             var lspSettings = await _settingsRepository.GetLspSettingsAsync();
             var lspManifestSource = GetManifestLocationAsUri(lspSettings);
 
-            var downloadCacheFetcher = new RelativeFileResourceFetcher(DownloadedCacheFolder);
 
-            var fetcherChain = new ChainedResourceFetcher();
-          
             // If toolkit is configured with a local version manifest location, use that first
             if (lspManifestSource != null && lspManifestSource.IsFile)
             {
                 var localLocationFetcher = new RelativeFileResourceFetcher(lspManifestSource.LocalPath);
                 // Validate the contents of the file fetched from the local path before returning it
-                var validatedLocalLocationFetcher = new ConditionalResourceFetcher(localLocationFetcher,
-                        _options.ResourceValidator ?? (stream => Task.FromResult(true)));
-                    fetcherChain.Add(validatedLocalLocationFetcher);
+                var validatedLocalLocationFetcher = CreateConditionalResourceFetcher(localLocationFetcher);
+
+                return await validatedLocalLocationFetcher.GetAsync(relativePath, token);
             }
 
-            // Next use the download cache, if it is valid and contains the latest version w.r.t the online counterpart
+            // if cache has the latest contents(by comparing e-tags with online version) and is valid use that, else fetch from remote
+            try
+            {
+                var cacheStream = await GetResourceFromCacheAsync(relativePath, token);
+
+                // if a remote location does not exist, default to content in the download cache
+                if (string.IsNullOrWhiteSpace(_options.CloudFrontBaseUrl))
+                {
+                    return cacheStream;
+                }
+
+                var cloudFrontFullUrl = GetCloudFrontFullUrl(relativePath);
+                var cachedEtag = GetEtagForManifest(lspSettings, cloudFrontFullUrl)?.Etag;
+
+                // only use cached content if it is valid and a cached etag exists
+                var etagToRequest = cacheStream != null && !string.IsNullOrWhiteSpace(cachedEtag) ? cachedEtag : null;
+
+                // fetch contents from remote if new version exists
+                var response = await GetLatestFromRemoteAsync(cloudFrontFullUrl, etagToRequest);
+                if (response == null)
+                {
+                    _logger.Info("Version manifest cache has the latest contents");
+                    // cache content is latest, return that
+                    return cacheStream;
+                }
+
+                // fetch latest contents from remote location and cache it
+                return await ValidateRemoteResourceAsync(relativePath, response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Failed to fetch version manifest from remote location", ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Fetch contents from local cache
+        /// </summary>
+        private async Task<Stream> GetResourceFromCacheAsync(string relativePath, CancellationToken token = default)
+        {
+            var downloadCacheFetcher = new RelativeFileResourceFetcher(DownloadedCacheFolder);
             var validatedDownloadCacheFetcher = new ConditionalResourceFetcher(downloadCacheFetcher, async (stream) =>
             {
-                // TODO:  Check if there is a different version online by comparing ETags, and opt to use that instead of the download cache version.
-
                 // verify if cached version is parseable and valid, if it corrupted delete the cached fallback version
                 var result = _options.ResourceValidator == null || await _options.ResourceValidator.Invoke(stream);
                 if (!result)
@@ -90,20 +136,146 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest
 
                 return true;
             });
-
-
-            // TODO: Fetch manifest from various online sources: CloudFront, S3. If the resource is obtained this way, it is also cached.
-
-            fetcherChain.Add(validatedDownloadCacheFetcher);
-            return fetcherChain;
+            try
+            {
+                return await validatedDownloadCacheFetcher.GetAsync(relativePath, token);
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Error fetching resource from local cache", e);
+                return null;
+            }
         }
 
-        public async Task<Stream> GetAsync(string relativePath, CancellationToken token = default)
+        private string GetCloudFrontFullUrl(string relativePath)
         {
-            var fetcherChain = await CreateResourceFetcherChainAsync(relativePath);
-
-            return await fetcherChain.GetAsync(relativePath, token);
+            return $"{_options.CloudFrontBaseUrl}/{_options.CompatibleMajorVersion}/{relativePath}";
         }
+
+        private ConditionalResourceFetcher CreateConditionalResourceFetcher(IResourceFetcher resourceFetcher)
+        {
+            return new ConditionalResourceFetcher(resourceFetcher,
+                _options.ResourceValidator ?? (stream => Task.FromResult(true)));
+        }
+
+        /// <summary>
+        /// Requests for new content but additionally uses the given E-Tag.
+        /// If no E-Tag is given, it behaves as a normal request.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="etag"></param>
+        /// <returns> response of the request. If response is null, it implies the provided E-Tag matched the server's, so no new content was in response.</returns>
+        private async Task<HttpWebResponse> GetLatestFromRemoteAsync(string url, string etag)
+        {
+           
+            var response = await GetResponseFromRemoteAsync(url, etag);
+            return response.StatusCode == HttpStatusCode.NotModified ? null : response;
+        }
+
+        private static async Task<HttpWebResponse> GetResponseFromRemoteAsync(string url, string etag)
+        {
+            url = url.Replace(@"\", "/");
+
+            var uri = new Uri(url);
+            var webRequest = WebRequest.Create(uri);
+            // add etag header to verify if contents match local cache
+            if (!string.IsNullOrWhiteSpace(etag))
+            {
+                webRequest.Headers["If-None-Match"] = etag;
+            }
+
+            try
+            {
+                return (HttpWebResponse) await webRequest.GetResponseAsync();
+            }
+            catch (WebException ex)
+            when(ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+            {
+                return (HttpWebResponse) ex.Response;
+            }
+        }
+
+        /// <summary>
+        /// Validates the latest contents retrieved from remote location and if valid, updates cache(content + etag)
+        /// </summary>
+        private async Task<Stream> ValidateRemoteResourceAsync(string relativePath, HttpWebResponse response)
+        {
+            var cloudFrontFullUrl = GetCloudFrontFullUrl(relativePath);
+            var latestStream = response.GetResponseStream();
+            var etag = response.Headers["Etag"];
+
+            var validatedStream = await GetValidatedRemoteStreamAsync(relativePath, latestStream);
+
+            if (validatedStream != null)
+            {
+                // cache the etag if contents  are valid
+                await CacheEtagAsync(etag, cloudFrontFullUrl);
+            }
+
+            return validatedStream;
+        }
+
+        /// <summary>
+        /// Validates and caches the remote contents retrieved
+        /// </summary>
+        private async Task<Stream> GetValidatedRemoteStreamAsync(string relativePath, Stream stream)
+        {
+            string FnGetFullCachePath(string path) => Path.Combine(DownloadedCacheFolder, path);
+
+            // validate the stream and then cache it
+            var passThroughRemoteFetcher = new PassThroughResourceFetcher(stream);
+            var validatedRemoteFetcher =
+                new CachingResourceFetcher(CreateConditionalResourceFetcher(passThroughRemoteFetcher),
+                    FnGetFullCachePath);
+
+            return await validatedRemoteFetcher.GetAsync(relativePath);
+        }
+
+        /// <summary>
+        /// Updates settings to cache/store the etag for specified manifest
+        /// </summary>
+        private async Task CacheEtagAsync(string etag, string cloudFrontUrl)
+        {
+            try
+            {
+                var settings = await _settingsRepository.GetLspSettingsAsync();
+                var cachedEntry = GetEtagForManifest(settings, cloudFrontUrl);
+
+                if (cachedEntry == null)
+                {
+                    cachedEntry = new ManifestCachedEtag()
+                    {
+                        Etag = etag,
+                        ManifestUrl = cloudFrontUrl
+                    };
+                    settings.ManifestCachedEtags.Add(cachedEntry);
+
+                }
+                else
+                {
+                    cachedEntry.Etag = etag;
+                    cachedEntry.ManifestUrl = cloudFrontUrl;
+                }
+
+                await _settingsRepository.SaveLspSettingsAsync(settings);
+
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error caching etag for version manifest: {cloudFrontUrl}", e);
+            }
+        }
+
+        /// <summary>
+        /// Gets etag associated with specified manifest url from cached e-tags list
+        /// </summary>
+        private ManifestCachedEtag GetEtagForManifest(LspSettings settings, string manifestUrl)
+        {
+            return settings?.ManifestCachedEtags?
+                .FirstOrDefault(x =>
+                    x != null && string.Equals(x.ManifestUrl, manifestUrl));
+        }
+
 
         /// <summary>
         /// Converts the user-configured version manifest path value to a Uri, which

@@ -69,29 +69,29 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var targetContent = GetLspTargetContent(latestCompatibleLspVersion);
 
                 // if the latest version is stored locally already, return that, else fetch the latest version
-                var downloadCachePath = GetDownloadPath(latestCompatibleLspVersion.Version, targetContent.Filename);
+                var downloadCachePath = GetDownloadPath(latestCompatibleLspVersion.ServerVersion, targetContent.Filename);
                 if (File.Exists(downloadCachePath))
                 {
                     ShowMessage(
-                        $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.Version} from local cache location: {downloadCachePath}");
+                        $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} from local cache location: {downloadCachePath}");
                     return downloadCachePath;
                 }
 
                 // if lsp can be successfully downloaded from remote location, return the download path else attempt fallback location
                 var downloadResult =
-                    await DownloadFromRemoteAsync(targetContent, latestCompatibleLspVersion.Version, token);
+                    await DownloadFromRemoteAsync(targetContent, latestCompatibleLspVersion.ServerVersion, token);
                 if (downloadResult)
                 {
                     ShowMessage(
-                        $"Installing {_options.Name} Language Server v{latestCompatibleLspVersion.Version} to: {downloadCachePath}");
+                        $"Installing {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} to: {downloadCachePath}");
                     return downloadCachePath;
                 }
 
                 // if unable to retrieve contents from specified remote location, use the most compatible fallback cached lsp version
                 _logger.Info(
-                    $"Unable to download {_options.Name} language server version v{latestCompatibleLspVersion.Version}. Attempting to fetch from fallback location");
+                    $"Unable to download {_options.Name} language server version v{latestCompatibleLspVersion.ServerVersion}. Attempting to fetch from fallback location");
 
-                var fallbackPath = GetFallbackPath(latestCompatibleLspVersion.Version);
+                var fallbackPath = GetFallbackPath(latestCompatibleLspVersion.ServerVersion);
                 if (!File.Exists(fallbackPath))
                 {
                     throw new ToolkitException(
@@ -100,7 +100,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 }
 
                 ShowMessage(
-                    $"Unable to install {_options.Name} Language Server v{latestCompatibleLspVersion.Version}. Launching a previous version from: {fallbackPath}");
+                    $"Unable to install {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion}. Launching a previous version from: {fallbackPath}");
                 return fallbackPath;
             }
             catch (Exception e)
@@ -161,7 +161,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
             var latestCompatibleLspVersion = _manifestSchema.Versions
                 .Where(ver => IsCompatibleVersion(ver) && HasRequiredTargetContent(ver))
-                .OrderByDescending(obj => Version.Parse(obj.Version)).FirstOrDefault();
+                .OrderByDescending(obj => Version.Parse(obj.ServerVersion)).FirstOrDefault();
 
             if (latestCompatibleLspVersion == null)
             {
@@ -304,7 +304,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <param name="lspVersion"></param>
         private bool IsCompatibleVersion(LspVersion lspVersion)
         {
-            Version.TryParse(lspVersion.Version, out var version);
+            Version.TryParse(lspVersion.ServerVersion, out var version);
             return _options.VersionRange.ContainsVersion(version) && !lspVersion.IsDelisted;
         }
 
@@ -314,7 +314,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// </summary>
         private IList<Version> GetCompatibleVersions()
         {
-            return _manifestSchema.Versions.Where(IsCompatibleVersion).Select(x => Version.Parse(x.Version)).ToList();
+            return _manifestSchema.Versions.Where(IsCompatibleVersion).Select(x => Version.Parse(x.ServerVersion)).ToList();
         }
 
         /// <summary>
