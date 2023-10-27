@@ -1,15 +1,18 @@
 ﻿using System;
+
+using Amazon.AwsToolkit.VsSdk.Common.Notifications;
+
 using log4net;
 
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace AwsToolkit.VsSdk.Common.Notifications
 {
     /// <summary>
     /// Represents toolkit specific info bars
     /// </summary>
-    public abstract class ToolkitInfoBar: IVsInfoBarUIEvents
+    public abstract class ToolkitInfoBar : IVsInfoBarUIEvents
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(ToolkitInfoBar));
         private IVsInfoBarUIElement _registeredInfoBarElement;
@@ -25,11 +28,17 @@ namespace AwsToolkit.VsSdk.Common.Notifications
             _registeredInfoBarElement = uiElement;
         }
 
-        public void UnregisterInfoBarEvents(IVsInfoBarUIElement uiElement)
+        public void UnRegisterInfoBarEvents(IVsInfoBarUIElement uiElement)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
             uiElement.Unadvise(_infoBarElementCookie);
+        }
+
+        public void Close()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            _registeredInfoBarElement?.Close();
         }
 
         public void OnClosed(IVsInfoBarUIElement infoBarUiElement)
@@ -39,7 +48,7 @@ namespace AwsToolkit.VsSdk.Common.Notifications
                 ThreadHelper.ThrowIfNotOnUIThread();
                 if (infoBarUiElement == _registeredInfoBarElement)
                 {
-                    UnregisterInfoBarEvents(infoBarUiElement);
+                    UnRegisterInfoBarEvents(infoBarUiElement);
                     _registeredInfoBarElement = null;
                 }
             }
@@ -62,8 +71,14 @@ namespace AwsToolkit.VsSdk.Common.Notifications
             }
         }
 
-        protected abstract void HandleActionItemClicked(IVsInfoBarUIElement infoBarUiElement,
-            IVsInfoBarActionItem actionItem);
+        protected virtual void HandleActionItemClicked(IVsInfoBarUIElement infoBarUiElement,
+            IVsInfoBarActionItem actionItem)
+        {
+            if (actionItem is ToolkitInfoBarActionItem toolkitActionItem)
+            {
+                toolkitActionItem.Execute(infoBarUiElement);
+            }
+        }
 
         // Note: should initialize the infoBarModel as part of the constructor of the derived class
         protected abstract InfoBarModel CreateInfoBar();

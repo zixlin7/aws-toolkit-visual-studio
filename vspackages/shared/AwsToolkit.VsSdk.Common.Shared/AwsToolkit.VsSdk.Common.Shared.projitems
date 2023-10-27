@@ -75,6 +75,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\TaskStatusNotifier.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ToolkitInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notifications\ToolkitInfoBarActionItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ToolkitInfoBarManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OutputWindow\OutputWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
