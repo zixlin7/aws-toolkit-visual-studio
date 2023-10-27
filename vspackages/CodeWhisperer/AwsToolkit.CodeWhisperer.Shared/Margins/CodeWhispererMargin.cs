@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
+using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.Context;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -22,7 +23,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         private readonly CodeWhispererMarginViewModel _viewModel;
 
         public CodeWhispererMargin(
-            IWpfTextView textView,
+            ICodeWhispererTextView textView,
             ICodeWhispererManager manager,
             ISuggestionUiManager suggestionUiManager,
             SVsServiceProvider serviceProvider,

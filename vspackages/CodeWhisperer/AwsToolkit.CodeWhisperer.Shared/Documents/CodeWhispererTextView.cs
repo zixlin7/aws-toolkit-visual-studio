@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Documents;
 using Amazon.AWSToolkit.Models.Text;
 
@@ -17,45 +18,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Documents
     /// Provides an abstraction layer around Visual Studio TextView types, allowing
     /// us to add test coverage to more integration logic without requiring complicated fakes for VS types.
     /// </summary>
-    public interface ICodeWhispererTextView
-    {
-        /// <summary>
-        /// The full path of the document represented by this text view
-        /// </summary>
-        string GetFilePath();
-
-        /// <summary>
-        /// Converts the given absolute position in a text view
-        /// to the line and character index within the document.
-        /// </summary>
-        Position GetDocumentPosition(int position);
-
-        /// <summary>
-        /// Creates the proposal used by Visual Studio to display a suggestion
-        /// </summary>
-        Proposal CreateProposal(string replacementText, string description);
-    }
-
-    /// <summary>
-    /// Provides an abstraction layer around Visual Studio TextView types, allowing
-    /// us to add test coverage to more integration logic without requiring complicated fakes for VS types.
-    /// </summary>
     internal class CodeWhispererTextView : ICodeWhispererTextView
     {
         private readonly IWpfTextView _wpfTextView;
-        private readonly IVsTextView _vsTextView;
+        private IVsTextView _vsTextView;
         private string _filePath;
 
-        protected CodeWhispererTextView(IWpfTextView wpfTextView, IVsTextView vsTextView)
+        internal CodeWhispererTextView(IWpfTextView wpfTextView)
         {
             _wpfTextView = wpfTextView;
-            _vsTextView = vsTextView;
-        }
-
-        public static async Task<CodeWhispererTextView> CreateAsync(IWpfTextView wpfTextView)
-        {
-            var vsTextView = await wpfTextView.ToIVsTextViewAsync();
-            return new CodeWhispererTextView(wpfTextView, vsTextView);
         }
 
         public string GetFilePath()
@@ -68,9 +39,34 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Documents
             return _filePath;
         }
 
-        public Position GetDocumentPosition(int position)
+        public async Task<Position> GetDocumentPositionAsync(int position)
         {
+            if (_vsTextView == null)
+            {
+                _vsTextView = await _wpfTextView.ToIVsTextViewAsync();
+            }
+
             return _vsTextView.GetDocumentPosition(position);
+        }
+
+        public Position GetCursorPosition()
+        {
+            return _wpfTextView.GetCursorPosition();
+        }
+
+        public IWpfTextView GetWpfTextView()
+        {
+            return _wpfTextView;
+        }
+
+        public GetSuggestionsRequest CreateGetSuggestionsRequest(bool isAutoSuggestion)
+        {
+            return new GetSuggestionsRequest()
+            {
+                FilePath = GetFilePath(),
+                CursorPosition = GetCursorPosition(),
+                IsAutoSuggestion = isAutoSuggestion
+            };
         }
 
         public Proposal CreateProposal(string replacementText, string description)

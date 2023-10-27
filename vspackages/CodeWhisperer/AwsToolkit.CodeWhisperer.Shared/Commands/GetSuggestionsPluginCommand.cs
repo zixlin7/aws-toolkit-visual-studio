@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Documents;
@@ -85,9 +86,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
             taskNotifier.ShowTaskStatus(async _ =>
             {
                 var textView = GetTextView();
-                var request = CreateGetSuggestionsRequest(textView);
+                var codeWhispererTextView = new CodeWhispererTextView(textView);
+                var request = codeWhispererTextView.CreateGetSuggestionsRequest(false);
                 var suggestions = (await _manager.GetSuggestionsAsync(request)).ToList();
-                await _suggestionUiManager.ShowAsync(suggestions, textView);
+                await _suggestionUiManager.ShowAsync(suggestions, codeWhispererTextView);
             });
         }
 
@@ -96,16 +98,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
             _textManager.GetActiveView(1, null, out var vsTextView);
 
             return vsTextView.GetWpfTextView();
-        }
-
-        private GetSuggestionsRequest CreateGetSuggestionsRequest(IWpfTextView textView)
-        {
-            return new GetSuggestionsRequest()
-            {
-                FilePath = textView.GetFilePath(),
-                CursorPosition = textView.GetCursorPosition(),
-                IsAutoSuggestion = false,
-            };
         }
     }
 }

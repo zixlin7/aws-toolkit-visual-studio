@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.Context;
@@ -63,7 +64,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(
                 typeof(CodeWhispererMargin),
-                () => new CodeWhispererMargin(wpfTextViewHost.TextView, _manager, _suggestionUiManager, _serviceProvider, _toolkitContextProvider, _taskFactoryProvider));
+                () => new CodeWhispererMargin(new CodeWhispererTextView(wpfTextViewHost.TextView), _manager, _suggestionUiManager, _serviceProvider, _toolkitContextProvider, _taskFactoryProvider));
         }
     }
 }

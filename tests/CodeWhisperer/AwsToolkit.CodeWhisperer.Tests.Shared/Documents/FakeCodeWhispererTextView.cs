@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AWSToolkit.Models.Text;
 
 using Microsoft.VisualStudio.Language.Proposals;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
@@ -19,9 +22,29 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Documents
             return FilePath;
         }
 
-        public Position GetDocumentPosition(int position)
+        public Task<Position> GetDocumentPositionAsync(int position)
         {
-            return new Position(0, position);
+            return Task.FromResult(new Position(0, position));
+        }
+
+        public Position GetCursorPosition()
+        {
+            return new Position(0, 0);
+        }
+
+        public IWpfTextView GetWpfTextView()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public GetSuggestionsRequest CreateGetSuggestionsRequest(bool isAutoSuggestion)
+        {
+            return new GetSuggestionsRequest()
+            {
+                FilePath = GetFilePath(),
+                CursorPosition = GetCursorPosition(),
+                IsAutoSuggestion = isAutoSuggestion
+            };
         }
 
         public Proposal CreateProposal(string replacementText, string description)

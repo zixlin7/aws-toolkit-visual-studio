@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Input;
 
 using Amazon.AwsToolkit.CodeWhisperer.Commands;
+using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
@@ -30,18 +31,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         private static readonly ILog _logger = LogManager.GetLogger(typeof(CodeWhispererMarginViewModel));
         private readonly IToolkitContextProvider _toolkitContextProvider;
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
-        private readonly IWpfTextView _textView;
         private readonly ICodeWhispererManager _manager;
         private readonly SVsServiceProvider _serviceProvider;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public CodeWhispererMarginViewModel(IWpfTextView textView, ICodeWhispererManager manager,
+        public CodeWhispererMarginViewModel(
+            ICodeWhispererTextView textView,
+            ICodeWhispererManager manager,
             ISuggestionUiManager suggestionUiManager,
             SVsServiceProvider serviceProvider,
             IToolkitContextProvider toolkitContextProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
-            _textView = textView;
             _manager = manager;
             _serviceProvider = serviceProvider;
             _toolkitContextProvider = toolkitContextProvider;
@@ -63,7 +64,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             ViewUserGuide = new ViewUserGuideCommand(_toolkitContextProvider);
             GettingStarted = new GettingStartedCommand(_toolkitContextProvider);
 
-            GenerateSuggestions = new GetSuggestionsCommand(_textView, _manager, suggestionUiManager, _toolkitContextProvider);
+            GenerateSuggestions = new GetSuggestionsCommand(textView, _manager, suggestionUiManager, _toolkitContextProvider);
             GenerateSuggestionsKeyBinding = GetKeyBindingFrom(_generateSuggestionsCommandName);
 
             ViewCodeReferences = new ViewCodeReferencesCommand(_manager, _toolkitContextProvider);

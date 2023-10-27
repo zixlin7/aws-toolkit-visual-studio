@@ -86,7 +86,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                 foreach (var reference in suggestion.References)
                 {
                     var referencePosition = cursorPosition + reference.StartIndex;
-                    var position = _view.GetDocumentPosition(referencePosition);
+                    var position = await _view.GetDocumentPositionAsync(referencePosition);
                     await LogReferenceAsync(suggestion, reference, filePath, position);
                 }
             }

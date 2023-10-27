@@ -38,14 +38,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             _taskFactoryProvider = taskFactoryProvider;
         }
 
-        public async Task ShowAsync(IEnumerable<Suggestion> suggestions, IWpfTextView textView)
+        public async Task ShowAsync(IEnumerable<Suggestion> suggestions, ICodeWhispererTextView textView)
         {
-            await _taskFactoryProvider.JoinableTaskFactory.SwitchToMainThreadAsync();
-            var codeWhispererTextView = await CodeWhispererTextView.CreateAsync(textView);
+            var suggestionContainer = new SuggestionContainer(suggestions, textView, _manager, _taskFactoryProvider.DisposalToken);
 
-            var suggestionContainer = new SuggestionContainer(suggestions, codeWhispererTextView, _manager, _taskFactoryProvider.DisposalToken);
-
-            var suggestionManager = await CreateSuggestionManagerAsync(textView);
+            var suggestionManager = await CreateSuggestionManagerAsync(textView.GetWpfTextView());
 
             if (_session != null)
             {
