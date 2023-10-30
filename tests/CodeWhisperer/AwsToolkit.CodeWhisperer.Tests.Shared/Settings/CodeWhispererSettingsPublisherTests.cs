@@ -30,6 +30,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             _sut = new CodeWhispererSettingsPublisher(_settingsRepository, _lspClient, taskFactoryProvider);
 
             _settingsRepository.Settings.IncludeSuggestionsWithReferences = false;
+            _settingsRepository.Settings.ShareCodeWhispererContentWithAws = false;
         }
 
         [Fact]
@@ -62,6 +63,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             eventArgs.Response.Should().Contain(
                 CodeWhispererSettingsNames.IncludeSuggestionsWithCodeReferences,
                 _settingsRepository.Settings.IncludeSuggestionsWithReferences);
+            eventArgs.Response.Should().Contain(
+                CodeWhispererSettingsNames.ShareCodeWhispererContentWithAws,
+                _settingsRepository.Settings.ShareCodeWhispererContentWithAws);
         }
 
         private async Task InitializeLspClientAsync()

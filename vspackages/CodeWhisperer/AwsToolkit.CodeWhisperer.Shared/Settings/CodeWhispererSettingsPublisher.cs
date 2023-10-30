@@ -10,6 +10,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
     public static class CodeWhispererSettingsNames
     {
         public const string IncludeSuggestionsWithCodeReferences = "includeSuggestionsWithCodeReferences";
+
+        public const string ShareCodeWhispererContentWithAws = "shareCodeWhispererContentWithAWS";
     }
 
     /// <summary>
@@ -47,6 +49,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
             var settings = await _settingsRepository.GetAsync();
 
             configurationState[CodeWhispererSettingsNames.IncludeSuggestionsWithCodeReferences] = settings.IncludeSuggestionsWithReferences;
+            configurationState[CodeWhispererSettingsNames.ShareCodeWhispererContentWithAws] = settings.ShareCodeWhispererContentWithAws;
         }
 
         protected override void Dispose(bool disposing)

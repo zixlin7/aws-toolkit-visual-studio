@@ -43,5 +43,15 @@ namespace AwsToolkit.VsSdk.Common.Settings.CodeWhisperer
         [Description("When set to false, CodeWhisperer will only make suggestions that do not have license attribution.")]
         [DefaultValue(true)]
         public bool IncludeSuggestionsWithReferences { get; set; } = true;
+
+
+        /// <summary>
+        /// Share CodeWhisperer content with AWS (true/false)
+        /// </summary>
+        [Category("General")]
+        [DisplayName("Share CodeWhisperer Content with AWS")]
+        [Description("When set to true, your content processed by CodeWhisperer may be used for service improvement (except for content processed by the Enterprise CodeWhisperer service tier). Setting to false will cause AWS to delete any of your content used for that purpose. The information used to provide the CodeWhisperer service to you will not be affected. See the Service Terms (https://aws.amazon.com/service-terms) for more detail.")]
+        [DefaultValue(true)]
+        public bool ShareCodeWhispererContentWithAws { get; set; } = true;
     }
 }
