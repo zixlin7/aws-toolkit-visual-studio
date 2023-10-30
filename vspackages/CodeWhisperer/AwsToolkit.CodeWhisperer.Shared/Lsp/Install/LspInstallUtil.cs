@@ -4,36 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
+
+using log4net;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 {
     public class LspInstallUtil
     {
-        /// <summary>
-        /// Determine most compatible fallback lsp version folder 
-        /// </summary>
-        /// <param name="downloadParentFolder"> the fallback parent folder</param>
-        /// <param name="expectedVersionString"> the highest version to fallback to</param>
-        /// <param name="compatibleVersions"> list of toolkit compatible lsp versions</param>
-        public static string GetFallbackVersionFolder(string downloadParentFolder, string expectedVersionString,
-            IList<Version> compatibleVersions)
-        {
-            // determine all folders containing lsp versions in the fallback parent folder
-            var cachedVersions = GetAllCachedVersions(downloadParentFolder);
-
-            // filter folders containing toolkit compatible lsp versions and sort them to determine the most compatible lsp version
-            var expectedVersion = Version.Parse(expectedVersionString);
-            var sortedVersions = cachedVersions.Where(x => compatibleVersions.Contains(x) && x <= expectedVersion)
-                .OrderByDescending(x => x);
-            var fallbackVersionFolder = sortedVersions.FirstOrDefault()?.ToString();
-            if (string.IsNullOrWhiteSpace(fallbackVersionFolder))
-            {
-                return null;
-            }
-
-            return Path.Combine(downloadParentFolder, fallbackVersionFolder);
-        }
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(LspInstallUtil));
 
         /// <summary>
         /// Get all cached versions under the download directory
@@ -70,9 +48,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             using (var sha384 = SHA384.Create())
             {
                 var val = sha384.ComputeHash(stream);
-                var hash = BitConverter.ToString(val).Replace("-", String.Empty);
-                // lower casing to match the remote version manifest hash casing 
-                return hash.ToLowerInvariant();
+                return BitConverter.ToString(val).Replace("-", String.Empty);
             }
         }
 
@@ -82,6 +58,21 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             var systemPlatform = OSPlatform.Windows.ToString();
             var lspPlatform = GetLspPlatform(platform);
             return string.Equals(systemPlatform, lspPlatform, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static void DeleteFile(string path)
+        {
+            try
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error deleting file: {path}", e);
+            }
         }
 
         private static string GetLspPlatform(string platform)

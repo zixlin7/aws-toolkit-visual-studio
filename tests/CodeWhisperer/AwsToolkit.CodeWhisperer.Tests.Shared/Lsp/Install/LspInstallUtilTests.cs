@@ -54,28 +54,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             Assert.Equal(expectedResult, result);
         }
 
-        [Fact]
-        public void GetFallbackVersionFolder()
-        {
-            SetupDirectories();
-            var expectedFallbackPath =
-                Path.Combine(TestLocation.TestFolder, $"{_majorLspVersion}.1.1");
-
-            var fallbackPath =
-                LspInstallUtil.GetFallbackVersionFolder(TestLocation.TestFolder, _lspVersion, _validVersions);
-            Assert.Equal(expectedFallbackPath, fallbackPath);
-        }
-
-
-        [Fact]
-        public void GetFallbackVersionFolder_WhenNoMatchingVersions()
-        {
-            CreateDirectoryForVersion(_majorLspVersion + 1);
-            var fallbackPath =
-                LspInstallUtil.GetFallbackVersionFolder(TestLocation.TestFolder, _lspVersion, _validVersions);
-            Assert.Null(fallbackPath);
-        }
-
 
         [Fact]
         public void GetAllCachedVersions()

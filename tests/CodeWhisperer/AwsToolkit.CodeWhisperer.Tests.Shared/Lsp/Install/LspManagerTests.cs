@@ -106,11 +106,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
 
         [Fact]
-        public async Task DownloadAsync_WhenVersionCacheAlreadyExists()
+        public async Task DownloadAsync_WhenValidVersionCacheAlreadyExists()
         {
             var expectedPath = Path.Combine(_options.DownloadParentFolder, _sampleVersion,
                 CodeWhispererConstants.Filename);
             SetupFile(expectedPath);
+            var hash = GetHash(expectedPath);
+            // setup target content with required params
+            SetupTargetContent($"sha384:{hash}", _sampleLspVersion);
 
             var path = await _sut.DownloadAsync();
 
@@ -130,23 +133,48 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         }
 
         [Fact]
-        public async Task DownloadAsync_WhenHashesDoNotMatchAndHasFallback()
+        public async Task DownloadAsync_WhenHashesDoNotMatchAndHasValidFallback()
         {
-            // setup manifest schema with fallback version
-            _sampleSchema.Versions.Add(CreateSampleLspVersion(_additionalVersion));
-            // setup target content with required params
+            // setup compatible target content with invalid hash
             SetupTargetContent("sha384:1234", _sampleLspVersion);
+
+            // setup manifest schema with fallback version
+            var fallbackVersion = CreateSampleLspVersion(_additionalVersion);
+            _sampleSchema.Versions.Add(fallbackVersion);
+
 
             // setup fallback cache
             var expectedFallbackLocation = SetupFileInCache(_additionalVersion);
             var additionalFallbackLocation =
                 SetupFileInCache($"{_sampleVersionRange.Start.Major}.0.0");
-            SetupFile(additionalFallbackLocation);
-
+            // setup fallback target content with required params
+            var hash = GetHash(expectedFallbackLocation);
+            SetupTargetContent($"sha384:{hash}", fallbackVersion);
 
             var downloadPath = await _sut.DownloadAsync();
 
             Assert.Equal(expectedFallbackLocation, downloadPath);
+        }
+
+        [Fact]
+        public async Task DownloadAsync_WhenHashesDoNotMatchAndHasInvalidFallback()
+        {
+            // setup compatible target content with invalid hash
+            SetupTargetContent("sha384:1234", _sampleLspVersion);
+
+            // setup manifest schema with fallback version
+            var fallbackVersion = CreateSampleLspVersion(_additionalVersion);
+            _sampleSchema.Versions.Add(fallbackVersion);
+
+
+            // setup fallback cache
+            var invalidFallbackLocation = SetupFileInCache(_additionalVersion);
+            var additionalFallbackLocation =
+                SetupFileInCache($"{_sampleVersionRange.Start.Major}.0.0");
+            // setup fallback target content with incompatible params
+            SetupTargetContent("sha384:5688", fallbackVersion);
+
+            await AssertDownloadAsyncThrowsWithMessage("compatible version of");
         }
 
         [Fact]

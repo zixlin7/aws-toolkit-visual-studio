@@ -68,14 +68,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var latestCompatibleLspVersion = GetCompatibleLspVersion();
                 var targetContent = GetLspTargetContent(latestCompatibleLspVersion);
 
-                // if the latest version is stored locally already, return that, else fetch the latest version
+                // if the latest version is stored locally already and is valid, return that, else fetch the latest version
                 var downloadCachePath = GetDownloadPath(latestCompatibleLspVersion.ServerVersion, targetContent.Filename);
-                if (File.Exists(downloadCachePath))
+
+                var hasValidLocalCache = HasValidLocalCache(downloadCachePath, targetContent);
+                if (hasValidLocalCache)
                 {
                     ShowMessage(
                         $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} from local cache location: {downloadCachePath}");
                     return downloadCachePath;
                 }
+
+                // cleanup download cache if invalid
+                LspInstallUtil.DeleteFile(downloadCachePath);
 
                 // if lsp can be successfully downloaded from remote location, return the download path else attempt fallback location
                 var downloadResult =
@@ -92,10 +97,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                     $"Unable to download {_options.Name} language server version v{latestCompatibleLspVersion.ServerVersion}. Attempting to fetch from fallback location");
 
                 var fallbackPath = GetFallbackPath(latestCompatibleLspVersion.ServerVersion);
-                if (!File.Exists(fallbackPath))
+                if (string.IsNullOrWhiteSpace(fallbackPath))
                 {
+                    ShowMessage($"AWS Toolkit was unable to find a compatible version of {_options.Name} Language Server.");
                     throw new ToolkitException(
-                        $"Unable to launch language server from fallback location: {fallbackPath}",
+                        $"AWS Toolkit was unable to find a compatible version of {_options.Name} Language Server.",
                         ToolkitException.CommonErrorCode.UnexpectedError);
                 }
 
@@ -143,7 +149,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             }
         }
 
-     
+
 
         /// <summary>
         /// Gets latest lsp version matching the toolkit compatible version range, not de-listed and contains required target content(architecture, platform and files)
@@ -206,10 +212,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <param name="lspVersion"></param>
         private bool HasRequiredTargetContent(LspVersion lspVersion)
         {
-            var lspTarget = GetCompatibleLspTarget(lspVersion);
-            var targetContent = GetCompatibleTargetContent(lspTarget);
+            return GetTargetContent(lspVersion) != null;
+        }
 
-            return targetContent != null;
+        /// <summary>
+        /// Returns the target content of the lsp version that contains the required toolkit compatible contents: architecture, platform and file
+        /// </summary>
+        /// <param name="lspVersion"></param>
+        private TargetContent GetTargetContent(LspVersion lspVersion)
+        {
+            var lspTarget = GetCompatibleLspTarget(lspVersion);
+            return GetCompatibleTargetContent(lspTarget);
         }
 
         /// <summary>
@@ -237,6 +250,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         }
 
         /// <summary>
+        /// Determines if a valid local cache exists by verifying if the local hash matches the expected remote hash
+        /// </summary>
+        /// <param name="localCachePath"></param>
+        /// <param name="targetContent"></param>
+        private bool HasValidLocalCache(string localCachePath, TargetContent targetContent)
+        {
+            return File.Exists(localCachePath) && ValidateHash(targetContent, localCachePath);
+        }
+
+        /// <summary>
         /// Attempts to fetch the specified lsp version from remote server
         /// </summary>
         /// <returns>true if successfully downloaded, else returns false</returns>
@@ -244,13 +267,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             string lspVersion, CancellationToken token)
         {
             // verify the hash of the file matches the expected hash for the chosen lsp version
-            Task<bool> Validate(Stream stream)
-            {
-                var hash = LspInstallUtil.GetHash(stream);
-                var expectedHash = GetExpectedHash(targetContent);
-
-                return Task.FromResult(string.Equals(hash, expectedHash));
-            }
+            Task<bool> Validate(Stream stream) => Task.FromResult(ValidateHash(targetContent, stream));
 
             var fetcher = CreateLspFetcher(lspVersion, targetContent.Filename, Validate);
 
@@ -261,7 +278,32 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 return stream != null;
             }
         }
-         
+
+        private bool ValidateHash(TargetContent targetContent, string filePath)
+        {
+            try
+            {
+                using (var stream = File.OpenRead(filePath))
+                {
+                    return ValidateHash(targetContent, stream);
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
+        }
+
+        private bool ValidateHash(TargetContent targetContent, Stream stream)
+        {
+            var hash = LspInstallUtil.GetHash(stream);
+            var expectedHash = GetExpectedHash(targetContent);
+
+            // use ignore case to discard case differences that arise due to systems producing the manifest hash differing from systems(toolkits) consuming them
+            return string.Equals(hash, expectedHash, StringComparison.InvariantCultureIgnoreCase);
+        }
+
         /// <summary>
         /// Create LSP fetcher using the manifest specified location
         /// </summary>
@@ -286,9 +328,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
         private string GetExpectedHash(TargetContent targetContent)
         {
-            var expectedHashKeyPair = targetContent.Hashes.FirstOrDefault(x => x.Contains("sha384"));
+            var expectedHashKeyPair = targetContent?.Hashes?.FirstOrDefault(x => x.StartsWith("sha384:"));
             // extract the hash value from string in format - sha384:abcbchdhdbchd
-            if (expectedHashKeyPair == null || expectedHashKeyPair.IndexOf(':') == -1)
+            if (expectedHashKeyPair == null)
             {
                 _logger.Error("Error parsing hash key pair, expected hash key pair in format: sha384:1234");
                 return null;
@@ -314,7 +356,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// </summary>
         private IList<Version> GetCompatibleVersions()
         {
-            return _manifestSchema.Versions.Where(IsCompatibleVersion).Select(x => Version.Parse(x.ServerVersion)).ToList();
+            return GetCompatibleLspVersions().Select(x => Version.Parse(x.ServerVersion)).ToList();
+        }
+
+        private IList<LspVersion> GetCompatibleLspVersions()
+        {
+            return _manifestSchema.Versions.Where(IsCompatibleVersion).ToList();
         }
 
         /// <summary>
@@ -323,19 +370,42 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// <param name="lspVersion">the lsp version with which the fallback version must be the most compatible to</param>
         private string GetFallbackPath(string lspVersion)
         {
-            var compatibleVersions = GetCompatibleVersions();
-            var fallbackFolder = LspInstallUtil.GetFallbackVersionFolder(_options.DownloadParentFolder,
-                lspVersion, compatibleVersions);
+            var compatibleLspVersions = GetCompatibleLspVersions();
 
-            if (fallbackFolder == null)
+            // determine all folders containing lsp versions in the fallback parent folder
+            var cachedVersions = LspInstallUtil.GetAllCachedVersions(_options.DownloadParentFolder);
+
+            // filter to lsp versions that have a local cache and sort them to determine the most compatible lsp version
+            var expectedVersion = Version.Parse(lspVersion);
+
+            var sortedCachedLspVersions = compatibleLspVersions.Where(x => cachedVersions.Contains(Version.Parse(x.ServerVersion)) && Version.Parse(x.ServerVersion) <= expectedVersion)
+                .OrderByDescending(x => x);
+
+            // find the first in the sorted version list that contains a valid local cache(matching expected hash) and return its cache path
+            var fallbackPath = sortedCachedLspVersions.Select(GetValidLocalCachePath)
+                .FirstOrDefault(x => x != null);
+
+            return fallbackPath;
+
+        }
+
+        /// <summary>
+        /// Validate the local cache path of the given lsp version(matches expected hash)
+        /// If valid return cache path, else return null
+        /// </summary>
+        /// <param name="version"></param>
+        private string GetValidLocalCachePath(LspVersion version)
+        {
+            var targetContent = GetTargetContent(version);
+            if (targetContent == null)
             {
-                ShowMessage($"AWS Toolkit was unable to find a compatible version of {_options.Name} Language Server.");
-                throw new ToolkitException(
-                    $"AWS Toolkit was unable to find a compatible version of {_options.Name} Language Server.",
-                    ToolkitException.CommonErrorCode.UnexpectedError);
+                return null;
             }
 
-            return Path.Combine(fallbackFolder, _options.Filename);
+            var cachePath = GetDownloadPath(version.ServerVersion, _options.Filename);
+            var hasValidCache = HasValidLocalCache(cachePath, targetContent);
+
+            return hasValidCache ? cachePath : null;
         }
 
         private void DeleteDeListedVersions()
@@ -367,17 +437,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         {
             var path = Path.Combine(_options.DownloadParentFolder, version.ToString(),
                 _options.Filename);
-            try
-            {
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error($"Error cleaning up cached version: {path}", e);
-            }
+            LspInstallUtil.DeleteFile(path);
         }
     }
 }
