@@ -116,6 +116,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _sut.CredentialIdPromptResponse = null;
             await _sut.SignInAsync();
 
+            _sut.Status.Should().Be(ConnectionStatus.Disconnected);
+            _timer.IsStarted.Should().BeFalse();
             _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
             _settingsRepository.Settings.CredentialIdentifier.Should().BeNull();
         }
@@ -127,6 +129,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _sut.CredentialIdPromptResponse = _sampleCredentialId;
             await _sut.SignInAsync();
 
+            _sut.Status.Should().Be(ConnectionStatus.Connected);
+            _timer.IsStarted.Should().BeTrue();
             _codeWhispererClient.CredentialsProtocol.TokenPayload.Token.Should().Be(_ssoTokenProvider.Token.Token);
             _settingsRepository.Settings.CredentialIdentifier.Should().Be(_sampleCredentialId.Id);
         }
