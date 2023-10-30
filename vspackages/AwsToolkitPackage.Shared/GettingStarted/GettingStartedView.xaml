@@ -9,7 +9,6 @@
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
-    xmlns:wizard="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     d:DesignHeight="600"
     d:DesignWidth="800"
@@ -18,6 +17,24 @@
         <ResourceDictionary>
             <commonUi:ToolkitImages x:Key="ToolkitImages" />
             <commonUi:VsImages x:Key="VsImages" />
+            <local:RadioButtonEnumConverter
+                x:Key="RadioButtonEnumConverter" />
+            <Style
+                x:Key="BorderStyle"
+                TargetType="{x:Type Border}">
+                <Setter
+                    Property="BorderBrush"
+                    Value="{DynamicResource {x:Static themes:ToolkitThemes.PanelBorderBrushKey}}" />
+                <Setter
+                    Property="BorderThickness"
+                    Value="1" />
+                <Setter
+                    Property="CornerRadius"
+                    Value="5" />
+                <Setter
+                    Property="Padding"
+                    Value="6" />
+            </Style>
         </ResourceDictionary>
     </commonUi:BaseAWSUserControl.Resources>
 
@@ -79,7 +96,6 @@
                         GitHub
                     </Hyperlink>
                 </TextBlock>
-
             </Grid>
 
             <commonUi:CardControl 
@@ -88,13 +104,103 @@
                 MaxWidth="650"
                 SelectedValue="{Binding CurrentStep}"
                 SelectedValuePath="Tag">
-                <!-- Names on items below is for CardControl selection, not access in code-behind -->
-                <wizard:AddEditProfileWizardView
+                <!-- Tags on items below are for CardControl selection -->
+
+                <Grid
                     Tag="{x:Static local:GettingStartedStep.AddEditProfileWizard}">
-                    <wizBehaviors:Mvvm.ViewModel>
-                        <wizard:AddEditProfileWizardViewModel />
-                    </wizBehaviors:Mvvm.ViewModel>
-                </wizard:AddEditProfileWizardView>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock 
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                        Text="Step 1 of 2: Select a feature setup" />
+
+                    <TextBlock 
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                        Margin="0 6 0 0"
+                        Text="You can return to this page at any time to set up another feature (Extensions > AWS Toolkit)." />
+
+                    <Border
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="0 6 6 0"
+                        Style="{StaticResource BorderStyle}">
+                        <RadioButton
+                            GroupName="FeatureType"
+                            IsChecked="{Binding FeatureType, Converter={StaticResource RadioButtonEnumConverter}, ConverterParameter={x:Static local:FeatureType.CodeWhisperer}}">
+                            <StackPanel>
+                                <TextBlock 
+                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                                    Text="CodeWhisperer" />
+                                <TextBlock
+                                    Margin="0 6 0 0"
+                                    TextWrapping="WrapWithOverflow">
+                                    Build applications faster with your AI coding companion.
+                                </TextBlock>
+                                <TextBlock
+                                    Margin="0 6 0 0">
+                                    <Hyperlink
+                                        Command="{Binding OpenCodeWhispererLearnMoreCommand}">
+                                        Learn more
+                                    </Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                    </Border>
+
+                    <Border
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="6 6 0 0"
+                        Style="{StaticResource BorderStyle}">
+                        <RadioButton
+                            GroupName="FeatureType"
+                            IsChecked="{Binding FeatureType, Converter={StaticResource RadioButtonEnumConverter}, ConverterParameter={x:Static local:FeatureType.AwsExplorer}}">
+                            <StackPanel>
+                                <TextBlock 
+                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                                    Text="AWS Explorer" />
+                                <TextBlock
+                                    Margin="0 6 0 0"
+                                    TextWrapping="WrapWithOverflow">
+                                    View, modify, and deploy AWS Resources. Work with S3, Lambda, CloudWatch, and more.
+                                </TextBlock>
+                                <TextBlock
+                                    Margin="0 6 0 0">
+                                    <Hyperlink
+                                        Command="{Binding OpenAwsExplorerLearnMoreCommand}">
+                                        Learn more
+                                    </Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                    </Border>
+
+                    <commonUi:CardControl 
+                        Grid.Row="4"
+                        Grid.ColumnSpan="2"
+                        SelectedValue="{Binding FeatureType}"
+                        SelectedValuePath="Tag">
+
+                        <local:FeatureCodeWhispererStep2View
+                            Tag="{x:Static local:FeatureType.CodeWhisperer}" />
+                        <local:FeatureAwsExplorerStep2View
+                            Tag="{x:Static local:FeatureType.AwsExplorer}" />
+                    </commonUi:CardControl>
+                </Grid>
 
                 <local:GettingStartedCompletedView
                     Tag="{x:Static local:GettingStartedStep.GettingStartedCompleted}">

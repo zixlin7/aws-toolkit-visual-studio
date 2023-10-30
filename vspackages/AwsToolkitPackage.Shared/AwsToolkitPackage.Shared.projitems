@@ -51,6 +51,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml.cs">
       <DependentUpon>LegacyFirstRunControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureAwsExplorerStep2View.xaml.cs">
+      <DependentUpon>FeatureAwsExplorerStep2View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureCodeWhispererStep2View.xaml.cs">
+      <DependentUpon>FeatureCodeWhispererStep2View.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedCompletedView.xaml.cs">
       <DependentUpon>GettingStartedCompletedView.xaml</DependentUpon>
     </Compile>
@@ -152,6 +158,14 @@
     <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureAwsExplorerStep2View.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureCodeWhispererStep2View.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedCompletedView.xaml">
       <SubType>Designer</SubType>

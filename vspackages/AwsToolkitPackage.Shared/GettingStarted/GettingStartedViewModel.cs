@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
@@ -25,6 +27,26 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         GettingStartedCompleted
     }
 
+    public enum FeatureType
+    {
+        NotSet,
+        CodeWhisperer,
+        AwsExplorer
+    }
+
+    public class RadioButtonEnumConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value?.Equals(parameter);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value?.Equals(true) == true ? parameter : Binding.DoNothing;
+        }
+    }
+
     public class GettingStartedViewModel : RootViewModel
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GettingStartedViewModel));
@@ -33,8 +55,6 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private IGettingStartedCompleted _gettingStartedCompleted => ServiceProvider.RequireService<IGettingStartedCompleted>();
 
-        #region GettingStartedStep
-
         private GettingStartedStep _currentStep;
 
         public GettingStartedStep CurrentStep
@@ -42,7 +62,30 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             get => _currentStep;
             set => SetProperty(ref _currentStep, value);
         }
-        #endregion
+
+        private FeatureType _featureType;
+
+        public FeatureType FeatureType
+        {
+            get => _featureType;
+            set => SetProperty(ref _featureType, value);
+        }
+
+        private ICommand _openAwsExplorerLearnMoreCommand;
+
+        public ICommand OpenAwsExplorerLearnMoreCommand
+        {
+            get => _openAwsExplorerLearnMoreCommand;
+            private set => SetProperty(ref _openAwsExplorerLearnMoreCommand, value);
+        }
+
+        private ICommand _openCodeWhispererLearnMoreCommand;
+
+        public ICommand OpenCodeWhispererLearnMoreCommand
+        {
+            get => _openCodeWhispererLearnMoreCommand;
+            private set => SetProperty(ref _openCodeWhispererLearnMoreCommand, value);
+        }
 
         private ICommand _openGitHubCommand;
 
@@ -65,7 +108,10 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
             ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
 
-            OpenGitHubCommand = OpenUrlCommandFactory.Create(ToolkitContext, GitHubUrls.RepositoryUrl);
+            Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(ToolkitContext, url);
+            OpenAwsExplorerLearnMoreCommand = openUrl(AwsUrls.UserGuideWorkWithAws);
+            OpenCodeWhispererLearnMoreCommand = openUrl(AwsUrls.CodeWhispererOverview);
+            OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);
 
             await ShowInitialCardAsync();
         }
