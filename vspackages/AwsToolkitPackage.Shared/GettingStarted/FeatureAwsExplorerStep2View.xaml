@@ -18,10 +18,14 @@
             Margin="0 24 0 0"
             Text="Step 2 of 2: Authenticate with AWS" />
 
-        <wizard:AddEditProfileWizardView>
-            <wizBehaviors:Mvvm.ViewModel>
-                <wizard:AddEditProfileWizardViewModel />
-            </wizBehaviors:Mvvm.ViewModel>
-        </wizard:AddEditProfileWizardView>
+        <Border
+            Margin="0 6 0 0">
+            <wizard:AddEditProfileWizardView
+                Margin="9">
+                <wizBehaviors:Mvvm.ViewModel>
+                    <wizard:AddEditProfileWizardViewModel />
+                </wizBehaviors:Mvvm.ViewModel>
+            </wizard:AddEditProfileWizardView>
+        </Border>
     </StackPanel>
 </UserControl>

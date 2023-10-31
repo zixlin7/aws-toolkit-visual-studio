@@ -20,7 +20,6 @@
             <local:RadioButtonEnumConverter
                 x:Key="RadioButtonEnumConverter" />
             <Style
-                x:Key="BorderStyle"
                 TargetType="{x:Type Border}">
                 <Setter
                     Property="BorderBrush"
@@ -136,8 +135,7 @@
                     <Border
                         Grid.Row="2"
                         Grid.Column="0"
-                        Margin="0 6 6 0"
-                        Style="{StaticResource BorderStyle}">
+                        Margin="0 6 6 0">
                         <RadioButton
                             GroupName="FeatureType"
                             IsChecked="{Binding FeatureType, Converter={StaticResource RadioButtonEnumConverter}, ConverterParameter={x:Static local:FeatureType.CodeWhisperer}}">
@@ -164,8 +162,7 @@
                     <Border
                         Grid.Row="2"
                         Grid.Column="1"
-                        Margin="6 6 0 0"
-                        Style="{StaticResource BorderStyle}">
+                        Margin="6 6 0 0">
                         <RadioButton
                             GroupName="FeatureType"
                             IsChecked="{Binding FeatureType, Converter={StaticResource RadioButtonEnumConverter}, ConverterParameter={x:Static local:FeatureType.AwsExplorer}}">
