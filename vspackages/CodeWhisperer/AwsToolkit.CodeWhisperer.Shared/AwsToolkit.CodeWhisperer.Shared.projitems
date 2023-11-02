@@ -70,6 +70,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationStrategy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatusToImageSourceConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources\CodeWhispererImages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
@@ -111,5 +114,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\TargetContent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\VersionTarget.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\disconnected-32.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\error-32.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\pause-32.png" />
   </ItemGroup>
 </Project>

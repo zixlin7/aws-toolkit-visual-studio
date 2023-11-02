@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Amazon.AwsToolkit.CodeWhisperer.Commands;
+using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.VsSdk.Common.Commands;
@@ -25,6 +26,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         private readonly ICodeWhispererManager _manager;
         private readonly IVsCommandRepository _commandRepository;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
+        private bool _isAutoSuggestPaused = false;
+        private ConnectionStatus _connectionState = ConnectionStatus.Disconnected;
 
         public CodeWhispererMarginViewModel(
             ICodeWhispererTextView textView,
@@ -59,6 +63,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 
             ViewCodeReferences = new ViewCodeReferencesCommand(_manager, _toolkitContextProvider);
             SecurityScan = new SecurityScanCommand(_toolkitContextProvider);
+
+            _isAutoSuggestPaused = _manager.IsAutoSuggestPaused();
+            _connectionState = _manager.ConnectionStatus;
+            _manager.PauseAutoSuggestChanged += OnManagerPauseAutoSuggestChanged;
+            _manager.ConnectionStatusChanged += OnManagerConnectionStatusChanged;
 
             UpdateKeyBindings();
         }
@@ -159,11 +168,50 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             set => SetProperty(ref _generateSuggestionsKeyBinding, value);
         }
 
+        private MarginStatus _status = MarginStatus.Disconnected;
+        public MarginStatus MarginStatus
+        {
+            get => _status;
+            set => SetProperty(ref _status, value);
+        }
+
         public void Dispose()
         {
+            _manager.PauseAutoSuggestChanged -= OnManagerPauseAutoSuggestChanged;
+            _manager.ConnectionStatusChanged -= OnManagerConnectionStatusChanged;
+
             foreach (var disposable in _disposables)
             {
                 disposable.Dispose();
+            }
+        }
+
+        private void OnManagerPauseAutoSuggestChanged(object sender, PauseStateChangedEventArgs e)
+        {
+            _isAutoSuggestPaused = e.IsPaused;
+            UpdateMarginStatus();
+        }
+
+        private void OnManagerConnectionStatusChanged(object sender, ConnectionStatusChangedEventArgs e)
+        {
+            _connectionState = e.ConnectionStatus;
+            UpdateMarginStatus();
+        }
+
+        private void UpdateMarginStatus()
+        {
+            switch (_connectionState)
+            {
+                // todo : Error
+                case ConnectionStatus.Disconnected:
+                case ConnectionStatus.Expired:
+                    MarginStatus = MarginStatus.Disconnected;
+                    break;
+                case ConnectionStatus.Connected:
+                    MarginStatus = _isAutoSuggestPaused ? MarginStatus.ConnectedPaused : MarginStatus.Connected;
+                    break;
+                default:
+                    break;
             }
         }
     }

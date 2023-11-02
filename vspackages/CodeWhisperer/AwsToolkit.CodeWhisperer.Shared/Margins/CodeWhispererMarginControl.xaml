@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              xmlns:local="clr-namespace:Amazon.AwsToolkit.CodeWhisperer.Margins"
-             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit" xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
              xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              themes:ToolkitThemes.UseToolkitTheme="False"
@@ -14,11 +14,12 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
-            <commonUi:ToolkitImages x:Key="ToolkitImages" />
+            <local:MarginStatusToImageSourceConverter x:Key="MarginStatusToImageSourceConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
     <StackPanel 
+        x:Name="ParentPanel" x:FieldModifier="private"
         Orientation="Horizontal" 
         VerticalAlignment="Center"
         Background="{DynamicResource {x:Static platformUi:EnvironmentColors.ScrollBarBackgroundBrushKey}}">
@@ -65,8 +66,14 @@
                 Height="14"
                 Width="14"
                 VerticalAlignment="Center"
-                Source="{Binding Source={StaticResource ToolkitImages}, Path=CodeWhisperer}"
-                />
+                >
+                <imaging:CrispImage.Source>
+                    <MultiBinding Converter="{StaticResource MarginStatusToImageSourceConverter}">
+                        <Binding Path="MarginStatus" />
+                        <Binding ElementName="ParentPanel" Path="Background" />
+                    </MultiBinding>
+                </imaging:CrispImage.Source>
+            </imaging:CrispImage>
         </Button>
     </StackPanel>
 </UserControl>
