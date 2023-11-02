@@ -8,6 +8,7 @@ using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
+using Amazon.AwsToolkit.VsSdk.Common.Commands;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 {
@@ -31,7 +32,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _toolkitContextProvider = toolkitContextProvider;
-            _viewModel = new CodeWhispererMarginViewModel(textView, manager, suggestionUiManager, serviceProvider, _toolkitContextProvider, taskFactoryProvider);
+
+            var commandRepository = new ToolkitVsCommandRepository(serviceProvider, taskFactoryProvider);
+            _viewModel = new CodeWhispererMarginViewModel(textView, manager, suggestionUiManager, commandRepository, _toolkitContextProvider, taskFactoryProvider);
 
             _control = new CodeWhispererMarginControl()
             {

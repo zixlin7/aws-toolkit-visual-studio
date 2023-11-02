@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CodeWhispererManagerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\FakeVsCommandRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommandTests.cs" />
@@ -40,10 +41,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsPublisherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeOutputWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeReferenceLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeSuggestionUiManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ReferenceLoggerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SampleSuggestionProducer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionContainerTests.cs" />

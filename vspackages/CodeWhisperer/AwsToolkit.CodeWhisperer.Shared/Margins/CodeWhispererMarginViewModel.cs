@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Amazon.AwsToolkit.CodeWhisperer.Commands;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
-using Amazon.AWSToolkit.Context;
 using Amazon.AwsToolkit.VsSdk.Common.Commands;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Context;
 
-using EnvDTE;
-
-using Microsoft;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text.Editor;
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using log4net;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Margins
@@ -32,19 +23,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         private readonly IToolkitContextProvider _toolkitContextProvider;
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private readonly ICodeWhispererManager _manager;
-        private readonly SVsServiceProvider _serviceProvider;
+        private readonly IVsCommandRepository _commandRepository;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         public CodeWhispererMarginViewModel(
             ICodeWhispererTextView textView,
             ICodeWhispererManager manager,
             ISuggestionUiManager suggestionUiManager,
-            SVsServiceProvider serviceProvider,
+            IVsCommandRepository commandRepository,
             IToolkitContextProvider toolkitContextProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _manager = manager;
-            _serviceProvider = serviceProvider;
+            _commandRepository = commandRepository;
             _toolkitContextProvider = toolkitContextProvider;
             _taskFactoryProvider = taskFactoryProvider;
 
@@ -65,43 +56,30 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             GettingStarted = new GettingStartedCommand(_toolkitContextProvider);
 
             GenerateSuggestions = new GetSuggestionsCommand(textView, _manager, suggestionUiManager, _toolkitContextProvider);
-            GenerateSuggestionsKeyBinding = GetKeyBindingFrom(_generateSuggestionsCommandName);
 
             ViewCodeReferences = new ViewCodeReferencesCommand(_manager, _toolkitContextProvider);
             SecurityScan = new SecurityScanCommand(_toolkitContextProvider);
+
+            UpdateKeyBindings();
         }
 
         public void UpdateKeyBindings()
         {
-            GenerateSuggestionsKeyBinding = GetKeyBindingFrom(_generateSuggestionsCommandName);
+            GenerateSuggestionsKeyBinding = _taskFactoryProvider.JoinableTaskFactory.Run(async () =>
+                await GetKeyBindingAsync(_generateSuggestionsCommandName));
         }
 
-        private string GetKeyBindingFrom(string commandName)
+        private async Task<string> GetKeyBindingAsync(string commandName)
         {
-            return _taskFactoryProvider.JoinableTaskFactory.Run(async () =>
+            try
             {
-                try
-                {
-                    await _taskFactoryProvider.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                    var dte = (DTE) _serviceProvider.GetService(typeof(DTE));
-
-                    Assumes.Present(dte);
-
-                    var binding = ((IEnumerable) dte.Commands.Item(commandName).Bindings)
-                        .Cast<object>()
-                        .ToList()
-                        .LastOrDefault()?
-                        .ToString();
-
-                    return KeyBindingUtilities.FormatKeyBindingDisplayText(binding);
-                }
-                catch (Exception e)
-                {
-                    _logger.Error($"Error getting key binding for command {commandName}", e);
-                    return string.Empty;
-                }
-            });
+                return await _commandRepository.GetCommandBindingAsync(commandName);
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error getting key binding for command {commandName}", e);
+                return string.Empty;
+            }
         }
 
         private ICommand _signIn;
