@@ -30,8 +30,9 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
     {
         protected RootViewModel(ToolkitContext toolkitContext)
         {
-            ServiceProvider = new ServiceProvider();
-            ServiceProvider.SetService(toolkitContext);
+            var serviceProvider = new ServiceProvider();
+            serviceProvider.SetService(toolkitContext);
+            ServiceProvider = serviceProvider;
         }
     }
 

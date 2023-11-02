@@ -28,6 +28,16 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
     {
         private readonly IDictionary<string, object> _services = new Dictionary<string, object>();
 
+        /// <summary>
+        /// If requested service not found, attempts to return from parent service provider.
+        /// </summary>
+        /// <remarks>
+        /// This behavior chains so that each service provider will continue looking to its
+        /// parent service provider for a service until null (i.e. root service provider) is
+        /// encountered.  If null, no additional attempts are made to return requested service.  
+        /// </remarks>
+        public ServiceProvider ParentServiceProvider { get; set; }
+
         public ServiceProvider() { }
 
         private string ToKey(Type type, string name)
@@ -76,7 +86,9 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         public virtual object GetService(Type serviceType, string name = null)
         {
             ThrowOnNullServiceType(serviceType);
-            return _services.TryGetValue(ToKey(serviceType, name), out var service) ? service : null;
+            return _services.TryGetValue(ToKey(serviceType, name), out var service) ?
+                service :
+                ParentServiceProvider?.GetService(serviceType, name);
         }
 
         /// <summary>
@@ -138,10 +150,13 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         public virtual void SetService(Type serviceType, object service, string name = null)
         {
             ThrowOnNullServiceType(serviceType);
+
+#pragma warning disable IDE0016 // Null check simplification would case adding null service to _services
             if (service == null)
             {
                 throw new ArgumentNullException(nameof(service));
             }
+#pragma warning restore IDE0016 // Null check simplification would case adding null service to _services
 
             _services[ToKey(serviceType, name)] = service;
         }

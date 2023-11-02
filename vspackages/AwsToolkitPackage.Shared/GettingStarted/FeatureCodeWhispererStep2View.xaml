@@ -6,16 +6,100 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:Amazon.AWSToolkit.VisualStudio.GettingStarted"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    xmlns:wizard="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;assembly=AWSToolkit"
+    xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d" 
-    d:DesignHeight="450" d:DesignWidth="800">
-    <!-- Stub for IDE-11880 -->
-    <StackPanel>
+    d:DesignHeight="450"
+    d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition SharedSizeGroup="MakeCwStep2BordersEqualWidth" />
+            <ColumnDefinition SharedSizeGroup="MakeCwStep2BordersEqualWidth" />
+        </Grid.ColumnDefinitions>
+        
         <TextBlock 
+            Grid.Row="0"
+            Grid.ColumnSpan="2"
             FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
             Margin="0 24 0 0"
             Text="Step 2 of 2: Authenticate with AWS" />
-        
-        <TextBlock>Hi, I'm CodeWhisperer!</TextBlock>
-    </StackPanel>
+
+        <TextBlock 
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}">
+            CodeWhisperer does not support authentication with IAM User Role Credentials.
+            <Hyperlink
+                Command="{Binding OpenAuthProvidersLearnMoreCommand}">
+                Learn more about supported authentication providers.
+            </Hyperlink>
+        </TextBlock>
+
+        <Border
+            Grid.Row="2"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Margin="0 6 6 0"
+            Padding="9">
+            <StackPanel>
+                <TextBlock 
+                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                    Text="My organization has enabled CodeWhisperer" />
+
+                <TextBlock
+                    Margin="0 9 0 0"
+                    Text="Sign in with IAM Identity Center (Successor to AWS Single Sign-on)" />
+
+                <TextBlock 
+                    Margin="0 6 0 0"
+                    Text="Choose from an existing Profile or add new" />
+
+                <ComboBox
+                    DisplayMemberPath="DisplayName"
+                    ItemsSource="{Binding CredentialIdentifiers}"
+                    Margin="0 6 0 0"
+                    SelectedItem="{Binding SelectedCredentialIdentifier}" />
+
+                <wizard:AddEditProfileWizardView
+                    Margin="0 6 0 0">
+                    <wizBehaviors:Mvvm.ViewModel>
+                        <wizard:AddEditProfileWizardViewModel>
+                            <wizard:AddEditProfileWizardViewModel.ServiceProvider>
+                                <wizard:ServiceProvider />
+                            </wizard:AddEditProfileWizardViewModel.ServiceProvider>
+                        </wizard:AddEditProfileWizardViewModel>
+                    </wizBehaviors:Mvvm.ViewModel>
+                </wizard:AddEditProfileWizardView>
+            </StackPanel>
+        </Border>
+
+        <Border
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="6 6 0 0"
+            Padding="9">
+            <StackPanel>
+                <TextBlock 
+                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                    Text="I'm using CodeWhisperer on my own" />
+
+                <TextBlock
+                    Margin="0 6 0 0"
+                    Text="With AWS Builder ID, sign up for free without an AWS Account." />
+
+                <Button
+                    HorizontalAlignment="Left"
+                    Margin="0 6 0 0">
+                    Sign up or Sign in
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
 </UserControl>

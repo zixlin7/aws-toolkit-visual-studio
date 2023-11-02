@@ -14,6 +14,7 @@ using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
 
@@ -23,7 +24,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 {
     public enum GettingStartedStep
     {
-        AddEditProfileWizard,
+        AddEditProfileWizards,
         GettingStartedCompleted
     }
 
@@ -47,11 +48,9 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         }
     }
 
-    public class GettingStartedViewModel : RootViewModel
+    internal class GettingStartedViewModel : RootViewModel, IAddEditProfileWizardHost
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GettingStartedViewModel));
-
-        private IAddEditProfileWizard _addEditProfileWizard => ServiceProvider.RequireService<IAddEditProfileWizard>();
 
         private IGettingStartedCompleted _gettingStartedCompleted => ServiceProvider.RequireService<IGettingStartedCompleted>();
 
@@ -95,20 +94,29 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             private set => SetProperty(ref _openGitHubCommand, value);
         }
 
+        public BaseMetricSource SaveMetricSource { get; private set; }
+
         internal GettingStartedViewModel(ToolkitContext toolkitContext)
             : base(toolkitContext) { }
+
+        public override async Task RegisterServicesAsync()
+        {
+            await base.RegisterServicesAsync();
+
+            ServiceProvider.SetService<IAddEditProfileWizardHost>(this);
+        }
 
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
 
-            _addEditProfileWizard.SaveMetricSource = ToolkitSettings.Instance.HasUserSeenFirstRunForm ?
+            SaveMetricSource = ToolkitSettings.Instance.HasUserSeenFirstRunForm ?
                 MetricSources.GettingStartedMetricSource.GettingStarted :
                 MetricSources.GettingStartedMetricSource.FirstStartup;
 
             ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
 
-            Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(ToolkitContext, url);
+            ICommand openUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
             OpenAwsExplorerLearnMoreCommand = openUrl(AwsUrls.UserGuideWorkWithAws);
             OpenCodeWhispererLearnMoreCommand = openUrl(AwsUrls.CodeWhispererOverview);
             OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);
@@ -121,18 +129,19 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             var credId = GetDefaultCredentialIdentifier();
             if (credId == null)
             {
-                _addEditProfileWizard.ConnectionSettingsChanged += (sender, e) =>
-                {
-                    _gettingStartedCompleted.Status = true;
-                    ShowGettingStarted(e.CredentialIdentifier);
-                };
-                CurrentStep = GettingStartedStep.AddEditProfileWizard;
+                CurrentStep = GettingStartedStep.AddEditProfileWizards;
             }
             else
             {
                 ShowGettingStarted(credId);
                 await ChangeConnectionSettingsAsync(credId);
             }
+        }
+
+        public void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
+        {
+            _gettingStartedCompleted.Status = true;
+            ShowGettingStarted(credentialIdentifier);
         }
 
         private async Task ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier)

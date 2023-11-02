@@ -57,6 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureCodeWhispererStep2View.xaml.cs">
       <DependentUpon>FeatureCodeWhispererStep2View.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureCodeWhispererStep2ViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedCompletedView.xaml.cs">
       <DependentUpon>GettingStartedCompletedView.xaml</DependentUpon>
     </Compile>

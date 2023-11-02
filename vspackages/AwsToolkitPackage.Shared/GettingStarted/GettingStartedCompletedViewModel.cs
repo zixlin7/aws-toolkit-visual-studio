@@ -12,7 +12,7 @@ using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 {
-    public class GettingStartedCompletedViewModel : ViewModel, IGettingStartedCompleted
+    internal class GettingStartedCompletedViewModel : ViewModel, IGettingStartedCompleted
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GettingStartedCompletedViewModel));
 
@@ -146,7 +146,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             OpenLogsCommand = new OpenToolkitLogsCommand(ToolkitContext);
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);
 
-            Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(ToolkitContext, url);
+            ICommand openUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
             OpenPrivacyPolicyCommand = openUrl(AwsUrls.PrivacyPolicy);
             OpenTelemetryDisclosureCommand = openUrl(AwsUrls.TelemetryDisclosure);
             OpenDeployLambdaDocsCommand = openUrl(AwsUrls.DeployLambdaDocs);

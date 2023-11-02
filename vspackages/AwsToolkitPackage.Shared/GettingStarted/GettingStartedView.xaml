@@ -37,21 +37,20 @@
         </ResourceDictionary>
     </commonUi:BaseAWSUserControl.Resources>
 
-    <ScrollViewer>
-        <Grid Margin="12">
+    <ScrollViewer
+        HorizontalAlignment="Left"
+        HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">
+        <Grid 
+            Margin="12"
+            MaxWidth="800">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MaxWidth="650" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
 
             <Grid
-                Grid.Row="0"
-                Grid.ColumnSpan="2"
-                Grid.Column="0">
+                Grid.Row="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -99,17 +98,17 @@
 
             <commonUi:CardControl 
                 Grid.Row="1"
-                Grid.Column="0"
-                MaxWidth="650"
                 SelectedValue="{Binding CurrentStep}"
                 SelectedValuePath="Tag">
                 <!-- Tags on items below are for CardControl selection -->
 
                 <Grid
-                    Tag="{x:Static local:GettingStartedStep.AddEditProfileWizard}">
+                    Grid.IsSharedSizeScope="True"
+                    Tag="{x:Static local:GettingStartedStep.AddEditProfileWizards}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
+                        <ColumnDefinition SharedSizeGroup="MakeStep1BordersEqualWidth" />
+                        <ColumnDefinition SharedSizeGroup="MakeStep1BordersEqualWidth" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
@@ -121,13 +120,13 @@
 
                     <TextBlock 
                         Grid.Row="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
                         Text="Step 1 of 2: Select a feature setup" />
 
                     <TextBlock 
                         Grid.Row="1"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
                         Margin="0 6 0 0"
                         Text="You can return to this page at any time to set up another feature (Extensions > AWS Toolkit)." />
@@ -146,7 +145,9 @@
                                 <TextBlock
                                     Margin="0 6 0 0"
                                     TextWrapping="WrapWithOverflow">
-                                    Build applications faster with your AI coding companion.
+                                    Build applications faster with your AI coding
+                                    <LineBreak />
+                                    companion.
                                 </TextBlock>
                                 <TextBlock
                                     Margin="0 6 0 0">
@@ -173,7 +174,9 @@
                                 <TextBlock
                                     Margin="0 6 0 0"
                                     TextWrapping="WrapWithOverflow">
-                                    View, modify, and deploy AWS Resources. Work with S3, Lambda, CloudWatch, and more.
+                                    View, modify, and deploy AWS Resources.
+                                    <LineBreak />
+                                    Work with S3, Lambda, CloudWatch, and more.
                                 </TextBlock>
                                 <TextBlock
                                     Margin="0 6 0 0">
@@ -188,12 +191,16 @@
 
                     <commonUi:CardControl 
                         Grid.Row="4"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="3"
                         SelectedValue="{Binding FeatureType}"
                         SelectedValuePath="Tag">
 
                         <local:FeatureCodeWhispererStep2View
-                            Tag="{x:Static local:FeatureType.CodeWhisperer}" />
+                            Tag="{x:Static local:FeatureType.CodeWhisperer}">
+                            <wizBehaviors:Mvvm.ViewModel>
+                                <local:FeatureCodeWhispererStep2ViewModel />
+                            </wizBehaviors:Mvvm.ViewModel>
+                        </local:FeatureCodeWhispererStep2View>
                         <local:FeatureAwsExplorerStep2View
                             Tag="{x:Static local:FeatureType.AwsExplorer}" />
                     </commonUi:CardControl>

@@ -10,6 +10,8 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
     public class Service2 { }
 
+    public class Service3 { }
+
     public class UnsetService { }
 
     // All generic methods delegate to non-generic methods, so only the non-generic
@@ -22,6 +24,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
         private readonly Service2 _service2a = new Service2();
         private readonly Service2 _service2b = new Service2();
         private readonly string _service2bName = "service2bName";
+        private readonly Service3 _service3 = new Service3();
 
         public ServiceProviderTests()
         {
@@ -58,6 +61,54 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             var wrongTypeRightName = _sut.GetService(typeof(Service1), _service2bName);
             Assert.Null(wrongTypeRightName);
         }
+
+        [Fact]
+        public void GetServiceReturnsServiceDefinedOnlyInParent()
+        {
+            var parent = new ServiceProvider();
+            parent.SetService(_service3);
+
+            var type = _sut.GetService(typeof(Service3));
+            Assert.Null(type);
+
+            _sut.ParentServiceProvider = parent;
+
+            type = _sut.GetService(typeof(Service3));
+            Assert.Equal(_service3, type);
+        }
+
+        [Fact]
+        public void GetServiceReturnsServiceDefinedOnlyInGrandparent() // Tests chained delegation
+        {
+            var parent = new ServiceProvider();
+            var grandparent = new ServiceProvider();
+            grandparent.SetService(_service3);
+
+            var type = _sut.GetService(typeof(Service3));
+            Assert.Null(type);
+
+            _sut.ParentServiceProvider = parent;
+
+            type = _sut.GetService(typeof(Service3));
+            Assert.Null(type);
+
+            parent.ParentServiceProvider = grandparent;
+
+            type = _sut.GetService(typeof(Service3));
+            Assert.Equal(_service3, type);
+        }
+
+        [Fact]
+        public void GetServiceReturnsServiceDefinedInCurrentWhenAlsoDefinedInParent()
+        {
+            var parentService1 = new Service1();
+            var parent = new ServiceProvider();
+            parent.SetService(parentService1);
+
+            var type = _sut.GetService(typeof(Service1));
+            Assert.Equal(_service1, type);
+        }
+
 
         [Fact]
         public void RequireServiceReturnsService()

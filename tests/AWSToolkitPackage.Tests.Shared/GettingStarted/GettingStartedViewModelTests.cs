@@ -92,7 +92,7 @@ namespace AWSToolkitPackage.Tests.GettingStarted
 
             await RunViewModelLifecycle();
 
-            Assert.Equal(GettingStartedStep.AddEditProfileWizard, _sut.CurrentStep);
+            Assert.Equal(GettingStartedStep.AddEditProfileWizards, _sut.CurrentStep);
         }
 
         [Fact]
