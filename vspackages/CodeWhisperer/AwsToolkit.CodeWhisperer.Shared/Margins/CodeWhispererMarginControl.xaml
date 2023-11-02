@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:Amazon.AwsToolkit.CodeWhisperer.Margins"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit" xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+             xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              themes:ToolkitThemes.UseToolkitTheme="False"
              mc:Ignorable="d" 
              d:DesignHeight="26" d:DesignWidth="64">
@@ -22,10 +23,26 @@
         VerticalAlignment="Center"
         Background="{DynamicResource {x:Static platformUi:EnvironmentColors.ScrollBarBackgroundBrushKey}}">
         <Button 
-            Height="19" MinWidth="50" 
+            Height="19" MinWidth="50"
             Margin="0" Padding="0"
-            Background="Transparent"
             PreviewMouseDown="OnPreviewMouseDown">
+            <Button.Style>
+                <!-- Ideally we'd use themes:ToolkitThemeResourceKeys.ButtonStyle here, but 
+                that is initialized when the Toolkit activates, and this control can be 
+                displayed before that happens. So we use the same underlying VS Button style
+                
+                (as seen in vspackages\AwsToolkitPackage.Shared\Themes\BaseToolkitStyles.xaml)
+
+                We're really only interested in the coloring for things like mouseover.
+                Otherwise, we want make sure we don't let the button inflate the lower margin height.
+                -->
+                <Style 
+                    BasedOn="{StaticResource {x:Static vsShell:VsResourceKeys.ButtonStyleKey}}"
+                    TargetType="{x:Type Button}">
+                    <Setter Property="MinHeight" Value="8" />
+                </Style>
+            </Button.Style>
+
             <Button.ContextMenu>
                 <ContextMenu themes:ToolkitThemes.UseToolkitTheme="True">
                     <MenuItem Header="Sign In" Command="{Binding SignIn}" />
