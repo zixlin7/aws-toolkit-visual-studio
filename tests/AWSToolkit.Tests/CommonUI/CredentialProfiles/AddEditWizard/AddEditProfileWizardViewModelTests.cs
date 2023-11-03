@@ -71,8 +71,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             await _sut.SaveAsync(p, CredentialFileType.Shared);
 
             _addEditProfileWizardHostMock.Verify(mock => mock.NotifyConnectionSettingsChanged(
-                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),
-                It.Is<ToolkitRegion>(r => r.Id == expectedRegion)));
+                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName)));
 
             _toolkitContextFixture.CredentialSettingsManager.Verify(mock => mock.CreateProfileAsync(
                 It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),
@@ -113,8 +112,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             await _sut.SaveAsync(p, CredentialFileType.Shared);
 
             _addEditProfileWizardHostMock.Verify(mock => mock.NotifyConnectionSettingsChanged(
-                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),
-                It.Is<ToolkitRegion>(r => r.Id == expectedRegion)));
+                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName)));
 
             _toolkitContextFixture.CredentialSettingsManager.Verify(mock => mock.CreateProfileAsync(
                 It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),

@@ -138,7 +138,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             }
         }
 
-        public void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
+        public void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier)
         {
             _gettingStartedCompleted.Status = true;
             ShowGettingStarted(credentialIdentifier);

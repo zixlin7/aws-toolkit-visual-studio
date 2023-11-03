@@ -44,7 +44,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
             wizard.CredentialsFileOpened += (sender, e) => DialogResult = false;
         }
 
-        public void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
+        public void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier)
         {
             DialogResult = true;
         }

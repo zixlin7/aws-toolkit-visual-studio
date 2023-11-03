@@ -36,6 +36,35 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
         }
 
         [Fact]
+        public void ThrowsWhenParentServiceProviderCycle()
+        {
+            var parent = new ServiceProvider();
+            _sut.ParentServiceProvider = parent;
+
+            var grandparent = new ServiceProvider();
+            parent.ParentServiceProvider = grandparent;
+
+            Assert.Equal(parent, _sut.ParentServiceProvider);
+            Assert.Equal(grandparent, _sut.ParentServiceProvider.ParentServiceProvider);
+
+            Assert.Throws<InvalidOperationException>(() => grandparent.ParentServiceProvider = _sut);
+        }
+
+        [Fact]
+        public void DoesNotThrowWhenNoParentServiceProviderCycle()
+        {
+            var parent = new ServiceProvider();
+            _sut.ParentServiceProvider = parent;
+
+            var grandparent = new ServiceProvider();
+            parent.ParentServiceProvider = grandparent;
+
+            grandparent.ParentServiceProvider = null;
+
+            // This is a sanity test and nothing to verify other than a test-failing exception is not thrown
+        }
+
+        [Fact]
         public void GetServiceReturnsService()
         {
             var type = _sut.GetService(typeof(Service2));
@@ -108,7 +137,6 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             var type = _sut.GetService(typeof(Service1));
             Assert.Equal(_service1, type);
         }
-
 
         [Fact]
         public void RequireServiceReturnsService()

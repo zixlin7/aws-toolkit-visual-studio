@@ -28,6 +28,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
     {
         private readonly IDictionary<string, object> _services = new Dictionary<string, object>();
 
+        private ServiceProvider _parentServiceProvider;
+
         /// <summary>
         /// If requested service not found, attempts to return from parent service provider.
         /// </summary>
@@ -36,7 +38,27 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         /// parent service provider for a service until null (i.e. root service provider) is
         /// encountered.  If null, no additional attempts are made to return requested service.  
         /// </remarks>
-        public ServiceProvider ParentServiceProvider { get; set; }
+        public ServiceProvider ParentServiceProvider
+        {
+            get => _parentServiceProvider;
+            set
+            {
+                ThrowOnParentServiceProviderCycle(value);
+                _parentServiceProvider = value;
+            }
+        }
+
+        private void ThrowOnParentServiceProviderCycle(ServiceProvider parent)
+        {
+            while (parent != null)
+            {
+                if (parent == this)
+                {
+                    throw new InvalidOperationException($"{nameof(ParentServiceProvider)} cycle detected.");
+                }
+                parent = parent.ParentServiceProvider;
+            }
+        }
 
         public ServiceProvider() { }
 

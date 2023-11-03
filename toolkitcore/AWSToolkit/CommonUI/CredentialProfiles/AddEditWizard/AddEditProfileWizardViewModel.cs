@@ -134,7 +134,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                     if (changeConnectionSettings)
                     {
                         await ToolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credId, region, cancelSource.Token);
-                        _addEditProfileWizardHost.NotifyConnectionSettingsChanged(credId, region);
+                        _addEditProfileWizardHost.NotifyConnectionSettingsChanged(credId);
                     }
                 }
 

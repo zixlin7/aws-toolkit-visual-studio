@@ -15,27 +15,28 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(Mvvm));
 
-        #region ParentServiceProvider attached property
+        #region InheritedServiceProvider attached property
 
         /// <summary>
-        /// Do not set directly in XAML.  Supports parent service provider handling in ServiceProvider.
+        /// Do not use this property in XAML.  It supports automated inherting of ServiceProvider.
         /// </summary>
-        public static readonly DependencyProperty ParentServiceProviderProperty = DependencyProperty.RegisterAttached(
-            "ParentServiceProvider",
+        public static readonly DependencyProperty InheritedServiceProviderProperty = DependencyProperty.RegisterAttached(
+            "InheritedServiceProvider",
             typeof(ServiceProvider),
             typeof(Mvvm),
-            new FrameworkPropertyMetadata(ParentServiceProvider_PropertyChanged));
+            new FrameworkPropertyMetadata(InheritedServiceProvider_PropertyChanged));
 
-        private static void ParentServiceProvider_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void InheritedServiceProvider_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var viewModel = GetViewModel(d);
             if (viewModel != null && e.NewValue is ServiceProvider serviceProvider)
             {
+                // If ServiceProvider not explicitly set on the view model, set the inherited service provider.
                 if (viewModel.ServiceProvider == null)
                 {
                     viewModel.ServiceProvider = serviceProvider;
                 }
-                else
+                else  // Otherwise make the inherited service provider the parent for GetService chaining.
                 {
                     viewModel.ServiceProvider.ParentServiceProvider = serviceProvider;
                 }
@@ -46,14 +47,14 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors
             }
         }
 
-        public static ServiceProvider GetParentServiceProvider(DependencyObject d)
+        public static ServiceProvider GetInheritedServiceProvider(DependencyObject d)
         {
-            return (ServiceProvider) d.GetValue(ParentServiceProviderProperty);
+            return (ServiceProvider) d.GetValue(InheritedServiceProviderProperty);
         }
 
-        public static void SetParentServiceProvider(DependencyObject d, ServiceProvider value)
+        public static void SetInheritedServiceProvider(DependencyObject d, ServiceProvider value)
         {
-            d.SetValue(ParentServiceProviderProperty, value);
+            d.SetValue(InheritedServiceProviderProperty, value);
         }
         #endregion
 
@@ -117,10 +118,10 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors
                 view.Unloaded -= View_Unloaded;
                 view.Unloaded += View_Unloaded;
 
-                if (GetParentServiceProvider(d) == null && view.GetBindingExpression(ParentServiceProviderProperty) == null)
+                if (GetInheritedServiceProvider(d) == null && view.GetBindingExpression(InheritedServiceProviderProperty) == null)
                 {
                     // Try to bind to parent's ServiceProvider
-                    view.SetBinding(ParentServiceProviderProperty,
+                    view.SetBinding(InheritedServiceProviderProperty,
                         new Binding($"DataContext.{nameof(ViewModel.ServiceProvider)}")
                         {
                             RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(FrameworkElement), 1)

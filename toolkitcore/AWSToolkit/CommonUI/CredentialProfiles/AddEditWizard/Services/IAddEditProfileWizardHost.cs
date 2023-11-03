@@ -8,6 +8,6 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
     {
         BaseMetricSource SaveMetricSource { get; }
 
-        void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier, ToolkitRegion region);
+        void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier);
     }
 }
