@@ -14,13 +14,14 @@ using Amazon.AWSToolkit.ResourceFetchers;
 using log4net;
 
 using Version = System.Version;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 {
     /// <summary>
     /// Manages the lsp version file
     /// </summary>
-    public class LspManager : IResourceManager<string>
+    public class LspManager : IResourceManager<LspInstallResult>
     {
         public class Options
         {
@@ -57,10 +58,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             _manifestSchema = manifestSchema;
         }
 
-        public async Task<string> DownloadAsync(CancellationToken token = default)
+        public async Task<LspInstallResult> DownloadAsync(CancellationToken token = default)
         {
             try
             {
+                var result = new LspInstallResult();
                 token.ThrowIfCancellationRequested();
 
                 // get latest lsp version from the manifest matching the required toolkit compatible version range
@@ -76,7 +78,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 {
                     ShowMessage(
                         $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} from local cache location: {downloadCachePath}");
-                    return downloadCachePath;
+
+                    result.Path = downloadCachePath;
+                    result.Location = LanguageServerLocation.Cache;
+                    result.Version = latestCompatibleLspVersion.ServerVersion;
+                    return result;
                 }
 
                 // cleanup download cache if invalid
@@ -89,7 +95,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 {
                     ShowMessage(
                         $"Installing {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} to: {downloadCachePath}");
-                    return downloadCachePath;
+
+                    result.Path = downloadCachePath;
+                    result.Location = LanguageServerLocation.Remote;
+                    result.Version = latestCompatibleLspVersion.ServerVersion;
+                    return result;
                 }
 
                 // if unable to retrieve contents from specified remote location, use the most compatible fallback cached lsp version
@@ -100,14 +110,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 if (string.IsNullOrWhiteSpace(fallbackPath))
                 {
                     ShowMessage($"AWS Toolkit was unable to find a compatible version of {_options.Name} Language Server.");
-                    throw new ToolkitException(
+                    throw new LspToolkitException(
                         $"AWS Toolkit was unable to find a compatible version of {_options.Name} Language Server.",
-                        ToolkitException.CommonErrorCode.UnexpectedError);
+                       LspToolkitException.LspErrorCode.NoValidLspFallback);
                 }
 
                 ShowMessage(
                     $"Unable to install {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion}. Launching a previous version from: {fallbackPath}");
-                return fallbackPath;
+
+                result.Path = fallbackPath;
+                result.Location = LanguageServerLocation.Fallback;
+                result.Version = Path.GetFileName(Path.GetDirectoryName(downloadCachePath));
+                return result;
             }
             catch (Exception e)
             {
@@ -160,9 +174,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         {
             if (_manifestSchema == null)
             {
-                throw new ToolkitException(
+                throw new LspToolkitException(
                     "No valid manifest version data was received. An error could have caused this. Please check logs.",
-                    ToolkitException.CommonErrorCode.InternalMissingServiceState);
+                    LspToolkitException.LspErrorCode.UnexpectedManifestError);
             }
 
             var latestCompatibleLspVersion = _manifestSchema.Versions
@@ -171,9 +185,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
             if (latestCompatibleLspVersion == null)
             {
-                throw new ToolkitException(
+                throw new LspToolkitException(
                     $"Unable to find a language server that satisfies one or more of these conditions: version in range [{_options.VersionRange.Start} - {_options.VersionRange.End}), matching system's architecture and platform or containing the file: {_options.Filename}  ",
-                    ToolkitException.CommonErrorCode.UnsupportedState);
+                    LspToolkitException.LspErrorCode.NoCompatibleLspVersion);
             }
 
             return latestCompatibleLspVersion;
@@ -189,18 +203,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             var lspTarget = GetCompatibleLspTarget(lspVersion);
             if (lspTarget == null)
             {
-                throw new ToolkitException(
+                throw new LspToolkitException(
                     "No language server target found matching the system's architecture and platform",
-                    ToolkitException.CommonErrorCode.UnsupportedState);
+                   LspToolkitException.LspErrorCode.NoSystemCompatibleLspVersion);
             }
 
             // from the matching target, retrieve the contents matching the specified lsp filename required by the toolkit
             var targetContent = GetCompatibleTargetContent(lspTarget);
             if (targetContent == null)
             {
-                throw new ToolkitException(
+                throw new LspToolkitException(
                     $"No matching target content found containing the specified filename: {_options.Filename}",
-                    ToolkitException.CommonErrorCode.UnsupportedState);
+                    LspToolkitException.LspErrorCode.NoCompatibleLspVersion);
             }
 
             return targetContent;

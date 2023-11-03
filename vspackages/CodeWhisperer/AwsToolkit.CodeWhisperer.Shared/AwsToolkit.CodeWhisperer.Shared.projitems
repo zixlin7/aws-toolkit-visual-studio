@@ -61,8 +61,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\CodeWhispererConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspFetcher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\CodeWhispererInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstallResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstallUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\LspToolkitException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\ManifestSchemaUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\VersionManifestOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationInfoBar.cs" />

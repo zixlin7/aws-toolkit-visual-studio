@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using AwsToolkit.VsSdk.Common.Settings;
 
@@ -35,21 +36,21 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             _toolkitContext = toolkitContext;
         }
 
-        public async Task<string> ExecuteAsync(ITaskStatusNotifier notifier, CancellationToken token = default)
+        public async Task<LspInstallResult> ExecuteAsync(ITaskStatusNotifier notifier, CancellationToken token = default)
         {
             var statusMsg = "Successfully installed CodeWhisperer Language Server";
             try
             {
                 token.ThrowIfCancellationRequested();
 
-                var localLspPath = await GetLocalLspPathAsync();
+                var localLspResult = await GetLspFromLocalOverrideAsync();
                 // if language server local override exists, return that location
-                if (!string.IsNullOrWhiteSpace(localLspPath))
+                if (!string.IsNullOrWhiteSpace(localLspResult.Path))
                 {
-                    var msg = $"Launching CodeWhisperer Language Server from local override location: {localLspPath}";
+                    var msg = $"Launching CodeWhisperer Language Server from local override location: {localLspResult.Path}";
                     _logger.Info(msg);
                     _toolkitContext.ToolkitHost.OutputToHostConsole(msg, true);
-                    return localLspPath;
+                    return localLspResult;
                 }
 
                 var versionManifestManager = CreateVersionManifestManager();
@@ -57,8 +58,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
                 if (manifestSchema == null)
                 {
-                    throw new ToolkitException("Error retrieving CodeWhisperer Language Server version manifest",
-                        ToolkitException.CommonErrorCode.UnsupportedState);
+                    throw new LspToolkitException("Error retrieving CodeWhisperer Language Server version manifest",
+                        LspToolkitException.LspErrorCode.UnexpectedManifestError);
                 }
 
                 var lspManager = CreateLspManager(manifestSchema);
@@ -98,12 +99,30 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
 
         /// <summary>
-        /// Get local language server path if one exists
+        /// Get language server from local path if one exists
         /// </summary>
+        private async Task<LspInstallResult> GetLspFromLocalOverrideAsync()
+        {
+            var result = new LspInstallResult
+            {
+                Path = await GetLocalLspPathAsync(),
+                Location = LanguageServerLocation.Override
+            };
+            return result;
+        }
+
         private async Task<string> GetLocalLspPathAsync()
         {
-            var settings = await _lspSettingsRepository.GetLspSettingsAsync();
-            return settings.LanguageServerPath;
+            try
+            {
+                var settings = await _lspSettingsRepository.GetLspSettingsAsync();
+                return settings.LanguageServerPath;
+            }
+            catch(Exception ex) when (!(ex is OperationCanceledException))
+            {
+                // swallow exceptions in this step, so that toolkit can attempt to fetch from remote if this unexpectedly fails
+                return null;
+            }
         }
 
         /// <summary>

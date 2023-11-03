@@ -7,9 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
-using Amazon.AWSToolkit.Exceptions;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.Tests.Common.IO;
@@ -61,9 +62,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         public async Task DownloadAsync_WhenManifestSchemaNull()
         {
             var manager = new LspManager(_options, null);
-            var exception = await Assert.ThrowsAsync<ToolkitException>(async () => await manager.DownloadAsync());
+            var exception = await Assert.ThrowsAsync<LspToolkitException>(async () => await manager.DownloadAsync());
 
             Assert.Contains("No valid manifest", exception.Message);
+            Assert.Equal(LspToolkitException.LspErrorCode.UnexpectedManifestError.ToString(), exception.Code);
         }
 
 
@@ -81,7 +83,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             _sampleLspVersion.ServerVersion = version;
 
             await AssertDownloadAsyncThrowsWithMessage(
-                "language server that satisfies one or more of these conditions");
+                "language server that satisfies one or more of these conditions", LspToolkitException.LspErrorCode.NoCompatibleLspVersion);
         }
 
         [Fact]
@@ -91,7 +93,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             // assumption: tests always run in an environment where the underlying OS is windows
             await AssertDownloadAsyncThrowsWithMessage(
-                "language server that satisfies one or more of these conditions");
+                "language server that satisfies one or more of these conditions", LspToolkitException.LspErrorCode.NoCompatibleLspVersion);
         }
 
 
@@ -101,7 +103,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             _sampleLspVersion.Targets.First().Contents.First().Filename = "abc.exe";
 
             await AssertDownloadAsyncThrowsWithMessage(
-                "language server that satisfies one or more of these conditions");
+                "language server that satisfies one or more of these conditions", LspToolkitException.LspErrorCode.NoCompatibleLspVersion);
         }
 
 
@@ -115,9 +117,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             // setup target content with required params
             SetupTargetContent($"sha384:{hash}", _sampleLspVersion);
 
-            var path = await _sut.DownloadAsync();
+            var result = await _sut.DownloadAsync();
 
-            Assert.Equal(expectedPath, path);
+            Assert.Equal(expectedPath, result.Path);
+            Assert.Equal(LanguageServerLocation.Cache, result.Location);
         }
 
         [Theory]
@@ -129,7 +132,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         {
             // setup target content with required params
             SetupTargetContent(hashString, _sampleLspVersion);
-            await AssertDownloadAsyncThrowsWithMessage("compatible version of");
+            await AssertDownloadAsyncThrowsWithMessage("compatible version of", LspToolkitException.LspErrorCode.NoValidLspFallback);
         }
 
         [Fact]
@@ -151,9 +154,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             var hash = GetHash(expectedFallbackLocation);
             SetupTargetContent($"sha384:{hash}", fallbackVersion);
 
-            var downloadPath = await _sut.DownloadAsync();
+            var result = await _sut.DownloadAsync();
 
-            Assert.Equal(expectedFallbackLocation, downloadPath);
+            Assert.Equal(expectedFallbackLocation, result.Path);
+            Assert.Equal(LanguageServerLocation.Fallback, result.Location);
         }
 
         [Fact]
@@ -174,7 +178,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             // setup fallback target content with incompatible params
             SetupTargetContent("sha384:5688", fallbackVersion);
 
-            await AssertDownloadAsyncThrowsWithMessage("compatible version of");
+            await AssertDownloadAsyncThrowsWithMessage("compatible version of", LspToolkitException.LspErrorCode.NoValidLspFallback);
         }
 
         [Fact]
@@ -194,7 +198,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             var additionalFallbackLocation =
                 SetupFileInCache($"{_sampleVersionRange.Start.Major}.0.0");
 
-            await AssertDownloadAsyncThrowsWithMessage("compatible version of");
+            await AssertDownloadAsyncThrowsWithMessage("compatible version of", LspToolkitException.LspErrorCode.NoValidLspFallback);
         }
 
         [Fact]
@@ -212,9 +216,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             var expectedPath = Path.Combine(_options.DownloadParentFolder, _sampleVersion,
                 CodeWhispererConstants.Filename);
-            var downloadPath = await _sut.DownloadAsync();
+            var result = await _sut.DownloadAsync();
 
-            Assert.Equal(expectedPath, downloadPath);
+            Assert.Equal(expectedPath, result.Path);
+            Assert.Equal(LanguageServerLocation.Remote, result.Location);
         }
 
         [Fact]
@@ -238,9 +243,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             // verify latest compatible lsp version is chosen amongst multiple available for eg. between 1.1.1 and 1.0.2, 1.1.1 is chosen
             var expectedPath = Path.Combine(_options.DownloadParentFolder, latestExpectedVersion,
                 CodeWhispererConstants.Filename);
-            var downloadPath = await _sut.DownloadAsync();
+            var result = await _sut.DownloadAsync();
 
-            Assert.Equal(expectedPath, downloadPath);
+            Assert.Equal(expectedPath, result.Path);
+            Assert.Equal(LanguageServerLocation.Remote, result.Location);
         }
 
         [Fact]
@@ -374,10 +380,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             };
         }
 
-        private async Task AssertDownloadAsyncThrowsWithMessage(string exceptionMessage)
+        private async Task AssertDownloadAsyncThrowsWithMessage(string exceptionMessage, LspToolkitException.LspErrorCode errorCode)
         {
-            var exception = await Assert.ThrowsAsync<ToolkitException>(async () => await _sut.DownloadAsync());
+            var exception = await Assert.ThrowsAsync<LspToolkitException>(async () => await _sut.DownloadAsync());
 
+            Assert.Equal(errorCode.ToString(), exception.Code);
             Assert.Contains(exceptionMessage, exception.Message);
         }
 

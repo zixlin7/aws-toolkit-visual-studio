@@ -11,10 +11,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
     public interface ILspInstaller
     {
         /// <summary>
-        /// Installs the Lsp and returns the path where it is installed
+        /// Installs the Lsp and returns information about the installation <see cref="LspInstallResult"/>
         /// </summary>
         /// <param name="notifier"></param>
         /// <param name="token"></param>
-        Task<string> ExecuteAsync(ITaskStatusNotifier notifier, CancellationToken token = default);
+        Task<LspInstallResult> ExecuteAsync(ITaskStatusNotifier notifier, CancellationToken token = default);
     }
 }

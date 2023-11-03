@@ -24,6 +24,7 @@ using Newtonsoft.Json.Serialization;
 
 using StreamJsonRpc;
 using Microsoft.VisualStudio.Shell;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 {
@@ -187,7 +188,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             {
                 using (var token = CreateCancellationTokenSource(taskStatusNotifier))
                 {
-                    _serverPath = await InstallServerAsync(taskStatusNotifier, token.Token);
+                    var lspInstallResult = await InstallServerAsync(taskStatusNotifier, token.Token);
+                    _serverPath = lspInstallResult?.Path;
 
                     // TODO : Have a separate controller responsible for starting the language server
                     await LaunchServerAsync(taskStatusNotifier);
@@ -323,7 +325,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         /// <returns></returns>
 
-        protected abstract Task<string> InstallServerAsync(ITaskStatusNotifier taskNotifier, CancellationToken token = default);
+        protected abstract Task<LspInstallResult> InstallServerAsync(ITaskStatusNotifier taskNotifier, CancellationToken token = default);
 
         /// <summary>
         /// Creates the task status notifier

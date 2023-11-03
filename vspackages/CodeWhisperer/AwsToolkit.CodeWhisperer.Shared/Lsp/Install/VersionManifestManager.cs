@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
-using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.ResourceFetchers;
 
 using AwsToolkit.VsSdk.Common.Settings;
@@ -78,9 +77,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 {
                     if (stream == null)
                     {
-                        throw new ToolkitException(
+                        throw new LspToolkitException(
                             $"No {_options.Name} Language Server version manifest data was received. An error could have caused this. Please check AWS Toolkit logs.",
-                            ToolkitException.CommonErrorCode.UnsupportedState);
+                            LspToolkitException.LspErrorCode.UnexpectedManifestFetchError);
                     }
 
                     await stream.CopyToAsync(streamCopy);
@@ -93,8 +92,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                         schema = await ManifestSchemaUtil.LoadAsync(manifestStream);
                         if (schema == null)
                         {
-                            throw new ToolkitException($"Error parsing {_options.Name} Language Server version manifest data.",
-                                ToolkitException.CommonErrorCode.UnsupportedState);
+                            throw new LspToolkitException($"Error parsing {_options.Name} Language Server version manifest data.",
+                               LspToolkitException.LspErrorCode.InvalidVersionManifest);
                         }
                     }
 

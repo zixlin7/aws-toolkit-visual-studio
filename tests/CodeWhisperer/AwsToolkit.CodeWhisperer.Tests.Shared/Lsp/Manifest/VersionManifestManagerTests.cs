@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Lsp;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
-using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.ResourceFetchers;
 
 using Moq;
@@ -79,11 +79,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
         public async Task Download_WhenEmptySchemaAsync()
         {
             SetupFetcher("non-existent.json");
-            var exception = await Assert.ThrowsAsync<ToolkitException>(async () => await _sut.DownloadAsync());
+            var exception = await Assert.ThrowsAsync<LspToolkitException>(async () => await _sut.DownloadAsync());
 
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
                 _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
-            Assert.Equal(exception.Code, ToolkitException.CommonErrorCode.UnsupportedState.ToString());
+            Assert.Equal(exception.Code, LspToolkitException.LspErrorCode.UnexpectedManifestFetchError.ToString());
         }
 
 

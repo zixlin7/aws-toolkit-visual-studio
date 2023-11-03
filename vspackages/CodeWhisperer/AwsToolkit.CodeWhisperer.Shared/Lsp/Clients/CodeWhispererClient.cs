@@ -60,7 +60,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             return !string.IsNullOrWhiteSpace(_serverPath) ? _serverPath : throw new Exception("Error finding CodeWhisperer Language Server location");
         }
 
-        protected override async Task<string> InstallServerAsync(ITaskStatusNotifier taskNotifier, CancellationToken token = default)
+        protected override async Task<LspInstallResult> InstallServerAsync(ITaskStatusNotifier taskNotifier, CancellationToken token = default)
         {
             taskNotifier.ProgressText = "Installing CodeWhisperer Language Server...";
             taskNotifier.CanCancel = true;

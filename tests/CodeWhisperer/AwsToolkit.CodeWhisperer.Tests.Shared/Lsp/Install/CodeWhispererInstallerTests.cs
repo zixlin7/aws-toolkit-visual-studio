@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Settings;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
@@ -41,9 +42,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
         public async Task DownloadAsync_WhenLocalOverride()
         {
             _settingsRepository.Settings.LspSettings.LanguageServerPath = "test-local-path/abc.exe";
-            var path = await _sut.ExecuteAsync(_taskNotifier.Object);
+            var result = await _sut.ExecuteAsync(_taskNotifier.Object);
 
-            Assert.Equal(_settingsRepository.Settings.LspSettings.LanguageServerPath, path);
+            Assert.Equal(_settingsRepository.Settings.LspSettings.LanguageServerPath, result.Path);
+            Assert.Equal(LanguageServerLocation.Override, result.Location);
         }
 
         public void Dispose()
