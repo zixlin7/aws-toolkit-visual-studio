@@ -96,6 +96,7 @@ using Microsoft.VisualStudio.Threading;
 using Debugger = System.Diagnostics.Debugger;
 using OutputWindow = Amazon.AwsToolkit.VsSdk.Common.OutputWindow.OutputWindow;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
+using Amazon.AWSToolkit.CommonUI.Behaviors;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;

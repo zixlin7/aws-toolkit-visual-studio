@@ -10,6 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
     xmlns:wizard="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;assembly=AWSToolkit"
+    xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     d:DesignHeight="600"
     d:DesignWidth="800"
@@ -165,9 +166,9 @@
                                                         Command="{Binding OpenAwsExplorerAsyncCommand}"
                                                         Content="Open AWS Explorer"
                                                         Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
-                                                        <wizBehaviors:UiClickMetric.Configure>
-                                                            <wizBehaviors:UiClickMetricConfig />
-                                                        </wizBehaviors:UiClickMetric.Configure>
+                                                        <behaviors:UiClickMetric.Configure>
+                                                            <behaviors:UiClickMetricConfig />
+                                                        </behaviors:UiClickMetric.Configure>
                                                     </Button>
                                                     <StackPanel>
                                                         <Grid>
