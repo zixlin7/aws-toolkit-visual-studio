@@ -10,6 +10,7 @@
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
     xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls"
+    xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors"
     themes:ToolkitThemes.UseToolkitTheme="True"    
     mc:Ignorable="d">
 
@@ -45,10 +46,10 @@
             ItemsSource="{Binding Items, ElementName=ConfigurationDetailsCardControl, Converter={StaticResource ViewToViewModelConverter}}"
             SelectedValue="{Binding SelectedCredentialType}"
             SelectedValuePath="CredentialType">
-            <wizBehaviors:UiClickMetric.Configure>
-                <wizBehaviors:UiClickMetricConfig
+            <behaviors:UiClickMetric.Configure>
+                <behaviors:UiClickMetricConfig
                     EventName="DropDownOpened" />
-            </wizBehaviors:UiClickMetric.Configure>
+            </behaviors:UiClickMetric.Configure>
         </ComboBox>
 
         <commonUi:CardControl

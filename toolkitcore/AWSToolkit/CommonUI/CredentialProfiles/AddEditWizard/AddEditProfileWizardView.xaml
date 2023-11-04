@@ -11,6 +11,7 @@
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
     xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors"
     themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d">
 
@@ -48,9 +49,9 @@
                 x:Name="auth_editCredentials"
                 Command="{Binding OpenCredentialsFileCommand}">
                 Edit credentials file directly...
-                <wizBehaviors:UiClickMetric.Configure>
-                    <wizBehaviors:UiClickMetricConfig />
-                </wizBehaviors:UiClickMetric.Configure>                
+                <behaviors:UiClickMetric.Configure>
+                    <behaviors:UiClickMetricConfig />
+                </behaviors:UiClickMetric.Configure>                
             </Hyperlink>
         </TextBlock>
 
