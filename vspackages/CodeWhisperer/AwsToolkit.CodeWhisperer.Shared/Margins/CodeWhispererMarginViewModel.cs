@@ -70,6 +70,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             _manager.ConnectionStatusChanged += OnManagerConnectionStatusChanged;
 
             UpdateKeyBindings();
+            UpdateMarginStatus();
         }
 
         public void UpdateKeyBindings()
