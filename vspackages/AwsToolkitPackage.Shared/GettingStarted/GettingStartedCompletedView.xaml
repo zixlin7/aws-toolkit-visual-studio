@@ -8,7 +8,7 @@
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
-    xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;assembly=AWSToolkit"
+    xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d" 
     d:DesignHeight="450"
@@ -88,9 +88,9 @@
                                             Command="{Binding OpenAwsExplorerAsyncCommand}"
                                             Content="Open AWS Explorer"
                                             Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
-                                            <wizBehaviors:UiClickMetric.Configure>
-                                                <wizBehaviors:UiClickMetricConfig />
-                                            </wizBehaviors:UiClickMetric.Configure>
+                                            <behaviors:UiClickMetric.Configure>
+                                                <behaviors:UiClickMetricConfig />
+                                            </behaviors:UiClickMetric.Configure>
                                         </Button>
                                         <StackPanel>
                                             <Grid>
