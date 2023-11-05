@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.TestUtilities;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -19,6 +21,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
     [Collection(VsMockCollection.CollectionName)]
     public class CodeWhispererManagerTests
     {
+        private readonly FakeCodeWhispererClient _lspClient = new FakeCodeWhispererClient();
         private readonly FakeConnection _connection = new FakeConnection();
         private readonly FakeSuggestionProvider _suggestionProvider = new FakeSuggestionProvider();
         private readonly FakeReferenceLogger _referenceLogger = new FakeReferenceLogger();
@@ -29,7 +32,36 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             serviceProvider.Reset();
 
             var taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
-            _sut = new CodeWhispererManager(_connection, _suggestionProvider, _referenceLogger, taskFactoryProvider);
+            _sut = new CodeWhispererManager(_lspClient, _connection, _suggestionProvider, _referenceLogger, taskFactoryProvider);
+        }
+
+        [Theory]
+        [InlineData(LspClientStatus.Error)]
+        [InlineData(LspClientStatus.NotRunning)]
+        [InlineData(LspClientStatus.Running)]
+        [InlineData(LspClientStatus.SettingUp)]
+        public void GetClientStatus(LspClientStatus expectedStatus)
+        {
+            _lspClient.Status = expectedStatus;
+
+            _sut.ClientStatus.Should().Be(expectedStatus);
+        }
+
+        [Fact]
+        public void ClientStatusChanged()
+        {
+            _lspClient.Status = LspClientStatus.Error;
+
+            var eventArgs = Assert.Raises<LspClientStatusChangedEventArgs>(
+                attach => _sut.ClientStatusChanged += attach,
+                detach => _sut.ClientStatusChanged -= detach,
+                () =>
+                {
+                    _lspClient.Status = LspClientStatus.Running;
+                    _lspClient.RaiseStatusChanged();
+                });
+
+            eventArgs.Arguments.ClientStatus.Should().Be(LspClientStatus.Running);
         }
 
         [Fact]

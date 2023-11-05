@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
+using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lsp;
-using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 using log4net;
 
 using Microsoft.VisualStudio.LanguageServer.Client;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 using StreamJsonRpc;
-using Microsoft.VisualStudio.Shell;
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 {
@@ -77,6 +77,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         private readonly CredentialsEncryption _credentialsEncryption = new CredentialsEncryption();
 
         protected string _serverPath { get; set; }
+        private ProcessWatcher _processWatcher;
+        private LspClientStatus _lspClientStatus = LspClientStatus.NotRunning;
 
         /// <summary>
         /// Used to send notifications and requests to the language server
@@ -98,6 +100,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
         public event AsyncEventHandler<EventArgs> InitializedAsync;
         public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
+
+        public event EventHandler<LspClientStatusChangedEventArgs> StatusChanged;
+        public LspClientStatus Status
+        {
+            get => _lspClientStatus;
+            set
+            {
+                if (_lspClientStatus != value)
+                {
+                    _lspClientStatus = value;
+                    RaiseStatusChanged(value);
+                }
+            }
+        }
 
         /// <summary>
         /// Requests a JSON-PRC Proxy that is used to access set of
@@ -174,6 +190,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         public virtual async Task OnLoadedAsync()
         {
             _logger.Info($"Starting set up for language server: {Name}");
+            Status = LspClientStatus.SettingUp;
 
             // TODO : Will this block the IDE while waiting?
             await _toolkitContextProvider.WaitForToolkitContextAsync();
@@ -182,6 +199,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
             SetupLspMessageHandler();
 
+            // todo : skip if _serverPath is already set
             // Determines the latest version of the language server, install and return it's path
             var taskStatusNotifier = await CreateTaskStatusNotifierAsync();
             taskStatusNotifier.ShowTaskStatus(async _ =>
@@ -195,6 +213,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
                     await LaunchServerAsync(taskStatusNotifier);
                 }
             });
+
+            // todo : set Status to error when installation throws something
         }
 
         private async Task LaunchServerAsync(ITaskStatusNotifier taskNotifier)
@@ -276,16 +296,22 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         public async Task<Connection> ActivateAsync(CancellationToken token)
         {
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Activating: {Name}");
+            _processWatcher?.Dispose();
+            Status = LspClientStatus.SettingUp;
 
             await Task.Yield();
 
             await TaskScheduler.Default;
 
             var serverProcess = CreateLspProcess();
+            _processWatcher = new ProcessWatcher(serverProcess);
+            _processWatcher.ProcessEnded += OnProcessEnded;
 
             _logger.Info($"Launching language server: {Name}");
             if (!serverProcess.Start())
             {
+                Status = LspClientStatus.Error;
+
                 // null indicates the server cannot be started
                 return null;
             }
@@ -378,6 +404,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         }
 
         /// <summary>
+        /// Raised when the language server process has terminated.
+        /// </summary>
+        private void OnProcessEnded(object sender, EventArgs e)
+        {
+            // When the process unexpectedly terminates, we want the rest of the system to stop operating as it
+            // the server is available. Examples include:
+            // - the language server crashes
+            // - a process or user on the host system killed the process
+            // When the user closes an open folder or solution, that will also cause Visual Studio to
+            // end the language server process by sending 'shutdown' and 'exit' messages over LSP.
+            // We cannot differentiate between these two scenarios, but this is okay because if the user
+            // were to load another solution, Visual Studio will go through the language client activation process,
+            // which will advance the Status to SettingUp, and then Running.
+            Status = LspClientStatus.Error;
+        }
+
+        /// <summary>
         /// Sends the Credentials encryption initialization message to the server
         /// </summary>
         private void WriteCredentialsEncryptionInit(StreamWriter writer)
@@ -397,6 +440,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         {
             _logger.Info($"Language server initialization handshake completed: {Name}");
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Initialized: {Name}");
+            Status = LspClientStatus.Running;
 
             await RaiseInitializedAsync();
         }
@@ -419,6 +463,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// <inheritdoc cref="ILanguageClient.OnServerInitializeFailedAsync"/>
         public Task<InitializationFailureContext> OnServerInitializeFailedAsync(ILanguageClientInitializationInfo initializationState)
         {
+            Status = LspClientStatus.Error;
+
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Failed to initialize Language Server: {Name}");
             _toolkitContext.ToolkitHost.OutputToHostConsole($"- Status: {initializationState.Status}");
             _toolkitContext.ToolkitHost.OutputToHostConsole($"- Status Message: {initializationState.StatusMessage}");
@@ -436,6 +482,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             };
 
             return Task.FromResult(failureInfo);
+        }
+
+        private void RaiseStatusChanged(LspClientStatus clientStatus)
+        {
+            StatusChanged?.Invoke(this, new LspClientStatusChangedEventArgs(clientStatus));
         }
 
         #region ILanguageClientCustomMessage2

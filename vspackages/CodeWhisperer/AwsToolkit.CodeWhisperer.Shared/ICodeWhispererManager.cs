@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 
@@ -10,6 +11,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer
 {
     public interface ICodeWhispererManager
     {
+        /// <summary>
+        /// Gets the current status of the LSP Client
+        /// </summary>
+        LspClientStatus ClientStatus { get; }
+
+        /// <summary>
+        /// Event signaling that the status of the LSP Client has changed
+        /// </summary>
+        event EventHandler<LspClientStatusChangedEventArgs> ClientStatusChanged;
+
         /// <summary>
         /// Attempts to connect with the user's credentials
         /// </summary>

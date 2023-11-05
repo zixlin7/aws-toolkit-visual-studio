@@ -13,10 +13,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     /// </summary>
     public interface IToolkitLspClient
     {
-        // TODO : additional methods we'll want other components to access
-        // bool IsRunning { get; }
-        // Start()
-        // Stop()
+        /// <summary>
+        /// Gets the current status of the LSP Client
+        /// </summary>
+        LspClientStatus Status { get; }
+
+        /// <summary>
+        /// Event signaling that the status of the LSP Client has changed
+        /// </summary>
+        event EventHandler<LspClientStatusChangedEventArgs> StatusChanged;
 
         /// <summary>
         /// Raised when the language client has successfully completed the initialization handshake with the language server.

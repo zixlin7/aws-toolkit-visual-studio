@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -21,6 +22,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer
     [Export(typeof(ICodeWhispererManager))]
     internal class CodeWhispererManager : ICodeWhispererManager
     {
+        private readonly ICodeWhispererLspClient _lspClient;
         private readonly IConnection _connection;
         private readonly ISuggestionProvider _suggestionProvider;
         private readonly IReferenceLogger _referenceLogger;
@@ -28,15 +30,31 @@ namespace Amazon.AwsToolkit.CodeWhisperer
 
         [ImportingConstructor]
         public CodeWhispererManager(
+            ICodeWhispererLspClient lspClient,
             IConnection connection,
             ISuggestionProvider suggestionProvider,
             IReferenceLogger referenceLogger,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
+            _lspClient = lspClient;
             _connection = connection;
             _suggestionProvider = suggestionProvider;
             _referenceLogger = referenceLogger;
             _taskFactoryProvider = taskFactoryProvider;
+        }
+
+        /// <summary>
+        /// Gets the current status of the LSP Client
+        /// </summary>
+        public LspClientStatus ClientStatus => _lspClient.Status;
+
+        /// <summary>
+        /// Event signaling that the status of the LSP Client has changed
+        /// </summary>
+        public event EventHandler<LspClientStatusChangedEventArgs> ClientStatusChanged
+        {
+            add => _lspClient.StatusChanged += value;
+            remove => _lspClient.StatusChanged -= value;
         }
 
         /// <summary>

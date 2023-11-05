@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 
@@ -20,8 +21,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         public readonly List<Suggestion> Suggestions = new List<Suggestion>();
         public readonly List<LogReferenceRequest> LoggedReferences = new List<LogReferenceRequest>();
 
+        public LspClientStatus ClientStatus { get; set; } = LspClientStatus.SettingUp;
+
         public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
+        public event EventHandler<LspClientStatusChangedEventArgs> ClientStatusChanged;
 
         public virtual Task SignInAsync()
         {
@@ -75,6 +79,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             {
                 IsPaused = PauseAutomaticSuggestions,
             });
+        }
+
+        public void RaiseClientStatusChanged()
+        {
+            ClientStatusChanged?.Invoke(this, new LspClientStatusChangedEventArgs(ClientStatus));
         }
 
         public Task ShowReferenceLoggerAsync()

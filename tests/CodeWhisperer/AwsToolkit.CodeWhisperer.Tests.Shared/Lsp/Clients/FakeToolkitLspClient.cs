@@ -16,6 +16,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients
         public readonly FakeLspConfiguration LspConfiguration = new FakeLspConfiguration();
         public readonly FakeToolkitLspCredentials CredentialsProtocol = new FakeToolkitLspCredentials();
 
+        public LspClientStatus Status { get; set; }
+
+        public event EventHandler<LspClientStatusChangedEventArgs> StatusChanged;
         public event AsyncEventHandler<EventArgs> InitializedAsync;
         public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
 
@@ -37,6 +40,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients
         public async Task RaiseRequestWorkspaceConfigurationAsync(WorkspaceConfigurationEventArgs args)
         {
             await RequestWorkspaceConfigurationAsync.InvokeAsync(this, args);
+        }
+
+        public void RaiseStatusChanged()
+        {
+            StatusChanged?.Invoke(this, new LspClientStatusChangedEventArgs(Status));
         }
     }
 }
