@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Amazon.AwsToolkit.CodeWhisperer.Commands;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.VsSdk.Common.Commands;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -28,7 +29,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private bool _isAutoSuggestPaused = false;
-        private ConnectionStatus _connectionState = ConnectionStatus.Disconnected;
+        private ConnectionStatus _connectionState;
+        private LspClientStatus _clientState;
 
         public CodeWhispererMarginViewModel(
             ICodeWhispererTextView textView,
@@ -66,8 +68,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 
             _isAutoSuggestPaused = _manager.IsAutoSuggestPaused();
             _connectionState = _manager.ConnectionStatus;
+            _clientState = _manager.ClientStatus;
             _manager.PauseAutoSuggestChanged += OnManagerPauseAutoSuggestChanged;
             _manager.ConnectionStatusChanged += OnManagerConnectionStatusChanged;
+            _manager.ClientStatusChanged += OnManagerClientStatusChanged;
 
             UpdateKeyBindings();
             UpdateMarginStatus();
@@ -170,6 +174,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         }
 
         private MarginStatus _status = MarginStatus.Disconnected;
+
         public MarginStatus MarginStatus
         {
             get => _status;
@@ -180,6 +185,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             _manager.PauseAutoSuggestChanged -= OnManagerPauseAutoSuggestChanged;
             _manager.ConnectionStatusChanged -= OnManagerConnectionStatusChanged;
+            _manager.ClientStatusChanged -= OnManagerClientStatusChanged;
 
             foreach (var disposable in _disposables)
             {
@@ -199,8 +205,30 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             UpdateMarginStatus();
         }
 
+        private void OnManagerClientStatusChanged(object sender, LspClientStatusChangedEventArgs e)
+        {
+            _clientState = e.ClientStatus;
+            UpdateMarginStatus();
+        }
+
         private void UpdateMarginStatus()
         {
+            switch (_clientState)
+            {
+                case LspClientStatus.NotRunning:
+                case LspClientStatus.SettingUp:
+                    MarginStatus = MarginStatus.Disconnected;
+                    return;
+                case LspClientStatus.Error:
+                    MarginStatus = MarginStatus.Error;
+                    return;
+                case LspClientStatus.Running:
+                    // do nothing - fall through to the connection state logic
+                    break;
+                default:
+                    break;
+            }
+
             switch (_connectionState)
             {
                 // todo : Error
