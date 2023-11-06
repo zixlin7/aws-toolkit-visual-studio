@@ -49,6 +49,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
         {
             serviceProvider.Reset();
 
+            _lspClient.Status = LspClientStatus.Running;
+
             var taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
             _sut = new FakeSettingsPublisher(_lspClient, taskFactoryProvider);
             _sut.ConfigurationState["sample-name"] = 1234;
@@ -89,6 +91,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
             await _sut.RaiseDidChangeConfigurationAsync();
 
             _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public async Task RaiseDidChangeConfigurationAsync_ClientNotRunning()
+        {
+            _lspClient.Status = LspClientStatus.NotRunning;
+            await _lspClient.RaiseInitializedAsync();
+            await _sut.RaiseDidChangeConfigurationAsync();
+
+            _lspClient.LspConfiguration.RaisedDidChangeConfigurations.Should().BeEmpty();
         }
     }
 }

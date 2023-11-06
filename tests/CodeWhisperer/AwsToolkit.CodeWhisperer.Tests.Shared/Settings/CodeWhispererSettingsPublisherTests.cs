@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients;
@@ -25,6 +26,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Settings
         public CodeWhispererSettingsPublisherTests(GlobalServiceProvider serviceProvider)
         {
             serviceProvider.Reset();
+
+            _lspClient.Status = LspClientStatus.Running;
 
             var taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
             _sut = new CodeWhispererSettingsPublisher(_settingsRepository, _lspClient, taskFactoryProvider);

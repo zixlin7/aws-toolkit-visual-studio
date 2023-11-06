@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AWSToolkit.Context;
@@ -35,6 +37,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
         protected override bool CanExecuteCore(object parameter)
         {
             return base.CanExecuteCore(parameter)
+                   && _manager.ClientStatus == LspClientStatus.Running
+                   && _manager.ConnectionStatus == ConnectionStatus.Connected
                    && _textView.GetWpfTextView().Caret != null
                    && !string.IsNullOrWhiteSpace(_textView.GetFilePath());
         }

@@ -39,7 +39,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Settings
         /// </summary>
         public async Task RaiseDidChangeConfigurationAsync()
         {
-            if (_lspConfiguration == null)
+            if (_lspConfiguration == null || _lspClient.Status != LspClientStatus.Running)
             {
                 return;
             }
