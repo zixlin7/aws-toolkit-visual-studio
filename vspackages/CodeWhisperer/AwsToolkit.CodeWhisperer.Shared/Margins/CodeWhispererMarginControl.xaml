@@ -8,6 +8,7 @@
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:platformUi="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
              xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+             xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors;assembly=AWSToolkit"
              themes:ToolkitThemes.UseToolkitTheme="False"
              mc:Ignorable="d" 
              d:DesignHeight="26" d:DesignWidth="64">
@@ -52,13 +53,23 @@
                     <Separator />
                     <MenuItem Header="Pause CodeWhisperer Suggestions" Command="{Binding Pause}" />
                     <MenuItem Header="Resume CodeWhisperer Suggestions" Command="{Binding Resume}" />
-                    <MenuItem Header="Open Code Reference Log" Command="{Binding ViewCodeReferences}" />
+                    <MenuItem Header="Open Code Reference Log" Command="{Binding ViewCodeReferences}" >
+                        <behaviors:UiClickMetric.Configure>
+                            <behaviors:UiClickMetricConfig
+                                ElementId="aws.codeWhisperer.openReferencePanel" />
+                        </behaviors:UiClickMetric.Configure>
+                    </MenuItem>
                     <Separator />
                     <MenuItem Header="View User Guide" Command="{Binding ViewUserGuide}" />
                     <MenuItem Header="Getting Started" Command="{Binding GettingStarted}" />
                     <MenuItem Header="View Options" Command="{Binding ViewOptions}" />
                     <Separator />
-                    <MenuItem Header="Sign Out" Command="{Binding SignOut}" />
+                    <MenuItem Header="Sign Out" Command="{Binding SignOut}" >
+                        <behaviors:UiClickMetric.Configure>
+                            <behaviors:UiClickMetricConfig
+                                ElementId="aws.codeWhisperer.signout" />
+                        </behaviors:UiClickMetric.Configure>
+                    </MenuItem>
                 </ContextMenu>
             </Button.ContextMenu>
             <imaging:CrispImage
