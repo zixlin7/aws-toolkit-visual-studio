@@ -2,7 +2,11 @@
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
+using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 {
@@ -32,7 +36,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 
         protected override async Task ExecuteCoreAsync(object parameter)
         {
-            await _manager.PauseAutoSuggestAsync();
+            var result = new TaskResult();
+            try
+            {
+                await _manager.PauseAutoSuggestAsync();
+                result.Status = TaskStatus.Success;
+            }
+            catch (Exception ex)
+            {
+                result.Exception = ex;
+            }
+          
+            RecordPause(result);
+        }
+
+        private void RecordPause(TaskResult result)
+        {
+            _toolkitContextProvider.GetToolkitContext().TelemetryLogger.RecordModifySetting(result,
+                CodeWhispererTelemetryConstants.AutoSuggestion.SettingId, CodeWhispererTelemetryConstants.AutoSuggestion.Deactivated);
         }
 
         public void Dispose()

@@ -173,5 +173,12 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
                     mock => mock.Confirm(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageBoxButton>()))
                 .Returns(returnValue);
         }
+
+        public void SetupTelemetryCallback(Action<Metrics> callback)
+        {
+            TelemetryLogger
+                .Setup(mock => mock.Record(It.IsAny<Metrics>()))
+                .Callback(callback);
+        }
     }
 }

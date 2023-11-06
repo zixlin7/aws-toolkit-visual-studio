@@ -102,6 +102,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ReferenceLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionUiManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\CodeWhispererTelemetryConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\LspTelemetryExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialog.xaml">
