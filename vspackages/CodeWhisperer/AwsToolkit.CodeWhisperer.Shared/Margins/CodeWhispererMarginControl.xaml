@@ -53,7 +53,6 @@
                     <MenuItem Header="Pause CodeWhisperer Suggestions" Command="{Binding Pause}" />
                     <MenuItem Header="Resume CodeWhisperer Suggestions" Command="{Binding Resume}" />
                     <MenuItem Header="Open Code Reference Log" Command="{Binding ViewCodeReferences}" />
-                    <MenuItem Header="Perform Security Scan" Command="{Binding SecurityScan}" />
                     <Separator />
                     <MenuItem Header="View User Guide" Command="{Binding ViewUserGuide}" />
                     <MenuItem Header="Getting Started" Command="{Binding GettingStarted}" />
