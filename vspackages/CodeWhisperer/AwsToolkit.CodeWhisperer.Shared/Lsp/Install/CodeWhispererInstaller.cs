@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Notification;
+using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using AwsToolkit.VsSdk.Common.Settings;
@@ -15,6 +17,8 @@ using AwsToolkit.VsSdk.Common.Settings;
 using log4net;
 
 using Microsoft.VisualStudio.Threading;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 {
@@ -103,11 +107,29 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         /// </summary>
         private async Task<LspInstallResult> GetLspFromLocalOverrideAsync()
         {
-            var result = new LspInstallResult
+            var result = new LspInstallResult();
+            async Task<string> GetLocalLspAsync() => await GetLocalLspPathAsync();
+
+            void RecordGetLocalOverrideLsp(ITelemetryLogger telemetryLogger, string path, TaskResult taskResult, long milliseconds)
             {
-                Path = await GetLocalLspPathAsync(),
-                Location = LanguageServerLocation.Override
-            };
+                // only record a metric when no errors occurred while resolving the override location
+                if (taskResult.Status != TaskStatus.Fail)
+                {
+                    var args = new RecordLspInstallerArgs()
+                    {
+                        Location = LanguageServerLocation.Override,
+                        Duration = milliseconds,
+                        Id = CodeWhispererConstants.LanguageServerIdentifier
+                    };
+                    telemetryLogger.RecordSetupGetLsp(taskResult, args);
+                }
+            }
+
+            var localLspPath = await _toolkitContext.TelemetryLogger.ExecuteTimeAndRecordAsync(GetLocalLspAsync, RecordGetLocalOverrideLsp);
+
+            result.Path = localLspPath;
+            result.Location = LanguageServerLocation.Override;
+
             return result;
         }
 
@@ -172,7 +194,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         {
             var options = new VersionManifestOptions()
             {
-                Name = "CodeWhisperer",
+                Name = CodeWhispererConstants.LanguageServerIdentifier,
                 FileName = CodeWhispererConstants.ManifestFilename,
                 MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion,
                 CloudFrontUrl = GetCloudFrontUrl(isFullUrl),
@@ -190,7 +212,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         {
             var options = new LspManager.Options()
             {
-                Name = "CodeWhisperer",
+                Name = CodeWhispererConstants.LanguageServerIdentifier,
                 Filename = CodeWhispererConstants.Filename,
                 ToolkitContext = _toolkitContext,
                 VersionRange = CodeWhispererConstants.LspCompatibleVersionRange,

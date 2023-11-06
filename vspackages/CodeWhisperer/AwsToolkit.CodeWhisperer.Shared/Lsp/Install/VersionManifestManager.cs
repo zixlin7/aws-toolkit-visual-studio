@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
+using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.ResourceFetchers;
 
 using AwsToolkit.VsSdk.Common.Settings;
@@ -68,6 +71,25 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         }
 
         public async Task<ManifestSchema> DownloadAsync(CancellationToken token = default)
+        {
+            async Task<ManifestSchema> ExecuteAsync() => await DownloadManifestAsync(token);
+
+            void RecordGetManifest(ITelemetryLogger telemetryLogger, ManifestSchema schema, TaskResult taskResult, long milliseconds)
+            {
+                var args = new RecordLspInstallerArgs()
+                {
+                    Duration = milliseconds,
+                    Id = _options.Name,
+                    ManifestSchemaVersion = schema?.ManifestSchemaVersion
+                };
+                telemetryLogger.RecordSetupGetManifest(taskResult, args);
+            }
+
+            var manifestSchema = await _options.ToolkitContext.TelemetryLogger.ExecuteTimeAndRecordAsync(ExecuteAsync, RecordGetManifest);
+            return manifestSchema;
+        }
+
+        private async Task<ManifestSchema> DownloadManifestAsync(CancellationToken token = default)
         {
             try
             {

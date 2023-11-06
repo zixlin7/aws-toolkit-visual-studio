@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
+using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 
 using Community.VisualStudio.Toolkit;
@@ -42,6 +44,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         }
 
         public override string Name => "Amazon CodeWhisperer Language Client";
+
+        public override string LanguageServerIdentifier => "CodeWhisperer";
 
         // TODO IDE-11602
         // Emitting as an anonymous type during early development, but consider options such as proxies, generated code, or hand-managed

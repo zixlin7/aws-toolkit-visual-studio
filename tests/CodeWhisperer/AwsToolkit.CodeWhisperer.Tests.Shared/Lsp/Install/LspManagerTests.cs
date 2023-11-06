@@ -10,6 +10,7 @@ using Amazon.AWSToolkit;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Tests.Common.Context;
@@ -33,7 +34,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
         private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
         private readonly LspManager.Options _options;
-
+        private MetricDatum _metric;
 
         public LspManagerTests()
         {
@@ -41,6 +42,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
                 new ProductEnvironment() { OperatingSystemArchitecture = Architecture.X64.ToString() };
             _contextFixture.ToolkitHost.Setup(x => x.ProductEnvironment)
                 .Returns(productEnvironment);
+
+            _contextFixture.SetupTelemetryCallback(metrics =>
+            {
+                var datum = metrics.Data.FirstOrDefault(x => string.Equals(x.MetricName, "languageServer_setup"));
+                if (datum != null)
+                {
+                    _metric = datum;
+                }
+            });
 
             _options = CreateOptions();
             _sut = new LspManager(_options, _sampleSchema);
@@ -56,6 +66,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             tokenSource.Cancel();
 
             await Assert.ThrowsAsync<OperationCanceledException>(async () => await _sut.DownloadAsync(tokenSource.Token));
+
+            AssertLspSetupTelemetryResult(Result.Cancelled);
         }
 
         [Fact]
@@ -66,6 +78,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             Assert.Contains("No valid manifest", exception.Message);
             Assert.Equal(LspToolkitException.LspErrorCode.UnexpectedManifestError.ToString(), exception.Code);
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
 
@@ -84,6 +98,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             await AssertDownloadAsyncThrowsWithMessage(
                 "language server that satisfies one or more of these conditions", LspToolkitException.LspErrorCode.NoCompatibleLspVersion);
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
         [Fact]
@@ -94,6 +110,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             // assumption: tests always run in an environment where the underlying OS is windows
             await AssertDownloadAsyncThrowsWithMessage(
                 "language server that satisfies one or more of these conditions", LspToolkitException.LspErrorCode.NoCompatibleLspVersion);
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
 
@@ -104,6 +122,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             await AssertDownloadAsyncThrowsWithMessage(
                 "language server that satisfies one or more of these conditions", LspToolkitException.LspErrorCode.NoCompatibleLspVersion);
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
 
@@ -121,6 +141,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             Assert.Equal(expectedPath, result.Path);
             Assert.Equal(LanguageServerLocation.Cache, result.Location);
+
+            AssertLspSetupTelemetryResult(Result.Succeeded);
+            Assert.Equal(LanguageServerLocation.Cache.ToString(), _metric.Metadata["languageServerLocation"]);
+
         }
 
         [Theory]
@@ -133,6 +157,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             // setup target content with required params
             SetupTargetContent(hashString, _sampleLspVersion);
             await AssertDownloadAsyncThrowsWithMessage("compatible version of", LspToolkitException.LspErrorCode.NoValidLspFallback);
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
         [Fact]
@@ -158,6 +184,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             Assert.Equal(expectedFallbackLocation, result.Path);
             Assert.Equal(LanguageServerLocation.Fallback, result.Location);
+
+            AssertLspSetupTelemetryResult(Result.Succeeded);
+            Assert.Equal(LanguageServerLocation.Fallback.ToString(), _metric.Metadata["languageServerLocation"]);
         }
 
         [Fact]
@@ -179,6 +208,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             SetupTargetContent("sha384:5688", fallbackVersion);
 
             await AssertDownloadAsyncThrowsWithMessage("compatible version of", LspToolkitException.LspErrorCode.NoValidLspFallback);
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
         [Fact]
@@ -199,6 +230,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
                 SetupFileInCache($"{_sampleVersionRange.Start.Major}.0.0");
 
             await AssertDownloadAsyncThrowsWithMessage("compatible version of", LspToolkitException.LspErrorCode.NoValidLspFallback);
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
         [Fact]
@@ -220,6 +253,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             Assert.Equal(expectedPath, result.Path);
             Assert.Equal(LanguageServerLocation.Remote, result.Location);
+
+            AssertLspSetupTelemetryResult(Result.Succeeded);
+            Assert.Equal(LanguageServerLocation.Remote.ToString(), _metric.Metadata["languageServerLocation"]);
         }
 
         [Fact]
@@ -247,6 +283,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
 
             Assert.Equal(expectedPath, result.Path);
             Assert.Equal(LanguageServerLocation.Remote, result.Location);
+
+            AssertLspSetupTelemetryResult(Result.Succeeded);
+            Assert.Equal(LanguageServerLocation.Remote.ToString(), _metric.Metadata["languageServerLocation"]);
         }
 
         [Fact]
@@ -388,6 +427,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Install
             Assert.Contains(exceptionMessage, exception.Message);
         }
 
+        private void AssertLspSetupTelemetryResult(Result result)
+        {
+            Assert.Equal(result.ToString(), _metric.Metadata["result"]);
+            Assert.Equal(LanguageServerSetupStage.GetServer.ToString(), _metric.Metadata["languageServerSetupStage"]);
+        }
 
         public void Dispose()
         {

@@ -14,6 +14,9 @@ using Amazon.AWSToolkit.ResourceFetchers;
 using log4net;
 
 using Version = System.Version;
+using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
+using Amazon.AWSToolkit.CommonUI.Notifications;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
@@ -59,6 +62,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         }
 
         public async Task<LspInstallResult> DownloadAsync(CancellationToken token = default)
+        {
+            async Task<LspInstallResult> ExecuteAsync() => await DownloadServerAsync(token);
+
+            void RecordGetServer(ITelemetryLogger telemetryLogger, LspInstallResult result, TaskResult taskResult, long milliseconds)
+            {
+                var args = LspInstallUtil.CreateRecordLspInstallerArgs(result, milliseconds);
+                args.Id = _options.Name;
+                args.ManifestSchemaVersion = _manifestSchema?.ManifestSchemaVersion;
+
+                telemetryLogger.RecordSetupGetLsp(taskResult, args);
+            }
+
+            var lspInstallResult = await _options.ToolkitContext.TelemetryLogger.ExecuteTimeAndRecordAsync(ExecuteAsync, RecordGetServer);
+            return lspInstallResult;
+        }
+
+        private async Task<LspInstallResult> DownloadServerAsync(CancellationToken token)
         {
             try
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,6 +7,9 @@ using Amazon.AwsToolkit.CodeWhisperer.Lsp;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models;
 using Amazon.AWSToolkit.ResourceFetchers;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Moq;
 
@@ -20,7 +24,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
         private const string _validManifestFileName = "sample-manifest.json";
         private const string _invalidManifestFileName = "sample-invalid-manifest.json";
         private readonly Mock<IResourceFetcher> _sampleManifestFetcher = new Mock<IResourceFetcher>();
+        private readonly ToolkitContextFixture _contextFixture = new ToolkitContextFixture();
         private readonly VersionManifestManager _sut;
+        private MetricDatum _metric;
 
         public VersionManifestManagerTests()
         {
@@ -28,8 +34,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             var options = new VersionManifestOptions()
             {
                 FileName = _validManifestFileName,
-                MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion
+                MajorVersion = CodeWhispererConstants.ManifestCompatibleMajorVersion,
+                ToolkitContext = _contextFixture.ToolkitContext
             };
+            _contextFixture.SetupTelemetryCallback(metrics =>
+            {
+                var datum = metrics.Data.FirstOrDefault(x => string.Equals(x.MetricName, "languageServer_setup"));
+                if (datum != null)
+                {
+                    _metric = datum;
+                }
+            });
             _sut = new VersionManifestManager(options, _sampleManifestFetcher.Object);
         }
 
@@ -49,6 +64,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
 
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
                 _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(0));
+
+            AssertLspSetupTelemetryResult(Result.Cancelled);
         }
 
         [Fact]
@@ -63,6 +80,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             Assert.NotNull(manifestSchema);
             Assert.Equal("0.1", manifestSchema.ManifestSchemaVersion);
             Assert.Equal(3, manifestSchema.Versions.Count);
+
+            AssertLspSetupTelemetryResult(Result.Succeeded);
         }
 
         [Fact]
@@ -73,6 +92,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
 
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
                 _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
         [Fact]
@@ -84,6 +105,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
                 _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
             Assert.Equal(exception.Code, LspToolkitException.LspErrorCode.UnexpectedManifestFetchError.ToString());
+
+            AssertLspSetupTelemetryResult(Result.Failed);
         }
 
 
@@ -98,6 +121,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Manifest
             _sampleManifestFetcher.Verify(mock => mock.GetAsync(
                 _validManifestFileName, It.IsAny<CancellationToken>()), Times.Exactly(1));
             Assert.Equal("test error", exception.Message);
+
+            AssertLspSetupTelemetryResult(Result.Failed);
+        }
+
+        private void AssertLspSetupTelemetryResult(Result result)
+        {
+            Assert.Equal(result.ToString(), _metric.Metadata["result"]);
+            Assert.Equal(LanguageServerSetupStage.GetManifest.ToString(), _metric.Metadata["languageServerSetupStage"]);
         }
     }
 }

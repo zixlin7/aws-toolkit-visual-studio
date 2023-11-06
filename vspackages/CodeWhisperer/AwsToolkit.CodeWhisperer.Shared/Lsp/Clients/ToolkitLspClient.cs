@@ -25,6 +25,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 using StreamJsonRpc;
+using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 {
@@ -161,6 +165,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         public abstract string Name { get; }
 
         /// <summary>
+        /// Unique identifier for the language server
+        /// </summary>
+        public abstract string LanguageServerIdentifier { get; }
+
+        /// <summary>
         /// <inheritdoc/>
         ///
         /// This lets us optionally define JSON files that configure some of the
@@ -206,21 +215,59 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             {
                 using (var token = CreateCancellationTokenSource(taskStatusNotifier))
                 {
-                    var lspInstallResult = await InstallServerAsync(taskStatusNotifier, token.Token);
-                    _serverPath = lspInstallResult?.Path;
-
-                    // TODO : Have a separate controller responsible for starting the language server
-                    await LaunchServerAsync(taskStatusNotifier);
+                    await SetupServerAsync(taskStatusNotifier, token);
                 }
             });
 
             // todo : set Status to error when installation throws something
         }
 
-        private async Task LaunchServerAsync(ITaskStatusNotifier taskNotifier)
+        private async Task SetupServerAsync(ITaskStatusNotifier notifier, CancellationTokenSource token)
         {
-            taskNotifier.ProgressText = "Launching Language Server...";
-            await StartAsync.InvokeAsync(this, EventArgs.Empty);
+            async Task<LspInstallResult> ExecuteAsync() => await InstallAndLaunchServerAsync(notifier, token);
+
+            void RecordSetupFull(ITelemetryLogger telemetryLogger, LspInstallResult result, TaskResult taskResult, long milliseconds)
+            {
+                //set status to fail if path is unset
+                if (taskResult.Status == TaskStatus.Success)
+                {
+                    taskResult.Status = string.IsNullOrWhiteSpace(result.Path) ? TaskStatus.Fail : TaskStatus.Success;
+                }
+               
+                var args = LspInstallUtil.CreateRecordLspInstallerArgs(result, milliseconds);
+                args.Id = LanguageServerIdentifier;
+                telemetryLogger.RecordSetupAll(taskResult, args);
+            }
+
+            await _toolkitContext.TelemetryLogger.ExecuteTimeAndRecordAsync(ExecuteAsync, RecordSetupFull);
+        }
+
+        private async Task<LspInstallResult> InstallAndLaunchServerAsync(ITaskStatusNotifier taskStatusNotifier, CancellationTokenSource token)
+        {
+            var lspInstallResult = await InstallServerAsync(taskStatusNotifier, token.Token);
+            _serverPath = lspInstallResult?.Path;
+
+            // TODO : Have a separate controller responsible for starting the language server
+            await LaunchServerAsync(lspInstallResult, taskStatusNotifier);
+            return lspInstallResult;
+        }
+
+        private async Task LaunchServerAsync(LspInstallResult result, ITaskStatusNotifier taskNotifier)
+        {
+            async Task LaunchAsync()
+            {
+                taskNotifier.ProgressText = "Launching Language Server...";
+                await StartAsync.InvokeAsync(this, EventArgs.Empty);
+            }
+
+            void RecordInitialize(ITelemetryLogger telemetryLogger, TaskResult taskResult, long milliseconds)
+            {
+                var args = LspInstallUtil.CreateRecordLspInstallerArgs(result, milliseconds);
+                args.Id = LanguageServerIdentifier;
+                telemetryLogger.RecordSetupInitialize(taskResult, args);
+            }
+
+            await _toolkitContext.TelemetryLogger.InvokeTimeAndRecordAsync(LaunchAsync, RecordInitialize);
         }
 
         /// <summary>

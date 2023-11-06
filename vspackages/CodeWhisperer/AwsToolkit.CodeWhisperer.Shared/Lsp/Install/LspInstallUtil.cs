@@ -75,6 +75,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             }
         }
 
+        /// <summary>
+        /// Creates <see cref="RecordLspInstallerArgs"/> using provided params
+        /// </summary>
+        public static RecordLspInstallerArgs CreateRecordLspInstallerArgs(LspInstallResult result, long milliseconds)
+        {
+            var args = new RecordLspInstallerArgs()
+            {
+                Duration = milliseconds,
+                LanguageServerVersion = result?.Version
+            };
+            if (result != null)
+            {
+                args.Location = result.Location;
+            }
+            return args;
+        }
+
         private static string GetLspPlatform(string platform)
         {
             switch (platform)
