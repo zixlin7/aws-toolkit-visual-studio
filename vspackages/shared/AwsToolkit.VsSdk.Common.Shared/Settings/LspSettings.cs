@@ -13,7 +13,7 @@ namespace AwsToolkit.VsSdk.Common.Settings
         /// This way we don't need a specific version of a language server in order to test things out.
         /// This is also an escape hatch in case we need to troubleshoot a test build with a customer.
         /// </summary>
-        [DisplayName("Language server path")]
+        [DisplayName("Language Server Override Path")]
         [Description("When set, overrides the default location the AWS Toolkit launches the language server from.")]
         [DefaultValue("")]
         [Browsable(true),
@@ -27,7 +27,7 @@ namespace AwsToolkit.VsSdk.Common.Settings
         /// </summary>
         // TODO: Un-comment browsable when developer testing is completed to hide the setting from users
         // [Browsable(false)]
-        [DisplayName("Version manifest folder")]
+        [DisplayName("Version Manifest Folder")]
         [Description("When set, attempts to use the specified folder to fetch the relevant LSP Version Manifest.")]
         [DefaultValue("")]
         [Browsable(true), NotifyParentProperty(true),
@@ -39,7 +39,7 @@ namespace AwsToolkit.VsSdk.Common.Settings
         /// </summary>
         /// <remark>Can be saved by user actions <see cref="ILspSettingsRepository.SaveLspSettingsAsync"/> </remark>
         //[Browsable(false)]
-        [DisplayName("Dismissed manifest deprecation notices")]
+        [DisplayName("Dismissed Manifest Deprecation Notices")]
         [Description("Represents list of version manifest deprecation notices dismissed by the user")]
         [DefaultValue("")]
         [Browsable(false), NotifyParentProperty(true),
@@ -49,7 +49,7 @@ namespace AwsToolkit.VsSdk.Common.Settings
         ///<summary>
         /// Represents list of version manifests and their associated cached etag values
         /// </summary>
-        [DisplayName("Cached manifest E-Tags")]
+        [DisplayName("Cached Manifest E-Tags")]
         [Description("Represents list of version manifests and their associated cached etag values")]
         [Browsable(false), NotifyParentProperty(true),
          EditorBrowsable(EditorBrowsableState.Never)]
