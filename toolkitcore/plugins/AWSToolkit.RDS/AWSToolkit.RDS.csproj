@@ -9,8 +9,8 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.EC2" Version="3.7.218.3" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.209.3" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.7.224.2" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.213.2" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>

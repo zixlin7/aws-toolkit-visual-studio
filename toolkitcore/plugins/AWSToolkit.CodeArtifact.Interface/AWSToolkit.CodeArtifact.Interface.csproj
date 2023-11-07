@@ -8,7 +8,7 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CodeArtifact" Version="3.7.201.9" />
+    <PackageReference Include="AWSSDK.CodeArtifact" Version="3.7.201.22" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />

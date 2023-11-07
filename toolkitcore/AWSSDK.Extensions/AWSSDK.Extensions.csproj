@@ -8,13 +8,13 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.202.46" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.203.46" />
-    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.200.52" />
-    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.200.52" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.205.8" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.200.52" />
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.200.53" />
+    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.203.11" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.204.10" />
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.200.65" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.203.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.205.23" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.201.3" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.200.66" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Web" />

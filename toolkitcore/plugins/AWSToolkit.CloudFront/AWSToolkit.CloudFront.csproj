@@ -9,7 +9,7 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudFront" Version="3.7.201.46" />
+    <PackageReference Include="AWSSDK.CloudFront" Version="3.7.201.59" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>
