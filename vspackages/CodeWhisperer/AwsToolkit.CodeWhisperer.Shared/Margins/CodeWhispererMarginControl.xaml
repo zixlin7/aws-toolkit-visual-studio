@@ -51,8 +51,8 @@
                     <Separator />
                     <MenuItem Header="Generate Code Suggestions" InputGestureText="{Binding GenerateSuggestionsKeyBinding}" Command="{Binding GenerateSuggestions}" />
                     <Separator />
-                    <MenuItem Header="Pause CodeWhisperer Suggestions" Command="{Binding Pause}" />
-                    <MenuItem Header="Resume CodeWhisperer Suggestions" Command="{Binding Resume}" />
+                    <MenuItem Header="Pause Auto-Suggestions" Command="{Binding Pause}" />
+                    <MenuItem Header="Resume Auto-Suggestions" Command="{Binding Resume}" />
                     <MenuItem Header="Open Code Reference Log" Command="{Binding ViewCodeReferences}" >
                         <behaviors:UiClickMetric.Configure>
                             <behaviors:UiClickMetricConfig
