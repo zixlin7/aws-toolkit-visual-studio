@@ -13,8 +13,8 @@ namespace BuildTasks
 {
     public class UpdateAwsSdkVersionsTask : BuildTaskBase
     {
-        const string AWSSDK_VERSION_MANIFEST = "https://raw.githubusercontent.com/aws/aws-sdk-net/master/generator/ServiceModels/_sdk-versions.json";
 
+        const string AWSSDK_VERSION_MANIFEST = "https://raw.githubusercontent.com/aws/aws-sdk-net/main/generator/ServiceModels/_sdk-versions.json";
 
         public string RootLocation { get; set; }
 

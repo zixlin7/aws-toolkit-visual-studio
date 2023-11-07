@@ -9,8 +9,8 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.203.0" />
-    <PackageReference Include="AWSSDK.Kinesis" Version="3.7.200.52" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.203.13" />
+    <PackageReference Include="AWSSDK.Kinesis" Version="3.7.200.65" />
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.0.102" />
   </ItemGroup>

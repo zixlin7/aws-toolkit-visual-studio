@@ -9,9 +9,9 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.201.48" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.200.52" />
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.200.53" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.202.11" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.201.3" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.200.66" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>
