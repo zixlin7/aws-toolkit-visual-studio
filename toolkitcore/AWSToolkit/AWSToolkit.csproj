@@ -65,4 +65,7 @@
   <ItemGroup>
     <None Remove="Resources\ServiceIcons\CodeCatalyst40x40.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Text\" />
+  </ItemGroup>
 </Project>

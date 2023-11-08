@@ -152,7 +152,13 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         public void DefineCredentialIdentifiers(IEnumerable<ICredentialIdentifier> credentialIdentifiers)
         {
-            CredentialManager.Setup(mock => mock.GetCredentialIdentifiers()).Returns(credentialIdentifiers.ToList());
+            var credentialIds = credentialIdentifiers.ToList();
+            CredentialManager.Setup(mock => mock.GetCredentialIdentifiers()).Returns(credentialIds);
+            foreach (var credentialIdentifier in credentialIds)
+            {
+                CredentialManager.Setup(mock => mock.GetCredentialIdentifierById(credentialIdentifier.Id))
+                    .Returns(credentialIdentifier);
+            }
         }
 
         public void SetupCredentialManagerSupports(ICredentialIdentifier credentialIdentifier,
@@ -166,6 +172,13 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             ToolkitHost.Setup(
                     mock => mock.Confirm(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageBoxButton>()))
                 .Returns(returnValue);
+        }
+
+        public void SetupTelemetryCallback(Action<Metrics> callback)
+        {
+            TelemetryLogger
+                .Setup(mock => mock.Record(It.IsAny<Metrics>()))
+                .Callback(callback);
         }
     }
 }

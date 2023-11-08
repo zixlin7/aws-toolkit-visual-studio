@@ -47,15 +47,27 @@
     <Compile Include="$(MSBuildThisFileDirectory)Editors\CloudFormation\TemplateFileNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Controller\LegacyFirstRunController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\Model\LegacyFirstRunModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)firstrun\model\MetricSources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FirstRun\model\MetricSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml.cs">
       <DependentUpon>LegacyFirstRunControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureAwsExplorerStep2View.xaml.cs">
+      <DependentUpon>FeatureAwsExplorerStep2View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureCodeWhispererStep2View.xaml.cs">
+      <DependentUpon>FeatureCodeWhispererStep2View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureCodeWhispererStep2ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedCompletedView.xaml.cs">
+      <DependentUpon>GettingStartedCompletedView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedCompletedViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedView.xaml.cs">
       <DependentUpon>GettingStartedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\MetricSources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\Services\IGettingStartedCompleted.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Guids.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HostedEditor\HostedEditorFactory.cs" />
@@ -136,7 +148,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\DteVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\ProjectExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\WindowExtensionMethods.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utilities\InfoBarUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ToolkitProductEnvironment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\VsAppId\IVsAppId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\WindowFrameNotificationController.cs" />
@@ -146,6 +157,18 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)FirstRun\View\LegacyFirstRunControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureAwsExplorerStep2View.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)GettingStarted\FeatureCodeWhispererStep2View.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedCompletedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

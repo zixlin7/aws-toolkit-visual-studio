@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>6d5c0c8e-e5fd-44d4-94bc-00ed69a70eb6</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Amazon.AwsToolkit.CodeWhisperer</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeWhispererManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\BaseCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GetSuggestionsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GetSuggestionsPluginCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\GettingStartedCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SecurityScanCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewOptionsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewUserGuideCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\CodeWhispererSsoTokenProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\Connection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatusChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialog.xaml.cs">
+      <DependentUpon>CredentialSelectionDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialogViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ExpirationNotificationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ICodeWhispererSsoTokenProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\IConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\IExpirationNotificationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\InfoBar\ConnectionExpiredInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\InfoBar\SignInActionItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Documents\CodeWhispererTextView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Documents\ICodeWhispererTextView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICodeWhispererManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\CodeWhispererClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\IToolkitLspClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\JsonRpcExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\LspClientStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\LspClientStatusChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\LspMessageHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ProcessWatcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Clients\ToolkitLspClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Configuration\LspConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Configuration\WorkspaceConfigurationEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\CredentialsEncryption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ILspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\IToolkitLspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsEncryptionInitializationRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\JwtFieldNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\UpdateCredentialsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ToolkitLspCredentials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\InlineCompletions\InlineCompletions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\ILspInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\CodeWhispererConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspFetcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\CodeWhispererInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstallResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\RecordLspInstallerArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\LspInstallUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\LspToolkitException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\ManifestSchemaUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\VersionManifestOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationInfoBarManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatusToImageSourceConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources\CodeWhispererImages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ICodeWhispererSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsPublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMargin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>CodeWhispererMarginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\IReferenceLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ISuggestionProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ISuggestionUiManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\GetSuggestionsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\LogReferenceRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\Suggestion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\SuggestionContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\SuggestionReference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\PauseStateChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ReferenceLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionUiManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\CodeWhispererTelemetryConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\LspTelemetryExtensionMethods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\IResourceManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Install\VersionManifestManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\LspVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\ManifestSchema.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\TargetContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Models\VersionTarget.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\disconnected-32.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\error-32.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\pause-32.png" />
+  </ItemGroup>
+</Project>

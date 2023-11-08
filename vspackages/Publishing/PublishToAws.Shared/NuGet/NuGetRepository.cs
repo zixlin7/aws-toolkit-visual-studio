@@ -7,6 +7,8 @@ using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
+using NugetVersionRange = NuGet.Versioning.VersionRange;
+
 namespace Amazon.AWSToolkit.Publish.NuGet
 {
     /// <summary>
@@ -28,7 +30,7 @@ namespace Amazon.AWSToolkit.Publish.NuGet
         /// <exception cref="NoVersionFoundException">Thrown if no version is found in range</exception>
         public async Task<NuGetVersion> GetBestVersionInRangeAsync(string package, string versionRange, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var range = VersionRange.Parse(versionRange);
+            var range = NugetVersionRange.Parse(versionRange);
 
             var versions = await GetAllVersionsAsync(package, cancellationToken);
             var bestMatchedVersion = range.FindBestMatch(versions);

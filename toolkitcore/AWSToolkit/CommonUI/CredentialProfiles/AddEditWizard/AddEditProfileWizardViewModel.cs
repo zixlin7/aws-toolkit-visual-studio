@@ -14,8 +14,6 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Regions;
-using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime.CredentialManagement;
 
@@ -34,6 +32,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         private const int _saveTimeoutMillis = 10000;
 
         private static readonly ILog _logger = LogManager.GetLogger(typeof(AddEditProfileWizardViewModel));
+
+        private IAddEditProfileWizardHost _addEditProfileWizardHost => ServiceProvider.GetService<IAddEditProfileWizardHost>();
 
         private WizardStep _currentStep = WizardStep.Configuration;
 
@@ -108,22 +108,6 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         #region Save
 
-        public event EventHandler<ConnectionSettingsChangeArgs> ConnectionSettingsChanged;
-
-        protected void OnConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
-        {
-            OnConnectionSettingsChanged(new ConnectionSettingsChangeArgs()
-            {
-                CredentialIdentifier = credentialIdentifier,
-                Region = region
-            });
-        }
-
-        protected virtual void OnConnectionSettingsChanged(ConnectionSettingsChangeArgs e)
-        {
-            ConnectionSettingsChanged?.Invoke(this, e);
-        }
-
         public async Task<ActionResults> SaveAsync(ProfileProperties profileProperties, CredentialFileType fileType, bool changeConnectionSettings = true)
         {
             Status = null;
@@ -150,7 +134,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                     if (changeConnectionSettings)
                     {
                         await ToolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credId, region, cancelSource.Token);
-                        OnConnectionSettingsChanged(credId, region);
+                        _addEditProfileWizardHost.NotifyConnectionSettingsChanged(credId);
                     }
                 }
 
@@ -224,17 +208,14 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
             OpenLogsCommand = new OpenToolkitLogsCommand(ToolkitContext);
             OpenCredentialsFileCommand = new RelayCommand(OpenCredentialsFile);
-
         }
-
-        public BaseMetricSource SaveMetricSource { get; set; }
 
         private T CreateMetricData<T>(ActionResults actionResults) where T : BaseTelemetryEvent, new()
         {
 #if DEBUG
-            if (SaveMetricSource == null)
+            if (_addEditProfileWizardHost.SaveMetricSource == null)
             {
-                throw new InvalidOperationException($"{nameof(SaveMetricSource)} must be set by wizard host.");
+                throw new InvalidOperationException($"{nameof(IAddEditProfileWizardHost.SaveMetricSource)} must be set by wizard host.");
             }
 #endif
             var accountId = ToolkitContext.ConnectionManager?.ActiveAccountId ?? MetadataValue.NotSet;
@@ -244,17 +225,21 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         private void RecordAwsModifyCredentialsMetric(ActionResults actionResults)
         {
+            var saveMetricSource = _addEditProfileWizardHost.SaveMetricSource;
+
             var data = CreateMetricData<AwsModifyCredentials>(actionResults);
             data.Result = actionResults.AsTelemetryResult();
             data.CredentialModification = CredentialModification.Add;
-            data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
-            data.ServiceType = SaveMetricSource?.Service ?? MetadataValue.NotSet;
+            data.Source = saveMetricSource?.Location ?? MetadataValue.NotSet;
+            data.ServiceType = saveMetricSource?.Service ?? MetadataValue.NotSet;
 
             ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
         }
 
         private void RecordAuthAddConnectionMetric(ActionResults actionResults)
         {
+            var saveMetricSource = _addEditProfileWizardHost.SaveMetricSource;
+
             var data = CreateMetricData<AuthAddConnection>(actionResults);
             data.Attempts = _connectionAttempts;
             // Called from ValidateConnectionAsync which is always memory
@@ -272,13 +257,14 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             // Same explanation as InvalidInputFields above.
             data.Reason = "";
             data.Result = actionResults.AsTelemetryResult();
-            data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+            data.Source = saveMetricSource?.Location ?? MetadataValue.NotSet;
 
             ToolkitContext.TelemetryLogger.RecordAuthAddConnection(data);
         }
 
         public void RecordAuthAddedConnectionsMetric(ActionResults actionResults, int newConnectionCount, IEnumerable<string> newEnabledConnections)
         {
+            var saveMetricSource = _addEditProfileWizardHost.SaveMetricSource;
             var authConnectionsCount = 0;
             var enabledAuthConnections = new HashSet<string>();
 
@@ -310,7 +296,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             // As this is called when adding a connection(s) it will always only contain one type
             data.NewEnabledAuthConnections = BuildEnabledAuthConnectionsString(newEnabledConnections);
             data.Result = actionResults.AsTelemetryResult();
-            data.Source = SaveMetricSource?.Location ?? MetadataValue.NotSet;
+            data.Source = saveMetricSource?.Location ?? MetadataValue.NotSet;
 
             ToolkitContext.TelemetryLogger.RecordAuthAddedConnections(data);
         }

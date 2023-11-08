@@ -85,5 +85,6 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SSOOIDC.dll" AssemblyName="AWSSDK.SSOOIDC, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.SourceControl.v17" TargetVersion="[17.0,18.0)" Path="|AwsToolkit.SourceControl.v17|" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.VsSdk.Common.v17" TargetVersion="[17.0,18.0)" Path="|AwsToolkit.VsSdk.Common.v17|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.CodeWhisperer.v17" Path="|AwsToolkit.CodeWhisperer.v17|" />
     </Assets>
 </PackageManifest>
