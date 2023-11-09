@@ -13,6 +13,7 @@ using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.AwsToolkit.VsSdk.Common.Documents;
 using Microsoft.VisualStudio.Threading;
+using log4net;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 {
@@ -21,6 +22,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
     /// </summary>
     public class CodeWhispererDocumentViewModel : BaseModel, IDisposable
     {
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CodeWhispererDocumentViewModel));
+
         private readonly ICodeWhispererTextView _textView;
         private readonly ICodeWhispererManager _manager;
         private readonly ISuggestionUiManager _suggestionUiManager;
@@ -58,27 +61,36 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 
             _isAttemptingToDisplaySuggestion = true;
 
-            if (_manager.ClientStatus != LspClientStatus.Running
-                || _manager.ConnectionStatus != ConnectionStatus.Connected
-                || await _manager.IsAutoSuggestPausedAsync()
-                || IsSuggestionDisplayed()
-                || !IsUserEdit(e.Changes.LastOrDefault()))
+            try
+            {
+                if (_manager.ClientStatus != LspClientStatus.Running
+                    || _manager.ConnectionStatus != ConnectionStatus.Connected
+                    || await _manager.IsAutoSuggestPausedAsync()
+                    || IsSuggestionDisplayed()
+                    || !IsUserEdit(e.Changes.LastOrDefault()))
+                {
+                    return;
+                }
+
+                var request = _textView.CreateGetSuggestionsRequest(true);
+                var requestPosition = _textView.GetWpfTextView().GetCaretSnapshotPosition();
+                _requestedSuggestions = (await _manager.GetSuggestionsAsync(request)).ToList();
+                // TODO : pass in session id
+                var invocationProperties =
+                    SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, null, requestPosition);
+                if (_requestedSuggestions.Count > 0)
+                {
+                    await _suggestionUiManager.ShowAsync(_requestedSuggestions, invocationProperties, _textView);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Unable to display CodeWhisperer auto-suggestion", ex);
+            }
+            finally
             {
                 _isAttemptingToDisplaySuggestion = false;
-                return;
             }
-
-            var request = _textView.CreateGetSuggestionsRequest(true);
-            var requestPosition = _textView.GetWpfTextView().GetCaretSnapshotPosition();
-            _requestedSuggestions =  (await _manager.GetSuggestionsAsync(request)).ToList();
-            // TODO : pass in session id
-            var invocationProperties = SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, null, requestPosition);
-            if (_requestedSuggestions.Count > 0)
-            {
-                await _suggestionUiManager.ShowAsync(_requestedSuggestions, invocationProperties, _textView);
-            }
-
-            _isAttemptingToDisplaySuggestion = false;
         }
 
         /// <summary>
