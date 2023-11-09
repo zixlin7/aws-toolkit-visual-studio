@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewUserGuideCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\CodeWhispererSsoTokenProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\Connection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\ConnectionStatusChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialog.xaml.cs">
@@ -54,6 +55,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\ILspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\IToolkitLspCredentials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\JwtJsonMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\ConnectionMetadata.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\ConnectionMetadataEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\CredentialsEncryptionInitializationRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Credentials\Models\JwtFieldNames.cs" />

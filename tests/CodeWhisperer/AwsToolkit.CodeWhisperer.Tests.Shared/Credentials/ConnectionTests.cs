@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Settings;
@@ -77,7 +78,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         {
             SsoRegion = "sample-region",
             SsoSession = "aws-builder-id",
-            SsoRegistrationScopes = SonoProperties.CodeWhispererScopes
+            SsoRegistrationScopes = SonoProperties.CodeWhispererScopes,
+            SsoStartUrl = "sample-start-url"
         };
 
         private readonly StubConnection _sut;
@@ -152,6 +154,37 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _timer.IsStarted.Should().BeFalse();
             _codeWhispererClient.CredentialsProtocol.TokenPayload.Should().BeNull();
             _settingsRepository.Settings.CredentialIdentifier.Should().BeNull();
+        }
+
+
+        [Fact]
+        public async Task RequestConnectionMetadataAsync_WhenSignedIn()
+        {
+            _settingsRepository.Settings.CredentialIdentifier = null;
+            _sut.CredentialIdPromptResponse = _sampleCredentialId;
+            await _sut.SignInAsync();
+
+            var eventArgs = new ConnectionMetadataEventArgs();
+            await _codeWhispererClient.RaiseRequestConnectionMetadataAsync(eventArgs);
+
+            eventArgs.Response.SsoProfileData.StartUrl.Should().BeEquivalentTo(_sampleProfileProperties.SsoStartUrl);
+        }
+
+        [Fact]
+        public async Task RequestConnectionMetadataAsync_WhenSignedOut()
+        {
+            // set up: Sign in with a token expiring in 6 hours
+            const int tokenDurationHours = 6;
+            _ssoTokenProvider.Token.ExpiresAt = DateTime.UtcNow.AddHours(tokenDurationHours);
+
+            _sut.CredentialIdPromptResponse = _sampleCredentialId;
+            await _sut.SignInAsync();
+            await _sut.SignOutAsync();
+
+            var eventArgs = new ConnectionMetadataEventArgs();
+            await _codeWhispererClient.RaiseRequestConnectionMetadataAsync(eventArgs);
+
+            eventArgs.Response.SsoProfileData.StartUrl.Should().BeNull();
         }
 
         [Fact]

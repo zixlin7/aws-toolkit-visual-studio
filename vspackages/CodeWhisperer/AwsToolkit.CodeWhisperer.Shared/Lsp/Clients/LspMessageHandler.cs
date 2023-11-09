@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry;
 
 using log4net;
@@ -88,6 +89,32 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             }
         }
 
+        /// <summary>
+        /// Signals that the language server is requesting auth connection information
+        /// Handler should populate <see cref="ConnectionMetadataEventArgs.Response"/>
+        /// with the data to send back to the language server.
+        /// </summary>
+        internal event AsyncEventHandler<ConnectionMetadataEventArgs> ConnectionMetadataAsync;
+
+        /// <summary>
+        /// Invoked when message "$/aws/credentials/getConnectionMetadata" is sent by the language server
+        /// </summary>
+        [JsonRpcMethod(ConnectionMessageNames.ConnectionMetadataRequested)]
+        public async Task<object> OnConnectionMetadataRequestAsync()
+        {
+            try
+            {
+                var eventArgs = new ConnectionMetadataEventArgs();
+                await RaiseConnectionMetadataRequestAsync(eventArgs);
+                return eventArgs.Response;
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Failed to handle connection metadata request from language server. Server will be sent a null response.", e);
+                return null;
+            }
+        }
+
         private async Task RaiseWorkspaceConfigurationAsync(WorkspaceConfigurationEventArgs eventArgs)
         {
             var workspaceConfigurationAsync = WorkspaceConfigurationAsync;
@@ -103,6 +130,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             if (telemetryEvent != null && eventArgs != null)
             {
                 telemetryEvent.Invoke(this, eventArgs);
+            }
+        }
+
+        private async Task RaiseConnectionMetadataRequestAsync(ConnectionMetadataEventArgs eventArgs)
+        {
+            var connectionMetadataAsync = ConnectionMetadataAsync;
+            if (connectionMetadataAsync != null)
+            {
+                await connectionMetadataAsync.InvokeAsync(this, eventArgs);
             }
         }
     }

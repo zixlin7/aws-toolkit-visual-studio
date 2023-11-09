@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Credentials;
@@ -23,6 +24,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients
         public event AsyncEventHandler<EventArgs> InitializedAsync;
         public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
         public event EventHandler<TelemetryEventArgs> TelemetryEventNotification;
+        public event AsyncEventHandler<ConnectionMetadataEventArgs> RequestConnectionMetadataAsync;
 
         public IToolkitLspCredentials CreateToolkitLspCredentials()
         {
@@ -47,6 +49,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients
         public void RaiseTelemetryEvent(TelemetryEventArgs args)
         {
             TelemetryEventNotification?.Invoke(this, args);
+        }
+
+        public async Task RaiseRequestConnectionMetadataAsync(ConnectionMetadataEventArgs args)
+        {
+            await RequestConnectionMetadataAsync.InvokeAsync(this, args);
         }
 
         public void RaiseStatusChanged()

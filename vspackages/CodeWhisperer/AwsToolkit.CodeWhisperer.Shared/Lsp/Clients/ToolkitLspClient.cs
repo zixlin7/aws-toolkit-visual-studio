@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -105,6 +106,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
         public event AsyncEventHandler<EventArgs> InitializedAsync;
         public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
+        public event AsyncEventHandler<ConnectionMetadataEventArgs> RequestConnectionMetadataAsync;
         public event EventHandler<TelemetryEventArgs> TelemetryEventNotification;
 
         public event EventHandler<LspClientStatusChangedEventArgs> StatusChanged;
@@ -280,6 +282,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             var messageHandler = CreateLspMessageHandler();
             messageHandler.WorkspaceConfigurationAsync += OnRequestWorkspaceConfigurationAsync;
             messageHandler.TelemetryEvent += OnTelemetryEventNotification;
+            messageHandler.ConnectionMetadataAsync += OnRequestConnectionMetadataAsync;
             SetLspMessageHandler(messageHandler);
         }
 
@@ -318,6 +321,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             TelemetryEventNotification?.Invoke(this, args);
         }
 
+        /// <summary>
+        /// Handles when the language server sends a request for the auth connection information, and
+        /// we want to send a response back. The contents of <see cref="ConnectionMetadataEventArgs.Response"/>
+        /// are sent after this handler completes.
+        /// </summary>
+        private async Task OnRequestConnectionMetadataAsync(object sender, ConnectionMetadataEventArgs args)
+        {
+            var asyncHandler = RequestConnectionMetadataAsync;
+            if (asyncHandler != null)
+            {
+                await asyncHandler.InvokeAsync(this, args);
+            }
+        }
+
         private void SetLspMessageHandler(LspMessageHandler messageHandler)
         {
             UnRegisterLspMessageHandler();
@@ -331,6 +348,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             {
                 messageHandler.WorkspaceConfigurationAsync -= OnRequestWorkspaceConfigurationAsync;
                 messageHandler.TelemetryEvent -= OnTelemetryEventNotification;
+                messageHandler.ConnectionMetadataAsync -= OnRequestConnectionMetadataAsync;
             }
         }
 

@@ -9,7 +9,7 @@ using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
 
@@ -32,8 +32,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private readonly ICodeWhispererSsoTokenProvider _tokenProvider;
 
-        private ICredentialIdentifier _signedInCredentialIdentifier;
-        private ToolkitRegion _signedInCredentialsSsoRegion;
+        private ConnectionProperties _signedInConnectionProperties;
         private DateTime? _tokenExpiresAt;
         private readonly IToolkitTimer _tokenRefreshTimer;
 
@@ -72,6 +71,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             _tokenRefreshTimer.Elapsed += OnTokenRefreshTimerElapsed;
 
             _codeWhispererLspClient.InitializedAsync += OnLspClientInitializedAsync;
+            _codeWhispererLspClient.RequestConnectionMetadataAsync += OnLspClientRequestConnectionMetadataAsync;
         }
 
         private ConnectionStatus _status = ConnectionStatus.Disconnected;
@@ -119,16 +119,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 try
                 {
                     var toolkitContext = _toolkitContextProvider.GetToolkitContext();
-                    var region = GetSsoRegion(credentialIdentifier);
+                    var connectionProperties = CreateConnectionProperties(credentialIdentifier);
 
-                    if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, region, out var awsToken))
+                    if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, connectionProperties.Region, out var awsToken))
                     {
                         var msg = $"Cannot sign in to CodeWhisperer.  Unable to resolve bearer token {displayName}.";
                         NotifyErrorAndDisconnect(msg);
                         throw new InvalidOperationException(msg);
                     }
 
-                    if (!await UseAwsTokenAsync(awsToken, credentialIdentifier, region))
+                    if (!await UseAwsTokenAsync(awsToken, connectionProperties))
                     {
                         var msg = "Credentials are valid, but the bearer token could not be sent to the language server. You will be signed out, try again.";
                         NotifyErrorAndDisconnect(msg);
@@ -148,14 +148,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         }
 
         /// <summary>
-        /// Looks up the SSO Region configured for the given credentialId
+        /// Creates an object representing properties associated with the connection(credentialId)
         /// </summary>
-        private ToolkitRegion GetSsoRegion(ICredentialIdentifier credentialIdentifier)
+        private ConnectionProperties CreateConnectionProperties(ICredentialIdentifier credentialIdentifier)
         {
             var toolkitContext = _toolkitContextProvider.GetToolkitContext();
             var profile = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-
-            return toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
+            var region = toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
+            return new ConnectionProperties()
+            {
+                CredentialIdentifier = credentialIdentifier,
+                Region = region,
+                SsoStartUrl = profile.SsoStartUrl
+            };
         }
 
         /// <summary>
@@ -181,7 +186,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         public async Task SignOutAsync()
         {
-            var credentialId = _signedInCredentialIdentifier;
+            var credentialId = _signedInConnectionProperties.CredentialIdentifier;
             var displayName = credentialId?.DisplayName ?? "<unknown>";
 
             try
@@ -243,14 +248,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     return;
                 }
 
-                var ssoRegion = GetSsoRegion(credentialId);
-                if (!_tokenProvider.TrySilentGetSsoToken(credentialId, ssoRegion, out var token))
+                var connectionProperties = CreateConnectionProperties(credentialId);
+                if (!_tokenProvider.TrySilentGetSsoToken(credentialId, connectionProperties.Region, out var token))
                 {
                     // Toolkit cannot automatically log in. Remain in signed-out state.
                     return;
                 }
 
-                if (!await UseAwsTokenAsync(token, credentialId, ssoRegion))
+                if (!await UseAwsTokenAsync(token, connectionProperties))
                 {
                     // Toolkit could not pass token over to language server. Remain in signed-out state.
                     _logger.Error("Failed to update bearer token after language server initialized. Remaining signed out.");
@@ -263,6 +268,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             {
                 _logger.Error("Unable to auto-login to CodeWhisperer", e);
             }
+        }
+
+        /// <summary>
+        /// Raised when the language server requests client for information about the auth connection
+        /// </summary>
+        private Task OnLspClientRequestConnectionMetadataAsync(object sender, ConnectionMetadataEventArgs args)
+        {
+            var metadata = new ConnectionMetadata()
+            {
+                SsoProfileData = new SsoProfileData() { StartUrl = _signedInConnectionProperties?.SsoStartUrl }
+            };
+            args.Response = metadata;
+            return Task.CompletedTask;
         }
 
         private void NotifyErrorAndDisconnect(string message, Exception ex = null)
@@ -282,7 +300,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         private Task<bool> ClearAwsTokenAsync()
         {
-            return UseAwsTokenAsync(null, null, null);
+            return UseAwsTokenAsync(null, null);
         }
 
         /// <summary>
@@ -291,9 +309,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// To "clear" a token (sign out), pass null for all parameters, or use <see cref="ClearAwsTokenAsync"/>.
         /// </summary>
         private async Task<bool> UseAwsTokenAsync(
-            AWSToken token,
-            ICredentialIdentifier credentialIdentifier,
-            ToolkitRegion credentialsSsoRegion)
+            AWSToken token, ConnectionProperties connectionProperties)
         {
             var credentialsProtocol = _codeWhispererLspClient.CreateToolkitLspCredentials();
 
@@ -304,8 +320,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 // Indicates "sign out"
                 credentialsProtocol.DeleteToken();
 
-                _signedInCredentialIdentifier = null;
-                _signedInCredentialsSsoRegion = null;
+                _signedInConnectionProperties = null;
                 _tokenExpiresAt = null;
                 Status = ConnectionStatus.Disconnected;
             }
@@ -315,9 +330,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
                 // TODO : Soon UpdateTokenAsync will return a response. Return true or false based on the response.
                 await credentialsProtocol.UpdateTokenAsync(new BearerToken() { Token = token.Token });
+                _signedInConnectionProperties = connectionProperties;
 
-                _signedInCredentialIdentifier = credentialIdentifier;
-                _signedInCredentialsSsoRegion = credentialsSsoRegion;
                 _tokenExpiresAt = token.ExpiresAt;
                 Status = ConnectionStatus.Connected;
 
@@ -395,7 +409,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         private async Task OnTokenRefreshTimerElapsedAsync()
         {
             if (!_tokenProvider.TrySilentGetSsoToken(
-                    _signedInCredentialIdentifier, _signedInCredentialsSsoRegion, out var refreshToken))
+                    _signedInConnectionProperties.CredentialIdentifier, _signedInConnectionProperties.Region, out var refreshToken))
             {
                 // Unable to refresh the token (or retrieve the current one)
                 // Consider the connection expired now.
@@ -408,7 +422,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             if (refreshToken.ExpiresAt > _tokenExpiresAt)
             {
                 // Token Refresh was successful
-                if (!await UseAwsTokenAsync(refreshToken, _signedInCredentialIdentifier, _signedInCredentialsSsoRegion))
+                if (!await UseAwsTokenAsync(refreshToken, _signedInConnectionProperties))
                 {
                     // Unable to update the token on the language server.
                     // If we do nothing, the token will soon expire, and the user would be unable
@@ -445,6 +459,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         public void Dispose()
         {
             _codeWhispererLspClient.InitializedAsync -= OnLspClientInitializedAsync;
+            _codeWhispererLspClient.RequestConnectionMetadataAsync -= OnLspClientRequestConnectionMetadataAsync;
 
             _tokenRefreshTimer.Elapsed -= OnTokenRefreshTimerElapsed;
             _tokenRefreshTimer?.Dispose();
