@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry;
 
 using log4net;
 
@@ -59,12 +60,49 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             }
         }
 
+        /// <summary>
+        /// Signals that the language server has sent telemetry event notifications
+        /// Handler should transform and emit the  <see cref="MetricEvent"/>
+        /// to the telemetry backend
+        /// </summary>
+        
+        internal event EventHandler<TelemetryEventArgs> TelemetryEvent;
+
+        /// <summary>
+        /// Invoked when notification "telemetry/event" is sent by the language server
+        /// </summary>
+        [JsonRpcMethod(TelemetryMessageNames.TelemetryNotification)]
+        public Task OnTelemetryEventAsync(JToken eventParams)
+        {
+            try
+            {
+                var metricEvent = eventParams.ToObject<MetricEvent>();
+                var eventArgs = new TelemetryEventArgs() { MetricEvent = metricEvent };
+                RaiseTelemetryEvent(eventArgs);
+                return Task.CompletedTask;
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Failed to handle telemetry event notification from language server.", e);
+                return Task.CompletedTask;
+            }
+        }
+
         private async Task RaiseWorkspaceConfigurationAsync(WorkspaceConfigurationEventArgs eventArgs)
         {
             var workspaceConfigurationAsync = WorkspaceConfigurationAsync;
             if (workspaceConfigurationAsync != null && eventArgs.Request != null)
             {
                 await workspaceConfigurationAsync.InvokeAsync(this, eventArgs);
+            }
+        }
+
+        private void RaiseTelemetryEvent(TelemetryEventArgs eventArgs)
+        {
+            var telemetryEvent = TelemetryEvent;
+            if (telemetryEvent != null && eventArgs != null)
+            {
+                telemetryEvent.Invoke(this, eventArgs);
             }
         }
     }

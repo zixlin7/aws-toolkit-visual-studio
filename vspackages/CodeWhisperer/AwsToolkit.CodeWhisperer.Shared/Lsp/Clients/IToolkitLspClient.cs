@@ -2,6 +2,7 @@
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry;
 
 using Microsoft.VisualStudio.Threading;
 
@@ -32,6 +33,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// Raised when the language server requests the current workspace configuration.
         /// </summary>
         event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
+
+        /// <summary>
+        /// Raised when the language server send the telemetry event notification.
+        /// </summary>
+        event EventHandler<TelemetryEventArgs> TelemetryEventNotification;
 
         /// <summary>
         /// Produces the abstraction capable of handling the language server's credentials messages 

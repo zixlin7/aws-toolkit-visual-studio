@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
@@ -104,6 +105,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
         public event AsyncEventHandler<EventArgs> InitializedAsync;
         public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
+        public event EventHandler<TelemetryEventArgs> TelemetryEventNotification;
 
         public event EventHandler<LspClientStatusChangedEventArgs> StatusChanged;
         public LspClientStatus Status
@@ -277,6 +279,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         {
             var messageHandler = CreateLspMessageHandler();
             messageHandler.WorkspaceConfigurationAsync += OnRequestWorkspaceConfigurationAsync;
+            messageHandler.TelemetryEvent += OnTelemetryEventNotification;
             SetLspMessageHandler(messageHandler);
         }
 
@@ -304,6 +307,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             }
         }
 
+
+        /// <summary>
+        /// Handles when the language server sends a notification for a telemetry event and we want to emit it
+        /// The contents of <see cref="TelemetryEventArgs.MetricEvent"/>
+        /// are emitted to telemetry backend as this handler completes.
+        /// </summary>
+        private void OnTelemetryEventNotification(object sender, TelemetryEventArgs args)
+        {
+            TelemetryEventNotification?.Invoke(this, args);
+        }
+
         private void SetLspMessageHandler(LspMessageHandler messageHandler)
         {
             UnRegisterLspMessageHandler();
@@ -316,6 +330,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             if (messageHandler != null)
             {
                 messageHandler.WorkspaceConfigurationAsync -= OnRequestWorkspaceConfigurationAsync;
+                messageHandler.TelemetryEvent -= OnTelemetryEventNotification;
             }
         }
 

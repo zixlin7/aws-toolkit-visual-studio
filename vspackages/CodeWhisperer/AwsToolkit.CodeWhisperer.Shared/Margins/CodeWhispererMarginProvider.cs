@@ -4,6 +4,7 @@ using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
+using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
 using Amazon.AWSToolkit.Context;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
@@ -48,6 +49,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             // CodeWhisperer component that gets activated by Visual Studio, so we
             // import ICodeWhispererSettingsPublisher here to auto instantiate it.
             ICodeWhispererSettingsPublisher codeWhispererSettingsPublisher,
+            // CodeWhispererTelemetryEventPublisher is not related to the VSSDK, so it isn't
+            // auto-created by Visual Studio. This margin provider is a central
+            // CodeWhisperer component that gets activated by Visual Studio, so we
+            // import ICodeWhispererTelemetryEventPublisher here to auto instantiate it.
+            ICodeWhispererTelemetryEventPublisher codeWhispererTelemetryEventPublisher,
             ISuggestionUiManager suggestionUiManager,
             SVsServiceProvider serviceProvider,
             IToolkitContextProvider toolkitContextProvider,

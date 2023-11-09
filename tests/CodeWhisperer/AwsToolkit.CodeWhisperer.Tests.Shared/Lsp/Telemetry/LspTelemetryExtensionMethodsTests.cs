@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry;
 using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -17,7 +19,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Telemetry
     {
         private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
         private Result _result;
+        private readonly MetricEvent _sampleMetricEvent = new MetricEvent()
+        {
+            Name = "sample-metric",
+            Data = new Dictionary<string, object>() { { "duration", 123 }, { "url", "http://abc.com" } }
+        };
 
+        private readonly MetricDatum _metricDatum = new MetricDatum();
 
         [Fact]
         public async Task ExecuteTimeAndRecord_RecordFailedWhenNullObject()
@@ -69,6 +77,29 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Telemetry
             await _telemetryLogger.Object.ExecuteTimeAndRecordAsync(ExecuteAsync, Record);
 
             Assert.Equal(_result, Result.Succeeded);
+        }
+
+        [Fact]
+        public void TransformAndRecordEvent_WithoutValue()
+        {
+            _telemetryLogger.Object.TransformAndRecordEvent(_metricDatum, _sampleMetricEvent);
+
+            Assert.Equal(_sampleMetricEvent.Data.Keys, _metricDatum.Metadata.Keys);
+            Assert.Equal(_sampleMetricEvent.Name, _metricDatum.MetricName);
+            _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
+        }
+
+        [Fact]
+        public void TransformAndRecordEvent_WithValue()
+        {
+            _sampleMetricEvent.Data.Add("value", 13.0);
+
+            _telemetryLogger.Object.TransformAndRecordEvent(_metricDatum, _sampleMetricEvent);
+
+            Assert.Equal(13.0 ,_metricDatum.Value);
+            Assert.Equal(2, _metricDatum.Metadata.Count);
+            Assert.Equal(_sampleMetricEvent.Name, _metricDatum.MetricName);
+            _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
         }
 
 

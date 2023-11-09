@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -175,6 +178,48 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Telemetry
             }
 
             return metricData;
+        }
+
+        /// <summary>
+        /// Populates the metric datum by transforming the metric event to extract relevant data and records the final datum with the telemetry logger
+        /// </summary>
+        /// <param name="telemetryLogger"> telemetry logger</param>
+        /// <param name="datum"> metric to populate and record</param>
+        /// <param name="metricEvent"> event to extract metric details from</param>
+        public static void TransformAndRecordEvent(this ITelemetryLogger telemetryLogger, MetricDatum datum,
+            MetricEvent metricEvent)
+        {
+            try
+            {
+                var metrics = new Metrics { CreatedOn = DateTime.Now, Data = new List<MetricDatum>() };
+
+                datum.MetricName = metricEvent.Name;
+                var data = metricEvent.Data;
+                if (data.TryGetValue("value", out var value))
+                {
+                    datum.Value = (double) value;
+                    data.Remove("value");
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+
+                foreach (var item in data
+                             .Where(item => !datum.Metadata.ContainsKey(item.Key)))
+                {
+                    datum.AddMetadata(item.Key, item.Value);
+                }
+
+                //TODO: Add handling for result and error data fields of metric event when server starts supporting it
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (Exception ex)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", ex);
+            }
         }
     }
 }

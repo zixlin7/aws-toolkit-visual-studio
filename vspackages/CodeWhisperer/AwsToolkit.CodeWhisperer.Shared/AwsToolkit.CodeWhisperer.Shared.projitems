@@ -104,7 +104,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionUiManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\CodeWhispererTelemetryConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\CodeWhispererTelemetryEventPublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\LspTelemetry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\LspTelemetryExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\TelemetryEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryEventPublisher.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)Credentials\CredentialSelectionDialog.xaml">
@@ -127,5 +131,8 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\disconnected-32.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\error-32.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\pause-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\" />
   </ItemGroup>
 </Project>
