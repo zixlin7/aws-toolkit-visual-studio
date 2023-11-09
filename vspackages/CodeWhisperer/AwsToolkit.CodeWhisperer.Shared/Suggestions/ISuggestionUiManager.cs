@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 
 using Microsoft.VisualStudio.Text.Editor;
@@ -14,6 +15,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
     /// </summary>
     public interface ISuggestionUiManager
     {
-        Task ShowAsync(IEnumerable<Suggestion> suggestions, ICodeWhispererTextView textView);
+        bool IsSuggestionDisplayed(ICodeWhispererTextView textView);
+
+        Task ShowAsync(IEnumerable<Suggestion> suggestions, SuggestionInvocationProperties invocationProperties, ICodeWhispererTextView view);
     }
 }

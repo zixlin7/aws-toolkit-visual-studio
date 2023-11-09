@@ -6,6 +6,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
 {
     public static class SampleSuggestionProducer
     {
+        public static Suggestion CreateSampleSuggestion(string text)
+        {
+            return new Suggestion { Text = text };
+        }
+
         public static Suggestion CreateSampleSuggestion(string id, int referenceCount)
         {
             var suggestion = new Suggestion() { Text = $"suggestion-{id}", };

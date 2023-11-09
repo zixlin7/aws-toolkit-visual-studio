@@ -19,9 +19,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
     {
         public const string EditorPartName = "CodeWhispererMargin";
 
-        private readonly IToolkitContextProvider _toolkitContextProvider;
         private readonly UserControl _control;
-        private readonly CodeWhispererMarginViewModel _viewModel;
+        private readonly CodeWhispererMarginViewModel _marginViewModel;
+        private readonly CodeWhispererDocumentViewModel _documentViewModel;
+        private readonly IToolkitContextProvider _toolkitContextProvider;
 
         public CodeWhispererMargin(
             ICodeWhispererTextView textView,
@@ -34,11 +35,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             _toolkitContextProvider = toolkitContextProvider;
 
             var commandRepository = new ToolkitVsCommandRepository(serviceProvider, taskFactoryProvider);
-            _viewModel = new CodeWhispererMarginViewModel(textView, manager, suggestionUiManager, commandRepository, _toolkitContextProvider, taskFactoryProvider);
+            _marginViewModel = new CodeWhispererMarginViewModel(textView, manager, suggestionUiManager, commandRepository, _toolkitContextProvider, taskFactoryProvider);
 
-            _control = new CodeWhispererMarginControl()
+            _documentViewModel = new CodeWhispererDocumentViewModel(textView, manager, suggestionUiManager);
+
+            _control = new CodeWhispererMarginControl
             {
-                DataContext = _viewModel,
+                DataContext = _marginViewModel,
             };
         }
 
@@ -55,7 +58,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 
         public void Dispose()
         {
-            _viewModel.Dispose();
+            _marginViewModel.Dispose();
+            _documentViewModel.Dispose();
         }
     }
 }

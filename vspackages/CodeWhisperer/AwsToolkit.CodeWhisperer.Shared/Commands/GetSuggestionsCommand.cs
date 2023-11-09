@@ -5,14 +5,8 @@ using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
-using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Models.Text;
 using Amazon.AwsToolkit.VsSdk.Common.Documents;
-using Amazon.AwsToolkit.VsSdk.Common.Tasks;
-
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 {
@@ -54,8 +48,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
             taskNotifier.ShowTaskStatus(async _ =>
             {
                 var request = _textView.CreateGetSuggestionsRequest(false);
+                var requestPosition = _textView.GetWpfTextView().GetCaretSnapshotPosition();
                 var suggestions = (await _manager.GetSuggestionsAsync(request)).ToList();
-                await _suggestionUiManager.ShowAsync(suggestions, _textView);
+                // TODO : pass in session id
+                var invocationProperties =
+                    SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, null, requestPosition);
+                await _suggestionUiManager.ShowAsync(suggestions, invocationProperties, _textView);
             });
         }
     }

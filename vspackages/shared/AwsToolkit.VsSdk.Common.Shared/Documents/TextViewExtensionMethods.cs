@@ -50,5 +50,33 @@ namespace Amazon.AwsToolkit.VsSdk.Common.Documents
             buffer.GetLineIndexOfPosition(position, out var line, out var column);
             return new Position(line, column);
         }
+
+        /// <summary>
+        /// Gets the text that exists between a start position and an end position within a VsTextView document.
+        /// </summary>
+        public static string GetTextBetweenPositions(this IVsTextView textView, int startPosition, int endPosition)
+        {
+            if (endPosition <= startPosition)
+            {
+                return string.Empty;
+            }
+
+            textView.GetBuffer(out var buffer);
+
+            buffer.GetLineIndexOfPosition(startPosition, out var startLine, out var startColumn);
+
+            buffer.GetLineIndexOfPosition(endPosition, out var endLine, out var endColumn);
+
+            buffer.GetLineText(startLine, startColumn, endLine, endColumn, out var stringBuffer);
+            return stringBuffer;
+        }
+
+        /// <summary>
+        /// Gets the integer Snapshot Position of the text view's caret
+        /// </summary>
+        public static int GetCaretSnapshotPosition(this IWpfTextView textView)
+        {
+            return textView.Caret.Position.BufferPosition.Position;
+        }
     }
 }

@@ -76,6 +76,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationStrategy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatusToImageSourceConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\CodeWhispererImages.cs" />
@@ -98,11 +99,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\LogReferenceRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\Suggestion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\SuggestionContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\SuggestionInvocationProperties.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\Models\SuggestionReference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\PauseStateChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\ReferenceLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionUiManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\CodeWhispererTelemetryConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\CodeWhispererTelemetryEventPublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\LspTelemetry.cs" />

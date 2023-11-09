@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Documents;
 using Amazon.AWSToolkit.Models.Text;
-
 using Microsoft.VisualStudio.Language.Proposals;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -57,6 +55,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Documents
         public IWpfTextView GetWpfTextView()
         {
             return _wpfTextView;
+        }
+
+        public async Task<string> GetTextBetweenPositionsAsync(int startPosition, int endPosition)
+        {
+            if (_vsTextView == null)
+            {
+                _vsTextView = await _wpfTextView.ToIVsTextViewAsync();
+            }
+
+            return _vsTextView.GetTextBetweenPositions(startPosition, endPosition);
         }
 
         public GetSuggestionsRequest CreateGetSuggestionsRequest(bool isAutoSuggestion)

@@ -32,6 +32,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Documents
             return new Position(0, 0);
         }
 
+        public Task<string> GetTextBetweenPositionsAsync(int startPosition, int endPosition)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IWpfTextView GetWpfTextView()
         {
             throw new System.NotImplementedException();

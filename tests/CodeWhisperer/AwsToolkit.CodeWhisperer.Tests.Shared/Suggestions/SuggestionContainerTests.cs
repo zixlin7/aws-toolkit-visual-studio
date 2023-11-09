@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,7 +25,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         private readonly FakeCodeWhispererTextView _textView = new FakeCodeWhispererTextView();
         private readonly FakeCodeWhispererManager _manager = new FakeCodeWhispererManager();
         private readonly Mock<SuggestionSessionBase> _suggestionSession = new Mock<SuggestionSessionBase>();
-        private readonly SuggestionContainer _sut;
+        private readonly StubSuggestionContainer _sut;
+        private readonly SuggestionContainer _textSuggestionContainer;
 
         private static class SampleSuggestions
         {
@@ -32,16 +34,47 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
             public static readonly Suggestion OneReference = SampleSuggestionProducer.CreateSampleSuggestion("b", 1);
             public static readonly Suggestion ThreeReferences = SampleSuggestionProducer.CreateSampleSuggestion("c", 3);
 
-            public static readonly Suggestion[] AllSuggestions = new Suggestion[]
+            private static readonly Suggestion _fibonacciSuggestion =
+                SampleSuggestionProducer.CreateSampleSuggestion("if (n <= 1)\r\n{\r\n    return n;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
+
+            private static readonly Suggestion _fibonacciSuggestion2 =
+                SampleSuggestionProducer.CreateSampleSuggestion("if (n == 0 || n == 1)\r\n{\r\n    return n;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
+
+            private static readonly Suggestion _fibonacciSuggestion3 =
+                SampleSuggestionProducer.CreateSampleSuggestion("if (n == 0)\r\n{\r\n    return 0;\r\n}\r\n\r\nif (n == 1)\r\n{\r\n    return 1;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
+
+            private static readonly Suggestion _fibonacciSuggestion4 =
+                SampleSuggestionProducer.CreateSampleSuggestion("if (n == 0)\r\n{\r\n    return 0;\r\n}\r\nelse if (n == 1)\r\n{\r\n    return 1;\r\n}\r\nelse\r\n{\r\n    return CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
+
+            public static readonly Suggestion[] ReferenceSuggestions = new Suggestion[]
             {
-                NoReferences, OneReference, ThreeReferences,
+                NoReferences, OneReference, ThreeReferences
             };
+
+            public static readonly Suggestion[] TextSuggestions = new Suggestion[]
+            {
+                _fibonacciSuggestion, _fibonacciSuggestion2, _fibonacciSuggestion3, _fibonacciSuggestion4
+            };
+        }
+
+        internal class StubSuggestionContainer : SuggestionContainer
+        {
+            public StubSuggestionContainer(Suggestion[] suggestions, SuggestionInvocationProperties properties, FakeCodeWhispererTextView textView, FakeCodeWhispererManager  manager, CancellationToken cancellationToken)
+                : base(suggestions, properties, textView, manager, cancellationToken)
+            {
+            }
+
+            public override Task<bool> FilterSuggestionsAsync(SuggestionSessionBase suggestionSession)
+            {
+                return Task.FromResult(true);
+            }
         }
 
         public SuggestionContainerTests()
         {
             _textView.FilePath = "some-path.code";
-            _sut = new SuggestionContainer(SampleSuggestions.AllSuggestions, _textView, _manager, CancellationToken.None);
+            _sut = new StubSuggestionContainer(SampleSuggestions.ReferenceSuggestions, new SuggestionInvocationProperties(), _textView, _manager, CancellationToken.None);
+            _textSuggestionContainer = new SuggestionContainer(SampleSuggestions.TextSuggestions, new SuggestionInvocationProperties(), _textView, _manager, CancellationToken.None);
         }
 
         [Fact]
@@ -64,7 +97,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         public async Task AdvanceLoopsBackToFirstProposal()
         {
             // Exercises wrapping around the end boundary, back to the start of the suggestion list
-            for (var i = 0; i < SampleSuggestions.AllSuggestions.Length; i++)
+            for (var i = 0; i < SampleSuggestions.ReferenceSuggestions.Length; i++)
             {
                 await CycleToNextProposalAsync();
             }
@@ -154,6 +187,83 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         {
             var edit = proposal.Edits.First();
             edit.ReplacementText.Should().BeEquivalentTo(expectedSuggestion.Text);
+        }
+
+        [Fact]
+        private void FilterSuggestions_NoPrefix()
+        {
+            _textSuggestionContainer.FilterSuggestions(string.Empty);
+
+            _textSuggestionContainer.CurrentProposal.Description.Should().Be(CreateExpectedDescriptionText(0, SampleSuggestions.TextSuggestions.Length));
+
+            _textSuggestionContainer.CurrentProposal.Edits[0].ReplacementText.Should()
+                .Be(SampleSuggestions.TextSuggestions[0].Text);
+        }
+
+        [Fact]
+        private void FilterSuggestions_PrefixMatchesAllSuggestions()
+        {
+            var prefix = "if (n ";
+
+            _textSuggestionContainer.FilterSuggestions(prefix);
+
+            _textSuggestionContainer.CurrentProposal.Description
+                .Should().Be(CreateExpectedDescriptionText(0, SampleSuggestions.TextSuggestions.Length));
+
+            _textSuggestionContainer.CurrentProposal.Edits[0].ReplacementText
+                .Should().Be(SampleSuggestions.TextSuggestions[0].Text.Substring(prefix.Length));
+        }
+
+        [Theory]
+        [InlineData("if (n =", 3)]
+        [InlineData("if (n == 0)", 2)]
+        [InlineData("if (n == 0)\r\n{\r\n    return 0;\r\n}\r\ne", 1)]
+        private void FilterSuggestions_PrefixMatchesSomeSuggestions(string prefix, int expectedFilteredSuggestionCount)
+        {
+            _textSuggestionContainer.FilterSuggestions(prefix);
+
+            _textSuggestionContainer.CurrentProposal.Description.Should().Be(CreateExpectedDescriptionText(0, expectedFilteredSuggestionCount));
+
+            // returns -1 if an index isn't found that matches the condition
+            Array.FindIndex(SampleSuggestions.TextSuggestions,
+                    s => s.Text.Substring(prefix.Length).Equals(_textSuggestionContainer.CurrentProposal.Edits[0].ReplacementText))
+                .Should().BeGreaterOrEqualTo(0);
+        }
+
+        [Fact]
+        private void FilterSuggestions_PrefixMatchesNoSuggestions()
+        {
+            var prefix = "if (n >";
+
+            _textSuggestionContainer.FilterSuggestions(prefix);
+
+            _textSuggestionContainer.CurrentProposal.Should().Be(null);
+        }
+
+        [Fact]
+        private void FilterSuggestions_BackspaceResurfacesFilteredSuggestions()
+        {
+            var firstFilterSuggestionCount = 2;
+            var secondFilterSuggestionCount = 3;
+
+            var prefix = "if (n == 0)";
+
+            _textSuggestionContainer.FilterSuggestions(prefix);
+
+            _textSuggestionContainer.CurrentProposal.Description.Should()
+                .Be(CreateExpectedDescriptionText(0, firstFilterSuggestionCount));
+
+            prefix = "if (n == 0";
+
+            _textSuggestionContainer.FilterSuggestions(prefix);
+
+            _textSuggestionContainer.CurrentProposal.Description.Should()
+                .Be(CreateExpectedDescriptionText(1, secondFilterSuggestionCount));
+        }
+
+        private string CreateExpectedDescriptionText(int index, int length)
+        {
+            return $"Suggestion {index + 1} / {length}";
         }
     }
 }

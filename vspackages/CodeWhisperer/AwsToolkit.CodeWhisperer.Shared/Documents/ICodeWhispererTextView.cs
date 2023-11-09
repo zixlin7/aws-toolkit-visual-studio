@@ -33,6 +33,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Documents
         Position GetCursorPosition();
 
         /// <summary>
+        /// Gets the text between two positions within a text view
+        /// </summary>
+        Task<string> GetTextBetweenPositionsAsync(int startPosition, int endPosition);
+
+        /// <summary>
         /// Gets the IWpfTextView.
         /// </summary>
         /// <returns></returns>

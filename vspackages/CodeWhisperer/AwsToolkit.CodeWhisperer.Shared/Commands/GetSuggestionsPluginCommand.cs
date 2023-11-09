@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Documents;
@@ -87,9 +88,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
             {
                 var textView = GetTextView();
                 var codeWhispererTextView = new CodeWhispererTextView(textView);
+                var requestPosition = codeWhispererTextView.GetWpfTextView().GetCaretSnapshotPosition();
                 var request = codeWhispererTextView.CreateGetSuggestionsRequest(false);
                 var suggestions = (await _manager.GetSuggestionsAsync(request)).ToList();
-                await _suggestionUiManager.ShowAsync(suggestions, codeWhispererTextView);
+                // TODO : pass in session id
+                var invocationProperties =
+                    SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, null, requestPosition);
+                await _suggestionUiManager.ShowAsync(suggestions, invocationProperties, codeWhispererTextView);
             });
         }
 
