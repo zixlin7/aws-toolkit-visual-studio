@@ -210,9 +210,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         {
             var currentSuggestion = _filteredSuggestions[_currentSuggestionIndex];
 
-            var selectedSuggestions = prefix.Length > 0
-                ? _unmodifiedSuggestions.Where(suggestion => suggestion.Text.StartsWith(prefix))
-                : _unmodifiedSuggestions;
+            var selectedSuggestions = _unmodifiedSuggestions
+                .Where(suggestion => !string.IsNullOrWhiteSpace(suggestion.Text) && suggestion.Text.StartsWith(prefix));
 
             _filteredSuggestionTextStartIndex = prefix.Length;
 

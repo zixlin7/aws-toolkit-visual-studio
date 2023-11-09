@@ -46,6 +46,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
             private static readonly Suggestion _fibonacciSuggestion4 =
                 SampleSuggestionProducer.CreateSampleSuggestion("if (n == 0)\r\n{\r\n    return 0;\r\n}\r\nelse if (n == 1)\r\n{\r\n    return 1;\r\n}\r\nelse\r\n{\r\n    return CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
 
+            private static readonly Suggestion _emptySuggestion = SampleSuggestionProducer.CreateSampleSuggestion("    ");
+
             public static readonly Suggestion[] ReferenceSuggestions = new Suggestion[]
             {
                 NoReferences, OneReference, ThreeReferences
@@ -53,7 +55,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
 
             public static readonly Suggestion[] TextSuggestions = new Suggestion[]
             {
-                _fibonacciSuggestion, _fibonacciSuggestion2, _fibonacciSuggestion3, _fibonacciSuggestion4
+                _fibonacciSuggestion, _fibonacciSuggestion2, _fibonacciSuggestion3, _fibonacciSuggestion4, _emptySuggestion
             };
         }
 
@@ -190,25 +192,26 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         }
 
         [Fact]
-        private void FilterSuggestions_NoPrefix()
+        private void FilterSuggestions_NoPrefixFiltersOutWhitespace()
         {
             _textSuggestionContainer.FilterSuggestions(string.Empty);
 
-            _textSuggestionContainer.CurrentProposal.Description.Should().Be(CreateExpectedDescriptionText(0, SampleSuggestions.TextSuggestions.Length));
+            _textSuggestionContainer.CurrentProposal.Description
+                .Should().Be(CreateExpectedDescriptionText(0, SampleSuggestions.TextSuggestions.Length-1));
 
-            _textSuggestionContainer.CurrentProposal.Edits[0].ReplacementText.Should()
-                .Be(SampleSuggestions.TextSuggestions[0].Text);
+            _textSuggestionContainer.CurrentProposal.Edits[0].ReplacementText
+                .Should().Be(SampleSuggestions.TextSuggestions[0].Text);
         }
 
         [Fact]
-        private void FilterSuggestions_PrefixMatchesAllSuggestions()
+        private void FilterSuggestions_PrefixMatchesAllNonWhitespaceSuggestions()
         {
             var prefix = "if (n ";
 
             _textSuggestionContainer.FilterSuggestions(prefix);
 
             _textSuggestionContainer.CurrentProposal.Description
-                .Should().Be(CreateExpectedDescriptionText(0, SampleSuggestions.TextSuggestions.Length));
+                .Should().Be(CreateExpectedDescriptionText(0, SampleSuggestions.TextSuggestions.Length-1));
 
             _textSuggestionContainer.CurrentProposal.Edits[0].ReplacementText
                 .Should().Be(SampleSuggestions.TextSuggestions[0].Text.Substring(prefix.Length));
