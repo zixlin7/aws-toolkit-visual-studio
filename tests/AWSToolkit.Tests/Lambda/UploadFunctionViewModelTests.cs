@@ -317,8 +317,7 @@ namespace AWSToolkit.Tests.Lambda
             return new List<RuntimeOption[]>
             {
                 new RuntimeOption[] { null },
-                new RuntimeOption[] { RuntimeOption.PROVIDED },
-                new RuntimeOption[] {RuntimeOption.PROVIDED_AL2},
+                new RuntimeOption[] { RuntimeOption.PROVIDED }
             };
         }
 

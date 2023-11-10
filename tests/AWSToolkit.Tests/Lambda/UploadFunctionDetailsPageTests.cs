@@ -60,6 +60,7 @@ namespace AWSToolkit.Tests.Lambda
                 RuntimeOption.DotNet6,
                 RuntimeOption.PROVIDED,
                 RuntimeOption.PROVIDED_AL2,
+                RuntimeOption.PROVIDED_AL2023,
             };
 
             UploadFunctionDetailsPageFixture.RuntimeOptions
