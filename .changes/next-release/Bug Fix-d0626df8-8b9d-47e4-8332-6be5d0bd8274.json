@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix a source of \"Unknown error converting pem to ppk file\" issues when making SSH connections to EC2 instances"
+}
