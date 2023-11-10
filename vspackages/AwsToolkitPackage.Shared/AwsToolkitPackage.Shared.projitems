@@ -123,6 +123,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPageForm.Designer.cs">
       <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\DismissSunsetNotificationActionItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\LearnMoreActionItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetNotificationInfoBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetNotificationBarManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetNotificationSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetNotificationStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetVs17Dot6Strategy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\MetricsOutputWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInfoBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInfoBarManager.cs" />

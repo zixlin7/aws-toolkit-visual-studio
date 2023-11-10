@@ -17,5 +17,10 @@ namespace Amazon.AWSToolkit.Urls
         public static readonly Uri FeatureRequestUri = new Uri(FeatureRequestUrl);
 
         public const string RepositoryUrl = "https://github.com/aws/aws-toolkit-visual-studio";
+
+        public static class Sunset
+        {
+            public const string SunsetVs17Dot6Announcement = "https://github.com/aws/aws-toolkit-visual-studio/issues/375";
+        }
     }
 }
