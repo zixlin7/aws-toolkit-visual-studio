@@ -5,7 +5,7 @@
         public const string ClientName = "AWS Toolkit for Visual Studio";
         public const string ClientType = "public";
 
-        public const string StartUrl = "https://d-9067642ac7.awsapps.com/start";
+        public const string StartUrl = "https://view.awsapps.com/start";
         public const string SsoAccountAccessScope = "sso:account:access";
 
         public const string CodeCatalystReadWriteScope = "codecatalyst:read_write";

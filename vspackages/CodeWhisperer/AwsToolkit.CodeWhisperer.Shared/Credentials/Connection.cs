@@ -303,7 +303,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         {
             var metadata = new ConnectionMetadata()
             {
-                SsoProfileData = new SsoProfileData() { StartUrl = _signedInConnectionProperties?.SsoStartUrl }
+                Sso = new SsoProfileData() { StartUrl = _signedInConnectionProperties?.SsoStartUrl }
             };
             args.Response = metadata;
             return Task.CompletedTask;
@@ -354,9 +354,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             {
                 // Indicates "sign in" or "token refresh"
 
-                // TODO : Soon UpdateTokenAsync will return a response. Return true or false based on the response.
-                await credentialsProtocol.UpdateTokenAsync(new BearerToken() { Token = token.Token });
+                // set signed in state before sending the updated token to server because request(and subsequent handling) to get additional metadata is made before control is returned to this class
                 _signedInConnectionProperties = connectionProperties;
+
+                // TODO : Soon UpdateTokenAsync will return a response. Return true or false based on the response.
+                try
+                {
+                    await credentialsProtocol.UpdateTokenAsync(new BearerToken() { Token = token.Token });
+                }
+                catch (Exception)
+                {
+                    // catch exception when sending token to server only to clear out signed in state set previously
+                    _signedInConnectionProperties = null;
+                    throw;
+                }
 
                 _tokenExpiresAt = token.ExpiresAt;
                 Status = ConnectionStatus.Connected;

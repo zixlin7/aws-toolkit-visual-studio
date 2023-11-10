@@ -167,7 +167,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             var eventArgs = new ConnectionMetadataEventArgs();
             await _codeWhispererClient.RaiseRequestConnectionMetadataAsync(eventArgs);
 
-            eventArgs.Response.SsoProfileData.StartUrl.Should().BeEquivalentTo(_sampleProfileProperties.SsoStartUrl);
+            eventArgs.Response.Sso.StartUrl.Should().BeEquivalentTo(_sampleProfileProperties.SsoStartUrl);
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             var eventArgs = new ConnectionMetadataEventArgs();
             await _codeWhispererClient.RaiseRequestConnectionMetadataAsync(eventArgs);
 
-            eventArgs.Response.SsoProfileData.StartUrl.Should().BeNull();
+            eventArgs.Response.Sso.StartUrl.Should().BeNull();
         }
 
         [Fact]

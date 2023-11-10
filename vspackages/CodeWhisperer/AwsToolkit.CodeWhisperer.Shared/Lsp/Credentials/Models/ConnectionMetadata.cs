@@ -1,11 +1,13 @@
-﻿namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models
+﻿using Newtonsoft.Json;
+
+namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models
 {
     internal static class ConnectionMessageNames
     {
         /// <summary>
         /// Connection metadata request sent by the language server
         /// </summary>
-        public const string ConnectionMetadataRequested = "$/aws/credentials/getConnectionMetadata";
+        public const string ConnectionMetadataRequested = "aws/credentials/getConnectionMetadata";
     }
 
     /// <summary>
@@ -13,7 +15,8 @@
     /// </summary>
     public class ConnectionMetadata
     {
-        public SsoProfileData SsoProfileData { get; set; }
+        [JsonProperty("sso")]
+        public SsoProfileData Sso { get; set; }
     }
 
     /// <summary>
@@ -21,6 +24,7 @@
     /// </summary>
     public class SsoProfileData
     {
+        [JsonProperty("startUrl")]
         public string StartUrl { get; set; }
     }
 }
