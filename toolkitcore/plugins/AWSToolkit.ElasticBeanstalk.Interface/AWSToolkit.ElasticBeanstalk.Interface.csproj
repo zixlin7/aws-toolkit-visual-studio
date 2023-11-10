@@ -8,7 +8,7 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.ElasticBeanstalk" Version="3.7.200.65" />
+    <PackageReference Include="AWSSDK.ElasticBeanstalk" Version="3.7.300.0" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>

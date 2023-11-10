@@ -21,7 +21,12 @@ namespace Amazon.AWSToolkit.Lambda.Model
             IsDotNet = true,
         };
 
-        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { DotNet6, NodeJS_v12_X, PROVIDED, PROVIDED_AL2};
+        public static readonly RuntimeOption PROVIDED_AL2023 = new RuntimeOption(Amazon.Lambda.Runtime.ProvidedAl2023.Value, "Custom .NET Core Runtime (AL2023)")
+        {
+            IsDotNet = true,
+        };
+
+        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { DotNet6, NodeJS_v12_X, PROVIDED, PROVIDED_AL2, PROVIDED_AL2023 };
 
         private RuntimeOption(string value, string displayName)
         {
