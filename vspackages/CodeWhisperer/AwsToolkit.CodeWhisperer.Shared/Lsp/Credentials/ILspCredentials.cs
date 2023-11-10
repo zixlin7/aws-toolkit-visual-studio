@@ -7,10 +7,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
 {
     internal static class MessageNames
     {
-        public const string UpdateIamCredenitals = "$/aws/credentials/iam/update";
-        public const string UpdateTokenCredenitals = "$/aws/credentials/token/update";
-        public const string DeleteIamCredenitals = "$/aws/credentials/iam/delete";
-        public const string DeleteTokenCredenitals = "$/aws/credentials/token/delete";
+        public const string UpdateIamCredentials = "aws/credentials/iam/update";
+        public const string UpdateTokenCredentials = "aws/credentials/token/update";
+        public const string DeleteIamCredentials = "aws/credentials/iam/delete";
+        public const string DeleteTokenCredentials = "aws/credentials/token/delete";
     }
 
     /// <summary>
@@ -20,14 +20,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials
     /// </summary>
     internal interface ILspCredentials
     {
-        [JsonRpcMessageMapping(MessageNames.UpdateIamCredenitals)]
+        [JsonRpcMessageMapping(MessageNames.UpdateIamCredentials)]
         Task UpdateIamCredentialsAsync(UpdateCredentialsRequest request);
-        [JsonRpcMessageMapping(MessageNames.UpdateTokenCredenitals)]
+        [JsonRpcMessageMapping(MessageNames.UpdateTokenCredentials)]
         Task UpdateTokenCredentialsAsync(UpdateCredentialsRequest request);
 
-        [JsonRpcMessageMapping(MessageNames.DeleteIamCredenitals)]
+        [JsonRpcMessageMapping(MessageNames.DeleteIamCredentials)]
         void DeleteIamCredentials();
-        [JsonRpcMessageMapping(MessageNames.DeleteTokenCredenitals)]
+        [JsonRpcMessageMapping(MessageNames.DeleteTokenCredentials)]
         void DeleteTokenCredentials();
     }
 }
