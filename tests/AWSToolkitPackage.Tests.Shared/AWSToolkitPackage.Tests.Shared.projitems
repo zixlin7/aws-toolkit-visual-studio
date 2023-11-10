@@ -25,6 +25,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandSolutionExplorerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ToolkitContextProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetNotificationSettingsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetNotificationStrategyTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetVs17Dot6StrategyTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionInfoBarTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SupportedVersionStrategyTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryInfoBarTests.cs" />
