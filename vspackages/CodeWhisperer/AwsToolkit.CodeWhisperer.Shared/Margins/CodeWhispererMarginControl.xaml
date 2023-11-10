@@ -24,8 +24,13 @@
         Orientation="Horizontal" 
         VerticalAlignment="Center"
         Background="{DynamicResource {x:Static platformUi:EnvironmentColors.ScrollBarBackgroundBrushKey}}">
+        <StackPanel.ToolTip>
+            <ToolTip themes:ToolkitThemes.UseToolkitTheme="True">
+                <TextBlock Text="Amazon CodeWhisperer (Preview)" />
+            </ToolTip>
+        </StackPanel.ToolTip>
         <Button 
-            Height="19" MinWidth="50"
+            Height="19" MinWidth="19"
             Margin="0" Padding="0"
             PreviewMouseDown="OnPreviewMouseDown">
             <Button.Style>
