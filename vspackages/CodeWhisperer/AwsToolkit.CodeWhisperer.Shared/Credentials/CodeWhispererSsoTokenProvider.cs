@@ -7,10 +7,13 @@ using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
+using log4net;
+
 namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 {
     public class CodeWhispererSsoTokenProvider : ICodeWhispererSsoTokenProvider
     {
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(CodeWhispererSsoTokenProvider));
         private readonly IToolkitContextProvider _toolkitContextProvider;
 
         public CodeWhispererSsoTokenProvider(IToolkitContextProvider toolkitContextProvider)
@@ -54,8 +57,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     .CredentialManager.GetToolkitCredentials(credentialId, ssoRegion)
                     .GetTokenProvider().TryResolveToken(out token);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.Error($"Failure resolving SSO Token for {credentialId?.Id}", e);
                 return false;
             }
         }

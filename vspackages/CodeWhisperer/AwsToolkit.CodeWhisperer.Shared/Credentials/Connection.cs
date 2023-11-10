@@ -9,7 +9,6 @@ using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
 
@@ -123,15 +122,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
                     if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, connectionProperties.Region, out var awsToken))
                     {
-                        var msg = $"Cannot sign in to CodeWhisperer.  Unable to resolve bearer token {displayName}.";
-                        NotifyErrorAndDisconnect(msg);
+                        var msg = $"Cannot sign in to CodeWhisperer, try again.{Environment.NewLine}Unable to resolve bearer token {displayName}.";
+
+                        // Invalidate the token to avoid an infinite loop of sign-in failures
+                        // that could otherwise require user to delete their token cache in
+                        // order to break the loop.
+                        //
+                        // There are normal circumstances where we get here, like when
+                        // the user presses Cancel on the SSO Token confirmation dialog.
+                        // There are unexpected circumstances, like if the AWS SDK raises
+                        // an exception while handling the token cache:
+                        // https://github.com/aws/aws-sdk-net/pull/3083/files#r1389714680
+                        InvalidateSsoToken(credentialIdentifier);
                         throw new InvalidOperationException(msg);
                     }
 
                     if (!await UseAwsTokenAsync(awsToken, connectionProperties))
                     {
                         var msg = "Credentials are valid, but the bearer token could not be sent to the language server. You will be signed out, try again.";
-                        NotifyErrorAndDisconnect(msg);
                         throw new InvalidOperationException(msg);
                     }
 
@@ -140,9 +148,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 }
                 catch (Exception ex)
                 {
-                    var msg = $"Failed to sign in to CodeWhisperer with {displayName}.";
-                    NotifyErrorAndDisconnect(msg, ex);
-                    throw new InvalidOperationException(msg, ex);
+                    var title = $"Failed to sign in to CodeWhisperer with {displayName}.";
+                    NotifyErrorAndDisconnect(title, ex);
+                    throw new InvalidOperationException(title, ex);
                 }
             }
         }
@@ -195,7 +203,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
                 if (await ClearAwsTokenAsync())
                 {
-                    _toolkitContextProvider.GetToolkitContext().CredentialManager.Invalidate(credentialId);
+                    InvalidateSsoToken(credentialId);
                     toolkitContext.ToolkitHost.OutputToHostConsole($"Signed out of CodeWhisperer with {displayName}.");
                 }
 
@@ -203,9 +211,27 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             }
             catch (Exception ex)
             {
-                var msg = $"Failed to sign out of CodeWhisperer with {displayName}.";
-                NotifyError(msg, ex);
-                throw new InvalidOperationException(msg, ex);
+                var title = $"Failed to sign out of CodeWhisperer with {displayName}.";
+                NotifyError(title, ex);
+                throw new InvalidOperationException(title, ex);
+            }
+        }
+
+        /// <summary>
+        /// Makes an attempt to remove the credential's SSO Token from cache, but does not
+        /// raise an error in the call stack.
+        /// </summary>
+        private void InvalidateSsoToken(ICredentialIdentifier credentialId)
+        {
+            try
+            {
+                _toolkitContextProvider.GetToolkitContext().CredentialManager.Invalidate(credentialId);
+            }
+            catch (Exception exception)
+            {
+                // Deliberately swallow the error. Code that is calling this method is already performing
+                // error-handling processes, which we do not want to interrupt.
+                _logger.Error($"Failure trying to invalidate cached SSO token for {credentialId?.Id}. SSO Sign-in might fail unless the token is deleted from cache.", exception);
             }
         }
 
@@ -283,19 +309,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             return Task.CompletedTask;
         }
 
-        private void NotifyErrorAndDisconnect(string message, Exception ex = null)
+        private void NotifyErrorAndDisconnect(string title, Exception ex)
         {
-            NotifyError(message, ex);
+            NotifyError(title, ex);
             Status = ConnectionStatus.Disconnected;
         }
 
-        private void NotifyError(string message, Exception ex = null)
+        private void NotifyError(string title, Exception ex)
         {
-            _logger.Error(message, ex);
+            _logger.Error(title, ex);
 
             var toolkitContext = _toolkitContextProvider.GetToolkitContext();
-            toolkitContext.ToolkitHost.OutputToHostConsole(message);
-            toolkitContext.ToolkitHost.ShowError(message, ex?.Message ?? message);
+            toolkitContext.ToolkitHost.OutputToHostConsole(title);
+            toolkitContext.ToolkitHost.ShowError(title, ex.Message ?? title);
         }
 
         private Task<bool> ClearAwsTokenAsync()
