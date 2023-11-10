@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Publish to AWS has been updated to use v1.15.7 of the AWS .NET deploy tool. This update uses node 18 in newly created dockerfiles, improves on some error messaging, and uses an updated CDK bootstrap template. For more details, see https://github.com/aws/aws-dotnet-deploy/releases/tag/1.12.3, https://github.com/aws/aws-dotnet-deploy/releases/tag/1.13.4, https://github.com/aws/aws-dotnet-deploy/releases/tag/1.14.6, and https://github.com/aws/aws-dotnet-deploy/releases/tag/1.15.7 ."
-}
