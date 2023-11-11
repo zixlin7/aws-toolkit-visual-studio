@@ -4,10 +4,10 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
-using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Documents;
 using Amazon.AwsToolkit.VsSdk.Common.Services;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -78,6 +78,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 
         protected async Task ExecuteAsync()
         {
+            if (!CanExecute())
+            {
+                return;
+            }
+
             var toolkitHost = _toolkitContextProvider.GetToolkitContext().ToolkitHost;
 
             // TODO : IDE-11363 : using a task notifier is temporary. It helps during development to know that a query is running.
@@ -96,6 +101,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
                     SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, null, requestPosition);
                 await _suggestionUiManager.ShowAsync(suggestions, invocationProperties, codeWhispererTextView);
             });
+        }
+
+        private bool CanExecute()
+        {
+            return _toolkitContextProvider.HasToolkitContext() &&
+                   _manager.ClientStatus == LspClientStatus.Running &&
+                   _manager.ConnectionStatus == ConnectionStatus.Connected;
         }
 
         private IWpfTextView GetTextView()
