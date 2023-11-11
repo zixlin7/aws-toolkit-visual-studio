@@ -46,10 +46,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            if (_process.HasExited)
+            try
             {
-                _timer.Stop();
-                RaiseProcessEnded();
+                if (_process.HasExited)
+                {
+                    _timer.Stop();
+                    RaiseProcessEnded();
+                }
+            }
+            catch (Exception)
+            {
+                // The process may not have started.
+                // Back the timer off by 10%
+                _timer.Interval *= 1.1;
             }
         }
 

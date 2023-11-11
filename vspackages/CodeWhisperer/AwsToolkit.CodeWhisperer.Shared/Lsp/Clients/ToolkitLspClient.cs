@@ -212,7 +212,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
             SetupLspMessageHandler();
 
-            // todo : skip if _serverPath is already set
             // Determines the latest version of the language server, install and return it's path
             var taskStatusNotifier = await CreateTaskStatusNotifierAsync();
             taskStatusNotifier.ShowTaskStatus(async _ =>
@@ -222,8 +221,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
                     await SetupServerAsync(taskStatusNotifier, token);
                 }
             });
-
-            // todo : set Status to error when installation throws something
         }
 
         private async Task SetupServerAsync(ITaskStatusNotifier notifier, CancellationTokenSource token)
@@ -248,12 +245,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
         private async Task<LspInstallResult> InstallAndLaunchServerAsync(ITaskStatusNotifier taskStatusNotifier, CancellationTokenSource token)
         {
-            var lspInstallResult = await InstallServerAsync(taskStatusNotifier, token.Token);
-            _serverPath = lspInstallResult?.Path;
+            try
+            {
+                var lspInstallResult = await InstallServerAsync(taskStatusNotifier, token.Token);
+                _serverPath = lspInstallResult?.Path;
 
-            // TODO : Have a separate controller responsible for starting the language server
-            await LaunchServerAsync(lspInstallResult, taskStatusNotifier);
-            return lspInstallResult;
+                // TODO : Have a separate controller responsible for starting the language server
+                await LaunchServerAsync(lspInstallResult, taskStatusNotifier);
+                return lspInstallResult;
+            }
+            catch (Exception e)
+            {
+                Status = LspClientStatus.Error;
+                _logger.Error("Unable to install language server", e);
+
+                throw;
+            }
+
         }
 
         private async Task LaunchServerAsync(LspInstallResult result, ITaskStatusNotifier taskNotifier)
@@ -375,30 +383,42 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </returns>
         public async Task<Connection> ActivateAsync(CancellationToken token)
         {
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"Activating: {Name}");
-            _processWatcher?.Dispose();
-            Status = LspClientStatus.SettingUp;
+            try
+            {
+                _toolkitContext.ToolkitHost.OutputToHostConsole($"Activating: {Name}");
+                _processWatcher?.Dispose();
+                Status = LspClientStatus.SettingUp;
 
-            await Task.Yield();
+                await Task.Yield();
 
-            await TaskScheduler.Default;
+                await TaskScheduler.Default;
 
-            var serverProcess = CreateLspProcess();
-            _processWatcher = new ProcessWatcher(serverProcess);
-            _processWatcher.ProcessEnded += OnProcessEnded;
+                var serverProcess = CreateLspProcess();
+                _processWatcher = new ProcessWatcher(serverProcess);
+                _processWatcher.ProcessEnded += OnProcessEnded;
 
-            _logger.Info($"Launching language server: {Name}");
-            if (!serverProcess.Start())
+                _logger.Info($"Launching language server: {Name}");
+                if (!serverProcess.Start())
+                {
+                    Status = LspClientStatus.Error;
+
+                    // null indicates the server cannot be started
+                    return null;
+                }
+
+                await OnBeforeLspConnectionStartsAsync(serverProcess);
+
+                return new Connection(serverProcess.StandardOutput.BaseStream, serverProcess.StandardInput.BaseStream);
+            }
+            catch (Exception e)
             {
                 Status = LspClientStatus.Error;
+                _processWatcher?.Dispose();
 
-                // null indicates the server cannot be started
-                return null;
+                _logger.Error($"Failed to launch language server {Name}", e);
+
+                throw;
             }
-
-            await OnBeforeLspConnectionStartsAsync(serverProcess);
-
-            return new Connection(serverProcess.StandardOutput.BaseStream, serverProcess.StandardInput.BaseStream);
         }
 
         /// <summary>
