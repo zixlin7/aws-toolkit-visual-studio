@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 {
@@ -17,6 +18,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 
         protected override async Task ExecuteCoreAsync(object parameter)
         {
+            await _toolkitContextProvider.GetToolkitContext().ToolkitHost.OpenShellWindowAsync(ShellWindows.Output);
             await _manager.ShowReferenceLoggerAsync();
         }
     }
