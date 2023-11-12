@@ -14,6 +14,8 @@ using Amazon.Runtime;
 
 using log4net;
 
+using Microsoft.VisualStudio.Threading;
+
 namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 {
     /// <summary>
@@ -117,6 +119,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
                 try
                 {
+                    // Ensure we aren't on the UI thread before getting an SSO Token.
+                    // Otherwise, the IDE will freeze while user is in the browser login flow.
+                    await TaskScheduler.Default;
+
                     var toolkitContext = _toolkitContextProvider.GetToolkitContext();
                     var connectionProperties = CreateConnectionProperties(credentialIdentifier);
 
