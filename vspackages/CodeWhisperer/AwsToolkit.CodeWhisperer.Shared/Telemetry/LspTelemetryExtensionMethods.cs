@@ -205,13 +205,22 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Telemetry
                     datum.Value = 1;
                 }
 
+                // add result and error data and give it precedence if overlapping fields in data
+                datum.AddMetadata("result", metricEvent.Result);
+                if (metricEvent.ErrorData != null)
+                {
+                    var errorData = metricEvent.ErrorData;
+                    datum.AddMetadata("reason", errorData.Reason);
+                    datum.AddMetadata("errorCode", errorData.ErrorCode);
+                    datum.AddMetadata("httpStatusCode", errorData.HttpStatusCode);
+                }
+                
+                // add all other metadata
                 foreach (var item in data
                              .Where(item => !datum.Metadata.ContainsKey(item.Key)))
                 {
                     datum.AddMetadata(item.Key, item.Value);
                 }
-
-                //TODO: Add handling for result and error data fields of metric event when server starts supporting it
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);

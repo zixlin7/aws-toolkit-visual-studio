@@ -53,6 +53,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Telemetry
 
         public string ErrorCode{ get; set; }
         
-        public int HttpStatusCode { get; set; }
+        public int? HttpStatusCode { get; set; }
     }
 }

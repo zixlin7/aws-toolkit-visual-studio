@@ -96,11 +96,42 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Telemetry
 
             _telemetryLogger.Object.TransformAndRecordEvent(_metricDatum, _sampleMetricEvent);
 
-            Assert.Equal(13.0 ,_metricDatum.Value);
+            Assert.Equal(13.0, _metricDatum.Value);
             Assert.Equal(2, _metricDatum.Metadata.Count);
             Assert.Equal(_sampleMetricEvent.Name, _metricDatum.MetricName);
             _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
         }
+
+        [Fact]
+        public void TransformAndRecordEvent_IgnoresDataWhenOverlappingResult()
+        {
+            _sampleMetricEvent.Data.Add("result", ResultType.Cancelled);
+            _sampleMetricEvent.Result = ResultType.Succeeded;
+
+            _telemetryLogger.Object.TransformAndRecordEvent(_metricDatum, _sampleMetricEvent);
+
+            Assert.Equal(3, _metricDatum.Metadata.Count);
+            Assert.Equal(_sampleMetricEvent.Name, _metricDatum.MetricName);
+            Assert.Equal(_sampleMetricEvent.Result.ToString(), _metricDatum.Metadata["result"]);
+            _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
+        }
+
+        [Fact]
+        public void TransformAndRecordEvent_IgnoresDataWhenOverlappingErrorData()
+        {
+            _sampleMetricEvent.Data.Add("reason", "ignore-reason");
+            _sampleMetricEvent.ErrorData = new ErrorData(){Reason = "sample-reason"};
+
+            _telemetryLogger.Object.TransformAndRecordEvent(_metricDatum, _sampleMetricEvent);
+
+            Assert.Equal(3, _metricDatum.Metadata.Count);
+            Assert.Equal(_sampleMetricEvent.Name, _metricDatum.MetricName);
+            Assert.Equal(_sampleMetricEvent.ErrorData.Reason, _metricDatum.Metadata["reason"]);
+            Assert.False(_metricDatum.Metadata.ContainsKey("errorCode"));
+            Assert.False(_metricDatum.Metadata.ContainsKey("httpStatusCode"));
+            _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
+        }
+
 
 
         private void Record<T>(ITelemetryLogger arg1, T value, TaskResult taskResult, long duration)
