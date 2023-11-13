@@ -45,14 +45,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// Invoked when message "workspace/configuration" is sent by the language server
         /// </summary>
         [JsonRpcMethod(MessageNames.ConfigurationRequested)]
-        public async Task<object> OnWorkspaceConfigurationAsync(JToken configurationParams)
+        public async Task<object[]> OnWorkspaceConfigurationAsync(JToken configurationParams)
         {
             try
             {
                 var eventArgs = new WorkspaceConfigurationEventArgs() { Request = configurationParams.ToObject<ConfigurationParams>(), };
 
                 await RaiseWorkspaceConfigurationAsync(eventArgs);
-                return eventArgs.Response;
+
+                return eventArgs.Response == null ? null : new object[] { eventArgs.Response };
             }
             catch (Exception e)
             {
