@@ -1,6 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Publish to AWS has been updated to use v1.16.7 of the AWS .NET deploy tool. This version of the Toolkit includes the following Deploy Tool changes:\n  - Add .NET8 support for Beanstalk web apps and ECS Fargate console apps\n  - Add support for .NET8 container-based web apps\n  - Add support for NodeJS 18 in generated dockerfiles\n  - Improves on some error messaging\n  - Uses an updated CDK bootstrap template\n  - See https://github.com/aws/aws-dotnet-deploy/releases/tag/1.12.3, https://github.com/aws/aws-dotnet-deploy/releases/tag/1.13.4, https://github.com/aws/aws-dotnet-deploy/releases/tag/1.14.6, https://github.com/aws/aws-dotnet-deploy/releases/tag/1.15.7 and https://github.com/aws/aws-dotnet-deploy/releases/tag/1.16.7 for more details."
-}
-
-
