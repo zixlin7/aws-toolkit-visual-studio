@@ -36,6 +36,10 @@ namespace Amazon.AWSToolkit.Telemetry.Model
         /// </summary>
         public string ParentProduct { get; set; }
 
+        /// <summary>
+        /// Visual Studio's user-facing version string
+        /// </summary>
+        /// <example>"15.9.20" or "17.8.0 Preview 7.0"</example>
         public string ParentProductVersion { get; set; }
     }
 }

@@ -70,7 +70,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities
                 ThreadHelper.ThrowIfNotOnUIThread();
                 if (vsAppId.TryGetProperty(VSAPropID.VSAPROPID_ProductDisplayVersion, out object version))
                 {
-                    return version.ToString(); // eg: "15.9.20"
+                    return version.ToString(); // eg: "15.9.20" or "17.8.0 Preview 7.0"
                 }
 
                 return GetParentProductVersion(dte);
