@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Events;
@@ -17,6 +18,8 @@ using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
 
 using log4net;
+
+using CredentialType = Amazon.AWSToolkit.Credentials.Utils.CredentialType;
 
 namespace Amazon.AWSToolkit.Credentials.Core
 {
@@ -399,6 +402,19 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 validationResult = e is UserCanceledException ? Result.Cancelled : Result.Failed;
                
                 LOGGER.Error($"Failed to switch to credentials: {identifier?.DisplayName}", e);
+
+                // Invalidate the credential to avoid getting in a bad state
+                // Specifically applies to invalidating the SSO token to avoid an infinite loop of sign-in failures
+                // that could otherwise require user to delete their token cache in
+                // order to break the loop.
+                //
+                // There are normal circumstances where we get here, like when
+                // the user presses Cancel on the SSO Token confirmation dialog.
+                // There are unexpected circumstances, like if the AWS SDK raises
+                // an exception while handling the token cache:
+                // https://github.com/aws/aws-sdk-net/pull/3083/files#r1389714680
+                Invalidate(identifier);
+
                 var connectionState = new ConnectionState.InvalidConnection(e.Message);
                 SetValidationResults(identifier, region, connectionState, null, string.Empty, string.Empty, token);
             }
@@ -414,6 +430,25 @@ namespace Amazon.AWSToolkit.Credentials.Core
                         .GetCredentialType(identifier)
                         .AsTelemetryCredentialType(),
                 });
+            }
+        }
+
+        /// <summary>
+        /// Makes an attempt to invalidate the credential but does not raise an error in the call stack
+        /// </summary>
+        /// <param name="credentialId"></param>
+        private void Invalidate(ICredentialIdentifier credentialId)
+        {
+            try
+            {
+              
+                CredentialManager.Invalidate(credentialId);
+            }
+            catch (Exception exception)
+            {
+                // Deliberately swallow the error. Code that is calling this method is already performing
+                // error-handling processes, which we do not want to interrupt.
+                LOGGER.Error($"Failure trying to invalidate credentials for: {credentialId?.Id}", exception);
             }
         }
 

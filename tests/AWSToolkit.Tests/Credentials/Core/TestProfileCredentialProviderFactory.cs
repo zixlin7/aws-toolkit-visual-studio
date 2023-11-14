@@ -17,8 +17,11 @@ namespace AWSToolkit.Tests.Credentials.Core
         public TestProfileCredentialProviderFactory() : base(null,null, null, null)
         {
         }
-
         public TestProfileCredentialProviderFactory(ICredentialFileWriter fileWriter) : base(null, null, fileWriter, null)
+        {
+        }
+
+        public TestProfileCredentialProviderFactory(ICredentialFileReader fileReader, string tokenCacheFolder) : base(null, fileReader, null, null, tokenCacheFolder)
         {
         }
 

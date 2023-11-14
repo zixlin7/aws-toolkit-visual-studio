@@ -1186,7 +1186,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             await TaskScheduler.Default;
 
-            if (!Version.TryParse(_productEnvironment.ParentProductVersion, out var vsVersion))
+            if (!_productEnvironment.TryGetBaseParentProductVersion(out var vsVersion))
             {
                 vsVersion = null;
             }
