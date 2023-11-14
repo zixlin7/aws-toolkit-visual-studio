@@ -42,3 +42,9 @@ solutions/packages
 ####################
 solutions/Backup*/**
 Solutions/UpgradeLog*.htm
+
+####################
+# Jose-JWT
+# TODO : Reference markdown
+####################
+thirdparty/jose-jwt.dll

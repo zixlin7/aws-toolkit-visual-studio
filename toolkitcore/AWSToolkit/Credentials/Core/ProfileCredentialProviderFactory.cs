@@ -450,9 +450,13 @@ namespace Amazon.AWSToolkit.Credentials.Core
             // we will need to redesign the system to handle different token provider resolution.
             var tokenProvider = SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(credentialIdentifier)
-                .WithToolkitShell(ToolkitShell)
-                .WithTokenProviderRegion(RegionEndpoint.GetBySystemName(profile.Options.SsoRegion))
+                .WithIsBuilderId(false)
+                .WithOidcRegion(RegionEndpoint.GetBySystemName(profile.Options.SsoRegion))
+                .WithScopes(ProfileProperties.ParseSsoRegistrationScopes(profile.Options.SsoRegistrationScopes))
+                .WithSessionName(profile.Options.SsoSession)
                 .WithStartUrl(profile.Options.SsoStartUrl)
+                .WithTokenProviderRegion(RegionEndpoint.GetBySystemName(profile.Options.SsoRegion))
+                .WithToolkitShell(ToolkitShell)
                 .Build();
 
             return new ToolkitCredentials(credentialIdentifier, tokenProvider);

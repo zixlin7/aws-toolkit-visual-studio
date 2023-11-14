@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
-using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
@@ -34,6 +32,8 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
         private readonly ServiceProvider _serviceProvider;
 
+        private readonly Mock<IAddEditProfileWizardHost> _addEditProfileWizardHostMock = new Mock<IAddEditProfileWizardHost>();
+
         public AddEditProfileWizardViewModelTests()
         {
             _toolkitContextFixture.ConnectionManager.SetupGet(mock => mock.IdentityResolver).Returns(new FakeIdentityResolver());
@@ -42,10 +42,13 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             _serviceProvider = new ServiceProvider();
             _serviceProvider.SetService(_toolkitContextFixture.ToolkitContext);
 
+            // Doesn't matter, not enabling telemetry anyway
+            _addEditProfileWizardHostMock.Setup(mock => mock.SaveMetricSource).Returns(CommonMetricSources.AwsExplorerMetricSource.ServiceNode);
+            _serviceProvider.SetService(_addEditProfileWizardHostMock.Object);
+
             _sut = new AddEditProfileWizardViewModel
             {
-                ServiceProvider = _serviceProvider,
-                SaveMetricSource = CommonMetricSources.AwsExplorerMetricSource.ServiceNode // Doesn't matter, not enabling telemetry anyway
+                ServiceProvider = _serviceProvider
             };
         }
 
@@ -65,10 +68,10 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
                 Region = expectedRegion
             };
 
-            await Assert.RaisesAsync<ConnectionSettingsChangeArgs>(
-                handler => _sut.ConnectionSettingsChanged += handler,
-                handler => _sut.ConnectionSettingsChanged -= handler,
-                async () => await _sut.SaveAsync(p, CredentialFileType.Shared));
+            await _sut.SaveAsync(p, CredentialFileType.Shared);
+
+            _addEditProfileWizardHostMock.Verify(mock => mock.NotifyConnectionSettingsChanged(
+                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName)));
 
             _toolkitContextFixture.CredentialSettingsManager.Verify(mock => mock.CreateProfileAsync(
                 It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),
@@ -106,10 +109,10 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
                 SsoStartUrl = expectedSsoStartUrl
             };
 
-            await Assert.RaisesAsync<ConnectionSettingsChangeArgs>(
-                handler => _sut.ConnectionSettingsChanged += handler,
-                handler => _sut.ConnectionSettingsChanged -= handler,
-                async () => await _sut.SaveAsync(p, CredentialFileType.Shared));
+            await _sut.SaveAsync(p, CredentialFileType.Shared);
+
+            _addEditProfileWizardHostMock.Verify(mock => mock.NotifyConnectionSettingsChanged(
+                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName)));
 
             _toolkitContextFixture.CredentialSettingsManager.Verify(mock => mock.CreateProfileAsync(
                 It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),

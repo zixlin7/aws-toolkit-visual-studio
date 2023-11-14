@@ -3,7 +3,8 @@ using System.Threading;
 using System.Timers;
 
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.VisualStudio.Utilities;
+
+using AwsToolkit.VsSdk.Common.Notifications;
 
 using log4net;
 
@@ -19,7 +20,7 @@ namespace Amazon.AWSToolkit.VisualStudio.SupportedVersion
     /// </summary>
     public class SunsetNotificationBarManager : IDisposable
     {
-        static readonly ILog _logger = LogManager.GetLogger(typeof(SunsetNotificationBarManager));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(SunsetNotificationBarManager));
         private const int _setupRetryIntervalMs = 3000;
 
         private bool _disposed = false;

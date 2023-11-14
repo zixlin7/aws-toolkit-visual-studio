@@ -1,4 +1,9 @@
-﻿namespace Amazon.AWSToolkit.Credentials.Utils
+﻿using System;
+using System.Text.RegularExpressions;
+
+using Amazon.AWSToolkit.Models;
+
+namespace Amazon.AWSToolkit.Credentials.Utils
 {
     /// <summary>
     /// Class representing properties associated with a credential profile
@@ -26,12 +31,25 @@
         public string SsoSession { get; set; }
         public string SsoAccountId { get; set; }
         public string SsoRegion { get; set; }
+        public string[] SsoRegistrationScopes { get; set; }
         public string SsoRoleName { get; set; }
         public string SsoStartUrl { get; set; }
 
         public ProfileProperties ShallowClone()
         {
             return MemberwiseClone() as ProfileProperties;
+        }
+
+        private static readonly Regex _whitespaceRegex = new Regex(@"\s+");
+
+        public static string[] ParseSsoRegistrationScopes(string scopes)
+        {
+            if (string.IsNullOrWhiteSpace(scopes))
+            {
+                return Array.Empty<string>();
+            }
+
+            return _whitespaceRegex.Replace(scopes, string.Empty).Split(',');
         }
     }
 }

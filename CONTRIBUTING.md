@@ -105,9 +105,35 @@ Example (from a Visual Studio developer prompt):
 msbuild buildtools\build.proj /t:update-telemetry
 ```
 
-## AWS SDK Package References
+## Package References
+
+This section discusses noteworthy package references, and how to manage them.
+
+### AWS SDK
 
 The AWS .NET SDK’s NuGet packages are referenced from multiple locations across to repo. To help keep the referenced versions in alignment, an msbuild task automates the process of updating the package references. The task is called `update-awssdk` and resides in `build.proj`.
+
+### Jose-jwt
+
+The AWS Toolkit for Visual Studio's codebase requires all referenced assemblies to be strong named, in order to avoid compile-time and runtime failures. The [jose-jwt](https://www.nuget.org/packages/jose-jwt/) NuGet package is used to create encrypted JSON Web Tokens ("JWTs"). This package is not strong-named, and the [owner's guidance](https://github.com/dvsekhvalnov/jose-jwt#strong-named-assembly) is to sign it yourself:
+
+> `jose-jwt` is not providing standalone strong-named assembly as of now. If you need one in your project, please take a look at [#5](https://github.com/dvsekhvalnov/jose-jwt/issues/5)
+>
+> Usually people have success with https://github.com/brutaldev/StrongNameSigner
+
+Since we can't directly consume this NuGet package, the solution has been set up to automatically download and strong-sign the relevant assembly as part of the solution build. This approach is based on details in this [Stack Overflow post](https://stackoverflow.com/questions/331520/how-to-fix-referenced-assembly-does-not-have-a-strong-name-error/331555#331555).
+
+A build task `sign-jose-jwt` has been created in [signJoseJwt.proj](./buildtools/signJoseJwt.proj) that will download the `jose-jwt` package, sign the assembly that targets .NET Framework 4.7, and place the assigned assembly in this repo's `thirdparty` folder. The signed assembly is not added to source control (and is listed in `.gitignore`) so that automated builds are responsible for producing the signed dll and packaging it into the extension VSIX.
+
+You don't need to call this build task directly. It has been added to [AwsToolkit.CodeWhisperer.v17.csproj](./vspackages/CodeWhisperer/AwsToolkit.CodeWhisperer.v17/AwsToolkit.CodeWhisperer.v17.csproj), and will be called whenever msbuild compiles the project, or when Visual Studio attempts to resolve the project's assembly references.
+
+#### Updating jose-jwt
+
+This process uses a hardcoded NuGet package version, and the build task operates on version-specific folder structures. In order to update `jose-jwt` to a different version, `signJoseJwt.proj` will have to be updated in two places:
+- the NuGet download instruction
+- where the task locates the unsigned assembly
+
+After adjusting the task, delete the jose-jwt dll from your `thirdparty` folder and try running the updated build task.
 
 ## Plugins
 
@@ -242,6 +268,12 @@ The extension has a lot of UIs, which will take time to align with these guideli
 Properly leveraging UI and Background threads reduces the chances of negatively impacting the IDE's overall performance and stability.
 * Definitive article on the subject: https://devblogs.microsoft.com/premier-developer/asynchronous-and-multithreaded-programming-within-vs-using-the-joinabletaskfactory/
 * Additional supporting material: https://github.com/microsoft/vs-threading/blob/main/doc/index.md
+
+### MEF
+
+Portions of the Toolkit are built as [Managed Extensibility Framework (MEF)](https://learn.microsoft.com/en-us/dotnet/framework/mef/) components. Think of it as a simplified dependency injection system. The VS SDK contains MEF interfaces, which Visual Studio automatically searches for and instantiates. See [Managed Extensibility Framework in the editor](https://learn.microsoft.com/en-us/visualstudio/extensibility/managed-extensibility-framework-in-the-editor?view=vs-2022) for more details.
+
+If you find one or more MEF components missing while you're developing the Toolkit, MEF may have been unable to instantiate a component and its imported dependencies. Often this will result in a silent failure, and Visual Studio will continue to operate as if that component doesn't exist. The MEF Composition Error Log can help you diagnose issues. It is located at `%localappdata%\Microsoft\VisualStudio\[yourVSVersion]\ComponentModelCache\Microsoft.VisualStudio.Default.err`, and contains a log for your most recent Visual Studio session. If you're working with an experimental instance of Visual Studio, `yourVSVersion` will be decorated with `Exp`. For example, a VS 2022 experimental folder could look something like `17.0_2ad3394eExp`.
 
 ### Extension examples and Prior Art
 

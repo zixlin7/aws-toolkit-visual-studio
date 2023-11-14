@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Ecr\RepositoryFactoryFixture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lambda.TemplateWizards\ProjectCreatorUtilitiesTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\Commands\KeyBindingUtilitiesTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\CloneCodeCatalystRepositoryViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\CredentialConnectionViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\IamRoleSelectionViewModelTests.cs" />
