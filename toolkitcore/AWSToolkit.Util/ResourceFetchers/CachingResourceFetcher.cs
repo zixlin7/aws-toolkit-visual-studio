@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.ResourceFetchers
@@ -16,6 +19,8 @@ namespace Amazon.AWSToolkit.ResourceFetchers
 
         private readonly IResourceFetcher _fetcher;
         private readonly GetCacheFullPath _getCacheFullPath;
+        // default buffer size reference: https://learn.microsoft.com/en-us/dotnet/api/system.io.stream.copyto?view=netframework-4.7.2
+        private readonly int _defaultBufferSize = 81920;
 
         /// <summary>
         /// Writes fetched resource to a cache, returns stream from the cache location.
@@ -33,29 +38,29 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         /// If the cache was unsuccessful, the retrieved contents are still returned.
         /// </summary>
         /// <returns>Stream of contents, null if there was an error or no contents were available.</returns>
-        public Stream Get(string path)
+        public async Task<Stream> GetAsync(string path, CancellationToken token = default)
         {
             try
             {
-                var callbackFetcher = new CallbackResourceFetcher(_fetcher, (p, stream) =>
+                var callbackFetcher = new CallbackResourceFetcher(_fetcher, async (p, stream) => 
                 {
                     // If there is an issue writing to the cache, we'll return the stream contents
                     // for use, they simply won't be cached.
                     // The stream might not support seeking, so we'll make a copy of it to work with,
                     // and to return back through the callback.
                     var streamCopy = new MemoryStream();
-                    stream.CopyTo(streamCopy);
+                    await stream.CopyToAsync(streamCopy, _defaultBufferSize, token);
                     stream.Dispose();
                     streamCopy.Position = 0;
 
                     var cachePath = _getCacheFullPath(p);
-                    WriteToFile(streamCopy, cachePath);
+                    await WriteToFileAsync(streamCopy, cachePath, token);
 
                     streamCopy.Position = 0;
                     return streamCopy;
                 });
 
-                return callbackFetcher.Get(path);
+                return await callbackFetcher.GetAsync(path, token);
             }
             catch (Exception e)
             {
@@ -64,7 +69,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             }
         }
 
-        private void WriteToFile(Stream stream, string cachePath)
+        private async Task WriteToFileAsync(Stream stream, string cachePath, CancellationToken token = default)
         {
             try
             {
@@ -76,7 +81,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
 
                 using (var outStream = File.OpenWrite(cachePath))
                 {
-                    stream.CopyTo(outStream);
+                   await stream.CopyToAsync(outStream, _defaultBufferSize, token);
                 }
             }
             catch (Exception e)

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+
 using Newtonsoft.Json;
 
 namespace Amazon.AWSToolkit.Regions.Manifest
@@ -23,22 +25,22 @@ namespace Amazon.AWSToolkit.Regions.Manifest
         /// <summary>
         /// Load from file
         /// </summary>
-        public static Endpoints Load(string filename)
+        public static async Task<Endpoints> LoadAsync(string filename)
         {
             using (var stream = File.OpenRead(filename))
             {
-                return Load(stream);
+                return await LoadAsync(stream);
             }
         }
 
         /// <summary>
         /// Load from stream
         /// </summary>
-        public static Endpoints Load(Stream stream)
+        public static async Task<Endpoints> LoadAsync(Stream stream)
         {
             using (var reader = new StreamReader(stream))
             {
-                var json = reader.ReadToEnd();
+                var json = await reader.ReadToEndAsync();
                 var endpoints = JsonConvert.DeserializeObject<Endpoints>(json);
                 return endpoints;
             }

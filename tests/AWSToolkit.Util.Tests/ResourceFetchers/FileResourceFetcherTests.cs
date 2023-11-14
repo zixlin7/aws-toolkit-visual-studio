@@ -1,5 +1,6 @@
 ﻿using System;
-using System.IO;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.ResourceFetchers;
 using Xunit;
 
@@ -17,9 +18,9 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void Get_FileExists()
+        public async Task Get_FileExists()
         {
-            var stream = _sut.Get(_fixture.GetFullPath(_sampleFileRelativePath));
+            var stream = await _sut.GetAsync(_fixture.GetFullPath(_sampleFileRelativePath));
             Assert.NotNull(stream);
 
             var text = _fixture.GetStreamContents(stream);
@@ -27,9 +28,9 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void Get_NoFileExists()
+        public async Task Get_NoFileExists()
         {
-            var stream = _sut.Get(_fixture.GetFullPath("bees.txt"));
+            var stream = await _sut.GetAsync(_fixture.GetFullPath("bees.txt"));
             Assert.Null(stream);
         }
 

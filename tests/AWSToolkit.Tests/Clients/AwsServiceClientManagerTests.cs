@@ -24,7 +24,7 @@ namespace AWSToolkit.Tests.Clients
             Id = "us-west-2",
             DisplayName = "us west two",
         };
-        private readonly string _localServiceUrl = "http://aws.amazon.com/";
+        private readonly string _localServiceUrl = "https://aws.amazon.com/";
         private bool _isRegionLocal;
 
         public AwsServiceClientManagerTests()

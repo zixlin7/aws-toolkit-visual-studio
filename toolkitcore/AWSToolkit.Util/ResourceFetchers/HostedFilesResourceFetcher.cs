@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using log4net;
 
@@ -43,7 +46,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             /// (Optional) Callback that verifies if the contents can be considered valid,
             /// or if contents should be retrieved from a fallback location.
             /// </summary>
-            public Func<Stream, bool> ResourceValidator { get; set; } = null;
+            public Func<Stream, Task<bool>> ResourceValidator { get; set; } = null;
 
             public ITelemetryLogger TelemetryLogger { get; set; }
         }
@@ -65,7 +68,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             _hostedFilesSettings = hostedFilesSettings;
         }
 
-        public Stream Get(string relativePath)
+        public async Task<Stream> GetAsync(string relativePath, CancellationToken token = default)
         {
             Uri hostedFilesSource = _hostedFilesSettings.HostedFilesLocationAsUri;
 
@@ -84,7 +87,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             // Next, consider using the download cache, if the requesting system allows it
             if (_options.LoadFromDownloadCache)
             {
-                fetcherChain.Add(new ConditionalResourceFetcher(downloadCacheFetcher, (stream) =>
+                fetcherChain.Add(new ConditionalResourceFetcher(downloadCacheFetcher, async (stream) =>
                 {
                     // For some contents, we want to ensure the Toolkit session downloads it first.
                     // This prevents the scenario where the Toolkit downloads a file and forever 
@@ -99,7 +102,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
                     // use that instead of the download cache version.
                     if (_options.DownloadIfNewer && hostedFilesSource != null && !hostedFilesSource.IsFile)
                     {
-                        return ContentsMatchCloudFront(stream, relativePath);
+                        return await ContentsMatchCloudFront(stream, relativePath);
                     }
 
                     return false;
@@ -120,12 +123,12 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             // If the caller determines that the retrieved contents (of fetcherChain) are not valid
             // (or none could be found), attempt to retrieve contents from
             // the Toolkit assembly resources.
-            var validatedChainedFetcher = new ConditionalResourceFetcher(fetcherChain, _options.ResourceValidator ?? (stream => true));
-
-            return new ChainedResourceFetcher()
+            var validatedChainedFetcher = new ConditionalResourceFetcher(fetcherChain, _options.ResourceValidator ?? (stream => Task.FromResult(true)));
+           
+            return await new ChainedResourceFetcher()
                 .Add(validatedChainedFetcher)
                 .Add(new AssemblyResourceFetcher())
-                .Get(relativePath);
+                .GetAsync(relativePath, token);
         }
 
         private IResourceFetcher CreateHttpBasedFetchers(Uri hostedFilesSource, string downloadedCacheFolder)
@@ -163,7 +166,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             // If we get contents from any of the http based fetchers here,
             // mark that the contents have been cached.
             // See HostedFilesResourceFetcher.Options.DownloadOncePerSession
-            return new CallbackResourceFetcher(httpFetcherChain, (path, stream) =>
+            return new CallbackResourceFetcher(httpFetcherChain, async (path, stream) =>
             {
                 if (stream != null)
                 {
@@ -183,14 +186,14 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         /// <summary>
         /// Checks if the contents make an MD5 match against their CloudFront counterpart.
         /// </summary>
-        private bool ContentsMatchCloudFront(Stream stream, string relativePath)
+        private async Task<bool> ContentsMatchCloudFront(Stream stream, string relativePath)
         {
             try
             {
                 string streamContent = "";
                 using (var reader = new StreamReader(stream))
                 {
-                    streamContent = reader.ReadToEnd();
+                    streamContent = await reader.ReadToEndAsync();
                 }
 
                 var streamMd5 = $"\"{Amazon.S3.Util.AmazonS3Util.GenerateChecksumForContent(streamContent, false)}\"";
@@ -198,7 +201,7 @@ namespace Amazon.AWSToolkit.ResourceFetchers
                 var url = _options.CloudFrontBaseUrl +
                           (_options.CloudFrontBaseUrl.EndsWith("/") ? "" : "/") +
                           relativePath;
-                var remoteMd5 = GetCloudFrontETag(url);
+                var remoteMd5 = await GetCloudFrontETag(url);
 
                 return string.Equals(streamMd5, remoteMd5, StringComparison.InvariantCultureIgnoreCase);
             }
@@ -209,12 +212,12 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             }
         }
 
-        private static string GetCloudFrontETag(string url)
+        private static async Task<string> GetCloudFrontETag(string url)
         {
             var httpRequest = WebRequest.Create(url);
             httpRequest.Method = "HEAD";
 
-            using (var response = httpRequest.GetResponse() as HttpWebResponse)
+            using (var response = await httpRequest.GetResponseAsync() as HttpWebResponse)
             {
                 return response?.Headers["ETag"];
             }

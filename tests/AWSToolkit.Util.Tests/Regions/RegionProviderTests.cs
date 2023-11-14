@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.ResourceFetchers;
@@ -22,24 +23,24 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
 
         public RegionProviderTests()
         {
-            _sampleEndpointsFetcher.Setup(mock => mock.Get(It.IsAny<string>()))
-                .Returns(() => TestResources.LoadResourceFile(EndpointsFilename));
+            _sampleEndpointsFetcher.Setup(mock => mock.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => TestResources.LoadResourceFile(EndpointsFilename));
 
             _sut = new RegionProvider(_sampleEndpointsFetcher.Object, _sampleEndpointsFetcher.Object);
         }
 
         [Fact]
-        public void Initialize()
+        public async Task Initialize()
         {
-            InitializeAndWaitForUpdateEvents();
+            await InitializeAndWaitForUpdateEvents();
 
-            _sampleEndpointsFetcher.Verify(mock => mock.Get(RegionProvider.EndpointsFile), Times.Exactly(2));
+            _sampleEndpointsFetcher.Verify(mock => mock.GetAsync(RegionProvider.EndpointsFile, It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
 
         [Fact]
-        public void GetPartitionId()
+        public async Task GetPartitionId()
         {
-            InitializeAndWaitForUpdateEvents();
+            await InitializeAndWaitForUpdateEvents();
 
             Assert.Equal("aws", _sut.GetPartitionId("us-west-2"));
             Assert.Equal("aws-cn", _sut.GetPartitionId("cn-north-1"));
@@ -47,9 +48,9 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         }
 
         [Fact]
-        public void GetPartition()
+        public async Task GetPartition()
         {
-            InitializeAndWaitForUpdateEvents();
+            await InitializeAndWaitForUpdateEvents();
 
             Assert.Equal("amazonaws.com", _sut.GetPartition("aws").DnsSuffix);
             Assert.Equal("amazonaws.com.cn", _sut.GetPartition("aws-cn").DnsSuffix);
@@ -57,18 +58,18 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         }
 
         [Fact]
-        public void GetPartitions()
+        public async Task GetPartitions()
         {
-            InitializeAndWaitForUpdateEvents();
+            await InitializeAndWaitForUpdateEvents();
 
             Assert.Equal(2, _sut.GetPartitions().Count);
             Assert.Empty( _sut.GetPartitions().Where(x =>x.PartitionName.Contains("gov")).ToList());
         }
 
         [Fact]
-        public void GetRegions()
+        public async Task GetRegions()
         {
-            InitializeAndWaitForUpdateEvents();
+            await InitializeAndWaitForUpdateEvents();
 
             var regions = _sut.GetRegions("aws");
             Assert.NotNull(regions);
@@ -81,9 +82,9 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         }
 
         [Fact]
-        public void GetRegion()
+        public async Task GetRegion()
         {
-            InitializeAndWaitForUpdateEvents();
+            await InitializeAndWaitForUpdateEvents();
 
             var usEast = _sut.GetRegion("us-east-1");
             Assert.NotNull(usEast);
@@ -141,9 +142,9 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         [InlineData("fake-service", "us-east-1", false)]
         // Unknown region
         [InlineData("ec2", FakeRegionId, false)]
-        public void IsServiceAvailable(string serviceName, string regionId, bool expectedResult)
+        public async Task IsServiceAvailable(string serviceName, string regionId, bool expectedResult)
         {
-            InitializeAndWaitForUpdateEvents();
+            await InitializeAndWaitForUpdateEvents();
 
             Assert.Equal(expectedResult, _sut.IsServiceAvailable(serviceName, regionId));
         }
@@ -162,7 +163,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
             Assert.True(_sut.IsServiceAvailable(serviceName, LocalRegionId));
         }
 
-        private void InitializeAndWaitForUpdateEvents()
+        private async Task InitializeAndWaitForUpdateEvents()
         {
             var syncHandle = new ManualResetEvent(false);
             int timesCalled = 0;
@@ -177,7 +178,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
                 }
             };
 
-            _sut.Initialize();
+            await _sut.InitializeAsync();
             syncHandle.WaitOne();
         }
     }

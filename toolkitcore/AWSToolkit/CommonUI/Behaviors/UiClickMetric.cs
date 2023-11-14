@@ -6,15 +6,15 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using System.Windows;
 
-using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 
 using log4net;
 
-namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors
+namespace Amazon.AWSToolkit.CommonUI.Behaviors
 {
     public static class UiClickMetric
     {
@@ -157,8 +157,6 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors
             }
         }
 
-        private static readonly ActionResults _actionResults = new ActionResults();
-
         private static void RecordUiClickMetric(DependencyObject d)
         {
             if (_toolkitContext == null)
@@ -176,8 +174,13 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors
                 return;
             }
 
-            var data = _actionResults.CreateMetricData<UiClick>(MetadataValue.NotApplicable, MetadataValue.NotApplicable);
-            data.ElementId = GetElementId(config, d);
+            var data = new UiClick()
+            {
+                AwsAccount = MetadataValue.NotApplicable,
+                AwsRegion = MetadataValue.NotApplicable,
+                ElementId = GetElementId(config, d)
+            };
+
             if (string.IsNullOrWhiteSpace(data.ElementId))
             {
                 _logger.Warn($"{nameof(data.ElementId)} must be set or derivable from DependencyObject Name property.");

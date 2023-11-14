@@ -26,7 +26,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE;VS2022;VS2022_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -34,7 +34,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);TRACE;VS2022;VS2022_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -76,20 +76,21 @@
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
       <Name>AWSToolkit.Lambda.Interface</Name>
     </ProjectReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>17.0.32112.339</Version>
-    </PackageReference>
-    <PackageReference Include="Moq">
-      <Version>4.17.2</Version>
+    <ProjectReference Include="..\Common\AwsToolkit.Tests.Common.VsSdk.v17\AwsToolkit.Tests.Common.VsSdk.v17.csproj">
+      <Project>{9479ec23-e329-4b7b-9a1a-4eaeb7bf0c59}</Project>
+      <Name>AwsToolkit.Tests.Common.VsSdk.v17</Name>
+    </ProjectReference>
+    <PackageReference Include="FluentAssertions">
+      <Version>6.11.0</Version>
     </PackageReference>
     <PackageReference Include="xunit">
-      <Version>2.4.1</Version>
+      <Version>2.5.1</Version>
     </PackageReference>
     <PackageReference Include="xunit.extensibility.core">
-      <Version>2.4.1</Version>
+      <Version>2.5.1</Version>
     </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.4.5</Version>
+      <Version>2.5.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -98,7 +99,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
-  <Import Project="..\AWSToolkit.Tests.Common.VS.Shared\AWSToolkit.Tests.Common.VS.Shared.projitems" Label="Shared" />
   <Import Project="..\AWSToolkitPackage.Tests.Shared\AWSToolkitPackage.Tests.Shared.projitems" Label="Shared" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
@@ -8,13 +8,13 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.103.14" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.24" />
-    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.100.86" />
-    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.100.87" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.103.23" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.101.22" />
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.100.86" />
+    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.300.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Web" />

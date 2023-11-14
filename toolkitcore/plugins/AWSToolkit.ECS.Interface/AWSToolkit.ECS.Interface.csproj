@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
@@ -8,7 +8,7 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.ECS" Version="3.7.105.7" />
+    <PackageReference Include="AWSSDK.ECS" Version="3.7.300.0" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>

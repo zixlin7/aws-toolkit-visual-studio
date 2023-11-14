@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.ResourceFetchers;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -34,13 +36,13 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void HostedFiles_LocalFolder()
+        public async Task HostedFiles_LocalFolder()
         {
             // Setup: "Local hosted files" contains this sample file
             _fixture.WriteToFile(_fixture.SampleData, _fixture.SampleInputRelativePath);
             _toolkitSettings.HostedFilesLocation = new Uri(_fixture.TestLocation.InputFolder).ToString();
 
-            var stream = _sut.Get(_fixture.SampleRelativePath);
+            var stream = await _sut.GetAsync(_fixture.SampleRelativePath);
             Assert.NotNull(stream);
 
             var text = _fixture.GetStreamContents(stream);
@@ -48,13 +50,13 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void HostedFiles_Url()
+        public async Task HostedFiles_Url()
         {
             // Setup: "hosted files" explicitly points to the CloudFront distribution
             _toolkitSettings.HostedFilesLocation = S3FileFetcher.HOSTEDFILES_LOCATION;
             _options.CloudFrontBaseUrl = "";
 
-            var stream = _sut.Get(HostedFilesResourcePath);
+            var stream = await _sut.GetAsync(HostedFilesResourcePath);
             AssertStreamHasExpectedContents(stream);
             _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
 
@@ -63,21 +65,21 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void DownloadCacheEmpty()
+        public async Task DownloadCacheEmpty()
         {
             // Setup: try to retrieve a file that isn't in the download cache (or anywhere)
-            var stream = _sut.Get("some-file.txt");
+            var stream = await _sut.GetAsync("some-file.txt");
             Assert.Null(stream);
         }
 
         [Fact]
-        public void DownloadCacheNotEmpty()
+        public async Task DownloadCacheNotEmpty()
         {
             // Setup: put a file in the download cache that isn't available in any other source
             var resourcePath = "some-file.txt";
             File.WriteAllText(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, resourcePath), _fixture.SampleData);
 
-            var stream = _sut.Get(resourcePath);
+            var stream = await _sut.GetAsync(resourcePath);
             Assert.NotNull(stream);
 
             var text = _fixture.GetStreamContents(stream);
@@ -85,28 +87,28 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         }
 
         [Fact]
-        public void DownloadOncePerSession()
+        public async Task DownloadOncePerSession()
         {
             // Setup: put a file in the download cache that is available in other sources (so that an alternate version is retrieved)
             _options.DownloadOncePerSession = true;
             File.WriteAllText(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, HostedFilesResourcePath), _fixture.SampleData);
 
-            var stream = _sut.Get(HostedFilesResourcePath);
+            var stream = await _sut.GetAsync(HostedFilesResourcePath);
             AssertStreamHasExpectedContents(stream);
             _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
         }
 
         [Fact]
-        public void ValidationFails()
+        public async Task ValidationFails()
         {
             // Setup: put a file in the download cache that is known to have a fallback in-assembly.
             // Then have it fail the validation check so that the in-assembly resource is used.
-            _options.ResourceValidator = s => false;
+            _options.ResourceValidator = s => Task.FromResult(false);
             _options.CloudFrontBaseUrl = "";
 
             File.WriteAllText(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, HostedFilesResourcePath), _fixture.SampleData);
 
-            var stream = _sut.Get("endpoints.json");
+            var stream = await _sut.GetAsync("endpoints.json");
 
             Assert.NotNull(stream);
             var text = _fixture.GetStreamContents(stream);

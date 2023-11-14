@@ -1,0 +1,30 @@
+﻿name: Create a Changelog from queued changes
+
+on:
+    push:
+        branches: [main, feature/*, release/stable]
+    pull_request:
+        branches: [main, feature/*, release/*]
+
+jobs:
+    changelog:
+        name: Generate Changelog
+        runs-on: windows-2019
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Add msbuild to PATH
+              uses: microsoft/setup-msbuild@v1.1
+              with:
+                  vs-version: "[16.0,17.0)"
+
+            - name: Create Release Notes
+              run: msbuild buildtools\changelog.proj /t:createRelease /p:ReleaseVersion=vNext /p:FailIfNoChanges=false
+
+            - name: Build Artifact
+              if: always()
+              uses: actions/upload-artifact@v3
+              with:
+                  name: Changelog
+                  path: CHANGELOG.md
+                  retention-days: 31

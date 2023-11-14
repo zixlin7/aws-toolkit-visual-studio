@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Amazon;
@@ -8,6 +9,7 @@ using Amazon.AWSToolkit.Credentials.IO;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
+using Amazon.AWSToolkit.Tests.Common.IO;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
 
@@ -302,6 +304,57 @@ namespace AWSToolkit.Tests.Credentials.Core
         {
             var expectedIdentifiers = _profiles.Keys;
             Assert.Equal(expectedIdentifiers, _factory.GetCredentialIdentifiers().Select(x => x.ProfileName).ToList());
+        }
+
+        [Fact]
+        public void Invalidate_WhenSsoCredential()
+        {
+            using (var testLocation = new TemporaryTestLocation(false))
+            {
+                // setup token cache
+                var ssoProfile = CredentialProfileTestHelper.Sso.ValidProfile;
+                var identifier = new SharedCredentialIdentifier(ssoProfile.Name);
+                var exposedFactory = new TestProfileCredentialProviderFactory(_reader.Object, testLocation.TestFolder);
+                _reader.Setup(x => x.GetCredentialProfile(It.IsAny<string>()))
+                    .Returns(ssoProfile);
+                var cachePath = Path.Combine(
+                    testLocation.TestFolder,
+                    TokenCache.GetCacheFilename(ssoProfile.Options.SsoStartUrl, ssoProfile.Options.SsoSession));
+                File.WriteAllText(cachePath, "a sample file that will be deleted");
+
+
+                //invalidate cache
+                exposedFactory.Invalidate(identifier);
+
+                // verify cache is deleted
+                Assert.False(File.Exists(cachePath));
+            }
+        }
+
+        [Fact]
+        public void Invalidate_WhenNotSsoCredential()
+        {
+            using (var testLocation = new TemporaryTestLocation(false))
+            {
+                // setup credential
+                var basicProfile = CredentialProfileTestHelper.Basic.Valid.AccessAndSecret;
+                var ssoProfile = CredentialProfileTestHelper.Sso.ValidProfile;
+
+                var identifier = new SharedCredentialIdentifier(basicProfile.Name);
+                var exposedFactory = new TestProfileCredentialProviderFactory(_reader.Object, testLocation.TestFolder);
+                _reader.Setup(x => x.GetCredentialProfile(It.IsAny<string>()))
+                    .Returns(basicProfile);
+                var cachePath = Path.Combine(
+                    testLocation.TestFolder,
+                    TokenCache.GetCacheFilename(ssoProfile.Options.SsoStartUrl, ssoProfile.Options.SsoSession));
+                File.WriteAllText(cachePath, "a sample file that will be deleted");
+
+                // invalidate non sso credential
+                exposedFactory.Invalidate(identifier);
+
+                // verify cache remains as is
+                Assert.True(File.Exists(cachePath));
+            }
         }
 
         private void SetupProfiles()

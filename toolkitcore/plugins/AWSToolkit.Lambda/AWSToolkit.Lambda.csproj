@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <UseWPF>true</UseWPF>
@@ -9,8 +9,8 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.102.0" />
-    <PackageReference Include="AWSSDK.Kinesis" Version="3.7.102.23" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.Kinesis" Version="3.7.300.0" />
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.0.102" />
   </ItemGroup>

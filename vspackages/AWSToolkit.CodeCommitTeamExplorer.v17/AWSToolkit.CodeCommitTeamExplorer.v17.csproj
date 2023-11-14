@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <PropertyGroup>
@@ -41,6 +41,7 @@
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj" />
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj" />
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj" />
+    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj" />
   </ItemGroup>
   <Import Project="..\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems" Label="Shared" />
 </Project>

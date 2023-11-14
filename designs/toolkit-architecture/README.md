@@ -156,8 +156,10 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
     - Tests related to the AmazonCLIExtensions project
   - AWSToolkit.Tests.Common
     - Common testing utilities for any of the testing projects, for code that does not require the VS SDK
-  - AWSToolkit.Tests.Common.VS.Shared
+  - AwsToolkit.Tests.Common.VsSdk.v16, AwsToolkit.Tests.Common.VsSdk.v17
     - Common testing utilities that require the VS SDK for any of the testing projects
+  - AWSToolkit.Tests.Common.VS.Shared
+    - the shared project that backs the AwsToolkit.Tests.Common.VsSdk.vXX projects
   - AWSToolkit.Tests
     - Tests related to AWSToolkit, the Toolkit plugins, and supporting code
     - Code and projects under test cannot reference the VSSDK, because this code should be tested against each relevant VS SDK version. Those tests should use AwsToolkit.Vs.vXX.Tests

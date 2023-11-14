@@ -1,16 +1,22 @@
 ﻿using System.Linq;
-using Amazon.AWSToolkit.Regions;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.Regions.Manifest;
 using Amazon.AWSToolkit.Util.Tests.Resources;
 using Xunit;
 
 namespace Amazon.AWSToolkit.Util.Tests.Regions
 {
-    public class EndpointsExtensionMethodsTests
+    public class EndpointsExtensionMethodsTests : IAsyncLifetime
     {
         private const string EndpointsFilename = "sample-endpoints.json";
         private const string FakeRegionId = "us-moon-1";
-        private readonly Endpoints _endpoints = Endpoints.Load(TestResources.LoadResourceFile(EndpointsFilename));
+        private Endpoints _endpoints;
+
+        public async Task InitializeAsync()
+        {
+           _endpoints = await Endpoints.LoadAsync(TestResources.LoadResourceFile(EndpointsFilename));
+        }
 
         [Fact]
         public void GetPartitionIdForRegion()
@@ -66,6 +72,11 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         public void IsServiceAvailable_UnknownRegion()
         {
             Assert.False(_endpoints.IsServiceAvailable("ec2", FakeRegionId));
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }
