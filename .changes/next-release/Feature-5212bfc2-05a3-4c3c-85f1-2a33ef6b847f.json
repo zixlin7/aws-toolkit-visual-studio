@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Added support for deploying Custom Runtime AL2 functions with Arm64 architecture to AWS Lambda."
-}
