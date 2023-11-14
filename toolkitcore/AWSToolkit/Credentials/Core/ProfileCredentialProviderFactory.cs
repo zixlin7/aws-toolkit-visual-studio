@@ -34,15 +34,26 @@ namespace Amazon.AWSToolkit.Credentials.Core
         protected readonly ICredentialFileReader FileReader;
         protected readonly ICredentialFileWriter FileWriter;
         public event EventHandler<CredentialChangeEventArgs> CredentialsChanged;
+        private readonly string _tokenCacheFolder;
+
 
         protected ProfileCredentialProviderFactory(IProfileHolder holder, ICredentialFileReader fileReader,
-            ICredentialFileWriter fileWriter, IAWSToolkitShellProvider toolkitShell)
+            ICredentialFileWriter fileWriter, IAWSToolkitShellProvider toolkitShell) : this(holder, fileReader, fileWriter, toolkitShell, null)
         {
+        }
+
+        /// <summary>
+        /// Overload for testing purposes with location for sso token cache(default set to null)
+        /// </summary>
+        protected ProfileCredentialProviderFactory(IProfileHolder holder, ICredentialFileReader fileReader,
+            ICredentialFileWriter fileWriter, IAWSToolkitShellProvider toolkitShell, string tokenCacheFolder) 
+        { 
             ToolkitShell = toolkitShell;
             ProfileHolder = holder;
             FileReader = fileReader;
             FileWriter = fileWriter;
             Validator = new ProfileValidator(FileReader);
+            _tokenCacheFolder = tokenCacheFolder;
         }
 
         public void Initialize()
@@ -493,7 +504,27 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         public virtual void Invalidate(ICredentialIdentifier credentialIdentifier)
         {
-            // Profile-related credentials do not have invalidation handling at this time.
+            // Only SSO related credentials have invalidation handling at this time. Other profile credentials do not have invalidation handling at this time.
+            var profileProperties = GetProfileProperties(credentialIdentifier);
+            if (profileProperties == null)
+            {
+                throw new NotSupportedException($"Unsupported credential Id: {credentialIdentifier.Id}");
+            }
+            var type = profileProperties.GetCredentialType();
+            try
+            {
+                if (type == CredentialType.SsoProfile || type == CredentialType.BearerToken)
+                {
+                    // Makes an attempt to remove the credential's SSO Token from cache, but does not
+                    // raise an error in the call stack.
+                    TokenCache.RemoveCacheFile(profileProperties.SsoStartUrl, profileProperties.SsoSession, _tokenCacheFolder);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Failure trying to invalidate cached SSO token for {credentialIdentifier?.Id}. SSO Sign-in might fail unless the token is deleted from cache.", ex);
+            }
+          
         }
 
         public void Dispose()
