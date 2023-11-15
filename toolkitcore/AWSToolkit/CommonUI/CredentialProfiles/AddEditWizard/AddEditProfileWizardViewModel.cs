@@ -31,6 +31,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         private const int _saveTimeoutMillis = 10000;
 
+        private const int _changeConnectionTimeoutMillis = 10000;
+
         private static readonly ILog _logger = LogManager.GetLogger(typeof(AddEditProfileWizardViewModel));
 
         private IAddEditProfileWizardHost _addEditProfileWizardHost => ServiceProvider.GetService<IAddEditProfileWizardHost>();
@@ -41,6 +43,14 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         {
             get => _currentStep;
             set => SetProperty(ref _currentStep, value);
+        }
+
+        private FeatureType _featureType = FeatureType.AwsExplorer;
+
+        public FeatureType FeatureType
+        {
+            get => _featureType;
+            set => SetProperty(ref _featureType, value);
         }
 
         private bool? _status;
@@ -106,9 +116,20 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         }
         #endregion
 
+        public async Task ChangeAwsExplorerConnectionAsync(ICredentialIdentifier credentialIdentifier)
+        {
+            var p = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+            var region = ToolkitContext.RegionProvider.GetRegion(p.Region);
+
+            using (var cancelSource = new CancellationTokenSource(_changeConnectionTimeoutMillis))
+            {
+                await ToolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credentialIdentifier, region, cancelSource.Token);
+            }
+        }
+
         #region Save
 
-        public async Task<ActionResults> SaveAsync(ProfileProperties profileProperties, CredentialFileType fileType, bool changeConnectionSettings = true)
+        public async Task<SaveAsyncResults> SaveAsync(ProfileProperties profileProperties, CredentialFileType fileType)
         {
             Status = null;
             InProgress = true;
@@ -118,24 +139,18 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             {
                 Status = false;
                 InProgress = false;
-                return actionResults;
+                return new SaveAsyncResults(actionResults, null);
             }
+
+            var credId = fileType == CredentialFileType.Shared ?
+                new SharedCredentialIdentifier(profileProperties.Name) as ICredentialIdentifier :
+                new SDKCredentialIdentifier(profileProperties.Name);
 
             try
             {
-                var credId = fileType == CredentialFileType.Shared ?
-                    new SharedCredentialIdentifier(profileProperties.Name) as ICredentialIdentifier :
-                    new SDKCredentialIdentifier(profileProperties.Name);
-                var region = ToolkitContext.RegionProvider.GetRegion(profileProperties.Region);
-
                 using (var cancelSource = new CancellationTokenSource(_saveTimeoutMillis))
                 {
                     await ToolkitContext.CredentialSettingsManager.CreateProfileAsync(credId, profileProperties, cancelSource.Token);
-                    if (changeConnectionSettings)
-                    {
-                        await ToolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credId, region, cancelSource.Token);
-                        _addEditProfileWizardHost.NotifyConnectionSettingsChanged(credId);
-                    }
                 }
 
                 actionResults = new ActionResults().WithSuccess(true);
@@ -153,7 +168,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 InProgress = false;
             }
 
-            return actionResults;
+            return new SaveAsyncResults(actionResults, credId);
         }
 
         private int _connectionAttempts = 0;
@@ -276,8 +291,6 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 {
                     // This may change as bearer token handling evolves
                     case Credentials.Utils.CredentialType.BearerToken:
-                        enabledAuthConnections.Add(EnabledAuthConnectionTypes.BuilderIdCodeCatalyst);
-                        break;
                     case Credentials.Utils.CredentialType.SsoProfile:
                         enabledAuthConnections.Add(EnabledAuthConnectionTypes.IamIdentityCenterAwsExplorer);
                         break;

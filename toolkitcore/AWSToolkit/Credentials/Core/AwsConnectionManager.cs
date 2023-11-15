@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Events;
@@ -357,8 +357,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
             CancellationToken token)
         {
             var validationResult = Result.Failed;
-            string accountId = string.Empty;
-            string awsId = string.Empty;
+            var accountId = string.Empty;
+            var awsId = string.Empty;
 
             try
             {
@@ -376,7 +376,18 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
                 if (credentials.Supports(AwsConnectionType.AwsToken))
                 {
-                    awsId = await GetAwsIdAsync(credentials, region, token);
+                    var profileProperties = CredentialManager.CredentialSettingsManager?.GetProfileProperties(identifier);
+
+                    // TODO IDE-12041 Currently only CAWS supports fetching an AWS ID/unique user identifier for
+                    // bearer token profiles.  This is used for display on the CodeCatalyst clone repo dialog
+                    // and its metrics.  CodeWhisperer doesn't have this requirement (yet) nor an analogous API.
+                    // For now an empty string will be returned for cases outside of CAWS with IDE-12041 prescribing
+                    // refactoring as a fast-follow.
+                    if (profileProperties?.SsoRegistrationScopes != null &&
+                        SonoProperties.CodeCatalystScopes.All(scope => profileProperties.SsoRegistrationScopes.Contains(scope)))
+                    {
+                        awsId = await GetCodeCatalystSessionIdentityAsync(credentials, region, token);
+                    }
                 }
 
                 var connectionState = new ConnectionState.ValidConnection(identifier, region);
@@ -488,7 +499,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// <summary>
         /// Token based credentials approach for looking up an AWS ID.
         /// </summary>
-        private async Task<string> GetAwsIdAsync(ToolkitCredentials credentials, ToolkitRegion region,
+        private async Task<string> GetCodeCatalystSessionIdentityAsync(ToolkitCredentials credentials, ToolkitRegion region,
             CancellationToken token)
         {
             if (_regionProvider.IsRegionLocal(region.Id))
@@ -496,7 +507,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 return string.Empty;
             }
 
-            return await _identityResolver.GetAwsIdAsync(credentials.GetTokenProvider(), token);
+            return await _identityResolver.GetCodeCatalystSessionIdentityAsync(credentials.GetTokenProvider(), token);
         }
 
         private void RegisterHandlers()

@@ -4,7 +4,6 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace AwsToolkit.VsSdk.Common.CommonUI.Models
@@ -44,7 +43,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
             wizard.CredentialsFileOpened += (sender, e) => DialogResult = false;
         }
 
-        public void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier)
+        public void ShowCompleted(ICredentialIdentifier credentialIdentifier)
         {
             DialogResult = true;
         }

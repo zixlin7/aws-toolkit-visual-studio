@@ -22,7 +22,8 @@
             <wizard:AddEditProfileWizardView
                 Margin="9">
                 <wizBehaviors:Mvvm.ViewModel>
-                    <wizard:AddEditProfileWizardViewModel>
+                    <wizard:AddEditProfileWizardViewModel
+                        FeatureType="AwsExplorer">
                         <wizard:AddEditProfileWizardViewModel.ServiceProvider>
                             <wizard:ServiceProvider />
                         </wizard:AddEditProfileWizardViewModel.ServiceProvider>

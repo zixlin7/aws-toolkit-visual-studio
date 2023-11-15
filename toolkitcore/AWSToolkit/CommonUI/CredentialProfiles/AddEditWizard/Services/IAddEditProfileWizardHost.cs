@@ -1,5 +1,4 @@
 ﻿using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Telemetry.Model;
 
 namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
@@ -8,6 +7,6 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
     {
         BaseMetricSource SaveMetricSource { get; }
 
-        void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier);
+        void ShowCompleted(ICredentialIdentifier credentialIdentifier);
     }
 }

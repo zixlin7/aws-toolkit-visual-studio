@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.Runtime;
@@ -20,7 +21,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SsoConnectingStepViewModel));
 
-        private ISsoProfilePropertiesProvider _propertiesProvider => ServiceProvider.RequireService<ISsoProfilePropertiesProvider>();
+        private IConfigurationDetails _configDetails => ServiceProvider.RequireService<IConfigurationDetails>(CredentialType.SsoProfile.ToString());
 
         #region CancelConnecting
 
@@ -71,9 +72,15 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         {
             await base.ViewShownAsync();
 
+            // NOTE - We need a way through the UX for users to determine bearer token or
+            // AWS credentials, but for now we'll assume if the feature is CodeWhisperer
+            // it's a bearer token.  When another feature/service is added, this will
+            // need to change.
             _addEditProfileWizard.CurrentStep = await ResolveAwsTokenAsync() == null ?
                 WizardStep.Configuration :
-                WizardStep.SsoConnected;
+                _addEditProfileWizard.FeatureType == FeatureType.AwsExplorer ?
+                    WizardStep.SsoAwsCredentialConnected :
+                    WizardStep.SsoBearerTokenConnected;
         }
 
         public Task<AWSToken> ResolveAwsTokenAsync()
@@ -84,7 +91,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         // Overload to support unit tests
         internal Task<AWSToken> ResolveAwsTokenAsync(CancellationTokenSource cancellationTokenSource)
         {
-            var p = _propertiesProvider.ProfileProperties;
+            var p = _configDetails.ProfileProperties;
 
             p.SsoSession = p.Name;
 
@@ -92,10 +99,12 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             // go through ProfileCredentialProviderFactory.CreateToolkitCredentials.
             var ssoRegion = RegionEndpoint.GetBySystemName(p.SsoRegion);
 
+            var credId = new MemoryCredentialIdentifier(p.Name);
+
             // SEPs SSO Credential Provider, SSO Login Token Flow, and Bearer Token Authorization and Token Providers
             // state that the OIDC client be created in the region provided by sso_region.
             var provider = SonoTokenProviderBuilder.Create()
-                .WithCredentialIdentifier(new MemoryCredentialIdentifier(p.Name))
+                .WithCredentialIdentifier(credId)
                 .WithIsBuilderId(false)
                 .WithOidcRegion(ssoRegion)
                 .WithSessionName(p.SsoSession)
@@ -142,13 +151,17 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 {
                     // Just ignore if the user cancelled, any exception here will revert back to the SSO configuration details screen
                 }
-                catch (InvalidRequestException ex)
+                catch (InvalidRequestException)
                 {
                     ToolkitContext.ToolkitHost.ShowError("Unable to connect.  Verify SSO Start URL is correct.");
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error("Unable to resolve IAM Identity Center token.", ex);
+                    TryInvalidateCredential(credId);
+
+                    var msg = "Unable to resolve IAM Identity Center token.";
+                    ToolkitContext.ToolkitHost.ShowError(msg);
+                    _logger.Error(msg, ex);
                 }
                 finally
                 {
@@ -161,6 +174,22 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                     resolverTask.Result.Value :
                     null;
             });
+        }
+
+        private bool TryInvalidateCredential(ICredentialIdentifier credentialIdentifier)
+        {
+            try
+            {
+                ToolkitContext.CredentialManager.Invalidate(credentialIdentifier);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Deliberately swallow the error as this is best effort, but write log
+                // to help with diagnosing a problem if necessary.
+                _logger.Error($"Failure trying to invalidate cached SSO token for {credentialIdentifier?.Id}.", ex);
+                return false;
+            }
         }
     }
 }

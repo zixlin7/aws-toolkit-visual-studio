@@ -22,9 +22,9 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 {
     public class PaginatedEnumerable<T> : List<T>, IPaginatedEnumerable<T> { }
 
-    public class SsoConnectedStepViewModelTests : IAsyncLifetime
+    public class SsoAwsCredentialConnectedStepViewModelTests : IAsyncLifetime
     {
-        private SsoConnectedStepViewModel _sut;
+        private SsoAwsCredentialConnectedStepViewModel _sut;
 
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
 
@@ -42,17 +42,17 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             _toolkitContextFixture.ToolkitContext.ConnectionManager = connectionManagerMock.Object;
             _toolkitContextFixture.CredentialManager.Setup(mock => mock.GetCredentialIdentifiers()).Returns(_credentialIdentifiers);
 
-            var ssoProfilePropertiesMock = new Mock<ISsoProfilePropertiesProvider>();
-            ssoProfilePropertiesMock.Setup(mock => mock.ProfileProperties).Returns(new ProfileProperties());
+            var configDetailsMock = new Mock<IConfigurationDetails>();
+            configDetailsMock.Setup(mock => mock.ProfileProperties).Returns(new ProfileProperties());
 
-            _addEditProfileWizardMock.Setup(m => m.SaveAsync(It.IsAny<ProfileProperties>(), It.IsAny<CredentialFileType>(),
-                It.IsAny<bool>())).Returns(Task.FromResult(new ActionResults().WithSuccess(true)));
+            _addEditProfileWizardMock.Setup(m => m.SaveAsync(It.IsAny<ProfileProperties>(), It.IsAny<CredentialFileType>()))
+                .Returns(Task.FromResult(new SaveAsyncResults(new ActionResults().WithSuccess(true), null)));
 
             _serviceProvider.SetService(_toolkitContextFixture.ToolkitContext);
             _serviceProvider.SetService(_addEditProfileWizardMock.Object);
-            _serviceProvider.SetService(ssoProfilePropertiesMock.Object);
+            _serviceProvider.SetService(configDetailsMock.Object, CredentialType.SsoProfile.ToString());
 
-            _sut = await ViewModelTests.BootstrapViewModel<SsoConnectedStepViewModel>(_serviceProvider);
+            _sut = await ViewModelTests.BootstrapViewModel<SsoAwsCredentialConnectedStepViewModel>(_serviceProvider);
         }
 
         public Task DisposeAsync()
@@ -68,7 +68,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             var sessionName = "mySsoSession";
             var profileName = $"{sessionName}-{roleName}-{accountId}";
 
-            _serviceProvider.RequireService<ISsoProfilePropertiesProvider>().ProfileProperties.Name = sessionName;
+            _serviceProvider.RequireService<IConfigurationDetails>(CredentialType.SsoProfile.ToString()).ProfileProperties.Name = sessionName;
             _credentialIdentifiers.Add(new SharedCredentialIdentifier(profileName));
 
             AddToSelectedRoleAccounts(roleName, accountId);
@@ -91,7 +91,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             var accountId = "123456789012";
             var sessionName = "mySsoSession";
 
-            _serviceProvider.RequireService<ISsoProfilePropertiesProvider>().ProfileProperties.Name = sessionName;
+            _serviceProvider.RequireService<IConfigurationDetails>(CredentialType.SsoProfile.ToString()).ProfileProperties.Name = sessionName;
 
             for (var i = 0; i < saveCount; ++i)
             {
@@ -100,8 +100,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
             _sut.SaveCommand.Execute(null);
 
-            _addEditProfileWizardMock.Verify(wiz => wiz.SaveAsync(It.IsAny<ProfileProperties>(), It.IsAny<CredentialFileType>(),
-                It.IsAny<bool>()), Times.Exactly(saveCount));
+            _addEditProfileWizardMock.Verify(wiz => wiz.SaveAsync(It.IsAny<ProfileProperties>(), It.IsAny<CredentialFileType>()), Times.Exactly(saveCount));
         }
 
         [Fact]
@@ -133,7 +132,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
             await _sut.LoadAccountRoles(token, region, ssoClientMock.Object);
 
-            Assert.Equal(_sut.SsoAccountRoles.Count, 2);
+            Assert.Equal(2, _sut.SsoAccountRoles.Count);
 
             _toolkitContextFixture.ToolkitHost.Verify(th => th.ShowError(It.IsAny<string>()), Times.Never());
         }

@@ -26,7 +26,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             return Task.FromResult(AccountId);
         }
 
-        public Task<string> GetAwsIdAsync(IAWSTokenProvider tokenProvider, CancellationToken cancellationToken)
+        public Task<string> GetCodeCatalystSessionIdentityAsync(IAWSTokenProvider tokenProvider, CancellationToken cancellationToken)
         {
             if (GetAwsIdAsyncThrows)
             {

@@ -18,39 +18,48 @@
         <converters:RelayValueConverter
             x:Key="ViewToViewModelConverter"
             ConvertHandler="{x:Static local:ViewModel.ViewToViewModel}" />
+        <converters:RelayValueConverter
+            x:Key="BoolToVisibilityConverter"
+            ConvertHandler="{x:Static local:ViewModel.BoolToVisibility}" />
     </UserControl.Resources>
     
     <StackPanel>
-        <WrapPanel Margin="0 9 0 0">
-            <TextBlock
-                HorizontalAlignment="Left"
-                TextWrapping="Wrap"
-                Text="Profile Type" />
-            <commonUi:HelpHyperlinkPopup>
-                <TextBlock 
-                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                    TextWrapping="WrapWithOverflow">
-                    <Run>The authentication method used to validate this profile's credentials.</Run>
-                    <commonUi:BrowserHyperLink
-                        NavigateUriFromStatic="{x:Static urls:AwsUrls.UserGuideAuth}">
-                        <Run Text="Learn more about authentication options" />
-                    </commonUi:BrowserHyperLink>
-                </TextBlock>
-            </commonUi:HelpHyperlinkPopup>
-        </WrapPanel>
-        <ComboBox
-            x:Name="auth_openConnectionSelector"
-            x:FieldModifier="private"
-            Margin="0 5 0 0"
-            DisplayMemberPath="CredentialTypeDescription"
-            ItemsSource="{Binding Items, ElementName=ConfigurationDetailsCardControl, Converter={StaticResource ViewToViewModelConverter}}"
-            SelectedValue="{Binding SelectedCredentialType}"
-            SelectedValuePath="CredentialType">
-            <behaviors:UiClickMetric.Configure>
-                <behaviors:UiClickMetricConfig
-                    EventName="DropDownOpened" />
-            </behaviors:UiClickMetric.Configure>
-        </ComboBox>
+        <StackPanel
+            Visibility="{Binding CredentialTypeSelectorVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+            <WrapPanel
+                Margin="0 9 0 0">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    TextWrapping="Wrap"
+                    Text="Profile Type" />
+                <commonUi:HelpHyperlinkPopup>
+                    <TextBlock 
+                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                        TextWrapping="WrapWithOverflow">
+                        <Run>The authentication method used to validate this profile's credentials.</Run>
+                        <commonUi:BrowserHyperLink
+                            NavigateUriFromStatic="{x:Static urls:AwsUrls.UserGuideAuth}">
+                            <Run Text="Learn more about authentication options" />
+                        </commonUi:BrowserHyperLink>
+                    </TextBlock>
+                </commonUi:HelpHyperlinkPopup>
+            </WrapPanel>
+
+            <ComboBox
+                x:Name="auth_openConnectionSelector"
+                x:FieldModifier="private"
+                Margin="0 5 0 0"
+                DisplayMemberPath="CredentialTypeDescription"
+                ItemsSource="{Binding Items, ElementName=ConfigurationDetailsCardControl, Converter={StaticResource ViewToViewModelConverter}}"
+                SelectedValue="{Binding SelectedCredentialType}"
+                SelectedValuePath="CredentialType"
+                Visibility="{Binding CredentialTypeSelectorVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <behaviors:UiClickMetric.Configure>
+                    <behaviors:UiClickMetricConfig
+                        EventName="DropDownOpened" />
+                </behaviors:UiClickMetric.Configure>
+            </ComboBox>
+        </StackPanel>
 
         <commonUi:CardControl
             x:Name="ConfigurationDetailsCardControl"

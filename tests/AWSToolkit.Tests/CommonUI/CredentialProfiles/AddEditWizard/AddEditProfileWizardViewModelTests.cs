@@ -70,9 +70,6 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
             await _sut.SaveAsync(p, CredentialFileType.Shared);
 
-            _addEditProfileWizardHostMock.Verify(mock => mock.NotifyConnectionSettingsChanged(
-                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName)));
-
             _toolkitContextFixture.CredentialSettingsManager.Verify(mock => mock.CreateProfileAsync(
                 It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),
                 It.Is<ProfileProperties>(props =>
@@ -80,11 +77,6 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
                     props.AccessKey == expectedAccessKey &&
                     props.SecretKey == expectedSecretKey &&
                     props.Region == expectedRegion),
-                It.IsAny<CancellationToken>()));
-
-            _toolkitContextFixture.ConnectionManager.Verify(mock => mock.ChangeConnectionSettingsAsync(
-                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),
-                It.Is<ToolkitRegion>(region => region.Id == expectedRegion),
                 It.IsAny<CancellationToken>()));
         }
 
@@ -111,9 +103,6 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
             await _sut.SaveAsync(p, CredentialFileType.Shared);
 
-            _addEditProfileWizardHostMock.Verify(mock => mock.NotifyConnectionSettingsChanged(
-                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName)));
-
             _toolkitContextFixture.CredentialSettingsManager.Verify(mock => mock.CreateProfileAsync(
                 It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),
                 It.Is<ProfileProperties>(props =>
@@ -124,11 +113,6 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
                     props.SsoRoleName == expectedSsoRoleName &&
                     props.SsoSession == expectedSsoSession &&
                     props.SsoStartUrl == expectedSsoStartUrl),
-                It.IsAny<CancellationToken>()));
-
-            _toolkitContextFixture.ConnectionManager.Verify(mock => mock.ChangeConnectionSettingsAsync(
-                It.Is<SharedCredentialIdentifier>(id => id.ProfileName == expectedName),
-                It.Is<ToolkitRegion>(region => region.Id == expectedRegion),
                 It.IsAny<CancellationToken>()));
         }
     }

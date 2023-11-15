@@ -22,8 +22,8 @@
                 x:Key="NegateBoolConverter"
                 ConvertHandler="{x:Static local:ViewModel.NegateBool}" />
             <converters:RelayValueConverter
-                x:Key="FalseToHiddenConverter"
-                ConvertHandler="{x:Static local:ViewModel.FalseToHidden}" />
+                x:Key="BoolToVisibilityConverter"
+                ConvertHandler="{x:Static local:ViewModel.BoolToVisibility}" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -36,7 +36,7 @@
         </Grid.RowDefinitions>
        
         <ProgressBar
-            Visibility="{Binding InProgress, Converter={StaticResource FalseToHiddenConverter}}"
+            Visibility="{Binding InProgress, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Hidden}"
             Grid.Row="0"
             Height="3"
             IsIndeterminate="True" />
@@ -62,6 +62,7 @@
             <StackPanel>
                 <commonUi:StatusBox 
                     Grid.Row="0"
+                    HorizontalAlignment="Left"
                     Status="{Binding Status}"
                     Margin="0 6 0 0">
                     <StackPanel Margin="6">
@@ -105,12 +106,19 @@
                         </wizBehaviors:Mvvm.ViewModel>
                     </local:SsoConnectingStepView>
 
-                    <local:SsoConnectedStepView
-                        Tag="{x:Static services:WizardStep.SsoConnected}">
+                    <local:SsoAwsCredentialConnectedStepView
+                        Tag="{x:Static services:WizardStep.SsoAwsCredentialConnected}">
                         <wizBehaviors:Mvvm.ViewModel>
-                            <local:SsoConnectedStepViewModel />
+                            <local:SsoAwsCredentialConnectedStepViewModel />
                         </wizBehaviors:Mvvm.ViewModel>
-                    </local:SsoConnectedStepView>
+                    </local:SsoAwsCredentialConnectedStepView>
+
+                    <local:SsoBearerTokenConnectedStepView
+                        Tag="{x:Static services:WizardStep.SsoBearerTokenConnected}">
+                        <wizBehaviors:Mvvm.ViewModel>
+                            <local:SsoBearerTokenConnectedStepViewModel />
+                        </wizBehaviors:Mvvm.ViewModel>
+                    </local:SsoBearerTokenConnectedStepView>
                 </commonUi:CardControl>
             </StackPanel>
         </ScrollViewer>

@@ -18,6 +18,8 @@ using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
 
+using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
@@ -26,13 +28,6 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
     {
         AddEditProfileWizards,
         GettingStartedCompleted
-    }
-
-    public enum FeatureType
-    {
-        NotSet,
-        CodeWhisperer,
-        AwsExplorer
     }
 
     public class RadioButtonEnumConverter : IValueConverter
@@ -138,10 +133,22 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             }
         }
 
-        public void NotifyConnectionSettingsChanged(ICredentialIdentifier credentialIdentifier)
+        public void ShowCompleted(ICredentialIdentifier credentialIdentifier)
         {
+            if (FeatureType == FeatureType.CodeWhisperer)
+            {
+                SetCodeWhispererCredentialIdentifier(credentialIdentifier);
+            }
+
             _gettingStartedCompleted.Status = true;
             ShowGettingStarted(credentialIdentifier);
+        }
+
+        private void SetCodeWhispererCredentialIdentifier(ICredentialIdentifier credentialIdentifier)
+        {
+            var settings = CodeWhispererSettings.Instance;
+            settings.CredentialIdentifier = credentialIdentifier.Id;
+            settings.Save();
         }
 
         private async Task ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier)

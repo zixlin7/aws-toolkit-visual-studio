@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.Runtime;
 using Amazon.SSO;
@@ -20,11 +21,13 @@ using log4net;
 
 namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 {
-    public class SsoConnectedStepViewModel : StepViewModel
+    public class SsoAwsCredentialConnectedStepViewModel : StepViewModel
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(SsoConnectedStepViewModel));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(SsoAwsCredentialConnectedStepViewModel));
 
-        private ISsoProfilePropertiesProvider _propertiesProvider => ServiceProvider.RequireService<ISsoProfilePropertiesProvider>();
+        private IAddEditProfileWizardHost _host => ServiceProvider.RequireService<IAddEditProfileWizardHost>();
+
+        private IConfigurationDetails _configDetails => ServiceProvider.RequireService<IConfigurationDetails>(CredentialType.SsoProfile.ToString());
 
         private IResolveAwsToken _resolveAwsToken => ServiceProvider.RequireService<IResolveAwsToken>();
 
@@ -99,8 +102,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 _addEditProfileWizard.InProgress = true;
                 AddButtonText = "Adding profile(s)...";
 
-                var p = _propertiesProvider.ProfileProperties.ShallowClone();
-                var changeConnectionSettings = true;
+                var p = _configDetails.ProfileProperties.ShallowClone();
+                SaveAsyncResults saveAsyncResults = null;
 
                 foreach (var accountRoles in SelectedSsoAccountRoles)
                 {
@@ -108,15 +111,24 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                     p.SsoRoleName = accountRoles.RoleName;
                     p.Name = ToProfileName(p.SsoRoleName, p.SsoAccountId);
 
-                    actionResults = await _addEditProfileWizard.SaveAsync(p, CredentialFileType.Shared, changeConnectionSettings);
+                    saveAsyncResults = await _addEditProfileWizard.SaveAsync(p, CredentialFileType.Shared);
+                    actionResults = saveAsyncResults.ActionResults;
+
                     if (!actionResults.Success)
                     {
                         throw new Exception($"Cannot save profile {p.Name}", actionResults.Exception);
                     }
 
                     ++newConnectionCount;
-                    changeConnectionSettings = false; // If multiple profiles created, just set the first one in AWS Explorer
                 }
+
+                if (newConnectionCount == 0 || saveAsyncResults == null)
+                {
+                    throw new Exception($"No profiles found to save.");
+                }
+
+                await _addEditProfileWizard.ChangeAwsExplorerConnectionAsync(saveAsyncResults.CredentialIdentifier);
+                _host.ShowCompleted(saveAsyncResults.CredentialIdentifier);
             }
             catch (Exception ex)
             {
@@ -145,7 +157,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         private string ToProfileName(string ssoRoleName, string ssoAccountId)
         {
-            return $"{_propertiesProvider.ProfileProperties.Name}-{ssoRoleName}-{ssoAccountId}";
+            return $"{_configDetails.ProfileProperties.Name}-{ssoRoleName}-{ssoAccountId}";
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -174,7 +186,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 return;
             }
 
-            var ssoRegion = RegionEndpoint.GetBySystemName(_propertiesProvider.ProfileProperties.SsoRegion);
+            var ssoRegion = RegionEndpoint.GetBySystemName(_configDetails.ProfileProperties.SsoRegion);
             await LoadAccountRoles(token.Token, ssoRegion);
         }
 

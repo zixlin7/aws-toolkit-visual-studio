@@ -569,6 +569,19 @@ namespace Amazon.AWSToolkit.Credentials.Core
             var credentialType = properties.GetCredentialType();
             switch (credentialType)
             {
+                case CredentialType.BearerToken:
+                    options = new CredentialProfileOptions
+                    {
+                        SsoRegion = properties.SsoRegion,
+                        SsoSession = properties.SsoSession,
+                        SsoStartUrl = properties.SsoStartUrl
+                    };
+
+                    if (properties.SsoRegistrationScopes != null)
+                    {
+                        options.SsoRegistrationScopes = string.Join(",", properties.SsoRegistrationScopes);
+                    }
+                    break;
                 case CredentialType.SsoProfile:
                     options = new CredentialProfileOptions
                     {
