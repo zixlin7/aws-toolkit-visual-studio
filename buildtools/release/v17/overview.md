@@ -1,8 +1,16 @@
-This edition of the toolkit is for Visual Studio 2022. There is a separate [AWS Toolkit extension for Visual Studio 2017 and 2019](https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.AWSToolkitforVisualStudio2017).
+This edition of the toolkit is for Visual Studio 2022. There is a separate [AWS Toolkit extension for Visual Studio 2019](https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.AWSToolkitforVisualStudio2017).
 
 For issues or questions about this extension please open a GitHub issue at https://github.com/aws/aws-toolkit-visual-studio.
 
-## Overview
+## [Amazon CodeWhisperer](https://aws.amazon.com/codewhisperer/) (Preview)
+
+Build applications faster with your AI coding companion.
+
+* **Real-time code suggestions** - automatic code recommendations for C#
+* **Optimized for use with AWS services** - code suggestions are optimized for AWS APIs including Amazon Elastic Compute Cloud (Amazon EC2), AWS Lambda, and Amazon Simple Storage Service (Amazon S3)
+* **Code responsibly** - built-in reference tracker that detects whether a code suggestion might resemble open source training data and can flag such suggestions
+
+## [AWS Toolkit for Visual Studio](https://aws.amazon.com/visualstudio/)
 
 [The AWS Toolkit for Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html) improves development workflows by making AWS services available directly from your Visual Studio environment. 
 
