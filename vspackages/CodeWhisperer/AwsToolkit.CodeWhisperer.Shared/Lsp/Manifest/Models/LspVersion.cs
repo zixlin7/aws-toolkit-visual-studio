@@ -26,6 +26,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models
         /// <summary>
         /// The attribution notice url associated with the language server version
         /// </summary>
-        public string License { get; set; }
+        public string ThirdPartyLicenses { get; set; }
     }
 }

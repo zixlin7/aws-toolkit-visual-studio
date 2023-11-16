@@ -96,7 +96,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var hasValidLocalCache = HasValidLocalCache(downloadCachePath, targetContent);
                 if (hasValidLocalCache)
                 {
-                    ShowLicenseMessage(latestCompatibleLspVersion.License);
+                    ShowLicenseMessage(latestCompatibleLspVersion.ThirdPartyLicenses);
                     ShowMessage(
                         $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} from local cache location: {downloadCachePath}");
 
@@ -114,7 +114,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                     await DownloadFromRemoteAsync(targetContent, latestCompatibleLspVersion.ServerVersion, token);
                 if (downloadResult)
                 {
-                    ShowLicenseMessage(latestCompatibleLspVersion.License);
+                    ShowLicenseMessage(latestCompatibleLspVersion.ThirdPartyLicenses);
                     ShowMessage(
                         $"Installing {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} to: {downloadCachePath}");
 
@@ -140,7 +140,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var version = Path.GetFileName(Path.GetDirectoryName(downloadCachePath));
                 var fallbackLspVersion = _manifestSchema.Versions.FirstOrDefault(x => string.Equals(version, x.ServerVersion));
 
-                ShowLicenseMessage(fallbackLspVersion?.License);
+                ShowLicenseMessage(fallbackLspVersion?.ThirdPartyLicenses);
                 ShowMessage(
                     $"Unable to install {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion}. Launching a previous version from: {fallbackPath}");
 
