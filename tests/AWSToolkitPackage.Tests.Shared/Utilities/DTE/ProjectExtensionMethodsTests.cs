@@ -1,63 +1,83 @@
-﻿using System;
+﻿#if VS2022_OR_LATER
+using System;
+using System.Threading.Tasks;
+
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
+
 using EnvDTE;
+
+using Microsoft.VisualStudio.Sdk.TestFramework;
 using Microsoft.VisualStudio.Shell;
+
 using Moq;
+
 using Xunit;
 
 namespace AWSToolkitPackage.Tests.Utilities.DTE
 {
-    [Collection(UIThreadFixtureCollection.CollectionName)]
+    [Collection(TestProjectMockCollection.CollectionName)]
     public class ProjectExtensionMethodsTests
     {
-        private readonly UIThreadFixture _fixture;
         private readonly Mock<Project> _projectMock = new Mock<Project>();
 
-        public ProjectExtensionMethodsTests(UIThreadFixture fixture)
+        public ProjectExtensionMethodsTests(GlobalServiceProvider globalServiceProvider)
         {
-            _fixture = fixture;
+            globalServiceProvider.Reset();
         }
 
         [Fact]
-        public void SafeGetFileNameHappyPath()
+        public async Task SafeGetFileNameHappyPath()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             _projectMock.Setup(x => x.FileName).Returns("foo");
             Assert.Equal("foo", _projectMock.Object.SafeGetFileName("bar"));
         }
 
         [Fact]
-        public void SafeGetFileNameReturnsDefault()
+        public async Task SafeGetFileNameReturnsDefault()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             _projectMock.Setup(x => x.FileName).Returns(() => throw new Exception("nope"));
             Assert.Equal("bar", _projectMock.Object.SafeGetFileName("bar"));
         }
 
         [Fact]
-        public void SafeGetFullNameHappyPath()
+        public async Task SafeGetFullNameHappyPath()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             _projectMock.Setup(x => x.FullName).Returns("foo");
             Assert.Equal("foo", _projectMock.Object.SafeGetFullName("bar"));
         }
 
         [Fact]
-        public void SafeGetFullNameReturnsDefault()
+        public async Task SafeGetFullNameReturnsDefault()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             _projectMock.Setup(x => x.FullName).Returns(() => throw new Exception("nope"));
             Assert.Equal("bar", _projectMock.Object.SafeGetFullName("bar"));
         }
 
         [Fact]
-        public void SafeGetUniqueNameHappyPath()
+        public async Task SafeGetUniqueNameHappyPath()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             _projectMock.Setup(x => x.UniqueName).Returns("foo");
             Assert.Equal("foo", _projectMock.Object.SafeGetUniqueName("bar"));
         }
 
         [Fact]
-        public void SafeGetUniqueNameReturnsDefault()
+        public async Task SafeGetUniqueNameReturnsDefault()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             _projectMock.Setup(x => x.UniqueName).Returns(() => throw new Exception("nope"));
             Assert.Equal("bar", _projectMock.Object.SafeGetUniqueName("bar"));
         }
     }
 }
+#endif

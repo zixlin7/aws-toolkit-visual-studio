@@ -1,13 +1,20 @@
-﻿using System;
+﻿#if VS2022_OR_LATER
+using System;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI.Images;
 using Amazon.AWSToolkit.VisualStudio.Images;
 
 using AWSToolkit.Tests.Common.VS;
 
+using AWSToolkitPackage.Tests.Utilities;
+
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Sdk.TestFramework;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 
 using Moq;
 
@@ -15,11 +22,10 @@ using Xunit;
 
 namespace AWSToolkitPackage.Tests.Images
 {
-    [Collection(UIThreadFixtureCollection.CollectionName)]
+    [Collection(TestProjectMockCollection.CollectionName)]
     public class VsImageProviderTests
     {
-        private readonly UIThreadFixture _fixture;
-
+        private readonly JoinableTaskFactory _taskFactory;
         private readonly Mock<IServiceProvider> _serviceProvider = new Mock<IServiceProvider>();
         private readonly Mock<IVsImageService2> _imageService = new Mock<IVsImageService2>();
         private readonly Mock<IVsUIObject> _image = new Mock<IVsUIObject>();
@@ -27,21 +33,29 @@ namespace AWSToolkitPackage.Tests.Images
 
         private readonly VsImageProvider _sut;
 
-        public VsImageProviderTests(UIThreadFixture fixture)
+        public VsImageProviderTests(GlobalServiceProvider globalServiceProvider)
         {
-            _fixture = fixture;
+            globalServiceProvider.Reset();
+
+            _taskFactory = ThreadHelper.JoinableTaskContext.Factory;
 
             _serviceProvider.Setup(mock => mock.GetService(It.IsAny<Type>())).Returns(_imageService.Object);
             _imageService.Setup(mock => mock.GetImage(It.IsAny<ImageMoniker>(), It.IsAny<ImageAttributes>()))
                 .Returns(_image.Object);
             _image.Setup(mock => mock.get_Data(out _imageGetDataObject));
 
-            _sut = new VsImageProvider(_serviceProvider.Object);
+            _sut = ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return new VsImageProvider(_serviceProvider.Object);
+            });
         }
 
         [Fact]
-        public void GetImage()
+        public async Task GetImage()
         {
+            await _taskFactory.SwitchToMainThreadAsync();
+
             ImageMoniker expectedImageMoniker = KnownMonikers.Edit;
 
             var image = _sut.GetImage(VsKnownImages.Edit, 16);
@@ -56,8 +70,10 @@ namespace AWSToolkitPackage.Tests.Images
 
 
         [Fact]
-        public void GetImage_WithGuid()
+        public async Task GetImage_WithGuid()
         {
+            await _taskFactory.SwitchToMainThreadAsync();
+
             ImageMoniker expectedImageMoniker = KnownMonikers.Edit;
 
             var image = _sut.GetImage(expectedImageMoniker.Guid, expectedImageMoniker.Id, 16);
@@ -71,3 +87,4 @@ namespace AWSToolkitPackage.Tests.Images
         }
     }
 }
+#endif

@@ -1,7 +1,14 @@
-﻿using Amazon.AWSToolkit.Tests.Common.Settings;
+﻿#if VS2022_OR_LATER
+using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Tests.Common.Settings;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.SupportedVersion;
 
+using AWSToolkitPackage.Tests.Utilities;
+
+using Microsoft.VisualStudio.Sdk.TestFramework;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Moq;
@@ -10,26 +17,32 @@ using Xunit;
 
 namespace AWSToolkitPackage.Tests.SupportedVersion
 {
-    [Collection(UIThreadFixtureCollection.CollectionName)]
+    [Collection(TestProjectMockCollection.CollectionName)]
     public class SupportedVersionInfoBarTests
     {
-        private readonly UIThreadFixture _fixture;
         private readonly SupportedVersionInfoBar _sut;
         private readonly Mock<IVsInfoBarUIElement> _element = new Mock<IVsInfoBarUIElement>();
         private readonly FakeToolkitSettings _toolkitSettings = FakeToolkitSettings.Create();
 
-        public SupportedVersionInfoBarTests(UIThreadFixture fixture)
+        public SupportedVersionInfoBarTests(GlobalServiceProvider globalServiceProvider)
         {
-             _fixture = fixture;
-             var sampleVersionStrategy = CreateSampleVersionStrategy();
-             _sut = new SupportedVersionInfoBar(sampleVersionStrategy);
+            globalServiceProvider.Reset();
+            var sampleVersionStrategy = CreateSampleVersionStrategy();
+            _sut = new SupportedVersionInfoBar(sampleVersionStrategy);
             _element.Setup(x => x.Advise(It.IsAny<IVsInfoBarUIEvents>(), out It.Ref<uint>.IsAny));
-            _sut.RegisterInfoBarEvents(_element.Object);
+
+            ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                _sut.RegisterInfoBarEvents(_element.Object);
+            });
         }
 
         [Fact]
-        public void DontShowAgainClicked()
+        public async Task DontShowAgainClicked()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var actionItem = new Mock<IVsInfoBarActionItem>();
             actionItem.Setup(mock => mock.ActionContext).Returns(SupportedVersionInfoBar.ActionContexts.DontShowAgain);
 
@@ -47,3 +60,4 @@ namespace AWSToolkitPackage.Tests.SupportedVersion
         }
     }
 }
+#endif
