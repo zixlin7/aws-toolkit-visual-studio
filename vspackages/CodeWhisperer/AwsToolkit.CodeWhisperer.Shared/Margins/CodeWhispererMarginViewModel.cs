@@ -60,6 +60,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 
             ViewUserGuide = new ViewUserGuideCommand(_toolkitContextProvider);
             GettingStarted = new GettingStartedCommand(_toolkitContextProvider);
+            SendFeedback = new SendCodeWhispererFeedbackCommand(_toolkitContextProvider);
 
             GenerateSuggestions = new GetSuggestionsCommand(textView, _manager, suggestionUiManager, _toolkitContextProvider);
 
@@ -164,6 +165,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             get => _gettingStarted;
             set => SetProperty(ref _gettingStarted, value);
+        }
+
+        private ICommand _sendFeedback;
+        public ICommand SendFeedback
+        {
+            get => _sendFeedback;
+            set => SetProperty(ref _sendFeedback, value);
         }
 
         private string _generateSuggestionsKeyBinding;

@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SecurityScanCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SendCodeWhispererFeedbackCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommand.cs" />

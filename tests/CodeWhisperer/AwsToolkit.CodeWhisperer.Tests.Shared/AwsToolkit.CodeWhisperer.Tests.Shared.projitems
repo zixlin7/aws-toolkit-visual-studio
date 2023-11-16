@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\FakeVsCommandRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\SendCodeWhispererFeedbackCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ViewCodeReferencesCommandTests.cs" />

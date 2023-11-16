@@ -67,6 +67,7 @@
                     <Separator />
                     <MenuItem Header="View User Guide" Command="{Binding ViewUserGuide}" />
                     <MenuItem Header="Getting Started" Command="{Binding GettingStarted}" />
+                    <MenuItem Header="Submit CodeWhisperer Feedback..." Command="{Binding SendFeedback}" CommandParameter="CodeWhisperer" />
                     <MenuItem Header="Options..." Command="{Binding ViewOptions}" />
                     <Separator />
                     <MenuItem Header="Sign Out" Command="{Binding SignOut}" >
