@@ -150,7 +150,16 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             ConnectToIamIdentityCenterCommand = new RelayCommand(CanConnectToIamIdentityCenter, ConnectToIamIdentityCenter);
 
             SelectedCredentialFileType = CredentialFileType.Shared;
-            CredentialIdentifierSelectorVisible = _addEditProfileWizard.FeatureType == FeatureType.CodeWhisperer;
+
+            if (_addEditProfileWizard.FeatureType == FeatureType.CodeWhisperer)
+            {
+                CredentialIdentifierSelectorVisible = true;
+                ProfileProperties.SsoRegistrationScopes = SonoProperties.CodeWhispererScopes;
+            }
+            else
+            {
+                CredentialIdentifierSelectorVisible = false;
+            }            
         }
 
         protected override IEnumerable<ICredentialIdentifier> FilterCredentialIdentifiers(IEnumerable<ICredentialIdentifier> credentialIdentifiers)

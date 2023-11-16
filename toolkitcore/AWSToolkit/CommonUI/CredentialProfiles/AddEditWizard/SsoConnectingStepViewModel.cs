@@ -103,15 +103,21 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
             // SEPs SSO Credential Provider, SSO Login Token Flow, and Bearer Token Authorization and Token Providers
             // state that the OIDC client be created in the region provided by sso_region.
-            var provider = SonoTokenProviderBuilder.Create()
+            var builder = SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(credId)
                 .WithIsBuilderId(false)
                 .WithOidcRegion(ssoRegion)
                 .WithSessionName(p.SsoSession)
                 .WithStartUrl(p.SsoStartUrl)
                 .WithTokenProviderRegion(ssoRegion)
-                .WithToolkitShell(ToolkitContext.ToolkitHost)
-                .Build();
+                .WithToolkitShell(ToolkitContext.ToolkitHost);
+
+            if (_addEditProfileWizard.FeatureType == FeatureType.CodeWhisperer)
+            {
+                builder.WithScopes(p.SsoRegistrationScopes);
+            }
+
+            var provider = builder.Build();
 
             return Task.Run(async () =>
             {
@@ -154,6 +160,10 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 catch (InvalidRequestException)
                 {
                     ToolkitContext.ToolkitHost.ShowError("Unable to connect.  Verify SSO Start URL is correct.");
+                }
+                catch (InvalidGrantException)
+                {
+                    ToolkitContext.ToolkitHost.ShowError("Invalid grant.  Verify SSO Start URL is correct.");
                 }
                 catch (Exception ex)
                 {

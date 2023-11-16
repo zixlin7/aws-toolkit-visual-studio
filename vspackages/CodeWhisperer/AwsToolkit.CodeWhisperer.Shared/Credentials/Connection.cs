@@ -111,7 +111,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         public async Task SignInAsync()
         {
-            var credentialIdentifier = PromptUserForCredentialId();
+            var credentialIdentifier = await PromptUserForCredentialIdAsync();
 
             if (credentialIdentifier != null)
             {
@@ -184,9 +184,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// This function isolates the prompt and UI related code, so that we can stub it in testing.
         /// </remarks>
         /// <returns>User-selected credentialId, null if user cancelled.</returns>
-        protected virtual ICredentialIdentifier PromptUserForCredentialId()
+        protected virtual async Task<ICredentialIdentifier> PromptUserForCredentialIdAsync()
         {
-            var viewModel = new CredentialSelectionDialogViewModel(_toolkitContextProvider);
+            var viewModel = new CredentialSelectionDialogViewModel(_toolkitContextProvider, _settingsRepository);
+            await viewModel.InitializeAsync();
             var dlg = new CredentialSelectionDialog
             {
                 DataContext = viewModel

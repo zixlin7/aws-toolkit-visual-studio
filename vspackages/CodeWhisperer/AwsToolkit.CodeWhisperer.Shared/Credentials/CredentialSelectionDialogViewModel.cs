@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.CodeWhisperer.Commands;
+using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
@@ -18,22 +19,43 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 {
     internal class CredentialSelectionDialogViewModel : BaseModel
     {
+        private class OverridenGettingStartedCommand : GettingStartedCommand
+        {
+            private readonly CredentialSelectionDialogViewModel _parent;
+
+            public OverridenGettingStartedCommand(IToolkitContextProvider toolkitContextProvider,
+                CredentialSelectionDialogViewModel parent)
+                : base(toolkitContextProvider)
+            {
+                _parent = parent;
+            }
+
+            protected override async Task ExecuteCoreAsync(object parameter)
+            {
+                await base.ExecuteCoreAsync(parameter);
+                _parent.CancelDialogCommand.Execute(null);
+            }
+        }
+
         private static readonly ILog _logger = LogManager.GetLogger(typeof(CredentialSelectionDialogViewModel));
 
         private readonly IToolkitContextProvider _toolkitContextProvider;
 
-        public CredentialSelectionDialogViewModel(IToolkitContextProvider toolkitContextProvider)
+        private readonly ICodeWhispererSettingsRepository _settingsRepository;
+
+        public CredentialSelectionDialogViewModel(
+            IToolkitContextProvider toolkitContextProvider,
+            ICodeWhispererSettingsRepository settingsRepository)
         {
             _toolkitContextProvider = toolkitContextProvider;
+            _settingsRepository = settingsRepository;
 
-            LoadCredentialIdentifiers();
-           
-            CreateCredentialProfileCommand = new AsyncRelayCommand(ExecuteCreateCredentialProfileAsync);
+            CreateCredentialProfileCommand = new OverridenGettingStartedCommand(_toolkitContextProvider, this);
             SubmitDialogCommand = new RelayCommand(CanExecuteSubmitDialog, ExecuteSubmitDialog);
             CancelDialogCommand = new RelayCommand(ExecuteCancelDialog);
         }
 
-        private void LoadCredentialIdentifiers()
+        public async Task InitializeAsync()
         {
             var tkc = _toolkitContextProvider.GetToolkitContext();
             var csm = tkc.CredentialSettingsManager;
@@ -50,7 +72,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 })
                 .OrderBy(id => id.ProfileName));
 
-            SelectedCredentialIdentifier = CredentialIdentifiers.FirstOrDefault();
+            var settings = await _settingsRepository.GetAsync();
+            SelectedCredentialIdentifier = CredentialIdentifiers.Where(ci => ci.Id == settings.CredentialIdentifier).FirstOrDefault()
+                ?? CredentialIdentifiers.FirstOrDefault();
         }
 
         public ObservableCollection<ICredentialIdentifier> CredentialIdentifiers { get; } = new ObservableCollection<ICredentialIdentifier>();
@@ -71,31 +95,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             private set => SetProperty(ref _dialogResult, value);
         }
 
-        #region CreateCredentialProfileCommand
         public ICommand CreateCredentialProfileCommand { get; }
-
-        private async Task ExecuteCreateCredentialProfileAsync(object parameter)
-        {
-            const string commandName = "AWSToolkit.GettingStarted";
-
-            var commandId = await _toolkitContextProvider.GetToolkitContext()
-                .ToolkitHost.QueryCommandAsync(commandName);
-
-            if (commandId != null)
-            {
-                await commandId.ExecuteAsync();
-                CancelDialogCommand.Execute(null);
-            }
-            else
-            {
-                var msg = "Unable to create a profile.  Try Getting Started.";
-                _toolkitContextProvider.GetToolkitContext()?.ToolkitHost
-                    .ShowError(msg);
-                _logger.Error($"Unable to find {commandName} command.");
-                _logger.Warn(msg);
-            }
-        }
-        #endregion
 
         #region SubmitDialogCommand
         public ICommand SubmitDialogCommand { get; }

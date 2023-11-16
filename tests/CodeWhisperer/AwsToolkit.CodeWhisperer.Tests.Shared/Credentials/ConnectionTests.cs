@@ -49,9 +49,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         {
         }
 
-        protected override ICredentialIdentifier PromptUserForCredentialId()
+        protected override Task<ICredentialIdentifier> PromptUserForCredentialIdAsync()
         {
-            return CredentialIdPromptResponse;
+            return Task.FromResult(CredentialIdPromptResponse);
         }
     }
 

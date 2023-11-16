@@ -65,6 +65,13 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             set => SetProperty(ref _featureType, value);
         }
 
+        public bool IsCodeWhispererSupported =>
+#if VS2022_OR_LATER
+                true;
+#else
+                false;
+#endif
+
         private ICommand _openAwsExplorerLearnMoreCommand;
 
         public ICommand OpenAwsExplorerLearnMoreCommand
@@ -115,6 +122,11 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             OpenAwsExplorerLearnMoreCommand = openUrl(AwsUrls.UserGuideWorkWithAws);
             OpenCodeWhispererLearnMoreCommand = openUrl(AwsUrls.CodeWhispererOverview);
             OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);
+
+            if (!IsCodeWhispererSupported)
+            {
+                FeatureType = FeatureType.AwsExplorer;
+            }
 
             await ShowInitialCardAsync();
         }

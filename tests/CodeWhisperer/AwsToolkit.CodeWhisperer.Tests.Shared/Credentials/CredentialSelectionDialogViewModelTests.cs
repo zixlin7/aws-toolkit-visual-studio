@@ -1,20 +1,23 @@
-﻿using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+﻿using System.Threading.Tasks;
+
+using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.Settings;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
-using Moq;
-
 using Xunit;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
 {
-    public class CredentialSelectionDialogViewModelTests
+    public class CredentialSelectionDialogViewModelTests : IAsyncLifetime
     {
         private readonly CredentialSelectionDialogViewModel _sut;
 
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
+
+        private readonly FakeCodeWhispererSettingsRepository _settingsRepository = new FakeCodeWhispererSettingsRepository();
 
         private readonly ICredentialIdentifier[] _credIds = new[]
         {
@@ -44,7 +47,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
                 _toolkitContextFixture.DefineCredentialProperties(_credIds[i], _profiles[i]);
             }
 
-            _sut = new CredentialSelectionDialogViewModel(_toolkitContextFixture.ToolkitContextProvider);
+            _sut = new CredentialSelectionDialogViewModel(_toolkitContextFixture.ToolkitContextProvider, _settingsRepository);
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _sut.InitializeAsync();
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         [Fact]

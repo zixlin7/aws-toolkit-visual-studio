@@ -6,8 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.VisualStudio.GettingStarted"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
+    xmlns:wizard="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;assembly=AWSToolkit"
     xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;assembly=AWSToolkit"
     xmlns:wizServices="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
@@ -16,6 +18,9 @@
     mc:Ignorable="d">
     <commonUi:BaseAWSUserControl.Resources>
         <ResourceDictionary>
+            <converters:RelayValueConverter
+                x:Key="BoolToVisibilityConverter"
+                ConvertHandler="{x:Static wizard:ViewModel.BoolToVisibility}" />
             <commonUi:ToolkitImages x:Key="ToolkitImages" />
             <commonUi:VsImages x:Key="VsImages" />
             <local:RadioButtonEnumConverter
@@ -132,63 +137,66 @@
                         Margin="0 6 0 0"
                         Text="You can return to this page at any time to set up another feature (Extensions > AWS Toolkit)." />
 
-                    <Border
+                    <StackPanel
                         Grid.Row="2"
                         Grid.Column="0"
-                        Margin="0 6 6 0">
-                        <RadioButton
-                            GroupName="FeatureType"
-                            IsChecked="{Binding FeatureType, Converter={StaticResource RadioButtonEnumConverter}, ConverterParameter={x:Static wizServices:FeatureType.CodeWhisperer}}">
-                            <StackPanel>
-                                <TextBlock 
-                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
-                                    Text="Amazon CodeWhisperer" />
-                                <TextBlock
-                                    Margin="0 6 0 0"
-                                    TextWrapping="WrapWithOverflow">
-                                    Build applications faster with your AI coding
-                                    <LineBreak />
-                                    companion.
-                                </TextBlock>
-                                <TextBlock
-                                    Margin="0 6 0 0">
-                                    <Hyperlink
-                                        Command="{Binding OpenCodeWhispererLearnMoreCommand}">
-                                        Learn more
-                                    </Hyperlink>
-                                </TextBlock>
-                            </StackPanel>
-                        </RadioButton>
-                    </Border>
+                        Grid.ColumnSpan="2"
+                        Orientation="Horizontal">
+                        <Border
+                            Margin="0 6 6 0"
+                            Visibility="{Binding IsCodeWhispererSupported, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <RadioButton
+                                GroupName="FeatureType"
+                                IsChecked="{Binding FeatureType, Converter={StaticResource RadioButtonEnumConverter}, ConverterParameter={x:Static wizServices:FeatureType.CodeWhisperer}}">
+                                <StackPanel>
+                                    <TextBlock 
+                                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                                        Text="Amazon CodeWhisperer" />
+                                    <TextBlock
+                                        Margin="0 6 0 0"
+                                        TextWrapping="WrapWithOverflow">
+                                        Build applications faster with your AI coding
+                                        <LineBreak />
+                                        companion.
+                                    </TextBlock>
+                                    <TextBlock
+                                        Margin="0 6 0 0">
+                                        <Hyperlink
+                                            Command="{Binding OpenCodeWhispererLearnMoreCommand}">
+                                            Learn more
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </RadioButton>
+                        </Border>
 
-                    <Border
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        Margin="6 6 0 0">
-                        <RadioButton
-                            GroupName="FeatureType"
-                            IsChecked="{Binding FeatureType, Converter={StaticResource RadioButtonEnumConverter}, ConverterParameter={x:Static wizServices:FeatureType.AwsExplorer}}">
-                            <StackPanel>
-                                <TextBlock 
-                                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
-                                    Text="AWS Explorer" />
-                                <TextBlock
-                                    Margin="0 6 0 0"
-                                    TextWrapping="WrapWithOverflow">
-                                    View, modify, and deploy AWS Resources.
-                                    <LineBreak />
-                                    Work with S3, Lambda, CloudWatch, and more.
-                                </TextBlock>
-                                <TextBlock
-                                    Margin="0 6 0 0">
-                                    <Hyperlink
-                                        Command="{Binding OpenAwsExplorerLearnMoreCommand}">
-                                        Learn more
-                                    </Hyperlink>
-                                </TextBlock>
-                            </StackPanel>
-                        </RadioButton>
-                    </Border>
+                        <Border
+                            Margin="6 6 0 0">
+                            <RadioButton
+                                GroupName="FeatureType"
+                                IsChecked="{Binding FeatureType, Converter={StaticResource RadioButtonEnumConverter}, ConverterParameter={x:Static wizServices:FeatureType.AwsExplorer}}">
+                                <StackPanel>
+                                    <TextBlock 
+                                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading3FontSizeKey}}"
+                                        Text="AWS Explorer" />
+                                    <TextBlock
+                                        Margin="0 6 0 0"
+                                        TextWrapping="WrapWithOverflow">
+                                        View, modify, and deploy AWS Resources.
+                                        <LineBreak />
+                                        Work with S3, Lambda, CloudWatch, and more.
+                                    </TextBlock>
+                                    <TextBlock
+                                        Margin="0 6 0 0">
+                                        <Hyperlink
+                                            Command="{Binding OpenAwsExplorerLearnMoreCommand}">
+                                            Learn more
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </RadioButton>
+                        </Border>
+                    </StackPanel>
 
                     <commonUi:CardControl 
                         Grid.Row="4"
