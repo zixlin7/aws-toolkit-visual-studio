@@ -1,12 +1,17 @@
-﻿using System;
+﻿#if VS2022_OR_LATER
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using Amazon.AWSToolkit.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Lambda;
 
+using AWSToolkitPackage.Tests.Utilities;
+
 using EnvDTE;
 
+using Microsoft.VisualStudio.Sdk.TestFramework;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
 using Moq;
@@ -17,20 +22,17 @@ using Task = System.Threading.Tasks.Task;
 
 namespace AWSToolkitPackage.Tests.Lambda
 {
-    [Collection(UIThreadFixtureCollection.CollectionName)]
+    [Collection(TestProjectMockCollection.CollectionName)]
     public class EnsureLambdaTesterConfigured 
     {
-        private readonly UIThreadFixture _fixture;
         private readonly Mock<IAWSLambda> _lambdaPluginMock = new Mock<IAWSLambda>();
         private readonly JoinableTaskFactory _taskFactory;
 
-        public EnsureLambdaTesterConfigured(UIThreadFixture fixture)
+        public EnsureLambdaTesterConfigured(GlobalServiceProvider globalServiceProvider)
         {
-            _fixture = fixture;
-#pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
-            var taskCollection = new JoinableTaskContext();
-#pragma warning restore VSSDK005
-            _taskFactory = taskCollection.Factory;
+            globalServiceProvider.Reset();
+
+            _taskFactory = ThreadHelper.JoinableTaskContext.Factory;
         }
 
         [Fact]
@@ -114,3 +116,4 @@ namespace AWSToolkitPackage.Tests.Lambda
         }
     }
 }
+#endif

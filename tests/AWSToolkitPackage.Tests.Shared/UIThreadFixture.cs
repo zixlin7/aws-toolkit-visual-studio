@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 using Microsoft.VisualStudio.Shell;
 
@@ -36,6 +37,8 @@ namespace AWSToolkitPackage.Tests
     }
 
     // All tests in a session use the same UI fixture. Otherwise disparate test classes can fail when run concurrently.
+    // TODO : IDE-12066 - Remove this file after support for VS2019 is removed.
+    [Obsolete("Use TestProjectMockCollection -- This class should only be used if VS 2019 test coverage is absolutely required.")]
     [CollectionDefinition(CollectionName)]
     public class UIThreadFixtureCollection : ICollectionFixture<UIThreadFixture>
     {

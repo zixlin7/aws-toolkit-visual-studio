@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UseCultureAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\DteVersionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\ProjectExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\TestProjectMockCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\WindowFrameNotificationControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
