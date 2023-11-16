@@ -1,12 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.TestUtilities;
+using Amazon.AWSToolkit.Util;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
 using FluentAssertions;
@@ -143,25 +146,34 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         [Fact]
         public async Task GetSuggestionsAsync()
         {
-            _suggestionProvider.Suggestions.Add(new Suggestion());
+            var invocationTime = DateTime.Now.AsUnixMilliseconds();
+            _suggestionProvider.SuggestionSession.SessionId = "sample-sessionId";
+            _suggestionProvider.SuggestionSession.Suggestions.Add(new Suggestion());
+            _suggestionProvider.SuggestionSession.RequestedAtEpoch = invocationTime;
 
-            var suggestions = await _sut.GetSuggestionsAsync(new GetSuggestionsRequest());
+            var suggestionSession = await _sut.GetSuggestionsAsync(new GetSuggestionsRequest());
 
-            suggestions.Should().BeEquivalentTo(_suggestionProvider.Suggestions);
+            suggestionSession.Should().BeEquivalentTo(_suggestionProvider.SuggestionSession);
+            suggestionSession.SessionId.Should().BeEquivalentTo("sample-sessionId");
+            suggestionSession.RequestedAtEpoch.Should().Be(invocationTime);
         }
 
         [Fact]
         public async Task GetSuggestionsAsync_WhenPaused()
         {
-            _suggestionProvider.Suggestions.Add(new Suggestion());
+            _suggestionProvider.SuggestionSession.SessionId = "sample-sessionId";
+            _suggestionProvider.SuggestionSession.Suggestions.Add(new Suggestion());
+            _suggestionProvider.SuggestionSession.RequestedAtEpoch = DateTime.Now.AsUnixMilliseconds();
 
             await _sut.PauseAutoSuggestAsync();
-            var suggestions = await _sut.GetSuggestionsAsync(new GetSuggestionsRequest()
+            var suggestionSession = await _sut.GetSuggestionsAsync(new GetSuggestionsRequest()
             {
                 IsAutoSuggestion = true,
             });
 
-            suggestions.Should().BeEmpty();
+            suggestionSession.SessionId.Should().BeNullOrWhiteSpace();
+            suggestionSession.Suggestions.Should().BeEmpty();
+            suggestionSession.RequestedAtEpoch.Should().Be(default);
         }
 
         [Fact]
@@ -182,6 +194,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             await _sut.LogReferenceAsync(request);
 
             _referenceLogger.LoggedReferences.Should().Contain(request);
+        }
+
+        [Fact]
+        public async Task SendSessionCompletionResultAsync()
+        {
+            var sessionResult = new LogInlineCompletionSessionResultsParams(){SessionId = "sample-sessionId"};
+
+            await _sut.SendSessionCompletionResultAsync(sessionResult);
+
+            _lspClient.SuggestionSessionResultsPublisher.SessionResultsParam.Should().Be(sessionResult);
         }
     }
 }

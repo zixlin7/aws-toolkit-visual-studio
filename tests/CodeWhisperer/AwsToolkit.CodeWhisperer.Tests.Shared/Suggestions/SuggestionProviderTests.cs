@@ -11,9 +11,6 @@ using Amazon.AWSToolkit.Models.Text;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using FluentAssertions;
-
-using Microsoft.VisualStudio.Project;
-
 using Xunit;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
@@ -27,6 +24,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
 
         private readonly FakeCodeWhispererClient _lspClient = new FakeCodeWhispererClient();
         private readonly SuggestionProvider _sut;
+        private readonly string _sampleSessionId = "sample-sessionId";
 
         public SuggestionProviderTests()
         {
@@ -78,16 +76,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
                 IsAutoSuggestion = false,
             };
 
-            var suggestions = (await _sut.GetSuggestionsAsync(request)).ToList();
+            var suggestionSession = await _sut.GetSuggestionsAsync(request);
 
-            suggestions.Should().HaveCount(sampleCompletions);
-            foreach (var suggestion in suggestions)
+            suggestionSession.SessionId.Should().BeEquivalentTo(_sampleSessionId);
+            suggestionSession.Suggestions.Should().HaveCount(sampleCompletions);
+            suggestionSession.RequestedAtEpoch.Should().BeGreaterThan(default);
+
+            foreach (var suggestion in suggestionSession.Suggestions)
             {
                 var expectedCompletion =
                     _lspClient.InlineCompletions.InlineCompletions.Items.FirstOrDefault(x =>
                         x.InsertText == suggestion.Text);
                 expectedCompletion.Should().NotBeNull();
 
+                suggestion.Id.Should().BeEquivalentTo(expectedCompletion.ItemId);
                 suggestion.References.Should().HaveCount(expectedCompletion.References.Length);
                 foreach (var expectedReference in expectedCompletion.References)
                 {
@@ -109,7 +111,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         {
             var completions = Enumerable.Range(0, sampleCompletions).Select(i => CreateSampleCompletionItem($"Sample Suggestion {i}"));
 
-            return new InlineCompletionList() { Items = completions.ToArray(), };
+            return new InlineCompletionList() { Items = completions.ToArray(), SessionId = _sampleSessionId };
         }
 
         private InlineCompletionItem CreateSampleCompletionItem(string text)
@@ -120,7 +122,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
                 References = new[]
                 {
                     CreateSampleInlineCompletionReference(),
-                }
+                },
+                ItemId = Guid.NewGuid().ToString()
             };
         }
 

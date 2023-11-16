@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 
@@ -18,8 +19,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         public bool IsSignedIn = false;
         public bool PauseAutomaticSuggestions = false;
         public bool DidShowReferenceLogger = false;
-        public readonly List<Suggestion> Suggestions = new List<Suggestion>();
         public readonly List<LogReferenceRequest> LoggedReferences = new List<LogReferenceRequest>();
+        public readonly SuggestionSession SuggestionSession = new SuggestionSession();
+         public LogInlineCompletionSessionResultsParams SessionResultsParam =
+            new LogInlineCompletionSessionResultsParams();
 
         public LspClientStatus ClientStatus { get; set; } = LspClientStatus.SettingUp;
 
@@ -63,9 +66,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             return Task.FromResult(PauseAutomaticSuggestions);
         }
 
-        public virtual Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request)
+        public virtual Task<SuggestionSession> GetSuggestionsAsync(GetSuggestionsRequest request)
         {
-            return Task.FromResult<IEnumerable<Suggestion>>(Suggestions);
+            return Task.FromResult(SuggestionSession);
         }
 
         public void RaiseStatusChanged()
@@ -95,6 +98,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         public Task LogReferenceAsync(LogReferenceRequest request)
         {
             LoggedReferences.Add(request);
+            return Task.CompletedTask;
+        }
+
+        public Task SendSessionCompletionResultAsync(LogInlineCompletionSessionResultsParams resultParams)
+        {
+            SessionResultsParam = resultParams;
             return Task.CompletedTask;
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,9 @@ using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
+using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Util;
 
 using log4net;
 
@@ -62,9 +63,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
 
-        public async Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request)
+        public async Task<SuggestionSession> GetSuggestionsAsync(GetSuggestionsRequest request)
         {
-            var suggestions = new List<Suggestion>();
+            var suggestionSession = new SuggestionSession();
 
             try
             {
@@ -82,9 +83,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                     Position = request.CursorPosition.AsLspPosition(),
                 };
 
+                suggestionSession.RequestedAtEpoch = DateTime.Now.AsUnixMilliseconds();
+
                 var response = await inlineCompletions.GetInlineCompletionsAsync(inlineCompletionRequest);
 
-                suggestions.AddRange(response.Items.Select(AsSuggestion));
+                suggestionSession.SessionId = response.SessionId;
+                suggestionSession.Suggestions.AddAll(response.Items.Select(AsSuggestion));
             }
             catch (Exception e)
             {
@@ -92,7 +96,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                 _toolkitContextProvider.GetToolkitContext().ToolkitHost.OutputToHostConsole($"AWS Toolkit was unable to get CodeWhisperer suggestions: {e.Message}", false);
             }
 
-            return suggestions;
+            return suggestionSession;
         }
 
         private Suggestion AsSuggestion(InlineCompletionItem inlineCompletion)
@@ -116,6 +120,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             {
                 Text = inlineCompletion.InsertText,
                 ReplacementRange = inlineCompletion.Range.AsToolkitRange(),
+                Id = inlineCompletion.ItemId,
                 References = references?.ToList(),
             };
         }

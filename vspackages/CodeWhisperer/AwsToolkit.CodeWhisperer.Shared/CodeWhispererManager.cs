@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -130,10 +129,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         /// <summary>
         /// Queries code suggestions from CodeWhisperer
         /// </summary>
-        public async Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request)
+        public async Task<SuggestionSession> GetSuggestionsAsync(GetSuggestionsRequest request)
         {
             return request.IsAutoSuggestion && await IsAutoSuggestPausedAsync()
-                ? Enumerable.Empty<Suggestion>()
+                ? new SuggestionSession()
                 : await _suggestionProvider.GetSuggestionsAsync(request);
         }
 
@@ -145,6 +144,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         public async Task LogReferenceAsync(LogReferenceRequest request)
         {
             await _referenceLogger.LogReferenceAsync(request);
+        }
+
+        public async Task SendSessionCompletionResultAsync(LogInlineCompletionSessionResultsParams resultParams)
+        {
+            var sessionResultsPublisher = _lspClient.CreateSessionResultsPublisher();
+            await sessionResultsPublisher.SendInlineCompletionSessionResultAsync(resultParams);
         }
     }
 }

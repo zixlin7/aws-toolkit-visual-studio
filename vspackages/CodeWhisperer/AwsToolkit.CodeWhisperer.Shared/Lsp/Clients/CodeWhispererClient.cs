@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
-using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 
 using Community.VisualStudio.Toolkit;
@@ -25,6 +24,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     public interface ICodeWhispererLspClient : IToolkitLspClient
     {
         IInlineCompletions CreateInlineCompletions();
+
+        /// <summary>
+        /// Produces the abstraction capable of sending suggestion completion session results to the language server
+        /// </summary>
+        ISuggestionSessionResultsPublisher CreateSessionResultsPublisher();
     }
 
     /// <summary>
@@ -89,6 +93,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         public IInlineCompletions CreateInlineCompletions()
         {
             return new InlineCompletions.InlineCompletions(_rpc);
+        }
+
+        /// <summary>
+        /// Produces the abstraction capable of sending suggestion completion session results to the language server
+        /// </summary>
+        public ISuggestionSessionResultsPublisher CreateSessionResultsPublisher()
+        {
+            return new SuggestionSessionResultsPublisher(_rpc);
         }
     }
 #pragma warning restore IDE0044 // Add readonly modifier

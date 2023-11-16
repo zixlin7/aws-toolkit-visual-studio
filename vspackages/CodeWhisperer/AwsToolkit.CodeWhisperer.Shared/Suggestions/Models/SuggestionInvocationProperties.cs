@@ -18,5 +18,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models
         /// The caret position of the original inline completions request
         /// </summary>
         public int RequestPosition { get; set; }
+
+        /// <summary>
+        /// The epoch time(in milliseconds) when the inline completions request started
+        /// </summary>
+        public long RequestedAtEpoch { get; set; }
     }
 }

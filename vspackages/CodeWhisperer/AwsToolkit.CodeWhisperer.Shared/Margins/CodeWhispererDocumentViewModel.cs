@@ -74,12 +74,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 
                 var request = _textView.CreateGetSuggestionsRequest(true);
                 var requestPosition = _textView.GetWpfTextView().GetCaretSnapshotPosition();
-                _requestedSuggestions = (await _manager.GetSuggestionsAsync(request)).ToList();
-                // TODO : pass in session id
-                var invocationProperties =
-                    SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, null, requestPosition);
-                if (_requestedSuggestions.Count > 0)
+
+                var suggestionSession = await _manager.GetSuggestionsAsync(request);
+
+                _requestedSuggestions = suggestionSession.Suggestions.ToList();
+
+                // only if suggestion session is valid, attempt to load suggestions in UI
+                if (suggestionSession.IsValid())
                 {
+                    var invocationProperties =
+                        SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, suggestionSession.SessionId, requestPosition, suggestionSession.RequestedAtEpoch);
                     await _suggestionUiManager.ShowAsync(_requestedSuggestions, invocationProperties, _textView);
                 }
             }

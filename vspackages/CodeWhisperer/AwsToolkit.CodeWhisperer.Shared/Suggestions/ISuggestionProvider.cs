@@ -31,6 +31,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         /// <summary>
         /// Queries code suggestions from CodeWhisperer
         /// </summary>
-        Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request);
+        Task<SuggestionSession> GetSuggestionsAsync(GetSuggestionsRequest request);
     }
 }

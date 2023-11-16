@@ -17,6 +17,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models
         public Range ReplacementRange { get; set; }
 
         /// <summary>
+        /// Unique identifier for the suggestion
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
         /// Optional - indicates that portions of the suggestion contain attributable licenses
         /// </summary>
         public IList<SuggestionReference> References { get; set; }

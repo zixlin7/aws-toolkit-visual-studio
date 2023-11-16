@@ -5,7 +5,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 {
     public static class SuggestionUtilities
     {
-        public static SuggestionInvocationProperties CreateInvocationProperties(bool isAutoSuggestion, string sessionId, int requestPosition)
+        public static SuggestionInvocationProperties CreateInvocationProperties(bool isAutoSuggestion, string sessionId, int requestPosition, long requestedAtEpoch)
         {
             return new SuggestionInvocationProperties()
             {
@@ -13,7 +13,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                     ? InlineCompletionTriggerKind.Automatic
                     : InlineCompletionTriggerKind.Invoke,
                 SessionId = sessionId,
-                RequestPosition = requestPosition
+                RequestPosition = requestPosition,
+                RequestedAtEpoch = requestedAtEpoch
             };
         }
     }

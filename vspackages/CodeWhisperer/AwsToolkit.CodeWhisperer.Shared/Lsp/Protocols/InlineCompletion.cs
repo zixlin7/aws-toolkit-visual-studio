@@ -87,6 +87,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols
     public class InlineCompletionList
     {
         /// <summary>
+        /// Session ID for current inline completion session returned by server
+        /// </summary>
+        public string SessionId {get; set; }
+
+        /// <summary>
         /// The inline completion items.
         /// </summary>
         public InlineCompletionItem[] Items { get; set; }
@@ -97,6 +102,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols
     /// </summary>
     public class InlineCompletionItem
     {
+        /// <summary>
+        /// Unique identifier for the inline completion item
+        /// </summary>
+        public string ItemId { get; set; }
+
         /// <summary>
         /// The text to replace the range with. Must be set.
         /// Is used both for the preview and the accept operation.

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
@@ -12,7 +11,6 @@ using Amazon.AwsToolkit.VsSdk.Common.Documents;
 using Amazon.AwsToolkit.VsSdk.Common.Services;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.Context;
-
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
@@ -95,11 +93,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
                 var codeWhispererTextView = new CodeWhispererTextView(textView);
                 var requestPosition = codeWhispererTextView.GetWpfTextView().GetCaretSnapshotPosition();
                 var request = codeWhispererTextView.CreateGetSuggestionsRequest(false);
-                var suggestions = (await _manager.GetSuggestionsAsync(request)).ToList();
-                // TODO : pass in session id
-                var invocationProperties =
-                    SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, null, requestPosition);
-                await _suggestionUiManager.ShowAsync(suggestions, invocationProperties, codeWhispererTextView);
+
+                var suggestionSession = await _manager.GetSuggestionsAsync(request);
+
+                // only if suggestion session is valid, attempt to load suggestions in UI
+                if (suggestionSession.IsValid())
+                {
+                    var invocationProperties =
+                        SuggestionUtilities.CreateInvocationProperties(request.IsAutoSuggestion, suggestionSession.SessionId, requestPosition, suggestionSession.RequestedAtEpoch);
+                    await _suggestionUiManager.ShowAsync(suggestionSession.Suggestions, invocationProperties, codeWhispererTextView);
+                }
             });
         }
 

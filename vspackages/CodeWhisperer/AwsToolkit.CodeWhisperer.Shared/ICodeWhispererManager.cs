@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 
@@ -68,7 +68,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         /// <summary>
         /// Queries code suggestions from CodeWhisperer
         /// </summary>
-        Task<IEnumerable<Suggestion>> GetSuggestionsAsync(GetSuggestionsRequest request);
+        Task<SuggestionSession> GetSuggestionsAsync(GetSuggestionsRequest request);
 
         /// <summary>
         /// Displays the log of licenses attributed to accepted suggestions
@@ -79,5 +79,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         /// Logs a license attribution associated with an accepted suggestion
         /// </summary>
         Task LogReferenceAsync(LogReferenceRequest request);
+
+        /// <summary>
+        /// Send the suggestion session's completion result to language server
+        /// </summary>
+        /// <param name="resultParams"></param>
+        /// <returns></returns>
+        Task SendSessionCompletionResultAsync(LogInlineCompletionSessionResultsParams resultParams);
     }
 }
