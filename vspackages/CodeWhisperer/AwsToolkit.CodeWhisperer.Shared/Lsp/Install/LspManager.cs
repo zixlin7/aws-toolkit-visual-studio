@@ -96,6 +96,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var hasValidLocalCache = HasValidLocalCache(downloadCachePath, targetContent);
                 if (hasValidLocalCache)
                 {
+                    ShowLicenseMessage(latestCompatibleLspVersion.License);
                     ShowMessage(
                         $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} from local cache location: {downloadCachePath}");
 
@@ -113,6 +114,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                     await DownloadFromRemoteAsync(targetContent, latestCompatibleLspVersion.ServerVersion, token);
                 if (downloadResult)
                 {
+                    ShowLicenseMessage(latestCompatibleLspVersion.License);
                     ShowMessage(
                         $"Installing {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} to: {downloadCachePath}");
 
@@ -135,12 +137,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                        LspToolkitException.LspErrorCode.NoValidLspFallback);
                 }
 
+                var version = Path.GetFileName(Path.GetDirectoryName(downloadCachePath));
+                var fallbackLspVersion = _manifestSchema.Versions.FirstOrDefault(x => string.Equals(version, x.ServerVersion));
+
+                ShowLicenseMessage(fallbackLspVersion?.License);
                 ShowMessage(
                     $"Unable to install {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion}. Launching a previous version from: {fallbackPath}");
 
                 result.Path = fallbackPath;
                 result.Location = LanguageServerLocation.Fallback;
-                result.Version = Path.GetFileName(Path.GetDirectoryName(downloadCachePath));
+                result.Version = version;
                 return result;
             }
             catch (Exception e)
@@ -183,6 +189,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
             }
         }
 
+        /// <summary>
+        /// Displays the attribution notice url in the toolkit output pane and logger
+        /// </summary>
+        /// <param name="attributionUrl"></param>
+        private void ShowLicenseMessage(string attributionUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(attributionUrl))
+            {
+                var message =
+                    $"AWS Toolkit uses a Language Server to provide CodeWhisperer features. The CodeWhisperer language service attribution notice can be seen at: {attributionUrl}";
+               ShowMessage(message);
+            }
+        }
 
 
         /// <summary>

@@ -22,5 +22,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Manifest.Models
         /// List of Version Targets containing information about platform/architecture and associated files
         /// </summary>
         public IList<VersionTarget> Targets { get; set; }
+
+        /// <summary>
+        /// The attribution notice url associated with the language server version
+        /// </summary>
+        public string License { get; set; }
     }
 }
