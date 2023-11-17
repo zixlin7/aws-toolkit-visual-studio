@@ -65,7 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.TemplateWizardInterface">
-      <Version>17.0.31902.203</Version>
+      <Version>17.5.33428.366</Version>
+      <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
   <Import Project="..\AwsToolkit.CloudFormation.TemplateWizards.Shared\AwsToolkit.CloudFormation.TemplateWizards.Shared.projitems" Label="Shared" />

@@ -1076,7 +1076,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ShowFirstRun();
                 ShowTelemetryNotice();
                 ShowSupportedVersionNotice(ToolkitHosts.Vs2017);
-                ShowSunsetNotificationsAsync().LogExceptionAndForget();
                 ShowNotificationsAsync(_productEnvironment).LogExceptionAndForget();
             }
 
@@ -1170,25 +1169,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     LOGGER.Error("Error occurred while trying to show minimum supported version info banner", e);
                 }
             });
-        }
-
-        private async Task ShowSunsetNotificationsAsync()
-        {
-            await TaskScheduler.Default;
-
-            if (!_productEnvironment.TryGetBaseParentProductVersion(out var vsVersion))
-            {
-                vsVersion = null;
-            }
-
-#if VS2022
-            var vs17Dot7Strategy = new SunsetVs17Dot6Strategy(vsVersion);
-            if (await vs17Dot7Strategy.CanShowNoticeAsync())
-            {
-                var infoBarManager = new SunsetNotificationBarManager(this, vs17Dot7Strategy, _toolkitContext, JoinableTaskFactory, DisposalToken);
-                infoBarManager.ShowInfoBar();
-            }
-#endif
         }
 
         /// <summary>
