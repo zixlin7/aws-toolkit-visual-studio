@@ -12,8 +12,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     {
         private static readonly string _lspTraceFolder = Path.Combine(Path.GetTempPath(), "AwsToolkit", "Lsp");
 
-        // TODO : IDE-11903 : Restore debug conditionals after security testing concludes
-// #if DEBUG
+#if DEBUG
         /// <summary>
         /// All messages sent on the given Json Rpc channel will be written to a file.
         /// This is intended for use when developing the Toolkit, when we need to check
@@ -44,7 +43,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             Directory.CreateDirectory(_lspTraceFolder);
             return new XmlWriterTraceListener(logFilePath);
         }
-        // TODO : IDE-11903 : Restore debug conditionals after security testing concludes
-// #endif
+#endif
     }
 }

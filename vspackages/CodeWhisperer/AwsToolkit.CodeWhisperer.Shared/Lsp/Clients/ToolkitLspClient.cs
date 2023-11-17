@@ -611,8 +611,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             // This is intended for development assistance only!
             // Uncomment this when you need to diagnose messages sent to/from the language server.
 // #if DEBUG
-        // TODO : IDE-11903 : Comment out LSP trace logging after security testing concludes
-             _rpc.LogJsonRpcMessages(this, _toolkitContext.ToolkitHost);
+//             _rpc.LogJsonRpcMessages(this, _toolkitContext.ToolkitHost);
 // #endif
 
             return Task.CompletedTask;
