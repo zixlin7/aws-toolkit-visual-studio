@@ -24,7 +24,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             new Dictionary<IWpfTextView, SuggestionManagerBase>();
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private readonly ICodeWhispererManager _manager;
-
+        private SuggestionContainer _suggestionContainer;
+     
         [ImportingConstructor]
         public SuggestionUiManager(ICodeWhispererManager manager, SVsServiceProvider serviceProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider, SuggestionServiceBase serviceBase)
@@ -34,6 +35,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             _serviceBase = serviceBase;
             
             _taskFactoryProvider = taskFactoryProvider;
+
+            _serviceBase.ProposalDisplayed += OnProposalDisplayed;
         }
 
         public bool IsSuggestionDisplayed(ICodeWhispererTextView textView)
@@ -45,34 +48,43 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         public async Task ShowAsync(IEnumerable<Suggestion> suggestions,
             SuggestionInvocationProperties invocationProperties, ICodeWhispererTextView view)
         {
-            var suggestionContainer =
-                new SuggestionContainer(suggestions, invocationProperties, view, _manager, _taskFactoryProvider.DisposalToken);
-
             var suggestionManager = await CreateSuggestionManagerAsync(view.GetWpfTextView());
 
             if (_session != null)
             {
                 await _session.DismissAsync(ReasonForDismiss.DismissedBySession, _taskFactoryProvider.DisposalToken);
-                _session = null; 
+                _suggestionContainer = null;
+                _session = null;
             }
 
             if (suggestionManager != null)
             {
-                _session = await suggestionManager.TryDisplaySuggestionAsync(suggestionContainer,
+                _suggestionContainer =
+                    new SuggestionContainer(suggestions, invocationProperties, view, _manager, _taskFactoryProvider.DisposalToken);
+
+                _session = await suggestionManager.TryDisplaySuggestionAsync(_suggestionContainer,
                     _taskFactoryProvider.DisposalToken);
 
                 if (_session != null)
                 {
                     // Filters the proposal using the most recent caret position
-                    if (await suggestionContainer.FilterSuggestionsAsync(_session))
+                    if (await _suggestionContainer.FilterSuggestionsAsync(_session))
                     {
-                        await _session.DisplayProposalAsync(suggestionContainer.CurrentProposal, _taskFactoryProvider.DisposalToken);
+                        await _session.DisplayProposalAsync(_suggestionContainer.CurrentProposal, _taskFactoryProvider.DisposalToken);
                     }
                     else
                     {
                         await _session.DismissAsync(ReasonForDismiss.DismissedBySession, _taskFactoryProvider.DisposalToken);
                     }
                 }
+            }
+        }
+
+        private void OnProposalDisplayed(object sender, ProposalDisplayedEventArgs e)
+        {
+            if (_suggestionContainer != null)
+            {
+                _suggestionContainer.OnProposalDisplayed(e.OriginalProposal.ProposalId);
             }
         }
 
@@ -101,6 +113,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                 }
                 _textViewManagers.Clear();
             });
+            if (_serviceBase != null)
+            {
+                _serviceBase.ProposalDisplayed -= OnProposalDisplayed;
+            }
         }
     }
 }

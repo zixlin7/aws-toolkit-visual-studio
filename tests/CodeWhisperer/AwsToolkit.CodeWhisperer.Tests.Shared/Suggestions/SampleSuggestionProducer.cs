@@ -6,14 +6,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
 {
     public static class SampleSuggestionProducer
     {
-        public static Suggestion CreateSampleSuggestion(string text)
+        public static Suggestion CreateSampleSuggestion(string id, string text)
         {
-            return new Suggestion { Text = text };
+            return new Suggestion { Id = id, Text = text };
         }
 
         public static Suggestion CreateSampleSuggestion(string id, int referenceCount)
         {
-            var suggestion = new Suggestion() { Text = $"suggestion-{id}", };
+            var suggestion = new Suggestion() { Id = id, Text = $"suggestion-{id}" };
 
             suggestion.References = Enumerable.Range(0, referenceCount)
                 .ToList()
@@ -31,7 +31,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
                 Url = $"url-{suggestionId}-{referenceId}",
                 LicenseName = $"license-{suggestionId}-{referenceId}",
                 StartIndex = 0,
-                EndIndex = suggestionText.Length,
+                EndIndex = suggestionText.Length
             };
         }
     }

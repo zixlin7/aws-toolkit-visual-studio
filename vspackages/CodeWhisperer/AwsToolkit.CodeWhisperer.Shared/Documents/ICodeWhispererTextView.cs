@@ -51,6 +51,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Documents
         /// <summary>
         /// Creates the proposal used by Visual Studio to display a suggestion
         /// </summary>
-        Proposal CreateProposal(string replacementText, string description);
+        Proposal CreateProposal(string replacementText, string description, string id);
     }
 }

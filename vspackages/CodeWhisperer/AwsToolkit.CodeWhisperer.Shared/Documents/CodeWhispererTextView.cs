@@ -77,11 +77,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Documents
             };
         }
 
-        public Proposal CreateProposal(string replacementText, string description)
+        public Proposal CreateProposal(string replacementText, string description, string id)
         {
             return new Proposal(description, CreateProposedEdits(replacementText).ToList(),
                 _wpfTextView.Caret.Position.VirtualBufferPosition, null,
-                ProposalFlags.ShowCommitHighlight);
+                ProposalFlags.ShowCommitHighlight, proposalId:id);
         }
 
         private IEnumerable<ProposedEdit> CreateProposedEdits(string replacementText)

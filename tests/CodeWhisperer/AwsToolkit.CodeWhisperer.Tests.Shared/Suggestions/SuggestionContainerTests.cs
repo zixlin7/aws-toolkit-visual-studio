@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Documents;
+using Amazon.AWSToolkit.Util;
 
 using FluentAssertions;
 
@@ -26,7 +29,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         private readonly FakeCodeWhispererManager _manager = new FakeCodeWhispererManager();
         private readonly Mock<SuggestionSessionBase> _suggestionSession = new Mock<SuggestionSessionBase>();
         private readonly StubSuggestionContainer _sut;
-        private readonly SuggestionContainer _textSuggestionContainer;
+        private readonly StubSuggestionContainer _textSuggestionContainer;
+        private readonly SuggestionInvocationProperties _invocationProperties = new SuggestionInvocationProperties() {SessionId = "sample-sessionId", RequestedAtEpoch = DateTime.Now.AsUnixMilliseconds()};
 
         private static class SampleSuggestions
         {
@@ -34,19 +38,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
             public static readonly Suggestion OneReference = SampleSuggestionProducer.CreateSampleSuggestion("b", 1);
             public static readonly Suggestion ThreeReferences = SampleSuggestionProducer.CreateSampleSuggestion("c", 3);
 
-            private static readonly Suggestion _fibonacciSuggestion =
-                SampleSuggestionProducer.CreateSampleSuggestion("if (n <= 1)\r\n{\r\n    return n;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
+            public static readonly Suggestion FibonacciSuggestion =
+                SampleSuggestionProducer.CreateSampleSuggestion("id-1", "if (n <= 1)\r\n{\r\n    return n;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
 
-            private static readonly Suggestion _fibonacciSuggestion2 =
-                SampleSuggestionProducer.CreateSampleSuggestion("if (n == 0 || n == 1)\r\n{\r\n    return n;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
+            public static readonly Suggestion FibonacciSuggestion2 =
+                SampleSuggestionProducer.CreateSampleSuggestion("id-2", "if (n == 0 || n == 1)\r\n{\r\n    return n;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
 
-            private static readonly Suggestion _fibonacciSuggestion3 =
-                SampleSuggestionProducer.CreateSampleSuggestion("if (n == 0)\r\n{\r\n    return 0;\r\n}\r\n\r\nif (n == 1)\r\n{\r\n    return 1;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
+            public static readonly Suggestion FibonacciSuggestion3 =
+                SampleSuggestionProducer.CreateSampleSuggestion("id-3", "if (n == 0)\r\n{\r\n    return 0;\r\n}\r\n\r\nif (n == 1)\r\n{\r\n    return 1;\r\n}\r\n\r\nreturn CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
 
-            private static readonly Suggestion _fibonacciSuggestion4 =
-                SampleSuggestionProducer.CreateSampleSuggestion("if (n == 0)\r\n{\r\n    return 0;\r\n}\r\nelse if (n == 1)\r\n{\r\n    return 1;\r\n}\r\nelse\r\n{\r\n    return CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
+            public static readonly Suggestion FibonacciSuggestion4 =
+                SampleSuggestionProducer.CreateSampleSuggestion("id-4", "if (n == 0)\r\n{\r\n    return 0;\r\n}\r\nelse if (n == 1)\r\n{\r\n    return 1;\r\n}\r\nelse\r\n{\r\n    return CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);");
 
-            private static readonly Suggestion _emptySuggestion = SampleSuggestionProducer.CreateSampleSuggestion("    ");
+            public static readonly Suggestion EmptySuggestion = SampleSuggestionProducer.CreateSampleSuggestion("id-5", " ");
 
             public static readonly Suggestion[] ReferenceSuggestions = new Suggestion[]
             {
@@ -55,13 +59,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
 
             public static readonly Suggestion[] TextSuggestions = new Suggestion[]
             {
-                _fibonacciSuggestion, _fibonacciSuggestion2, _fibonacciSuggestion3, _fibonacciSuggestion4, _emptySuggestion
+                FibonacciSuggestion, FibonacciSuggestion2, FibonacciSuggestion3, FibonacciSuggestion4, EmptySuggestion
             };
         }
 
         internal class StubSuggestionContainer : SuggestionContainer
         {
-            public StubSuggestionContainer(Suggestion[] suggestions, SuggestionInvocationProperties properties, FakeCodeWhispererTextView textView, FakeCodeWhispererManager  manager, CancellationToken cancellationToken)
+            public StubSuggestionContainer(Suggestion[] suggestions, SuggestionInvocationProperties properties,
+                FakeCodeWhispererTextView textView, FakeCodeWhispererManager manager, CancellationToken cancellationToken)
                 : base(suggestions, properties, textView, manager, cancellationToken)
             {
             }
@@ -75,8 +80,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         public SuggestionContainerTests()
         {
             _textView.FilePath = "some-path.code";
-            _sut = new StubSuggestionContainer(SampleSuggestions.ReferenceSuggestions, new SuggestionInvocationProperties(), _textView, _manager, CancellationToken.None);
-            _textSuggestionContainer = new SuggestionContainer(SampleSuggestions.TextSuggestions, new SuggestionInvocationProperties(), _textView, _manager, CancellationToken.None);
+            _sut = new StubSuggestionContainer(SampleSuggestions.ReferenceSuggestions, _invocationProperties, _textView, _manager, CancellationToken.None);
+            _textSuggestionContainer = new StubSuggestionContainer(SampleSuggestions.TextSuggestions, _invocationProperties, _textView, _manager, CancellationToken.None);
         }
 
         [Fact]
@@ -94,6 +99,172 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
 
             _manager.LoggedReferences.Should().BeEmpty();
         }
+
+
+        [Fact]
+        public async Task VerifySuggestionSessionResult_WhenFirstSuggestionSeenAndAccepted()
+        {
+            // introduce a minor delay to ensure some latency time is observed with the tests
+            await Task.Delay(5);
+            var expectedAcceptedSuggestion = SampleSuggestions.ReferenceSuggestions.First();
+
+            _sut.OnProposalDisplayed(_sut.CurrentProposal.ProposalId);
+
+            // introduce a minor delay to ensure some total session time is observed with the tests
+            await Task.Delay(5);
+            await AcceptCurrentProposalAsync();
+
+            var actualAcceptedSuggestion = GetAcceptedSuggestionCompletionResults().Single();
+            var seenSuggestions = GetSeenSuggestionCompletionResults();
+
+            actualAcceptedSuggestion.Key.Should().BeEquivalentTo(expectedAcceptedSuggestion.Id);
+            seenSuggestions.Count().Should().Be(1);
+            seenSuggestions.First().Key.Should().BeEquivalentTo(expectedAcceptedSuggestion.Id);
+
+            AssertValidSeenCompletionResultParams();
+        }
+
+
+        [Fact]
+        public async Task VerifySuggestionSessionResult_WhenFirstSuggestionSeenAndDismissed()
+        {
+            // introduce a minor delay to ensure some latency time is observed with the tests
+            await Task.Delay(5);
+
+            var expectedSeenSuggestion = SampleSuggestions.ReferenceSuggestions.First();
+
+            _sut.OnProposalDisplayed(_sut.CurrentProposal.ProposalId);
+
+            // introduce a minor delay to ensure some total session time is observed with the tests
+            await Task.Delay(5);
+
+            await DismissCurrentProposalAsync(_sut);
+
+            var seenSuggestions = GetSeenSuggestionCompletionResults();
+            var acceptedSuggestions = GetAcceptedSuggestionCompletionResults();
+
+            acceptedSuggestions.Should().BeEmpty();
+            seenSuggestions.Count().Should().Be(1);
+            seenSuggestions.First().Key.Should().BeEquivalentTo(expectedSeenSuggestion.Id);
+
+            AssertValidSeenCompletionResultParams();
+        }
+
+
+        [Fact]
+        public async Task VerifySuggestionSessionResult_WhenMultipleSuggestionsSeenAndDismissed()
+        {
+            SetupContainerDisplay(_sut);
+            // introduce a minor delay to ensure some latency time is observed with the tests
+            await Task.Delay(5);
+
+            // Exercises wrapping around the end boundary, back to the start of the suggestion list to see all
+            for (var i = 0; i < SampleSuggestions.ReferenceSuggestions.Length; i++)
+            {
+                await CycleToNextProposalAsync();
+            }
+            // introduce a minor delay to ensure some total session time is observed with the tests
+            await Task.Delay(5);
+            await DismissCurrentProposalAsync(_sut);
+
+            var seenSuggestions = GetSeenSuggestionCompletionResults();
+            var acceptedSuggestions = GetAcceptedSuggestionCompletionResults();
+
+            acceptedSuggestions.Should().BeEmpty();
+            seenSuggestions.Count().Should().Be(SampleSuggestions.ReferenceSuggestions.Length);
+
+            AssertValidSeenCompletionResultParams();
+        }
+
+        [Fact]
+        public async Task VerifySuggestionSessionResultMarksDiscarded_WhenSuggestionsFilteredAndDismissed()
+        {
+            // introduce a minor delay to ensure some latency time is observed with the tests
+            await Task.Delay(5);
+
+            var expectedDiscardedSuggestionList = new List<string>()
+            {
+                SampleSuggestions.FibonacciSuggestion.Id, SampleSuggestions.EmptySuggestion.Id
+            };
+
+            // shows FibonacciSuggestion
+            _textSuggestionContainer.OnProposalDisplayed(_textSuggestionContainer.CurrentProposal.ProposalId);
+
+            var prefix = "if (n == 0";
+            _textSuggestionContainer.FilterSuggestions(prefix);
+
+            // see first in filtered list
+            _textSuggestionContainer.OnProposalDisplayed(_textSuggestionContainer.CurrentProposal.ProposalId);
+
+            // introduce a minor delay to ensure some total session time is observed with the tests
+            await Task.Delay(30);
+
+            await DismissCurrentProposalAsync(_textSuggestionContainer);
+
+            var seenSuggestions = GetSeenSuggestionCompletionResults();
+            var discardedSuggestions = GetDiscardedSuggestionCompletionResults().ToList();
+            var acceptedSuggestions = GetAcceptedSuggestionCompletionResults();
+
+            // verify none accepted
+            acceptedSuggestions.Should().BeEmpty();
+
+            // verify single suggestion seen and is not the one that was seen previously and has been discarded
+            seenSuggestions.Count().Should().Be(1);
+            seenSuggestions.First().Key.Should().NotBe(SampleSuggestions.FibonacciSuggestion.Id);
+
+            // verify discarded list matches expectation
+            var discardedSuggestionIdList = discardedSuggestions.Select(x => x.Key);
+            discardedSuggestionIdList.Should().BeEquivalentTo(expectedDiscardedSuggestionList);
+
+            AssertValidSeenCompletionResultParams();
+        }
+
+        [Fact]
+        public async Task VerifySuggestionSessionResultResetsDiscardedWithBacktracking_WhenSuggestionFilteredAndDismissed()
+        {
+            // introduce a minor delay to ensure some latency time is observed with the tests
+            await Task.Delay(5);
+
+            // filter Fibonacci Suggestion so that it is initially marked discarded
+            var prefix = "if (n == 0";
+            _textSuggestionContainer.FilterSuggestions(prefix);
+
+            // backtrack to add back Fibonacci Suggestion
+            prefix = "i";
+            _textSuggestionContainer.FilterSuggestions(prefix);
+
+            var expectedDiscardedSuggestionList = new List<string>()
+            {
+                SampleSuggestions.EmptySuggestion.Id
+            };
+
+            // see first in filtered list
+            _textSuggestionContainer.OnProposalDisplayed(_textSuggestionContainer.CurrentProposal.ProposalId);
+
+            // introduce a minor delay to ensure some total session time is observed with the tests
+            await Task.Delay(5);
+
+            await DismissCurrentProposalAsync(_textSuggestionContainer);
+
+            var seenSuggestions = GetSeenSuggestionCompletionResults();
+            var discardedSuggestions = GetDiscardedSuggestionCompletionResults().ToList();
+            var acceptedSuggestions = GetAcceptedSuggestionCompletionResults();
+
+            // verify none accepted
+            acceptedSuggestions.Should().BeEmpty();
+
+            // verify discarded list matches expectation
+            var discardedSuggestionIdList = discardedSuggestions.Select(x => x.Key);
+            discardedSuggestionIdList.Should().BeEquivalentTo(expectedDiscardedSuggestionList);
+
+            // verify single suggestion seen and is the one that was previously has been discarded
+            seenSuggestions.Count().Should().Be(1);
+            seenSuggestions.First().Key.Should().NotBe(SampleSuggestions.FibonacciSuggestion.Id);
+
+
+            AssertValidSeenCompletionResultParams();
+        }
+
 
         [Fact]
         public async Task AdvanceLoopsBackToFirstProposal()
@@ -183,6 +354,44 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
             await _sut.OnAcceptedAsync(_suggestionSession.Object,
                 _sut.CurrentProposal, _sut.CurrentProposal,
                 ReasonForAccept.AcceptedByCommand, CancellationToken.None);
+        }
+
+        private async Task DismissCurrentProposalAsync(SuggestionContainer container)
+        {
+            await container.OnDismissedAsync(_suggestionSession.Object,
+                container.CurrentProposal, container.CurrentProposal,
+                ReasonForDismiss.DismissedAfterReturn, CancellationToken.None);
+        }
+
+        private void SetupContainerDisplay(SuggestionContainer container)
+        {
+            _suggestionSession
+                .Setup(x => x.DisplayProposalAsync(It.IsAny<ProposalBase>(), It.IsAny<CancellationToken>()))
+                .Callback((ProposalBase baseProposal, CancellationToken token) => container.OnProposalDisplayed(baseProposal.ProposalId))
+                .Returns(Task.CompletedTask);
+        }
+
+        private IEnumerable<KeyValuePair<string, InlineCompletionStates>> GetSeenSuggestionCompletionResults()
+        {
+            return _manager.SessionResultsParam.CompletionSessionResult.Where(x => x.Value.Seen);
+        }
+
+        private IEnumerable<KeyValuePair<string, InlineCompletionStates>> GetDiscardedSuggestionCompletionResults()
+        {
+            return _manager.SessionResultsParam.CompletionSessionResult.Where(x => x.Value.Discarded);
+        }
+
+        private IEnumerable<KeyValuePair<string, InlineCompletionStates>> GetAcceptedSuggestionCompletionResults()
+        {
+            return _manager.SessionResultsParam.CompletionSessionResult.Where(x => x.Value.Accepted);
+        }
+
+        private void AssertValidSeenCompletionResultParams()
+        {
+            // assert durations were recorded
+            _manager.SessionResultsParam.FirstCompletionDisplayLatency.Should().BeGreaterThan(2);
+            _manager.SessionResultsParam.TotalSessionDisplayTime.Should().BeGreaterThan(2);
+            _manager.SessionResultsParam.SessionId.Should().BeEquivalentTo(_invocationProperties.SessionId);
         }
 
         private void AssertProposalText(Suggestion expectedSuggestion, Proposal proposal)

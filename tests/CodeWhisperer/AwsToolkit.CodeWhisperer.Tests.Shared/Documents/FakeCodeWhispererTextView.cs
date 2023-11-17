@@ -52,12 +52,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Documents
             };
         }
 
-        public Proposal CreateProposal(string replacementText, string description)
+        public Proposal CreateProposal(string replacementText, string description, string id)
         {
             var edit = new ProposedEdit(new SnapshotSpan(), replacementText, null);
             var caretPosition = new VirtualSnapshotPoint(new SnapshotPoint());
 
-            return new Proposal(description, new List<ProposedEdit>() { edit }, caretPosition);
+            return new Proposal(description, new List<ProposedEdit>() { edit }, caretPosition, proposalId:id);
         }
     }
 }

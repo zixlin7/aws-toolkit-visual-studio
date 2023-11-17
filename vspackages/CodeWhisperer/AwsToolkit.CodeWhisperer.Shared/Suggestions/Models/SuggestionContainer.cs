@@ -20,6 +20,9 @@ using Microsoft.VisualStudio.Language.Proposals;
 using Microsoft.VisualStudio.Language.Suggestions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Threading;
+using System.Diagnostics;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
+using Amazon.AWSToolkit.Util;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
@@ -40,6 +43,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private int _currentSuggestionIndex; // index of the displayed suggestion from _filteredSuggestions
         private int _filteredSuggestionTextStartIndex; // the current suggestion's filtered text start index
 
+        private readonly string _sessionId;
+
+        private readonly Dictionary<string, InlineCompletionStates> _suggestionCompletionResults =
+            new Dictionary<string, InlineCompletionStates>();
+
+        private readonly Stopwatch _suggestionDisplaySessionStopWatch = new Stopwatch();
+        private long _firstSuggestionDisplayLatency;
+        protected bool _hasSeenFirstSuggestion;
+
         private static readonly List<ReasonForUpdate> _divergenceReasons = new List<ReasonForUpdate>()
         {
             ReasonForUpdate.Diverged, ReasonForUpdate.DivergedAfterBackspace, ReasonForUpdate.DivergedAfterCompletionChange,
@@ -57,6 +69,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             _view = view;
             _manager = manager;
             _disposalToken = disposalToken;
+            _sessionId = invocationProperties.SessionId;
+
+            InitializeSuggestionCompletionResults();
 
             Elements = new[]
             {
@@ -67,7 +82,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                     (uint) VSConstants.VSStd97CmdID.ToolsOptions,
                     commandArg: typeof(CodeWhispererSettingsProvider).GUID.ToString())
             };
-
+          
             UpdateCurrentProposal();
         }
 
@@ -89,6 +104,77 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             var cursorPosition = currentProposal.Caret.Position.Position;
 
             await LogReferencesAsync(suggestion, cursorPosition);
+
+            // mark current suggestion as accepted
+            var item = _suggestionCompletionResults[suggestion.Id];
+            item.Accepted = true;
+
+            await UpdateAndRecordCompletionStateAsync();
+
+        }
+
+        /// <summary>
+        /// Handles the on proposal displayed event
+        /// </summary>
+        /// <param name="proposalId"></param>
+        public void OnProposalDisplayed(string proposalId)
+        {
+            if (!string.IsNullOrWhiteSpace(proposalId))
+            {
+                // set suggestion as seen
+                if (_suggestionCompletionResults.TryGetValue(proposalId, out var result))
+                {
+                    result.Seen = true;
+
+                    // if this was the first suggestion displayed, start suggestion session display timer and record first suggestion's display latency
+                    if (!_hasSeenFirstSuggestion)
+                    {
+                        _suggestionDisplaySessionStopWatch.Start();
+                        _firstSuggestionDisplayLatency =
+                            DateTime.Now.AsUnixMilliseconds() - _invocationProperties.RequestedAtEpoch;
+                        _hasSeenFirstSuggestion = true;
+                    }
+                }
+            }
+        }
+
+        private void StopSuggestionSessionTimer()
+        {
+            if (_suggestionDisplaySessionStopWatch.IsRunning)
+            {
+                _suggestionDisplaySessionStopWatch.Stop();
+            }
+        }
+
+        /// <summary>
+        /// Populates the suggestion completion result map with suggestion id keys
+        /// </summary>
+        private void InitializeSuggestionCompletionResults()
+        {
+            _unmodifiedSuggestions.ForEach(suggestion =>
+                _suggestionCompletionResults.Add(suggestion.Id, new InlineCompletionStates()));
+        }
+
+        private async Task SendSessionCompletionResultAsync()
+        {
+            var result = new LogInlineCompletionSessionResultsParams()
+            {
+                SessionId = _sessionId, CompletionSessionResult = _suggestionCompletionResults
+            };
+
+            if (_firstSuggestionDisplayLatency > 0)
+            {
+                result.FirstCompletionDisplayLatency = _firstSuggestionDisplayLatency;
+            }
+
+            var sessionTime = _suggestionDisplaySessionStopWatch.Elapsed.Milliseconds;
+
+            if (sessionTime > 0)
+            {
+                result.TotalSessionDisplayTime = sessionTime;
+            }
+
+            await _manager.SendSessionCompletionResultAsync(result);
         }
 
         private async Task LogReferencesAsync(Suggestion suggestion, int cursorPosition)
@@ -124,10 +210,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         /// Invoked when the proposal's SuggestionSessionBase is dismissed. This occurs when a user rejects a proposal using Escape or by
         /// clicking away from the suggestion focus.
         /// </summary>
-        public override Task OnDismissedAsync(SuggestionSessionBase session, ProposalBase originalProposal, ProposalBase currentProposal,
+        public override async Task OnDismissedAsync(SuggestionSessionBase session, ProposalBase originalProposal, ProposalBase currentProposal,
             ReasonForDismiss reason, CancellationToken cancel)
         {
-            return Task.CompletedTask;
+            await UpdateAndRecordCompletionStateAsync();
+        }
+
+        /// <summary>
+        /// Stop timer recording display time for this suggestion session and send completion result to server
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateAndRecordCompletionStateAsync()
+        {
+            StopSuggestionSessionTimer();
+            await SendSessionCompletionResultAsync();
         }
 
         /// <summary>
@@ -197,6 +293,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
             if (_invocationProperties.RequestPosition > currentCaretPosition)
             {
+                UpdateCompletionStates(Array.Empty<Suggestion>());
                 await session.DismissAsync(ReasonForDismiss.DismissedAfterCaretMoved, _disposalToken);
                 return false;
             }
@@ -217,6 +314,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
             _filteredSuggestions = selectedSuggestions.ToArray();
 
+            // update the completion states for each suggestion based on the filtering applied 
+            UpdateCompletionStates(_filteredSuggestions);
+
             var index = Array.IndexOf(_filteredSuggestions, currentSuggestion);
 
             _currentSuggestionIndex = CurrentProposal != null && index >= 0
@@ -226,6 +326,27 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             UpdateCurrentProposal();
 
             return _filteredSuggestions?.Length > 0;
+        }
+
+        /// <summary>
+        /// Updates completion state of each suggestion in the `_suggestionCompletionResult` map, given the updated filtered suggestion list
+        /// </summary>
+        /// <param name="filteredSuggestions">current list of filtered suggestions</param>
+        private void UpdateCompletionStates(Suggestion[] filteredSuggestions)
+        {
+            // reset all suggestions to be marked as unseen and initialize with discarded as true after filter is applied
+            _suggestionCompletionResults.Values.ToList().ForEach(state =>
+            {
+                state.Seen = false;
+                state.Discarded = true;
+            });
+
+            // for those in currently filtered suggestions list, if they were previously marked discarded, reset it to false
+            filteredSuggestions.ToList().ForEach(x =>
+            {
+                var item = _suggestionCompletionResults[x.Id];
+                item.Discarded = false;
+            });
         }
 
         private void UpdateCurrentProposal()
@@ -260,7 +381,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
             var suggestion = _filteredSuggestions[suggestionIndex];
             var description = CreateProposalDescription(suggestion, suggestionIndex);
-            return _view.CreateProposal(suggestion.Text.Substring(_filteredSuggestionTextStartIndex), description);
+            return _view.CreateProposal(suggestion.Text.Substring(_filteredSuggestionTextStartIndex), description, suggestion.Id);
         }
 
         private string CreateProposalDescription(Suggestion suggestion, int suggestionIndex)
