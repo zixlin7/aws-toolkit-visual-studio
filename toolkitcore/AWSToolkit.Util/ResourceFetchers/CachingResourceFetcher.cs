@@ -42,7 +42,8 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         {
             try
             {
-                var callbackFetcher = new CallbackResourceFetcher(_fetcher, async (p, stream) => 
+                token.ThrowIfCancellationRequested();
+                var callbackFetcher = new CallbackResourceFetcher(_fetcher, async (p, stream) =>
                 {
                     // If there is an issue writing to the cache, we'll return the stream contents
                     // for use, they simply won't be cached.

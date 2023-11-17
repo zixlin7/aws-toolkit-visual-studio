@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Tests.Common.Context;
+
+using Moq;
 
 using Xunit;
 
@@ -23,11 +26,14 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
         private readonly ServiceProvider _serviceProvider = new ServiceProvider();
 
+        private readonly Mock<IAddEditProfileWizard> _wizardMock = new Mock<IAddEditProfileWizard>();
+
         public async Task InitializeAsync()
         {
             _toolkitContextFixture.CredentialManager.Setup(mock => mock.GetCredentialIdentifiers()).Returns(new List<ICredentialIdentifier>());
 
             _serviceProvider.SetService(_toolkitContextFixture.ToolkitContext);
+            _serviceProvider.SetService(_wizardMock.Object);
 
             _sut = await ViewModelTests.BootstrapViewModel<SsoConfigurationDetailsViewModel>(_serviceProvider);
         }
@@ -43,7 +49,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             const string expectedProfileName = "my-profile-name";
             const string expectedSsoStartUrl = "https://d-1234567890.awsapps.com/start";
 
-            var svc = _serviceProvider.RequireService<ISsoProfilePropertiesProvider>();
+            var svc = _serviceProvider.RequireService<IConfigurationDetails>(CredentialType.SsoProfile.ToString());
             Assert.NotNull(svc);
             Assert.NotNull(svc.ProfileProperties);
 

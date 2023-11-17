@@ -15,42 +15,46 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(Mvvm));
 
-        #region ServiceProvider attached property
+        #region InheritedServiceProvider attached property
 
         /// <summary>
-        /// Provides a way of assigning a ServiceProvider on a view to be available to its view model.
+        /// Do not use this property in XAML.  It supports automated inherting of ServiceProvider.
         /// </summary>
-        /// <remarks>
-        /// If this property is not set in XAML, the default behavior is for the view model to attempt to
-        /// inherit the ServiceProvider from the parent view model.  The root view model is responsible
-        /// for creating and setting the ServiceProvider in its view model and will not access this property.
-        ///
-        /// Typically this value is not set in XAML unless there is a reason to set the ServiceProvider
-        /// to another instance besides the inherited instance.  This is a bindable property.
-        /// </remarks>
-        public static readonly DependencyProperty ServiceProviderProperty = DependencyProperty.RegisterAttached(
-            "ServiceProvider",
+        public static readonly DependencyProperty InheritedServiceProviderProperty = DependencyProperty.RegisterAttached(
+            "InheritedServiceProvider",
             typeof(ServiceProvider),
             typeof(Mvvm),
-            new FrameworkPropertyMetadata(ServiceProvider_PropertyChanged));
+            new FrameworkPropertyMetadata(InheritedServiceProvider_PropertyChanged));
 
-        private static void ServiceProvider_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void InheritedServiceProvider_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var viewModel = GetViewModel(d);
             if (viewModel != null && e.NewValue is ServiceProvider serviceProvider)
             {
-                SetServiceProvider(viewModel, serviceProvider);
+                // If ServiceProvider not explicitly set on the view model, set the inherited service provider.
+                if (viewModel.ServiceProvider == null)
+                {
+                    viewModel.ServiceProvider = serviceProvider;
+                }
+                else  // Otherwise make the inherited service provider the parent for GetService chaining.
+                {
+                    viewModel.ServiceProvider.ParentServiceProvider = serviceProvider;
+                }
+
+                // Call this method as soon as the ServiceProvider is available to ensure view models can register
+                // their services early.
+                viewModel.CallLifecycleMethod(ViewModel.LifecycleMethods.RegisterServicesAsync).LogExceptionAndForget();
             }
         }
 
-        public static ServiceProvider GetServiceProvider(DependencyObject d)
+        public static ServiceProvider GetInheritedServiceProvider(DependencyObject d)
         {
-            return (ServiceProvider) d.GetValue(ServiceProviderProperty);
+            return (ServiceProvider) d.GetValue(InheritedServiceProviderProperty);
         }
 
-        public static void SetServiceProvider(DependencyObject d, ServiceProvider value)
+        public static void SetInheritedServiceProvider(DependencyObject d, ServiceProvider value)
         {
-            d.SetValue(ServiceProviderProperty, value);
+            d.SetValue(InheritedServiceProviderProperty, value);
         }
         #endregion
 
@@ -114,37 +118,25 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors
                 view.Unloaded -= View_Unloaded;
                 view.Unloaded += View_Unloaded;
 
-                var serviceProvider = viewModel.ServiceProvider ?? GetServiceProvider(d);
-                if (serviceProvider == null && view.GetBindingExpression(ServiceProviderProperty) == null)
+                if (GetInheritedServiceProvider(d) == null && view.GetBindingExpression(InheritedServiceProviderProperty) == null)
                 {
                     // Try to bind to parent's ServiceProvider
-                    view.SetBinding(ServiceProviderProperty,
+                    view.SetBinding(InheritedServiceProviderProperty,
                         new Binding($"DataContext.{nameof(ViewModel.ServiceProvider)}")
                         {
                             RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(FrameworkElement), 1)
                         });
                 }
-                else
+
+                if (viewModel.ServiceProvider != null)
                 {
-                    SetServiceProvider(viewModel, serviceProvider);
+                    // Call this method as soon as the ServiceProvider is available to ensure view models can register
+                    // their services early.
+                    viewModel.CallLifecycleMethod(ViewModel.LifecycleMethods.RegisterServicesAsync).LogExceptionAndForget();
                 }
             }
         }
         #endregion
-
-        private static void SetServiceProvider(ViewModel viewModel, ServiceProvider serviceProvider)
-        {
-            if (viewModel == null || serviceProvider == null)
-            {
-                throw new InvalidOperationException("Both viewModel and serviceProvider must be initialized.");
-            }
-
-            viewModel.ServiceProvider = serviceProvider;
-
-            // Call this method as soon as the ServiceProvider is available to ensure view models can register
-            // their services early.
-            viewModel.CallLifecycleMethod(ViewModel.LifecycleMethods.RegisterServicesAsync).LogExceptionAndForget();
-        }
 
         private static void View_Loaded(object sender, RoutedEventArgs e)
         {

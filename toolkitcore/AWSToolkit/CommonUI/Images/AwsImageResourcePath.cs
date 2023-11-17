@@ -29,6 +29,9 @@
         public static readonly AwsImageResourcePath CodeCommit =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CodeCommit.png");
 
+        public static readonly AwsImageResourcePath CodeWhisperer =
+            new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.CodeWhisperer.png");
+
         public static readonly AwsImageResourcePath DynamoDb =
             new AwsImageResourcePath("Amazon.AWSToolkit.Resources.ServiceIcons.DynamoDB.png");
 

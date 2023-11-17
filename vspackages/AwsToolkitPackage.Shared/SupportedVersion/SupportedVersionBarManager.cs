@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Timers;
 
-using Amazon.AWSToolkit.VisualStudio.Utilities;
+using AwsToolkit.VsSdk.Common.Notifications;
 
 using log4net;
 

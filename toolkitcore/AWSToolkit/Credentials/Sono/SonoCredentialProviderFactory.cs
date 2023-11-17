@@ -14,6 +14,14 @@ namespace Amazon.AWSToolkit.Credentials.Sono
     /// </summary>
     public class SonoCredentialProviderFactory : ICredentialProviderFactory
     {
+        public const string CodeCatalystProfileName = "codecatalyst";
+
+        public static readonly string CodeCatalystSsoSession = FormatSsoSessionName(CodeCatalystProfileName);
+
+        public const string CodeWhispererProfileName = "codewhisperer";
+
+        public static readonly string CodeWhispererSsoSession = FormatSsoSessionName(CodeWhispererProfileName);
+
         public const string FactoryId = "AwsBuilderId";
 
         public event EventHandler<CredentialChangeEventArgs> CredentialsChanged;
@@ -31,7 +39,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         /// </summary>
         /// <param name="toolkitShell"></param>
         /// <param name="tokenCacheFolder">Location of the SSO Token cache. Set to null to use the default folder.</param>
-        public SonoCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell, string tokenCacheFolder)
+        internal SonoCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell, string tokenCacheFolder)
         {
             _toolkitShell = toolkitShell;
             _tokenCacheFolder = tokenCacheFolder;
@@ -39,22 +47,34 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
         public void Initialize()
         {
-            // Populate settings manager with the fixed AWS Builder ID configurations that will back this factory
+            CreateProfile(CodeCatalystProfileName, SonoProperties.CodeCatalystScopes);
+            CreateProfile(CodeWhispererProfileName, SonoProperties.CodeWhispererScopes);
+        }
 
-            var defaultCredentialId = new SonoCredentialIdentifier("default");
-            _profileProcessor.CreateProfile(defaultCredentialId,
+        private static string FormatSsoSessionName(string profileName)
+        {
+            return $"{FactoryId}-{profileName}";
+        }
+
+        private void CreateProfile(string profileName, string[] ssoRegistrationScopes)
+        { 
+            // Populate settings manager with the fixed AWS Builder ID configurations that will back this factory
+            var credId = new SonoCredentialIdentifier(profileName);
+            _profileProcessor.CreateProfile(credId,
                 new ProfileProperties()
                 {
-                    Name = defaultCredentialId.ProfileName,
-                    // Assigning SsoSession is arbitrary, but helps resolve CredentialType
-                    SsoSession = $"{FactoryId}-{defaultCredentialId.ProfileName}",
+                    Name = credId.ProfileName,
+                    SsoRegistrationScopes = ssoRegistrationScopes,
+                    SsoSession = FormatSsoSessionName(credId.ProfileName), // SsoSession helps resolve CredentialType
                     SsoStartUrl = SonoProperties.StartUrl,
                     SsoRegion = SonoProperties.DefaultTokenProviderRegion.SystemName,
                 });
         }
 
-        public List<ICredentialIdentifier> GetCredentialIdentifiers() =>
-            _profileProcessor.GetCredentialIdentifiers().ToList();
+        public List<ICredentialIdentifier> GetCredentialIdentifiers()
+        {
+            return _profileProcessor.GetCredentialIdentifiers().ToList();
+        }
 
         public ToolkitCredentials CreateToolkitCredentials(ICredentialIdentifier credentialIdentifier, ToolkitRegion region)
         {
@@ -72,23 +92,31 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
             var tokenProvider = SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(credentialIdentifier)
-                .WithToolkitShell(_toolkitShell)
+                .WithScopes(profileProperties.SsoRegistrationScopes)
+                .WithSessionName(profileProperties.SsoSession)
                 .WithStartUrl(profileProperties.SsoStartUrl)
                 .WithTokenProviderRegion(RegionEndpoint.GetBySystemName(profileProperties.SsoRegion))
+                .WithToolkitShell(_toolkitShell)
                 .Build();
 
             return new ToolkitCredentials(credentialIdentifier, tokenProvider);
         }
 
-        public ICredentialProfileProcessor GetCredentialProfileProcessor() => _profileProcessor;
+        public ICredentialProfileProcessor GetCredentialProfileProcessor()
+        {
+            return _profileProcessor;
+        }
 
-        public bool IsLoginRequired(ICredentialIdentifier id) => true;
+        public bool IsLoginRequired(ICredentialIdentifier id)
+        {
+            return true;
+        }
 
         public bool Supports(ICredentialIdentifier credentialIdentifier, AwsConnectionType connectionType)
         {
-            if (connectionType != AwsConnectionType.AwsToken) { return false; }
-
-            return _profileProcessor.GetProfileProperties(credentialIdentifier) != null;
+            return
+                connectionType == AwsConnectionType.AwsToken
+                && _profileProcessor.GetProfileProperties(credentialIdentifier) != null;
         }
 
         public virtual void Invalidate(ICredentialIdentifier credentialIdentifier)
@@ -99,7 +127,7 @@ namespace Amazon.AWSToolkit.Credentials.Sono
                 throw new NotSupportedException($"Unsupported AWS Builder ID based credential Id: {credentialIdentifier.Id}");
             }
 
-            TokenCache.RemoveCacheFile(profileProperties.SsoStartUrl, SonoProperties.DefaultSessionName, _tokenCacheFolder);
+            TokenCache.RemoveCacheFile(profileProperties.SsoStartUrl, profileProperties.SsoSession, _tokenCacheFolder);
         }
 
         public void Dispose()

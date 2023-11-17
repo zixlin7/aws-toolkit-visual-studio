@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <PropertyGroup>
@@ -10,6 +10,8 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Community.VisualStudio.Toolkit - Keep this version in sync with AwsToolkitPackage.v17.csproj -->
+    <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.486" ExcludeAssets="Runtime" />
     <PackageReference Include="Microsoft.VisualStudio.SDK">
       <Version>17.7.37357</Version>
       <ExcludeAssets>runtime</ExcludeAssets>

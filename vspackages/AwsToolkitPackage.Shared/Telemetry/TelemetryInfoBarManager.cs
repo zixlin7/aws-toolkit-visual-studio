@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Timers;
-using Amazon.AWSToolkit.VisualStudio.Utilities;
+
+using AwsToolkit.VsSdk.Common.Notifications;
+
 using log4net;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Amazon.AWSToolkit.VisualStudio.Telemetry
 {

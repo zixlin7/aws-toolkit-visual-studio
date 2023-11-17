@@ -14,9 +14,25 @@ using Task = System.Threading.Tasks.Task;
 namespace Amazon.AwsToolkit.VsSdk.Common.OutputWindow
 {
     /// <summary>
+    /// Abstraction for an Output window, allows for stubbing in tests.
+    /// </summary>
+    public interface IOutputWindow : IDisposable
+    {
+        /// <summary>
+        /// Displays the output window in Visual Studio
+        /// </summary>
+        void Show();
+
+        /// <summary>
+        /// Writes the given text into the output window.
+        /// </summary>
+        void WriteText(string message);
+    }
+
+    /// <summary>
     /// Writes text to a VS OutputWindow Pane, if a pane was created.
     /// </summary>
-    public class OutputWindow : IDisposable
+    public class OutputWindow : IOutputWindow
     {
         private const int WriteQueuedTextIntervalMs = 333;
         private readonly IVsOutputWindow _outputWindowManager;

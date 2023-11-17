@@ -155,6 +155,7 @@
             <TestAssemblies Condition="'$(VisualStudioVersion)' == '17.0'" Include="..\tests\AWSToolkitPackage.v17.Tests\bin\$(Configuration)\AWSToolkitPackage.v17.Tests.dll" />
             <TestAssemblies Condition="'$(VisualStudioVersion)' == '16.0'" Include="..\tests\PublishToAws.Tests\bin\$(Configuration)\PublishToAws.Tests.dll" />
             <TestAssemblies Condition="'$(VisualStudioVersion)' == '17.0'" Include="..\tests\PublishToAws.v17.Tests\bin\$(Configuration)\PublishToAws.v17.Tests.dll" />
+            <TestAssemblies Condition="'$(VisualStudioVersion)' == '17.0'" Include="..\tests\CodeWhisperer\AwsToolkit.CodeWhisperer.v17.Tests\bin\$(Configuration)\net48\AwsToolkit.CodeWhisperer.v17.Tests.dll" />
         </ItemGroup>        
 
         <MakeDir Directories="$(TestResults)" />

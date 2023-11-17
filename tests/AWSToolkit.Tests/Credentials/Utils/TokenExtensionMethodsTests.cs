@@ -68,7 +68,8 @@ namespace AWSToolkit.Tests.Credentials.Utils
         private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation();
         private readonly FakeFileHandler _fileHandler = new FakeFileHandler();
         private readonly FakeDirectoryHandler _directoryHandler;
-        private readonly ICredentialIdentifier _credentialsId = new SonoCredentialIdentifier("default");
+        private readonly ICredentialIdentifier _credentialsId = new SonoCredentialIdentifier(SonoCredentialProviderFactory.CodeCatalystProfileName);
+        private const string _sessionName = "session-name";
 
         public TokenExtensionMethodsTests()
         {
@@ -92,6 +93,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
                 AccessToken = "access-token",
                 ExpiresAt = DateTime.UtcNow.AddYears(-2),
                 Region = SonoProperties.DefaultTokenProviderRegion.SystemName,
+                Session = _sessionName,
                 StartUrl = SonoProperties.StartUrl,
             };
 
@@ -110,7 +112,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
 
         private bool HasValidToken()
         {
-            return _credentialsId.HasValidToken(_toolkitContext.ToolkitHost.Object, _fileHandler, _directoryHandler);
+            return _credentialsId.HasValidToken(_sessionName, _toolkitContext.ToolkitHost.Object, _fileHandler, _directoryHandler);
         }
     }
 }
