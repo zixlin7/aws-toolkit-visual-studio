@@ -42,7 +42,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         public async Task PauseAutoSuggestAsync()
         {
             var settings = await _settingsRepository.GetAsync();
-            settings.PauseAutomaticSuggestions = true;
+            settings.AutomaticSuggestionsEnabled = false;
             _settingsRepository.Save(settings);
             OutputStatus("CodeWhisperer's automatic suggestions have been paused.");
         }
@@ -50,7 +50,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         public async Task ResumeAutoSuggestAsync()
         {
             var settings = await _settingsRepository.GetAsync();
-            settings.PauseAutomaticSuggestions = false;
+            settings.AutomaticSuggestionsEnabled = true;
             _settingsRepository.Save(settings);
             OutputStatus("CodeWhisperer's automatic suggestions will be displayed.");
         }
@@ -58,7 +58,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         public async Task<bool> IsAutoSuggestPausedAsync()
         {
             var settings = await _settingsRepository.GetAsync();
-            return settings.PauseAutomaticSuggestions;
+            return !settings.AutomaticSuggestionsEnabled;
         }
 
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
@@ -145,7 +145,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             // Until then, always raise the event, so that we don't have a compiler warning for PauseAutoSuggestChanged being unused
             PauseAutoSuggestChanged?.Invoke(this, new PauseStateChangedEventArgs()
             {
-                IsPaused = e.Settings.PauseAutomaticSuggestions,
+                IsPaused = !e.Settings.AutomaticSuggestionsEnabled,
             });
         }
 

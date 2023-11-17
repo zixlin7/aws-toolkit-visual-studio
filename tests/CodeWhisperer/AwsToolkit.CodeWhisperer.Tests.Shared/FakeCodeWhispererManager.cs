@@ -17,7 +17,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
     public class FakeCodeWhispererManager : ICodeWhispererManager
     {
         public bool IsSignedIn = false;
-        public bool PauseAutomaticSuggestions = false;
+        public bool AutomaticSuggestionsEnabled = true;
         public bool DidShowReferenceLogger = false;
         public readonly List<LogReferenceRequest> LoggedReferences = new List<LogReferenceRequest>();
         public readonly SuggestionSession SuggestionSession = new SuggestionSession();
@@ -46,24 +46,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
 
         public virtual Task PauseAutoSuggestAsync()
         {
-            PauseAutomaticSuggestions = true;
+            AutomaticSuggestionsEnabled = false;
             return Task.CompletedTask;
         }
 
         public virtual Task ResumeAutoSuggestAsync()
         {
-            PauseAutomaticSuggestions = false;
+            AutomaticSuggestionsEnabled = true;
             return Task.CompletedTask;
         }
 
         public virtual bool IsAutoSuggestPaused()
         {
-            return PauseAutomaticSuggestions;
+            return !AutomaticSuggestionsEnabled;
         }
 
         public virtual Task<bool> IsAutoSuggestPausedAsync()
         {
-            return Task.FromResult(PauseAutomaticSuggestions);
+            return Task.FromResult(!AutomaticSuggestionsEnabled);
         }
 
         public virtual Task<SuggestionSession> GetSuggestionsAsync(GetSuggestionsRequest request)
@@ -80,7 +80,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         {
             PauseAutoSuggestChanged?.Invoke(this, new PauseStateChangedEventArgs()
             {
-                IsPaused = PauseAutomaticSuggestions,
+                IsPaused = !AutomaticSuggestionsEnabled,
             });
         }
 

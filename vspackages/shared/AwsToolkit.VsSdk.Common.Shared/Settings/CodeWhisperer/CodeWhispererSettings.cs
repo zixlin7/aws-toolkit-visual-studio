@@ -27,13 +27,13 @@ namespace AwsToolkit.VsSdk.Common.Settings.CodeWhisperer
         public string CredentialIdentifier { get; set; }
 
         /// <summary>
-        /// Enables and disables (pauses) CodeWhisperer features.
+        /// Enables and disables (pauses) CodeWhisperer automatic suggestions.
         /// </summary>
         [Category("General")]
-        [DisplayName("Pause Automatic Suggestions")]
-        [Description("When true, CodeWhisperer will not automatically provide code suggestions (you can still get suggestions on-demand). When false, CodeWhisperer will offer suggestions while you write code.")]
-        [DefaultValue(false)]
-        public bool PauseAutomaticSuggestions { get; set; } = false;
+        [DisplayName("Auto-suggestions enabled")]
+        [Description("When true, CodeWhisperer will automatically offer suggestions while you write code. When false, CodeWhisperer will not automatically provide code suggestions (you can still get suggestions on-demand).")]
+        [DefaultValue(true)]
+        public bool AutomaticSuggestionsEnabled { get; set; } = true;
 
         /// <summary>
         /// Include (true) or filter out (false) suggestions that contain license attribution

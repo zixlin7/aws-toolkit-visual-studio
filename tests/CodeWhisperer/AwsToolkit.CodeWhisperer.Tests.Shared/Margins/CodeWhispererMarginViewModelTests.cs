@@ -79,7 +79,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Margins
         [MemberData(nameof(GetMarginStatusInputs))]
         public void MarginStatusUpdates(bool isAutoSuggestionPaused, LspClientStatus clientStatus, ConnectionStatus connectionStatus, MarginStatus expectedMarginStatus)
         {
-            _manager.PauseAutomaticSuggestions = isAutoSuggestionPaused;
+            _manager.AutomaticSuggestionsEnabled = !isAutoSuggestionPaused;
             _manager.ConnectionStatus = connectionStatus;
             _manager.ClientStatus = clientStatus;
 

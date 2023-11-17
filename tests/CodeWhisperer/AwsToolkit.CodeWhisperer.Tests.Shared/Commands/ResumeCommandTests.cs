@@ -35,11 +35,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Commands
         }
 
         [Theory]
-        [InlineData(true, true)]
-        [InlineData(false, false)]
-        public void CanExecute(bool initialPauseState, bool expectedCanExecute)
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        public void CanExecute(bool isAutoSuggestEnabledState, bool expectedCanExecute)
         {
-            SetManagerPausedState(initialPauseState);
+            SetManagerAutoSuggestionsEnabledState(isAutoSuggestEnabledState);
 
             _sut.CanExecute().Should().Be(expectedCanExecute);
         }
@@ -49,10 +49,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Commands
 
         public async Task ExecuteAsync_WhenInitiallyPaused()
         {
-            SetManagerPausedState(true);
+            SetManagerAutoSuggestionsEnabledState(false);
 
             await _sut.ExecuteAsync();
-            _manager.PauseAutomaticSuggestions.Should().BeFalse();
+            _manager.AutomaticSuggestionsEnabled.Should().BeTrue();
 
             _metric.Metadata["settingId"].Should().BeEquivalentTo(CodeWhispererTelemetryConstants.AutoSuggestion.SettingId);
             _metric.Metadata["settingState"].Should().BeEquivalentTo(CodeWhispererTelemetryConstants.AutoSuggestion.Activated);
@@ -61,17 +61,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Commands
         [Fact]
         public async Task ExecuteAsync_WhenInitiallyNotPaused()
         {
-            SetManagerPausedState(false);
+            SetManagerAutoSuggestionsEnabledState(true);
 
             await _sut.ExecuteAsync();
-            _manager.PauseAutomaticSuggestions.Should().BeFalse();
+            _manager.AutomaticSuggestionsEnabled.Should().BeTrue();
 
             _metric.Should().BeNull();
         }
 
-        private void SetManagerPausedState(bool pauseState)
+        private void SetManagerAutoSuggestionsEnabledState(bool isAutoSuggestEnabledState)
         {
-            _manager.PauseAutomaticSuggestions = pauseState;
+            _manager.AutomaticSuggestionsEnabled = isAutoSuggestEnabledState;
             _manager.RaisePauseAutoSuggestChanged();
         }
 

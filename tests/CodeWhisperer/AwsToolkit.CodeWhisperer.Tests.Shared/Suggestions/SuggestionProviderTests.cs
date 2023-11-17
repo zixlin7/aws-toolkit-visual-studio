@@ -35,32 +35,32 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
         [Fact]
         public async Task PauseAutoSuggestAsync()
         {
-            _settingsRepository.Settings.PauseAutomaticSuggestions = false;
+            _settingsRepository.Settings.AutomaticSuggestionsEnabled = true;
 
             await _sut.PauseAutoSuggestAsync();
             (await _sut.IsAutoSuggestPausedAsync()).Should().BeTrue();
-            _settingsRepository.Settings.PauseAutomaticSuggestions.Should().BeTrue();
+            _settingsRepository.Settings.AutomaticSuggestionsEnabled.Should().BeFalse();
         }
 
         [Fact]
         public async Task ResumeAutoSuggestAsync()
         {
-            _settingsRepository.Settings.PauseAutomaticSuggestions = true;
+            _settingsRepository.Settings.AutomaticSuggestionsEnabled = false;
 
             await _sut.ResumeAutoSuggestAsync();
 
             (await _sut.IsAutoSuggestPausedAsync()).Should().BeFalse();
-            _settingsRepository.Settings.PauseAutomaticSuggestions.Should().BeFalse();
+            _settingsRepository.Settings.AutomaticSuggestionsEnabled.Should().BeTrue();
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task IsAutoSuggestPausedAsync(bool isPaused)
+        public async Task IsAutoSuggestPausedAsync(bool isEnabled)
         {
-            _settingsRepository.Settings.PauseAutomaticSuggestions = isPaused;
+            _settingsRepository.Settings.AutomaticSuggestionsEnabled = isEnabled;
 
-            (await _sut.IsAutoSuggestPausedAsync()).Should().Be(isPaused);
+            (await _sut.IsAutoSuggestPausedAsync()).Should().NotBe(isEnabled);
         }
 
         [Fact]
