@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -10,9 +9,7 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
-using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Urls;
@@ -49,7 +46,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private IGettingStartedCompleted _gettingStartedCompleted => ServiceProvider.RequireService<IGettingStartedCompleted>();
 
-        private GettingStartedStep _currentStep;
+        private GettingStartedStep _currentStep = GettingStartedStep.AddEditProfileWizards;
 
         public GettingStartedStep CurrentStep
         {
@@ -71,6 +68,14 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 #else
                 false;
 #endif
+
+        private ICommand _openUsingToolkitDocsCommand;
+
+        public ICommand OpenUsingToolkitDocsCommand
+        {
+            get => _openUsingToolkitDocsCommand;
+            private set => SetProperty(ref _openUsingToolkitDocsCommand, value);
+        }
 
         private ICommand _openAwsExplorerLearnMoreCommand;
 
@@ -123,25 +128,11 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             OpenCodeWhispererLearnMoreCommand = openUrl(AwsUrls.CodeWhispererOverview);
             OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);
 
+            OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);
+
             if (!IsCodeWhispererSupported)
             {
                 FeatureType = FeatureType.AwsExplorer;
-            }
-
-            await ShowInitialCardAsync();
-        }
-
-        private async Task ShowInitialCardAsync()
-        {
-            var credId = GetDefaultCredentialIdentifier();
-            if (credId == null)
-            {
-                CurrentStep = GettingStartedStep.AddEditProfileWizards;
-            }
-            else
-            {
-                ShowGettingStarted(credId);
-                await ChangeConnectionSettingsAsync(credId);
             }
         }
 
@@ -163,22 +154,6 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             settings.Save();
         }
 
-        private async Task ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier)
-        {
-            var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-            var region = ToolkitContext.RegionProvider.GetRegion(profileProperties.Region ?? ToolkitRegion.DefaultRegionId);
-            try
-            {
-                var state = await ToolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credentialIdentifier, region);
-                _gettingStartedCompleted.Status = ConnectionState.IsValid(state);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Unable to set AWS Explorer to existing credential.", ex);
-                _gettingStartedCompleted.Status = false;
-            }
-        }
-
         private void ShowGettingStarted(ICredentialIdentifier credentialIdentifier)
         {
             var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
@@ -186,18 +161,6 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             _gettingStartedCompleted.CredentialTypeName = profileProperties.GetCredentialType().GetDescription();
             _gettingStartedCompleted.CredentialName = credentialIdentifier.ProfileName;
             CurrentStep = GettingStartedStep.GettingStartedCompleted;
-        }
-
-        private ICredentialIdentifier GetDefaultCredentialIdentifier()
-        {
-            var credIds = ToolkitContext.CredentialManager.GetCredentialIdentifiers().Where(ci =>
-                ci.FactoryId == SDKCredentialProviderFactory.SdkProfileFactoryId ||
-                ci.FactoryId == SharedCredentialProviderFactory.SharedProfileFactoryId);
-
-            return
-                ToolkitContext.ConnectionManager.ActiveCredentialIdentifier ??
-                credIds.FirstOrDefault(ci => ci.ProfileName == "default") ??
-                credIds.FirstOrDefault();
         }
     }
 }

@@ -88,6 +88,7 @@
                     Text="With AWS Builder ID, sign up for free without an AWS Account." />
 
                 <Button
+                    Command="{Binding SignInWithAwsBuilderIdCommand}"
                     HorizontalAlignment="Left"
                     Margin="0 6 0 0">
                     Sign up or Sign in

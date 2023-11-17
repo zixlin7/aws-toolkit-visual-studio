@@ -68,39 +68,17 @@ namespace AWSToolkitPackage.Tests.GettingStarted
 
             await RunViewModelLifecycle();
 
-            _gettingStartedCompleted.VerifyAll();
-        }
-
-        [Fact]
-        public async Task ConnectionStateIsInvalidSetsStatusFalse()
-        {
-            SetupChangeConnectionSettingsAsync(new ConnectionState.InvalidConnection("kaboom"));
-
-            await RunViewModelLifecycle();
-
-            _gettingStartedCompleted.SetupSet(mock => mock.Status = false).Verifiable();
-
-            await RunViewModelLifecycle();
+            _sut.ShowCompleted(id);
 
             _gettingStartedCompleted.VerifyAll();
         }
 
         [Fact]
-        public async Task NoCredentialsDefinedSetsCurrentStepToAddEditProfileWizard()
+        public async Task AlwaysStartsOnAddEditProfileWizards()
         {
-            _credentialIdentifiers.Clear();
-
             await RunViewModelLifecycle();
 
             Assert.Equal(GettingStartedStep.AddEditProfileWizards, _sut.CurrentStep);
-        }
-
-        [Fact]
-        public async Task AnySharedOrSdkCredentialsDefinedSetsCurrentStepToGettingStarted()
-        {
-            await RunViewModelLifecycle();
-
-            Assert.Equal(GettingStartedStep.GettingStartedCompleted, _sut.CurrentStep);
         }
     }
 }

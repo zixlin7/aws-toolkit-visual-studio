@@ -5,6 +5,8 @@ using Amazon.AWSToolkit.Context;
 
 using log4net;
 
+using Microsoft.VisualStudio.Threading;
+
 namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 {
     // TODO Consider renaming to something other than "Getting Started" to not conflate with the
@@ -27,6 +29,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 
             if (commandId != null)
             {
+                // MAGIC!  This command is used by both the margin menu and a hyperlink on the CredentialSelectionDialog.
+                // await TaskSchedule.Default is required for the AddEditProfileWizard to load properly when this command
+                // is executed from the margin menu.  This is not required when this command is executed from the
+                // CredentialSelectionDialog, but it works fine when it is here.  If you remove this, the AddEditProfileWizard
+                // will not load on Getting Started when launched from the margin menu.
+                await TaskScheduler.Default;
                 await commandId.ExecuteAsync();
             }
             else
