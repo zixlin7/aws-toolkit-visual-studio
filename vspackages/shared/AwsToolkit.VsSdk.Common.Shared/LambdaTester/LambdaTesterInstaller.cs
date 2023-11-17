@@ -5,8 +5,8 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Amazon.AWSToolkit.Lambda.LambdaTester;
 using Amazon.Common.DotNetCli.Tools;
+
 using log4net;
 
 using Microsoft.VisualStudio.Threading;
@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Amazon.AWSToolkit.Lambda.Util
+namespace AwsToolkit.VsSdk.Common.LambdaTester
 {
     public static class LambdaTesterInstaller
     {

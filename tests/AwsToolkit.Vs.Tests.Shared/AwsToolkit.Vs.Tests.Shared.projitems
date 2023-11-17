@@ -22,5 +22,24 @@
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\VsKnownImagesTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\ImageThemeConverterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\IVsMonitorSelectionExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\LambdaTesterInstallerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\ProjectTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\test-data\LambdaTester-Compatible.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\test-data\LambdaTester-LambdaRuntimeSupport.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\test-data\LambdaTester-NoAWSProjectType.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\test-data\LambdaTester-NonLambdaAWSProjectType.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\test-data\LambdaTester-NoTargetFramework.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

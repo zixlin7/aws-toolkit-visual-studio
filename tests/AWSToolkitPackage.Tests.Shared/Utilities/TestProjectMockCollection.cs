@@ -1,4 +1,4 @@
-﻿#if VS2022_OR_LATER
+﻿﻿#if VS2022_OR_LATER
 using AwsToolkit.Vs.Tests.VsTestFramework;
 
 using Xunit;

@@ -1,8 +1,8 @@
-﻿using Amazon.AWSToolkit.Lambda.LambdaTester;
-using Amazon.AWSToolkit.Lambda.Util;
+﻿using AwsToolkit.VsSdk.Common.LambdaTester;
+
 using Xunit;
 
-namespace AWSToolkit.Tests.Lambda
+namespace AwsToolkit.Vs.Tests.VsSdk.Common.LambdaTester
 {
     public class LambdaTesterInstallerTests
     {
@@ -23,16 +23,16 @@ namespace AWSToolkit.Tests.Lambda
         [Fact]
         public void IsLambdaTesterSupported_HappyPath()
         {
-            var projectFilename = @"Lambda\test-data\LambdaTester-Compatible.csproj";
+            var projectFilename = @"VsSdk.Common\LambdaTester\test-data\LambdaTester-Compatible.csproj";
             var project = new Project(projectFilename);
             Assert.True(LambdaTesterInstaller.IsLambdaTesterSupported(project));
         }
 
         [Theory]
-        [InlineData(@"Lambda\test-data\LambdaTester-LambdaRuntimeSupport.csproj")]
-        [InlineData(@"Lambda\test-data\LambdaTester-NoAWSProjectType.csproj")]
-        [InlineData(@"Lambda\test-data\LambdaTester-NonLambdaAWSProjectType.csproj")]
-        [InlineData(@"Lambda\test-data\LambdaTester-NoTargetFramework.csproj")]
+        [InlineData(@"VsSdk.Common\LambdaTester\test-data\LambdaTester-LambdaRuntimeSupport.csproj")]
+        [InlineData(@"VsSdk.Common\LambdaTester\test-data\LambdaTester-NoAWSProjectType.csproj")]
+        [InlineData(@"VsSdk.Common\LambdaTester\test-data\LambdaTester-NonLambdaAWSProjectType.csproj")]
+        [InlineData(@"VsSdk.Common\LambdaTester\test-data\LambdaTester-NoTargetFramework.csproj")]
         public void IsLambdaTesterSupported_UnsupportedProjects(string projectFilename)
         {
             var project = new Project(projectFilename);

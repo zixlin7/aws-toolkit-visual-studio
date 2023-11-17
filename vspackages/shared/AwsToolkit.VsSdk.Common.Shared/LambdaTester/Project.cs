@@ -2,7 +2,7 @@
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace Amazon.AWSToolkit.Lambda.LambdaTester
+namespace AwsToolkit.VsSdk.Common.LambdaTester
 {
     /// <summary>
     /// Lambda Tester representation of a Project file (eg: .csproj file)

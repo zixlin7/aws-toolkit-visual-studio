@@ -69,6 +69,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\VsFolderBrowserDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LambdaTester\LambdaTesterInstaller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LambdaTester\Project.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ProgressDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\TaskStatusNotifier.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notifications\ToolkitInfoBarActionItem.cs" />
