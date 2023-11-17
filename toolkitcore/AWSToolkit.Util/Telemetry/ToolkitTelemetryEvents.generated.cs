@@ -751,6 +751,76 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
             }
         }
+        
+        /// Records Telemetry Event:
+        /// Sets up a language server
+        public static void RecordLanguageServerSetup(this ITelemetryLogger telemetryLogger, LanguageServerSetup payload, Func<MetricDatum, MetricDatum> transformDatum = null)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "languageServer_setup";
+                datum.Unit = Unit.Milliseconds;
+                datum.Passive = payload.Passive;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
+                datum.AddMetadata("reason", payload.Reason);
+                datum.AddMetadata("errorCode", payload.ErrorCode);
+                datum.AddMetadata("causedBy", payload.CausedBy);
+                datum.AddMetadata("httpStatusCode", payload.HttpStatusCode);
+                datum.AddMetadata("requestId", payload.RequestId);
+                datum.AddMetadata("requestServiceType", payload.RequestServiceType);
+                if (payload.Duration.HasValue)
+                {
+                    datum.AddMetadata("duration", payload.Duration.Value);
+                }
+                datum.AddMetadata("locale", payload.Locale);
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("id", payload.Id);
+
+                datum.AddMetadata("languageServerSetupStage", payload.LanguageServerSetupStage);
+
+                datum.AddMetadata("version", payload.Version);
+
+                if (payload.LanguageServerLocation.HasValue)
+                {
+                    datum.AddMetadata("languageServerLocation", payload.LanguageServerLocation.Value);
+                }
+
+                datum.AddMetadata("manifestSchemaVersion", payload.ManifestSchemaVersion);
+
+                datum = datum.InvokeTransform(transformDatum);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
     }
     
     /// Metric field type
@@ -803,6 +873,66 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public static readonly PublishSetupStage All = new PublishSetupStage("all");
         
         public PublishSetupStage(string value)
+        {
+            this._value = value;
+        }
+        
+        public override string ToString()
+        {
+            return this._value;
+        }
+    }
+    
+    /// Metric field type
+    /// Represents a phase of the language server startup sequence
+    public struct LanguageServerSetupStage
+    {
+        
+        private string _value;
+        
+        /// getManifest
+        public static readonly LanguageServerSetupStage GetManifest = new LanguageServerSetupStage("getManifest");
+        
+        /// getServer
+        public static readonly LanguageServerSetupStage GetServer = new LanguageServerSetupStage("getServer");
+        
+        /// initialize
+        public static readonly LanguageServerSetupStage Initialize = new LanguageServerSetupStage("initialize");
+        
+        /// all
+        public static readonly LanguageServerSetupStage All = new LanguageServerSetupStage("all");
+        
+        public LanguageServerSetupStage(string value)
+        {
+            this._value = value;
+        }
+        
+        public override string ToString()
+        {
+            return this._value;
+        }
+    }
+    
+    /// Metric field type
+    /// Represents the location where the language server is installed from
+    public struct LanguageServerLocation
+    {
+        
+        private string _value;
+        
+        /// remote
+        public static readonly LanguageServerLocation Remote = new LanguageServerLocation("remote");
+        
+        /// cache
+        public static readonly LanguageServerLocation Cache = new LanguageServerLocation("cache");
+        
+        /// override
+        public static readonly LanguageServerLocation Override = new LanguageServerLocation("override");
+        
+        /// fallback
+        public static readonly LanguageServerLocation Fallback = new LanguageServerLocation("fallback");
+        
+        public LanguageServerLocation(string value)
         {
             this._value = value;
         }
@@ -1020,6 +1150,34 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public LambdaAddEvent()
         {
             this.Passive = false;
+        }
+    }
+    
+    /// Sets up a language server
+    public sealed class LanguageServerSetup : BaseTelemetryEvent
+    {
+        
+        /// The result of the operation
+        public Result Result;
+        
+        /// A generic ID metadata
+        public string Id;
+        
+        /// Represents a phase of the language server startup sequence
+        public LanguageServerSetupStage LanguageServerSetupStage;
+        
+        /// Optional - A generic version metadata
+        public string Version;
+        
+        /// Optional - Represents the location where the language server is installed from
+        public LanguageServerLocation? LanguageServerLocation;
+        
+        /// Optional - Represents the version of the manifest schema associated with the language server
+        public string ManifestSchemaVersion;
+        
+        public LanguageServerSetup()
+        {
+            this.Passive = true;
         }
     }
 }

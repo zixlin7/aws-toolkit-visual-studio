@@ -20,6 +20,8 @@ namespace AWSToolkit.Tests.Credentials.IO
 
         private const string _expectedSsoSessionRegion = "us-west-2";
 
+        private const string _expectedSsoRegistrationScopes = "test-scope-1,test-scope-2";
+
         private const string _expectedSsoSessionStartUrl = "https://amazon.com";
 
         private readonly string _expectedSsoSessionSectionName;
@@ -107,6 +109,7 @@ namespace AWSToolkit.Tests.Credentials.IO
                 {
                     SsoRegion = ssoRegion,
                     SsoStartUrl = ssoStartUrl
+                    // SsoRegistrationScopes is not required
                 })));
         }
 
@@ -118,7 +121,8 @@ namespace AWSToolkit.Tests.Credentials.IO
                 {
                     SsoRegion = _expectedSsoSessionRegion,
                     SsoSession = _expectedSsoSessionName,
-                    SsoStartUrl = _expectedSsoSessionStartUrl
+                    SsoStartUrl = _expectedSsoSessionStartUrl,
+                    SsoRegistrationScopes = _expectedSsoRegistrationScopes
                 });
 
             CreateSharedConfigFile();
@@ -130,6 +134,7 @@ namespace AWSToolkit.Tests.Credentials.IO
             Assert.NotNull(configFile);
             Assert.True(configFile.TryGetSection(_expectedSsoSessionName, true, out var actualSsoSession));
             Assert.Equal(expectedSsoSession.Options.SsoRegion, actualSsoSession[ExtensionMethods._ssoRegionPropertyName]);
+            Assert.Equal(expectedSsoSession.Options.SsoRegistrationScopes, actualSsoSession[ExtensionMethods._ssoRegistrationScopesName]);
             Assert.Equal(expectedSsoSession.Options.SsoStartUrl, actualSsoSession[ExtensionMethods._ssoStartUrlPropertyName]);
         }
         #endregion

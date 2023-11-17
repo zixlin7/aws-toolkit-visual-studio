@@ -21,7 +21,6 @@ namespace AWSToolkit.Tests.Credentials.Core
     public class AwsConnectionManagerTest
     {
         private const string SampleAccountId = "11222333444";
-        private const string SampleAwsId = "5678";
 
         private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
         private readonly Mock<ICredentialManager> _credentialManager = new Mock<ICredentialManager>();
@@ -70,7 +69,6 @@ namespace AWSToolkit.Tests.Credentials.Core
             PopulateRegions();
 
             _identityResolver.AccountId = SampleAccountId;
-            _identityResolver.AwsId = SampleAwsId;
 
             _credentialManager.Setup(x => x.CredentialSettingsManager).Returns((ICredentialSettingsManager)null);
             _regionProvider.Setup(x => x.GetRegion(It.IsAny<string>()))
@@ -255,7 +253,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             _awsConnectionManager.ChangeCredentialProvider(_sampleTokenBasedIdentifier);
             WaitUntilConnectionStateIsStable();
 
-            Assert.Equal(SampleAwsId, _awsConnectionManager.ActiveAwsId);
+            Assert.Equal(string.Empty, _awsConnectionManager.ActiveAwsId);
             Assert.True(string.IsNullOrEmpty(_awsConnectionManager.ActiveAccountId));
         }
 

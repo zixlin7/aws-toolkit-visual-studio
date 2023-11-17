@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
@@ -12,7 +14,11 @@ using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Urls;
+using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
+
+using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 
 using log4net;
 
@@ -20,17 +26,28 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 {
     public enum GettingStartedStep
     {
-        AddEditProfileWizard,
-        GettingStarted
+        AddEditProfileWizards,
+        GettingStartedCompleted
     }
 
-    public class GettingStartedViewModel : RootViewModel
+    public class RadioButtonEnumConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value?.Equals(parameter);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value?.Equals(true) == true ? parameter : Binding.DoNothing;
+        }
+    }
+
+    internal class GettingStartedViewModel : RootViewModel, IAddEditProfileWizardHost
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GettingStartedViewModel));
 
-        private IAddEditProfileWizard _addEditProfileWizard => ServiceProvider.RequireService<IAddEditProfileWizard>();
-
-        #region GettingStartedStep
+        private IGettingStartedCompleted _gettingStartedCompleted => ServiceProvider.RequireService<IGettingStartedCompleted>();
 
         private GettingStartedStep _currentStep;
 
@@ -39,74 +56,36 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             get => _currentStep;
             set => SetProperty(ref _currentStep, value);
         }
-        #endregion
 
-        private string _credentialTypeName;
+        private FeatureType _featureType;
 
-        public string CredentialTypeName
+        public FeatureType FeatureType
         {
-            get => _credentialTypeName;
-            set => SetProperty(ref _credentialTypeName, value);
+            get => _featureType;
+            set => SetProperty(ref _featureType, value);
         }
 
-        private string _credentialName;
+        public bool IsCodeWhispererSupported =>
+#if VS2022_OR_LATER
+                true;
+#else
+                false;
+#endif
 
-        public string CredentialName
+        private ICommand _openAwsExplorerLearnMoreCommand;
+
+        public ICommand OpenAwsExplorerLearnMoreCommand
         {
-            get => _credentialName;
-            set => SetProperty(ref _credentialName, value);
+            get => _openAwsExplorerLearnMoreCommand;
+            private set => SetProperty(ref _openAwsExplorerLearnMoreCommand, value);
         }
 
-        #region Status
-        private bool? _status;
+        private ICommand _openCodeWhispererLearnMoreCommand;
 
-        public bool? Status
+        public ICommand OpenCodeWhispererLearnMoreCommand
         {
-            get => _status;
-            set => SetProperty(ref _status, value);
-        }
-        #endregion
-
-        #region CollectAnalytics
-        public bool CollectAnalytics
-        {
-            get
-            {
-                try
-                {
-                    return ToolkitSettings.Instance.TelemetryEnabled;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex);
-                }
-
-                return ToolkitSettings.DefaultValues.TelemetryEnabled;
-            }
-            set
-            {
-                try
-                {
-                    if (ToolkitSettings.Instance.TelemetryEnabled != value)
-                    {
-                        ToolkitSettings.Instance.TelemetryEnabled = value;
-                        NotifyPropertyChanged(nameof(CollectAnalytics));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex);
-                }
-            }
-        }
-        #endregion
-
-        private ICommand _openAwsExplorerAsyncCommand;
-
-        public ICommand OpenAwsExplorerAsyncCommand
-        {
-            get => _openAwsExplorerAsyncCommand;
-            private set => SetProperty(ref _openAwsExplorerAsyncCommand, value);
+            get => _openCodeWhispererLearnMoreCommand;
+            private set => SetProperty(ref _openCodeWhispererLearnMoreCommand, value);
         }
 
         private ICommand _openGitHubCommand;
@@ -117,86 +96,37 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             private set => SetProperty(ref _openGitHubCommand, value);
         }
 
-        private ICommand _openUsingToolkitDocsCommand;
-
-        public ICommand OpenUsingToolkitDocsCommand
-        {
-            get => _openUsingToolkitDocsCommand;
-            private set => SetProperty(ref _openUsingToolkitDocsCommand, value);
-        }
-
-        private ICommand _openDeployLambdaDocsCommand;
-
-        public ICommand OpenDeployLambdaDocsCommand
-        {
-            get => _openDeployLambdaDocsCommand;
-            private set => SetProperty(ref _openDeployLambdaDocsCommand, value);
-        }
-
-        private ICommand _openDeployBeanstalkDocsCommand;
-
-        public ICommand OpenDeployBeanstalkDocsCommand
-        {
-            get => _openDeployBeanstalkDocsCommand;
-            private set => SetProperty(ref _openDeployBeanstalkDocsCommand, value);
-        }
-
-        private ICommand _openDevBlogCommand;
-
-        public ICommand OpenDevBlogCommand
-        {
-            get => _openDevBlogCommand;
-            private set => SetProperty(ref _openDevBlogCommand, value);
-        }
-
-        private ICommand _openPrivacyPolicyCommand;
-
-        public ICommand OpenPrivacyPolicyCommand
-        {
-            get => _openPrivacyPolicyCommand;
-            private set => SetProperty(ref _openPrivacyPolicyCommand, value);
-        }
-
-        private ICommand _openTelemetryDisclosureCommand;
-
-        public ICommand OpenTelemetryDisclosureCommand
-        {
-            get => _openTelemetryDisclosureCommand;
-            private set => SetProperty(ref _openTelemetryDisclosureCommand, value);
-        }
-
-        private ICommand _openLogsCommand;
-
-        public ICommand OpenLogsCommand
-        {
-            get => _openLogsCommand;
-            private set => SetProperty(ref _openLogsCommand, value);
-        }
+        public BaseMetricSource SaveMetricSource { get; private set; }
 
         internal GettingStartedViewModel(ToolkitContext toolkitContext)
             : base(toolkitContext) { }
+
+        public override async Task RegisterServicesAsync()
+        {
+            await base.RegisterServicesAsync();
+
+            ServiceProvider.SetService<IAddEditProfileWizardHost>(this);
+        }
 
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
 
-            _addEditProfileWizard.SaveMetricSource = ToolkitSettings.Instance.HasUserSeenFirstRunForm ?
+            SaveMetricSource = ToolkitSettings.Instance.HasUserSeenFirstRunForm ?
                 MetricSources.GettingStartedMetricSource.GettingStarted :
                 MetricSources.GettingStartedMetricSource.FirstStartup;
 
             ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
 
-            OpenAwsExplorerAsyncCommand = new OpenAwsExplorerCommand(ToolkitContext);
-            OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);
-            OpenLogsCommand = new OpenToolkitLogsCommand(ToolkitContext);
-
-            Func<string, ICommand> openUrl = url => OpenUrlCommandFactory.Create(ToolkitContext, url);
+            ICommand openUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
+            OpenAwsExplorerLearnMoreCommand = openUrl(AwsUrls.UserGuideWorkWithAws);
+            OpenCodeWhispererLearnMoreCommand = openUrl(AwsUrls.CodeWhispererOverview);
             OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);
-            OpenDeployLambdaDocsCommand = openUrl(AwsUrls.DeployLambdaDocs);
-            OpenDeployBeanstalkDocsCommand = openUrl(AwsUrls.DeployBeanstalkDocs);
-            OpenDevBlogCommand = openUrl(AwsUrls.DevBlog);
-            OpenPrivacyPolicyCommand = openUrl(AwsUrls.PrivacyPolicy);
-            OpenTelemetryDisclosureCommand = openUrl(AwsUrls.TelemetryDisclosure);
+
+            if (!IsCodeWhispererSupported)
+            {
+                FeatureType = FeatureType.AwsExplorer;
+            }
 
             await ShowInitialCardAsync();
         }
@@ -206,18 +136,31 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             var credId = GetDefaultCredentialIdentifier();
             if (credId == null)
             {
-                _addEditProfileWizard.ConnectionSettingsChanged += (sender, e) =>
-                {
-                    Status = true;
-                    ShowGettingStarted(e.CredentialIdentifier);
-                };
-                CurrentStep = GettingStartedStep.AddEditProfileWizard;
+                CurrentStep = GettingStartedStep.AddEditProfileWizards;
             }
             else
             {
                 ShowGettingStarted(credId);
                 await ChangeConnectionSettingsAsync(credId);
             }
+        }
+
+        public void ShowCompleted(ICredentialIdentifier credentialIdentifier)
+        {
+            if (FeatureType == FeatureType.CodeWhisperer)
+            {
+                SetCodeWhispererCredentialIdentifier(credentialIdentifier);
+            }
+
+            _gettingStartedCompleted.Status = true;
+            ShowGettingStarted(credentialIdentifier);
+        }
+
+        private void SetCodeWhispererCredentialIdentifier(ICredentialIdentifier credentialIdentifier)
+        {
+            var settings = CodeWhispererSettings.Instance;
+            settings.CredentialIdentifier = credentialIdentifier.Id;
+            settings.Save();
         }
 
         private async Task ChangeConnectionSettingsAsync(ICredentialIdentifier credentialIdentifier)
@@ -227,12 +170,12 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             try
             {
                 var state = await ToolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(credentialIdentifier, region);
-                Status = ConnectionState.IsValid(state);
+                _gettingStartedCompleted.Status = ConnectionState.IsValid(state);
             }
             catch (Exception ex)
             {
                 _logger.Error("Unable to set AWS Explorer to existing credential.", ex);
-                Status = false;
+                _gettingStartedCompleted.Status = false;
             }
         }
 
@@ -240,9 +183,9 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         {
             var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
 
-            CredentialTypeName = profileProperties.GetCredentialType().GetDescription();
-            CredentialName = credentialIdentifier.ProfileName;
-            CurrentStep = GettingStartedStep.GettingStarted;
+            _gettingStartedCompleted.CredentialTypeName = profileProperties.GetCredentialType().GetDescription();
+            _gettingStartedCompleted.CredentialName = credentialIdentifier.ProfileName;
+            CurrentStep = GettingStartedStep.GettingStartedCompleted;
         }
 
         private ICredentialIdentifier GetDefaultCredentialIdentifier()

@@ -15,15 +15,18 @@ namespace AWSToolkit.Tests.Credentials.Sono
     {
         public static readonly TheoryData<string> NullOrWhitespaceText = new TheoryData<string>() { string.Empty, " ", null };
 
-        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier("default");
+        private static readonly ICredentialIdentifier SonoCredentialId = new SonoCredentialIdentifier(SonoCredentialProviderFactory.CodeCatalystProfileName);
         
         private readonly Mock<IAWSToolkitShellProvider> _toolkitShell = new Mock<IAWSToolkitShellProvider>();
+
+        private const string _sessionName = "session-name";
 
         [Fact]
         public void BuildWithoutCallback()
         {
             var tokenProvider = SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(SonoCredentialId)
+                .WithSessionName(_sessionName)
                 .WithToolkitShell(_toolkitShell.Object)
                 .Build();
 
@@ -36,6 +39,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
             void SsoCallback(SsoVerificationArguments args) { }
 
             var tokenProvider = SonoTokenProviderBuilder.Create()
+                .WithSessionName(_sessionName)
                 .WithSsoCallback(SsoCallback)
                 .Build();
 
@@ -46,6 +50,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         public void BuildShouldThrowWithMissingToolkitShell()
         {
             var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
+                .WithSessionName(_sessionName)
                 .WithToolkitShell(null)
                 .Build());
 
@@ -57,6 +62,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         {
             var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
                 .WithCredentialIdentifier(null)
+                .WithSessionName(_sessionName)
                 .Build());
 
             Assert.Contains("Credential", exception.Message);
@@ -77,6 +83,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         public void BuildShouldThrowWithMissingProviderRegion()
         {
             var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
+                .WithSessionName(_sessionName)
                 .WithTokenProviderRegion(null)
                 .Build());
 
@@ -88,6 +95,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         public void BuildShouldThrowWithMissingStartUrl(string startUrl)
         {
             var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
+                .WithSessionName(_sessionName)
                 .WithStartUrl(startUrl)
                 .Build());
 
@@ -99,6 +107,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         {
             var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
                 .WithOidcRegion(null)
+                .WithSessionName(_sessionName)
                 .Build());
 
             Assert.Contains("OIDC", exception.Message);
@@ -108,6 +117,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         public void BuildShouldThrowWithMissingFileHandler()
         {
             var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
+                .WithSessionName(_sessionName)
                 .WithTokenCacheFileHandler(null)
                 .Build());
 
@@ -118,6 +128,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         public void BuildShouldThrowWithMissingDirectoryHandler()
         {
             var exception = Assert.Throws<InvalidOperationException>(() => PopulateBuilder()
+                .WithSessionName(_sessionName)
                 .WithTokenCacheDirectoryHandler(null)
                 .Build());
 
@@ -128,6 +139,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
         {
             return SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(SonoCredentialId)
+                .WithSessionName(_sessionName)
                 .WithToolkitShell(_toolkitShell.Object);
         }
     }

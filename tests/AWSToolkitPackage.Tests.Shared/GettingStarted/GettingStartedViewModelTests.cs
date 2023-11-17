@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
+using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
 
 using Moq;
 
@@ -24,6 +25,8 @@ namespace AWSToolkitPackage.Tests.GettingStarted
 
         private readonly Mock<IAddEditProfileWizard> _addEditProfileWizardMock = new Mock<IAddEditProfileWizard>();
 
+        private readonly Mock<IGettingStartedCompleted> _gettingStartedCompleted = new Mock<IGettingStartedCompleted>();
+
         private readonly List<ICredentialIdentifier> _credentialIdentifiers = new List<ICredentialIdentifier>();
 
         public GettingStartedViewModelTests()
@@ -38,6 +41,7 @@ namespace AWSToolkitPackage.Tests.GettingStarted
 
             _sut = new GettingStartedViewModel(_toolkitContextFixture.ToolkitContext);
             _sut.ServiceProvider.SetService(_addEditProfileWizardMock.Object);
+            _sut.ServiceProvider.SetService(_gettingStartedCompleted.Object);
         }
 
         private async Task RunViewModelLifecycle()
@@ -60,9 +64,11 @@ namespace AWSToolkitPackage.Tests.GettingStarted
             var region = new ToolkitRegion() { DisplayName = "nowhere-east-6" };
             SetupChangeConnectionSettingsAsync(new ConnectionState.ValidConnection(id, region));
 
+            _gettingStartedCompleted.SetupSet(mock => mock.Status = true).Verifiable();
+
             await RunViewModelLifecycle();
 
-            Assert.True(_sut.Status);
+            _gettingStartedCompleted.VerifyAll();
         }
 
         [Fact]
@@ -72,7 +78,11 @@ namespace AWSToolkitPackage.Tests.GettingStarted
 
             await RunViewModelLifecycle();
 
-            Assert.False(_sut.Status);
+            _gettingStartedCompleted.SetupSet(mock => mock.Status = false).Verifiable();
+
+            await RunViewModelLifecycle();
+
+            _gettingStartedCompleted.VerifyAll();
         }
 
         [Fact]
@@ -82,7 +92,7 @@ namespace AWSToolkitPackage.Tests.GettingStarted
 
             await RunViewModelLifecycle();
 
-            Assert.Equal(GettingStartedStep.AddEditProfileWizard, _sut.CurrentStep);
+            Assert.Equal(GettingStartedStep.AddEditProfileWizards, _sut.CurrentStep);
         }
 
         [Fact]
@@ -90,7 +100,7 @@ namespace AWSToolkitPackage.Tests.GettingStarted
         {
             await RunViewModelLifecycle();
 
-            Assert.Equal(GettingStartedStep.GettingStarted, _sut.CurrentStep);
+            Assert.Equal(GettingStartedStep.GettingStartedCompleted, _sut.CurrentStep);
         }
     }
 }

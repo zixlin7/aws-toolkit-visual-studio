@@ -1,0 +1,51 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+<!-- Microsoft.Build.Tasks.v4.0.dll contains useful utilities that can help customize a build
+
+    This file contains tasks that wrap some ToolLocationHelper functions.
+    See https://learn.microsoft.com/en-us/dotnet/api/microsoft.build.utilities.toollocationhelper?view=msbuild-16
+-->
+
+<!-- 
+    GetPathToDotNetFrameworkSdkFile - Search for a file within the Windows SDK and return its full path.
+    https://learn.microsoft.com/en-us/dotnet/api/microsoft.build.utilities.toollocationhelper.getpathtodotnetframeworksdkfile?view=msbuild-16#microsoft-build-utilities-toollocationhelper-getpathtodotnetframeworksdkfile(system-string-microsoft-build-utilities-targetdotnetframeworkversion)
+
+    Filename - in - filename to search for (eg: "ildasm.exe")
+    FullPath - out - full path on local system to the filename
+-->
+  <UsingTask TaskName="GetPathToDotNetFrameworkSdkFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+        <Filename ParameterType="System.String" Required="true" />
+        <FullPath ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          FullPath = Microsoft.Build.Utilities.ToolLocationHelper.GetPathToDotNetFrameworkSdkFile(Filename);
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+<!-- 
+    GetPathToDotNetFrameworkFile - Search for a file within the .NET Framework and return its full path.
+    https://learn.microsoft.com/en-us/dotnet/api/microsoft.build.utilities.toollocationhelper.getpathtodotnetframeworkfile?view=msbuild-16#microsoft-build-utilities-toollocationhelper-getpathtodotnetframeworkfile(system-string-microsoft-build-utilities-targetdotnetframeworkversion)
+
+    Filename - in - filename to search for (eg: "ilasm.exe")
+    FullPath - out - full path on local system to the filename
+-->
+  <UsingTask TaskName="GetPathToDotNetFrameworkFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+        <Filename ParameterType="System.String" Required="true" />
+        <FullPath ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          FullPath = Microsoft.Build.Utilities.ToolLocationHelper.GetPathToDotNetFrameworkFile(Filename, TargetDotNetFrameworkVersion.VersionLatest);
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+</Project>

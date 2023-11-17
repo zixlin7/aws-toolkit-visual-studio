@@ -123,6 +123,11 @@
         <Parent guid="guid_VSPackageCmdSet" id="IDM_AWS_TOOLKIT" />
       </Group>
 
+      <!-- This is the submenu group that we add view related menu items to -->
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_CODEWHISPERER" priority="0x0004">
+        <Parent guid="guid_VSPackageCmdSet" id="IDM_AWS_TOOLKIT" />
+      </Group>
+
     </Groups>
 
 
@@ -368,6 +373,7 @@
         </Strings>
       </Button>
 
+
       <Button guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001" type="Button">
         <Icon guid="ImageCatalogGuid" id="NewBug" />
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -417,6 +423,16 @@
         <Strings>
           <CommandName>AWS.View.Link.DotNetOnAws</CommandName>
           <ButtonText>View .NET on AWS Community Webpage</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidCodeWhispererGetSuggestion" priority="0x0001" type="Button">
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.CodeWhisperer.GetSuggestion</CommandName>
+          <ButtonText>CodeWhisperer.GetSuggestion</ButtonText>
         </Strings>
       </Button>
       <!-- END Menu items that will be added to the "AWS Toolkit" submenu group -->
@@ -638,7 +654,7 @@
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidViewToolkitLogs" priority="0x0003">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW" />
     </CommandPlacement>
-
+    
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT" />
     </CommandPlacement>
@@ -653,6 +669,10 @@
 
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidLinkToDotNetOnAwsCommunity" priority="0x0002">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_LINKS" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCodeWhispererGetSuggestion" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_CODEWHISPERER" />
     </CommandPlacement>
     <!-- END AWS Toolkit Menu Command Placements -->
 
@@ -675,6 +695,7 @@
 
   <KeyBindings>
     <KeyBinding guid="guid_VSPackageCmdSet" id="cmdidAWSNavigator" editor="guidVSStd97" key1="K" mod1="Control" key2="A" />
+    <KeyBinding guid="guid_VSPackageCmdSet" id="cmdidCodeWhispererGetSuggestion" editor="guidVSStd97" key1="C" mod1="Alt" />
   </KeyBindings>
 
   <Symbols>
@@ -716,6 +737,10 @@
       <IDSymbol name="cmdidViewToolkitLogs" value="0x0612" />
       <!-- END Commands within the "AWS Toolkit" Menu -->
 
+      <!-- CodeWhisperer commands -->
+      <IDSymbol name="cmdidCodeWhispererGetSuggestion" value ="0x0700" />
+      <!-- END CodeWhisperer commands -->
+
       <IDSymbol name="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" value="0x1000" />
 
       <IDSymbol name="IDG_AWS_CLOUDFORMATION" value="0x1001"/>
@@ -735,6 +760,7 @@
       <IDSymbol name="IDG_AWS_TOOLKIT_ACT" value="0x02002" />
       <IDSymbol name="IDG_AWS_TOOLKIT_VIEW" value="0x02004" />
       <IDSymbol name="IDG_AWS_TOOLKIT_LINKS" value="0x02006" />
+      <IDSymbol name="IDG_AWS_TOOLKIT_CODEWHISPERER" value="0x02008" />
       <IDSymbol name="IDM_AWS_TOOLKIT" value="0x02100" />
     </GuidSymbol>
 

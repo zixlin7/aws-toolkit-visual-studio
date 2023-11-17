@@ -147,7 +147,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
         [Fact]
         public void ExecuteLogout()
         {
-            var identifier = new SonoCredentialIdentifier("default");
+            var identifier = new SonoCredentialIdentifier(SonoCredentialProviderFactory.CodeCatalystProfileName);
             _sut.Connection.CredentialIdentifier = identifier;
 
             _sut.LogoutCommand.Execute(null);
@@ -160,7 +160,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 
         public static IEnumerable<object[]> CanExecuteData = new List<object[]>
         {
-            new object[] { new SonoCredentialIdentifier("default"), true},
+            new object[] { new SonoCredentialIdentifier(SonoCredentialProviderFactory.CodeCatalystProfileName), true},
             new object[] { new SonoCredentialIdentifier("sample"), false},
             new object[] { new SharedCredentialIdentifier("sample"), false },
             new object[] { null, false},

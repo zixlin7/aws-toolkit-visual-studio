@@ -65,7 +65,8 @@ namespace Amazon.AWSToolkit.Telemetry
             get
             {
                 // Don't use implicit string cast here or it will create a cycle
-                if (_clientId == AutomatedTestClientId._clientId)
+                if (_clientId == AutomatedTestClientId._clientId
+                    || _clientId == UnknownClientId._clientId)
                 {
                     return _clientId;
                 }

@@ -10,7 +10,7 @@
         <ReleaseNotes>ReleaseNotes.txt</ReleaseNotes>
         <Icon>Resources\Package.ico</Icon>
         <PreviewImage>Resources\aws.png</PreviewImage>
-        <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CloudWatch Logs;CodeArtifact;CodeCommit;CodeCatalyst;DynamoDB;EC2;ECR;ECS;IAM;Lambda;RDS;S3;Serverless;SNS;SQS</Tags>
+        <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CloudWatch Logs;CodeArtifact;CodeCommit;CodeCatalyst;CodeWhisperer;DynamoDB;EC2;ECR;ECS;IAM;Lambda;RDS;S3;Serverless;SNS;SQS</Tags>
         <Preview>false</Preview>
     </Metadata>
     <Installation AllUsers="true">
@@ -85,5 +85,6 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SSOOIDC.dll" AssemblyName="AWSSDK.SSOOIDC, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.SourceControl.v17" TargetVersion="[17.0,18.0)" Path="|AwsToolkit.SourceControl.v17|" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.VsSdk.Common.v17" TargetVersion="[17.0,18.0)" Path="|AwsToolkit.VsSdk.Common.v17|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AwsToolkit.CodeWhisperer.v17" Path="|AwsToolkit.CodeWhisperer.v17|" />
     </Assets>
 </PackageManifest>
