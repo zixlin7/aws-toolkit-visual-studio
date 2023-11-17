@@ -96,9 +96,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var hasValidLocalCache = HasValidLocalCache(downloadCachePath, targetContent);
                 if (hasValidLocalCache)
                 {
-                    ShowLicenseMessage(latestCompatibleLspVersion.ThirdPartyLicenses);
-                    ShowMessage(
-                        $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} from local cache location: {downloadCachePath}");
+                    ShowMessageWithLicense(
+                        $"Launching {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} from local cache location: {downloadCachePath}", latestCompatibleLspVersion.ThirdPartyLicenses);
 
                     result.Path = downloadCachePath;
                     result.Location = LanguageServerLocation.Cache;
@@ -114,9 +113,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                     await DownloadFromRemoteAsync(targetContent, latestCompatibleLspVersion.ServerVersion, token);
                 if (downloadResult)
                 {
-                    ShowLicenseMessage(latestCompatibleLspVersion.ThirdPartyLicenses);
-                    ShowMessage(
-                        $"Installing {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} to: {downloadCachePath}");
+                    ShowMessageWithLicense(
+                        $"Installing {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion} to: {downloadCachePath}", latestCompatibleLspVersion.ThirdPartyLicenses);
 
                     result.Path = downloadCachePath;
                     result.Location = LanguageServerLocation.Remote;
@@ -140,9 +138,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 var version = Path.GetFileName(Path.GetDirectoryName(downloadCachePath));
                 var fallbackLspVersion = _manifestSchema.Versions.FirstOrDefault(x => string.Equals(version, x.ServerVersion));
 
-                ShowLicenseMessage(fallbackLspVersion?.ThirdPartyLicenses);
-                ShowMessage(
-                    $"Unable to install {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion}. Launching a previous version from: {fallbackPath}");
+                ShowMessageWithLicense(
+                    $"Unable to install {_options.Name} Language Server v{latestCompatibleLspVersion.ServerVersion}. Launching a previous version from: {fallbackPath}", fallbackLspVersion?.ThirdPartyLicenses);
 
                 result.Path = fallbackPath;
                 result.Location = LanguageServerLocation.Fallback;
@@ -190,16 +187,21 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
         }
 
         /// <summary>
-        /// Displays the attribution notice url in the toolkit output pane and logger
+        /// Displays the language server message with attribution url message in the toolkit output pane
         /// </summary>
+        /// <param name="languageServerMessage"></param>
         /// <param name="attributionUrl"></param>
-        private void ShowLicenseMessage(string attributionUrl)
+        private void ShowMessageWithLicense(string languageServerMessage, string attributionUrl)
         {
-            if (!string.IsNullOrWhiteSpace(attributionUrl))
+            if (!string.IsNullOrWhiteSpace(languageServerMessage))
             {
-                var message =
-                    $"AWS Toolkit uses a Language Server to provide CodeWhisperer features. The CodeWhisperer language service attribution notice can be seen at: {attributionUrl}";
-               ShowMessage(message);
+                if (!string.IsNullOrWhiteSpace(attributionUrl))
+                {
+                    var attributionMessage =
+                        $" (Attribution notice for {_options.Filename} can be found at: {attributionUrl})";
+                   languageServerMessage += attributionMessage;
+                }
+                ShowMessage(languageServerMessage);
             }
         }
 
