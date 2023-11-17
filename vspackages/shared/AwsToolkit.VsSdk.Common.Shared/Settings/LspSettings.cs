@@ -25,12 +25,10 @@ namespace AwsToolkit.VsSdk.Common.Settings
         /// Provides Toolkit developers a way to load the lsp version manifest from a local folder 
         /// This provides a way to test things locally while the remote version is still under development
         /// </summary>
-        // TODO: Un-comment browsable when developer testing is completed to hide the setting from users
-        // [Browsable(false)]
         [DisplayName("Version Manifest Folder")]
         [Description("When set, attempts to use the specified folder to fetch the relevant LSP Version Manifest.")]
         [DefaultValue("")]
-        [Browsable(true), NotifyParentProperty(true),
+        [Browsable(false), NotifyParentProperty(true),
          EditorBrowsable(EditorBrowsableState.Never)]
         public string VersionManifestFolder { get; set; } = string.Empty;
 
@@ -38,7 +36,6 @@ namespace AwsToolkit.VsSdk.Common.Settings
         /// Represents list of version manifest deprecation notices dismissed by the user 
         /// </summary>
         /// <remark>Can be saved by user actions <see cref="ILspSettingsRepository.SaveLspSettingsAsync"/> </remark>
-        //[Browsable(false)]
         [DisplayName("Dismissed Manifest Deprecation Notices")]
         [Description("Represents list of version manifest deprecation notices dismissed by the user")]
         [DefaultValue("")]
