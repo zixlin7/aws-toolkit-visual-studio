@@ -39,7 +39,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
             }
             else
             {
-                var msg = "Unable to create a profile.  Try Getting Started.";
+                var msg = "An unexpected error occurred.  Try to open Getting Started from the main menu.";
                 _toolkitContextProvider.GetToolkitContext()?.ToolkitHost.ShowError(msg);
                 _logger.Warn(msg);
                 _logger.Error($"Unable to find {commandName} command.");

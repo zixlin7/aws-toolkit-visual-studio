@@ -33,7 +33,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private readonly ICodeWhispererSsoTokenProvider _tokenProvider;
 
-        private ConnectionProperties _signedInConnectionProperties;
+        internal ConnectionProperties _signedInConnectionProperties;
         private DateTime? _tokenExpiresAt;
         private readonly IToolkitTimer _tokenRefreshTimer;
 
@@ -73,6 +73,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
             _codeWhispererLspClient.InitializedAsync += OnLspClientInitializedAsync;
             _codeWhispererLspClient.RequestConnectionMetadataAsync += OnLspClientRequestConnectionMetadataAsync;
+
+            _settingsRepository.SettingsSaved += OnSettingsRepositorySettingsSaved;
         }
 
         private ConnectionStatus _status = ConnectionStatus.Disconnected;
@@ -105,6 +107,37 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             StatusChanged?.Invoke(this, e);
         }
 
+        private void OnSettingsRepositorySettingsSaved(object sender, CodeWhispererSettingsSavedEventArgs e)
+        {
+            var credentialIdentifierSetting = e.Settings.CredentialIdentifier;
+
+            if (credentialIdentifierSetting != _signedInConnectionProperties?.CredentialIdentifier?.Id)
+            {
+                _taskFactoryProvider.JoinableTaskFactory.Run(async () =>
+                {
+                    try
+                    {
+                        if (_signedInConnectionProperties != null)
+                        {
+                            await SignOutAsync(false, false);
+                        }
+
+                        var credentialIdentifier = _toolkitContextProvider.GetToolkitContext().CredentialManager
+                            .GetCredentialIdentifierById(credentialIdentifierSetting);
+
+                        if (credentialIdentifier != null)
+                        {
+                            await SignInAsync(credentialIdentifier, false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error("Unable to update signed-in credentials.", ex);
+                    }
+                });
+            }
+        }
+
         /// <summary>
         /// Connects the user to CodeWhisperer.
         /// User may go through modal dialogs and login flows as a result.
@@ -115,49 +148,58 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
             if (credentialIdentifier != null)
             {
-                var displayName = credentialIdentifier?.DisplayName ?? "unknown";
+                await SignInAsync(credentialIdentifier, true);
+            }
+        }
 
-                try
+        internal async Task SignInAsync(ICredentialIdentifier credentialIdentifier, bool saveSettings)
+        { 
+            var displayName = credentialIdentifier?.DisplayName ?? "unknown";
+
+            try
+            {
+                // Ensure we aren't on the UI thread before getting an SSO Token.
+                // Otherwise, the IDE will freeze while user is in the browser login flow.
+                await TaskScheduler.Default;
+
+                var toolkitContext = _toolkitContextProvider.GetToolkitContext();
+                var connectionProperties = CreateConnectionProperties(credentialIdentifier);
+
+                if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, connectionProperties.Region, out var awsToken))
                 {
-                    // Ensure we aren't on the UI thread before getting an SSO Token.
-                    // Otherwise, the IDE will freeze while user is in the browser login flow.
-                    await TaskScheduler.Default;
+                    var msg = $"Cannot sign in to CodeWhisperer, try again.{Environment.NewLine}Unable to resolve bearer token {displayName}.";
 
-                    var toolkitContext = _toolkitContextProvider.GetToolkitContext();
-                    var connectionProperties = CreateConnectionProperties(credentialIdentifier);
+                    // Invalidate the token to avoid an infinite loop of sign-in failures
+                    // that could otherwise require user to delete their token cache in
+                    // order to break the loop.
+                    //
+                    // There are normal circumstances where we get here, like when
+                    // the user presses Cancel on the SSO Token confirmation dialog.
+                    // There are unexpected circumstances, like if the AWS SDK raises
+                    // an exception while handling the token cache:
+                    // https://github.com/aws/aws-sdk-net/pull/3083/files#r1389714680
+                    InvalidateSsoToken(credentialIdentifier);
+                    throw new InvalidOperationException(msg);
+                }
 
-                    if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, connectionProperties.Region, out var awsToken))
-                    {
-                        var msg = $"Cannot sign in to CodeWhisperer, try again.{Environment.NewLine}Unable to resolve bearer token {displayName}.";
+                if (!await UseAwsTokenAsync(awsToken, connectionProperties))
+                {
+                    var msg = "Credentials are valid, but the bearer token could not be sent to the language server. You will be signed out, try again.";
+                    throw new InvalidOperationException(msg);
+                }
 
-                        // Invalidate the token to avoid an infinite loop of sign-in failures
-                        // that could otherwise require user to delete their token cache in
-                        // order to break the loop.
-                        //
-                        // There are normal circumstances where we get here, like when
-                        // the user presses Cancel on the SSO Token confirmation dialog.
-                        // There are unexpected circumstances, like if the AWS SDK raises
-                        // an exception while handling the token cache:
-                        // https://github.com/aws/aws-sdk-net/pull/3083/files#r1389714680
-                        InvalidateSsoToken(credentialIdentifier);
-                        throw new InvalidOperationException(msg);
-                    }
+                toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
 
-                    if (!await UseAwsTokenAsync(awsToken, connectionProperties))
-                    {
-                        var msg = "Credentials are valid, but the bearer token could not be sent to the language server. You will be signed out, try again.";
-                        throw new InvalidOperationException(msg);
-                    }
-
-                    toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
+                if (saveSettings)
+                {
                     await SaveCredentialIdAsync(credentialIdentifier.Id);
                 }
-                catch (Exception ex)
-                {
-                    var title = $"Failed to sign in to CodeWhisperer with {displayName}.";
-                    NotifyErrorAndDisconnect(title, ex);
-                    throw new InvalidOperationException(title, ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                var title = $"Failed to sign in to CodeWhisperer with {displayName}.";
+                NotifyErrorAndDisconnect(title, ex);
+                throw new InvalidOperationException(title, ex);
             }
         }
 
@@ -201,6 +243,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         public async Task SignOutAsync()
         {
+            await SignOutAsync(true, true);
+        }
+
+        internal async Task SignOutAsync(bool saveSettings, bool invalidateSsoToken)
+        {
             var credentialId = _signedInConnectionProperties.CredentialIdentifier;
             var displayName = credentialId?.DisplayName ?? "<unknown>";
 
@@ -210,11 +257,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
                 if (await ClearAwsTokenAsync())
                 {
-                    InvalidateSsoToken(credentialId);
+                    if (invalidateSsoToken)
+                    {
+                        InvalidateSsoToken(credentialId);
+                    }
                     toolkitContext.ToolkitHost.OutputToHostConsole($"Signed out of CodeWhisperer with {displayName}.");
                 }
 
-                await SaveCredentialIdAsync(null);
+                if (saveSettings)
+                {
+                    await SaveCredentialIdAsync(null);
+                }
             }
             catch (Exception ex)
             {
@@ -502,6 +555,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         public void Dispose()
         {
+            _settingsRepository.SettingsSaved -= OnSettingsRepositorySettingsSaved;
+
             _codeWhispererLspClient.InitializedAsync -= OnLspClientInitializedAsync;
             _codeWhispererLspClient.RequestConnectionMetadataAsync -= OnLspClientRequestConnectionMetadataAsync;
 

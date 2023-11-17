@@ -156,6 +156,45 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _settingsRepository.Settings.CredentialIdentifier.Should().BeNull();
         }
 
+        [Fact]
+        public void UpdatingCredIdSettingWithDifferentCredIdSignsIn()
+        {
+            _sut.Status.Should().Be(ConnectionStatus.Disconnected);
+
+            _settingsRepository.Settings.CredentialIdentifier = _sampleCredentialId.Id;
+            _settingsRepository.RaiseSettingsSaved();
+
+            Assert.Equal(_sampleCredentialId, _sut._signedInConnectionProperties.CredentialIdentifier);
+            _sut.Status.Should().Be(ConnectionStatus.Connected);
+        }
+
+        [Fact]
+        public async Task UpdatingCredIdSettingWithNullCredIdSignsOut()
+        {
+            _sut.Status.Should().Be(ConnectionStatus.Disconnected);
+
+            await _sut.SignInAsync(_sampleCredentialId, true);
+
+            _settingsRepository.Settings.CredentialIdentifier = null;
+            _settingsRepository.RaiseSettingsSaved();
+
+            Assert.Null(_sut._signedInConnectionProperties);
+            _sut.Status.Should().Be(ConnectionStatus.Disconnected);
+        }
+
+        [Fact]
+        public async Task UpdatingCredIdSettingWithSameCredIdDoesNothing()
+        {
+            _sut.Status.Should().Be(ConnectionStatus.Disconnected);
+
+            await _sut.SignInAsync(_sampleCredentialId, true);
+
+            _settingsRepository.Settings.CredentialIdentifier = _sampleCredentialId.Id;
+            _settingsRepository.RaiseSettingsSaved();
+
+            Assert.Equal(_sampleCredentialId, _sut._signedInConnectionProperties.CredentialIdentifier);
+            _sut.Status.Should().Be(ConnectionStatus.Connected);
+        }
 
         [Fact]
         public async Task RequestConnectionMetadataAsync_WhenSignedIn()
