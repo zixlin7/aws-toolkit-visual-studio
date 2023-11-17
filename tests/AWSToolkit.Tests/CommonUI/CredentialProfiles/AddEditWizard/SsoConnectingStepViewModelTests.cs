@@ -8,8 +8,6 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
-using Microsoft.VisualStudio.Threading;
-
 using Moq;
 
 using Xunit;
@@ -59,9 +57,20 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             // Call view model lifecycle method ViewShownAsync to call ResolveAwsTokenAsync indirectly.
             // This should fail almost immediately as expected due to bogus SsoStartUrl, but set a reasonable 
             // timeout less than the 10 minute grant code timeout just in case an update breaks the test.
-            await _sut.ViewShownAsync().WithTimeout(TimeSpan.FromMinutes(1));
+            await ConstrainTaskLengthAsync(_sut.ViewShownAsync(), TimeSpan.FromMinutes(1));
 
             _toolkitContextFixture.ToolkitHost.Verify(th => th.ShowError(It.IsAny<string>()), Times.Once());
+        }
+
+        /// <summary>
+        /// Throws if the task runs too long
+        /// </summary>
+        private async Task ConstrainTaskLengthAsync(Task task, TimeSpan taskLimit)
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.CancelAfter(taskLimit);
+
+            await Task.WhenAny(task, Task.Delay(Timeout.Infinite, tokenSource.Token));
         }
 
         [Fact]

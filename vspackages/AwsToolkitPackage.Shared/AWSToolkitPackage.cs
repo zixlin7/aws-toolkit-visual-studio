@@ -659,7 +659,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     additionalPluginFolders,
                     () =>
                     {
-                        // Event listener uses IAWSLambda, requires plugins to be loaded first
                         InitializeLambdaTesterEventListener();
                         RecordToolkitInitializedMetrics();
                         _toolkitInitialized = true;
@@ -992,7 +991,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             try
             {
-                _lambdaTesterEventListener = new LambdaTesterEventListener(this);
+                _lambdaTesterEventListener = new LambdaTesterEventListener(this, _toolkitContext);
             }
             catch (Exception e)
             {

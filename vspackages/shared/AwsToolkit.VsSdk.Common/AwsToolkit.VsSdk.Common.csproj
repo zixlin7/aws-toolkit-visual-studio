@@ -82,6 +82,10 @@
       <Project>{49C00D37-5980-495F-80C6-43C5192C4A87}</Project>
       <Name>AWSToolkit.IdentityManagement.Interface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\AmazonCLIExtensions\AmazonCLIExtensions.csproj">
+      <Project>{b4771f7a-a835-4b86-8b52-0e2fd560a48c}</Project>
+      <Name>AmazonCLIExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\toolkitcore\plugins\AWSToolkit.CodeCatalyst.Interface\AWSToolkit.CodeCatalyst.Interface.csproj">
       <Project>{dbdb8299-3efb-4a02-a34e-7bfb98ce3169}</Project>
       <Name>AWSToolkit.CodeCatalyst.Interface</Name>
