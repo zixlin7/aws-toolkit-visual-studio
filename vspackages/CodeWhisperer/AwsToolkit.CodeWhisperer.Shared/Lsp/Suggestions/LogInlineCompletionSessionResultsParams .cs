@@ -10,10 +10,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions
         public string SessionId { get; set; }
 
         [JsonProperty("totalSessionDisplayTime")]
-        public long TotalSessionDisplayTime { get; set; }
+        public long? TotalSessionDisplayTime { get; set; }
 
         [JsonProperty("firstCompletionDisplayLatency")]
-        public long FirstCompletionDisplayLatency { get; set; }
+        public long? FirstCompletionDisplayLatency { get; set; }
 
         [JsonProperty("completionSessionResult")]
         public Dictionary<string, InlineCompletionStates> CompletionSessionResult { get; set; }

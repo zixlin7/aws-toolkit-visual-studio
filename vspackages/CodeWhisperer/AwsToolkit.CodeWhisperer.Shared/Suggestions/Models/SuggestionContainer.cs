@@ -167,7 +167,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                 result.FirstCompletionDisplayLatency = _firstSuggestionDisplayLatency;
             }
 
-            var sessionTime = _suggestionDisplaySessionStopWatch.Elapsed.Milliseconds;
+            var sessionTime = Convert.ToInt64(_suggestionDisplaySessionStopWatch.Elapsed.TotalMilliseconds);
 
             if (sessionTime > 0)
             {
