@@ -83,9 +83,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
                 RaiseTelemetryEvent(eventArgs);
                 return Task.CompletedTask;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.Error("Failed to handle telemetry event notification from language server.", e);
+                // swallow errors that may include error parsing the telemetry event notification from language server
                 return Task.CompletedTask;
             }
         }
