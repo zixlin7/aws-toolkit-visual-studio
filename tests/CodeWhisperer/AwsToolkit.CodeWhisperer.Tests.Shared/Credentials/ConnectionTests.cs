@@ -102,6 +102,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _toolkitContextFixture.DefineCredentialIdentifiers(new[] { _sampleCredentialId });
             _toolkitContextFixture.DefineCredentialProperties(_sampleCredentialId, _sampleProfileProperties);
 
+            _codeWhispererClient.Status = LspClientStatus.Running;
+
             _sut = new StubConnection(
                 _toolkitContextFixture.ToolkitContextProvider,
                 _settingsRepository,
@@ -164,8 +166,24 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _settingsRepository.Settings.CredentialIdentifier = _sampleCredentialId.Id;
             _settingsRepository.RaiseSettingsSaved();
 
-            Assert.Equal(_sampleCredentialId, _sut._signedInConnectionProperties.CredentialIdentifier);
+            _sut._signedInConnectionProperties.CredentialIdentifier.Should().Be(_sampleCredentialId);
             _sut.Status.Should().Be(ConnectionStatus.Connected);
+        }
+
+        [Theory]
+        [InlineData(LspClientStatus.Error)]
+        [InlineData(LspClientStatus.NotRunning)]
+        [InlineData(LspClientStatus.SettingUp)]
+        public void UpdatingCredIdSettingWithDifferentCredIdSignsIn_WhenClientNotRunning(LspClientStatus initialClientStatus)
+        {
+            _codeWhispererClient.Status = initialClientStatus;
+            _sut.Status.Should().Be(ConnectionStatus.Disconnected);
+
+            _settingsRepository.Settings.CredentialIdentifier = _sampleCredentialId.Id;
+            _settingsRepository.RaiseSettingsSaved();
+
+            _sut._signedInConnectionProperties.Should().BeNull();
+            _sut.Status.Should().Be(ConnectionStatus.Disconnected);
         }
 
         [Fact]
@@ -178,7 +196,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _settingsRepository.Settings.CredentialIdentifier = null;
             _settingsRepository.RaiseSettingsSaved();
 
-            Assert.Null(_sut._signedInConnectionProperties);
+            _sut._signedInConnectionProperties.Should().BeNull();
             _sut.Status.Should().Be(ConnectionStatus.Disconnected);
         }
 
@@ -192,7 +210,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _settingsRepository.Settings.CredentialIdentifier = _sampleCredentialId.Id;
             _settingsRepository.RaiseSettingsSaved();
 
-            Assert.Equal(_sampleCredentialId, _sut._signedInConnectionProperties.CredentialIdentifier);
+            _sut._signedInConnectionProperties.CredentialIdentifier.Should().Be(_sampleCredentialId);
             _sut.Status.Should().Be(ConnectionStatus.Connected);
         }
 

@@ -109,6 +109,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         private void OnSettingsRepositorySettingsSaved(object sender, CodeWhispererSettingsSavedEventArgs e)
         {
+            if (_codeWhispererLspClient.Status != LspClientStatus.Running)
+            {
+                // The language server doesn't have a protocol channel for us to work with
+                // Sign-in will automatically kick in the next time the language server starts up.
+                return;
+            }
+
             var credentialIdentifierSetting = e.Settings.CredentialIdentifier;
 
             if (credentialIdentifierSetting != _signedInConnectionProperties?.CredentialIdentifier?.Id)
