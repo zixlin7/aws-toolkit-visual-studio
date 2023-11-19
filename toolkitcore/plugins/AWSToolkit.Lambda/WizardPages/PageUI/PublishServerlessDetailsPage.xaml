@@ -135,6 +135,7 @@
                 <ContentControl  x:Name="StackLoadingIndicator" 
                                  x:FieldModifier="private"
                                  Template="{StaticResource LoadingComboBox}"
+                                 IsTabStop="False"
                                  Grid.Row="0"
                                  Grid.Column="1"/>
 
@@ -189,10 +190,10 @@
                 <ContentControl x:Name="BucketLoadingIndicator"
                                 x:FieldModifier="private"
                                 Template="{StaticResource LoadingComboBox}"
+                                IsTabStop="False"
                                 Grid.Row="2"
                                 Grid.Column="1"
-                               
-                />
+                                />
 
                 <Button
                     Name="_ctlNewBucket"
