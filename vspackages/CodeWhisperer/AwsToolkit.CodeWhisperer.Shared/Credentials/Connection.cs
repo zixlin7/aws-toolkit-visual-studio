@@ -388,6 +388,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
             var toolkitContext = _toolkitContextProvider.GetToolkitContext();
             toolkitContext.ToolkitHost.OutputToHostConsole(title);
+            toolkitContext.ToolkitHost.OutputToHostConsole(ex.Message);
             toolkitContext.ToolkitHost.ShowError(title, ex.Message ?? title);
         }
 
