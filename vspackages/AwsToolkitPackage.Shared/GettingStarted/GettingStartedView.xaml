@@ -12,6 +12,7 @@
     xmlns:wizard="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;assembly=AWSToolkit"
     xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;assembly=AWSToolkit"
     xmlns:wizServices="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;assembly=AWSToolkit"
+    xmlns:services="clr-namespace:Amazon.AWSToolkit.VisualStudio.GettingStarted.Services"
     xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     d:DesignHeight="600"
@@ -111,7 +112,7 @@
 
                 <Grid
                     Grid.IsSharedSizeScope="True"
-                    Tag="{x:Static local:GettingStartedStep.AddEditProfileWizards}">
+                    Tag="{x:Static services:GettingStartedStep.AddEditProfileWizards}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition SharedSizeGroup="MakeStep1BordersEqualWidth" />
                         <ColumnDefinition SharedSizeGroup="MakeStep1BordersEqualWidth" />
@@ -223,7 +224,7 @@
                 </Grid>
 
                 <local:GettingStartedCompletedView
-                    Tag="{x:Static local:GettingStartedStep.GettingStartedCompleted}">
+                    Tag="{x:Static services:GettingStartedStep.GettingStartedCompleted}">
                     <wizBehaviors:Mvvm.ViewModel>
                         <local:GettingStartedCompletedViewModel />
                     </wizBehaviors:Mvvm.ViewModel>

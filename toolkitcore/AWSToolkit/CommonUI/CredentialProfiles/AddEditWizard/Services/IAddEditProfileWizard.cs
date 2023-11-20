@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Credentials.Core;
@@ -10,8 +11,13 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
 {
     public enum FeatureType
     {
+        [Description("")]
         NotSet,
+
+        [Description("AWS Explorer")]
         AwsExplorer,
+
+        [Description("CodeWhisperer")]
         CodeWhisperer
     }
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
+using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
@@ -16,12 +16,30 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GettingStartedCompletedViewModel));
 
+        private IGettingStarted _gettingStarted =>
+            ServiceProvider.RequireService<IGettingStarted>();
+
+        public bool IsCodeWhispererSupported =>
+#if VS2022_OR_LATER
+                true;
+#else
+            false;
+#endif
+
         private bool? _status;
 
         public bool? Status
         {
             get => _status;
             set => SetProperty(ref _status, value);
+        }
+
+        private string _featureTypeName;
+
+        public string FeatureTypeName
+        {
+            get => _featureTypeName;
+            set => SetProperty(ref _featureTypeName, value);
         }
 
         private string _credentialTypeName;
@@ -82,6 +100,14 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             private set => SetProperty(ref _openAwsExplorerAsyncCommand, value);
         }
 
+        private ICommand _openAddEditWizardCommand;
+
+        public ICommand OpenAddEditWizardCommand
+        {
+            get => _openAddEditWizardCommand;
+            private set => SetProperty(ref _openAddEditWizardCommand, value);
+        }
+
         private ICommand _openDeployBeanstalkDocsCommand;
 
         public ICommand OpenDeployBeanstalkDocsCommand
@@ -138,20 +164,42 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             private set => SetProperty(ref _openUsingToolkitDocsCommand, value);
         }
 
+        // TODO: IDE-11680 :  CodeWhisperer Tutorial Course
+        //private ICommand _tryCodeWhispererExamplesAsyncCommand;
+
+        //public ICommand TryCodeWhispererExamplesAsyncCommand
+        //{
+        //    get => _tryCodeWhispererExamplesAsyncCommand;
+        //    private set => SetProperty(ref _tryCodeWhispererExamplesAsyncCommand, value);
+        //}
+
+        private ICommand _openCodeWhispererOverviewCommand;
+
+        public ICommand OpenCodeWhispererOverviewCommand
+        {
+            get => _openCodeWhispererOverviewCommand;
+            private set => SetProperty(ref _openCodeWhispererOverviewCommand, value);
+        }
+
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
 
             OpenAwsExplorerAsyncCommand = new OpenAwsExplorerCommand(ToolkitContext);
+            OpenAddEditWizardCommand = new RelayCommand(OpenAddEditWizard);
             OpenLogsCommand = new OpenToolkitLogsCommand(ToolkitContext);
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);
 
-            ICommand openUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
-            OpenPrivacyPolicyCommand = openUrl(AwsUrls.PrivacyPolicy);
-            OpenTelemetryDisclosureCommand = openUrl(AwsUrls.TelemetryDisclosure);
-            OpenDeployLambdaDocsCommand = openUrl(AwsUrls.DeployLambdaDocs);
-            OpenDeployBeanstalkDocsCommand = openUrl(AwsUrls.DeployBeanstalkDocs);
-            OpenDevBlogCommand = openUrl(AwsUrls.DevBlog);
+            // TODO: IDE-11680 :  CodeWhisperer Tutorial Course
+            // TryCodeWhispererExamplesAsyncCommand = new RelayCommand(TryCodeWhispererExamples);
+
+            ICommand OpenUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
+            OpenPrivacyPolicyCommand = OpenUrl(AwsUrls.PrivacyPolicy);
+            OpenTelemetryDisclosureCommand = OpenUrl(AwsUrls.TelemetryDisclosure);
+            OpenDeployLambdaDocsCommand = OpenUrl(AwsUrls.DeployLambdaDocs);
+            OpenDeployBeanstalkDocsCommand = OpenUrl(AwsUrls.DeployBeanstalkDocs);
+            OpenDevBlogCommand = OpenUrl(AwsUrls.DevBlog);
+            OpenCodeWhispererOverviewCommand = OpenUrl(AwsUrls.CodeWhispererOverview);
         }
 
         public override async Task RegisterServicesAsync()
@@ -160,5 +208,32 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
             ServiceProvider.SetService<IGettingStartedCompleted>(this);
         }
+
+        public override async Task ViewLoadedAsync()
+        {
+            await base.ViewLoadedAsync();
+            FeatureTypeName = _gettingStarted.FeatureType.GetDescription();
+        }
+
+        public override async Task ViewShownAsync()
+        {
+            await base.ViewShownAsync();
+            FeatureTypeName = _gettingStarted.FeatureType.GetDescription();
+        }
+
+        private void OpenAddEditWizard(object parameter)
+        {
+            _gettingStarted.FeatureType = IsCodeWhispererSupported
+                ? FeatureType.CodeWhisperer
+                : FeatureType.AwsExplorer;
+
+            _gettingStarted.CurrentStep = GettingStartedStep.AddEditProfileWizards;
+        }
+
+        // TODO: IDE-11680 :  CodeWhisperer Tutorial Course
+        //private void TryCodeWhispererExamples(object parameter)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

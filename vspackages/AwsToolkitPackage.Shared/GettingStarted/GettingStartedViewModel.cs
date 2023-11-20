@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Telemetry.Model;
@@ -21,12 +22,6 @@ using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 {
-    public enum GettingStartedStep
-    {
-        AddEditProfileWizards,
-        GettingStartedCompleted
-    }
-
     public class RadioButtonEnumConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -40,7 +35,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         }
     }
 
-    internal class GettingStartedViewModel : RootViewModel, IAddEditProfileWizardHost
+    internal class GettingStartedViewModel : RootViewModel, IAddEditProfileWizardHost, IGettingStarted
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GettingStartedViewModel));
 
@@ -111,6 +106,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             await base.RegisterServicesAsync();
 
             ServiceProvider.SetService<IAddEditProfileWizardHost>(this);
+            ServiceProvider.SetService<IGettingStarted>(this);
         }
 
         public override async Task InitializeAsync()
@@ -123,16 +119,34 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
             ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
 
-            ICommand openUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
-            OpenAwsExplorerLearnMoreCommand = openUrl(AwsUrls.UserGuideWorkWithAws);
-            OpenCodeWhispererLearnMoreCommand = openUrl(AwsUrls.CodeWhispererOverview);
-            OpenGitHubCommand = openUrl(GitHubUrls.RepositoryUrl);
+            ICommand OpenUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
+            OpenAwsExplorerLearnMoreCommand = OpenUrl(AwsUrls.UserGuideWorkWithAws);
+            OpenCodeWhispererLearnMoreCommand = OpenUrl(AwsUrls.CodeWhispererOverview);
+            OpenGitHubCommand = OpenUrl(GitHubUrls.RepositoryUrl);
 
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);
 
-            if (!IsCodeWhispererSupported)
+            FeatureType = IsCodeWhispererSupported
+                ? FeatureType.CodeWhisperer
+                : FeatureType.AwsExplorer;
+
+            ShowInitialCard();
+        }
+
+        private void ShowInitialCard()
+        {
+            var codeWhispererCredId  = GetCodeWhispererCredentialIdentifierId();
+
+            var credentialIdentifier = ToolkitContext.CredentialManager.GetCredentialIdentifierById(codeWhispererCredId);
+
+            var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+
+            if (credentialIdentifier != null
+                && FeatureType == FeatureType.CodeWhisperer
+                && credentialIdentifier.HasValidToken(profileProperties?.SsoSession, ToolkitContext.ToolkitHost))
             {
-                FeatureType = FeatureType.AwsExplorer;
+                _gettingStartedCompleted.Status = true;
+                ShowGettingStartedCompleted(credentialIdentifier);
             }
         }
 
@@ -144,22 +158,43 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             }
 
             _gettingStartedCompleted.Status = true;
-            ShowGettingStarted(credentialIdentifier);
+            ShowGettingStartedCompleted(credentialIdentifier);
         }
 
         private void SetCodeWhispererCredentialIdentifier(ICredentialIdentifier credentialIdentifier)
         {
-            var settings = CodeWhispererSettings.Instance;
-            settings.CredentialIdentifier = credentialIdentifier.Id;
-            settings.Save();
+            try
+            {
+                var settings = CodeWhispererSettings.Instance;
+                settings.CredentialIdentifier = credentialIdentifier.Id;
+                settings.Save();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Failed to save CodeWhisperer credential identifier", ex);
+            }
         }
 
-        private void ShowGettingStarted(ICredentialIdentifier credentialIdentifier)
+        private string GetCodeWhispererCredentialIdentifierId()
+        {
+            try
+            {
+                return CodeWhispererSettings.Instance.CredentialIdentifier;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private void ShowGettingStartedCompleted(ICredentialIdentifier credentialIdentifier)
         {
             var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
 
             _gettingStartedCompleted.CredentialTypeName = profileProperties.GetCredentialType().GetDescription();
+
             _gettingStartedCompleted.CredentialName = credentialIdentifier.ProfileName;
+
             CurrentStep = GettingStartedStep.GettingStartedCompleted;
         }
     }

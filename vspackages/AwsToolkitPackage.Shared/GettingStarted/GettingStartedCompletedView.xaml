@@ -9,6 +9,8 @@
     xmlns:images="clr-namespace:Amazon.AWSToolkit.CommonUI.Images;assembly=AWSToolkit"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors;assembly=AWSToolkit"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
+    xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d" 
     d:DesignHeight="450"
@@ -17,10 +19,22 @@
         <ResourceDictionary>
             <commonUi:ToolkitImages x:Key="ToolkitImages" />
             <commonUi:VsImages x:Key="VsImages" />
+            <converters:EqualityVisibilityConverter x:Key="EqualityVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
     <StackPanel>
+        <Grid Margin="6 0 0 12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0">
+                <Hyperlink Command="{Binding OpenAddEditWizardCommand}">
+                    🡐 Setup a connection or feature
+                </Hyperlink>
+            </TextBlock>
+        </Grid>
         <commonUi:StatusBox
             Status="{Binding Status}">
             <commonUi:StatusBox.Style>
@@ -56,8 +70,6 @@
                                         </Grid>
 
                                         <TextBlock
-                                            Grid.Row="1"
-                                            Grid.Column="0"
                                             TextWrapping="WrapWithOverflow"
                                             Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ErrorTextBrushKey}}">
                                             <TextBlock.Inlines>
@@ -87,11 +99,23 @@
                                             MaxHeight="40"
                                             Command="{Binding OpenAwsExplorerAsyncCommand}"
                                             Content="Open AWS Explorer"
-                                            Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}">
+                                            Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}"
+                                            Visibility="{Binding FeatureTypeName, Converter={StaticResource EqualityVisibilityConverter}, ConverterParameter='AWS Explorer'}">
                                             <behaviors:UiClickMetric.Configure>
                                                 <behaviors:UiClickMetricConfig />
                                             </behaviors:UiClickMetric.Configure>
                                         </Button>
+
+                                        <!--TODO: IDE-11680 :  CodeWhisperer Tutorial Course-->
+                                        <!--<Button
+                                            Margin="6 0 0 0"
+                                            DockPanel.Dock="Right"
+                                            MaxHeight="40"
+                                            Command="{Binding TryCodeWhispererExamplesAsyncCommand}"
+                                            Content="Try CodeWhisperer with examples"
+                                            Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}"
+                                            Visibility="{Binding FeatureTypeName, Converter={StaticResource EqualityVisibilityConverter}, ConverterParameter='CodeWhisperer'}" />-->
+
                                         <StackPanel>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
@@ -113,21 +137,14 @@
                                                         TextWrapping="Wrap"
                                                         FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}">
                                                         <TextBlock.Text>
-                                                            <MultiBinding StringFormat="{}Connected to {0}: {1}">
-                                                                <Binding Path="CredentialTypeName" FallbackValue="(not available)" />
+                                                            <MultiBinding StringFormat="{}{0} enabled and connected to {1}">
+                                                                <Binding Path="FeatureTypeName" FallbackValue="(not available)" />
                                                                 <Binding Path="CredentialName" FallbackValue="(not available)" />
                                                             </MultiBinding>
                                                         </TextBlock.Text>
                                                     </TextBlock>
                                                 </WrapPanel>
                                             </Grid>
-
-                                            <TextBlock
-                                                Grid.Row="1"
-                                                Grid.Column="0"
-                                                TextWrapping="WrapWithOverflow"
-                                                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}"
-                                                Text="Open the AWS Explorer to add and switch between additional profiles." />
                                         </StackPanel>
                                     </DockPanel>
                                 </Setter.Value>
@@ -137,6 +154,60 @@
                 </Style>
             </commonUi:StatusBox.Style>
         </commonUi:StatusBox>
+
+        <Border BorderThickness="1" Margin="0 12 0 0"  Visibility="{Binding FeatureTypeName, Converter={StaticResource EqualityVisibilityConverter}, ConverterParameter='AWS Explorer'}">
+            <DockPanel Margin="12" LastChildFill="True">
+                <Button
+                    Margin="6 0 0 0"
+                    DockPanel.Dock="Right"
+                    MaxHeight="40"
+                    Command="{Binding OpenAddEditWizardCommand}"
+                    Content="Setup"
+                    Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}" />
+
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <WrapPanel
+                            Grid.Column="1">
+                            <TextBlock
+                                Margin="6 0 0 0"
+                                TextWrapping="Wrap"
+                                FontWeight="SemiBold"
+                                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                                Text="New: CodeWhisperer AI powered code suggestions" />
+                            <commonUi:HelpHyperlinkPopup>
+                                <TextBlock 
+                                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                                    TextWrapping="WrapWithOverflow">
+                                    <Run Text="Amazon CodeWhisperer is a general purpose, machine learning-powered code generator that provides you with code recommendations in real time." />
+                                    <commonUi:BrowserHyperLink
+                                        NavigateUriFromStatic="{x:Static urls:AwsUrls.CodeWhispererOverview}">
+                                        Learn more
+                                        <behaviors:UiClickMetric.Configure>
+                                            <behaviors:UiClickMetricConfig
+                                                ElementId="auth_learnMoreCodeWhisperer" />
+                                        </behaviors:UiClickMetric.Configure>                        
+                                    </commonUi:BrowserHyperLink>
+                                </TextBlock>
+                            </commonUi:HelpHyperlinkPopup>
+
+                            <TextBlock
+                                Margin="6 3 0 0"
+                                TextWrapping="WrapWithOverflow"
+                                FontSize="10"
+                                FontWeight="Normal">
+                                <Run Text="If your organization has enabled CodeWhisperer, login with IAM Identity Center. To use for free as an individual, sign up or sign in with AWS Builder ID." />
+                            </TextBlock>
+                        </WrapPanel>
+                    </Grid>
+                </StackPanel>
+            </DockPanel>
+        </Border>
 
         <Border BorderThickness="1" Margin="0 12 0 0">
             <StackPanel Margin="12">
@@ -163,7 +234,10 @@
 
                 <TextBlock
                     Margin="6 3 0 0"
-                    TextWrapping="WrapWithOverflow">
+                    TextWrapping="WrapWithOverflow"
+                    FontSize="10"
+                    FontWeight="Normal"
+                    >
                     <Run
                         Text="By letting us know which Toolkit features are used, this data helps improve the AWS Toolkit and other Amazon products and services. AWS handles this data in accordance with the" />
                     <Hyperlink

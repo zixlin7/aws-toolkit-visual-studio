@@ -237,7 +237,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         /// <returns>A Task to be awaited.</returns>
         /// <remarks>
         /// Similar to loaded, but more lightweight, this call is made when the view becomes visible.  Visibility may become affected by
-        /// changes to the Visbility property, the view being covered up by z-order, etc.  The view model may choose to take action
+        /// changes to the Visibility property, the view being covered up by z-order, etc.  The view model may choose to take action
         /// when it is know that the user can see the view.
         ///
         /// This method may be called multiple times during the life of the view model.
@@ -258,7 +258,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         /// <returns>A Task to be awaited.</returns>
         /// <remarks>
         /// Similar to unloaded, but more lightweight, this call is made when the view becomes invisible.  Visibility may become affected by
-        /// changes to the Visbility property, the view being covered up by z-order, etc.  The view model may choose to take action
+        /// changes to the Visibility property, the view being covered up by z-order, etc.  The view model may choose to take action
         /// when it is know that the user cannot see the view, even if temporarily.
         /// 
         /// This method may be called multiple times during the life of the view model.

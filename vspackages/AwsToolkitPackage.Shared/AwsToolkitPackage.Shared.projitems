@@ -67,6 +67,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\MetricSources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\Services\IGettingStarted.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\Services\IGettingStartedCompleted.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Guids.cs" />
