@@ -12,6 +12,7 @@
     xmlns:wizard="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;assembly=AWSToolkit"
     xmlns:wizBehaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;assembly=AWSToolkit"
     xmlns:wizServices="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;assembly=AWSToolkit"
+    xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     d:DesignHeight="600"
     d:DesignWidth="800"
@@ -164,6 +165,9 @@
                                         <Hyperlink
                                             Command="{Binding OpenCodeWhispererLearnMoreCommand}">
                                             Learn more
+                                            <behaviors:UiClickMetric.Configure>
+                                                <behaviors:UiClickMetricConfig ElementId="auth_learnMoreCodeWhisperer" />
+                                            </behaviors:UiClickMetric.Configure>
                                         </Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
@@ -191,6 +195,9 @@
                                         <Hyperlink
                                             Command="{Binding OpenAwsExplorerLearnMoreCommand}">
                                             Learn more
+                                             <behaviors:UiClickMetric.Configure>
+                                                 <behaviors:UiClickMetricConfig ElementId="auth_learnMoreAWSResource" />
+                                             </behaviors:UiClickMetric.Configure>
                                         </Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
