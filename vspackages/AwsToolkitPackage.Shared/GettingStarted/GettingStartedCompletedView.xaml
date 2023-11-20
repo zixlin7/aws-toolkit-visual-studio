@@ -179,7 +179,7 @@
                                 TextWrapping="Wrap"
                                 FontWeight="SemiBold"
                                 FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
-                                Text="New: CodeWhisperer AI powered code suggestions" />
+                                Text="New: Amazon CodeWhisperer AI powered code suggestions" />
                             <commonUi:HelpHyperlinkPopup>
                                 <TextBlock 
                                     Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
