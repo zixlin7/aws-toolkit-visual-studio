@@ -1,21 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+using static Amazon.AWSToolkit.Util.TelemetryExtensionMethods;
 
 using log4net;
+using System.Linq;
 
 namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 {
@@ -114,6 +122,11 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
                 MetricSources.GettingStartedMetricSource.GettingStarted :
                 MetricSources.GettingStartedMetricSource.FirstStartup;
 
+            if (!ToolkitSettings.Instance.HasUserSeenFirstRunForm)
+            {
+                RecordFirstStartupAuthAddedConnectionsMetric();
+            }
+
             ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
 
             ICommand OpenUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
@@ -191,6 +204,48 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             _gettingStartedCompleted.CredentialName = credentialIdentifier.ProfileName;
 
             CurrentStep = GettingStartedStep.GettingStartedCompleted;
+        }
+
+        public void RecordFirstStartupAuthAddedConnectionsMetric()
+        {
+            var authConnectionsCount = 0;
+            var enabledAuthConnections = new HashSet<string>();
+
+            // Create metric details for all auth connections
+            foreach (var credId in ToolkitContext.CredentialManager.GetCredentialIdentifiers())
+            {
+                ++authConnectionsCount;
+
+                var p = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credId);
+                switch (p.GetCredentialType())
+                {
+                    // This may change as bearer token handling evolves
+                    case Credentials.Utils.CredentialType.BearerToken:
+                        enabledAuthConnections.Add(p.SsoStartUrl == SonoProperties.StartUrl ?
+                            EnabledAuthConnectionTypes.BuilderIdCodeWhisperer :
+                            EnabledAuthConnectionTypes.IamIdentityCenterCodeWhisperer);
+                        break;
+                    case Credentials.Utils.CredentialType.SsoProfile:
+                        enabledAuthConnections.Add(EnabledAuthConnectionTypes.IamIdentityCenterAwsExplorer);
+                        break;
+                    case Credentials.Utils.CredentialType.StaticProfile:
+                        enabledAuthConnections.Add(EnabledAuthConnectionTypes.StaticCredentials);
+                        break;
+                }
+            }
+
+            var actionResults = authConnectionsCount == 0 ? ActionResults.CreateFailed() : new ActionResults().WithSuccess(true);
+
+            var data = actionResults.CreateMetricData<AuthAddedConnections>(MetadataValue.NotApplicable, MetadataValue.NotApplicable);
+            data.Attempts = 0;
+            data.AuthConnectionsCount = authConnectionsCount;
+            data.EnabledAuthConnections = string.Join(",", enabledAuthConnections.OrderBy(s => s));
+            data.NewAuthConnectionsCount = 0;
+            data.NewEnabledAuthConnections = null;
+            data.Result = actionResults.AsTelemetryResult();
+            data.Source = SaveMetricSource.Location;
+
+            ToolkitContext.TelemetryLogger.RecordAuthAddedConnections(data);
         }
     }
 }
