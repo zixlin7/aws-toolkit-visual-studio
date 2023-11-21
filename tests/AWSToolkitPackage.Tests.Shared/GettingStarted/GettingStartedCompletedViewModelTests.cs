@@ -69,6 +69,7 @@ namespace AWSToolkitPackage.Tests.GettingStarted
         }
 
         [Theory]
+        [InlineData(null)]
         [InlineData("")]
         [InlineData("fake")]
         [InlineData("SdkProfileCredentialProviderFactory")]

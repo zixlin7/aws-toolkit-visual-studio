@@ -233,7 +233,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private string CreateCredentialDisplayName()
         {
-            return _credentialFactoryId.Equals("AwsBuilderId")
+            return _credentialFactoryId != null && _credentialFactoryId.Equals("AwsBuilderId")
                 ? $"AWS Builder ID ({_credentialName})"
                 : $"IAM Identity Center ({_credentialName})";
         }
