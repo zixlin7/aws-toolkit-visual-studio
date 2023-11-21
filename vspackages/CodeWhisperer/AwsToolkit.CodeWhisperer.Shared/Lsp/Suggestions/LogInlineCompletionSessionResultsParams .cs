@@ -15,6 +15,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions
         [JsonProperty("firstCompletionDisplayLatency")]
         public long? FirstCompletionDisplayLatency { get; set; }
 
+        [JsonProperty("typeaheadLength")]
+        public int? TypeaheadLength { get; set; }
+
         [JsonProperty("completionSessionResult")]
         public Dictionary<string, InlineCompletionStates> CompletionSessionResult { get; set; }
     }

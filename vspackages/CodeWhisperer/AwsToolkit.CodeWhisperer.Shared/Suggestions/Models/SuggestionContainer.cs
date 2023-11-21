@@ -51,6 +51,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private readonly Stopwatch _suggestionDisplaySessionStopWatch = new Stopwatch();
         private long _firstSuggestionDisplayLatency;
         protected bool _hasSeenFirstSuggestion;
+        private int? _initialTypeaheadLength;
 
         private static readonly List<ReasonForUpdate> _divergenceReasons = new List<ReasonForUpdate>()
         {
@@ -138,6 +139,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             }
         }
 
+        /// <summary>
+        /// Computes the typeahead length from when user invocation happened to when recommendations are shown in UI first
+        /// <remarks>Note: This computation may change later on but follows the same pattern for consistency across IDEs for now</remarks>
+        /// </summary>
+        /// <returns></returns>
+        public async Task SetInitialTypeaheadLengthAsync()
+        {
+            var currentCaretPosition = _view.GetWpfTextView().GetCaretSnapshotPosition();
+            var typedPrefix = await _view.GetTextBetweenPositionsAsync(_invocationProperties.RequestPosition, currentCaretPosition);
+            _initialTypeaheadLength = typedPrefix.Length;
+        }
+
         private void StopSuggestionSessionTimer()
         {
             if (_suggestionDisplaySessionStopWatch.IsRunning)
@@ -174,6 +187,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                 result.TotalSessionDisplayTime = sessionTime;
             }
 
+            if (_initialTypeaheadLength != null)
+            {
+                result.TypeaheadLength = _initialTypeaheadLength;
+            }
             await _manager.SendSessionCompletionResultAsync(result);
         }
 
