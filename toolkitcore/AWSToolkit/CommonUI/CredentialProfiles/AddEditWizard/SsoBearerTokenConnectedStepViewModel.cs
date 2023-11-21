@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
@@ -66,8 +67,10 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             }
             finally
             {
-                _addEditProfileWizard.RecordAuthAddedConnectionsMetric(actionResults, 1,
-                    new HashSet<string>() { EnabledAuthConnectionTypes.IamIdentityCenterAwsExplorer });
+                _addEditProfileWizard.RecordAuthAddedConnectionsMetric(actionResults, actionResults.Success ? 1 : 0,
+                    actionResults.Success ?
+                        new HashSet<string>() { EnabledAuthConnectionTypes.IamIdentityCenterCodeWhisperer } :
+                        Enumerable.Empty<string>());
 
                 _addEditProfileWizard.InProgress = false;
             }

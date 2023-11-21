@@ -2,12 +2,17 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Urls;
+
+using static Amazon.AWSToolkit.Util.TelemetryExtensionMethods;
 
 using log4net;
 
@@ -45,6 +50,8 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             SignInWithAwsBuilderIdCommand = new AsyncRelayCommand(ExecuteSignInWithAwsBuilderIdCommandAsync);
         }
 
+        private int _connectionAttempts = 0;
+
         public async Task ExecuteSignInWithAwsBuilderIdCommandAsync(object parameter)
         {
             var credId = ToolkitContext.CredentialManager.GetCredentialIdentifierById(
@@ -53,22 +60,38 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
             await Task.Run(async () =>
             {
+                ++_connectionAttempts;
+
+                var actionResults = ActionResults.CreateFailed();
+
                 try
                 {
-                    await ToolkitContext.CredentialManager.GetToolkitCredentials(credId, ssoRegion)
-                        .GetTokenProvider().TryResolveTokenAsync();
+                    if ((await ToolkitContext.CredentialManager.GetToolkitCredentials(credId, ssoRegion)
+                        .GetTokenProvider().TryResolveTokenAsync()).Success)
+                    {
+                        actionResults = new ActionResults().WithSuccess(true);
+                        _host.ShowCompleted(credId);
+                    }
+                    else
+                    {
+                        throw new Exception($"Unable to sign into AWS Builder ID.");
+                    }
                 }
                 catch (Exception ex)
                 {
+                    actionResults = ActionResults.CreateFailed(ex);
+
                     TryInvalidateCredential(credId);
 
                     var msg = "Unable to resolve AWS Builder ID token.  Try to login again.";
                     ToolkitContext.ToolkitHost.ShowError(msg);
                     _logger.Error(msg, ex);
                 }
+                finally
+                {
+                    RecordAuthAddConnectionMetric(actionResults);   
+                }
             });
-
-            _host.ShowCompleted(credId);
         }
 
         private bool TryInvalidateCredential(ICredentialIdentifier credentialIdentifier)
@@ -85,6 +108,27 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
                 _logger.Error($"Failure trying to invalidate cached SSO token for {credentialIdentifier?.Id}.", ex);
                 return false;
             }
+        }
+
+        public void RecordAuthAddConnectionMetric(ActionResults actionResults)
+        {
+            var saveMetricSource = _host.SaveMetricSource;
+
+            var data = actionResults.CreateMetricData<AuthAddConnection>(MetadataValue.NotApplicable, MetadataValue.NotApplicable);
+            data.Attempts = _connectionAttempts;
+            data.CredentialSourceId = CredentialSourceId.AwsId;
+            data.FeatureId = FeatureId.Codewhisperer;
+            // Errors regarding bearer token logins:
+            // This currently throws in AwsConnectionManager.PerformValidation.  There isn't a feasible way to
+            // get that information from there to here with the way the credential subsystem is written today.
+            // It's also not practical to emit this metric from that location as other fields that are known in
+            // this context are unavailable there.  InvalidInputFields cannot be set at this time.
+            data.InvalidInputFields = "";
+            data.IsAggregated = false;
+            data.Result = actionResults.AsTelemetryResult();
+            data.Source = saveMetricSource?.Location ?? MetadataValue.NotSet;
+
+            ToolkitContext.TelemetryLogger.RecordAuthAddConnection(data);
         }
     }
 }

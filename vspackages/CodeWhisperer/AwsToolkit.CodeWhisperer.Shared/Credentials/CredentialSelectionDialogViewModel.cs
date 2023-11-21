@@ -57,21 +57,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
         public async Task InitializeAsync()
         {
-            var tkc = _toolkitContextProvider.GetToolkitContext();
-            var csm = tkc.CredentialSettingsManager;
-
-            CredentialIdentifiers.AddAll(tkc.CredentialManager.GetCredentialIdentifiers()
-                .Where(id =>
-                {
-                    var scopes = csm.GetProfileProperties(id).SsoRegistrationScopes;
-                    return
-                        scopes?.Length >= 2
-                        && scopes.Contains(SonoProperties.CodeWhispererAnalysisScope)
-                        && scopes.Contains(SonoProperties.CodeWhispererCompletionsScope)
-                        && csm.GetCredentialType(id) == CredentialType.BearerToken;
-                })
-                .OrderBy(id => id.ProfileName));
-
             var settings = await _settingsRepository.GetAsync();
             SelectedCredentialIdentifier = CredentialIdentifiers.Where(ci => ci.Id == settings.CredentialIdentifier).FirstOrDefault()
                 ?? CredentialIdentifiers.FirstOrDefault();

@@ -3,12 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Tasks;
 using Amazon.Runtime;
 using Amazon.SSOOIDC.Model;
@@ -21,7 +22,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SsoConnectingStepViewModel));
 
-        private IConfigurationDetails _configDetails => ServiceProvider.RequireService<IConfigurationDetails>(CredentialType.SsoProfile.ToString());
+        private IConfigurationDetails _configDetails => ServiceProvider.RequireService<IConfigurationDetails>(
+            Credentials.Utils.CredentialType.SsoProfile.ToString());
 
         #region CancelConnecting
 
@@ -123,6 +125,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             {
                 _addEditProfileWizard.InProgress = true;
 
+                var actionResults = ActionResults.CreateFailed();
+
                 CancellationTokenSource = cancellationTokenSource;
                 var cancellationToken = cancellationTokenSource.Token;
 
@@ -152,18 +156,18 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                             }
                         }
                     }
+
+                    actionResults = new ActionResults().WithSuccess(true);
                 }
                 catch (UserCanceledException)
                 {
                     // Just ignore if the user cancelled, any exception here will revert back to the SSO configuration details screen
+                    actionResults = new ActionResults().WithCancelled(true);
                 }
-                catch (InvalidRequestException)
+                catch (Exception ex) when (ex is InvalidRequestException || ex is InvalidGrantException)
                 {
                     ToolkitContext.ToolkitHost.ShowError("Unable to connect.  Verify SSO Start URL is correct.");
-                }
-                catch (InvalidGrantException)
-                {
-                    ToolkitContext.ToolkitHost.ShowError("Invalid grant.  Verify SSO Start URL is correct.");
+                    actionResults = new ActionResults().WithException(ex);
                 }
                 catch (Exception ex)
                 {
@@ -172,10 +176,13 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                     var msg = "Unable to resolve IAM Identity Center token.";
                     ToolkitContext.ToolkitHost.ShowError(msg);
                     _logger.Error(msg, ex);
+                    actionResults = new ActionResults().WithException(ex);
                 }
                 finally
                 {
                     _addEditProfileWizard.InProgress = false;
+
+                    _addEditProfileWizard.RecordAuthAddConnectionMetric(actionResults, CredentialSourceId.IamIdentityCenter);
                 }
 
                 return !cancellationTokenSource.IsCancellationRequested &&

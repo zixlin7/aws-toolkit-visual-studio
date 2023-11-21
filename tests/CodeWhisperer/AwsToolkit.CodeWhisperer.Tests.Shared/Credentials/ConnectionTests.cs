@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
@@ -137,6 +138,41 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
             _timer.IsStarted.Should().BeTrue();
             _codeWhispererClient.CredentialsProtocol.TokenPayload.Token.Should().Be(_ssoTokenProvider.Token.Token);
             _settingsRepository.Settings.CredentialIdentifier.Should().Be(_sampleCredentialId.Id);
+        }
+
+        [Fact]
+        public void GetCodeWhispererCredentialIdentifiersOnlyReturnsCodeWhispererProfiles()
+        {
+            var credIds = new ICredentialIdentifier[]
+            {
+                FakeCredentialIdentifier.Create("AwsBuilderId"),
+                FakeCredentialIdentifier.Create("IdcRole"),
+                FakeCredentialIdentifier.Create("Idc"),
+                FakeCredentialIdentifier.Create("IdcOneCowScope"),
+                FakeCredentialIdentifier.Create("IdcNoScopes"),
+                FakeCredentialIdentifier.Create("IamCredentials")
+            };
+
+            var profiles = new[]
+            {
+                new ProfileProperties() { SsoSession = "aws-builder-id", SsoRegistrationScopes = SonoProperties.CodeWhispererScopes },
+                new ProfileProperties() { SsoSession = "idc-role", SsoAccountId = "012345678901", SsoRoleName = "role" },
+                new ProfileProperties() { SsoSession = "idc", SsoRegistrationScopes = SonoProperties.CodeWhispererScopes },
+                new ProfileProperties() { SsoSession = "idc-one-cow-scope", SsoRegistrationScopes = new[] { SonoProperties.CodeWhispererCompletionsScope } },
+                new ProfileProperties() { SsoSession = "idc-no-scopes" },
+                new ProfileProperties() { AccessKey = "access-key" }
+            };
+
+            _toolkitContextFixture.DefineCredentialIdentifiers(credIds);
+            for (var i = 0; i < credIds.Length; i++)
+            {
+                _toolkitContextFixture.DefineCredentialProperties(credIds[i], profiles[i]);
+            }
+
+            var actual = _sut.GetCodeWhispererCredentialIdentifiers().ToList();
+            Assert.Equal(2, actual.Count);
+            Assert.Contains(credIds[0], actual);
+            Assert.Contains(credIds[2], actual);
         }
 
         [Fact]

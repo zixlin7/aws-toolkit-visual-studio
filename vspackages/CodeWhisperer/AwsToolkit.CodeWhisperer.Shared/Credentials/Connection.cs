@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,9 +7,14 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
+using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
 
@@ -156,6 +162,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             if (credentialIdentifier != null)
             {
                 await SignInAsync(credentialIdentifier, true);
+                RecordAuthAddConnectionMetric(new ActionResults().WithSuccess(true), credentialIdentifier);
+            }
+            else
+            {
+                RecordAuthAddConnectionMetric(new ActionResults().WithCancelled(true), credentialIdentifier);
             }
         }
 
@@ -204,10 +215,33 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             }
             catch (Exception ex)
             {
+                RecordAuthAddConnectionMetric(ActionResults.CreateFailed(ex), credentialIdentifier);
+
                 var title = $"Failed to sign in to CodeWhisperer with {displayName}.";
                 NotifyErrorAndDisconnect(title, ex);
                 throw new InvalidOperationException(title, ex);
             }
+        }
+
+        public void RecordAuthAddConnectionMetric(ActionResults actionResults, ICredentialIdentifier credentialIdentifier)
+        {
+            var toolkitContext = _toolkitContextProvider.GetToolkitContext();
+
+            var data = actionResults.CreateMetricData<AuthAddConnection>(MetadataValue.NotApplicable, MetadataValue.NotApplicable);
+            data.Attempts = 1;
+            data.FeatureId = FeatureId.Codewhisperer;
+            data.IsAggregated = false;
+            data.Result = actionResults.AsTelemetryResult();
+            data.Source = "statusBarBrain";
+
+            if (credentialIdentifier != null)
+            {
+                data.CredentialSourceId = credentialIdentifier.ProfileName == SonoCredentialProviderFactory.CodeWhispererProfileName ?
+                    CredentialSourceId.AwsId :
+                    CredentialSourceId.IamIdentityCenter;
+            }
+
+            toolkitContext.TelemetryLogger.RecordAuthAddConnection(data);
         }
 
         /// <summary>
@@ -236,13 +270,33 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         protected virtual async Task<ICredentialIdentifier> PromptUserForCredentialIdAsync()
         {
             var viewModel = new CredentialSelectionDialogViewModel(_toolkitContextProvider, _settingsRepository);
+            viewModel.CredentialIdentifiers.AddAll(GetCodeWhispererCredentialIdentifiers());
             await viewModel.InitializeAsync();
+
             var dlg = new CredentialSelectionDialog
             {
                 DataContext = viewModel
             };
 
             return dlg.ShowModal() == true ? viewModel.SelectedCredentialIdentifier : null;
+        }
+
+        internal IEnumerable<ICredentialIdentifier> GetCodeWhispererCredentialIdentifiers()
+        {
+            var tkc = _toolkitContextProvider.GetToolkitContext();
+            var csm = tkc.CredentialSettingsManager;
+
+            return tkc.CredentialManager.GetCredentialIdentifiers()
+                .Where(id =>
+                {
+                    var scopes = csm.GetProfileProperties(id).SsoRegistrationScopes;
+                    return
+                        csm.GetCredentialType(id) == AWSToolkit.Credentials.Utils.CredentialType.BearerToken
+                        && scopes?.Length >= 2
+                        && scopes.Contains(SonoProperties.CodeWhispererAnalysisScope)
+                        && scopes.Contains(SonoProperties.CodeWhispererCompletionsScope);
+                })
+                .OrderBy(id => id.ProfileName);
         }
 
         /// <summary>

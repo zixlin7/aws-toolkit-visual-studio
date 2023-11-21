@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator;
@@ -66,6 +67,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services
         Task ChangeAwsExplorerConnectionAsync(ICredentialIdentifier credentialIdentifier);
 
         event EventHandler<CredentialsFileOpenedEventArgs> CredentialsFileOpened;
+
+        void RecordAuthAddConnectionMetric(ActionResults actionResults, CredentialSourceId credentialSourceId);
 
         void RecordAuthAddedConnectionsMetric(ActionResults actionResults, int newConnectionCount, IEnumerable<string> newEnabledConnections);
     }

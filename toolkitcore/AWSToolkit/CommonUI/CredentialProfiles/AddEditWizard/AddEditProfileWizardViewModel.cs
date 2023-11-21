@@ -11,6 +11,7 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator;
@@ -192,7 +193,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                     actionResults = ActionResults.CreateCancelled();
                 }
 
-                RecordAuthAddConnectionMetric(actionResults);
+                RecordAuthAddConnectionMetric(actionResults, CredentialSourceId.Memory);
 
                 return actionResults;
             }
@@ -251,16 +252,14 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             ToolkitContext.TelemetryLogger.RecordAwsModifyCredentials(data);
         }
 
-        private void RecordAuthAddConnectionMetric(ActionResults actionResults)
+        public void RecordAuthAddConnectionMetric(ActionResults actionResults, CredentialSourceId credentialSourceId)
         {
             var saveMetricSource = _addEditProfileWizardHost.SaveMetricSource;
 
-            var data = CreateMetricData<AuthAddConnection>(actionResults);
+            var data = CreateMetricData<AuthAddConnection>(actionResults);  
             data.Attempts = _connectionAttempts;
-            // Called from ValidateConnectionAsync which is always memory
-            data.CredentialSourceId = CredentialSourceId.Memory;
-            // When CodeWhisperer is implemented this will be variable
-            data.FeatureId = FeatureId.AwsExplorer;
+            data.CredentialSourceId = credentialSourceId;
+            data.FeatureId = FeatureType == FeatureType.AwsExplorer ? FeatureId.AwsExplorer : FeatureId.Codewhisperer;
             // The access key ID/secret key fields can be detected from AmazonServiceException.ErrorCode where
             // InvalidClientTokenId is a bad access key ID and SignatureDoesNotMatch is a bad secret key.
             // This currently throws in AwsConnectionManager.PerformValidation.  There isn't a feasible way to
@@ -269,8 +268,6 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             // this context are unavailable there.  InvalidInputFields cannot be set at this time.
             data.InvalidInputFields = "";
             data.IsAggregated = false;
-            // Same explanation as InvalidInputFields above.
-            data.Reason = "";
             data.Result = actionResults.AsTelemetryResult();
             data.Source = saveMetricSource?.Location ?? MetadataValue.NotSet;
 
@@ -283,14 +280,20 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             var authConnectionsCount = 0;
             var enabledAuthConnections = new HashSet<string>();
 
+            // Create metric details for all auth connections
             foreach (var credId in ToolkitContext.ConnectionManager.CredentialManager.GetCredentialIdentifiers())
             {
                 ++authConnectionsCount;
 
-                switch (ToolkitContext.CredentialSettingsManager.GetProfileProperties(credId).GetCredentialType())
+                var p = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credId);
+                switch (p.GetCredentialType())
                 {
                     // This may change as bearer token handling evolves
                     case Credentials.Utils.CredentialType.BearerToken:
+                        enabledAuthConnections.Add(p.SsoStartUrl == SonoProperties.StartUrl ?
+                            EnabledAuthConnectionTypes.BuilderIdCodeWhisperer :
+                            EnabledAuthConnectionTypes.IamIdentityCenterCodeWhisperer);
+                        break;
                     case Credentials.Utils.CredentialType.SsoProfile:
                         enabledAuthConnections.Add(EnabledAuthConnectionTypes.IamIdentityCenterAwsExplorer);
                         break;
