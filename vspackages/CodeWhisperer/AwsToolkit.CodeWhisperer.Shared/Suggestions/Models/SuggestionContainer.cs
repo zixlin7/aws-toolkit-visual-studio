@@ -42,7 +42,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private Suggestion[] _filteredSuggestions;
         private int _currentSuggestionIndex; // index of the displayed suggestion from _filteredSuggestions
         private int _filteredSuggestionTextStartIndex; // the current suggestion's filtered text start index
-
+        private string _typedPrefix;
         private readonly string _sessionId;
 
         private readonly Dictionary<string, InlineCompletionStates> _suggestionCompletionResults =
@@ -52,6 +52,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private long _firstSuggestionDisplayLatency;
         protected bool _hasSeenFirstSuggestion;
         private int? _initialTypeaheadLength;
+        private bool _initialFilter = true;
 
         private static readonly List<ReasonForUpdate> _divergenceReasons = new List<ReasonForUpdate>()
         {
@@ -140,15 +141,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         }
 
         /// <summary>
-        /// Computes the typeahead length from when user invocation happened to when recommendations are shown in UI first
+        /// Computes the typed prefix and typeahead length from when user invocation happened to when recommendations are shown in UI first
         /// <remarks>Note: This computation may change later on but follows the same pattern for consistency across IDEs for now</remarks>
         /// </summary>
         /// <returns></returns>
-        public async Task SetInitialTypeaheadLengthAsync()
+        public async Task SetInitialTypedPrefixAsync()
         {
             var currentCaretPosition = _view.GetWpfTextView().GetCaretSnapshotPosition();
-            var typedPrefix = await _view.GetTextBetweenPositionsAsync(_invocationProperties.RequestPosition, currentCaretPosition);
-            _initialTypeaheadLength = typedPrefix.Length;
+            _typedPrefix = await _view.GetTextBetweenPositionsAsync(_invocationProperties.RequestPosition, currentCaretPosition);
+            _initialTypeaheadLength = _typedPrefix.Length;
         }
 
         private void StopSuggestionSessionTimer()
@@ -285,7 +286,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                 await session.DismissAsync(ReasonForDismiss.DismissedBySession, _disposalToken);
                 return;
             }
-
             if (forward)
             {
                 NextSuggestion();
@@ -317,6 +317,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
             var prefix = await _view.GetTextBetweenPositionsAsync(_invocationProperties.RequestPosition, currentCaretPosition);
 
+            // only filter if it is not first time filtering and typed prefix has changed
+            // first/initial filtering is required in order to account for changes in UI since user invocation
+            if (!_initialFilter && string.Equals(prefix, _typedPrefix))
+            {
+                return true;
+            }
+
+            _typedPrefix = prefix;
+            if (_initialFilter)
+            {
+                _initialFilter = false;
+            }
             return FilterSuggestions(prefix);
         }
 

@@ -61,7 +61,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             {
                 _suggestionContainer =
                     new SuggestionContainer(suggestions, invocationProperties, view, _manager, _taskFactoryProvider.DisposalToken);
-                await _suggestionContainer.SetInitialTypeaheadLengthAsync();
+                await _suggestionContainer.SetInitialTypedPrefixAsync();
 
                 _session = await suggestionManager.TryDisplaySuggestionAsync(_suggestionContainer,
                     _taskFactoryProvider.DisposalToken);
