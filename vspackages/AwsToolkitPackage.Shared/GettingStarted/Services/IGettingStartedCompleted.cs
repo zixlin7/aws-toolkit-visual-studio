@@ -11,9 +11,9 @@
         bool? Status { get; set; }
 
         /// <summary>
-        /// Credential type name of successfully added profile.
+        /// Credential factory id of successfully added profile. (i.e. AwsBuilderId)
         /// </summary>
-        string CredentialTypeName { get; set; }
+        string CredentialFactoryId { get; set; }
 
         /// <summary>
         /// Credential name of successfully added profile.

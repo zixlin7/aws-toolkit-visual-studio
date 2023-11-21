@@ -57,6 +57,31 @@ namespace AWSToolkitPackage.Tests.GettingStarted
                 .Be(_sut.IsCodeWhispererSupported ? FeatureType.CodeWhisperer : FeatureType.AwsExplorer);
         }
 
+        [Fact]
+        public async Task ShouldCreateBuilderIdDisplayName()
+        {
+            _sut.CredentialName = "testProfile";
+            _sut.CredentialFactoryId = "AwsBuilderId";
+
+            await _sut.ViewShownAsync();
+
+            _sut.CredentialDisplayName.Should().Be($"AWS Builder ID ({_sut.CredentialName})");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("fake")]
+        [InlineData("SdkProfileCredentialProviderFactory")]
+        public async Task ShouldCreateIdcDisplayName(string factoryId)
+        {
+            _sut.CredentialName = "testProfile";
+            _sut.CredentialFactoryId = factoryId;
+
+            await _sut.ViewLoadedAsync();
+
+            _sut.CredentialDisplayName.Should().Be($"IAM Identity Center ({_sut.CredentialName})");
+        }
+
         private async Task RunViewModelLifecycle()
         {
             await _sut.RegisterServicesAsync();

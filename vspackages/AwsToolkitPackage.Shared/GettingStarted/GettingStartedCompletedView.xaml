@@ -139,7 +139,7 @@
                                                         <TextBlock.Text>
                                                             <MultiBinding StringFormat="{}{0} enabled and connected to {1}">
                                                                 <Binding Path="FeatureTypeName" FallbackValue="(not available)" />
-                                                                <Binding Path="CredentialName" FallbackValue="(not available)" />
+                                                                <Binding Path="CredentialDisplayName" FallbackValue="(not available)" />
                                                             </MultiBinding>
                                                         </TextBlock.Text>
                                                     </TextBlock>

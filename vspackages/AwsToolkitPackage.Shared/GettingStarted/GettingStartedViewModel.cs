@@ -3,19 +3,16 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
-
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 
 using log4net;
@@ -139,15 +136,15 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
             var credentialIdentifier = ToolkitContext.CredentialManager.GetCredentialIdentifierById(codeWhispererCredId);
 
-            var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-
-            if (credentialIdentifier != null
-                && FeatureType == FeatureType.CodeWhisperer
-                && credentialIdentifier.HasValidToken(profileProperties?.SsoSession, ToolkitContext.ToolkitHost))
+            if (credentialIdentifier == null
+                || FeatureType != FeatureType.CodeWhisperer
+                || !credentialIdentifier.HasValidToken(ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier)?.SsoSession, ToolkitContext.ToolkitHost))
             {
-                _gettingStartedCompleted.Status = true;
-                ShowGettingStartedCompleted(credentialIdentifier);
+                return;
             }
+
+            _gettingStartedCompleted.Status = true;
+            ShowGettingStartedCompleted(credentialIdentifier);
         }
 
         public void ShowCompleted(ICredentialIdentifier credentialIdentifier)
@@ -189,9 +186,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private void ShowGettingStartedCompleted(ICredentialIdentifier credentialIdentifier)
         {
-            var profileProperties = ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-
-            _gettingStartedCompleted.CredentialTypeName = profileProperties.GetCredentialType().GetDescription();
+            _gettingStartedCompleted.CredentialFactoryId = credentialIdentifier.FactoryId;
 
             _gettingStartedCompleted.CredentialName = credentialIdentifier.ProfileName;
 

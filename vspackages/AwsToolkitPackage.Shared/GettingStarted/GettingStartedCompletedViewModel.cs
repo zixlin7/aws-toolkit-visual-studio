@@ -42,12 +42,20 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             set => SetProperty(ref _featureTypeName, value);
         }
 
-        private string _credentialTypeName;
+        private string _credentialDisplayName;
 
-        public string CredentialTypeName
+        public string CredentialDisplayName
         {
-            get => _credentialTypeName;
-            set => SetProperty(ref _credentialTypeName, value);
+            get => _credentialDisplayName;
+            set => SetProperty(ref _credentialDisplayName, value);
+        }
+
+        private string _credentialFactoryId;
+
+        public string CredentialFactoryId
+        {
+            get => _credentialFactoryId;
+            set => SetProperty(ref _credentialFactoryId, value);
         }
 
         private string _credentialName;
@@ -213,12 +221,21 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         {
             await base.ViewLoadedAsync();
             FeatureTypeName = _gettingStarted.FeatureType.GetDescription();
+            CredentialDisplayName = CreateCredentialDisplayName();
         }
 
         public override async Task ViewShownAsync()
         {
             await base.ViewShownAsync();
             FeatureTypeName = _gettingStarted.FeatureType.GetDescription();
+            CredentialDisplayName = CreateCredentialDisplayName();
+        }
+
+        private string CreateCredentialDisplayName()
+        {
+            return _credentialFactoryId.Equals("AwsBuilderId")
+                ? $"AWS Builder ID ({_credentialName})"
+                : $"IAM Identity Center ({_credentialName})";
         }
 
         private void OpenAddEditWizard(object parameter)
