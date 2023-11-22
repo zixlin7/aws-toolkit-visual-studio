@@ -1,0 +1,82 @@
+﻿<Project ToolsVersion="14.0" DefaultTargets="" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- This file contains build tasks that help strong-sign the jose-jwt package.
+        See the "Jose-jwt" section of ./CONTRIBUTING.md for more details. -->
+
+    <PropertyGroup>
+    	<BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+        <PackageDestination>$(BuildRoot)\solutions\packages</PackageDestination>
+        <Snk>$(BuildRoot)\buildtools\awstoolkit.snk</Snk>
+
+        <JoseJwtFilename>jose-jwt</JoseJwtFilename>
+        <JoseJwtDll>jose-jwt.dll</JoseJwtDll>
+        <JoseJwtUnsignedAssemblyPath>$(PackageDestination)\jose-jwt.4.1.0\lib\net472\$(JoseJwtDll)</JoseJwtUnsignedAssemblyPath>
+        <TempSigningPath>$(PackageDestination)\jose-sign</TempSigningPath>
+        <JoseJwtIlPath>$(TempSigningPath)\$(JoseJwtFilename).il</JoseJwtIlPath>
+        <JoseJwtSignedAssemblyPath>$(BuildRoot)\thirdparty\$(JoseJwtDll)</JoseJwtSignedAssemblyPath>
+    </PropertyGroup>
+
+    <Import Project="$(BuildRoot)\buildtasks\ToolLocationHelper.targets" />
+
+    <!-- sign-jose-jwt - Ensures the Toolkit code has access to a strong-signed version of jose-jwt
+            - Downloads jose-jwt NuGet package
+            - converts the .NET 4.7 dll to intermediate language
+            - produces a new dll from the intermediate language, signing the dll with the repo's SNK file
+            - places the signed dll in thirdparty for use by Toolkit projects
+
+        We do this because the Toolkit solution requires all referenced assemblies to be strongly signed.
+        This is a workaround because jose-jwt is not strongly signed (https://github.com/dvsekhvalnov/jose-jwt#strong-named-assembly)
+        Reference: https://stackoverflow.com/a/331555
+    -->
+    <Target Name="sign-jose-jwt">
+
+        <PropertyGroup>
+            <SignedDllExists>false</SignedDllExists>
+            <SignedDllExists Condition="Exists('$(JoseJwtSignedAssemblyPath)')">true</SignedDllExists>
+        </PropertyGroup>
+
+        <!-- If this system has already signed the dll, avoid doing it again unnecessarily. -->
+        <Message Text="$(JoseJwtFilename) has already been signed" Condition="'$(SignedDllExists)' == 'true'" />
+        <CallTarget Targets="sign-jose-jwt-unconditional" Condition="'$(SignedDllExists)' == 'false'" />
+
+    </Target>
+
+    <Target Name="sign-jose-jwt-unconditional">
+
+        <Message Text="Producing a strong signed version of jose-jwt" Importance="high" />
+
+        <!-- locate ildasm.exe -->
+        <GetPathToDotNetFrameworkSdkFile Filename="ildasm.exe">
+            <Output PropertyName="IldasmPath" TaskParameter="FullPath" />
+        </GetPathToDotNetFrameworkSdkFile>
+
+        <Error Condition="'$(IldasmPath)' == ''" Text="Unable to find ildasm.exe" />
+
+        <!-- locate ilasm.exe -->
+        <GetPathToDotNetFrameworkFile Filename="ilasm.exe">
+            <Output PropertyName="IlasmPath" TaskParameter="FullPath" />
+        </GetPathToDotNetFrameworkFile>
+
+        <Error Condition="'$(IlasmPath)' == ''" Text="Unable to find ilasm.exe" />
+
+        <!-- Download the package to a deterministic location -->
+        <Message Text="Downloading jose-jwt to: $(PackageDestination)"/>
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe install jose-jwt -Version 4.1.0 -OutputDirectory $(PackageDestination)" />
+
+        <!-- Convert the dll to intermediate (il), then create a new signed dll from il -->
+        <Message Text="Sign jose-jwt from: $(JoseJwtUnsignedAssemblyPath)"/>
+        <Message Text="Sign jose-jwt into: $(TempSigningPath)"/>
+        <RemoveDir Directories="$(TempSigningPath)" />
+        <MakeDir Directories="$(TempSigningPath)" />
+
+        <Exec IgnoreExitCode="false" Command="&quot;$(IldasmPath)&quot; /all /nobar /out=$(JoseJwtIlPath) $(JoseJwtUnsignedAssemblyPath)" />
+        <Exec IgnoreExitCode="false" Command="&quot;$(IlasmPath)&quot; /dll /key=$(Snk) $(JoseJwtIlPath)" />
+
+        <!-- Place signed dll in thirdparty (referenced by Toolkit projects) -->
+        <Message Text="Copy signed jose-jwt into: $(JoseJwtSignedAssemblyPath)"/>
+        <Copy SourceFiles="$(TempSigningPath)\$(JoseJwtDll)" DestinationFiles="$(JoseJwtSignedAssemblyPath)" />
+        <RemoveDir Directories="$(TempSigningPath)" />
+
+    </Target>
+
+</Project>

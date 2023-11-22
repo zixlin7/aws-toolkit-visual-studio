@@ -25,11 +25,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Time
 
         public void RaiseElapsed()
         {
-            Elapsed?.Invoke(this, new ToolkitTimerElapsedEventArgs());
             if (!AutoReset)
             {
                 Stop();
             }
+            Elapsed?.Invoke(this, new ToolkitTimerElapsedEventArgs());
         }
 
         public void Dispose()

@@ -19,6 +19,7 @@
         object HintText { get; }
         object InfoText { get; }
         object InfoBackground { get; }
+        object PanelBorder { get; }
         object ToolTipBorder { get; }
         object ToolTipBackground { get; }
         object ToolTipText { get; }

@@ -16,7 +16,11 @@ namespace Amazon.AWSToolkit.Credentials.IO
 
         internal const string _ssoRegionPropertyName = "sso_region";
 
+        internal const string _ssoRegistrationScopesName = "sso_registration_scopes";
+
         internal const string _ssoStartUrlPropertyName = "sso_start_url";
+
+        internal const string _ssoRegistrationScopes = "sso_registration_scopes";
 
         // Inspired by SharedCredentialsFile.Refresh.
         // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Core/Amazon.Runtime/CredentialManagement/SharedCredentialsFile.cs
@@ -73,6 +77,11 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 { _ssoRegionPropertyName, options.SsoRegion },
                 { _ssoStartUrlPropertyName, options.SsoStartUrl }
             };
+
+            if (!string.IsNullOrWhiteSpace(options.SsoRegistrationScopes))
+            {
+                properties.Add(_ssoRegistrationScopes, options.SsoRegistrationScopes);
+            }
 
             var configFile = @this.GetSharedConfigFile();
             configFile.EnsureSectionExists(ProfileName.CreateSsoSessionProfileName(options.SsoSession));

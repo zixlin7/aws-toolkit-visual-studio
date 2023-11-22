@@ -20,7 +20,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             // exception is raised.
             // We know this client should be using a bearer token. We're passing it a fake token provider, which will return a
             // "No Token found.  Operation requires a Bearer token." AmazonClientException
-            await Assert.ThrowsAsync<AmazonClientException>(() => _sut.GetAwsIdAsync(new FakeAwsTokenProvider(), CancellationToken.None));
+            await Assert.ThrowsAsync<AmazonClientException>(() => _sut.GetCodeCatalystSessionIdentityAsync(new FakeAwsTokenProvider(), CancellationToken.None));
         }
     }
 }

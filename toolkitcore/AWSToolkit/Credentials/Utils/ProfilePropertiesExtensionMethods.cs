@@ -1,15 +1,13 @@
-﻿using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Settings;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using System;
 
-using Amazon.Runtime.CredentialManagement.Internal;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Exceptions;
-using Amazon.AWSToolkit.Events;
-using System.Threading;
+using Amazon.AWSToolkit.Settings;
+using Amazon.Runtime.CredentialManagement.Internal;
 
 namespace Amazon.AWSToolkit.Credentials.Utils
 {

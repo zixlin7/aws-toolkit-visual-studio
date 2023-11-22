@@ -13,6 +13,7 @@ namespace Amazon.AwsToolkit.VsSdk.Common.CommonUI
     /// IsDefault can be used in subclasses.  Typically buttons should bind to ICommand objects in the view model to perform commit (Default)
     /// and cancel operations.
     /// </remarks>
+    /// <seealso href="https://learn.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio?view=vs-2022#BKMK_ThemedDialogLayout"/>
     public class ThemedDialogWindow : DialogWindow
     {
         static ThemedDialogWindow()

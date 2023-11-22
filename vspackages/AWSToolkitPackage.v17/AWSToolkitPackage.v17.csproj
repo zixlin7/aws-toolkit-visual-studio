@@ -51,6 +51,9 @@
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\CodeWhisperer_Examples.cs">
+      <Link>Resources\CodeWhisperer_Examples.cs</Link>
+    </EmbeddedResource>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -322,6 +325,12 @@
     <ProjectReference Include="..\AWSToolkit.CodeCommitTeamExplorer.v17\AWSToolkit.CodeCommitTeamExplorer.v17.csproj">
       <Project>{5A075C30-BB90-4095-98D2-508E92B3ED2D}</Project>
       <Name>AWSToolkit.CodeCommitTeamExplorer.v17</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\CodeWhisperer\AwsToolkit.CodeWhisperer.v17\AwsToolkit.CodeWhisperer.v17.csproj">
+      <Project>{835efd45-063b-4201-bbeb-66d45986f521}</Project>
+      <Name>AwsToolkit.CodeWhisperer.v17</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>

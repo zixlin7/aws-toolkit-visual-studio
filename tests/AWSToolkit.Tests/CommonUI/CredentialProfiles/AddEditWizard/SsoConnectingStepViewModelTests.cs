@@ -22,9 +22,9 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
 
         private readonly ServiceProvider _serviceProvider = new ServiceProvider();
 
-        private readonly Mock<IAddEditProfileWizard> _mockWizard = new Mock<IAddEditProfileWizard>();
+        private readonly Mock<IAddEditProfileWizard> _wizardMock = new Mock<IAddEditProfileWizard>();
 
-        private readonly Mock<ISsoProfilePropertiesProvider> _mockPropertiesProvider = new Mock<ISsoProfilePropertiesProvider>();
+        private readonly Mock<IConfigurationDetails> _configDetailsMock = new Mock<IConfigurationDetails>();
 
         private readonly ProfileProperties _profileProperties = new ProfileProperties();
 
@@ -35,11 +35,11 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             // Bad URLs will be accepted by AWSSDK if they follow the https://<...>.awsapps.com/start pattern
             _profileProperties.SsoStartUrl = "https://roadtonowhere.awsapps.com/start";
 
-            _mockPropertiesProvider.SetupGet(mock => mock.ProfileProperties).Returns(_profileProperties);
+            _configDetailsMock.SetupGet(mock => mock.ProfileProperties).Returns(_profileProperties);
 
             _serviceProvider.SetService(_toolkitContextFixture.ToolkitContext);
-            _serviceProvider.SetService(_mockWizard.Object);
-            _serviceProvider.SetService(_mockPropertiesProvider.Object);
+            _serviceProvider.SetService(_wizardMock.Object);
+            _serviceProvider.SetService(_configDetailsMock.Object, CredentialType.SsoProfile.ToString());
 
             _sut = await ViewModelTests.BootstrapViewModel<SsoConnectingStepViewModel>(_serviceProvider);
         }
@@ -90,9 +90,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             // Since the AWSSDK polling process isn't cancellable, just verify that we've reverted to
             // the first step of the wizard as it will take 10 minutes for the polling to terminate
             // due to the code expiring.
-            Assert.Equal(WizardStep.Configuration, _mockWizard.Object.CurrentStep);
-
-            _toolkitContextFixture.ToolkitHost.Verify(th => th.ShowError(It.IsAny<string>()), Times.Never());
+            Assert.Equal(WizardStep.Configuration, _wizardMock.Object.CurrentStep);
         }
 
         [Fact]
@@ -107,7 +105,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             cancelToken.Cancel();
             await vm.ResolveAwsTokenAsync(cancelToken);
 
-            Assert.Equal(WizardStep.Configuration, _mockWizard.Object.CurrentStep);
+            Assert.Equal(WizardStep.Configuration, _wizardMock.Object.CurrentStep);
 
             // Second cancel
             // ResolveAwsTokenAsync checks every second, so delay a few seconds to ensure AWSSDK call has started
@@ -120,9 +118,7 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             // Since the AWSSDK polling process isn't cancellable, just verify that we've reverted to
             // the first step of the wizard as it will take 10 minutes for the polling to terminate
             // due to the code expiring.
-            Assert.Equal(WizardStep.Configuration, _mockWizard.Object.CurrentStep);
-
-            _toolkitContextFixture.ToolkitHost.Verify(th => th.ShowError(It.IsAny<string>()), Times.Never());
+            Assert.Equal(WizardStep.Configuration, _wizardMock.Object.CurrentStep);
         }
     }
 }

@@ -8,7 +8,9 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.VisualStudio.Utilities;
+
+using AwsToolkit.VsSdk.Common.Notifications;
+
 using log4net;
 using Microsoft.VisualStudio.Shell;
 using Newtonsoft.Json;

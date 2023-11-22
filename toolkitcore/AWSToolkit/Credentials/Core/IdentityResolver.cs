@@ -37,10 +37,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// Retrieve the AWS ID of a token provider based connection.
         /// ASSUMPTION: Token Provider is associated with Sono.
         /// </summary>
-        public async Task<string> GetAwsIdAsync(IAWSTokenProvider tokenProvider, CancellationToken cancellationToken)
+        public async Task<string> GetCodeCatalystSessionIdentityAsync(IAWSTokenProvider tokenProvider, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            // TODO IDE-12041
             // We are querying from CAWS for the first implementation.
             // Over time, Sono intends to provide a direct means of querying for the user id (AWS ID),
             // and we can switch away from querying CAWS.

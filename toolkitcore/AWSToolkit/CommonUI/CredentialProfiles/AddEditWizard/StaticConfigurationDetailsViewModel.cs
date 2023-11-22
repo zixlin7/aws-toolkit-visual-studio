@@ -24,6 +24,8 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
         private const string _iamUserConsoleUrl = "https://console.aws.amazon.com/iam/home?region=us-east-1#/users";
 
+        private IAddEditProfileWizardHost _host => ServiceProvider.RequireService<IAddEditProfileWizardHost>();
+
         public override CredentialType CredentialType => CredentialType.StaticProfile;
 
         #region ProfileName
@@ -231,7 +233,16 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
                 _addEditProfileWizard.InProgress = true;
                 AddButtonText = "Adding profile...";
 
-                actionResults = await _addEditProfileWizard.SaveAsync(ProfileProperties, SelectedCredentialFileType);
+                var saveAsyncResults = await _addEditProfileWizard.SaveAsync(ProfileProperties, SelectedCredentialFileType);
+                actionResults = saveAsyncResults.ActionResults;
+
+                if (!actionResults.Success)
+                {
+                    throw new Exception($"Cannot save profile {ProfileProperties.Name}", actionResults.Exception);
+                }
+
+                await _addEditProfileWizard.ChangeAwsExplorerConnectionAsync(saveAsyncResults.CredentialIdentifier);
+                _host.ShowCompleted(saveAsyncResults.CredentialIdentifier);
             }
             catch (Exception ex)
             {

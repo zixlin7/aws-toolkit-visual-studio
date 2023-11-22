@@ -7,127 +7,151 @@
     xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
     xmlns:controls="clr-namespace:Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
     xmlns:urls="clr-namespace:Amazon.AWSToolkit.Urls"
     xmlns:behaviors="clr-namespace:Amazon.AWSToolkit.CommonUI.Behaviors"
     themes:ToolkitThemes.UseToolkitTheme="True"
     mc:Ignorable="d">
-    
+
+    <UserControl.Resources>
+        <converters:RelayValueConverter
+            x:Key="BoolToVisibilityConverter"
+            ConvertHandler="{x:Static local:ViewModel.BoolToVisibility}" />
+    </UserControl.Resources>
+
     <StackPanel>
-        <WrapPanel Margin="0 9 0 0">
-            <TextBlock
-                HorizontalAlignment="Left"
-                TextWrapping="WrapWithOverflow"
-                Text="Profile Name" />
-            <commonUi:HelpHyperlinkPopup>
-                <TextBlock 
-                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                    TextWrapping="WrapWithOverflow">
-                    <Run Text="Name of this profile stored in the local configuration file."></Run>
-                    <commonUi:BrowserHyperLink
-                        NavigateUriFromStatic="{x:Static urls:AwsUrls.IamIdC}">
-                        Learn more about IAM Identity center
-                        <behaviors:UiClickMetric.Configure>
-                            <behaviors:UiClickMetricConfig
-                                ElementId="auth_infoIAMIdentityCenter" />
-                        </behaviors:UiClickMetric.Configure>                        
-                    </commonUi:BrowserHyperLink>
-                </TextBlock>
-            </commonUi:HelpHyperlinkPopup>            
-        </WrapPanel>
-        <TextBox
-            x:Name="ProfileNameBox"
-            x:FieldModifier="private"
-            Margin="0 5 0 0"
-            Text="{Binding ProfileName, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+        <StackPanel
+            Visibility="{Binding CredentialIdentifierSelectorVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock 
+                Margin="0 6 0 0"
+                Text="Choose from an existing Profile or add new" />
 
-        <commonUi:ValidationErrorText
-            SourceElement="{x:Reference ProfileNameBox}" />
+            <ComboBox
+                DisplayMemberPath="DisplayName"
+                ItemsSource="{Binding CredentialIdentifiers}"
+                Margin="0 6 0 0"
+                SelectedItem="{Binding SelectedCredentialIdentifier}" />
+        </StackPanel>
 
-        <WrapPanel Margin="0 9 0 0">
-            <TextBlock
-                HorizontalAlignment="Left"
-                TextWrapping="WrapWithOverflow"
-                Text="Start URL" />
-            <commonUi:HelpHyperlinkPopup>
-                <TextBlock 
-                    Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                    TextWrapping="WrapWithOverflow">
-                    <Run Text="The Start URL for your organization provided by an admin or help desk." />
-                    <commonUi:BrowserHyperLink
-                        NavigateUriFromStatic="{x:Static urls:AwsUrls.IamIdC}">
-                        Learn more about IAM Identity center
-                        <behaviors:UiClickMetric.Configure>
-                            <behaviors:UiClickMetricConfig
-                                ElementId="auth_infoIAMIdentityCenter" />
-                        </behaviors:UiClickMetric.Configure>                        
-                    </commonUi:BrowserHyperLink>
-                </TextBlock>
-            </commonUi:HelpHyperlinkPopup>
-        </WrapPanel>
-        <commonUi:HintTextBox
-            x:Name="SsoStartUrlBox"
-            x:FieldModifier="private"
-            Margin="0 5 0 0"
-            HintText="https://&lt;YOUR_SUBDOMAIN&gt;.awsapps.com/start"
-            Text="{Binding SsoStartUrl, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-
-        <commonUi:ValidationErrorText
-            SourceElement="{x:Reference SsoStartUrlBox}" />
-
-        <Expander
-            Margin="0 9 0 0"
-            HorizontalAlignment="Stretch"
-            Background="Transparent">
-            <controls:RegionSelector
-                Margin="20 5 0 0"
-                FontWeight="Normal"
-                DataContext="{Binding ProfileRegionSelectorMixin}"
-                Partitions="{Binding Partitions}"
-                Regions="{Binding Regions}"
-                SelectedPartition="{Binding SelectedPartition}"
-                SelectedRegion="{Binding SelectedRegion}" />
-            <Expander.Header>
-                <WrapPanel>
+        <StackPanel
+            Visibility="{Binding IsAddNewProfile, Converter={StaticResource BoolToVisibilityConverter}}">
+            <WrapPanel Margin="0 9 0 0">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    TextWrapping="WrapWithOverflow"
+                    Text="Profile Name" />
+                <commonUi:HelpHyperlinkPopup>
                     <TextBlock 
-                        Text="Profile Region (defaults to us-east-1)" />
-                    <commonUi:HelpHyperlinkPopup 
-                        Background="Transparent">
-                        <TextBlock 
-                            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                            TextWrapping="WrapWithOverflow"
-                            Text="Specifies the AWS Region to send requests to for commands requested using this profile." />
-                    </commonUi:HelpHyperlinkPopup>
-                </WrapPanel>
-            </Expander.Header>
-        </Expander>
+                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                        TextWrapping="WrapWithOverflow">
+                        <Run Text="Name of this profile stored in the local configuration file."></Run>
+                        <commonUi:BrowserHyperLink
+                            NavigateUriFromStatic="{x:Static urls:AwsUrls.IamIdC}">
+                            Learn more about IAM Identity center
+                            <behaviors:UiClickMetric.Configure>
+                                <behaviors:UiClickMetricConfig
+                                    ElementId="auth_infoIAMIdentityCenter" />
+                            </behaviors:UiClickMetric.Configure>                        
+                        </commonUi:BrowserHyperLink>
+                    </TextBlock>
+                </commonUi:HelpHyperlinkPopup>
+            </WrapPanel>
 
-        <Expander
-            HorizontalAlignment="Stretch"
-            Background="Transparent"
-            Margin=" 0 9 0 0">
-            <controls:RegionSelector
-                Margin="20 5 0 0"
-                FontWeight="Normal"
-                DataContext="{Binding SsoRegionSelectorMixin}"
-                Partitions="{Binding Partitions}"
-                Regions="{Binding Regions}"
-                SelectedPartition="{Binding SelectedPartition}"
-                SelectedRegion="{Binding SelectedRegion}" />
-            <Expander.Header>
-                <WrapPanel>
+            <TextBox
+                x:Name="ProfileNameBox"
+                x:FieldModifier="private"
+                Margin="0 5 0 0"
+                Text="{Binding ProfileName, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+            <commonUi:ValidationErrorText
+                SourceElement="{x:Reference ProfileNameBox}" />
+
+            <WrapPanel Margin="0 9 0 0">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    TextWrapping="WrapWithOverflow"
+                    Text="Start URL" />
+                <commonUi:HelpHyperlinkPopup>
                     <TextBlock 
-                        Text="SSO Region (defaults to us-east-1)" />
-                    <commonUi:HelpHyperlinkPopup 
-                        Background="Transparent">
+                        Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                        TextWrapping="WrapWithOverflow">
+                        <Run Text="The Start URL for your organization provided by an admin or help desk." />
+                        <commonUi:BrowserHyperLink
+                            NavigateUriFromStatic="{x:Static urls:AwsUrls.IamIdC}">
+                            Learn more about IAM Identity center
+                            <behaviors:UiClickMetric.Configure>
+                                <behaviors:UiClickMetricConfig
+                                    ElementId="auth_infoIAMIdentityCenter" />
+                            </behaviors:UiClickMetric.Configure>                        
+                        </commonUi:BrowserHyperLink>
+                    </TextBlock>
+                </commonUi:HelpHyperlinkPopup>
+            </WrapPanel>
+            <commonUi:HintTextBox
+                x:Name="SsoStartUrlBox"
+                x:FieldModifier="private"
+                Margin="0 5 0 0"
+                HintText="https://&lt;YOUR_SUBDOMAIN&gt;.awsapps.com/start"
+                Text="{Binding SsoStartUrl, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+            <commonUi:ValidationErrorText
+                SourceElement="{x:Reference SsoStartUrlBox}" />
+
+            <Expander
+                Margin="0 9 0 0"
+                HorizontalAlignment="Stretch"
+                Background="Transparent">
+                <controls:RegionSelector
+                    Margin="20 5 0 0"
+                    FontWeight="Normal"
+                    DataContext="{Binding ProfileRegionSelectorMixin}"
+                    Partitions="{Binding Partitions}"
+                    Regions="{Binding Regions}"
+                    SelectedPartition="{Binding SelectedPartition}"
+                    SelectedRegion="{Binding SelectedRegion}" />
+                <Expander.Header>
+                    <WrapPanel>
                         <TextBlock 
-                            Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
-                            TextWrapping="WrapWithOverflow"
-                            Text="Specifies the AWS Region that contains the AWS access portal host. This is separate from, and can be different than Profile Region." />
-                    </commonUi:HelpHyperlinkPopup>
-                </WrapPanel>
-            </Expander.Header>            
-        </Expander>
+                            Text="Profile Region (defaults to us-east-1)" />
+                        <commonUi:HelpHyperlinkPopup 
+                            Background="Transparent">
+                            <TextBlock 
+                                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                                TextWrapping="WrapWithOverflow"
+                                Text="Specifies the AWS Region to send requests to for commands requested using this profile." />
+                        </commonUi:HelpHyperlinkPopup>
+                    </WrapPanel>
+                </Expander.Header>
+            </Expander>
+
+            <Expander
+                HorizontalAlignment="Stretch"
+                Background="Transparent"
+                Margin=" 0 9 0 0">
+                <controls:RegionSelector
+                    Margin="20 5 0 0"
+                    FontWeight="Normal"
+                    DataContext="{Binding SsoRegionSelectorMixin}"
+                    Partitions="{Binding Partitions}"
+                    Regions="{Binding Regions}"
+                    SelectedPartition="{Binding SelectedPartition}"
+                    SelectedRegion="{Binding SelectedRegion}" />
+                <Expander.Header>
+                    <WrapPanel>
+                        <TextBlock 
+                            Text="SSO Region (defaults to us-east-1)" />
+                        <commonUi:HelpHyperlinkPopup 
+                            Background="Transparent">
+                            <TextBlock 
+                                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.ToolTipTextBrushKey}}"
+                                TextWrapping="WrapWithOverflow"
+                                Text="Specifies the AWS Region that contains the AWS access portal host. This is separate from, and can be different than Profile Region." />
+                        </commonUi:HelpHyperlinkPopup>
+                    </WrapPanel>
+                </Expander.Header>
+            </Expander>
+        </StackPanel>
 
         <Button
             HorizontalAlignment="Right"

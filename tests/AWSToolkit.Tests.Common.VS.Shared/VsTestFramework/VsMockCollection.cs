@@ -15,6 +15,10 @@ namespace AwsToolkit.Vs.Tests.VsTestFramework
     /// This collection allows tests to work with ThreadHelper.JoinableTaskContext.
     ///
     /// To use,
+    /// - Create a class in your test assembly that derives from <see cref="VsMockCollection"/>,
+    ///   and annotate it with [CollectionDefinition(CollectionName)].
+    ///   xunit requires collection definitions to live in the same assembly as the test.
+    ///   See VsMockCollection in AwsToolkit.CodeWhisperer.Tests.Shared for an example.
     /// - add a Collection annotation to your test class
     ///   [Collection(VsMockCollection.CollectionName)]
     /// - pass in the required fixture(s) to the ctor

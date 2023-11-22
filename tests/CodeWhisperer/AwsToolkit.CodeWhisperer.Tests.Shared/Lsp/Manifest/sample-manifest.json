@@ -1,0 +1,63 @@
+﻿{
+    "manifestSchemaVersion": "0.1",
+    "artifactId": "AWS-Toolkits-Language-Server",
+    "artifactDescription": "AWS Toolkits LSP based Language Server",
+    "versions": [
+        {
+            "serverVersion": "1.2.0",
+            "isDelisted": true
+        },
+        {
+            "serverVersion": "1.2.1",
+            "targets": [
+                {
+                    "platform": "windows",
+                    "arch": "x64",
+                    "contents": [
+                        {
+                            "filename": "bar.exe",
+                            "url": "https://qwerty...foo.biz/foo/1.2.1/bar.exe",
+                            "hashes": [ "sha384:ababababababab" ],
+                            "bytes": 123123123
+                        },
+                        {
+                            "filename": "bar.exe.sig",
+                            "url": "https://qwerty...foo.biz/foo/1.2.1/bar.exe.sig",
+                            "hashes": [ "sha384:ababababababab" ],
+                            "bytes": 1231
+                        }
+                    ]
+                },
+                {
+                    "platform": "mac",
+                    "arch": "x64",
+                    "contents": [
+                        {
+                            "filename": "bar",
+                            "url": "https://qwerty...foo.biz/foo/1.2.1/bar",
+                            "hashes": [ "sha384:cdcdcdcdcdcdcd" ],
+                            "bytes": 234234234
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "serverVersion": "2.0.0",
+            "targets": [
+                {
+                    "platform": "windows",
+                    "arch": "x64",
+                    "contents": [
+                        {
+                            "filename": "bar.exe",
+                            "url": "https://qwerty...foo.biz/foo/2.0.0/bar.exe",
+                            "hashes": [ "sha384:ababababababab" ],
+                            "bytes": 123123123
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
