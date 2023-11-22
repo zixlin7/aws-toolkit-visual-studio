@@ -51,6 +51,9 @@
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\CodeWhisperer_Examples.cs">
+      <Link>Resources\CodeWhisperer_Examples.cs</Link>
+    </EmbeddedResource>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

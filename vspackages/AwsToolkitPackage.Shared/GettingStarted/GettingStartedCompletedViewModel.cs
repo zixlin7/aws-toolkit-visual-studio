@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
@@ -199,7 +200,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);
 
             // TODO: IDE-11680 :  CodeWhisperer Tutorial Course
-            // TryCodeWhispererExamplesAsyncCommand = new RelayCommand(TryCodeWhispererExamples);
+            // TryCodeWhispererExamplesAsyncCommand = new AsyncRelayCommand(TryCodeWhispererExamplesAsync);
 
             ICommand OpenUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
             OpenPrivacyPolicyCommand = OpenUrl(AwsUrls.PrivacyPolicy);
@@ -251,9 +252,32 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         }
 
         // TODO: IDE-11680 :  CodeWhisperer Tutorial Course
-        //private void TryCodeWhispererExamples(object parameter)
-        //{
-        //    throw new NotImplementedException();
-        //}
+//        private async Task TryCodeWhispererExamplesAsync(object parameter)
+//        {
+//#if VS2022_OR_LATER
+//            var examplesName = "CodeWhisperer_Examples.cs";
+
+//            try
+//            {
+//                var destinationFile = Path.Combine(Path.GetTempPath(), examplesName);
+//                using (var stream = new StreamReader(GetType().Assembly
+//                    .GetManifestResourceStream($"Amazon.AWSToolkit.VisualStudio.Resources.{examplesName}")))
+//                using (var outputStream = new StreamWriter(File.Open(destinationFile, FileMode.Create)))
+//                {
+//                    await outputStream.WriteAsync(await stream.ReadToEndAsync());
+//                }
+
+//                ToolkitContext.ToolkitHost.OpenInEditor(destinationFile);
+//            }
+//            catch (Exception ex)
+//            {
+//                var msg = $"Failed to create {examplesName}";
+//                _logger.Error(msg, ex);
+//                ToolkitContext.ToolkitHost.ShowError(msg, ex.Message);
+//            }
+//#else
+//            throw new NotImplementedException();
+//#endif
+//        }
     }
 }
