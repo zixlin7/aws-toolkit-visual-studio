@@ -54,14 +54,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private int? _initialTypeaheadLength;
         private bool _initialFilter = true;
 
-        private static readonly List<ReasonForUpdate> _divergenceReasons = new List<ReasonForUpdate>()
-        {
-            ReasonForUpdate.Diverged, ReasonForUpdate.DivergedAfterBackspace, ReasonForUpdate.DivergedAfterCompletionChange,
-            ReasonForUpdate.DivergedAfterCompletionItemCommitted, ReasonForUpdate.DivergedAfterCompletionItemCommittedCommandPending,
-            ReasonForUpdate.DivergedAfterReturn, ReasonForUpdate.DivergedAfterTypeChar, ReasonForUpdate.DivergedDueToChangeProposal,
-            ReasonForUpdate.DivergedDueToInvalidProposal
-        };
-
         public SuggestionContainer(IEnumerable<Suggestion> suggestions, SuggestionInvocationProperties invocationProperties,
             ICodeWhispererTextView view, ICodeWhispererManager manager, CancellationToken disposalToken)
         {
@@ -251,10 +243,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         public override Task OnProposalUpdatedAsync(SuggestionSessionBase session, ProposalBase originalProposal, ProposalBase currentProposal,
             ReasonForUpdate reason, VirtualSnapshotPoint caret, CompletionState completionState, CancellationToken cancel)
         {
-            if (_divergenceReasons.Contains(reason))
-            {
-                ProcessDivergenceAsync(session, reason).LogExceptionAndForget();
-            }
+            ProcessDivergenceAsync(session, reason).LogExceptionAndForget();
 
             return Task.CompletedTask;
         }
