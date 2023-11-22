@@ -113,6 +113,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
                     EndIndex = reference.Position?.EndCharacter ?? inlineCompletion.InsertText.Length,
                 };
 
+                // Prevent out of boundary access issues
+                data.StartIndex = Math.Max(data.StartIndex, 0);
+                data.EndIndex = Math.Min(data.EndIndex, inlineCompletion.InsertText.Length);
+
                 return data;
             });
 

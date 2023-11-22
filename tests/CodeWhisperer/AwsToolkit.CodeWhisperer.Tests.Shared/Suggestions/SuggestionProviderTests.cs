@@ -98,6 +98,34 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions
             }
         }
 
+        [Theory]
+        [InlineData("hello", 0, 5, 0, 5)]
+        [InlineData("hello", 0, 500, 0, 5)]
+        [InlineData("hello", -100, 5, 0, 5)]
+        [InlineData("hello", 1, 3, 1, 3)]
+        public async Task GetSuggestionsAsyncCapsReferenceBoundaries(string suggestionText, int referenceStart, int referenceEnd, int expectedReferenceStart, int expectedReferenceEnd)
+        {
+            var serverReturnedCompletions = CreateInlineCompletionList(1);
+            serverReturnedCompletions.Items[0].InsertText = suggestionText;
+            serverReturnedCompletions.Items[0].References[0].Position.StartCharacter = referenceStart;
+            serverReturnedCompletions.Items[0].References[0].Position.EndCharacter = referenceEnd;
+            _lspClient.InlineCompletions.InlineCompletions = serverReturnedCompletions;
+
+            var request = new GetSuggestionsRequest()
+            {
+                FilePath = @"c:\sample\file.cs",
+                CursorPosition = new Position(0, 0),
+                IsAutoSuggestion = false,
+            };
+
+            var suggestionSession = await _sut.GetSuggestionsAsync(request);
+
+            var suggestion = suggestionSession.Suggestions.First();
+            suggestion.Text.Should().Be(suggestionText);
+            suggestion.References.First().StartIndex.Should().Be(expectedReferenceStart);
+            suggestion.References.First().EndIndex.Should().Be(expectedReferenceEnd);
+        }
+
         private bool IsMatch(InlineCompletionReference expectedReference, SuggestionReference actualReference)
         {
             return expectedReference.ReferenceName == actualReference.Name

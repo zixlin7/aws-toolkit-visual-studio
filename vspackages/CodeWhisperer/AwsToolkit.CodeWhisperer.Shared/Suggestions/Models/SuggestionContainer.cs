@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
+using Amazon.AwsToolkit.VsSdk.Common.Documents;
 using Amazon.AWSToolkit.Models.Text;
 using Amazon.AWSToolkit.Tasks;
-using Amazon.AwsToolkit.VsSdk.Common.Documents;
+using Amazon.AWSToolkit.Util;
 
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+
+using log4net;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Core.Imaging;
@@ -20,9 +25,6 @@ using Microsoft.VisualStudio.Language.Proposals;
 using Microsoft.VisualStudio.Language.Suggestions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Threading;
-using System.Diagnostics;
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
-using Amazon.AWSToolkit.Util;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
@@ -34,6 +36,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
     /// </summary>
     public class SuggestionContainer : SuggestionBase
     {
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(SuggestionContainer));
+
         private readonly SuggestionInvocationProperties _invocationProperties;
         private readonly CancellationToken _disposalToken;
         private readonly ICodeWhispererTextView _view;
@@ -205,15 +209,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         private async Task LogReferenceAsync(Suggestion suggestion, SuggestionReference reference, string filePath,
             Position position)
         {
-            var logReferenceRequest = new LogReferenceRequest()
+            try
             {
-                Suggestion = suggestion,
-                SuggestionReference = reference,
-                Filename = filePath,
-                Position = position,
-            };
+                var logReferenceRequest = new LogReferenceRequest()
+                {
+                    Suggestion = suggestion,
+                    SuggestionReference = reference,
+                    Filename = filePath,
+                    Position = position,
+                };
 
-            await _manager.LogReferenceAsync(logReferenceRequest);
+                await _manager.LogReferenceAsync(logReferenceRequest);
+            }
+            catch (Exception ex)
+            {
+                // Swallow any errors that would break the call stack
+                _logger.Error("Error logging reference", ex);
+            }
         }
 
         /// <summary>

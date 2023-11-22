@@ -7,6 +7,8 @@ using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.OutputWindow;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 
+using log4net;
+
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -17,6 +19,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
     [Export(typeof(IReferenceLogger))]
     internal class ReferenceLogger : IReferenceLogger, IDisposable
     {
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ReferenceLogger));
+
         private const string _separator = "----------------------------------------";
         private const string _outputWindowName = "CodeWhisperer Reference Log";
         private static readonly Guid _outputWindowGuid = Guid.NewGuid();
@@ -67,7 +71,19 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
 
         public Task LogReferenceAsync(LogReferenceRequest request)
         {
-            _outputWindow.WriteText(CreateOutputText(request));
+            try
+            {
+                _outputWindow.WriteText(CreateOutputText(request));
+            }
+            catch (Exception ex)
+            {
+                // Make an attempt to show the user *something* in the reference logger
+                _logger.Error("Error logging reference", ex);
+                _outputWindow.WriteText("CodeWhisperer Reference could not be logged due to an error.");
+                _outputWindow.WriteText($"Raw Details: {request?.Filename}, {request?.SuggestionReference?.LicenseName}, {request?.SuggestionReference?.Url}");
+                _outputWindow.WriteText($"Suggestion: {request?.Suggestion}");
+            }
+
             return Task.CompletedTask;
         }
 
@@ -93,7 +109,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
         /// </summary>
         private static string GetAttributedText(LogReferenceRequest request)
         {
-            var length = request.SuggestionReference.EndIndex - request.SuggestionReference.StartIndex;
+            var endIndex = Math.Min(request.SuggestionReference.EndIndex, request.Suggestion.Text.Length);
+            var length = endIndex - request.SuggestionReference.StartIndex;
 
             return request.Suggestion.Text.Substring(request.SuggestionReference.StartIndex, length);
         }

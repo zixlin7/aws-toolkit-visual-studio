@@ -567,6 +567,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// </summary>
         private async Task OnTokenRefreshTimerElapsedAsync()
         {
+            if (_codeWhispererLspClient.Status != LspClientStatus.Running)
+            {
+                // Don't bother trying to refresh the token if the language server is not running
+                return;
+            }
+
             if (!_tokenProvider.TrySilentGetSsoToken(
                     _signedInConnectionProperties.CredentialIdentifier, _signedInConnectionProperties.Region, out var refreshToken))
             {
