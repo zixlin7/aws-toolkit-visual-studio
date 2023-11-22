@@ -77,6 +77,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             _tokenRefreshTimer.AutoReset = false;
             _tokenRefreshTimer.Elapsed += OnTokenRefreshTimerElapsed;
 
+            _codeWhispererLspClient.StatusChanged += OnLspClientStatusChanged;
             _codeWhispererLspClient.InitializedAsync += OnLspClientInitializedAsync;
             _codeWhispererLspClient.RequestConnectionMetadataAsync += OnLspClientRequestConnectionMetadataAsync;
 
@@ -367,6 +368,34 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        private void OnLspClientStatusChanged(object sender, LspClientStatusChangedEventArgs e)
+        {
+            _taskFactoryProvider.JoinableTaskFactory.Run(async () => await OnLspClientStatusChangedAsync(e));
+        }
+
+        private async Task OnLspClientStatusChangedAsync(LspClientStatusChangedEventArgs e)
+        {
+            try
+            {
+                // eg: If the language server stops, we don't want this component
+                // to remain in a connected state. Otherwise, you can get into
+                // a scenario where closing one solution and opening another solution
+                // causes the system to think that the user is connected, even
+                // though the language server is not running.
+                if (e.ClientStatus != LspClientStatus.Running && Status == ConnectionStatus.Connected)
+                {
+                    await SignOutAsync(false, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
+        /// <summary>
         /// Raised when the Language Client has completed its initialization handshake with the
         /// language server.
         /// </summary>
@@ -392,6 +421,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 if (credentialId == null)
                 {
                     // Credentials entry no longer exists. Remain in signed-out state.
+                    Status = ConnectionStatus.Disconnected;
                     return;
                 }
 
@@ -399,6 +429,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 if (!_tokenProvider.TrySilentGetSsoToken(credentialId, connectionProperties.Region, out var token))
                 {
                     // Toolkit cannot automatically log in. Remain in signed-out state.
+                    Status = ConnectionStatus.Disconnected;
                     return;
                 }
 

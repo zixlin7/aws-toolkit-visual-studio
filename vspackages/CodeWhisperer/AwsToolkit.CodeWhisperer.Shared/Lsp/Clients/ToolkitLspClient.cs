@@ -199,6 +199,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// <inheritdoc/>
         /// 
         /// Visual Studio Calls this when the extension has loaded.
+        /// This is run when a solution or folder is opened.
         /// </summary>
         public virtual async Task OnLoadedAsync()
         {
