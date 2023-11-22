@@ -20,6 +20,7 @@
             <commonUi:ToolkitImages x:Key="ToolkitImages" />
             <commonUi:VsImages x:Key="VsImages" />
             <converters:EqualityVisibilityConverter x:Key="EqualityVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -149,6 +150,9 @@
                                             <TextBlock
                                                 TextWrapping="WrapWithOverflow"
                                                 Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}"
+                                                FontSize="10"
+                                                FontWeight="Normal"
+                                                Visibility="{Binding ShowAuthHelpMessage, Converter={StaticResource BooleanVisibilityConverter}}"
                                                 Text="To use CodeWhisperer with a different connection, select Sign Out from the CodeWhisperer Menu, then select Getting Started from the same menu. To configure AWS Explorer with a connection, open the View menu, select AWS Explorer, then press the Add AWS Credentials Profile button." />
                                         </StackPanel>
                                     </DockPanel>
@@ -160,7 +164,7 @@
             </commonUi:StatusBox.Style>
         </commonUi:StatusBox>
 
-        <Border BorderThickness="1" Margin="0 12 0 0"  Visibility="{Binding FeatureTypeName, Converter={StaticResource EqualityVisibilityConverter}, ConverterParameter='AWS Explorer'}">
+        <Border BorderThickness="1" Margin="0 12 0 0"  Visibility="{Binding ShowNewToCodeWhispererBox, Converter={StaticResource BooleanVisibilityConverter}}">
             <DockPanel Margin="12" LastChildFill="True">
                 <Button
                     Margin="6 0 0 0"

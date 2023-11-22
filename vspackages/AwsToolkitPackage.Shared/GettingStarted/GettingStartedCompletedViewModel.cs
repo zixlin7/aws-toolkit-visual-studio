@@ -43,6 +43,22 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             set => SetProperty(ref _featureTypeName, value);
         }
 
+        private bool _showNewToCodeWhispererBox;
+
+        public bool ShowNewToCodeWhispererBox
+        {
+            get => _showNewToCodeWhispererBox;
+            set => SetProperty(ref _showNewToCodeWhispererBox, value);
+        }
+
+        private bool _showAuthHelpMessage;
+
+        public bool ShowAuthHelpMessage
+        {
+            get => _showAuthHelpMessage;
+            set => SetProperty(ref _showAuthHelpMessage, value);
+        }
+
         private string _credentialDisplayName;
 
         public string CredentialDisplayName
@@ -221,15 +237,21 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
         public override async Task ViewLoadedAsync()
         {
             await base.ViewLoadedAsync();
-            FeatureTypeName = _gettingStarted.FeatureType.GetDescription();
-            CredentialDisplayName = CreateCredentialDisplayName();
+            RefreshUIComponents();
         }
 
         public override async Task ViewShownAsync()
         {
             await base.ViewShownAsync();
+            RefreshUIComponents();
+        }
+
+        private void RefreshUIComponents()
+        {
             FeatureTypeName = _gettingStarted.FeatureType.GetDescription();
             CredentialDisplayName = CreateCredentialDisplayName();
+            ShowNewToCodeWhispererBox = IsCodeWhispererSupported && _gettingStarted.FeatureType == FeatureType.AwsExplorer;
+            ShowAuthHelpMessage = IsCodeWhispererSupported && _gettingStarted.FeatureType == FeatureType.CodeWhisperer;
         }
 
         private string CreateCredentialDisplayName()
