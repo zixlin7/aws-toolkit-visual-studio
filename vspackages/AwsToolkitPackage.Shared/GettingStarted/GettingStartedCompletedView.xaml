@@ -24,7 +24,8 @@
     </UserControl.Resources>
 
     <StackPanel>
-        <Grid Margin="6 0 0 12">
+        <!-- TODO: IDE-12124 : Open Add Edit Wizard Button-->
+        <!--<Grid Margin="6 0 0 12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -34,7 +35,7 @@
                     🡐 Setup a connection or feature
                 </Hyperlink>
             </TextBlock>
-        </Grid>
+        </Grid>-->
         <commonUi:StatusBox
             Status="{Binding Status}">
             <commonUi:StatusBox.Style>
@@ -145,6 +146,10 @@
                                                     </TextBlock>
                                                 </WrapPanel>
                                             </Grid>
+                                            <TextBlock
+                                                TextWrapping="WrapWithOverflow"
+                                                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.SuccessTextBrushKey}}"
+                                                Text="To use CodeWhisperer with a different connection, select Sign Out from the CodeWhisperer Menu, then select Getting Started from the same menu. To configure AWS Explorer with a connection, open the View menu, select AWS Explorer, then press the Add AWS Credentials Profile button." />
                                         </StackPanel>
                                     </DockPanel>
                                 </Setter.Value>

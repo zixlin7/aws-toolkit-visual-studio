@@ -238,6 +238,9 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
                 : $"IAM Identity Center ({_credentialName})";
         }
 
+        // TODO: IDE-12124 : Open Add Edit Wizard Button
+        // This command is still enabled for the New 2 CWSPR "Setup" button,
+        // but will need to be added as a standalone button as well
         private void OpenAddEditWizard(object parameter)
         {
             _gettingStarted.FeatureType = IsCodeWhispererSupported
