@@ -33,6 +33,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                 SsoSession = profile.Options?.SsoSession ?? string.Empty,
                 SsoAccountId = profile.Options?.SsoAccountId ?? string.Empty,
                 SsoRegion = profile.Options?.SsoRegion ?? string.Empty,
+                SsoRegistrationScopes = ProfileProperties.ParseSsoRegistrationScopes(profile.Options?.SsoRegistrationScopes),
                 SsoRoleName = profile.Options?.SsoRoleName ?? string.Empty,
                 SsoStartUrl = profile.Options?.SsoStartUrl ?? string.Empty,
                 UniqueKey = GetUniqueKey(profile)
@@ -88,6 +89,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                 SourceProfile = @this.SourceProfile,
                 SsoAccountId = @this.SsoAccountId,
                 SsoRegion = @this.SsoRegion,
+                SsoRegistrationScopes = @this.SsoRegistrationScopes,
                 SsoRoleName = @this.SsoRoleName,
                 SsoSession = @this.SsoSession,
                 SsoStartUrl = @this.SsoStartUrl,

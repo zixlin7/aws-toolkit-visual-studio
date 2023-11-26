@@ -22,7 +22,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
             "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/sso-credentials.html";
 
         private const string _builderIdHelpUri =
-            "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/codecatalyst-setup.html#codecatalyst-setup-connect";
+            "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/builder-id.html";
 
 
         private readonly ToolkitContext _toolkitContext;

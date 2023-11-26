@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.Context;
@@ -87,6 +88,50 @@ namespace AWSToolkit.Tests.CommonUI.CredentialProfiles.AddEditWizard
             await viewModel.InitializeAsync();
 
             return viewModel;
+        }
+
+        [Theory]
+        [InlineData(new object[] { true, null, Visibility.Visible })]
+        [InlineData(new object[] { false, null, Visibility.Collapsed })]
+        [InlineData(new object[] { true, "Hidden", Visibility.Visible })]
+        [InlineData(new object[] { false, "Hidden", Visibility.Hidden })]
+        [InlineData(new object[] { true, "Hidden,Collapsed", Visibility.Collapsed })]
+        [InlineData(new object[] { false, "Hidden,Collapsed", Visibility.Hidden })]
+        public void BoolToVisibilityReturnsExpectedResults(bool value, object parameter, Visibility expected)
+        {
+            var actual = ViewModel.BoolToVisibility(value, typeof(Visibility), parameter, null);
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(new object[] { "Collapsed", Visibility.Collapsed })]
+        [InlineData(new object[] { "Hidden", Visibility.Hidden })]
+        [InlineData(new object[] { "Visible", Visibility.Visible })]
+        public void TryParseAndSetWithValidValues(string value, Visibility expected)
+        {
+            var storage = new Visibility[10];
+            var index = new Random().Next() % storage.Length;
+
+            var parsed = ViewModel.TryParseAndSet(value, ref storage[index]);
+
+            Assert.True(parsed);
+            Assert.Equal(expected, storage[index]);
+        }
+
+        [Theory]
+        [InlineData(new object[] { "collapsed" })]
+        [InlineData(new object[] { "Hidden," })]
+        [InlineData(new object[] { "HotGarbage" })]
+        [InlineData(new object[] { null })]
+        [InlineData(new object[] { "" })]
+        public void TryParseAndSetWithInvalidValues(string value)
+        {
+            var storage = Visibility.Visible;
+
+            var parsed = ViewModel.TryParseAndSet(value, ref storage);
+
+            Assert.False(parsed);
+            Assert.Equal(Visibility.Visible, storage);
         }
     }
 }

@@ -9,6 +9,8 @@
     <DefineConstants>$(DefineConstants);VS2022;VS2022_OR_LATER</DefineConstants>
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <!-- Hack: IDE-12076 - prevents analyzer failures from failing the build, when compiled with VS 2019 (this is a VS 2022 project) -->
+    <TreatWarningsAsErrors Condition="'$(VisualStudioVersion)' == '16.0'">false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.TeamFoundation.Client">
@@ -27,14 +29,7 @@
       <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v17\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
       <Private>False</Private>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK">
-      <Version>17.0.32112.339</Version>
-      <ExcludeAssets>runtime</ExcludeAssets>
-      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="17.0.32112.339" />
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj" />

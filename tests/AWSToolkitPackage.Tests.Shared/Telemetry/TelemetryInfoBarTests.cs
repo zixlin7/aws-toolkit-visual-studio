@@ -1,33 +1,50 @@
-﻿using Amazon.AWSToolkit.Tests.Common.Settings;
+﻿#if VS2022_OR_LATER
+using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Tests.Common.Settings;
 using Amazon.AWSToolkit.VisualStudio.Telemetry;
+
+using AWSToolkitPackage.Tests.Utilities;
+
+using Microsoft.VisualStudio.Sdk.TestFramework;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using Moq;
+
 using Xunit;
 
 namespace AWSToolkitPackage.Tests.Telemetry
 {
-    [Collection(UIThreadFixtureCollection.CollectionName)]
+    [Collection(TestProjectMockCollection.CollectionName)]
     public class TelemetryInfoBarTests
     {
         private const string TelemetryEnabledBackingFieldName = "AnalyticsPermitted";
-        private readonly UIThreadFixture _fixture;
         private readonly TelemetryInfoBar _sut;
         private readonly Mock<IVsInfoBarUIElement> _element = new Mock<IVsInfoBarUIElement>();
         private readonly FakeToolkitSettings _fakeToolkitSettings = FakeToolkitSettings.Create();
 
-        public TelemetryInfoBarTests(UIThreadFixture fixture)
+        public TelemetryInfoBarTests(GlobalServiceProvider globalServiceProvider)
         {
-            _fixture = fixture;
+            globalServiceProvider.Reset();
 
             _sut = new TelemetryInfoBar(_fakeToolkitSettings);
             _element.Setup(x => x.Advise(It.IsAny<IVsInfoBarUIEvents>(), out It.Ref<uint>.IsAny));
-            _sut.RegisterInfoBarEvents(_element.Object);
+
+            ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                _sut.RegisterInfoBarEvents(_element.Object);
+            });
+
             _fakeToolkitSettings.TelemetryEnabled = true;
         }
 
         [Fact]
-        public void DisableClicked()
+        public async Task DisableClicked()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var actionItem = new Mock<IVsInfoBarActionItem>();
             actionItem.Setup(mock => mock.ActionContext).Returns(TelemetryInfoBar.ActionContexts.Disable);
 
@@ -38,8 +55,10 @@ namespace AWSToolkitPackage.Tests.Telemetry
         }
 
         [Fact]
-        public void DontShowAgainClicked()
+        public async Task DontShowAgainClicked()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var actionItem = new Mock<IVsInfoBarActionItem>();
             actionItem.Setup(mock => mock.ActionContext).Returns(TelemetryInfoBar.ActionContexts.DontShowAgain);
 
@@ -54,3 +73,4 @@ namespace AWSToolkitPackage.Tests.Telemetry
         }
     }
 }
+#endif

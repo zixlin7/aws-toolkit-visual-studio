@@ -1,21 +1,30 @@
-﻿using Amazon.AWSToolkit.Settings;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.AWSToolkit.Tests.Common.Context;
-using Amazon.AWSToolkit.VisualStudio.Notification;
-using Microsoft.VisualStudio.Shell.Interop;
-using Moq;
-using Xunit;
-using Amazon.AWSToolkit.Util;
+﻿#if VS2022_OR_LATER
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Tests.Common.Context;
+using Amazon.AWSToolkit.Util;
+using Amazon.AWSToolkit.VisualStudio.Notification;
+
+using AWSToolkitPackage.Tests.Utilities;
+
+using Microsoft.VisualStudio.Sdk.TestFramework;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+
+using Moq;
+
+using Xunit;
 
 namespace AWSToolkitPackage.Tests.Notification
 {
-    [Collection(UIThreadFixtureCollection.CollectionName)]
+    [Collection(TestProjectMockCollection.CollectionName)]
     public class NotificationInfoBarTests
     {
-        private readonly UIThreadFixture _fixture;
         private readonly NotificationInfoBar _sut;
         private readonly Mock<IVsInfoBarUIElement> _element = new Mock<IVsInfoBarUIElement>();
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
@@ -31,17 +40,19 @@ namespace AWSToolkitPackage.Tests.Notification
             ToolkitHosts.Vs2015
         };
 
-        public NotificationInfoBarTests(UIThreadFixture fixture)
+        public NotificationInfoBarTests(GlobalServiceProvider globalServiceProvider)
         {
-            _fixture = fixture;
+            globalServiceProvider.Reset();
             _strategy = new Mock<NotificationStrategy>(new FileSettingsRepository<NotificationSettings>(),
                 _toolkitContextFixture.ToolkitContext, "1.39.0.0", Component.Infobar);
             _sut = new NotificationInfoBar(BuildNotification(), _strategy.Object, _toolkitContextFixture.ToolkitContext);
         }
 
         [Fact]
-        public void DontShowAgainClicked()
+        public async Task DontShowAgainClicked()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var actionItem = new Mock<IVsInfoBarActionItem>();
             actionItem.Setup(mock => mock.ActionContext).Returns(new DontShowAgainAction());
 
@@ -135,8 +146,10 @@ namespace AWSToolkitPackage.Tests.Notification
                 {
                     { "en-US", "test en-US content" }
                 },
-                DisplayIf = new DisplayIf() {ToolkitVersion = "1.40.0.0", Comparison = "<"}
+                DisplayIf = new DisplayIf() { ToolkitVersion = "1.40.0.0", Comparison = "<" }
             };
         }
     }
 }
+
+#endif

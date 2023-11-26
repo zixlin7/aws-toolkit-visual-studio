@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\FeedbackPanelViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\SendFeedbackCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FirstRun\LegacyFirstRunControllerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedCompletedViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GettingStarted\GettingStartedViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Images\VsImageProviderTests.cs" />
@@ -35,6 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UseCultureAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\DteVersionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DTE\ProjectExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\TestProjectMockCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\WindowFrameNotificationControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>

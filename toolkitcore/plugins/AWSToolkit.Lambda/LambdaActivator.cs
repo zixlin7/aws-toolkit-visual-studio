@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Lambda.Command;
-using Amazon.AWSToolkit.Navigator;
-
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.AWSToolkit.Lambda.Util;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 using log4net;
@@ -75,11 +72,6 @@ namespace Amazon.AWSToolkit.Lambda
                 ToolkitContext.ConnectionManager.ActiveCredentialIdentifier,
                 ToolkitContext.ConnectionManager.ActiveRegion,
                 ToolkitFactory.Instance.RootViewModel);
-        }
-
-        public async Task EnsureLambdaTesterConfiguredAsync(string projectPath)
-        {
-            await LambdaTesterInstaller.InstallAsync(projectPath);
         }
 
         private ActionResults OnViewLogs(IViewModel viewModel)

@@ -13,9 +13,11 @@ namespace AWSToolkit.Tests.Credentials.Utils
     {
         private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation();
 
-        private static readonly string _sampleSsoSessionName = SonoProperties.DefaultSessionName;
+        private static readonly string _sampleSsoSessionName = "session-name";
+
         private static readonly string _sampleSsoStartUrl = SonoProperties.StartUrl;
-        private static readonly string _expectedFilename = "5e3b6d0e0a5a1917f5c7deba8b9a7745877ed003.json";
+
+        private static readonly string _expectedFilename = "1b3b78a276e7c20461d218e42fd5f24d7e671635.json";
 
         [Fact]
         public void GetCacheFileName()

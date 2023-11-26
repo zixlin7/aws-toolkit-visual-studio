@@ -23,6 +23,8 @@ namespace Amazon.AWSToolkit.Themes
         public object HintText => FallbackTextBrushKey;
         public object InfoText => FallbackTextBrushKey;
         public object InfoBackground => FallbackInfoBrushKey;
+        public object PanelBorder => FallbackBorderBrushKey;
+
         public object ToolTipBorder => FallbackTextBrushKey;
         public object ToolTipBackground => FallbackInfoBrushKey;
         public object ToolTipText => FallbackTextBrushKey;

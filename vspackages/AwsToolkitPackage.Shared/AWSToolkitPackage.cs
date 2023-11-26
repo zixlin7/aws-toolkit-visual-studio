@@ -100,6 +100,10 @@ using Amazon.AWSToolkit.CommonUI.Behaviors;
 using Amazon.AwsToolkit.SourceControl.CodeContainerProviders;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
+using Amazon.AwsToolkit.VsSdk.Common.Services;
+
+using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
+using AwsToolkit.VsSdk.Common.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.LanguageServer.Client;
 
@@ -150,10 +154,15 @@ namespace Amazon.AWSToolkit.VisualStudio
                            "cfproj",
                            ".\\NullPath",
                            LanguageVsTemplate = "AWS")]
-    [ProvideOptionPage(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true)]
-    [ProvideProfile(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true, DescriptionResourceID = 150)]
-    [ProvideOptionPage(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true)]
-    [ProvideProfile(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true, DescriptionResourceID = 150)]
+    [ProvideOptionPage(typeof(GeneralOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.General, 150, 160, true)]
+    [ProvideProfile(typeof(GeneralOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.General, 150, 160, true, DescriptionResourceID = 150)]
+    [ProvideOptionPage(typeof(ProxyOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.Proxy, 150, 170, true)]
+    [ProvideProfile(typeof(ProxyOptionsPage), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.Proxy, 150, 170, true, DescriptionResourceID = 150)]
+#if VS2022_OR_LATER
+    // Show CodeWhisperer Settings in VS "Tools > Options" dialog
+    [ProvideOptionPage(typeof(CodeWhispererSettingsProvider), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.CodeWhisperer, 0, 0, true)]
+    [ProvideProfile(typeof(CodeWhispererSettingsProvider), SettingsText.CategoryNames.AwsToolkit, SettingsText.PageNames.CodeWhisperer, 0, 0, true)]
+#endif
     [ProvideToolWindow(typeof(Amazon.AWSToolkit.VisualStudio.LogGroupsToolWindow), Style = VsDockStyle.Tabbed,
         Orientation = ToolWindowOrientation.Right,
         Transient = true,
@@ -650,7 +659,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     additionalPluginFolders,
                     () =>
                     {
-                        // Event listener uses IAWSLambda, requires plugins to be loaded first
                         InitializeLambdaTesterEventListener();
                         RecordToolkitInitializedMetrics();
                         _toolkitInitialized = true;
@@ -660,12 +668,25 @@ namespace Amazon.AWSToolkit.VisualStudio
                 // TODO : IDE-11469 : phase out SignalShellInitializationComplete by replacing reliance on static globals with MEF & IToolkitContextProvider
                 ToolkitFactory.SignalShellInitializationComplete();
                 await InitializeToolkitContextProviderAsync();
+                await InitializePluginCommandsAsync();
                 RunLogCleanupAsync().LogExceptionAndForget();
             }
             finally
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        private async Task InitializePluginCommandsAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var componentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
+
+            componentModel
+                .GetExtensions<IPluginCommand>()?
+                .ToList()
+                .ForEach(pluginCommand => pluginCommand.RegisterAsync(this));
         }
 
         /// <summary>
@@ -918,63 +939,50 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
         private async Task InitializeAwsToolkitMenuCommandsAsync()
         {
-            var tasks = new List<Task>();
-
-            tasks.Add(
+            var tasks = new List<Task>
+            {
                 ViewUserGuideCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewUserGuide,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewUrlCommand.InitializeAsync(
                     AwsUrls.DotNetOnAws, ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidLinkToDotNetOnAws,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewUrlCommand.InitializeAsync(
                     AwsUrls.DotNetOnAwsCommunity, ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidLinkToDotNetOnAwsCommunity,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewGettingStartedCommand.InitializeAsync(
                     this, _toolkitContext, _toolkitSettingsWatcher,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewGettingStarted,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 CreateIssueCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidCreateIssue,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
                 ViewFeedbackPanelCommand.InitializeAsync(
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidSubmitFeedback,
-                    this)
-            );
+                    this),
 
-            tasks.Add(
-                 ViewToolkitLogsCommand.InitializeAsync(
+                ViewToolkitLogsCommand.InitializeAsync(
                     _toolkitContext,
                     GuidList.CommandSetGuid,
                     (int) PkgCmdIDList.cmdidViewToolkitLogs,
                     this)
-            );
+            };
 
             await Task.WhenAll(tasks);
         }
@@ -983,7 +991,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             try
             {
-                _lambdaTesterEventListener = new LambdaTesterEventListener(this);
+                _lambdaTesterEventListener = new LambdaTesterEventListener(this, _toolkitContext);
             }
             catch (Exception e)
             {
@@ -1077,7 +1085,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ShowFirstRun();
                 ShowTelemetryNotice();
                 ShowSupportedVersionNotice(ToolkitHosts.Vs2017);
-                ShowSunsetNotificationsAsync().LogExceptionAndForget();
                 ShowNotificationsAsync(_productEnvironment).LogExceptionAndForget();
             }
 
@@ -1171,25 +1178,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     LOGGER.Error("Error occurred while trying to show minimum supported version info banner", e);
                 }
             });
-        }
-
-        private async Task ShowSunsetNotificationsAsync()
-        {
-            await TaskScheduler.Default;
-
-            if (!_productEnvironment.TryGetBaseParentProductVersion(out var vsVersion))
-            {
-                vsVersion = null;
-            }
-
-#if VS2022
-            var vs17Dot7Strategy = new SunsetVs17Dot6Strategy(vsVersion);
-            if (await vs17Dot7Strategy.CanShowNoticeAsync())
-            {
-                var infoBarManager = new SunsetNotificationBarManager(this, vs17Dot7Strategy, _toolkitContext, JoinableTaskFactory, DisposalToken);
-                infoBarManager.ShowInfoBar();
-            }
-#endif
         }
 
         /// <summary>

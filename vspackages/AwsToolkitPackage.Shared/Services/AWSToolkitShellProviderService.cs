@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -29,6 +30,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
+using Microsoft.VisualStudio.Threading;
 
 using Task = System.Threading.Tasks.Task;
 
@@ -553,6 +555,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
             // don't throw it away if caller got category wrong
             _hostPackage.Logger.InfoFormat("Request to AddToLog with unknown category '{0}', message is '{1}'", category, message);
+        }
+
+        public async Task<CommandID> QueryCommandAsync(string name)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var map = await Community.VisualStudio.Toolkit.VS.Services.GetCommandNameMappingAsync();
+
+            return map.MapNameToGUIDID(name, out var group, out var id) == VSConstants.S_OK ?
+                new CommandID(group, (int) id)
+                : null;
         }
 
         public T QueryShellProviderService<T>() where T : class

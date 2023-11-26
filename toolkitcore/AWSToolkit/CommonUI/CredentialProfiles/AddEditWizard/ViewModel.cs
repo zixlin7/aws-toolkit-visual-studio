@@ -30,8 +30,9 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
     {
         protected RootViewModel(ToolkitContext toolkitContext)
         {
-            ServiceProvider = new ServiceProvider();
-            ServiceProvider.SetService(toolkitContext);
+            var serviceProvider = new ServiceProvider();
+            serviceProvider.SetService(toolkitContext);
+            ServiceProvider = serviceProvider;
         }
     }
 
@@ -236,7 +237,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         /// <returns>A Task to be awaited.</returns>
         /// <remarks>
         /// Similar to loaded, but more lightweight, this call is made when the view becomes visible.  Visibility may become affected by
-        /// changes to the Visbility property, the view being covered up by z-order, etc.  The view model may choose to take action
+        /// changes to the Visibility property, the view being covered up by z-order, etc.  The view model may choose to take action
         /// when it is know that the user can see the view.
         ///
         /// This method may be called multiple times during the life of the view model.
@@ -257,7 +258,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         /// <returns>A Task to be awaited.</returns>
         /// <remarks>
         /// Similar to unloaded, but more lightweight, this call is made when the view becomes invisible.  Visibility may become affected by
-        /// changes to the Visbility property, the view being covered up by z-order, etc.  The view model may choose to take action
+        /// changes to the Visibility property, the view being covered up by z-order, etc.  The view model may choose to take action
         /// when it is know that the user cannot see the view, even if temporarily.
         /// 
         /// This method may be called multiple times during the life of the view model.
@@ -332,10 +333,55 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             !(bool) value;
 
         /// <summary>
-        /// Converts a boolean true/false to a Visibility Visible/Hidden respectively.
+        /// Converts a boolean true/false to a Visibility states passed into the parameter.
         /// </summary>
-        public static readonly RelayValueConverter.ConvertDelegate FalseToHidden =
+        /// <remarks>
+        /// The converter will convert a false/true value to collapsed and visible by default.
+        /// A string can be passed into the converter parameter in XAML to change the visibility
+        /// options assigned to false or both true and false.
+        ///
+        /// If the converter parameter is empty, false/true will convert to collapsed/visible.
+        ///
+        /// If the converter parameter is a single visibility value, such as "Hidden", false/true
+        /// will convert to &lt;parameter value&gt;/visible.
+        ///
+        /// If the converter parameter is a comma-delimited pair of visibility values, such as "Hidden/Collapsed",
+        /// false/true will convert to &lt;first parameter values&gt;/&lt;second parameter value&gt;.
+        /// </remarks>
+        public static readonly RelayValueConverter.ConvertDelegate BoolToVisibility =
             (object value, Type targetType, object parameter, CultureInfo culture) =>
-            ((bool) value) ? Visibility.Visible : Visibility.Hidden;
+            {
+                var parameterString = parameter as string;
+                var parameters = new Visibility[] { Visibility.Collapsed, Visibility.Visible };
+
+                if (!string.IsNullOrWhiteSpace(parameterString))
+                {
+                    var parameterStringSplit = parameterString.Split(',');
+
+                    if (parameterStringSplit.Length > 0)
+                    {
+                        TryParseAndSet(parameterStringSplit[0], ref parameters[0]);
+
+                        if (parameterStringSplit.Length > 1)
+                        {
+                            TryParseAndSet(parameterStringSplit[1], ref parameters[1]);
+                        }
+                    }
+                }
+
+                return ((bool) value) ? parameters[1] : parameters[0];
+            };
+
+        internal static bool TryParseAndSet<TEnum>(string value, ref TEnum result) where TEnum : struct
+        {
+            var isParsed = Enum.TryParse(value, out TEnum enumValue);
+
+            if (isParsed)
+            {
+                result = enumValue;
+            }
+
+            return isParsed;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if VS2022_OR_LATER
+using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
@@ -12,10 +13,13 @@ using Amazon.AWSToolkit.VisualStudio.Commands.Publishing;
 
 using AWSToolkit.Tests.Common.VS.SolutionExplorer;
 
+using AWSToolkitPackage.Tests.Utilities;
+
 using EnvDTE;
 
 using EnvDTE80;
 
+using Microsoft.VisualStudio.Sdk.TestFramework;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -48,11 +52,16 @@ namespace AWSToolkitPackage.Tests.Publishing
         /// </summary>
         public void ExposedBeforeQueryStatus(OleMenuCommand menuCommand)
         {
-            BeforeQueryStatus(menuCommand, EventArgs.Empty);
+            ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                BeforeQueryStatus(menuCommand, EventArgs.Empty);
+            });
         }
     }
 
-    [Collection(UIThreadFixtureCollection.CollectionName)]
+    [Collection(TestProjectMockCollection.CollectionName)]
     public class PublishToAwsCommandSolutionExplorerTests
     {
         public class SetupState
@@ -101,8 +110,10 @@ namespace AWSToolkitPackage.Tests.Publishing
         private readonly TestPublishToAwsCommandSolutionExplorer _sut;
         private readonly OleMenuCommand _menuCommand;
 
-        public PublishToAwsCommandSolutionExplorerTests()
+        public PublishToAwsCommandSolutionExplorerTests(GlobalServiceProvider globalServiceProvider)
         {
+            globalServiceProvider.Reset();
+
             _publishSettingsRepository.Save(_publishSettings);
 
             _sampleProject = new Mock<Project>();
@@ -192,3 +203,4 @@ namespace AWSToolkitPackage.Tests.Publishing
         }
     }
 }
+#endif

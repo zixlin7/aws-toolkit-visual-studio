@@ -1,9 +1,9 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Threading.Tasks;
 using System.Windows;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
@@ -135,6 +135,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public void AddToLog(string category, string message)
         {
 
+        }
+
+        public Task<CommandID> QueryCommandAsync(string name)
+        {
+            return null;
         }
 
         public T QueryShellProviderService<T>() where T : class

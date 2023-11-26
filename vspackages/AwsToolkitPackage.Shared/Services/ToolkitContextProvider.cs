@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Threading;
 namespace Amazon.AWSToolkit.VisualStudio.Services
 {
     /// <summary>
-    /// Allows us to depencency inject the ToolkitContext into systems.
+    /// Allows us to dependency inject the ToolkitContext into systems.
     /// This is primarily intended for use with MEF components, which
     /// can be activated independently from the main AWS Toolkit package.
     ///

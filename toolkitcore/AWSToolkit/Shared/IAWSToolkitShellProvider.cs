@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.Telemetry.Model;
+using System.ComponentModel.Design;
 
 namespace Amazon.AWSToolkit.Shared
 {
@@ -246,6 +247,13 @@ namespace Amazon.AWSToolkit.Shared
         /// <param name="category">Type of message; one of 'debug', 'warn', 'error' or 'info'</param>
         /// <param name="message"></param>
         void AddToLog(string category, string message);
+
+        /// <summary>
+        /// Returns a VS CommandID by name.
+        /// </summary>
+        /// <param name="name">CommandName from vsct file.</param>
+        /// <returns>CommandID if found by name, otherwise null.</returns>
+        Task<CommandID> QueryCommandAsync(string name);
 
         /// <summary>
         /// Requests a service implemented in our hosting shell.

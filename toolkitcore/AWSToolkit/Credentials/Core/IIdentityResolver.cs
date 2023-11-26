@@ -11,6 +11,6 @@ namespace Amazon.AWSToolkit.Credentials.Core
     public interface IIdentityResolver
     {
         Task<string> GetAccountIdAsync(AWSCredentials awsCredentials, RegionEndpoint regionEndpoint, CancellationToken cancellationToken);
-        Task<string> GetAwsIdAsync(IAWSTokenProvider tokenProvider, CancellationToken cancellationToken);
+        Task<string> GetCodeCatalystSessionIdentityAsync(IAWSTokenProvider tokenProvider, CancellationToken cancellationToken);
     }
 }

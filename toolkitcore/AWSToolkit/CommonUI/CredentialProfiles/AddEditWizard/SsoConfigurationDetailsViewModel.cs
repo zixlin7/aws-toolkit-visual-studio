@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -7,13 +8,16 @@ using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Controls;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
 
 using log4net;
 
 namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 {
-    public class SsoConfigurationDetailsViewModel : ConfigurationDetailsViewModel, ISsoProfilePropertiesProvider
+    // NOTE - We need a way to separate SsoProfile and BearerToken credential types in a coherent way.
+    // For now we will assume AWS Explorer is SsoProfile and CodeWhisperer is BearerToken.
+    public class SsoConfigurationDetailsViewModel : ConfigurationDetailsViewModel
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SsoConfigurationDetailsViewModel));
 
@@ -133,7 +137,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         {
             await base.RegisterServicesAsync();
 
-            ServiceProvider.SetService<ISsoProfilePropertiesProvider>(this);
+            ServiceProvider.SetService<IConfigurationDetails>(this, CredentialType.ToString());
         }
 
         public override async Task InitializeAsync()
@@ -146,6 +150,35 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
             ConnectToIamIdentityCenterCommand = new RelayCommand(CanConnectToIamIdentityCenter, ConnectToIamIdentityCenter);
 
             SelectedCredentialFileType = CredentialFileType.Shared;
+
+            if (_addEditProfileWizard.FeatureType == FeatureType.CodeWhisperer)
+            {
+                CredentialIdentifierSelectorVisible = true;
+                ProfileProperties.SsoRegistrationScopes = SonoProperties.CodeWhispererScopes;
+            }
+            else
+            {
+                CredentialIdentifierSelectorVisible = false;
+            }            
+        }
+
+        protected override IEnumerable<ICredentialIdentifier> FilterCredentialIdentifiers(IEnumerable<ICredentialIdentifier> credentialIdentifiers)
+        {
+            var csm = ToolkitContext.CredentialSettingsManager;
+
+            // NOTE - This is for CodeWhisperer only.  If and when we add another feature/service in the future, this will
+            // need to be refactored.
+            return credentialIdentifiers
+                .Where(id =>
+                {
+                    var scopes = csm.GetProfileProperties(id)?.SsoRegistrationScopes;
+
+                    return scopes != null
+                        && id.FactoryId != SonoCredentialProviderFactory.FactoryId
+                        && csm.GetCredentialType(id) == CredentialType.BearerToken
+                        && scopes.Contains(SonoProperties.CodeWhispererAnalysisScope)
+                        && scopes.Contains(SonoProperties.CodeWhispererCompletionsScope);
+                });
         }
     }
 }

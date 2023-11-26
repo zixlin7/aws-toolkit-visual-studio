@@ -1,8 +1,13 @@
 ﻿using System;
-using Amazon.AWSToolkit.Lambda;
+
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
+
+using AwsToolkit.VsSdk.Common.LambdaTester;
+
 using EnvDTE;
+
 using log4net;
+
 using Microsoft.VisualStudio.Threading;
 
 using Task = System.Threading.Tasks.Task;
@@ -13,25 +18,21 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(LambdaTesterUtilities));
 
-        public static async Task  EnsureLambdaTesterConfiguredAsync(Solution solution, IAWSLambda lambdaPlugin, JoinableTaskFactory joinableTaskFactory)
+        public static async Task  EnsureLambdaTesterConfiguredAsync(Solution solution, JoinableTaskFactory joinableTaskFactory)
         {
             LOGGER.Debug("Configuring Solution with Lambda Tester");
             await joinableTaskFactory.SwitchToMainThreadAsync();
             foreach (Project project in solution.Projects)
             {
-                await EnsureLambdaTesterConfiguredAsync(project, lambdaPlugin, joinableTaskFactory).ConfigureAwait(false);
+                await EnsureLambdaTesterConfiguredAsync(project, joinableTaskFactory).ConfigureAwait(false);
             }
 
             LOGGER.Debug("Finished configuring Solution with Lambda Tester");
         }
 
-        public static async Task EnsureLambdaTesterConfiguredAsync(Project project, IAWSLambda lambdaPlugin, JoinableTaskFactory joinableTaskFactory)
+        public static async Task EnsureLambdaTesterConfiguredAsync(Project project, JoinableTaskFactory joinableTaskFactory)
         {
             await joinableTaskFactory.SwitchToMainThreadAsync();
-            if (lambdaPlugin == null)
-            {
-                throw new ArgumentNullException(nameof(lambdaPlugin));
-            }
 
             if (project == null)
             {
@@ -49,7 +50,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
                 {
                     foreach (ProjectItem childItem in project.ProjectItems)
                     {
-                        await EnsureLambdaTesterConfiguredAsync(childItem.SubProject, lambdaPlugin, joinableTaskFactory).ConfigureAwait(false);
+                        await EnsureLambdaTesterConfiguredAsync(childItem.SubProject, joinableTaskFactory).ConfigureAwait(false);
                     }
                 }
                 else
@@ -60,7 +61,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
                         throw new Exception("Unable to determine project FileName");
                     }
 
-                    await lambdaPlugin.EnsureLambdaTesterConfiguredAsync(projectFileName).ConfigureAwait(false);
+                    await LambdaTesterInstaller.InstallAsync(projectFileName).ConfigureAwait(false);
                 }
             }
             catch (Exception e)

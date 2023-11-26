@@ -1,12 +1,16 @@
-﻿using System;
+﻿#if VS2022_OR_LATER
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Amazon.AWSToolkit.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Lambda;
+
+using AWSToolkitPackage.Tests.Utilities;
 
 using EnvDTE;
 
+using Microsoft.VisualStudio.Sdk.TestFramework;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
 using Moq;
@@ -17,30 +21,16 @@ using Task = System.Threading.Tasks.Task;
 
 namespace AWSToolkitPackage.Tests.Lambda
 {
-    [Collection(UIThreadFixtureCollection.CollectionName)]
+    [Collection(TestProjectMockCollection.CollectionName)]
     public class EnsureLambdaTesterConfigured 
     {
-        private readonly UIThreadFixture _fixture;
-        private readonly Mock<IAWSLambda> _lambdaPluginMock = new Mock<IAWSLambda>();
         private readonly JoinableTaskFactory _taskFactory;
 
-        public EnsureLambdaTesterConfigured(UIThreadFixture fixture)
+        public EnsureLambdaTesterConfigured(GlobalServiceProvider globalServiceProvider)
         {
-            _fixture = fixture;
-#pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
-            var taskCollection = new JoinableTaskContext();
-#pragma warning restore VSSDK005
-            _taskFactory = taskCollection.Factory;
-        }
+            globalServiceProvider.Reset();
 
-        [Fact]
-        public async Task ThrowsExceptionIfLambdaPluginIsNull()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                Project project = null;
-                await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(project, null, _taskFactory);
-            });
+            _taskFactory = ThreadHelper.JoinableTaskContext.Factory;
         }
 
         [Fact]
@@ -57,9 +47,9 @@ namespace AWSToolkitPackage.Tests.Lambda
             var solution = new Mock<Solution>();
             solution.Setup(x => x.Projects).Returns(projects.Object);
 
-            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(solution.Object, _lambdaPluginMock.Object, _taskFactory);
+            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(solution.Object, _taskFactory);
 
-            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfiguredAsync(project.Object.FileName), Times.Once);
+            project.VerifyGet(x => x.FileName, Times.Once);
         }
 
         [Fact]
@@ -69,9 +59,9 @@ namespace AWSToolkitPackage.Tests.Lambda
             project.Setup(x => x.Kind).Returns("csharpproject");
             project.Setup(x => x.FileName).Returns("child-project-1.csproj");
 
-            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(project.Object, _lambdaPluginMock.Object, _taskFactory);
+            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(project.Object, _taskFactory);
 
-            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfiguredAsync(project.Object.FileName), Times.Once);
+            project.VerifyGet(x => x.FileName, Times.Once);
         }
 
         [Fact]
@@ -92,10 +82,10 @@ namespace AWSToolkitPackage.Tests.Lambda
             parentFolderProject.Setup(x => x.Kind).Returns("{66A26720-8FB5-11D2-AA7E-00C04F688DDE}"); // GuidList.VSProjectTypeProjectFolder
             parentFolderProject.Setup(x => x.ProjectItems).Returns(projectItemsMock.Object);
 
-            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(parentFolderProject.Object, _lambdaPluginMock.Object, _taskFactory);
+            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(parentFolderProject.Object, _taskFactory);
 
-            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfiguredAsync(childProject1.Object.FileName), Times.Once);
-            _lambdaPluginMock.Verify(x => x.EnsureLambdaTesterConfiguredAsync(childProject2.Object.FileName), Times.Once);
+            childProject1.VerifyGet(x => x.FileName, Times.Once);
+            childProject2.VerifyGet(x => x.FileName, Times.Once);
         }
 
         private Mock<ProjectItems> CreateProjectItemsMock(params Mock<Project>[] projects)
@@ -114,3 +104,4 @@ namespace AWSToolkitPackage.Tests.Lambda
         }
     }
 }
+#endif

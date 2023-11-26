@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Amazon.AWSToolkit.Lambda;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Tasks;
 
 using EnvDTE;
@@ -28,25 +28,19 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
         private DebuggerEvents _debuggerEvents;
 
         private readonly AWSToolkitPackage _hostPackage;
-
+        private readonly ToolkitContext _toolkitContext;
         private readonly LambdaTesterUsageEmitter _usageEmitter;
 
         private bool _debugHookRegistered = false;
 
-        // Plugin usage must be lazy loaded in order to avoid "assembly not found" errors
-        private readonly Lazy<IAWSLambda> _lambdaPlugin;
-
-        public LambdaTesterEventListener(AWSToolkitPackage hostPackage)
+        public LambdaTesterEventListener(AWSToolkitPackage hostPackage, ToolkitContext toolkitContext)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            this._hostPackage = hostPackage;
+            _hostPackage = hostPackage;
+            _toolkitContext = toolkitContext;
 
-            this._usageEmitter = new LambdaTesterUsageEmitter(ToolkitFactory.Instance.TelemetryLogger);
-
-            this._lambdaPlugin = new Lazy<IAWSLambda>(() =>
-                hostPackage.ToolkitShellProviderService.QueryAWSToolkitPluginService(typeof(IAWSLambda)) as
-                    IAWSLambda);
+            _usageEmitter = new LambdaTesterUsageEmitter(_toolkitContext.TelemetryLogger);
 
             Initialize();
         }
@@ -116,7 +110,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
                 }
 
                 // Configure Lambda Tester usage in the Solution's Projects
-                await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(dte.Solution, _lambdaPlugin.Value, ThreadHelper.JoinableTaskFactory);
+                await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(dte.Solution, ThreadHelper.JoinableTaskFactory);
             }
             catch (Exception e)
             {
@@ -137,7 +131,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             // Configure Lambda Tester usage in Project
-            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(project, _lambdaPlugin.Value, ThreadHelper.JoinableTaskFactory);
+            await LambdaTesterUtilities.EnsureLambdaTesterConfiguredAsync(project, ThreadHelper.JoinableTaskFactory);
         }
 
         private void RegisterDebuggerEvents(DTE2 dte)
