@@ -1,0 +1,14 @@
+{
+  "Date": "2023-11-22",
+  "Version": "1.45.0.0",
+  "Entries": [
+    {
+      "Type": "Breaking Change",
+      "Description": "From this version on, AWS Toolkit for Visual Studio 2022 requires a minimum Visual Studio version of 17.7."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added Preview support for Amazon CodeWhisperer - your AI coding companion. See https://aws.amazon.com/codewhisperer/ to learn more."
+    }
+  ]
+}
