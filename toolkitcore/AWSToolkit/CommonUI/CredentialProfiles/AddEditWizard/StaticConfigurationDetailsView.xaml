@@ -18,8 +18,9 @@
             Margin="0 9 0 0"
             Background="Transparent"
             Header="Where to find or create an IAM User Role?">
+            <!-- Negative margin hides the FlowDocument reader toolbar -->
             <FlowDocumentScrollViewer
-                VerticalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Hidden"
                 Margin="-20,0,4,0">
                 <FlowDocument
                     Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.FlowDocumentStyle}}">
@@ -88,7 +89,8 @@
             x:Name="ProfileNameBox"
             x:FieldModifier="private"
             Margin="0 5 0 0"
-            Text="{Binding ProfileName, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            Text="{Binding ProfileName, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            VerticalScrollBarVisibility="Hidden" />
 
         <commonUi:ValidationErrorText
             SourceElement="{x:Reference ProfileNameBox}" />

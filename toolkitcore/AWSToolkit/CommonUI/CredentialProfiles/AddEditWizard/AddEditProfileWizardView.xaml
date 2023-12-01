@@ -55,72 +55,68 @@
             </Hyperlink>
         </TextBlock>
 
-        <ScrollViewer
+        <StackPanel
             Grid.Row="2"
-            Padding="0 0 12 0"
-            VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <commonUi:StatusBox 
-                    Grid.Row="0"
-                    HorizontalAlignment="Left"
-                    Status="{Binding Status}"
-                    Margin="0 6 0 0">
-                    <StackPanel Margin="6">
-                        <WrapPanel>
-                            <images:VsImage
-                                Height="16"
-                                Width="16"
-                                VerticalAlignment="Center"
-                                Source="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
-                            <TextBlock 
-                                Margin="3 0 0 0"
-                                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
-                                Text="We hit an issue connecting to your profile" />
-                        </WrapPanel>
+            Margin="0 0 12 0">
+            <commonUi:StatusBox 
+                HorizontalAlignment="Left"
+                Status="{Binding Status}"
+                Margin="0 6 0 0">
+                <StackPanel Margin="6">
+                    <WrapPanel>
+                        <images:VsImage
+                            Height="16"
+                            Width="16"
+                            VerticalAlignment="Center"
+                            Source="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                        <TextBlock 
+                            Margin="3 0 0 0"
+                            FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                            Text="We hit an issue connecting to your profile" />
+                    </WrapPanel>
 
-                        <TextBlock
-                            Margin="0 6 0 0"
-                            TextWrapping="WrapWithOverflow">
-                            <Run>Since we couldn't connect, we didn't write the profile information below
-                            to your local AWS credentials file.  Please check the information below or</Run>
-                            <Hyperlink Command="{Binding OpenLogsCommand}">open logs.</Hyperlink>
-                        </TextBlock>
-                    </StackPanel>
-                </commonUi:StatusBox>
+                    <TextBlock
+                        Margin="0 6 0 0"
+                        TextWrapping="WrapWithOverflow">
+                        <Run>Since we couldn't connect, we didn't write the profile information below
+                        to your local AWS credentials file.  Please check the information below or</Run>
+                        <Hyperlink Command="{Binding OpenLogsCommand}">open logs.</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+            </commonUi:StatusBox>
 
-                <commonUi:CardControl
-                    SelectedValue="{Binding CurrentStep}"
-                    SelectedValuePath="Tag">
+            <commonUi:CardControl
+                SelectedValue="{Binding CurrentStep}"
+                SelectedValuePath="Tag">
 
-                    <local:ConfigurationStepView
-                        Tag="{x:Static services:WizardStep.Configuration}">
-                        <wizBehaviors:Mvvm.ViewModel>
-                            <local:ConfigurationStepViewModel />
-                        </wizBehaviors:Mvvm.ViewModel>
-                    </local:ConfigurationStepView>
+                <local:ConfigurationStepView
+                    Tag="{x:Static services:WizardStep.Configuration}">
+                    <wizBehaviors:Mvvm.ViewModel>
+                        <local:ConfigurationStepViewModel />
+                    </wizBehaviors:Mvvm.ViewModel>
+                </local:ConfigurationStepView>
 
-                    <local:SsoConnectingStepView
-                        Tag="{x:Static services:WizardStep.SsoConnecting}">
-                        <wizBehaviors:Mvvm.ViewModel>
-                            <local:SsoConnectingStepViewModel />
-                        </wizBehaviors:Mvvm.ViewModel>
-                    </local:SsoConnectingStepView>
+                <local:SsoConnectingStepView
+                    Tag="{x:Static services:WizardStep.SsoConnecting}">
+                    <wizBehaviors:Mvvm.ViewModel>
+                        <local:SsoConnectingStepViewModel />
+                    </wizBehaviors:Mvvm.ViewModel>
+                </local:SsoConnectingStepView>
 
-                    <local:SsoAwsCredentialConnectedStepView
-                        Tag="{x:Static services:WizardStep.SsoAwsCredentialConnected}">
-                        <wizBehaviors:Mvvm.ViewModel>
-                            <local:SsoAwsCredentialConnectedStepViewModel />
-                        </wizBehaviors:Mvvm.ViewModel>
-                    </local:SsoAwsCredentialConnectedStepView>
+                <local:SsoAwsCredentialConnectedStepView
+                    Tag="{x:Static services:WizardStep.SsoAwsCredentialConnected}">
+                    <wizBehaviors:Mvvm.ViewModel>
+                        <local:SsoAwsCredentialConnectedStepViewModel />
+                    </wizBehaviors:Mvvm.ViewModel>
+                </local:SsoAwsCredentialConnectedStepView>
 
-                    <local:SsoBearerTokenConnectedStepView
-                        Tag="{x:Static services:WizardStep.SsoBearerTokenConnected}">
-                        <wizBehaviors:Mvvm.ViewModel>
-                            <local:SsoBearerTokenConnectedStepViewModel />
-                        </wizBehaviors:Mvvm.ViewModel>
-                    </local:SsoBearerTokenConnectedStepView>
-                </commonUi:CardControl>
-            </StackPanel>
-        </ScrollViewer>
+                <local:SsoBearerTokenConnectedStepView
+                    Tag="{x:Static services:WizardStep.SsoBearerTokenConnected}">
+                    <wizBehaviors:Mvvm.ViewModel>
+                        <local:SsoBearerTokenConnectedStepViewModel />
+                    </wizBehaviors:Mvvm.ViewModel>
+                </local:SsoBearerTokenConnectedStepView>
+            </commonUi:CardControl>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -62,7 +62,8 @@
                 x:Name="ProfileNameBox"
                 x:FieldModifier="private"
                 Margin="0 5 0 0"
-                Text="{Binding ProfileName, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                Text="{Binding ProfileName, ValidatesOnDataErrors=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                VerticalScrollBarVisibility="Hidden" />
 
             <commonUi:ValidationErrorText
                 SourceElement="{x:Reference ProfileNameBox}" />
