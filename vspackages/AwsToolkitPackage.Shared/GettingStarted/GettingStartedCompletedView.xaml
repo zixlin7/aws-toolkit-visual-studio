@@ -108,15 +108,14 @@
                                             </behaviors:UiClickMetric.Configure>
                                         </Button>
 
-                                        <!--TODO: IDE-11680 :  CodeWhisperer Tutorial Course-->
-                                        <!--<Button
+                                        <Button
                                             Margin="6 0 0 0"
                                             DockPanel.Dock="Right"
                                             MaxHeight="40"
                                             Command="{Binding TryCodeWhispererExamplesAsyncCommand}"
                                             Content="Try CodeWhisperer with examples"
                                             Style="{DynamicResource {x:Static themes:ToolkitThemeResourceKeys.ButtonStyle}}"
-                                            Visibility="{Binding FeatureTypeName, Converter={StaticResource EqualityVisibilityConverter}, ConverterParameter='CodeWhisperer'}" />-->
+                                            Visibility="{Binding FeatureTypeName, Converter={StaticResource EqualityVisibilityConverter}, ConverterParameter='CodeWhisperer'}" />
 
                                         <StackPanel>
                                             <Grid>
