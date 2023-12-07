@@ -13,6 +13,16 @@
   <PropertyGroup>
     <BuildRoot>$(MSBuildThisFileDirectory)</BuildRoot>
   </PropertyGroup>
+
+  <!-- Build Acceleration (while developing in VS 17.8 and newer)
+    See: https://devblogs.microsoft.com/visualstudio/visual-studio-17-8-now-available/#BuildAccelerate
+  -->
+  <PropertyGroup>
+    <!-- We set ProduceReferenceAssembly because projects targeting .NET Framework 
+    do not implicitly do this. Build acceleration requires reference assemblies. -->
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+  </PropertyGroup>
   
   <!-- Assembly Signing -->
   <!-- Even test assemblies are signed so they can access Internal classes from other Strong-Signed assemblies -->
