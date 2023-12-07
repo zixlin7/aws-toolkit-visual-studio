@@ -316,7 +316,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             {
                 await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                var uiShell = (IVsUIShell)_hostPackage.GetVSShellService(typeof(SVsUIShell));
+                var uiShell = (IVsUIShell) await _hostPackage.GetServiceAsync(typeof(SVsUIShell));
                 IntPtr parent;
                 if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
                 {
@@ -413,7 +413,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
                 try
                 {
-                    var statusBar = (IVsStatusbar)_hostPackage.GetVSShellService(typeof(SVsStatusbar));
+                    var statusBar = (IVsStatusbar) await _hostPackage.GetServiceAsync(typeof(SVsStatusbar));
                     int frozen;
 
                     statusBar.IsFrozen(out frozen);
@@ -601,7 +601,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
                 if (preferInternalBrowser)
                 {
-                    var service = _hostPackage.GetVSShellService(typeof(SVsWebBrowsingService)) as IVsWebBrowsingService;
+                    var service = await _hostPackage.GetServiceAsync(typeof(SVsWebBrowsingService)) as IVsWebBrowsingService;
 
                     if (service != null)
                     {

@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public async Task ExecuteCommand_NewPublish()
         {
             await _commandFixture.SetupNewPublishAsync();
-            _sut.Execute(null);
+            await _sut.ExecuteAsync(null);
 
             Assert.Equal(PublishViewStage.Configure, ViewModel.ViewStage);
         }
@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
         public async Task ExecuteCommand_Republish()
         {
             await _commandFixture.SetupRepublishAsync();
-            _sut.Execute(null);
+            await _sut.ExecuteAsync(null);
 
             Assert.Equal(PublishViewStage.Configure, ViewModel.ViewStage);
         }
