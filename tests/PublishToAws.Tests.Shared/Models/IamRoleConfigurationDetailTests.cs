@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         public void AddChild()
         {
             _sut.AddChild(ConfigurationDetailBuilder.Create().WithSampleData().Build());
-            Assert.Equal(1, _sut.Children.Count);
+            Assert.Single(_sut.Children);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         {
             _sut.AddChild(_sampleRoleArnDetail);
 
-            Assert.Equal(1, _sut.Children.Count);
+            Assert.Single(_sut.Children);
             Assert.Equal(_sampleRoleArnDetail, _sut.RoleArnDetail);
         }
 
@@ -57,7 +57,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         {
             _sut.AddChild(_sampleCreateNewDetail);
 
-            Assert.Equal(1, _sut.Children.Count);
+            Assert.Single(_sut.Children);
             Assert.Equal(_sampleCreateNewDetail.Value, _sut.CreateNewRole);
         }
 

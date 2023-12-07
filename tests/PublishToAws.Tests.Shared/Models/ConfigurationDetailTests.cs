@@ -213,7 +213,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         public void AddChild()
         {
             _sut.AddChild(ConfigurationDetailBuilder.Create().WithSampleData().Build());
-            Assert.Equal(1, _sut.Children.Count);
+            Assert.Single(_sut.Children);
         }
 
         [Fact]

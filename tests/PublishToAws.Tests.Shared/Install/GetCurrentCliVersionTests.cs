@@ -33,7 +33,7 @@ Project Home: https://github.com/aws/aws-dotnet-deploy
         public void ParseEmpty(string cliOutput)
         {
             var ex = Assert.Throws<DeployToolException>(() => GetCurrentCliVersion.ParseVersionFromCliOutput(cliOutput));
-            Assert.Equal(ex.Message, GetCurrentCliVersion.ErrorMessages.VersionOutputEmpty);
+            Assert.Equal(GetCurrentCliVersion.ErrorMessages.VersionOutputEmpty, ex.Message);
         }
     }
 }

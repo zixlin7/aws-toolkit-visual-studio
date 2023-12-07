@@ -137,10 +137,10 @@ namespace AWSToolkit.Tests.CommonUI
 
             _sut.ErrorsChanged += (sender, e) =>
             {
-                Assert.True(false, userMessage);
+                Assert.Fail(userMessage);
             };
 
-            var ex = Assert.Throws<TrueException>(() => _sut.AddError("Error"));
+            var ex = Assert.Throws<FailException>(() => _sut.AddError("Error"));
             Assert.Equal(userMessage, ex.Message);
         }
 
