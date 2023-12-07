@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.Credentials.Core;
+﻿using Amazon.AWSToolkit.CommonUI.Notifications;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
@@ -19,6 +20,6 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         /// <summary>
         /// Obtain an SSO Token from the credentials system, taking the user through the SSO login flow if needed.
         /// </summary>
-        bool TryGetSsoToken(ICredentialIdentifier credentialId, ToolkitRegion ssoRegion, out AWSToken token);
+        TaskStatus TryGetSsoToken(ICredentialIdentifier credentialId, ToolkitRegion ssoRegion, out AWSToken token);
     }
 }

@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Urls;
 
@@ -67,7 +68,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
                 try
                 {
                     if ((await ToolkitContext.CredentialManager.GetToolkitCredentials(credId, ssoRegion)
-                        .GetTokenProvider().TryResolveTokenAsync()).Success)
+                            .GetTokenProvider().TryResolveTokenAsync()).Success)
                     {
                         actionResults = new ActionResults().WithSuccess(true);
                         _host.ShowCompleted(credId);
@@ -76,6 +77,11 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
                     {
                         throw new Exception($"Unable to sign into AWS Builder ID.");
                     }
+                }
+                catch (UserCanceledException ex)
+                {
+                    actionResults = ActionResults.CreateCancelled();
+                    _logger.Debug("User canceled the AWS Builder ID sign-in");
                 }
                 catch (Exception ex)
                 {

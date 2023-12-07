@@ -14,6 +14,7 @@ using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
@@ -21,6 +22,8 @@ using Amazon.Runtime;
 using log4net;
 
 using Microsoft.VisualStudio.Threading;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 {
@@ -184,7 +187,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 var toolkitContext = _toolkitContextProvider.GetToolkitContext();
                 var connectionProperties = CreateConnectionProperties(credentialIdentifier);
 
-                if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, connectionProperties.Region, out var awsToken))
+                var result = _tokenProvider.TryGetSsoToken(credentialIdentifier, connectionProperties.Region,
+                    out var awsToken);
+                if(result != TaskStatus.Success)
                 {
                     var msg = $"Cannot sign in to CodeWhisperer, try again.{Environment.NewLine}Unable to resolve bearer token {displayName}.";
 
@@ -198,6 +203,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     // an exception while handling the token cache:
                     // https://github.com/aws/aws-sdk-net/pull/3083/files#r1389714680
                     InvalidateSsoToken(credentialIdentifier);
+                    if (result == TaskStatus.Cancel)
+                    {
+                        throw new OperationCanceledException(msg);
+                    }
+
                     throw new InvalidOperationException(msg);
                 }
 
@@ -216,7 +226,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             }
             catch (Exception ex)
             {
-                RecordAuthAddConnectionMetric(ActionResults.CreateFailed(ex), credentialIdentifier);
+                var results = ex is OperationCanceledException ? ActionResults.CreateCancelled() : ActionResults.CreateFailed(ex);
+                
+                RecordAuthAddConnectionMetric(results, credentialIdentifier);
 
                 var title = $"Failed to sign in to CodeWhisperer with {displayName}.";
                 NotifyErrorAndDisconnect(title, ex);

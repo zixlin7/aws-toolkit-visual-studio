@@ -1,9 +1,11 @@
 ﻿using System;
 
+using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
@@ -38,7 +40,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
                 // The token has been refreshed. We can now obtain it through the credentials engine
                 // with confidence that the user will not get prompted to perform an SSO login.
-                return TryGetSsoToken(credentialId, ssoRegion, out token);
+                return TryGetSsoToken(credentialId, ssoRegion, out token) == TaskStatus.Success;
             }
             catch (Exception)
             {
@@ -47,7 +49,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         }
 #pragma warning restore IDE0046 // Convert to conditional expression
 
-        public bool TryGetSsoToken(ICredentialIdentifier credentialId, ToolkitRegion ssoRegion, out AWSToken token)
+        public TaskStatus TryGetSsoToken(ICredentialIdentifier credentialId, ToolkitRegion ssoRegion, out AWSToken token)
         {
             token = null;
 
@@ -55,12 +57,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             {
                 return _toolkitContextProvider.GetToolkitContext()
                     .CredentialManager.GetToolkitCredentials(credentialId, ssoRegion)
-                    .GetTokenProvider().TryResolveToken(out token);
+                    .GetTokenProvider().TryResolveToken(out token)
+                    ? TaskStatus.Success
+                    : TaskStatus.Fail;
+            }
+            catch (UserCanceledException)
+            {
+                return TaskStatus.Cancel;
             }
             catch (Exception e)
             {
                 _logger.Error($"Failure resolving SSO Token for {credentialId?.Id}", e);
-                return false;
+                return TaskStatus.Fail;
             }
         }
     }
