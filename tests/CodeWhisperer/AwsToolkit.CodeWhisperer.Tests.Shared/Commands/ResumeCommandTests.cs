@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Commands;
+using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -35,10 +36,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Commands
         }
 
         [Theory]
-        [InlineData(false, true)]
-        [InlineData(true, false)]
-        public void CanExecute(bool isAutoSuggestEnabledState, bool expectedCanExecute)
+        [InlineData(false, ConnectionStatus.Connected, true)]
+        [InlineData(false, ConnectionStatus.Disconnected, false)]
+        [InlineData(false, ConnectionStatus.Expired, false)]
+        [InlineData(true, ConnectionStatus.Connected, false)]
+        [InlineData(true, ConnectionStatus.Disconnected, false)]
+        [InlineData(true, ConnectionStatus.Expired, false)]
+        public void CanExecute(bool isAutoSuggestEnabledState, ConnectionStatus connectionStatus, bool expectedCanExecute)
         {
+            _manager.ConnectionStatus = connectionStatus;
             SetManagerAutoSuggestionsEnabledState(isAutoSuggestEnabledState);
 
             _sut.CanExecute().Should().Be(expectedCanExecute);
@@ -49,6 +55,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Commands
 
         public async Task ExecuteAsync_WhenInitiallyPaused()
         {
+            _manager.ConnectionStatus = ConnectionStatus.Connected;
             SetManagerAutoSuggestionsEnabledState(false);
 
             await _sut.ExecuteAsync();
@@ -61,6 +68,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Commands
         [Fact]
         public async Task ExecuteAsync_WhenInitiallyNotPaused()
         {
+            _manager.ConnectionStatus = ConnectionStatus.Connected;
             SetManagerAutoSuggestionsEnabledState(true);
 
             await _sut.ExecuteAsync();
