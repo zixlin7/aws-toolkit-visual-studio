@@ -1,6 +1,5 @@
 ﻿using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
@@ -12,14 +11,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
     public interface ICodeWhispererSsoTokenProvider
     {
         /// <summary>
-        /// Attempts to refresh the SSO token for <see cref="credentialId"/> without
+        /// Attempts to refresh the SSO token for <see cref="ConnectionProperties.CredentialIdentifier"/> without
         /// prompting the user for an SSO login flow.
         /// </summary>
-        bool TrySilentGetSsoToken(ICredentialIdentifier credentialId, ToolkitRegion ssoRegion, out AWSToken token);
+        bool TrySilentGetSsoToken(ConnectionProperties connectionProperties, out AWSToken token);
 
         /// <summary>
         /// Obtain an SSO Token from the credentials system, taking the user through the SSO login flow if needed.
         /// </summary>
-        TaskStatus TryGetSsoToken(ICredentialIdentifier credentialId, ToolkitRegion ssoRegion, out AWSToken token);
+        TaskStatus TryGetSsoToken(ConnectionProperties connectionProperties, out AWSToken token);
     }
 }

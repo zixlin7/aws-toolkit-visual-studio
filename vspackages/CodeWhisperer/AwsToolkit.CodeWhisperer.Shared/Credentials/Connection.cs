@@ -170,7 +170,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             }
             else
             {
-                RecordAuthAddConnectionMetric(new ActionResults().WithCancelled(true), credentialIdentifier);
+                RecordAuthAddConnectionMetric(new ActionResults().WithCancelled(true), null);
             }
         }
 
@@ -187,9 +187,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 var toolkitContext = _toolkitContextProvider.GetToolkitContext();
                 var connectionProperties = CreateConnectionProperties(credentialIdentifier);
 
-                var result = _tokenProvider.TryGetSsoToken(credentialIdentifier, connectionProperties.Region,
-                    out var awsToken);
-                if(result != TaskStatus.Success)
+                var result = _tokenProvider.TryGetSsoToken(connectionProperties, out var awsToken);
+
+                if (result != TaskStatus.Success)
                 {
                     var msg = $"Cannot sign in to CodeWhisperer, try again.{Environment.NewLine}Unable to resolve bearer token {displayName}.";
 
@@ -263,13 +263,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         private ConnectionProperties CreateConnectionProperties(ICredentialIdentifier credentialIdentifier)
         {
             var toolkitContext = _toolkitContextProvider.GetToolkitContext();
-            var profile = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-            var region = toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
+            var profileProps = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+            var ssoRegion = toolkitContext.RegionProvider.GetRegion(profileProps.SsoRegion);
             return new ConnectionProperties()
             {
                 CredentialIdentifier = credentialIdentifier,
-                Region = region,
-                SsoStartUrl = profile.SsoStartUrl
+                SsoRegion = ssoRegion,
+                SsoStartUrl = profileProps.SsoStartUrl
             };
         }
 
@@ -438,7 +438,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 }
 
                 var connectionProperties = CreateConnectionProperties(credentialId);
-                if (!_tokenProvider.TrySilentGetSsoToken(credentialId, connectionProperties.Region, out var token))
+                if (!_tokenProvider.TrySilentGetSsoToken(connectionProperties, out var token))
                 {
                     // Toolkit cannot automatically log in. Remain in signed-out state.
                     Status = ConnectionStatus.Disconnected;
@@ -616,8 +616,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 return;
             }
 
-            if (!_tokenProvider.TrySilentGetSsoToken(
-                    _signedInConnectionProperties.CredentialIdentifier, _signedInConnectionProperties.Region, out var refreshToken))
+            if (!_tokenProvider.TrySilentGetSsoToken(_signedInConnectionProperties, out var refreshToken))
             {
                 // Unable to refresh the token (or retrieve the current one)
                 // Consider the connection expired now.

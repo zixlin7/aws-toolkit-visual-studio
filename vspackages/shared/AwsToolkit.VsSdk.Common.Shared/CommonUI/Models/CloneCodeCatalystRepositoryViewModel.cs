@@ -326,7 +326,12 @@ namespace CommonUI.Models
 
         public bool IsAuthenticated()
         {
-            return _awsIdIdentifier.HasValidToken(SonoCredentialProviderFactory.CodeCatalystSsoSession, _toolkitContext.ToolkitHost);
+            var builder = SonoTokenProviderBuilder.Create()
+                .WithCredentialIdentifier(_awsIdIdentifier)
+                .WithSessionName(SonoCredentialProviderFactory.CodeCatalystSsoSession)
+                .WithToolkitShell(_toolkitContext.ToolkitHost);
+
+            return _awsIdIdentifier.HasValidToken(builder);
         }
 
         public void InvalidateCache()

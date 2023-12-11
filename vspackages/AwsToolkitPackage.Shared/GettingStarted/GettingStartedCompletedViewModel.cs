@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
@@ -255,7 +256,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private string CreateCredentialDisplayName()
         {
-            return _credentialFactoryId != null && _credentialFactoryId.Equals("AwsBuilderId")
+            return _credentialFactoryId != null && _credentialFactoryId.Equals(SonoCredentialProviderFactory.FactoryId)
                 ? $"AWS Builder ID ({_credentialName})"
                 : $"IAM Identity Center ({_credentialName})";
         }
