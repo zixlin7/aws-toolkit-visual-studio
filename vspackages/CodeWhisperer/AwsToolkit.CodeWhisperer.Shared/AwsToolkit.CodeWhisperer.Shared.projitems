@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\IExpirationNotificationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\InfoBar\ConnectionExpiredInfoBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\InfoBar\SignInActionItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\LspConnectionToolkitException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Documents\CodeWhispererTextView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Documents\ICodeWhispererTextView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICodeWhispererManager.cs" />

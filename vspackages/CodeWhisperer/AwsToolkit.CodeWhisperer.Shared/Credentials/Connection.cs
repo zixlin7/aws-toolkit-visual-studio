@@ -208,13 +208,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                         throw new OperationCanceledException(msg);
                     }
 
-                    throw new InvalidOperationException(msg);
+                    throw new ConnectionToolkitException(msg, ConnectionToolkitException.ConnectionErrorCode.NoValidToken);
                 }
 
                 if (!await UseAwsTokenAsync(awsToken, connectionProperties))
                 {
                     var msg = "Credentials are valid, but the bearer token could not be sent to the language server. You will be signed out, try again.";
-                    throw new InvalidOperationException(msg);
+                    throw new LspConnectionToolkitException(msg, LspConnectionToolkitException.LspConnectionErrorCode.UnexpectedLspCredentialSetError);
                 }
 
                 toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
@@ -232,7 +232,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 
                 var title = $"Failed to sign in to CodeWhisperer with {displayName}.";
                 NotifyErrorAndDisconnect(title, ex);
-                throw new InvalidOperationException(title, ex);
+                throw new ConnectionToolkitException(title, ConnectionToolkitException.ConnectionErrorCode.UnexpectedSigninError, ex);
             }
         }
 
@@ -347,7 +347,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             {
                 var title = $"Failed to sign out of CodeWhisperer with {displayName}.";
                 NotifyError(title, ex);
-                throw new InvalidOperationException(title, ex);
+                throw new ConnectionToolkitException(title, ConnectionToolkitException.ConnectionErrorCode.UnexpectedSignOutError, ex);
             }
         }
 

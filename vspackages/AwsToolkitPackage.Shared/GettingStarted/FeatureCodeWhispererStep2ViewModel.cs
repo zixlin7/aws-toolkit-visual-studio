@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
                     }
                     else
                     {
-                        throw new Exception($"Unable to sign into AWS Builder ID.");
+                        throw new ConnectionToolkitException($"Unable to sign into AWS Builder ID.", ConnectionToolkitException.ConnectionErrorCode.NoValidToken);
                     }
                 }
                 catch (UserCanceledException ex)
