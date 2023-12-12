@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUsageEmitterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lambda\LambdaTesterUtilitiesTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Navigator\NavigatorViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationInfoBarManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationStrategyTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationInfoBarTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notification\VersionStrategyTests.cs" />

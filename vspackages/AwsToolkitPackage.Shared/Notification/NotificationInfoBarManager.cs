@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
+
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Exceptions;
@@ -12,8 +13,11 @@ using Amazon.AWSToolkit.Util;
 using AwsToolkit.VsSdk.Common.Notifications;
 
 using log4net;
+
 using Microsoft.VisualStudio.Shell;
+
 using Newtonsoft.Json;
+
 using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.VisualStudio.Notification
@@ -33,18 +37,25 @@ namespace Amazon.AWSToolkit.VisualStudio.Notification
         private readonly IServiceProvider _serviceProvider;
         private readonly ToolkitContext _toolkitContext;
         private readonly List<NotificationTimer> _queuedNotificationTimers;
-        private readonly FileSettingsRepository<NotificationSettings> _notificationSettingsRepository;
+        private readonly ISettingsRepository<NotificationSettings> _notificationSettingsRepository;
         private readonly NotificationStrategy _strategy;
 
         public NotificationInfoBarManager(IServiceProvider serviceProvider, ToolkitContext toolkitContext, string awsProductVersion)
+            : this(new FileSettingsRepository<NotificationSettings>(ToolkitAppDataPath.Join("NotificationInfoBarSettings.json")), serviceProvider, toolkitContext, awsProductVersion)
+        {
+        }
+
+        // This is a constructor overload for testing purposes
+        public NotificationInfoBarManager(ISettingsRepository<NotificationSettings> settingsRepository, IServiceProvider serviceProvider, ToolkitContext toolkitContext,
+            string awsProductVersion)
         {
             _serviceProvider = serviceProvider;
             _toolkitContext = toolkitContext;
-            _notificationSettingsRepository = new FileSettingsRepository<NotificationSettings>(ToolkitAppDataPath.Join("NotificationInfoBarSettings.json"));
+            _notificationSettingsRepository = settingsRepository;
             _queuedNotificationTimers = new List<NotificationTimer>();
             _strategy = new NotificationStrategy(_notificationSettingsRepository, _toolkitContext, awsProductVersion, Component.Infobar);
-
         }
+
 
         /// <summary>
         /// Displays an info bar relaying the latest Toolkit Notifications sourced from Hosted Files
@@ -55,7 +66,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Notification
             {
                 var notificationModel = await FetchNotificationsAsync(manifestPath);
 
-                await CleanSettingsAsync(_notificationSettingsRepository, notificationModel.Notifications);
+                await CleanSettingsAsync(notificationModel.Notifications);
 
                 await QueueNotificationsAsync(notificationModel.Notifications);
 
@@ -101,15 +112,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Notification
             }
         }
 
-        /// <summary>
-        /// Clears cache of dismissed notifications that are over 2 months old and no longer exist in the source hosted file 
-        /// </summary>
-        private async Task CleanSettingsAsync(FileSettingsRepository<NotificationSettings> settingsRepository,
-            IEnumerable<Notification> notifications)
+        protected async Task CleanSettingsAsync(IEnumerable<Notification> notifications)
         {
             try
             {
-                var settings = await settingsRepository.GetOrDefaultAsync(new NotificationSettings() { DismissedNotifications = new List<NotificationSettings.DismissedNotification>()});
+                var settings = await _notificationSettingsRepository.GetOrDefaultAsync(new NotificationSettings() { DismissedNotifications = new List<NotificationSettings.DismissedNotification>() });
 
                 if (!settings.DismissedNotifications.Any())
                 {
@@ -118,11 +125,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Notification
 
                 var notificationIds = notifications.Select(notification => notification.NotificationId);
 
-                settings.DismissedNotifications = settings.DismissedNotifications.Where(notification =>
-                    !notificationIds.Contains(notification.NotificationId) &&
-                    IsTimestampOlderThanTwoMonths(notification.DismissedOn)).ToList();
+                // Keep dismissed notifications in the cache for as long as they remain in the manifest so that users don't get re-prompted in the future
+                settings.DismissedNotifications = settings.DismissedNotifications
+                    .Where(dismissedNotification => notificationIds.Contains(dismissedNotification.NotificationId) || CanStoreAsDismissed(dismissedNotification)).ToList();
 
-                settingsRepository.Save(settings);
+                _notificationSettingsRepository.Save(settings);
             }
             catch (Exception e)
             {
@@ -131,6 +138,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Notification
                 throw new NotificationToolkitException(message,
                     NotificationToolkitException.NotificationErrorCode.InvalidCacheCleanup, e);
             }
+        }
+
+        private static bool CanStoreAsDismissed(NotificationSettings.DismissedNotification notification)
+        {
+            var dateTime = DateTimeUtil.ConvertUnixToDateTime(notification.DismissedOn, TimeZoneInfo.Utc);
+            var timeSpan = DateTime.UtcNow - dateTime;
+            return timeSpan.TotalDays <= 60;
         }
 
         public async Task QueueNotificationsAsync(List<Notification> notifications)
@@ -161,16 +175,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Notification
                     _queuedNotificationTimers.Add(timer);
                 });
         }
-
-        public bool IsTimestampOlderThanTwoMonths(long unixTimeStamp)
-        {
-            var dateTime = DateTimeUtil.ConvertUnixToDateTime(unixTimeStamp, TimeZoneInfo.Utc);
-
-            var timeSpan = DateTime.UtcNow - dateTime;
-
-            return timeSpan.TotalDays > 60;
-        }
-
 
         /// <summary>
         /// Responsible for displaying the InfoBar.
