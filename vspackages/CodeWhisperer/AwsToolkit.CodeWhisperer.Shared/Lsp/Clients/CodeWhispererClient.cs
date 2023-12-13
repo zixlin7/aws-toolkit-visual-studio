@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.TypeDefinitions;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 
@@ -37,6 +38,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     [Export(typeof(ICodeWhispererLspClient))]
     [Export(typeof(ILanguageClient))]
     [ContentType(ContentTypes.Code)]
+    [ContentType(AwsToolkitCppContentType.ContentTypeName)]
     public class CodeWhispererClient : ToolkitLspClient, ICodeWhispererLspClient
     {
         [Import]

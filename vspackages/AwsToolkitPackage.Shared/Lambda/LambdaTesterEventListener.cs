@@ -92,7 +92,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                if (!(_hostPackage.GetVSShellService(typeof(DTE)) is DTE2 dte))
+                if (!(await _hostPackage.GetServiceAsync(typeof(DTE)) is DTE2 dte))
                 {
                     LOGGER.Error("Unable to get DTE");
                     return;

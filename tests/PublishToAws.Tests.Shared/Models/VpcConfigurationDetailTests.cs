@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         public void AddChild()
         {
             _sut.AddChild(ConfigurationDetailBuilder.Create().WithSampleData().Build());
-            Assert.Equal(1, _sut.Children.Count);
+            Assert.Single(_sut.Children);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         {
             _sut.AddChild(_sampleVpcIdDetail);
 
-            Assert.Equal(1, _sut.Children.Count);
+            Assert.Single(_sut.Children);
             Assert.Equal(_sampleVpcIdDetail, _sut.VpcIdDetail);
         }
 
@@ -63,7 +63,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         {
             _sut.AddChild(_sampleCreateNewDetail);
 
-            Assert.Equal(1, _sut.Children.Count);
+            Assert.Single(_sut.Children);
             Assert.Equal(_sampleCreateNewDetail, _sut.CreateVpcDetail);
         }
 
@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
         {
             _sut.AddChild(_sampleUseDefaultDetail);
 
-            Assert.Equal(1, _sut.Children.Count);
+            Assert.Single(_sut.Children);
             Assert.Equal(_sampleUseDefaultDetail, _sut.DefaultVpcDetail);
         }
 

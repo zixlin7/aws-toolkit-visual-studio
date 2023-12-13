@@ -1114,7 +1114,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                             {
                                 var view = new GettingStartedView();
                                 Mvvm.SetViewModel(view, new GettingStartedViewModel(_toolkitContext));
-                                _toolkitContext.ToolkitHost.OpenInEditor(view);
+                                await _toolkitContext.ToolkitHost.OpenInEditorAsync(view);
                             }
                         }
                     }

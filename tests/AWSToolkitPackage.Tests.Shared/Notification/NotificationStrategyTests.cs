@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Tests.Common.Context;
-using Amazon.AWSToolkit.Tests.Common.IO;
+using Amazon.AWSToolkit.Tests.Common.Settings;
 using Amazon.AWSToolkit.VisualStudio.Notification;
+
 using Xunit;
 
 using Notif = Amazon.AWSToolkit.VisualStudio.Notification.Notification;
@@ -14,9 +15,9 @@ namespace AWSToolkitPackage.Tests.Notification
 {
     public class NotificationStrategyTests
     {
-        private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation();
         private readonly NotificationStrategy _sut;
-        private readonly FileSettingsRepository<NotificationSettings> _notificationRepository;
+        private readonly FakeSettingsRepository<NotificationSettings> _notificationRepository =
+            new FakeSettingsRepository<NotificationSettings>();
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
 
         private static readonly Notif _sampleNotification = BuildNotification("uuid-1");
@@ -24,8 +25,7 @@ namespace AWSToolkitPackage.Tests.Notification
 
         public NotificationStrategyTests()
         {
-            var filePath = $@"{_testLocation.InputFolder}\NotificationInfoBarSettings.json";
-            _notificationRepository = new FileSettingsRepository<NotificationSettings>(filePath);
+            _notificationRepository.Settings = new NotificationSettings() { DismissedNotifications = new List<NotificationSettings.DismissedNotification>() };
             _sut = new NotificationStrategy(_notificationRepository,
                 _toolkitContextFixture.ToolkitContext, "1.39.0.0", Component.Infobar);
         }
@@ -35,9 +35,7 @@ namespace AWSToolkitPackage.Tests.Notification
         {
             await _sut.MarkNotificationAsDismissedAsync(_sampleNotification);
 
-            var settings = await _notificationRepository.GetOrDefaultAsync(new NotificationSettings());
-
-            Assert.Equal(_sampleNotification.NotificationId, settings.DismissedNotifications.FirstOrDefault()?.NotificationId);
+            Assert.Equal(_sampleNotification.NotificationId, _notificationRepository.Settings.DismissedNotifications.FirstOrDefault()?.NotificationId);
         }
         
         [Theory]

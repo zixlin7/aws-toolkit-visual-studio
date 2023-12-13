@@ -131,12 +131,12 @@
     <!-- Use NuGet to grab the xunit runner -->
     <Target Name="restore-test-runner">
         <Message Text="Restoring nuget packages for the test runner"/>
-        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe install xunit.runner.msbuild -Version 2.4.1 -OutputDirectory $(BuildRoot)\solutions\packages" />
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe install xunit.runner.msbuild -Version 2.6.2 -OutputDirectory $(BuildRoot)\solutions\packages" />
 	</Target>
 
     <!-- Required for the "xunit" element within the run-tests task. -->
     <UsingTask 
-        AssemblyFile="$(BuildRoot)\solutions\packages\xunit.runner.msbuild.2.4.1\build\net452\xunit.runner.msbuild.net452.dll"
+        AssemblyFile="$(BuildRoot)\solutions\packages\xunit.runner.msbuild.2.6.2\build\net452\xunit.runner.msbuild.net452.dll"
         TaskName="Xunit.Runner.MSBuild.xunit"
         />
 

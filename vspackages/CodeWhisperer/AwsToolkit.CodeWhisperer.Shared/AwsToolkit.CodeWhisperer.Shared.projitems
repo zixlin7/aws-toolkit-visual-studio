@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\IExpirationNotificationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\InfoBar\ConnectionExpiredInfoBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Credentials\InfoBar\SignInActionItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Credentials\LspConnectionToolkitException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Documents\CodeWhispererTextView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Documents\ICodeWhispererTextView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICodeWhispererManager.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Suggestions\SuggestionSessionResultsPublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\TypeDefinitions\AwsToolkitCppContentType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatusToImageSourceConverter.cs" />

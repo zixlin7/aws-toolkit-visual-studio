@@ -14,6 +14,7 @@ using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
@@ -21,6 +22,8 @@ using Amazon.Runtime;
 using log4net;
 
 using Microsoft.VisualStudio.Threading;
+
+using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
 {
@@ -167,7 +170,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             }
             else
             {
-                RecordAuthAddConnectionMetric(new ActionResults().WithCancelled(true), credentialIdentifier);
+                RecordAuthAddConnectionMetric(new ActionResults().WithCancelled(true), null);
             }
         }
 
@@ -184,7 +187,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 var toolkitContext = _toolkitContextProvider.GetToolkitContext();
                 var connectionProperties = CreateConnectionProperties(credentialIdentifier);
 
-                if (!_tokenProvider.TryGetSsoToken(credentialIdentifier, connectionProperties.Region, out var awsToken))
+                var result = _tokenProvider.TryGetSsoToken(connectionProperties, out var awsToken);
+
+                if (result != TaskStatus.Success)
                 {
                     var msg = $"Cannot sign in to CodeWhisperer, try again.{Environment.NewLine}Unable to resolve bearer token {displayName}.";
 
@@ -198,13 +203,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     // an exception while handling the token cache:
                     // https://github.com/aws/aws-sdk-net/pull/3083/files#r1389714680
                     InvalidateSsoToken(credentialIdentifier);
-                    throw new InvalidOperationException(msg);
+                    if (result == TaskStatus.Cancel)
+                    {
+                        throw new OperationCanceledException(msg);
+                    }
+
+                    throw new ConnectionToolkitException(msg, ConnectionToolkitException.ConnectionErrorCode.NoValidToken);
                 }
 
                 if (!await UseAwsTokenAsync(awsToken, connectionProperties))
                 {
                     var msg = "Credentials are valid, but the bearer token could not be sent to the language server. You will be signed out, try again.";
-                    throw new InvalidOperationException(msg);
+                    throw new LspConnectionToolkitException(msg, LspConnectionToolkitException.LspConnectionErrorCode.UnexpectedLspCredentialSetError);
                 }
 
                 toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
@@ -216,11 +226,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             }
             catch (Exception ex)
             {
-                RecordAuthAddConnectionMetric(ActionResults.CreateFailed(ex), credentialIdentifier);
+                var results = ex is OperationCanceledException ? ActionResults.CreateCancelled() : ActionResults.CreateFailed(ex);
+                
+                RecordAuthAddConnectionMetric(results, credentialIdentifier);
 
                 var title = $"Failed to sign in to CodeWhisperer with {displayName}.";
                 NotifyErrorAndDisconnect(title, ex);
-                throw new InvalidOperationException(title, ex);
+                throw new ConnectionToolkitException(title, ConnectionToolkitException.ConnectionErrorCode.UnexpectedSigninError, ex);
             }
         }
 
@@ -251,13 +263,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         private ConnectionProperties CreateConnectionProperties(ICredentialIdentifier credentialIdentifier)
         {
             var toolkitContext = _toolkitContextProvider.GetToolkitContext();
-            var profile = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
-            var region = toolkitContext.RegionProvider.GetRegion(profile.SsoRegion);
+            var profileProps = toolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier);
+            var ssoRegion = toolkitContext.RegionProvider.GetRegion(profileProps.SsoRegion);
             return new ConnectionProperties()
             {
                 CredentialIdentifier = credentialIdentifier,
-                Region = region,
-                SsoStartUrl = profile.SsoStartUrl
+                SsoRegion = ssoRegion,
+                SsoStartUrl = profileProps.SsoStartUrl
             };
         }
 
@@ -335,7 +347,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
             {
                 var title = $"Failed to sign out of CodeWhisperer with {displayName}.";
                 NotifyError(title, ex);
-                throw new InvalidOperationException(title, ex);
+                throw new ConnectionToolkitException(title, ConnectionToolkitException.ConnectionErrorCode.UnexpectedSignOutError, ex);
             }
         }
 
@@ -426,7 +438,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 }
 
                 var connectionProperties = CreateConnectionProperties(credentialId);
-                if (!_tokenProvider.TrySilentGetSsoToken(credentialId, connectionProperties.Region, out var token))
+                if (!_tokenProvider.TrySilentGetSsoToken(connectionProperties, out var token))
                 {
                     // Toolkit cannot automatically log in. Remain in signed-out state.
                     Status = ConnectionStatus.Disconnected;
@@ -604,8 +616,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                 return;
             }
 
-            if (!_tokenProvider.TrySilentGetSsoToken(
-                    _signedInConnectionProperties.CredentialIdentifier, _signedInConnectionProperties.Region, out var refreshToken))
+            if (!_tokenProvider.TrySilentGetSsoToken(_signedInConnectionProperties, out var refreshToken))
             {
                 // Unable to refresh the token (or retrieve the current one)
                 // Consider the connection expired now.

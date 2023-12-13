@@ -3,7 +3,20 @@
   <PropertyGroup>
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
   </PropertyGroup>
-  
+
+  <!-- Build Acceleration (while developing in VS 17.8 and newer)
+    See: https://devblogs.microsoft.com/visualstudio/visual-studio-17-8-now-available/#BuildAccelerate
+
+    Directory.Build.props applies to SDK style projects.
+    Most older csproj in the repo reference this file, which is how we're applying the property.
+  -->
+  <PropertyGroup>
+    <!-- We set ProduceReferenceAssembly because projects targeting .NET Framework 
+    do not implicitly do this. Build acceleration requires reference assemblies. -->
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+  </PropertyGroup>
+
   <PropertyGroup>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <FileUpgradeFlags>

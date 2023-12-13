@@ -1,4 +1,5 @@
-﻿using Amazon.AwsToolkit.CodeWhisperer.Credentials;
+using Amazon.AWSToolkit.CommonUI.Notifications;
+using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
@@ -18,23 +19,23 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Credentials
         /// </summary>
         public bool CanGetTokenSilently = false;
 
-        public bool TrySilentGetSsoToken(ICredentialIdentifier credentialId, ToolkitRegion ssoRegion, out AWSToken token)
+        public bool TrySilentGetSsoToken(ConnectionProperties connectionProperties, out AWSToken token)
         {
             token = null;
-            return CanGetTokenSilently && TryGetSsoToken(credentialId, ssoRegion, out token);
+            return CanGetTokenSilently && TryGetSsoToken(connectionProperties, out token) == TaskStatus.Success;
         }
 
-        public bool TryGetSsoToken(ICredentialIdentifier credentialId, ToolkitRegion ssoRegion, out AWSToken token)
+        public TaskStatus TryGetSsoToken(ConnectionProperties connectionProperties, out AWSToken token)
         {
             token = null;
 
             if (Token == null)
             {
-                return false;
+                return TaskStatus.Fail;
             }
 
             token = new AWSToken() { Token = Token.Token, ExpiresAt = Token.ExpiresAt, };
-            return true;
+            return TaskStatus.Success;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
+using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Urls;
 using Amazon.AWSToolkit.VisualStudio.GettingStarted.Services;
@@ -189,14 +191,13 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             private set => SetProperty(ref _openUsingToolkitDocsCommand, value);
         }
 
-        // TODO: IDE-11680 :  CodeWhisperer Tutorial Course
-        //private ICommand _tryCodeWhispererExamplesAsyncCommand;
+        private ICommand _tryCodeWhispererExamplesAsyncCommand;
 
-        //public ICommand TryCodeWhispererExamplesAsyncCommand
-        //{
-        //    get => _tryCodeWhispererExamplesAsyncCommand;
-        //    private set => SetProperty(ref _tryCodeWhispererExamplesAsyncCommand, value);
-        //}
+        public ICommand TryCodeWhispererExamplesAsyncCommand
+        {
+            get => _tryCodeWhispererExamplesAsyncCommand;
+            private set => SetProperty(ref _tryCodeWhispererExamplesAsyncCommand, value);
+        }
 
         private ICommand _openCodeWhispererOverviewCommand;
 
@@ -215,8 +216,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             OpenLogsCommand = new OpenToolkitLogsCommand(ToolkitContext);
             OpenUsingToolkitDocsCommand = OpenUserGuideCommand.Create(ToolkitContext);
 
-            // TODO: IDE-11680 :  CodeWhisperer Tutorial Course
-            // TryCodeWhispererExamplesAsyncCommand = new AsyncRelayCommand(TryCodeWhispererExamplesAsync);
+            TryCodeWhispererExamplesAsyncCommand = new AsyncRelayCommand(TryCodeWhispererExamplesAsync);
 
             ICommand OpenUrl(string url) => OpenUrlCommandFactory.Create(ToolkitContext, url);
             OpenPrivacyPolicyCommand = OpenUrl(AwsUrls.PrivacyPolicy);
@@ -256,7 +256,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
         private string CreateCredentialDisplayName()
         {
-            return _credentialFactoryId != null && _credentialFactoryId.Equals("AwsBuilderId")
+            return _credentialFactoryId != null && _credentialFactoryId.Equals(SonoCredentialProviderFactory.FactoryId)
                 ? $"AWS Builder ID ({_credentialName})"
                 : $"IAM Identity Center ({_credentialName})";
         }
@@ -273,33 +273,31 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
             _gettingStarted.CurrentStep = GettingStartedStep.AddEditProfileWizards;
         }
 
-        // TODO: IDE-11680 :  CodeWhisperer Tutorial Course
-//        private async Task TryCodeWhispererExamplesAsync(object parameter)
-//        {
-//#if VS2022_OR_LATER
-//            var examplesName = "CodeWhisperer_Examples.cs";
+        private async Task TryCodeWhispererExamplesAsync(object parameter)
+        {
+            if (IsCodeWhispererSupported)
+            {
+                var examplesName = "CodeWhisperer_Examples.cs";
 
-//            try
-//            {
-//                var destinationFile = Path.Combine(Path.GetTempPath(), examplesName);
-//                using (var stream = new StreamReader(GetType().Assembly
-//                    .GetManifestResourceStream($"Amazon.AWSToolkit.VisualStudio.Resources.{examplesName}")))
-//                using (var outputStream = new StreamWriter(File.Open(destinationFile, FileMode.Create)))
-//                {
-//                    await outputStream.WriteAsync(await stream.ReadToEndAsync());
-//                }
+                try
+                {
+                    var destinationFile = Path.Combine(Path.GetTempPath(), examplesName);
+                    using (var stream = new StreamReader(GetType().Assembly
+                        .GetManifestResourceStream($"Amazon.AWSToolkit.VisualStudio.Resources.{examplesName}")))
+                    using (var outputStream = new StreamWriter(File.Open(destinationFile, FileMode.Create)))
+                    {
+                        await outputStream.WriteAsync(await stream.ReadToEndAsync());
+                    }
 
-//                ToolkitContext.ToolkitHost.OpenInEditor(destinationFile);
-//            }
-//            catch (Exception ex)
-//            {
-//                var msg = $"Failed to create {examplesName}";
-//                _logger.Error(msg, ex);
-//                ToolkitContext.ToolkitHost.ShowError(msg, ex.Message);
-//            }
-//#else
-//            throw new NotImplementedException();
-//#endif
-//        }
+                    ToolkitContext.ToolkitHost.OpenInEditor(destinationFile);
+                }
+                catch (Exception ex)
+                {
+                    var msg = $"Failed to create {examplesName}";
+                    _logger.Error(msg, ex);
+                    ToolkitContext.ToolkitHost.ShowError(msg, ex.Message);
+                }
+            }
+        }
     }
 }

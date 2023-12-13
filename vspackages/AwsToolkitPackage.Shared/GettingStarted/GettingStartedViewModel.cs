@@ -149,9 +149,7 @@ namespace Amazon.AWSToolkit.VisualStudio.GettingStarted
 
             var credentialIdentifier = ToolkitContext.CredentialManager.GetCredentialIdentifierById(codeWhispererCredId);
 
-            if (credentialIdentifier == null
-                || FeatureType != FeatureType.CodeWhisperer
-                || !credentialIdentifier.HasValidToken(ToolkitContext.CredentialSettingsManager.GetProfileProperties(credentialIdentifier)?.SsoSession, ToolkitContext.ToolkitHost))
+            if (FeatureType != FeatureType.CodeWhisperer || !credentialIdentifier.HasValidCodeWhispererConnection(ToolkitContext))
             {
                 return;
             }

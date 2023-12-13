@@ -88,7 +88,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
         [Fact]
         public void ShouldNotBeValidWithExpiredToken()
         {
-            SsoToken ssoToken = new SsoToken()
+            var ssoToken = new SsoToken()
             {
                 AccessToken = "access-token",
                 ExpiresAt = DateTime.UtcNow.AddYears(-2),
@@ -112,7 +112,12 @@ namespace AWSToolkit.Tests.Credentials.Utils
 
         private bool HasValidToken()
         {
-            return _credentialsId.HasValidToken(_sessionName, _toolkitContext.ToolkitHost.Object, _fileHandler, _directoryHandler);
+            var builder = SonoTokenProviderBuilder.Create()
+                .WithCredentialIdentifier(_credentialsId)
+                .WithSessionName(_sessionName)
+                .WithToolkitShell(_toolkitContext.ToolkitHost.Object);
+
+            return _credentialsId.HasValidToken(builder, _fileHandler, _directoryHandler);
         }
     }
 }

@@ -331,7 +331,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Models
             }
             else
             {
-                Assert.True(false, "Unexpected state");
+                Assert.Fail("Unexpected state");
             }
         }
 

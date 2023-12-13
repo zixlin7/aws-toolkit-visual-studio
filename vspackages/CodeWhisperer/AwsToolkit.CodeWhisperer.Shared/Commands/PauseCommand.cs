@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
 using Amazon.AWSToolkit.CommonUI.Notifications;
@@ -31,8 +32,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Commands
 
         protected override bool CanExecuteCore(object parameter)
         {
-            return !_isPaused && base.CanExecuteCore(parameter);
+            return
+                base.CanExecuteCore(parameter)
+                && !_isPaused
+                && _manager.ConnectionStatus == ConnectionStatus.Connected;
         }
+
 
         protected override async Task ExecuteCoreAsync(object parameter)
         {

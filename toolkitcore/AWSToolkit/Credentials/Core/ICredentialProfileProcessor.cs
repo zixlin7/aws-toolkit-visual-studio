@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Amazon.AWSToolkit.Credentials.Utils;
+﻿using Amazon.AWSToolkit.Credentials.Utils;
 
 namespace Amazon.AWSToolkit.Credentials.Core
 {

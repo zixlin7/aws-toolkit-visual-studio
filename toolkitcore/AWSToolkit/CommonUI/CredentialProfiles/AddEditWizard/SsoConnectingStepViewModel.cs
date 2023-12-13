@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Tasks;
@@ -93,30 +94,31 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
         // Overload to support unit tests
         internal Task<AWSToken> ResolveAwsTokenAsync(CancellationTokenSource cancellationTokenSource)
         {
-            var p = _configDetails.ProfileProperties;
+            var profileProps = _configDetails.ProfileProperties;
 
-            p.SsoSession = p.Name;
+            profileProps.SsoSession = profileProps.Name;
 
             // When CodeWhisperer work causes refactoring of Sono* to generic classes, this code can be refactored to
             // go through ProfileCredentialProviderFactory.CreateToolkitCredentials.
-            var ssoRegion = RegionEndpoint.GetBySystemName(p.SsoRegion);
+            var ssoRegion = RegionEndpoint.GetBySystemName(profileProps.SsoRegion);
 
-            var credId = new MemoryCredentialIdentifier(p.Name);
+            var credId = new MemoryCredentialIdentifier(profileProps.Name);
 
             // SEPs SSO Credential Provider, SSO Login Token Flow, and Bearer Token Authorization and Token Providers
             // state that the OIDC client be created in the region provided by sso_region.
+
             var builder = SonoTokenProviderBuilder.Create()
                 .WithCredentialIdentifier(credId)
                 .WithIsBuilderId(false)
                 .WithOidcRegion(ssoRegion)
-                .WithSessionName(p.SsoSession)
-                .WithStartUrl(p.SsoStartUrl)
+                .WithSessionName(profileProps.SsoSession)
+                .WithStartUrl(profileProps.SsoStartUrl)
                 .WithTokenProviderRegion(ssoRegion)
                 .WithToolkitShell(ToolkitContext.ToolkitHost);
 
             if (_addEditProfileWizard.FeatureType == FeatureType.CodeWhisperer)
             {
-                builder.WithScopes(p.SsoRegistrationScopes);
+                builder.WithScopes(profileProps.SsoRegistrationScopes);
             }
 
             var provider = builder.Build();

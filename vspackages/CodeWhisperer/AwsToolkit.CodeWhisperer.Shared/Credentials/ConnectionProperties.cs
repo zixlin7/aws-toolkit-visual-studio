@@ -10,7 +10,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
     {
         public ICredentialIdentifier CredentialIdentifier { get; set; }
 
-        public ToolkitRegion Region { get; set; }
+        public ToolkitRegion SsoRegion { get; set; }
 
         public string SsoStartUrl { get; set; }
     }

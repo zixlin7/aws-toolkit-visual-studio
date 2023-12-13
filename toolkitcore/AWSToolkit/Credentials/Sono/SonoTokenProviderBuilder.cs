@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Amazon.AWSToolkit.Credentials.Core;
-using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
@@ -35,6 +33,11 @@ namespace Amazon.AWSToolkit.Credentials.Sono
         public static SonoTokenProviderBuilder Create()
         {
             return new SonoTokenProviderBuilder();
+        }
+
+        public SonoTokenProviderBuilder ShallowClone()
+        {
+            return MemberwiseClone() as SonoTokenProviderBuilder;
         }
 
         private SonoTokenProviderBuilder() { }

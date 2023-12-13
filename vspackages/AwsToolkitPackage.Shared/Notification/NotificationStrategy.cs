@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -17,13 +16,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Notification
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(NotificationStrategy));
 
-        private readonly FileSettingsRepository<NotificationSettings> _notificationSettingsRepository;
+        private readonly ISettingsRepository<NotificationSettings> _notificationSettingsRepository;
         private readonly ToolkitContext _toolkitContext;
         private readonly Component _component;
         private readonly VersionStrategy _productVersion;
         
         public NotificationStrategy(
-            FileSettingsRepository<NotificationSettings> notificationSettingsRepository,
+            ISettingsRepository<NotificationSettings> notificationSettingsRepository,
             ToolkitContext toolkitContext,
             string productVersion,
             Component component)

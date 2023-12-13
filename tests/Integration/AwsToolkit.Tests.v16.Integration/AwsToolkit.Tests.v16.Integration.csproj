@@ -59,16 +59,16 @@
       <Version>16.0.208</Version>
     </PackageReference>
     <PackageReference Include="Moq">
-      <Version>4.17.2</Version>
+      <Version>4.18.4</Version>
     </PackageReference>
     <PackageReference Include="xunit">
-      <Version>2.5.1</Version>
+      <Version>2.6.2</Version>
     </PackageReference>
     <PackageReference Include="xunit.extensibility.core">
-      <Version>2.5.1</Version>
+      <Version>2.6.2</Version>
     </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.5.1</Version>
+      <Version>2.5.4</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

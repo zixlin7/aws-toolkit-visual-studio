@@ -1,8 +1,6 @@
 ﻿using System;
-
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
-using Amazon.AWSToolkit.Shared;
 using Amazon.Runtime;
 using Amazon.Util.Internal;
 
@@ -15,42 +13,35 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         /// </summary>
         /// <returns>true if the credentials have a currently valid token, false if the token is not cached, or has expired</returns>
         public static bool HasValidToken(this ICredentialIdentifier credentialsId,
-            string ssoSession,
-            IAWSToolkitShellProvider toolkitShell)
+            SonoTokenProviderBuilder builder)
         {
-            return HasValidToken(credentialsId, ssoSession, toolkitShell, null, null);
+            return credentialsId.HasValidToken(builder, null, null);
         }
 
-        /// <summary>
-        /// Overload used for testing purposes
-        /// </summary>
         public static bool HasValidToken(this ICredentialIdentifier credentialsId,
-            string ssoSession,
-            IAWSToolkitShellProvider toolkitShell,
+            SonoTokenProviderBuilder builder,
             IFile tokenCacheFileProvider,
             IDirectory tokenCacheDirectoryProvider)
         {
-            SonoTokenProviderBuilder builder = SonoTokenProviderBuilder.Create()
-                .WithCredentialIdentifier(credentialsId)
-                .WithSessionName(ssoSession)
-                .WithSsoCallback(StubTokenCallback)
-                .WithToolkitShell(toolkitShell);
+            var builderClone = builder.ShallowClone();
+
+            builderClone.WithSsoCallback(StubTokenCallback);
 
             if (tokenCacheFileProvider != null)
             {
-                builder = builder.WithTokenCacheFileHandler(tokenCacheFileProvider);
+                builderClone = builderClone.WithTokenCacheFileHandler(tokenCacheFileProvider);
             }
 
             if (tokenCacheDirectoryProvider != null)
             {
-                builder = builder.WithTokenCacheDirectoryHandler(tokenCacheDirectoryProvider);
+                builderClone = builderClone.WithTokenCacheDirectoryHandler(tokenCacheDirectoryProvider);
             }
 
-            var tokenProvider = builder.Build();
+            var tokenProvider = builderClone.Build();
 
             try
             {
-                return tokenProvider.TryResolveToken(out AWSToken _);
+                return tokenProvider.TryResolveToken(out _);
             }
             catch (Exception)
             {

@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Services;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.Runtime;
 using Amazon.SSO;
@@ -116,7 +117,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
                     if (!actionResults.Success)
                     {
-                        throw new Exception($"Cannot save profile {p.Name}", actionResults.Exception);
+                        throw new ConnectionToolkitException($"Cannot save profile {p.Name}", ConnectionToolkitException.ConnectionErrorCode.UnexpectedErrorOnSave,actionResults.Exception);
                     }
 
                     ++newConnectionCount;
@@ -124,7 +125,7 @@ namespace Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard
 
                 if (newConnectionCount == 0 || saveAsyncResults == null)
                 {
-                    throw new Exception($"No profiles found to save.");
+                    throw new ConnectionToolkitException($"No profiles found to save.", ConnectionToolkitException.ConnectionErrorCode.NoProfilesToSave);
                 }
 
                 await _addEditProfileWizard.ChangeAwsExplorerConnectionAsync(saveAsyncResults.CredentialIdentifier);
