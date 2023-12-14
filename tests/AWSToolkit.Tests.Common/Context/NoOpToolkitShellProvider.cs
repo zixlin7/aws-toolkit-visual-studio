@@ -202,6 +202,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
             return false;
         }
 
+        public Task<bool> ShowModalAsync(Window window)
+        {
+            return Task.FromResult(false);
+        }
+
         public Task<IProgressDialog> CreateProgressDialog()
         {
             return null;

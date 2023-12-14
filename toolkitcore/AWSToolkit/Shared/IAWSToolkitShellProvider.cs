@@ -148,6 +148,12 @@ namespace Amazon.AWSToolkit.Shared
         bool ShowModal(Window window);
 
         /// <summary>
+        /// Attempts to display the provided window as a modal to Visual Studio.
+        /// An attempt is made to center the window.
+        /// </summary>
+        Task<bool> ShowModalAsync(Window window);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="message"></param>
