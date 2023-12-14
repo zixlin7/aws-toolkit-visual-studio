@@ -212,6 +212,12 @@ namespace Amazon.AWSToolkit.Shared
         void UpdateStatus(string status);
 
         /// <summary>
+        /// Runs a chunk of code on a background thread (not the UI thread).
+        /// Intended for use in code that doesn't have access to the JoinableTaskFactory.
+        /// </summary>
+        T ExecuteOnBackgroundThread<T>(Func<Task<T>> asyncFunc);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="action"></param>
