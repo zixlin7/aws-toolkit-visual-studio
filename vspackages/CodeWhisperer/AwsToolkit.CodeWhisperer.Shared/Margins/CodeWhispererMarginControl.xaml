@@ -64,6 +64,7 @@
                                 ElementId="aws.codeWhisperer.openReferencePanel" />
                         </behaviors:UiClickMetric.Configure>
                     </MenuItem>
+                    <MenuItem Header="Perform Security Scan" Command="{Binding SecurityScan}" />
                     <Separator />
                     <MenuItem Header="View User Guide" Command="{Binding ViewUserGuide}" />
                     <MenuItem Header="Getting Started" Command="{Binding GettingStarted}" />

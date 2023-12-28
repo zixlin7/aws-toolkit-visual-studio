@@ -81,12 +81,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationStrategy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)lsp\protocols\SecurityScan.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\SecurityScans\SecurityScans.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Suggestions\SuggestionSessionResultsPublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\TypeDefinitions\AwsToolkitCppContentType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatusToImageSourceConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\CodeWhispererImages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)securityscans\ISecurityScanProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)securityscans\SecurityScanProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
@@ -146,6 +150,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\MarginStatus\pause-32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Lsp\SecurityScans\" />
     <Folder Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\" />
   </ItemGroup>
 </Project>

@@ -80,6 +80,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         /// </summary>
         Task LogReferenceAsync(LogReferenceRequest request);
 
+        Task GetScanFindingAsync();
+
         /// <summary>
         /// Send the suggestion session's completion result to language server
         /// </summary>

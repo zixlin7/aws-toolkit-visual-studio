@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScan;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -25,6 +26,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         private readonly IConnection _connection;
         private readonly ISuggestionProvider _suggestionProvider;
         private readonly IReferenceLogger _referenceLogger;
+        private readonly ISecurityScanProvider _securityScanProvider;
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
 
         [ImportingConstructor]
@@ -33,12 +35,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer
             IConnection connection,
             ISuggestionProvider suggestionProvider,
             IReferenceLogger referenceLogger,
+            ISecurityScanProvider securityScanProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _lspClient = lspClient;
             _connection = connection;
             _suggestionProvider = suggestionProvider;
             _referenceLogger = referenceLogger;
+            _securityScanProvider = securityScanProvider;
             _taskFactoryProvider = taskFactoryProvider;
         }
 
@@ -144,6 +148,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         public async Task LogReferenceAsync(LogReferenceRequest request)
         {
             await _referenceLogger.LogReferenceAsync(request);
+        }
+
+        public async Task GetScanFindingAsync()
+        {
+            await _securityScanProvider.GetScanFindingsAsync();
         }
 
         public async Task SendSessionCompletionResultAsync(LogInlineCompletionSessionResultsParams resultParams)
