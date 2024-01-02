@@ -14,6 +14,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.LambdaTester
         [InlineData("net5.0", "Amazon.Lambda.TestTool-5.0")]
         [InlineData("net6.0", "Amazon.Lambda.TestTool-6.0")]
         [InlineData("net7.0", "Amazon.Lambda.TestTool-7.0")]
+        [InlineData("net8.0", "Amazon.Lambda.TestTool-8.0")]
         public void GetTesterConfiguration(string targetFramework, string expectedPackage)
         {
             var configuration = LambdaTesterInstaller.GetTesterConfiguration(targetFramework);
