@@ -51,10 +51,12 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             // assert.
             Wizard.AssertPlatformIsWindows();
-            Wizard.AssertIsSelfContained();
+            Wizard.AssertSelfContained(true);
         }
 
         [StaTheory]
+        [InlineData(Frameworks.Net80, "Linux", true)]
+        [InlineData(Frameworks.Net80, "Windows", false)]
         [InlineData(Frameworks.Net70, "Linux", true)]
         [InlineData(Frameworks.Net70, "Windows", true)]
         [InlineData(Frameworks.Net60, "Windows", false)]
@@ -86,11 +88,13 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             Assert.Equal(expectedDefault, page.BuildSelfContainedBundle);
         }
 
-        [StaFact]
-        public void ShouldRetainDefaultAfterInstanceSwitch()
+        [StaTheory]
+        [InlineData(Frameworks.Net70, true)]
+        [InlineData(Frameworks.Net80, false)]
+        public void ShouldHaveExpectedDefaultAfterInstanceSwitch(string runtime, bool expectedDefault)
         {
             // arrange.
-            SetRuntimeTo(Frameworks.Net70);
+            SetRuntimeTo(runtime);
             SetDeploymentTo("Linux");
 
             var optionsPageController = new TestableCoreCLRApplicationOptionsPageController(null)
@@ -109,7 +113,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             // assert.
             Wizard.AssertPlatformIsWindows();
-            Wizard.AssertIsSelfContained();
+            Wizard.AssertSelfContained(expectedDefault);
         }
 
         private void SetRuntimeTo(string runtime)
