@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     _pageUI.IsLinuxDeployment = isLinuxDeployment;
                 }
 
-                _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework);
+                _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework, _pageUI.IsLinuxDeployment);
 
                 if (!RedeployingAppVersion)
                 {
@@ -89,7 +89,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             return _pageUI;
         }
 
-        private bool SelfContainedDefaultFor(string targetFramework) => targetFramework.MatchesFramework(Frameworks.Net70);
+        /// <summary>
+        /// Default to self contained builds as true when project is either .NET 7 framework based for both platforms or .NET 8 framework based for Linux platforms
+        /// </summary>
+        private bool SelfContainedDefaultFor(string targetFramework, bool isLinuxDeployment)
+        {
+            return targetFramework.MatchesFramework(Frameworks.Net70) || (targetFramework.MatchesFramework(Frameworks.Net80) && isLinuxDeployment);
+        }
 
         string _lastSeenAccount;
         string _lastSeenRegion;
@@ -117,7 +123,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     _pageUI.IsLinuxDeployment = isLinuxDeployment;
                 }
 
-                _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework);
+                _pageUI.BuildSelfContainedBundle = SelfContainedDefaultFor(_pageUI.TargetFramework, _pageUI.IsLinuxDeployment);
 
                 DeploymentWizardHelper.ValidBeanstalkOptions validOptions = null;
                 var selectedAccount = HostingWizard.GetSelectedAccount();
