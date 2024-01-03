@@ -11,8 +11,8 @@
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.174.0" />
-    <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.174.0" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.177.0" />
+    <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.177.0" />
     <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.300.0" />
     <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.300.0" />
     <PackageReference Include="AWSSDK.EC2" Version="3.7.300.0" />
