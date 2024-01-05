@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -56,9 +56,6 @@
     <Compile Include="ChangeLog\ChangeLogTransform.cs" />
     <Compile Include="ChangeLog\ReleaseNotesTransform.cs" />
     <Compile Include="CheckAssembliesTask.cs" />
-    <Compile Include="CompareToS3Task.cs" />
-    <Compile Include="DownloadFromS3Task.cs" />
-    <Compile Include="EC2QuickLaunchGeneratorTask.cs" />
     <Compile Include="Images\GenerateImageListTask.cs" />
     <Compile Include="Images\ImageList.cs" />
     <Compile Include="KeyScannerTask.cs" />
@@ -66,7 +63,6 @@
     <Compile Include="Telemetry\UpdateTelemetryReferencesTask.cs" />
     <Compile Include="UpdateAwsSdkVersionsTask.cs" />
     <Compile Include="UploadCredentials.cs" />
-    <Compile Include="UploadToS3Task.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SetupVSTemplateArchives.cs" />
@@ -95,15 +91,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudFront">
-      <Version>3.3.6.1</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>3.3.5</Version>
-    </PackageReference>
-    <PackageReference Include="AWSSDK.S3">
-      <Version>3.3.16.2</Version>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>

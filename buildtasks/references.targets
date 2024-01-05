@@ -11,20 +11,4 @@
 		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.KeyScannerTask" />
 
-	<UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.CompareToS3Task" />
-
-	<UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.UploadHostedFileTask" />
-
-	<UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.UploadHostedFilesTask" />
-
-	<UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.DownloadFromS3Task" />
-
 </Project>
