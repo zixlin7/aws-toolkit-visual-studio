@@ -77,10 +77,6 @@
 
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-    TaskName="BuildTasks.EC2QuickLaunchGeneratorTask" />
-
-  <UsingTask
-    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
     TaskName="BuildTasks.UpdateVSToolkitVersionTask" />
 
   <UsingTask
@@ -98,10 +94,6 @@
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
     TaskName="BuildTasks.PatchVsixManifestPackageIdTask" />
-
-  <UsingTask
-    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-    TaskName="BuildTasks.CFInvalidateTask" />
 
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
