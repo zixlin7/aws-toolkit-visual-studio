@@ -326,7 +326,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 window.VerticalAlignment = VerticalAlignment.Center;
 
                 var result = WindowHelper.ShowModal(window);
-                return result == VSConstants.S_OK;
+                // WindowHelper.ShowModal converts a bool? from Window.ShowDialog to:
+                // null = 0, true = 1, false = 2
+                return result == 1;
             }
             catch (Exception e)
             {
