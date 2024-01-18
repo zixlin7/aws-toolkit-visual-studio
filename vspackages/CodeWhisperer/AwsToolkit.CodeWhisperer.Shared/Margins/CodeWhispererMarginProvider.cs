@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.Composition;
+using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
-using Amazon.AWSToolkit.Context;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
+using Amazon.AWSToolkit.Context;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
@@ -32,6 +33,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
     {
         private readonly ICodeWhispererManager _manager;
         private readonly ISuggestionUiManager _suggestionUiManager;
+        private readonly ICodeWhispererSettingsRepository _settingsRepository;
         private readonly IToolkitContextProvider _toolkitContextProvider;
         private readonly SVsServiceProvider _serviceProvider;
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
@@ -54,13 +56,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             // CodeWhisperer component that gets activated by Visual Studio, so we
             // import ICodeWhispererTelemetryEventPublisher here to auto instantiate it.
             ICodeWhispererTelemetryEventPublisher codeWhispererTelemetryEventPublisher,
+            // EnabledStateManager is not related to the VSSDK, so it isn't
+            // auto-created by Visual Studio. This margin provider is a central
+            // CodeWhisperer component that gets activated by Visual Studio, so we
+            // import EnabledStateManager here to auto instantiate it.
+            EnabledStateManager enabledStateManager,
             ISuggestionUiManager suggestionUiManager,
+            ICodeWhispererSettingsRepository settingsRepository,
             SVsServiceProvider serviceProvider,
             IToolkitContextProvider toolkitContextProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _manager = manager;
             _suggestionUiManager = suggestionUiManager;
+            _settingsRepository = settingsRepository;
             _serviceProvider = serviceProvider;
             _toolkitContextProvider = toolkitContextProvider;
             _taskFactoryProvider = taskFactoryProvider;
@@ -70,7 +79,22 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(
                 typeof(CodeWhispererMargin),
-                () => new CodeWhispererMargin(new CodeWhispererTextView(wpfTextViewHost.TextView), _manager, _suggestionUiManager, _serviceProvider, _toolkitContextProvider, _taskFactoryProvider));
+                () => _taskFactoryProvider.JoinableTaskFactory.Run(
+                    async () => await CreateCodeWhispererMarginAsync(wpfTextViewHost)));
+        }
+
+        private async Task<CodeWhispererMargin> CreateCodeWhispererMarginAsync(IWpfTextViewHost wpfTextViewHost)
+        {
+            var margin = new CodeWhispererMargin(
+                new CodeWhispererTextView(wpfTextViewHost.TextView),
+                _manager, _suggestionUiManager,
+                _settingsRepository,
+                _serviceProvider,
+                _toolkitContextProvider, _taskFactoryProvider);
+
+            await margin.InitializeAsync();
+
+            return margin;
         }
     }
 }
