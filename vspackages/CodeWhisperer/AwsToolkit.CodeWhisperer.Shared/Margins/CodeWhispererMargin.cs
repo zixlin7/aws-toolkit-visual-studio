@@ -1,14 +1,16 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
-using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.VsSdk.Common.Commands;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
+using Amazon.AWSToolkit.Context;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
-using Amazon.AwsToolkit.VsSdk.Common.Commands;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Margins
 {
@@ -28,6 +30,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             ICodeWhispererTextView textView,
             ICodeWhispererManager manager,
             ISuggestionUiManager suggestionUiManager,
+            ICodeWhispererSettingsRepository settingsRepository,
             SVsServiceProvider serviceProvider,
             IToolkitContextProvider toolkitContextProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
@@ -35,7 +38,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             _toolkitContextProvider = toolkitContextProvider;
 
             var commandRepository = new ToolkitVsCommandRepository(serviceProvider, taskFactoryProvider);
-            _marginViewModel = new CodeWhispererMarginViewModel(textView, manager, suggestionUiManager, commandRepository, _toolkitContextProvider, taskFactoryProvider);
+            _marginViewModel = new CodeWhispererMarginViewModel(textView,
+                manager, suggestionUiManager,
+                settingsRepository, commandRepository,
+                _toolkitContextProvider, taskFactoryProvider);
 
             _documentViewModel = new CodeWhispererDocumentViewModel(textView, manager, suggestionUiManager);
 
@@ -43,6 +49,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             {
                 DataContext = _marginViewModel,
             };
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _marginViewModel.InitializeAsync();
         }
 
         public FrameworkElement VisualElement => _control;

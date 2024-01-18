@@ -155,10 +155,25 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             return new LspConfiguration(_rpc);
         }
 
+        public async Task StartClientAsync()
+        {
+            await _toolkitContextProvider.WaitForToolkitContextAsync();
+
+            await StartServerAsync();
+        }
+
+        public async Task StopClientAsync()
+        {
+            if (_toolkitContextProvider.HasToolkitContext())
+            {
+                _toolkitContext.ToolkitHost.OutputToHostConsole($"Stopping: {Name}");
+            }
+
+            await StopAsync.InvokeAsync(this, EventArgs.Empty);
+        }
+
         public event AsyncEventHandler<EventArgs> StartAsync;
-#pragma warning disable CS0067 // The event 'ToolkitLspClient.StopAsync' is never used
         public event AsyncEventHandler<EventArgs> StopAsync;
-#pragma warning restore CS0067 // The event 'ToolkitLspClient.StopAsync' is never used
 
         /// <summary>
         /// User-facing name of the Language Client.
@@ -203,11 +218,25 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         public virtual async Task OnLoadedAsync()
         {
+            await _toolkitContextProvider.WaitForToolkitContextAsync();
+
+            if (!await IsEnabledAsync())
+            {
+                return;
+            }
+
+            await StartClientAsync();
+        }
+
+        protected virtual Task<bool> IsEnabledAsync()
+        {
+            return Task.FromResult(true);
+        }
+
+        private async Task StartServerAsync()
+        {
             _logger.Info($"Starting set up for language server: {Name}");
             Status = LspClientStatus.SettingUp;
-
-            // TODO : Will this block the IDE while waiting?
-            await _toolkitContextProvider.WaitForToolkitContextAsync();
 
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Initializing: {Name}");
 

@@ -16,6 +16,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <local:MarginStatusToImageSourceConverter x:Key="MarginStatusToImageSourceConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -23,7 +24,9 @@
         x:Name="ParentPanel" x:FieldModifier="private"
         Orientation="Horizontal" 
         VerticalAlignment="Center"
-        Background="{DynamicResource {x:Static platformUi:EnvironmentColors.ScrollBarBackgroundBrushKey}}">
+        Background="{DynamicResource {x:Static platformUi:EnvironmentColors.ScrollBarBackgroundBrushKey}}"
+        Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+        >
         <StackPanel.ToolTip>
             <ToolTip themes:ToolkitThemes.UseToolkitTheme="True">
                 <TextBlock Text="Amazon CodeWhisperer (Preview)" />

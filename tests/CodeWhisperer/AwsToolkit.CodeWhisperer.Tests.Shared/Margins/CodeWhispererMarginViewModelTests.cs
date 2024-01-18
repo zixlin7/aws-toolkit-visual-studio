@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Margins;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Commands;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.TestUtilities;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -25,6 +27,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Margins
         private readonly FakeCodeWhispererTextView _textView = new FakeCodeWhispererTextView();
         private readonly FakeCodeWhispererManager _manager = new FakeCodeWhispererManager();
         private readonly FakeSuggestionUiManager _suggestionUiManager = new FakeSuggestionUiManager();
+        private readonly FakeCodeWhispererSettingsRepository _settingsRepository = new FakeCodeWhispererSettingsRepository();
         private readonly FakeVsCommandRepository _commandRepository = new FakeVsCommandRepository();
 
         private readonly ToolkitContextFixture _toolkitContext = new ToolkitContextFixture();
@@ -41,6 +44,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Margins
                 _textView,
                 _manager,
                 _suggestionUiManager,
+                _settingsRepository,
                 _commandRepository,
                 _toolkitContext.ToolkitContextProvider,
                 taskFactoryProvider);
@@ -54,6 +58,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Margins
             _sut.UpdateKeyBindings();
 
             _sut.GenerateSuggestionsKeyBinding.Should().Be(_commandRepository.CommandBinding);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task InitializeAsyncUpdatesIsEnabled(bool isEnabledState)
+        {
+            _settingsRepository.Settings.IsEnabled = isEnabledState;
+            await _sut.InitializeAsync();
+            _sut.IsEnabled.Should().Be(isEnabledState);
         }
 
         public static TheoryData<bool, LspClientStatus, ConnectionStatus, MarginStatus> GetMarginStatusInputs()

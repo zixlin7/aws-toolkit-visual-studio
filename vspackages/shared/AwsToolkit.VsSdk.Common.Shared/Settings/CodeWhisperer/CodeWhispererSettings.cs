@@ -17,6 +17,14 @@ namespace AwsToolkit.VsSdk.Common.Settings.CodeWhisperer
         public LspSettings LspSettings { get; set; } = new LspSettings();
 
         /// <summary>
+        /// Enables and disablies the whole CodeWhisperer integration
+        /// </summary>
+        [Category("General")]
+        [DisplayName("Enable CodeWhisperer")]
+        [Description("Turns all CodeWhisperer features on (true) or off (false).")]
+        public bool IsEnabled { get; set; } = true;
+
+        /// <summary>
         /// Represents the Credential Id (<see cref="Amazon.AWSToolkit.Credentials.Core.ICredentialIdentifier.Id"/>)
         /// currently signed in to CodeWhisperer.
         /// Null/empty represents signed out state.

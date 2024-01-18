@@ -7,11 +7,13 @@ using Amazon.AwsToolkit.CodeWhisperer.Commands;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.VsSdk.Common.Commands;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Settings;
 
 using log4net;
 
@@ -25,6 +27,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         private readonly IToolkitContextProvider _toolkitContextProvider;
         private readonly ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
         private readonly ICodeWhispererManager _manager;
+        private readonly ICodeWhispererSettingsRepository _settingsRepository;
         private readonly IVsCommandRepository _commandRepository;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -36,11 +39,13 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             ICodeWhispererTextView textView,
             ICodeWhispererManager manager,
             ISuggestionUiManager suggestionUiManager,
+            ICodeWhispererSettingsRepository settingsRepository,
             IVsCommandRepository commandRepository,
             IToolkitContextProvider toolkitContextProvider,
             ToolkitJoinableTaskFactoryProvider taskFactoryProvider)
         {
             _manager = manager;
+            _settingsRepository = settingsRepository;
             _commandRepository = commandRepository;
             _toolkitContextProvider = toolkitContextProvider;
             _taskFactoryProvider = taskFactoryProvider;
@@ -73,9 +78,16 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             _manager.PauseAutoSuggestChanged += OnManagerPauseAutoSuggestChanged;
             _manager.ConnectionStatusChanged += OnManagerConnectionStatusChanged;
             _manager.ClientStatusChanged += OnManagerClientStatusChanged;
+            _settingsRepository.SettingsSaved += OnSettingsSaved;
 
             UpdateKeyBindings();
             UpdateMarginStatus();
+        }
+
+        public async Task InitializeAsync()
+        {
+            var settings = await _settingsRepository.GetAsync();
+            IsEnabled = settings.IsEnabled;
         }
 
         public void UpdateKeyBindings()
@@ -95,6 +107,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
                 _logger.Error($"Error getting key binding for command {commandName}", e);
                 return string.Empty;
             }
+        }
+
+        /// Initialized during <see cref="InitializeAsync" />
+        private bool _isEnabled;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set => SetProperty(ref _isEnabled, value);
         }
 
         private ICommand _signIn;
@@ -194,6 +214,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             _manager.PauseAutoSuggestChanged -= OnManagerPauseAutoSuggestChanged;
             _manager.ConnectionStatusChanged -= OnManagerConnectionStatusChanged;
             _manager.ClientStatusChanged -= OnManagerClientStatusChanged;
+            _settingsRepository.SettingsSaved -= OnSettingsSaved;
 
             foreach (var disposable in _disposables)
             {
@@ -217,6 +238,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         {
             _clientState = e.ClientStatus;
             UpdateMarginStatus();
+        }
+
+        private void OnSettingsSaved(object sender, CodeWhispererSettingsSavedEventArgs e)
+        {
+            IsEnabled = e.Settings.IsEnabled;
         }
 
         private void UpdateMarginStatus()
