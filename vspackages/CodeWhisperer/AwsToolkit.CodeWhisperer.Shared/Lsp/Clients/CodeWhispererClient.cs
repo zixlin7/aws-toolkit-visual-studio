@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.InlineCompletions;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Install;
+using Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.TypeDefinitions;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
@@ -25,6 +26,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     public interface ICodeWhispererLspClient : IToolkitLspClient
     {
         IInlineCompletions CreateInlineCompletions();
+        ISecurityScans CreateSecurityScan();
 
         /// <summary>
         /// Produces the abstraction capable of sending suggestion completion session results to the language server
@@ -95,6 +97,11 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         public IInlineCompletions CreateInlineCompletions()
         {
             return new InlineCompletions.InlineCompletions(_rpc);
+        }
+
+        public ISecurityScans CreateSecurityScan()
+        {
+            return new SecurityScans.SecurityScans(_rpc);
         }
 
         /// <summary>

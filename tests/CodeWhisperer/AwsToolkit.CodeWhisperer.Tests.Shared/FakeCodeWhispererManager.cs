@@ -19,6 +19,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         public bool IsSignedIn = false;
         public bool AutomaticSuggestionsEnabled = true;
         public bool DidShowReferenceLogger = false;
+        public bool DidRunSecurityScan = false;
         public readonly List<LogReferenceRequest> LoggedReferences = new List<LogReferenceRequest>();
         public readonly SuggestionSession SuggestionSession = new SuggestionSession();
          public LogInlineCompletionSessionResultsParams SessionResultsParam =
@@ -104,6 +105,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         public Task SendSessionCompletionResultAsync(LogInlineCompletionSessionResultsParams resultParams)
         {
             SessionResultsParam = resultParams;
+            return Task.CompletedTask;
+        }
+
+        public Task ScanAsync()
+        {
+            DidRunSecurityScan = true;
             return Task.CompletedTask;
         }
     }

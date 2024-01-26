@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\FakeVsCommandRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\PauseCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\ResumeCommandTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)commands\SecurityScanCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SendCodeWhispererFeedbackCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignInCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\SignOutCommandTests.cs" />
@@ -41,11 +42,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestFetcherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\VersionManifestManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethodsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lsp\SecurityScans\FakeSecurityScans.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Suggestions\FakeSuggestionSessionResultsPublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\CodeWhispererTelemetryEventPublisherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\LspTelemetryExtensionMethodsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\TelemetryEventPublisherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SecurityScans\FakeSecurityScanProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\EnabledStateManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsPublisherTests.cs" />
@@ -64,5 +67,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings\FakeCodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\FakeSuggestionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Suggestions\SuggestionProviderTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)SecurityScans\" />
   </ItemGroup>
 </Project>

@@ -70,7 +70,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             GenerateSuggestions = new GetSuggestionsCommand(textView, _manager, suggestionUiManager, _toolkitContextProvider);
 
             ViewCodeReferences = new ViewCodeReferencesCommand(_manager, _toolkitContextProvider);
-            SecurityScan = new SecurityScanCommand(_toolkitContextProvider);
+            SecurityScan = new SecurityScanCommand(_manager, textView, _toolkitContextProvider);
 
             _isAutoSuggestPaused = _manager.IsAutoSuggestPaused();
             _connectionState = _manager.ConnectionStatus;

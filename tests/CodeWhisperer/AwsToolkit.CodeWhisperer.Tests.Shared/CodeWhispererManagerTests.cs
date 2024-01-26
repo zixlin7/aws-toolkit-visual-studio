@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.Sdk.TestFramework;
 using Microsoft.VisualStudio.Shell;
 
 using Xunit;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.SecurityScan;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests
 {
@@ -28,6 +29,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         private readonly FakeConnection _connection = new FakeConnection();
         private readonly FakeSuggestionProvider _suggestionProvider = new FakeSuggestionProvider();
         private readonly FakeReferenceLogger _referenceLogger = new FakeReferenceLogger();
+        private readonly FakeSecurityScanProvider _securityScanProvider = new FakeSecurityScanProvider();
         private readonly CodeWhispererManager _sut;
 
         public CodeWhispererManagerTests(GlobalServiceProvider serviceProvider)
@@ -35,7 +37,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             serviceProvider.Reset();
 
             var taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
-            _sut = new CodeWhispererManager(_lspClient, _connection, _suggestionProvider, _referenceLogger, taskFactoryProvider);
+            _sut = new CodeWhispererManager(_lspClient, _connection, _suggestionProvider, _referenceLogger, _securityScanProvider ,taskFactoryProvider);
         }
 
         [Theory]
@@ -204,6 +206,14 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             await _sut.SendSessionCompletionResultAsync(sessionResult);
 
             _lspClient.SuggestionSessionResultsPublisher.SessionResultsParam.Should().Be(sessionResult);
+        }
+
+        [Fact]
+        public async Task ScanAsync()
+        {
+            await _sut.ScanAsync();
+
+            _securityScanProvider.DidRunSecurityScan.Should().Be(true);
         }
     }
 }
