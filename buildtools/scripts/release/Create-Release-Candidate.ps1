@@ -16,7 +16,12 @@ param (
     # Url of the repo
     # eg: https://github.com/aws/aws-toolkit-visual-studio-staging.git
     [Parameter(Mandatory=$true)][string]$RepoUrl,
-    [Parameter(Mandatory=$true)][string]$StatusContext
+    # Text applied to GitHub status while this task is being performed
+    # Don't pass quotes through here. It doesn't handle it properly
+    [Parameter(Mandatory=$true)][string]$StatusContext,
+    # Name of S3 Bucket to upload VSIX files to, for the purpose 
+    # of starting the signing process.
+    [Parameter(Mandatory=$true)][string]$ArchiveBucket
 )
 
 # Globals
@@ -45,32 +50,41 @@ function Copy-Vsix {
     $dstFolder = Join-Path -Path $pwd -ChildPath $DestinationFolder
     New-Item -Path $dstFolder -ItemType "directory" -Force | Out-Null
 
-    # Each VS version makes different files. Copy from appropriate locations and filenames.
-    Switch -exact ($VisualStudioVersion) 
+    $srcRoot = GetVsToolkitOutputFolder $VisualStudioVersion
+    $filenames = GetVsToolkitVsixFileNames $VisualStudioVersion
+
+    foreach ($filename in $filenames) 
     {
-        "2019" {
-            # VS 2019 build chain outputs to /Deployment/16.0/Release
-            $srcRoot = Join-Path -Path $pwd -ChildPath "Deployment"
-            $srcRoot = Join-Path -Path $srcRoot -ChildPath "16.0"
-            $srcRoot = Join-Path -Path $srcRoot -ChildPath "Release"
-
-            $toolkitVs2019Vsix = Join-Path -Path $srcRoot -ChildPath "AWSToolkitPackage.vsix"
-            Copy-Item -Path $toolkitVs2019Vsix -Destination $dstFolder
-        }
-        "2022" {
-            # VS 2022 build chain outputs to /Deployment/17.0/Release
-            $srcRoot = Join-Path -Path $pwd -ChildPath "Deployment"
-            $srcRoot = Join-Path -Path $srcRoot -ChildPath "17.0"
-            $srcRoot = Join-Path -Path $srcRoot -ChildPath "Release"
-
-            $toolkitVs2022Vsix = Join-Path -Path $srcRoot -ChildPath "AWSToolkitPackage.v17.vsix"
-            Copy-Item -Path $toolkitVs2022Vsix -Destination $dstFolder
-        }
+        $vsixPath = Join-Path -Path $srcRoot -ChildPath $filename
+        Copy-Item -Path $vsixPath -Destination $dstFolder
     }
 
     echo "Files copied to: $dstFolder"
     echo "----------------------------------------"
 }
+
+# Copy-Vsix-To-Archive - Copies the produced VSIX files from the destination folder to the short term archive
+# (copying them to the archive kicks off the build signing processes)
+function Copy-Vsix-To-Archive {
+    echo "----------------------------------------"
+    echo "Copying VSIX Files to short term archive: $ArchiveBucket"
+
+    $srcRoot = $DestinationFolder
+    $filenames = GetVsToolkitVsixFileNames $VisualStudioVersion
+
+    foreach ($filename in $filenames) 
+    {
+        $vsixPath = Join-Path -Path $DestinationFolder -ChildPath $filename
+        $objectKey = "unsigned/$CommitId/$filename"
+
+        echo "$vsixPath -> $objectKey"
+        aws s3 cp $vsixPath s3://$ArchiveBucket/$objectKey
+    }
+
+    echo "----------------------------------------"
+}
+
+
 
 ## ----- This script (Create-Release-Candidate) -----
 $version = GetReleaseVersion
@@ -98,6 +112,7 @@ UpdateCommitStatus -RepoOwner $repoOwner -RepoName $repoName -CommitId $CommitId
     -Description "Post build: Copying files..."
 
 Copy-Vsix -VisualStudioVersion $VisualStudioVersion
+Copy-Vsix-To-Archive
 
 UpdateCommitStatus -RepoOwner $repoOwner -RepoName $repoName -CommitId $CommitId `
     -State pending -Context $StatusContext `
