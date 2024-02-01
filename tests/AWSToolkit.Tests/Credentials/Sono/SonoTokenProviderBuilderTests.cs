@@ -40,6 +40,7 @@ namespace AWSToolkit.Tests.Credentials.Sono
 
             var tokenProvider = SonoTokenProviderBuilder.Create()
                 .WithSessionName(_sessionName)
+                .WithCredentialIdentifier(SonoCredentialId)
                 .WithSsoCallback(SsoCallback)
                 .Build();
 
