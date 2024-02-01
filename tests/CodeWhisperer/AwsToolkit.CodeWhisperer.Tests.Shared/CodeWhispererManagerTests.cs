@@ -19,6 +19,8 @@ using Microsoft.VisualStudio.Shell;
 
 using Xunit;
 using Amazon.AwsToolkit.CodeWhisperer.Tests.SecurityScan;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans.Models;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests
 {
@@ -208,12 +210,50 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             _lspClient.SuggestionSessionResultsPublisher.SessionResultsParam.Should().Be(sessionResult);
         }
 
+        [Theory]
+        [InlineData(SecurityScanState.NotRunning)]
+        [InlineData(SecurityScanState.Running)]
+        [InlineData(SecurityScanState.Cancelling)]
+        public void ScanState(SecurityScanState expectedStatus)
+        {
+            _securityScanProvider.ScanState = expectedStatus;
+
+            _sut.SecurityScanState.Should().Be(expectedStatus);
+        }
+
+        [Fact]
+        public void SecurityScanStateChanged()
+        {
+            _securityScanProvider.ScanState = SecurityScanState.NotRunning;
+
+            var eventArgs = Assert.Raises<SecurityScanStateChangedEventArgs>(
+                attach => _sut.SecurityScanStateChanged += attach,
+                detach => _sut.SecurityScanStateChanged -= detach,
+                () =>
+                {
+                    _securityScanProvider.ScanState = SecurityScanState.Running;
+                    _securityScanProvider.RaiseStateChanged();
+                });
+
+            eventArgs.Arguments.ScanState.Should().Be(SecurityScanState.Running);
+        }
+
         [Fact]
         public async Task ScanAsync()
         {
+            _securityScanProvider.ScanState = SecurityScanState.NotRunning;
             await _sut.ScanAsync();
 
-            _securityScanProvider.DidRunSecurityScan.Should().Be(true);
+            _sut.SecurityScanState.Should().Be(SecurityScanState.Running);
+        }
+
+        [Fact]
+        public async Task CancelScanAsync()
+        {
+            _securityScanProvider.ScanState = SecurityScanState.Running;
+            await _sut.CancelScanAsync();
+
+            _sut.SecurityScanState.Should().Be(SecurityScanState.Cancelling);
         }
     }
 }

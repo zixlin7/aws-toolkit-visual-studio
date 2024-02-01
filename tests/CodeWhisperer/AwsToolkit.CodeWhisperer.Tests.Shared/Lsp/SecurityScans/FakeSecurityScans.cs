@@ -11,5 +11,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.SecurityScans
         {
             return Task.CompletedTask;
         }
+
+        public Task CancelSecurityScanAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

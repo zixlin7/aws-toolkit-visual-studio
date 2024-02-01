@@ -5,6 +5,6 @@
         Disconnected,
         Connected,
         ConnectedPaused,
-        Error,
+        Error
     }
 }

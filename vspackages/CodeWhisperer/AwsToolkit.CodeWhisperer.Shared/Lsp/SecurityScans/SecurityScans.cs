@@ -10,6 +10,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
     {
         // TODO: replace with finalized message name
         public const string RunSecurityScan = "aws/codewhisperer/securityscan";
+        public const string CancelSecurityScan = "aws/codewhisperer/cancelsecurityscan";
     }
 
     /// <summary>
@@ -18,6 +19,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
     public interface ISecurityScans
     {
         Task RunSecurityScanAsync(SecurityScanParams securityScanParams);
+        Task CancelSecurityScanAsync();
     }
 
     public class SecurityScans : ISecurityScans
@@ -32,6 +34,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
         {
            await _rpc.InvokeWithParameterObjectAsync(
                 MessageNames.RunSecurityScan, securityScanParams);
+        }
+
+        public async Task CancelSecurityScanAsync()
+        {
+            await _rpc.InvokeAsync(
+                 MessageNames.CancelSecurityScan);
         }
     }
 }

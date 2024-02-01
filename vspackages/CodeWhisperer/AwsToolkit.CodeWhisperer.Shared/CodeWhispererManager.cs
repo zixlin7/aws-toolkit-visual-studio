@@ -6,6 +6,8 @@ using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.SecurityScan;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
@@ -150,9 +152,22 @@ namespace Amazon.AwsToolkit.CodeWhisperer
             await _referenceLogger.LogReferenceAsync(request);
         }
 
+        public SecurityScanState SecurityScanState => _securityScanProvider.ScanState;
+
+        public event EventHandler<SecurityScanStateChangedEventArgs> SecurityScanStateChanged
+        {
+            add => _securityScanProvider.SecurityScanStateChanged += value;
+            remove => _securityScanProvider.SecurityScanStateChanged -= value;
+        }
+
         public async Task ScanAsync()
         {
             await _securityScanProvider.ScanAsync();
+        }
+
+        public async Task CancelScanAsync()
+        {
+            await _securityScanProvider.CancelScanAsync();
         }
 
         public async Task SendSessionCompletionResultAsync(LogInlineCompletionSessionResultsParams resultParams)

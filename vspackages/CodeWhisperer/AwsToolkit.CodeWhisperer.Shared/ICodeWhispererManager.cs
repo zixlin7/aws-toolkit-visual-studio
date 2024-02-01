@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 
@@ -80,7 +82,15 @@ namespace Amazon.AwsToolkit.CodeWhisperer
         /// </summary>
         Task LogReferenceAsync(LogReferenceRequest request);
 
+        SecurityScanState SecurityScanState { get; }
+
+        /// <summary>
+        /// Event signalling a state change for whether or not security scan is running
+        /// </summary>
+        event EventHandler<SecurityScanStateChangedEventArgs> SecurityScanStateChanged;
+
         Task ScanAsync();
+        Task CancelScanAsync();
 
         /// <summary>
         /// Send the suggestion session's completion result to language server

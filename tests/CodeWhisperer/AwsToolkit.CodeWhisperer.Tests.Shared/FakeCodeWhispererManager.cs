@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Suggestions;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 
@@ -19,7 +21,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         public bool IsSignedIn = false;
         public bool AutomaticSuggestionsEnabled = true;
         public bool DidShowReferenceLogger = false;
-        public bool DidRunSecurityScan = false;
+        public bool IsScanning = false;
         public readonly List<LogReferenceRequest> LoggedReferences = new List<LogReferenceRequest>();
         public readonly SuggestionSession SuggestionSession = new SuggestionSession();
          public LogInlineCompletionSessionResultsParams SessionResultsParam =
@@ -30,6 +32,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChanged;
         public event EventHandler<PauseStateChangedEventArgs> PauseAutoSuggestChanged;
         public event EventHandler<LspClientStatusChangedEventArgs> ClientStatusChanged;
+        public event EventHandler<SecurityScanStateChangedEventArgs> SecurityScanStateChanged;
 
         public virtual Task SignInAsync()
         {
@@ -108,9 +111,21 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             return Task.CompletedTask;
         }
 
+        public SecurityScanState SecurityScanState { get; set; } = SecurityScanState.NotRunning;
+
+        public void RaiseSecurityScanStateChanged()
+        {
+            SecurityScanStateChanged?.Invoke(this, new SecurityScanStateChangedEventArgs(SecurityScanState));
+        }
+
         public Task ScanAsync()
         {
-            DidRunSecurityScan = true;
+            IsScanning = true;
+            return Task.CompletedTask;
+        }
+        public Task CancelScanAsync()
+        {
+            IsScanning = false;
             return Task.CompletedTask;
         }
     }
