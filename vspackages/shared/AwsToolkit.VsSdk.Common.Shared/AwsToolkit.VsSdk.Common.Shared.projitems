@@ -59,6 +59,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\OkDialogWindowHost.xaml.cs">
       <DependentUpon>OkDialogWindowHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\SsoLoginDialogFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\ThemedDialogWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommonUI\ValidationErrorsBox.xaml.cs">
       <DependentUpon>ValidationErrorsBox.xaml</DependentUpon>

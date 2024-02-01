@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\InstanceTypeSelectionViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\KeyValueEditorViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\RepositorySelectionViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\SsoLoginViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\VpcSelectionViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\VsKnownImagesTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\ImageThemeConverterTests.cs" />
