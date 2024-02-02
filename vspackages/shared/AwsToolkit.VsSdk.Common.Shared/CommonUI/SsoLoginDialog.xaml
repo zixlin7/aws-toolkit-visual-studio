@@ -69,7 +69,7 @@
                         <TextBlock
                             FontFamily="{DynamicResource {x:Static shell15:VsFonts.EnvironmentFontFamilyKey}}"
                             FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
-                            Text="{Binding DisplayName, StringFormat=Login with {0}}"
+                            Text="{Binding DisplayName, StringFormat=Log In with {0}}"
                             RenderOptions.ClearTypeHint="Enabled"
                             VerticalAlignment="Center" />
 

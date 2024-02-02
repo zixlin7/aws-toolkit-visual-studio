@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "The AWS Builder Id and IAM Identity Center (SSO) login flow has been improved to confirm that the device code in the Toolkit and browser match. Previously, the code needed to be copied from the Toolkit and pasted into the browser."
+}
