@@ -168,7 +168,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
         {
             try
             {
-                _toolkitContext.ToolkitHost.OutputToHostConsole($"{DisplayName} Login flow started for Credentials: {CredentialName}", false);
+                _toolkitContext.ToolkitHost.OutputToHostConsole($"{DisplayName} Log in flow started for Credentials: {CredentialName}", false);
                 await ExecuteLoginFlowAsync();
                 LoginResult.Status = TaskStatus.Success;
                 DialogResult = true;
@@ -186,7 +186,7 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
 
                 LoginResult.Status = TaskStatus.Fail;
                 LoginResult.Exception = e;
-                _logger.Error($"Login failed for {DisplayName} based Credentials {CredentialName}: {e.Message}", e);
+                _logger.Error($"Log in failed for {DisplayName} based Credentials {CredentialName}: {e.Message}", e);
                 DialogResult = false;
                 throw;
             }
