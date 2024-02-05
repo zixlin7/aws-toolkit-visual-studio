@@ -27,6 +27,19 @@ namespace AWSToolkit.Tests.CommonValidators
             Assert.Null(value);
         }
 
+        [Fact]
+        public void ValidBucketLocation_WhenEU()
+        {
+            // S3Region.EUWest1 sets up an S3 region using `S3Region("EU")` and returns a location of "EU"
+            SetupS3Client(S3Region.EUWest1);
+
+            // SystemName for the EUWest1 RegionEndpoint is "eu-west-1"
+            var value = S3BucketLocationValidator.Validate(_s3Client.Object, _sampleBucket,
+                RegionEndpoint.EUWest1.SystemName);
+
+            Assert.Null(value);
+        }
+
 
         public static IEnumerable<object[]> ValidLocationData =>
             new List<object[]>
