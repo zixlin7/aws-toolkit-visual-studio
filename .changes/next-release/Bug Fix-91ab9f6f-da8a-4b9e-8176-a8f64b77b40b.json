@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fix \"Bucket is not in the same region\" validation in Serverless deployment dialog when working with buckets in eu-west-1."
+}

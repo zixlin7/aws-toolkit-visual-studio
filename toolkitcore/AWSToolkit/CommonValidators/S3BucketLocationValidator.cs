@@ -26,17 +26,19 @@ namespace Amazon.AWSToolkit.CommonValidators
                 // buckets in region us-east-1 are returned with the location value as null
                 if (string.IsNullOrWhiteSpace(location))
                 {
-                    location = "us-east-1";
+                    location = RegionEndpoint.USEast1.SystemName;
                 }
 
-                if (!string.Equals(location, region))
+                // Buckets in "eu-west-1" can return a location value of "EU" instead of the "eu-west-1" region.
+                if (string.Equals(location, "EU"))
                 {
-                    return $"Bucket is not in the same region {location} as the currently selected region {region}";
+                    location = RegionEndpoint.EUWest1.SystemName;
                 }
 
-                return null;
+                return !string.Equals(location, region)
+                    ? $"Bucket is not in the same region {location} as the currently selected region {region}"
+                    : null;
             }
-
             catch (Exception ex)
             {
                 // silently swallow any errors(for eg. due to permission issues) with this validation to unblock users in UI
