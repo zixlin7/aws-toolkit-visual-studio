@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationStrategyTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notification\NotificationInfoBarTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Notification\VersionStrategyTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProxySettingsExtensionMethodsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandSolutionExplorerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Publishing\PublishToAwsCommandTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ToolkitContextProviderTests.cs" />
