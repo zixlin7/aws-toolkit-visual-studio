@@ -25,6 +25,12 @@ namespace BuildTasks.ChangeLog
         public string ReleaseVersion { get; set; }
 
         /// <summary>
+        ///  The release date to write into the release notes for the next release.
+        ///  Defaults to today's date.
+        /// </summary>
+        public string ReleaseDate { get; set; }
+
+        /// <summary>
         /// Raise an error if there are no changes
         /// </summary>
         public bool FailIfNoChanges { get; set; } = true;
@@ -112,10 +118,10 @@ namespace BuildTasks.ChangeLog
         /// <returns></returns>
         public ChangeLogVersion CreateChangeLogVersion()
         {
-            var time = DateTime.Now.ToString("yyyy-MM-dd");
+            var releaseDate = string.IsNullOrWhiteSpace(ReleaseDate) ? DateTime.Now.ToString("yyyy-MM-dd") : ReleaseDate;
             var changelogObjects = RetrieveChangeLogObjects();
             var releaseLog = new ChangeLogVersion
-                {Date = time, Version = ReleaseVersion, Entries = changelogObjects};
+                {Date = releaseDate, Version = ReleaseVersion, Entries = changelogObjects};
             return releaseLog;
         }
 
