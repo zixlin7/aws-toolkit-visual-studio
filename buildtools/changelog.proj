@@ -18,7 +18,7 @@
     <Exec Command="git add $(nextReleasePath)" />
   </Target>
   <Target Name="createRelease" DependsOnTargets="build-buildtasks">
-    <CreateReleaseTask RepositoryRoot="$(MSBuildProjectDirectory)\.." ReleaseVersion="$(ReleaseVersion)" FailIfNoChanges="$(FailIfNoChanges)">
+    <CreateReleaseTask RepositoryRoot="$(MSBuildProjectDirectory)\.." ReleaseVersion="$(ReleaseVersion)" ReleaseDate="$(ReleaseDate)" FailIfNoChanges="$(FailIfNoChanges)">
       <Output TaskParameter="ChangeDirectoryPath" PropertyName="changeDirectory" />
       <Output TaskParameter="NextReleasePath" PropertyName="nextRelease" />
       <Output TaskParameter="ChangelogPath" PropertyName="changelog" />
