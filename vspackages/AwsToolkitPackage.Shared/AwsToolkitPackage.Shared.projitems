@@ -115,15 +115,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\GeneralOptionsPageControl.xaml.cs">
       <DependentUpon>GeneralOptionsPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPageForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPageForm.Designer.cs">
-      <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\DismissSunsetNotificationActionItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\LearnMoreActionItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SupportedVersion\SunsetNotificationInfoBar.cs" />
@@ -235,9 +226,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ShellOptions\ProxyOptionsPageForm.resx">
-      <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

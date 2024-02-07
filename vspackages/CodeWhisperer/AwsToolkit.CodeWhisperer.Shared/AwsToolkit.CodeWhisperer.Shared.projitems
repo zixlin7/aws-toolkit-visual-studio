@@ -92,6 +92,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\EnabledStateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\ICodeWhispererSettingsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\LspProxySettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsPublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMargin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginControl.xaml.cs">

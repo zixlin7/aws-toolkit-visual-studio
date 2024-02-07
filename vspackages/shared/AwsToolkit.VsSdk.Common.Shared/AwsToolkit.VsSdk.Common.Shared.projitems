@@ -89,9 +89,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhisperer\CodeWhispererSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhisperer\CodeWhispererSettingsProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\DismissedManifestDeprecation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\Proxy\ProxyOptionsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\Proxy\ProxySettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\LspSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\ILspSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\ManifestCachedEtag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\Proxy\ProxyOptionsPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\Proxy\ProxyOptions.xaml.cs">
+      <DependentUpon>ProxyOptions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tasks\ToolkitJoinableTaskFactoryProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsHierarchyHelpers.cs" />
@@ -155,6 +161,9 @@
     <Page Include="$(MSBuildThisFileDirectory)CommonUI\SelectionDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Settings\Proxy\ProxyOptions.xaml">
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)themes\generic.xaml">
       <SubType>Designer</SubType>

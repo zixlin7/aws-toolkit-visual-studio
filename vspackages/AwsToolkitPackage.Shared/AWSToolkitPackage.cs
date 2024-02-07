@@ -104,6 +104,8 @@ using Amazon.AwsToolkit.VsSdk.Common.Services;
 
 using AwsToolkit.VsSdk.Common.Settings.CodeWhisperer;
 using AwsToolkit.VsSdk.Common.Settings;
+using AwsToolkit.VsSdk.Common.Settings.Proxy;
+
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.LanguageServer.Client;
 

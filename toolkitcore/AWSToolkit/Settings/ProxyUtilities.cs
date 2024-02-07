@@ -1,6 +1,6 @@
 ﻿using Amazon.Runtime.Internal.Settings;
 
-namespace Amazon.AWSToolkit
+namespace Amazon.AWSToolkit.Settings
 {
     public class ProxyUtilities
     {
@@ -75,49 +75,6 @@ namespace Amazon.AWSToolkit
             proxy.Port = settings.Port;
             proxy.Username = settings.Username;
             proxy.Password = settings.Password;
-        }
-
-
-        /// <summary>
-        /// Settings for configuring a proxy for the SDK to use.
-        /// </summary>
-        public class ProxySettings
-        {
-            /// <summary>
-            /// Gets and sets the host name or IP address of the proxy server.
-            /// </summary>
-            public string Host
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Gets and sets the port number of the proxy.
-            /// </summary>
-            public int? Port
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Gets and sets the username to authenticate with the proxy server.
-            /// </summary>
-            public string Username
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Gets and sets the password to authenticate with the proxy server.
-            /// </summary>
-            public string Password
-            {
-                get;
-                set;
-            }
         }
     }
 }
