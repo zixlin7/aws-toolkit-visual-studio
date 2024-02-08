@@ -94,7 +94,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private ISsoLoginDialog CreateLoginDialog()
         {
             var ssoDialogFactory = _toolkitShell.GetDialogFactory().CreateSsoLoginDialogFactory(_profile.Name);
-            return ssoDialogFactory.CreateSsoIdcLoginDialog(_ssoCredentials);
+            return ssoDialogFactory.CreateSsoCredentialsProviderLoginDialog(_ssoCredentials);
         }
     }
 }

@@ -8,9 +8,9 @@ namespace Amazon.AWSToolkit.CommonUI.Dialogs
     /// </summary>
     public interface ISsoLoginDialogFactory
     {
-        ISsoLoginDialog CreateSsoIdcLoginDialog(SSOAWSCredentials ssoCredentials);
+        ISsoLoginDialog CreateSsoCredentialsProviderLoginDialog(SSOAWSCredentials ssoCredentials);
 
-        ISsoLoginDialog CreateSsoBuilderIdLoginDialog(ISSOTokenManager ssoTokenManager,
-            SSOTokenManagerGetTokenOptions tokenOptions);
+        ISsoLoginDialog CreateSsoTokenProviderLoginDialog(ISSOTokenManager ssoTokenManager,
+            SSOTokenManagerGetTokenOptions tokenOptions, bool isBuilderId);
     }
 }

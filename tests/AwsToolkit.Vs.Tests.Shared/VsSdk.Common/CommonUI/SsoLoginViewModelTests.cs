@@ -18,7 +18,7 @@ using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
 namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 {
-    public class TestSsoLoginViewModel : SsoBuilderIdLoginViewModel
+    public class TestSsoTokenProviderLoginViewModel : SsoTokenProviderLoginViewModel
     {
         public async Task ExposeBeginLoginFlowAsync()
         {
@@ -27,9 +27,9 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 
         public CancellationToken CancellationToken => _linkedCancellationToken;
 
-        public TestSsoLoginViewModel(ISSOTokenManager ssoTokenManager,
+        public TestSsoTokenProviderLoginViewModel(ISSOTokenManager ssoTokenManager,
             SSOTokenManagerGetTokenOptions tokenManagerOptions, ToolkitContext toolkitContext,
-            JoinableTaskFactory joinableTaskFactory, CancellationToken cancellationToken) : base(ssoTokenManager, tokenManagerOptions, toolkitContext,
+            JoinableTaskFactory joinableTaskFactory, CancellationToken cancellationToken) : base(ssoTokenManager, tokenManagerOptions, true, toolkitContext,
             joinableTaskFactory, cancellationToken)
         {
         }
@@ -38,7 +38,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
     public class SsoLoginViewModelTests : IDisposable
     {
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
-        private readonly TestSsoLoginViewModel _sut;
+        private readonly TestSsoTokenProviderLoginViewModel _sut;
         private readonly SsoToken _sampleSsoToken = new SsoToken();
         private readonly Mock<ISSOTokenManager> _ssoTokenManager = new Mock<ISSOTokenManager>();
         private readonly SSOTokenManagerGetTokenOptions _options = new SSOTokenManagerGetTokenOptions();
@@ -48,7 +48,7 @@ namespace AwsToolkit.Vs.Tests.VsSdk.Common.CommonUI
 #pragma warning disable VSSDK005 // ThreadHelper.JoinableTaskContext requires VS Services from a running VS instance
             var taskContext = new JoinableTaskContext();
 #pragma warning restore VSSDK005
-            _sut = new TestSsoLoginViewModel(_ssoTokenManager.Object, _options, _toolkitContextFixture.ToolkitContext,
+            _sut = new TestSsoTokenProviderLoginViewModel(_ssoTokenManager.Object, _options, _toolkitContextFixture.ToolkitContext,
                 taskContext.Factory, default);
         }
 
