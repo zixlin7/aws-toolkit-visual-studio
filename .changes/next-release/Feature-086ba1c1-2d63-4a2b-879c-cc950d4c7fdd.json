@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Publish to Beanstalk experience now defaults to using self contained deployment bundles when publishing .NET 8 projects to Linux images. This setting is necessary for Beanstalk Linux images that do not support .NET 8."
-}
