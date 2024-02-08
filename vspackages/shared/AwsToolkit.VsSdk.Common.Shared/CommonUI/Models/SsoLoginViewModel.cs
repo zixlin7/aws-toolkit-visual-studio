@@ -232,19 +232,19 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
         }
     }
 
-    public class SsoBuilderIdLoginViewModel : SsoLoginViewModel
+    public class SsoTokenProviderLoginViewModel : SsoLoginViewModel
     {
         private readonly ISSOTokenManager _ssoTokenManager;
         private readonly SSOTokenManagerGetTokenOptions _tokenManagerOptions;
 
-        public SsoBuilderIdLoginViewModel(ISSOTokenManager ssoTokenManager,
-            SSOTokenManagerGetTokenOptions tokenManagerOptions, ToolkitContext toolkitContext,
+        public SsoTokenProviderLoginViewModel(ISSOTokenManager ssoTokenManager,
+            SSOTokenManagerGetTokenOptions tokenManagerOptions, bool isBuilderId, ToolkitContext toolkitContext,
             JoinableTaskFactory joinableTaskFactory, CancellationToken cancellationToken) : base(toolkitContext,
             joinableTaskFactory, cancellationToken)
         {
             _ssoTokenManager = ssoTokenManager;
             _tokenManagerOptions = tokenManagerOptions;
-            IsBuilderId = true;
+            IsBuilderId = isBuilderId;
         }
 
         protected override async Task ExecuteLoginFlowAsync()
@@ -259,12 +259,12 @@ namespace AwsToolkit.VsSdk.Common.CommonUI.Models
         }
     }
 
-    public class SsoIdcLoginViewModel : SsoLoginViewModel
+    public class SsoCredentialsProviderLoginViewModel : SsoLoginViewModel
     {
         private readonly SSOAWSCredentials _ssoCredentials;
 
 
-        public SsoIdcLoginViewModel(SSOAWSCredentials credentials, ToolkitContext toolkitContext,
+        public SsoCredentialsProviderLoginViewModel(SSOAWSCredentials credentials, ToolkitContext toolkitContext,
             JoinableTaskFactory joinableTaskFactory, CancellationToken cancellationToken) : base(toolkitContext,
             joinableTaskFactory, cancellationToken)
         {

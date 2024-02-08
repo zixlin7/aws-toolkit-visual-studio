@@ -27,10 +27,10 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             _joinableTaskFactory = joinableTaskFactory;
         }
 
-        public ISsoLoginDialog CreateSsoIdcLoginDialog(SSOAWSCredentials ssoCredentials)
+        public ISsoLoginDialog CreateSsoCredentialsProviderLoginDialog(SSOAWSCredentials ssoCredentials)
         {
             var viewModel =
-                new SsoIdcLoginViewModel(ssoCredentials, _toolkitContext, _joinableTaskFactory, _cancellationToken)
+                new SsoCredentialsProviderLoginViewModel(ssoCredentials, _toolkitContext, _joinableTaskFactory, _cancellationToken)
                 {
                     CredentialName = _credentialName
                 };
@@ -38,11 +38,11 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
             return new SsoLoginDialog { DataContext = viewModel };
         }
 
-        public ISsoLoginDialog CreateSsoBuilderIdLoginDialog(ISSOTokenManager ssoTokenManager,
-            SSOTokenManagerGetTokenOptions tokenOptions)
+        public ISsoLoginDialog CreateSsoTokenProviderLoginDialog(ISSOTokenManager ssoTokenManager,
+            SSOTokenManagerGetTokenOptions tokenOptions, bool isBuilderId)
         {
-            var viewModel = new SsoBuilderIdLoginViewModel(ssoTokenManager, tokenOptions, _toolkitContext,
-                _joinableTaskFactory, _cancellationToken) { CredentialName = _credentialName };
+            var viewModel = new SsoTokenProviderLoginViewModel(ssoTokenManager, tokenOptions, isBuilderId, _toolkitContext,
+                _joinableTaskFactory, _cancellationToken) { CredentialName = _credentialName};
             return new SsoLoginDialog { DataContext = viewModel };
         }
     }

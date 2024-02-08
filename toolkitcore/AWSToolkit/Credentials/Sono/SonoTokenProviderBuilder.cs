@@ -181,7 +181,9 @@ namespace Amazon.AWSToolkit.Credentials.Sono
 
         private ISSOTokenManager CreateTokenManager()
         {
-            var tokenManagerOptions = new ToolkitSsoTokenManagerOptions(SonoProperties.ClientName, SonoProperties.ClientType, _credentialIdentifier.DisplayName, _ssoCallbackHandler, _scopes);
+            var tokenManagerOptions = new ToolkitSsoTokenManagerOptions(SonoProperties.ClientName,
+                SonoProperties.ClientType, _credentialIdentifier.ProfileName, _ssoCallbackHandler, _scopes,
+                _isBuilderId);
 
             var ssoOidcClient = SSOServiceClientHelpers.BuildSSOIDCClient(_oidcRegion);
 

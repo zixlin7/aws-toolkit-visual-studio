@@ -28,6 +28,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
             _toolkitShell = toolkitShell;
         }
 
+        public string TokenProviderDisplayName =>
+            _toolkitTokenManagerOptions.IsBuilderId ? "AWS Builder ID" : "AWS IAM Identity Center (SSO)";
+
         public SsoToken GetToken(SSOTokenManagerGetTokenOptions options)
         {
             SetupOptions(options);
@@ -78,7 +81,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             catch (Exception ex)
             {
                 _toolkitShell.OutputToHostConsole(
-                    $"Login failed for AWS Builder ID {_toolkitTokenManagerOptions.CredentialName}: {ex.Message}");
+                    $"Log in failed for {TokenProviderDisplayName} based Credentials {_toolkitTokenManagerOptions.CredentialName}: {ex.Message}");
                 throw;
             }
         }
@@ -87,7 +90,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         {
             var ssoDialogFactory = _toolkitShell.GetDialogFactory()
                 .CreateSsoLoginDialogFactory(_toolkitTokenManagerOptions.CredentialName, cancellationToken);
-            return ssoDialogFactory.CreateSsoBuilderIdLoginDialog(_ssoTokenManager, options);
+            return ssoDialogFactory.CreateSsoTokenProviderLoginDialog(_ssoTokenManager, options, _toolkitTokenManagerOptions.IsBuilderId);
         }
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             {
                 // Setup token manager options without actual sso callback required for user login
                 options.SsoVerificationCallback = args
-                    => throw new Exception("AWS Builder ID requires a login flow");
+                    => throw new Exception($"{TokenProviderDisplayName} requires a login flow");
                 return _ssoTokenManager.GetToken(options);
             }
             catch (Exception)
@@ -118,7 +121,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             {
                 // Setup token manager options without actual sso callback required for user login
                 options.SsoVerificationCallback = args
-                    => throw new Exception("AWS Builder ID requires a login flow");
+                    => throw new Exception($"{TokenProviderDisplayName} requires a login flow");
                 return await _ssoTokenManager.GetTokenAsync(options, cancellationToken);
             }
             catch (Exception)

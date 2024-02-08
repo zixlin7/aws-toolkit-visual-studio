@@ -38,7 +38,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             SetupLoginDialog();
 
             _toolkitOptions = new ToolkitSsoTokenManagerOptions("client-name", "client-type", "credential-name", _ssoCallbackStub,
-                new[] { "scope" });
+                new[] { "scope" }, false);
 
             _sut = new ToolkitSsoTokenManager(_ssoTokenManager.Object, _toolkitOptions, _toolkitContextFixture.ToolkitHost.Object);
         }
@@ -58,13 +58,13 @@ namespace AWSToolkit.Tests.Credentials.Core
 
             SetupSsoTokenManager(null);
             _toolkitOptions = new ToolkitSsoTokenManagerOptions("client-name", "client-type", "credential-name", null,
-                new[] { "scope" });
+                new[] { "scope" }, true);
             var sut = new ToolkitSsoTokenManager(_ssoTokenManager.Object, _toolkitOptions,
                 _toolkitContextFixture.ToolkitHost.Object);
 
             sut.GetToken(_options);
 
-            _ssoDialogFactory.Verify(x => x.CreateSsoBuilderIdLoginDialog(It.IsAny<ISSOTokenManager>(), It.IsAny<SSOTokenManagerGetTokenOptions>()), Times.Once);
+            _ssoDialogFactory.Verify(x => x.CreateSsoTokenProviderLoginDialog(It.IsAny<ISSOTokenManager>(), It.IsAny<SSOTokenManagerGetTokenOptions>(), true), Times.Once);
 
         }
 
@@ -84,7 +84,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         {
             SetupSsoTokenManager(null);
             _toolkitOptions = new ToolkitSsoTokenManagerOptions("client-name", "client-type", "credential-name", null,
-                new[] { "scope" });
+                new[] { "scope" }, true);
 
            
             var sut = new ToolkitSsoTokenManager(_ssoTokenManager.Object, _toolkitOptions,
@@ -92,7 +92,7 @@ namespace AWSToolkit.Tests.Credentials.Core
 
             await sut.GetTokenAsync(_options);
 
-            _ssoDialogFactory.Verify(x => x.CreateSsoBuilderIdLoginDialog(It.IsAny<ISSOTokenManager>(), It.IsAny<SSOTokenManagerGetTokenOptions>()), Times.Once);
+            _ssoDialogFactory.Verify(x => x.CreateSsoTokenProviderLoginDialog(It.IsAny<ISSOTokenManager>(), It.IsAny<SSOTokenManagerGetTokenOptions>(), It.IsAny<bool>()), Times.Once);
 
         }
 
@@ -111,8 +111,8 @@ namespace AWSToolkit.Tests.Credentials.Core
             _toolkitContextFixture.SetupExecuteOnUIThread();
 
             _dialog.Setup(x => x.DoLoginFlow()).Returns(new TaskResult() { Status = TaskStatus.Success });
-            _ssoDialogFactory.Setup(x => x.CreateSsoBuilderIdLoginDialog(It.IsAny<ISSOTokenManager>(),
-                It.IsAny<SSOTokenManagerGetTokenOptions>())).Returns(_dialog.Object);
+            _ssoDialogFactory.Setup(x => x.CreateSsoTokenProviderLoginDialog(It.IsAny<ISSOTokenManager>(),
+                It.IsAny<SSOTokenManagerGetTokenOptions>(), It.IsAny<bool>())).Returns(_dialog.Object);
             _toolkitContextFixture.ToolkitHost.Setup(x =>
                     x.GetDialogFactory().CreateSsoLoginDialogFactory(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(_ssoDialogFactory.Object);
