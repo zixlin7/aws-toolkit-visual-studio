@@ -3,11 +3,11 @@
 # Any issues would cause the release process to stop, preventing larger downstream problems.
 # This script is intended to be run at the repo root.
 param (
-    # Represents the release candidate tag used to trigger the release pipeline
-    # The tag is associated with the commit of the build being released.
-    # Expected format: "release-v<release-version>" eg "release-v1.23.45.0"
+    # Represents the release version used to trigger the release pipeline
+    # This is the version being released.
+    # Expected format: "1.2.3.4"
     [Parameter(Mandatory = $true)]
-    [string]$ReleaseCandidateTag,
+    [string]$ReleaseVersion,
     # Represents the git commit of the build being released
     [Parameter(Mandatory = $true)]
     [string]$CommitId
@@ -35,26 +35,26 @@ function Test-Required-Input {
     }
 }
 
-# Test-Release-Version - Checks that the given release tag (which is expected to represent the release version)
-# matches what is in the release manifest (which is expected to be the version of the release candidate).
+# Test-Release-Version - Checks that the version we're intending to release 
+# matches what is in the release manifest.
 function Test-Release-Version {
     Param(
-        [Parameter(Mandatory = $true)][string]$ReleaseTag
+        [Parameter(Mandatory = $true)][string]$Version
     )
 
-    Write-Output "Checking if $ReleaseTag matches the vsix version..."
+    Write-Output "Checking if $Version matches the vsix version..."
     Write-Output ""
 
     $manifestVersion = GetReleaseVersion
     Write-Output "Release manifest version: $manifestVersion"
     
-    if ($ReleaseTag -eq $manifestVersion) {
+    if ($Version -eq $manifestVersion) {
         Write-Output ""
         Write-Output "Release versions match."
     } 
     else {
         Write-Output ""
-        throw "Version mismatch: Release pipeline is processing version $ReleaseTag, but the vsix manifest reports $manifestVersion"
+        throw "Version mismatch: Release pipeline is processing version $Version, but the vsix manifest reports $manifestVersion"
     }
     Write-Output "----------------------------------------"
 }
@@ -84,18 +84,18 @@ function Test-Unique-Tag {
 ## ----- This script (Test-Release-Inputs) -----
 
 Write-Output "----------------------------------------"
-Write-Output "Release Candidate Tag: $ReleaseCandidateTag"
+Write-Output "Release Version: $ReleaseVersion"
 Write-Output "CommitId: $CommitId"
 Write-Output "----------------------------------------"
 
-Test-Required-Input -Text $ReleaseCandidateTag
+Test-Required-Input -Text $ReleaseVersion
 Test-Required-Input -Text $CommitId
 
-$releaseTag = CreateReleaseTag -ReleaseCandidateTag $ReleaseCandidateTag
+$releaseTag = CreateReleaseTag -ReleaseVersion $ReleaseVersion
 Write-Output "Release Tag: $releaseTag"
 Write-Output "----------------------------------------"
 
-Test-Release-Version -ReleaseTag $releaseTag
+Test-Release-Version -Version $ReleaseVersion
 Test-Unique-Tag -ReleaseTag $releaseTag
 
 # If you get here, things look good
