@@ -23,10 +23,11 @@ namespace AWSToolkit.Tests.ElasticBeanstalk.Wizard
             Assert.False(IsPlatformLinux(wizard));
         }
 
-        public static void AssertIsSelfContained(this IAWSWizard wizard)
+        public static void AssertSelfContained(this IAWSWizard wizard, bool isSelfContained)
         {
-            Assert.Equal(true, wizard[DeploymentWizardProperties.AppOptions.propkey_BuildSelfContainedBundle]);
+            Assert.Equal(isSelfContained, wizard[DeploymentWizardProperties.AppOptions.propkey_BuildSelfContainedBundle]);
         }
+
 
         public static void AssertUsingEbTools(this IAWSWizard wizard)
         {

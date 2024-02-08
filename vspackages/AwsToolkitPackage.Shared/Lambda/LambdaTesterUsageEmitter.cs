@@ -58,6 +58,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
                 {
                     runtime = AwsToolkit.Telemetry.Events.Generated.Runtime.Dotnet7.ToString();
                 }
+                else if (processName.Contains("dotnet-lambda-test-tool-8.0"))
+                {
+                    runtime = AwsToolkit.Telemetry.Events.Generated.Runtime.Dotnet8.ToString();
+                }
 
                 try
                 {

@@ -31,7 +31,8 @@ namespace AwsToolkit.VsSdk.Common.LambdaTester
             {"netcoreapp3.1", new ToolConfig("Amazon.Lambda.TestTool-3.1", "dotnet-lambda-test-tool-3.1.exe")},
             {"net5.0", new ToolConfig("Amazon.Lambda.TestTool-5.0", "dotnet-lambda-test-tool-5.0.exe")},
             {"net6.0", new ToolConfig("Amazon.Lambda.TestTool-6.0", "dotnet-lambda-test-tool-6.0.exe")},
-            {"net7.0", new ToolConfig("Amazon.Lambda.TestTool-7.0", "dotnet-lambda-test-tool-7.0.exe")}
+            {"net7.0", new ToolConfig("Amazon.Lambda.TestTool-7.0", "dotnet-lambda-test-tool-7.0.exe")},
+            {"net8.0", new ToolConfig("Amazon.Lambda.TestTool-8.0", "dotnet-lambda-test-tool-8.0.exe")}
         };
 
         static readonly ISet<string> InstalledTesterPackages = new HashSet<string>();

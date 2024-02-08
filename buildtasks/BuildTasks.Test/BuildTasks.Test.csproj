@@ -47,8 +47,6 @@
     <Compile Include="CreateTestVersionTaskTests.cs" />
     <Compile Include="GetVersionTaskTests.cs" />
     <Compile Include="CreateReleaseTaskTests.cs" />
-    <Compile Include="UploadHostedFileTaskTestImpl.cs" />
-    <Compile Include="UploadHostedFileTaskTests.cs" />
     <Compile Include="ChangeLogGeneratorTaskTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\TemporaryTestLocation.cs" />

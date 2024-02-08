@@ -28,7 +28,10 @@ using Newtonsoft.Json.Serialization;
 
 using StreamJsonRpc;
 using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
+using Amazon.AWSToolkit.Settings;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
+
+using AwsToolkit.VsSdk.Common.Settings.Proxy;
 
 using TaskStatus = Amazon.AWSToolkit.CommonUI.Notifications.TaskStatus;
 
@@ -71,6 +74,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
 
         [Import]
         protected ToolkitJoinableTaskFactoryProvider _taskFactoryProvider;
+
+        [Import]
+        protected IProxySettingsRepository _proxySettingsRepository;
+
         protected CancellationToken _disposalToken => _taskFactoryProvider.DisposalToken;
 
         [Import] protected SVsServiceProvider _serviceProvider;
@@ -155,10 +162,25 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             return new LspConfiguration(_rpc);
         }
 
+        public async Task StartClientAsync()
+        {
+            await _toolkitContextProvider.WaitForToolkitContextAsync();
+
+            await StartServerAsync();
+        }
+
+        public async Task StopClientAsync()
+        {
+            if (_toolkitContextProvider.HasToolkitContext())
+            {
+                _toolkitContext.ToolkitHost.OutputToHostConsole($"Stopping: {Name}");
+            }
+
+            await StopAsync.InvokeAsync(this, EventArgs.Empty);
+        }
+
         public event AsyncEventHandler<EventArgs> StartAsync;
-#pragma warning disable CS0067 // The event 'ToolkitLspClient.StopAsync' is never used
         public event AsyncEventHandler<EventArgs> StopAsync;
-#pragma warning restore CS0067 // The event 'ToolkitLspClient.StopAsync' is never used
 
         /// <summary>
         /// User-facing name of the Language Client.
@@ -203,11 +225,25 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         /// </summary>
         public virtual async Task OnLoadedAsync()
         {
+            await _toolkitContextProvider.WaitForToolkitContextAsync();
+
+            if (!await IsEnabledAsync())
+            {
+                return;
+            }
+
+            await StartClientAsync();
+        }
+
+        protected virtual Task<bool> IsEnabledAsync()
+        {
+            return Task.FromResult(true);
+        }
+
+        private async Task StartServerAsync()
+        {
             _logger.Info($"Starting set up for language server: {Name}");
             Status = LspClientStatus.SettingUp;
-
-            // TODO : Will this block the IDE while waiting?
-            await _toolkitContextProvider.WaitForToolkitContextAsync();
 
             _toolkitContext.ToolkitHost.OutputToHostConsole($"Initializing: {Name}");
 
@@ -439,12 +475,31 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
                 CreateNoWindow = true,
             };
 
+
+            ApplyProxySettings(info);
+
             var process = new Process
             {
                 StartInfo = info,
-            };
+            };  
 
             return process;
+        }
+
+        /// <summary>
+        /// Applies proxy settings if configured to LSP server
+        /// </summary>
+        /// <param name="info"></param>
+        private void ApplyProxySettings(ProcessStartInfo info)
+        {
+            var proxySettings = _proxySettingsRepository.Get();
+            var proxyUrl = proxySettings.GetProxyUrl();
+            if (!string.IsNullOrWhiteSpace(proxyUrl))
+            {
+                // sets proxy env variable for the node based LSP server as per https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-configuring-proxies.html
+                // LSP server then applies this proxy config to the AWS SDK 
+                info.EnvironmentVariables["HTTPS_PROXY"] = proxyUrl;
+            }
         }
 
         /// <summary>

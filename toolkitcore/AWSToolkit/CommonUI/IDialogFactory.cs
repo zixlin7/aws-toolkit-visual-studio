@@ -1,6 +1,10 @@
-﻿using Amazon.AWSToolkit.CommonUI.CredentialSelector;
+﻿using System.Threading;
+
+using Amazon.AWSToolkit.CommonUI.CredentialSelector;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Telemetry.Model;
+using Amazon.Runtime;
+using Amazon.Runtime.Credentials.Internal;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -20,7 +24,7 @@ namespace Amazon.AWSToolkit.CommonUI
         IEcrRepositorySelectionDialog CreateEcrRepositorySelectionDialog();
         ICloneCodeCommitRepositoryDialog CreateCloneCodeCommitRepositoryDialog();
         ICloneCodeCatalystRepositoryDialog CreateCloneCodeCatalystRepositoryDialog();
-        ISsoLoginDialog CreateSsoLoginDialog();
+        ISsoLoginDialogFactory CreateSsoLoginDialogFactory(string credentialName, CancellationToken cancellationToken = default);
         ICredentialProfileDialog CreateCredentialProfileDialog(BaseMetricSource saveMetricSource);
     }
 }

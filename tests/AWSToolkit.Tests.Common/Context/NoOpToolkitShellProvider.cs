@@ -98,6 +98,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         }
 
+        public T ExecuteOnBackgroundThread<T>(Func<Task<T>> asyncFunc)
+        {
+            return default(T);
+        }
+
         public void ExecuteOnUIThread(Action action)
         {
 
@@ -200,6 +205,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
         public bool ShowModal(IAWSToolkitControl hostedControl, MessageBoxButton buttons)
         {
             return false;
+        }
+
+        public Task<bool> ShowModalAsync(Window window)
+        {
+            return Task.FromResult(false);
         }
 
         public Task<IProgressDialog> CreateProgressDialog()

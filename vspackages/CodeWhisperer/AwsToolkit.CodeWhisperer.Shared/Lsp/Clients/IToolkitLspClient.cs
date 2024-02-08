@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Configuration;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Credentials;
@@ -15,6 +16,17 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
     /// </summary>
     public interface IToolkitLspClient
     {
+        /// <summary>
+        /// Asks VS to start up the Language Client, if it isn't already running.
+        /// Download and installation is also performed.
+        /// </summary>
+        Task StartClientAsync();
+
+        /// <summary>
+        /// Asks VS to stop the Language Client, if it is running.
+        /// </summary>
+        Task StopClientAsync();
+
         /// <summary>
         /// Gets the current status of the LSP Client
         /// </summary>

@@ -1,0 +1,91 @@
+﻿name: Set up a new Release Candidate
+
+on:
+    workflow_dispatch:
+        inputs:
+            versionIncrement:
+                description: "Release Version Increment"
+                default: "Minor"
+                required: true
+                type: choice
+                options:
+                    - Major
+                    - Minor
+                    - Release
+                    - Patch
+                    - Custom
+            customVersion:
+                description: "Custom Release Version (only used if release increment is 'Custom') - Format: 1.2.3.4"
+                default: ""
+                required: false
+                type: string
+            commitId:
+                description: "Commit Id"
+                default: ""
+                required: true
+                type: string
+            releaseDate:
+                description: "Release date (added to the release notes) - Format: YYYY-MM-DD"
+                default: ""
+                required: true
+                type: string
+
+jobs:
+    setupRcBranch:
+        name: Set up a Release Candidate Branch
+        runs-on: windows-2019
+
+        steps:
+            - name: Sync code
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ inputs.commitId }}
+
+            - name: Calculate Release Version
+              id: release-version
+              run: |
+                  $customVersion = "${{ inputs.customVersion }}"
+                  if (($CustomVersion -eq $null) -or ($CustomVersion.Trim() -eq "")) {
+                    $version = .\buildtools\scripts\release\Get-Next-Version.ps1 -VersionIncrement ${{ inputs.versionIncrement }}
+                  } else {
+                    $version = .\buildtools\scripts\release\Get-Next-Version.ps1 -VersionIncrement ${{ inputs.versionIncrement }} -CustomVersion $customVersion
+                  }
+                  echo "New release version: $version"
+                  "RELEASE_VERSION=$version" | Out-File -FilePath $env:GITHUB_OUTPUT
+
+            - name: Add msbuild to PATH
+              uses: microsoft/setup-msbuild@v2
+              with:
+                  vs-version: "[16.0,17.0)"
+
+            - name: Create Release Candidate Branch
+              id: release-branch
+              shell: pwsh
+              env:
+                  RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+              run: |
+                  $branch = "release/candidate/$env:RELEASE_VERSION"
+                  git checkout -b $branch
+                  "BRANCH_NAME=$branch" | Out-File -FilePath $env:GITHUB_OUTPUT
+
+            - name: Compile release notes
+              env:
+                  RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+              run: msbuild buildtools\changelog.proj /t:createRelease /p:ReleaseVersion=$env:RELEASE_VERSION /p:ReleaseDate=${{ inputs.releaseDate }} /p:FailIfNoChanges=true
+
+            - name: Adjust release manifest
+              env:
+                  RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+              run: |
+                  .\buildtools\scripts\release\Set-Next-Version.ps1 -Version $env:RELEASE_VERSION
+                  git add .\buildtools\release\config.json
+
+            - name: Commit and Push changes
+              env:
+                  BRANCH_NAME: ${{ steps.release-branch.outputs.BRANCH_NAME }}
+                  RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
+              run: |
+                  git config --global user.email "<>"
+                  git config --global user.name "aws-toolkit-automation"
+                  git commit -m "Update release notes and manifest: $env:RELEASE_VERSION"
+                  git push --set-upstream origin $env:BRANCH_NAME

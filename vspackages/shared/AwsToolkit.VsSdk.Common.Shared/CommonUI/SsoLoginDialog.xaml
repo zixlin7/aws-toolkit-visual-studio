@@ -1,5 +1,5 @@
 ﻿<local:ThemedDialogWindow
-    x:Class="Amazon.AwsToolkit.VsSdk.Common.CommonUI.SsoLoginDialog"
+    x:Class=" AwsToolkit.VsSdk.Common.CommonUI.SsoLoginDialog"
     x:Name="Root"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -16,20 +16,18 @@
     xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     themes:ToolkitThemes.UseToolkitTheme="True"
     behaviors:WindowBehavior.BindDialogResult="{Binding DialogResult}"
-    Height="300"
-    Width="450"
-    MinHeight="300"
+    Height="250"
+    Width="500"
+    MinHeight="150"
     MinWidth="450">
 
     <local:ThemedDialogWindow.Resources>
         <ResourceDictionary>
-            <commonUi:VsImages
-                x:Key="VsImages" />
             <commonUi:ToolkitImages
                 x:Key="ToolkitImages" />
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
-
     </local:ThemedDialogWindow.Resources>
 
     <DockPanel
@@ -51,38 +49,38 @@
                 Grid.Row="0">
 
                 <images:VsImage
-                     Source="{Binding Source={StaticResource ToolkitImages}, Path=Aws}"
-                     Width="32"
-                     Height="32"
-                     VerticalAlignment="Center"
-                     HorizontalAlignment="Center" />
+                    Source="{Binding Source={StaticResource ToolkitImages}, Path=Aws}"
+                    Width="32"
+                    Height="32"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center" />
                 <!-- 
-                    TODO Maintain this comment in the ThemedDialog class when it is written. The ThemedDialog.HeaderText will be a DepedencyProperty
-                    and this TextBlock will no longer be defined in XAML for types deriving from ThemedDialog.  
-            
-                    Per https://learn.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio?view=vs-2022
-                    Themed dialogs must have the 200% header size VsFonts.Environment200PercentFontSizeKey  The ToolkitThemes.Heading1FontSizeKey
-                    is set to this size, so it is safe to use here.  Should it change from 200%, FontSize here will need to be refactored.
-                -->
+                 TODO Maintain this comment in the ThemedDialog class when it is written. The ThemedDialog.HeaderText will be a DependencyProperty
+                 and this TextBlock will no longer be defined in XAML for types deriving from ThemedDialog.  
+         
+                 Per https://learn.microsoft.com/en-us/visualstudio/extensibility/ux-guidelines/layout-for-visual-studio?view=vs-2022
+                 Themed dialogs must have the 200% header size VsFonts.Environment200PercentFontSizeKey  The ToolkitThemes.Heading1FontSizeKey
+                 is set to this size, so it is safe to use here.  Should it change from 200%, FontSize here will need to be refactored.
+             -->
 
-                <WrapPanel Orientation="Vertical" 
+                <WrapPanel Orientation="Vertical"
                            VerticalAlignment="Center"
                            Margin="12 0 0 0">
-                    <TextBlock
-                        FontFamily="{DynamicResource {x:Static shell15:VsFonts.EnvironmentFontFamilyKey}}"
-                        FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
-                        FontWeight="SemiBold"
-                        Text="{Binding DisplayName, StringFormat=Login with {0}}"
-                        RenderOptions.ClearTypeHint="Enabled"
-                        VerticalAlignment="Center" />
+                        <TextBlock
+                            FontFamily="{DynamicResource {x:Static shell15:VsFonts.EnvironmentFontFamilyKey}}"
+                            FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                            Text="{Binding DisplayName, StringFormat=Log In with {0}}"
+                            RenderOptions.ClearTypeHint="Enabled"
+                            VerticalAlignment="Center" />
 
-                    <!--Indicates information relevant to SSO login flow-->
-                    <TextBlock Text="(Successor to AWS Single Sign-on)"
-                               Margin="0 3 0 0"
+                        <!--Indicates information relevant to SSO login flow-->
+                        <TextBlock Text="(Successor to AWS Single Sign-on)"
+                                   Margin="0 3 0 0"
+                                   FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
+                                   Visibility="{Binding IsBuilderId, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+
+                    <TextBlock Text="{Binding CredentialName, StringFormat=Profile: {0}}"
                                FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
-                               Visibility="{Binding IsBuilderId, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
-
-                    <TextBlock Text="{Binding CredentialName, StringFormat=Credential Profile: {0}}"
                                Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
                                Visibility="{Binding IsBuilderId, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
 
@@ -111,10 +109,10 @@
                 Orientation="Horizontal">
                 <Button
                     Margin="6 0 0 0"
-                    Command="{Binding OkCommand}"
-                    CommandParameter="{Binding UserCode}"
+                    Command="{Binding BeginLoginFlowCommand}"
                     IsDefault="True"
-                    Content="Open and Copy Code" />
+                    Visibility="{Binding InProgress,Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                    Content="Proceed to Browser" />
 
                 <Button
                     IsCancel="True"
@@ -142,52 +140,44 @@
 
                 <TextBlock
                     Grid.Row="0"
-                    HorizontalAlignment="Left"
+                    HorizontalAlignment="Center"
                     VerticalAlignment="Center"
+                    FontWeight="Bold"
+                    FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading4FontSizeKey}}"
                     TextWrapping="WrapWithOverFlow"
-                    Text="To proceed, open the login page and provide this code to confirm the access request for AWS Toolkit."
                     RenderOptions.ClearTypeHint="Enabled"
                     Margin="0 12 0 0">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Text"
+                                    Value="Proceed to the browser and verify this code matches:" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding InProgress}" Value="True">
+                                    <Setter Property="Text"
+                                            Value="Verify this code matches the code displayed in browser:" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
                 </TextBlock>
 
-                <TextBlock
-                    Grid.Row="1"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    TextWrapping="WrapWithOverFlow"
-                    Text="{Binding LoginUri, StringFormat=URL: {0}}"
-                    RenderOptions.ClearTypeHint="Enabled"
-                    Margin="0 12 0 0">
-                </TextBlock>
 
-                <StackPanel Grid.Row="2" 
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Center">
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Text="{Binding UserCode, StringFormat=Code: {0}}"
-                        d:Text="Code: 134S4"
-                        RenderOptions.ClearTypeHint="Enabled"
-                        Margin="0 12 0 0" />
+                <TextBlock Grid.Row="1"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontSizeKey}}"
+                           FontWeight="{DynamicResource {x:Static themes:ToolkitThemes.Heading1FontWeightKey}}"
+                           Text="{Binding UserCode}"
+                           d:Text="Code: 134S4"
+                           RenderOptions.ClearTypeHint="Enabled"
+                           Margin="0 12 0 0" />
 
-                    <Button
-                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                        Margin="6 12 0 0"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        Command="{Binding CopyCommand}"
-                        CommandParameter="{Binding UserCode}"
-                        ToolTip="Copy Code To Clipboard">
-                        <images:VsImage
-                            Width="16"
-                            Height="16"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Source="{Binding Source={StaticResource VsImages}, Path=Copy}" />
-                    </Button>
-                </StackPanel>
+                <ProgressBar Margin="6 6 0 0"
+                             VerticalAlignment="Bottom"
+                             Grid.Row="2"
+                             IsIndeterminate="True" Height="6"
+                             themes:ToolkitThemes.UseToolkitTheme="True"
+                             Visibility="{Binding InProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </Grid>
         </ScrollViewer>
     </DockPanel>

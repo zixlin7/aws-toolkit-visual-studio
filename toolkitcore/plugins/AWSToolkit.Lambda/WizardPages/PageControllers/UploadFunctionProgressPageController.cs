@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.Exceptions;
@@ -18,7 +19,6 @@ using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
 using Amazon.AWSToolkit.Lambda.Nodes;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Regions;
 using Amazon.CloudFormation;
 using Amazon.ECR;
@@ -446,32 +446,31 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 if (_pageUI.AutoCloseWizard && !_pageUI.IsUnloaded)
                     HostingWizard.CancelRun();
             }));
-            var navigator = ToolkitFactory.Instance.Navigator;
-            //sync up navigator connection settings with the deployment settings and check if they have been validated
-            var isConnectionValid = navigator.TryWaitForSelection(_toolkitContext.ConnectionManager, settings.Account, settings.Region);
-           
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action) (() =>
-            {
-                if (!isConnectionValid)
-                {
-                    ToolkitFactory.Instance.ShellProvider.OutputToHostConsole("Serverless application has been successfully deployed. You can view it under AWS CloudFormation.");
-                }
-                else
-                {
-                    var cloudFormationNode =
-                        settings.Account.Children.FirstOrDefault(x => x is ICloudFormationRootViewModel);
-                    if (cloudFormationNode != null)
-                    {
-                        cloudFormationNode.Refresh(false);
 
-                        var funcNode =
-                            cloudFormationNode.Children.FirstOrDefault(x => x.Name == settings.StackName) as
-                                ICloudFormationStackViewModel;
-                        if (funcNode != null)
-                        {
-                            var metaNode = funcNode.MetaNode as ICloudFormationStackViewMetaNode;
-                            metaNode.OnOpen(funcNode);
-                        }
+            var connectionState = UpdateConnectionSettings(
+                new AwsConnectionSettings(settings.Account.Identifier, settings.Region));
+
+            if (!ConnectionState.IsValid(connectionState))
+            {
+                _toolkitContext.ToolkitHost.OutputToHostConsole("Serverless application has been successfully deployed. You can view it from the AWS CloudFormation node in AWS Explorer.");
+                return;
+            }
+
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread((Action) (() =>
+            {
+                var cloudFormationNode =
+                    settings.Account.Children.FirstOrDefault(x => x is ICloudFormationRootViewModel);
+                if (cloudFormationNode != null)
+                {
+                    cloudFormationNode.Refresh(false);
+
+                    var funcNode =
+                        cloudFormationNode.Children.FirstOrDefault(x => x.Name == settings.StackName) as
+                            ICloudFormationStackViewModel;
+                    if (funcNode != null)
+                    {
+                        var metaNode = funcNode.MetaNode as ICloudFormationStackViewMetaNode;
+                        metaNode.OnOpen(funcNode);
                     }
                 }
             }));
@@ -488,35 +487,41 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     HostingWizard.CancelRun();
             }));
 
-            var navigator = ToolkitFactory.Instance.Navigator;
-            //sync up navigator connection settings with the deployment settings and check if they have been validated
-            var isConnectionValid = navigator.TryWaitForSelection(_toolkitContext.ConnectionManager, uploadState.Account, uploadState.Region);
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action) (() =>
-            {
-                if (!isConnectionValid)
-                {
-                    ToolkitFactory.Instance.ShellProvider.OutputToHostConsole("Lambda function has been successfully deployed. You can view it under AWS Lambda.");
-                }
-                else
-                {
-                    var lambdaNode = navigator.SelectedAccount.FindSingleChild<LambdaRootViewModel>(false);
-                    if (lambdaNode != null)
-                    {
-                        lambdaNode.Refresh(false);
+            var connectionState = UpdateConnectionSettings(
+                new AwsConnectionSettings(uploadState.Account.Identifier, uploadState.Region));
 
-                        var originator = (UploadOriginator) HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
-                        if (_pageUI.OpenView && originator != UploadOriginator.FromFunctionView)
+            if (!ConnectionState.IsValid(connectionState))
+            {
+                _toolkitContext.ToolkitHost.OutputToHostConsole("Lambda function has been successfully deployed. You can view it from the AWS Lambda node in AWS Explorer.");
+                return;
+            }
+
+            _toolkitContext.ToolkitHost.ExecuteOnUIThread((Action) (() =>
+            {
+                var lambdaNode = uploadState.Account.FindSingleChild<LambdaRootViewModel>(false);
+                if (lambdaNode != null)
+                {
+                    lambdaNode.Refresh(false);
+
+                    var originator = (UploadOriginator) HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
+                    if (_pageUI.OpenView && originator != UploadOriginator.FromFunctionView)
+                    {
+                        var funcNode = lambdaNode.Children.FirstOrDefault(x => x.Name == uploadState.Request.FunctionName) as LambdaFunctionViewModel;
+                        if (funcNode != null)
                         {
-                            var funcNode = lambdaNode.Children.FirstOrDefault(x => x.Name == uploadState.Request.FunctionName) as LambdaFunctionViewModel;
-                            if (funcNode != null)
-                            {
-                                var metaNode = funcNode.MetaNode as LambdaFunctionViewMetaNode;
-                                metaNode.OnOpen(funcNode);
-                            }
+                            var metaNode = funcNode.MetaNode as LambdaFunctionViewMetaNode;
+                            metaNode.OnOpen(funcNode);
                         }
                     }
                 }
             }));
+        }
+
+        private ConnectionState UpdateConnectionSettings(AwsConnectionSettings connectionSettings)
+        {
+            return _toolkitContext.ToolkitHost.ExecuteOnBackgroundThread(async () =>
+                await _toolkitContext.ConnectionManager.ChangeConnectionSettingsAsync(
+                    connectionSettings.CredentialIdentifier, connectionSettings.Region));
         }
 
         private void PostDeploymentAnalysis(bool persist)

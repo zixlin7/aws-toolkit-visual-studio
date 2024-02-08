@@ -1,29 +1,26 @@
-﻿namespace Amazon.AWSToolkit.CommonUI.Dialogs
+﻿using System;
+
+using Amazon.AWSToolkit.CommonUI.Notifications;
+using Amazon.Runtime;
+using Amazon.Runtime.Credentials.Internal;
+
+namespace Amazon.AWSToolkit.CommonUI.Dialogs
 {
-    public interface ISsoLoginDialog
+    public interface ISsoLoginDialog : IDisposable
     {
         /// <summary>
-        /// Indicates whether the connection represents an AWS SSO Credential profile
-        /// or an AWS Builder ID connection
+        /// Represents credentials associated with an AWS IAM IDC Credential profile 
         /// </summary>
-        bool IsBuilderId { get; set; }
+        ImmutableCredentials Credentials { get; set; }
 
         /// <summary>
-        /// User code required for authorization
+        /// Represents SSO token associated with an AWS Builder ID connection
         /// </summary>
-        string UserCode { get; set; }
+        SsoToken SsoToken { get; set; }
 
         /// <summary>
-        /// Login Uri to be opened in browser
+        /// Displays the dialog and performs and returns the result of the associated login process
         /// </summary>
-        string LoginUri { get; set; }
-
-        /// <summary>
-        /// The name of the credential profile for which connection is being made
-        /// only applicable for SSO based credential profile
-        /// </summary>
-        string CredentialName { get; set; }
-
-        bool Show();
+        TaskResult DoLoginFlow();
     }
 }

@@ -1,49 +1,55 @@
-﻿using Amazon.AWSToolkit.CommonUI.Dialogs;
-using Amazon.AWSToolkit.Context;
+﻿using System;
+using System.Windows;
+using Amazon.AWSToolkit.CommonUI.Dialogs;
+using Amazon.AWSToolkit.CommonUI.Notifications;
+using Amazon.Runtime;
+using Amazon.Runtime.Credentials.Internal;
 
 using AwsToolkit.VsSdk.Common.CommonUI.Models;
 
-namespace Amazon.AwsToolkit.VsSdk.Common.CommonUI
+namespace AwsToolkit.VsSdk.Common.CommonUI
 {
-    public partial class SsoLoginDialog : ThemedDialogWindow, ISsoLoginDialog
+    /// <summary>
+    /// Interaction logic for SsoLoginDialog.xaml
+    /// </summary>
+    public partial class SsoLoginDialog : ISsoLoginDialog
     {
-        private readonly SsoLoginViewModel _viewModel;
+        private SsoLoginViewModel _viewModel => DataContext as SsoLoginViewModel;
 
-        public SsoLoginDialog(ToolkitContext toolkitContext)
+        public SsoLoginDialog()
         {
-            _viewModel = new SsoLoginViewModel(toolkitContext);
-
             InitializeComponent();
-            DataContext = _viewModel;
+            Loaded += OnLoaded;
         }
 
-        public string CredentialName
+        public ImmutableCredentials Credentials
         {
-            get => _viewModel.CredentialName;
-            set => _viewModel.CredentialName = value;
+            get => _viewModel.Credentials;
+            set => _viewModel.Credentials = value;
         }
 
-        public bool IsBuilderId
+        public SsoToken SsoToken
         {
-            get => _viewModel.IsBuilderId;
-            set => _viewModel.IsBuilderId = value;
+            get => _viewModel.SsoToken;
+            set => _viewModel.SsoToken = value;
         }
 
-        public string LoginUri
+        public TaskResult DoLoginFlow()
         {
-            get => _viewModel.LoginUri;
-            set => _viewModel.LoginUri = value;
+            ShowModal();
+            _viewModel.RecordLoginMetric();
+            return _viewModel.LoginResult;
         }
 
-        public string UserCode
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            get => _viewModel.UserCode;
-            set => _viewModel.UserCode = value;
+            _viewModel.BeginLoginFlow();
+            Loaded -= OnLoaded;
         }
 
-        public new bool Show()
+        public void Dispose()
         {
-            return ShowModal() == true;
+            _viewModel?.Dispose();
         }
     }
 }

@@ -19,12 +19,25 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests.Lsp.Clients
         public readonly FakeToolkitLspCredentials CredentialsProtocol = new FakeToolkitLspCredentials();
 
         public LspClientStatus Status { get; set; }
+        public bool IsStarted = false;
 
         public event EventHandler<LspClientStatusChangedEventArgs> StatusChanged;
         public event AsyncEventHandler<EventArgs> InitializedAsync;
         public event AsyncEventHandler<WorkspaceConfigurationEventArgs> RequestWorkspaceConfigurationAsync;
         public event EventHandler<TelemetryEventArgs> TelemetryEventNotification;
         public event AsyncEventHandler<ConnectionMetadataEventArgs> RequestConnectionMetadataAsync;
+
+        public Task StartClientAsync()
+        {
+            IsStarted = true;
+            return Task.CompletedTask;
+        }
+
+        public Task StopClientAsync()
+        {
+            IsStarted = false;
+            return Task.CompletedTask;
+        }
 
         public IToolkitLspCredentials CreateToolkitLspCredentials()
         {

@@ -26,6 +26,7 @@ using AwsToolkit.VsSdk.Common.Notifications;
 using EnvDTE80;
 
 using Microsoft;
+using Microsoft.Internal.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -312,40 +313,30 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public bool ShowModal(Window window)
         {
-            return this._hostPackage.JoinableTaskFactory.Run<bool>(async () =>
+            return _hostPackage.JoinableTaskFactory.Run(async () => await ShowModalAsync(window));
+        }
+
+        public async Task<bool> ShowModalAsync(Window window)
+        {
+            await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            try
             {
-                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                window.HorizontalAlignment = HorizontalAlignment.Center;
+                window.VerticalAlignment = VerticalAlignment.Center;
 
-                var uiShell = (IVsUIShell) await _hostPackage.GetServiceAsync(typeof(SVsUIShell));
-                IntPtr parent;
-                if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
-                {
-                    Trace.Fail("Failed to get hwnd for ShowModal: " + window.Title);
-                    return false;
-                }
-
-                try
-                {
-                    window.HorizontalAlignment = HorizontalAlignment.Center;
-                    window.VerticalAlignment = VerticalAlignment.Center;
-
-                    var wih = new WindowInteropHelper(window);
-                    wih.Owner = parent;
-
-                    uiShell.EnableModeless(0);
-                    var dialogResult = window.ShowDialog().GetValueOrDefault();
-                    return dialogResult;
-                }
-                catch (Exception e)
-                {
-                    Trace.Fail("Error displaying modal dialog: " + e.Message);
-                    return false;
-                }
-                finally
-                {
-                    uiShell.EnableModeless(1);
-                }
-            });
+                var result = WindowHelper.ShowModal(window);
+                // WindowHelper.ShowModal converts a bool? from Window.ShowDialog to:
+                // null = 0, true = 1, false = 2
+                return result == 1;
+            }
+            catch (Exception e)
+            {
+                var message = $"Error displaying modal dialog ({window.GetType()})";
+                _hostPackage.Logger.Error(message, e);
+                Trace.Fail($"{message}: {e.Message}");
+                return false;
+            }
         }
 
         public void ShowError(string message)
@@ -428,6 +419,20 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 }
                 catch (Exception) { }
             });
+        }
+
+        public T ExecuteOnBackgroundThread<T>(Func<Task<T>> asyncFunc)
+        {
+            async Task<T> TaskFunc()
+            {
+                await Task.Yield();
+
+                await TaskScheduler.Default;
+
+                return await asyncFunc();
+            }
+
+            return _hostPackage.JoinableTaskFactory.Run(TaskFunc);
         }
 
         public void ExecuteOnUIThread(Action action)

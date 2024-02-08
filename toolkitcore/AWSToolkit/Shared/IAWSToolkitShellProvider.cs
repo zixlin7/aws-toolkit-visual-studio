@@ -148,6 +148,12 @@ namespace Amazon.AWSToolkit.Shared
         bool ShowModal(Window window);
 
         /// <summary>
+        /// Attempts to display the provided window as a modal to Visual Studio.
+        /// An attempt is made to center the window.
+        /// </summary>
+        Task<bool> ShowModalAsync(Window window);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="message"></param>
@@ -204,6 +210,12 @@ namespace Amazon.AWSToolkit.Shared
         /// </summary>
         /// <param name="status"></param>
         void UpdateStatus(string status);
+
+        /// <summary>
+        /// Runs a chunk of code on a background thread (not the UI thread).
+        /// Intended for use in code that doesn't have access to the JoinableTaskFactory.
+        /// </summary>
+        T ExecuteOnBackgroundThread<T>(Func<Task<T>> asyncFunc);
 
         /// <summary>
         /// 

@@ -1,4 +1,6 @@
-﻿using Amazon.AwsToolkit.SourceControl;
+﻿using System.Threading;
+
+using Amazon.AwsToolkit.SourceControl;
 using Amazon.AwsToolkit.VsSdk.Common.CommonUI;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CredentialProfiles.AddEditWizard.Behaviors;
@@ -135,9 +137,10 @@ namespace Amazon.AWSToolkit.VisualStudio
             return new CloneCodeCatalystRepositoryDialog(_toolkitContext, _joinableTaskFactory, new GitService(_toolkitContext));
         }
 
-        public ISsoLoginDialog CreateSsoLoginDialog()
+        public ISsoLoginDialogFactory CreateSsoLoginDialogFactory(string credentialName,
+            CancellationToken cancellationToken = default)
         {
-            return new SsoLoginDialog(_toolkitContext);
+            return new SsoLoginDialogFactory(credentialName, _toolkitContext, _joinableTaskFactory, cancellationToken);
         }
 
         public ICredentialProfileDialog CreateCredentialProfileDialog(BaseMetricSource saveMetricSource)

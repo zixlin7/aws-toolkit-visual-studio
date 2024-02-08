@@ -104,6 +104,12 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         {
             return new SuggestionSessionResultsPublisher(_rpc);
         }
+
+        protected override async Task<bool> IsEnabledAsync()
+        {
+            var settings = await _settingsRepository.GetAsync();
+            return settings.IsEnabled;
+        }
     }
 #pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore CS0649 // Field 'Foo' is never assigned to, and will always have its default value null

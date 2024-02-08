@@ -19,12 +19,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\InstanceTypeSelectionViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\KeyValueEditorViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\RepositorySelectionViewModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\SsoLoginViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\VpcSelectionViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\CommonUI\VsKnownImagesTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\ImageThemeConverterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\IVsMonitorSelectionExtensionMethodsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\LambdaTesterInstallerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\ProjectTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VsSdk.Common\Settings\Proxy\ProxyOptionsViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)VsSdk.Common\LambdaTester\test-data\LambdaTester-Compatible.csproj">
