@@ -11,8 +11,8 @@ on:
                 options:
                     - Major
                     - Minor
-                    - Release
-                    - Patch
+                    - Build
+                    - Revision
                     - Custom
             customVersion:
                 description: "Custom Release Version (only used if release increment is 'Custom') - Format: 1.2.3.4"

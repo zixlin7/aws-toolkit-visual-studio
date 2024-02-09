@@ -17,7 +17,7 @@ $thisScriptFolder = $MyInvocation.MyCommand.Path | Split-Path -Parent
 
 Import-Module $thisScriptFolder/VersionFunctions.psm1 -Force
 
-## ----- This script (Create-Release-Candidate) -----
+## ----- This script (Get-Next-Version) -----
 
 if ($VersionIncrement -eq "Custom") {
     if (($CustomVersion -eq $null) -or ($CustomVersion.Trim() -eq "")) {
