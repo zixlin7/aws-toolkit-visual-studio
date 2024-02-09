@@ -54,7 +54,10 @@
             </Button.Style>
 
             <Button.ContextMenu>
-                <ContextMenu themes:ToolkitThemes.UseToolkitTheme="True">
+                <ContextMenu 
+                    themes:ToolkitThemes.UseToolkitTheme="True"
+                    PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                    Placement="Right">
                     <MenuItem Header="Sign In" Command="{Binding SignIn}" />
                     <Separator />
                     <MenuItem Header="Generate Code Suggestions" InputGestureText="{Binding GenerateSuggestionsKeyBinding}" Command="{Binding GenerateSuggestions}" />
