@@ -7,13 +7,14 @@ using Amazon.AwsToolkit.CodeWhisperer.Commands;
 using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
 using Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans.Models;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
 using Amazon.AwsToolkit.VsSdk.Common.Commands;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
-using Amazon.AWSToolkit.Settings;
 
 using log4net;
 
@@ -70,7 +71,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             GenerateSuggestions = new GetSuggestionsCommand(textView, _manager, suggestionUiManager, _toolkitContextProvider);
 
             ViewCodeReferences = new ViewCodeReferencesCommand(_manager, _toolkitContextProvider);
-            SecurityScan = new SecurityScanCommand(_toolkitContextProvider);
+            RunSecurityScan = new RunSecurityScanCommand(_manager, textView, _toolkitContextProvider);
+            CancelSecurityScan = new CancelSecurityScanCommand(_manager, _toolkitContextProvider);
 
             _isAutoSuggestPaused = _manager.IsAutoSuggestPaused();
             _connectionState = _manager.ConnectionStatus;
@@ -166,11 +168,18 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
             set => SetProperty(ref _viewCodeReferences, value);
         }
 
-        private ICommand _securityScan;
-        public ICommand SecurityScan
+        private ICommand _runSecurityScan;
+        public ICommand RunSecurityScan
         {
-            get => _securityScan;
-            set => SetProperty(ref _securityScan, value);
+            get => _runSecurityScan;
+            set => SetProperty(ref _runSecurityScan, value);
+        }
+
+        private ICommand _cancelSecurityScan;
+        public ICommand CancelSecurityScan
+        {
+            get => _cancelSecurityScan;
+            set => SetProperty(ref _cancelSecurityScan, value);
         }
 
         private ICommand _viewUserGuide;

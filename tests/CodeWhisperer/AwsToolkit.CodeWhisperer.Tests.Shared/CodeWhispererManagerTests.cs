@@ -18,6 +18,9 @@ using Microsoft.VisualStudio.Sdk.TestFramework;
 using Microsoft.VisualStudio.Shell;
 
 using Xunit;
+using Amazon.AwsToolkit.CodeWhisperer.Tests.SecurityScan;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans.Models;
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Tests
 {
@@ -28,6 +31,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
         private readonly FakeConnection _connection = new FakeConnection();
         private readonly FakeSuggestionProvider _suggestionProvider = new FakeSuggestionProvider();
         private readonly FakeReferenceLogger _referenceLogger = new FakeReferenceLogger();
+        private readonly FakeSecurityScanProvider _securityScanProvider = new FakeSecurityScanProvider();
         private readonly CodeWhispererManager _sut;
 
         public CodeWhispererManagerTests(GlobalServiceProvider serviceProvider)
@@ -35,7 +39,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             serviceProvider.Reset();
 
             var taskFactoryProvider = new ToolkitJoinableTaskFactoryProvider(ThreadHelper.JoinableTaskContext);
-            _sut = new CodeWhispererManager(_lspClient, _connection, _suggestionProvider, _referenceLogger, taskFactoryProvider);
+            _sut = new CodeWhispererManager(_lspClient, _connection, _suggestionProvider, _referenceLogger, _securityScanProvider ,taskFactoryProvider);
         }
 
         [Theory]
@@ -204,6 +208,52 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Tests
             await _sut.SendSessionCompletionResultAsync(sessionResult);
 
             _lspClient.SuggestionSessionResultsPublisher.SessionResultsParam.Should().Be(sessionResult);
+        }
+
+        [Theory]
+        [InlineData(SecurityScanState.NotRunning)]
+        [InlineData(SecurityScanState.Running)]
+        [InlineData(SecurityScanState.Cancelling)]
+        public void ScanState(SecurityScanState expectedStatus)
+        {
+            _securityScanProvider.ScanState = expectedStatus;
+
+            _sut.SecurityScanState.Should().Be(expectedStatus);
+        }
+
+        [Fact]
+        public void SecurityScanStateChanged()
+        {
+            _securityScanProvider.ScanState = SecurityScanState.NotRunning;
+
+            var eventArgs = Assert.Raises<SecurityScanStateChangedEventArgs>(
+                attach => _sut.SecurityScanStateChanged += attach,
+                detach => _sut.SecurityScanStateChanged -= detach,
+                () =>
+                {
+                    _securityScanProvider.ScanState = SecurityScanState.Running;
+                    _securityScanProvider.RaiseStateChanged();
+                });
+
+            eventArgs.Arguments.ScanState.Should().Be(SecurityScanState.Running);
+        }
+
+        [Fact]
+        public async Task ScanAsync()
+        {
+            _securityScanProvider.ScanState = SecurityScanState.NotRunning;
+            await _sut.ScanAsync();
+
+            _sut.SecurityScanState.Should().Be(SecurityScanState.Running);
+        }
+
+        [Fact]
+        public async Task CancelScanAsync()
+        {
+            _securityScanProvider.ScanState = SecurityScanState.Running;
+            await _sut.CancelScanAsync();
+
+            _sut.SecurityScanState.Should().Be(SecurityScanState.Cancelling);
         }
     }
 }

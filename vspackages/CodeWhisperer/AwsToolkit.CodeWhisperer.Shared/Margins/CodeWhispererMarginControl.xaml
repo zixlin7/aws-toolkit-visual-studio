@@ -71,6 +71,9 @@
                         </behaviors:UiClickMetric.Configure>
                     </MenuItem>
                     <Separator />
+                    <MenuItem Header="Perform Security Scan" Command="{Binding RunSecurityScan}" />
+                    <MenuItem Header="Cancel Security Scan" Command="{Binding CancelSecurityScan}" />
+                    <Separator />
                     <MenuItem Header="View User Guide" Command="{Binding ViewUserGuide}" />
                     <MenuItem Header="Getting Started" Command="{Binding GettingStarted}" />
                     <MenuItem Header="Submit CodeWhisperer Feedback..." Command="{Binding SendFeedback}" CommandParameter="CodeWhisperer" />
