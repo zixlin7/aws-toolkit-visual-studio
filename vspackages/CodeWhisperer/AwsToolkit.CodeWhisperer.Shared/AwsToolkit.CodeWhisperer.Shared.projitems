@@ -86,7 +86,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererDocumentViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\MarginStatusToImageSourceConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mef\CentralComponents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\CodeWhispererImages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererEnabledStateEmitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsSavedEventArgs.cs" />
