@@ -50,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Telemetry\TelemetryEventPublisherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Margins\CodeWhispererMarginViewModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SecurityScans\FakeSecurityScanProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererEnabledStateEmitterTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\CodeWhispererSettingsPublisherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\EnabledStateManagerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsPublisherTests.cs" />

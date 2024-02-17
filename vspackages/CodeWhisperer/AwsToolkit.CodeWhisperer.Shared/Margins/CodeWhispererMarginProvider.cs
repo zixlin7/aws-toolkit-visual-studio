@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
-using Amazon.AwsToolkit.CodeWhisperer.Credentials;
 using Amazon.AwsToolkit.CodeWhisperer.Documents;
+using Amazon.AwsToolkit.CodeWhisperer.Mef;
 using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions;
-using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
 using Amazon.AwsToolkit.VsSdk.Common.Tasks;
 using Amazon.AWSToolkit.Context;
 
@@ -41,26 +40,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Margins
         [ImportingConstructor]
         public CodeWhispererMarginProvider(
             ICodeWhispererManager manager,
-            // ExpirationNotificationManager is not related to the VSSDK, so it isn't
-            // auto-created by Visual Studio. This margin provider is a central
-            // CodeWhisperer component that gets activated by Visual Studio, so we
-            // import ExpirationNotificationManager here to auto instantiate it.
-            IExpirationNotificationManager expirationNotificationManager,
-            // CodeWhispererSettingsPublisher is not related to the VSSDK, so it isn't
-            // auto-created by Visual Studio. This margin provider is a central
-            // CodeWhisperer component that gets activated by Visual Studio, so we
-            // import ICodeWhispererSettingsPublisher here to auto instantiate it.
-            ICodeWhispererSettingsPublisher codeWhispererSettingsPublisher,
-            // CodeWhispererTelemetryEventPublisher is not related to the VSSDK, so it isn't
-            // auto-created by Visual Studio. This margin provider is a central
-            // CodeWhisperer component that gets activated by Visual Studio, so we
-            // import ICodeWhispererTelemetryEventPublisher here to auto instantiate it.
-            ICodeWhispererTelemetryEventPublisher codeWhispererTelemetryEventPublisher,
-            // EnabledStateManager is not related to the VSSDK, so it isn't
-            // auto-created by Visual Studio. This margin provider is a central
-            // CodeWhisperer component that gets activated by Visual Studio, so we
-            // import EnabledStateManager here to auto instantiate it.
-            EnabledStateManager enabledStateManager,
+            // CentralComponents - Auto-instantiate CodeWhisperer MEF components that aren't related
+            // to the VS SDK (and aren't otherwise auto-created by Visual Studio).
+            CentralComponents centralComponents,
             ISuggestionUiManager suggestionUiManager,
             ICodeWhispererSettingsRepository settingsRepository,
             SVsServiceProvider serviceProvider,
