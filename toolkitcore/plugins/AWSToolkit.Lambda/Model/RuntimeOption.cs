@@ -4,7 +4,15 @@ namespace Amazon.AWSToolkit.Lambda.Model
 {
     public class RuntimeOption
     {
+        // TODO: IDE-12354 Update to use Runtime.Dotnet8 instead fo string "dotnet8" when the AWS SDK for .NET is updated with the new value.
+        public const string ManagedRuntimeDotNet8 = "dotnet8";
+
         public static readonly RuntimeOption NodeJS_v12_X = new RuntimeOption(Amazon.Lambda.Runtime.Nodejs12X.Value, "Node.js v12");
+
+        public static readonly RuntimeOption DotNet8 = new RuntimeOption(ManagedRuntimeDotNet8, ".NET 8")
+        {
+             IsDotNet = true,
+        };
 
         public static readonly RuntimeOption DotNet6 = new RuntimeOption(Amazon.Lambda.Runtime.Dotnet6.Value, ".NET 6")
         {
@@ -26,7 +34,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             IsDotNet = true,
         };
 
-        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { DotNet6, NodeJS_v12_X, PROVIDED, PROVIDED_AL2, PROVIDED_AL2023 };
+        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { DotNet8, DotNet6, NodeJS_v12_X, PROVIDED, PROVIDED_AL2, PROVIDED_AL2023 };
 
         private RuntimeOption(string value, string displayName)
         {

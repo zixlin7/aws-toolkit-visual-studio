@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Added support for using container builds with Lambda when targeting .NET 8"
+}

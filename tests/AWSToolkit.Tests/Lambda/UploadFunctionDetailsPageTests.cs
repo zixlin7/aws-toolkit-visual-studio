@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
@@ -37,6 +38,7 @@ namespace AWSToolkit.Tests.Lambda
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp31, RuntimeOption.PROVIDED);
             AssertFrameworkSetsRuntime(Frameworks.Net50, RuntimeOption.PROVIDED);
             AssertFrameworkSetsRuntime(Frameworks.Net60, RuntimeOption.DotNet6);
+            AssertFrameworkSetsRuntime(Frameworks.Net80, RuntimeOption.DotNet8);
         }
 
         [StaFact]
@@ -50,6 +52,7 @@ namespace AWSToolkit.Tests.Lambda
         public void RuntimeAffectsFramework()
         {
             AssertRuntimeAffectsFramework(RuntimeOption.DotNet6, Frameworks.Net60);
+            AssertRuntimeAffectsFramework(RuntimeOption.DotNet8, Frameworks.Net80);
         }
 
         [StaFact]
@@ -57,6 +60,7 @@ namespace AWSToolkit.Tests.Lambda
         {
             var runtimesToShow = new RuntimeOption[]
             {
+                RuntimeOption.DotNet8, 
                 RuntimeOption.DotNet6,
                 RuntimeOption.PROVIDED,
                 RuntimeOption.PROVIDED_AL2,
@@ -72,10 +76,20 @@ namespace AWSToolkit.Tests.Lambda
                 });
         }
 
-        [StaFact]
-        public void DotNetHandlerComponentsAffectHandler_DotNet6()
+        public static TheoryData<RuntimeOption> DotNetRuntimes()
         {
-            _fixture.Page.ViewModel.Runtime = RuntimeOption.DotNet6;
+            return new TheoryData<RuntimeOption>()
+            {
+                RuntimeOption.DotNet8,
+                RuntimeOption.DotNet6
+            };
+        }
+
+        [StaTheory]
+        [MemberData(nameof(DotNetRuntimes))]
+        public void DotNetHandlerComponentsAffectHandler(RuntimeOption dotnetRuntime)
+        {
+            _fixture.Page.ViewModel.Runtime = dotnetRuntime;
 
             _fixture.Page.ViewModel.HandlerAssembly = "aaa";
             _fixture.Page.ViewModel.HandlerType = "ttt";
