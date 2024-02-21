@@ -39,12 +39,14 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             new Dictionary<string, RuntimeOption>(StringComparer.OrdinalIgnoreCase)
             {
                 {Frameworks.Net60, RuntimeOption.DotNet6},
+                {Frameworks.Net80, RuntimeOption.DotNet8},
             };
 
         private static readonly IDictionary<RuntimeOption, string> FrameworkByRuntime =
             new Dictionary<RuntimeOption, string>()
             {
                 {RuntimeOption.DotNet6, Frameworks.Net60},
+                {RuntimeOption.DotNet8, Frameworks.Net80},
             };
 
         public IAWSWizardPageController PageController { get; }
@@ -306,6 +308,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 ViewModel.Frameworks.Add(Frameworks.NetCoreApp31);
                 ViewModel.Frameworks.Add(Frameworks.Net50);
                 ViewModel.Frameworks.Add(Frameworks.Net60);
+                ViewModel.Frameworks.Add(Frameworks.Net80);
 
                 if (_shellProvider.HostInfo.Name == ToolkitHosts.Vs2017.Name)
                 {
@@ -315,7 +318,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 else if (_shellProvider.HostInfo.Name == ToolkitHosts.Vs2019.Name)
                 {
                     // Select a framework supported by VS2019
-                    ViewModel.Framework = ViewModel.Frameworks.Last(x => !x.MatchesFramework(Frameworks.Net60));
+                    ViewModel.Framework = ViewModel.Frameworks.First(x => x.MatchesFramework(Frameworks.Net50));
                 }
                 else
                 {

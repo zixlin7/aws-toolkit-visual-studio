@@ -39,6 +39,7 @@ namespace AWSToolkit.Tests.Lambda
             Page.ViewModel.Frameworks.Add(Frameworks.NetCoreApp21);
             Page.ViewModel.Frameworks.Add(Frameworks.NetCoreApp31);
             Page.ViewModel.Frameworks.Add(Frameworks.Net60);
+            Page.ViewModel.Frameworks.Add(Frameworks.Net80);
         }
         
         public void Dispose()

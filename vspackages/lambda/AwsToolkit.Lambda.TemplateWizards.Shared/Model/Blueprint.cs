@@ -201,9 +201,9 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Model
     internal abstract class BlueprintsManifest
     {
         public static readonly string BlueprintsManifestPathV1 = @"LambdaSampleFunctions\NETCore\v1\";
-        // v10 only contains vs2022 blueprints, supporting .NET 7 and AOT
+        // v11 only contains vs2022 blueprints, supporting .NET 7+ and AOT
 #if VS2022
-        private static readonly string BlueprintsManifestPathMsbuildStyle = @"LambdaSampleFunctions\NETCore\msbuild-v10";
+        private static readonly string BlueprintsManifestPathMsbuildStyle = @"LambdaSampleFunctions\NETCore\msbuild-v11";
 #else
         private static readonly string BlueprintsManifestPathMsbuildStyle = @"LambdaSampleFunctions\NETCore\msbuild-v9";
 #endif

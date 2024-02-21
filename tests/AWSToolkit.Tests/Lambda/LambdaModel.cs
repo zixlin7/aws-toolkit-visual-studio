@@ -12,6 +12,7 @@ namespace AWSToolkit.Tests.Lambda
         public static readonly IEnumerable<object[]> DotNetManagedRuntimes = new[]
         {
             new object[] { RuntimeOption.DotNet6 },
+            new object[] { RuntimeOption.DotNet8 },
         };
 
         [Theory]
