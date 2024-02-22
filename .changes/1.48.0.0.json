@@ -1,0 +1,14 @@
+{
+  "Date": "2024-02-22",
+  "Version": "1.48.0.0",
+  "Entries": [
+    {
+      "Type": "Feature",
+      "Description": "Added support for using container builds with Lambda when targeting .NET 8"
+    },
+    {
+      "Type": "Feature",
+      "Description": " Add support for publishing Lambda functions using the .NET 8 managed runtime"
+    }
+  ]
+}

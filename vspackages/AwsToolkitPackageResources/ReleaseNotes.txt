@@ -1,3 +1,7 @@
+v1.48.0.0 (2024-02-22)
+* Added support for using container builds with Lambda when targeting .NET 8
+*  Add support for publishing Lambda functions using the .NET 8 managed runtime
+
 v1.47.0.0 (2024-02-08)
 * Fix "Bucket is not in the same region" validation in Serverless deployment dialog when working with buckets in eu-west-1.
 * Publish to Beanstalk experience now defaults to using self contained deployment bundles when publishing .NET 8 projects to Linux images. This setting is necessary for Beanstalk Linux images that do not support .NET 8.
