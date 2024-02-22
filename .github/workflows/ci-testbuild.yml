@@ -12,9 +12,9 @@ jobs:
         runs-on: windows-2019
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Add msbuild to PATH
-              uses: microsoft/setup-msbuild@v1.1
+              uses: microsoft/setup-msbuild@v2
               with:
                   vs-version: "[16.0,17.0)"
 
@@ -23,28 +23,28 @@ jobs:
 
             - name: Generate Hash for VS 2017/19 Tookit
               run: |
-                $ARTIFACT_HASH = (Get-FileHash Deployment/16.0/Release/AWSToolkitPackage.vsix -Algorithm SHA384).Hash
-                echo $ARTIFACT_HASH > Deployment/16.0/Release/AWSToolkitPackage.vsix.sha384
+                  $ARTIFACT_HASH = (Get-FileHash Deployment/16.0/Release/AWSToolkitPackage.vsix -Algorithm SHA384).Hash
+                  echo $ARTIFACT_HASH > Deployment/16.0/Release/AWSToolkitPackage.vsix.sha384
 
             - name: Generate Hash for VS 2022 Tookit
               run: |
-                $ARTIFACT_HASHv17 = (Get-FileHash Deployment/16.0/Release/AWSToolkitPackage.v17.vsix -Algorithm SHA384).Hash
-                echo $ARTIFACT_HASHv17 > Deployment/16.0/Release/AWSToolkitPackage.v17.vsix.sha384
+                  $ARTIFACT_HASHv17 = (Get-FileHash Deployment/16.0/Release/AWSToolkitPackage.v17.vsix -Algorithm SHA384).Hash
+                  echo $ARTIFACT_HASHv17 > Deployment/16.0/Release/AWSToolkitPackage.v17.vsix.sha384
 
             - name: Build Artifact for VS 2017/19 Toolkit
               if: always()
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: Toolkit-2017-2019
                   path: |
-                    Deployment/16.0/Release/AWSToolkitPackage.vsix
-                    Deployment/16.0/Release/AWSToolkitPackage.vsix.sha384
+                      Deployment/16.0/Release/AWSToolkitPackage.vsix
+                      Deployment/16.0/Release/AWSToolkitPackage.vsix.sha384
 
             - name: Build Artifact for VS 2022 Toolkit
               if: always()
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: Toolkit-2022
                   path: |
-                    Deployment/16.0/Release/AWSToolkitPackage.v17.vsix
-                    Deployment/16.0/Release/AWSToolkitPackage.v17.vsix.sha384
+                      Deployment/16.0/Release/AWSToolkitPackage.v17.vsix
+                      Deployment/16.0/Release/AWSToolkitPackage.v17.vsix.sha384
