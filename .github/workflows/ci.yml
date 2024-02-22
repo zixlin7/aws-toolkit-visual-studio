@@ -13,14 +13,14 @@ jobs:
                 vs: [2019, 2022]
                 configuration: [Debug, Release]
                 include:
-                  - vs: 2019
-                    name: VS 2019
-                    os: windows-2019
-                    vs-version: "[16.0,17.0)"
-                  - vs: 2022
-                    name: VS 2022
-                    os: windows-2022
-                    vs-version: "[17.0,18.0)"
+                    - vs: 2019
+                      name: VS 2019
+                      os: windows-2019
+                      vs-version: "[16.0,17.0)"
+                    - vs: 2022
+                      name: VS 2022
+                      os: windows-2022
+                      vs-version: "[17.0,18.0)"
 
         name: ${{ matrix.name }} (${{ matrix.configuration }})
         runs-on: ${{ matrix.os }}
@@ -28,9 +28,9 @@ jobs:
             TEST_REPORT_HTML: TestResults/toolkit-test-results.html
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Add msbuild to PATH
-              uses: microsoft/setup-msbuild@v1.1
+              uses: microsoft/setup-msbuild@v2
               with:
                   vs-version: ${{ matrix.vs-version }}
 
@@ -50,7 +50,7 @@ jobs:
 
             - name: Attach Test Report as Build Artifact
               if: always()
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: test-reports-${{ matrix.vs }}-${{ matrix.configuration }}
                   path: ${{ env.TEST_REPORT_HTML }}
