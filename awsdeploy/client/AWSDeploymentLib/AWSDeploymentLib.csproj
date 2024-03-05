@@ -8,15 +8,15 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.Core" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.ElasticBeanstalk" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.302.10" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.303.8" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.302.13" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.7.314.10" />
+    <PackageReference Include="AWSSDK.ElasticBeanstalk" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.308.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.305.28" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj" />

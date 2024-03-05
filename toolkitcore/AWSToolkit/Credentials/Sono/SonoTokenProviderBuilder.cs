@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Credentials.Core;
@@ -212,6 +213,16 @@ namespace Amazon.AWSToolkit.Credentials.Sono
                 _cache = new SSOTokenFileCache(cryptoUtil, file, directory);
             }
 
+            public void DeleteSsoToken(SSOTokenManagerGetTokenOptions getSsoTokenOptions, string ssoCacheDirectory)
+            {
+                _cache.DeleteSsoToken(getSsoTokenOptions, ssoCacheDirectory);
+            }
+
+            public void DeleteSsoToken(string filePath)
+            {
+                _cache.DeleteSsoToken(filePath);
+            }
+
             public bool Exists(CredentialProfileOptions options)
             {
                 return _cache.Exists(options);
@@ -225,6 +236,16 @@ namespace Amazon.AWSToolkit.Credentials.Sono
             public Task SaveSsoTokenAsync(SsoToken token, string ssoCacheDirectory, CancellationToken cancellationToken = default)
             {
                 return _cache.SaveSsoTokenAsync(token, ssoCacheDirectory, cancellationToken);
+            }
+
+            public List<SSOTokenFile> ScanSsoTokens(string ssoCacheDirectory)
+            {
+                return _cache.ScanSsoTokens(ssoCacheDirectory);
+            }
+
+            public Task<List<SSOTokenFile>> ScanSsoTokensAsync(string ssoCacheDirectory, CancellationToken cancellationToken = default)
+            {
+                return _cache.ScanSsoTokensAsync(ssoCacheDirectory, cancellationToken);
             }
 
             public bool TryGetSsoToken(SSOTokenManagerGetTokenOptions getSsoTokenOptions, string ssoCacheDirectory, out SsoToken ssoToken)

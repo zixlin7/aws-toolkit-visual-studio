@@ -6,7 +6,7 @@
     <RootNamespace>AmazonCLIExtensions.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Core" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.302.13" />
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.6.2" />
