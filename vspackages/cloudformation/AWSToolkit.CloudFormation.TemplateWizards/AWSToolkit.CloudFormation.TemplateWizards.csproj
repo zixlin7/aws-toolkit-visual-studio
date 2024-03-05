@@ -76,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.7.300.0</Version>
+      <Version>3.7.303.8</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>

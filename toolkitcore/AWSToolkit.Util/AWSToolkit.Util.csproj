@@ -13,11 +13,11 @@
   <ItemGroup>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK" Version="1.0.189.0" />
     <PackageReference Include="AWS.Toolkit.Telemetry.Events" Version="1.0.189.0" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.303.8" />
+    <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.7.314.10" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.305.28" />
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>

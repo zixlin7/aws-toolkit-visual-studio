@@ -9,14 +9,14 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.RDS" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.AutoScaling" Version="3.7.302.10" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.303.8" />
+    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.302.4" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.7.314.10" />
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.RDS" Version="3.7.308.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.305.28" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.301.0" />
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <ItemGroup>

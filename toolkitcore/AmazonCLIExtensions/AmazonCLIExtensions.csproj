@@ -8,18 +8,18 @@
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.CloudWatchEvents" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.Core" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.ECR" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.ECS" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.ElasticBeanstalk" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.300.0" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.0" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.303.8" />
+    <PackageReference Include="AWSSDK.CloudWatchEvents" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.304.6" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.302.13" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.7.314.10" />
+    <PackageReference Include="AWSSDK.ECR" Version="3.7.301.47" />
+    <PackageReference Include="AWSSDK.ECS" Version="3.7.305.14" />
+    <PackageReference Include="AWSSDK.ElasticBeanstalk" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.IdentityManagement" Version="3.7.300.52" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.304.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.305.28" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.53" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>

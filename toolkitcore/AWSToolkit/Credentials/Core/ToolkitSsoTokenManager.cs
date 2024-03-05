@@ -144,5 +144,25 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
             options.Scopes.AddAll(_toolkitTokenManagerOptions.Scopes.Except(options.Scopes));
         }
+
+        public void Logout(string ssoCacheDirectory = null)
+        {
+            _ssoTokenManager.Logout(ssoCacheDirectory);
+        }
+
+        public void Logout(SSOTokenManagerGetTokenOptions options)
+        {
+            _ssoTokenManager.Logout(options);
+        }
+
+        public Task LogoutAsync(string ssoCacheDirectory = null, CancellationToken cancellationToken = default)
+        {
+            return _ssoTokenManager.LogoutAsync(ssoCacheDirectory, cancellationToken);
+        }
+
+        public Task LogoutAsync(SSOTokenManagerGetTokenOptions options, CancellationToken cancellationToken = default)
+        {
+            return _ssoTokenManager.LogoutAsync(options, cancellationToken);
+        }
     }
 }

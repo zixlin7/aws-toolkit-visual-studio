@@ -45,6 +45,10 @@ namespace AWSToolkit.Tests.Credentials.Utils
             WriteAllText(path, contents);
             return Task.CompletedTask;
         }
+
+        public void Delete(string path)
+        {
+        }
     }
 
     public class FakeDirectoryHandler : IDirectory
@@ -59,6 +63,11 @@ namespace AWSToolkit.Tests.Credentials.Utils
         public DirectoryInfo CreateDirectory(string path)
         {
             return new DirectoryInfo(_testLocation.TestFolder);
+        }
+
+        public string[] GetFiles(string path, string searchPattern)
+        {
+            return Directory.GetFiles(path, searchPattern);
         }
     }
 
