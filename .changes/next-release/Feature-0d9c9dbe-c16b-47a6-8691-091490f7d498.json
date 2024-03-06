@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Publish to AWS has been updated to use v1.18.6 of the AWS .NET deploy tool. Projects can now be deployed to Elastic Beanstalk on Linux using the '.NET 6 on AL2023' platform. See https://github.com/aws/aws-dotnet-deploy/releases/tag/1.18.6 for more details."
+}
