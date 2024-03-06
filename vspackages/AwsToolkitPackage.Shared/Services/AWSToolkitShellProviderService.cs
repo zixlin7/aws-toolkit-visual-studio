@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Interop;
 
 using Amazon.AwsToolkit.VsSdk.Common;
+using Amazon.AwsToolkit.VsSdk.Common.OutputWindow;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.CommonUI.Notifications;
@@ -15,6 +16,7 @@ using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Solutions;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.ToolWindow;
@@ -24,6 +26,8 @@ using AwsToolkit.VsSdk.Common.CommonUI;
 using AwsToolkit.VsSdk.Common.Notifications;
 
 using EnvDTE80;
+
+using log4net;
 
 using Microsoft;
 using Microsoft.Internal.VisualStudio.PlatformUI;
@@ -49,13 +53,19 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
     internal class AWSToolkitShellProviderService : SAWSToolkitShellProvider, IAWSToolkitShellProvider
     {
+        static readonly ILog _logger = LogManager.GetLogger(typeof(AWSToolkitShellProviderService));
+
         private readonly AWSToolkitPackage _hostPackage;
         private readonly IToolkitHostInfo _toolkitHostInfo;
+        private readonly IOutputWindow _toolkitOutputWindow;
 
-        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, IToolkitHostInfo hostVersion,
+        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage,
+            IOutputWindow toolkitOutputWindow,
+            IToolkitHostInfo hostVersion,
             ProductEnvironment productEnvironment)
         {
             _hostPackage = hostPackage;
+            _toolkitOutputWindow = toolkitOutputWindow;
             _toolkitHostInfo = hostVersion;
             ProductEnvironment = productEnvironment;
         }
@@ -494,14 +504,42 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             return _hostPackage.GetParentWindowHandle();
         }
 
+        /// <summary>
+        /// OutputToHostConsoleAsync should be used instead, with LogExceptionAndForget
+        /// when called from sync code, and where callers don't need to wait on this to complete.
+        /// </summary>
         public void OutputToHostConsole(string message)
         {
-            _hostPackage.OutputToConsole(message, false);
+            OutputToHostConsole(message, false);
         }
 
+        /// <summary>
+        /// OutputToHostConsoleAsync should be used instead, with LogExceptionAndForget
+        /// when called from sync code, and where callers don't need to wait on this to complete.
+        /// </summary>
         public void OutputToHostConsole(string message, bool forceVisible)
         {
-            _hostPackage.OutputToConsole(message, forceVisible);
+            OutputToHostConsoleAsync(message, forceVisible).LogExceptionAndForget();
+        }
+
+        public async Task OutputToHostConsoleAsync(string message, bool forceVisible)
+        {
+            try
+            {
+                await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                if (forceVisible)
+                {
+                    _toolkitOutputWindow.Show();
+                }
+
+                _toolkitOutputWindow.WriteText(message);
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Failed to log message to output window", e);
+                _logger.Error($"Original message: {message}");
+            }
         }
 
         public async Task<bool> OpenOutputWindowPaneAsync(string name)

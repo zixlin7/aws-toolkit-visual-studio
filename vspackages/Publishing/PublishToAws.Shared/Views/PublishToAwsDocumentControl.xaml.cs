@@ -213,9 +213,9 @@ namespace Amazon.AWSToolkit.Publish.Views
                 }
                 else
                 {
-                    _publishContext.ToolkitShellProvider.OutputToHostConsole(
+                    _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(
                         $"Publish {_viewModel?.ProjectName} to AWS does not have a valid credentials-region combination.{Environment.NewLine}Select valid credentials and try again.{Environment.NewLine}{connectionState.Message}.",
-                        true);
+                        true).LogExceptionAndForget();
 
                     await _viewModel.StopDeploymentSessionAsync(cancellationToken);
                     await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
@@ -226,8 +226,8 @@ namespace Amazon.AWSToolkit.Publish.Views
             catch (Exception e)
             {
                 Logger.Error("Error refreshing publish state", e);
-                _publishContext.ToolkitShellProvider.OutputToHostConsole(
-                    $"Publish to AWS failed to load publish details using the current credentials:{Environment.NewLine}{e.Message}", true);
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(
+                    $"Publish to AWS failed to load publish details using the current credentials:{Environment.NewLine}{e.Message}", true).LogExceptionAndForget();
 
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
                 _viewModel.ErrorMessage = e.Message;

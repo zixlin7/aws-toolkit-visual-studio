@@ -139,7 +139,7 @@ namespace Amazon.AWSToolkit.Tests.Publishing.Commands
 
             await _sut.ExecuteAsync(null);
 
-            ShellProvider.Verify(x => x.OutputToHostConsole(It.Is<string>(s => s.Contains("error getting status")), true), Times.Once);
+            ShellProvider.Verify(x => x.OutputToHostConsoleAsync(It.Is<string>(s => s.Contains("error getting status")), true), Times.Once);
 
             Assert.Equal(PublishViewStage.Publish, ViewModel.ViewStage);
         }

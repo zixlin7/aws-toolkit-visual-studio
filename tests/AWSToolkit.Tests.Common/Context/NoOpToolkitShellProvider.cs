@@ -132,6 +132,11 @@ namespace Amazon.AWSToolkit.Tests.Common.Context
 
         }
 
+        public virtual Task OutputToHostConsoleAsync(string message, bool forceVisible)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task<bool> OpenOutputWindowPaneAsync(string name)
         {
             return Task.FromResult(false);

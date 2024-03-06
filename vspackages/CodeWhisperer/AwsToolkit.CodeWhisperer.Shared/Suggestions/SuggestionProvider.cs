@@ -9,6 +9,7 @@ using Amazon.AwsToolkit.CodeWhisperer.Settings;
 using Amazon.AwsToolkit.CodeWhisperer.Suggestions.Models;
 using Amazon.AWSToolkit.Collections;
 using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Util;
 
 using log4net;
@@ -93,7 +94,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Suggestions
             catch (Exception e)
             {
                 _logger.Error("Failure getting suggestions from language server", e);
-                _toolkitContextProvider.GetToolkitContext().ToolkitHost.OutputToHostConsole($"AWS Toolkit was unable to get CodeWhisperer suggestions: {e.Message}", false);
+                _toolkitContextProvider.GetToolkitContext().ToolkitHost.OutputToHostConsoleAsync($"AWS Toolkit was unable to get CodeWhisperer suggestions: {e.Message}", false).LogExceptionAndForget();
             }
 
             return suggestionSession;

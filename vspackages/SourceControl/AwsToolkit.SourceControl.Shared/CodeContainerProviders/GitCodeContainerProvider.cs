@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tasks;
 
 using log4net;
 
@@ -178,7 +179,7 @@ namespace Amazon.AwsToolkit.SourceControl.CodeContainerProviders
 
             try
             {
-                _toolkitContext.ToolkitHost.OutputToHostConsole($"Attempting to clone {cloneRepoData.RepositoryName} to {cloneRepoData.LocalPath}", true);
+                _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Attempting to clone {cloneRepoData.RepositoryName} to {cloneRepoData.LocalPath}", true).LogExceptionAndForget();
 
                 await git.CloneAsync(
                     cloneRepoData.RemoteUri,

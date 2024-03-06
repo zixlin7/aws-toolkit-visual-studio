@@ -23,6 +23,7 @@ using Amazon.AWSToolkit.Publish.Commands;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.Runtime;
 
@@ -655,7 +656,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 var message = $"Publish targets found for {ProjectName}: {recommendations.Count}";
                 Logger.Debug(message);
-                _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(message, true).LogExceptionAndForget();
             }
         }
 
@@ -689,7 +690,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 var message = $"Republish targets found for {ProjectName}: {targets.Count}";
                 Logger.Debug(message);
-                _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(message, true).LogExceptionAndForget();
             }
         }
 
@@ -813,9 +814,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                 await ClearConfigurationDetailsAsync();
 
                 var innerMessage = e.GetExceptionInnerMessage();
-                _publishContext.ToolkitShellProvider.OutputToHostConsole(
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(
                     $"Publish to AWS error: {innerMessage}",
-                    true);
+                    true).LogExceptionAndForget();
                 throw new PublishException($"Unable to retrieve configuration details: {innerMessage}", e);
             }
         }
@@ -1063,7 +1064,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
             using (PublishProjectViewModel.IsPublishedScope())
             {
                 await SetProgressStatusAsync(ProgressStatus.Loading);
-                _publishContext.ToolkitShellProvider.OutputToHostConsole($"Starting to publish {ProjectName}");
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync($"Starting to publish {ProjectName}", false).LogExceptionAndForget();
 
                 result = await publishProjectAsyncFunc().ConfigureAwait(false);
 
@@ -1220,7 +1221,7 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                     var message =
                         $"Cannot publish {ProjectName} to {PublishDestination?.Name}, missing requirements: {missingRequirementsStr}";
                     Logger.Debug(message);
-                    _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
+                    _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(message, true).LogExceptionAndForget();
                 }
             }
             catch (Exception e)
@@ -1257,8 +1258,8 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
 
                 await SetProgressStatusAsync(status);
                 UpdateDeploymentProgress(statusMessage);
-                _publishContext.ToolkitShellProvider.OutputToHostConsole(statusMessage,
-                    true);
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(statusMessage,
+                    true).LogExceptionAndForget();
 
                 await SetIsFailureBannerEnabledAsync(!publishResult.IsSuccess).ConfigureAwait(false);
             }

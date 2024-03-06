@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CodeCatalyst;
 using Amazon.AWSToolkit.CommonUI.Dialogs;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.SourceControl;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Urls;
 
 // There are a lot of duplicated type names between these two namespaces, so use aliases for clarity.
@@ -122,7 +123,7 @@ Recreate access token and retry?");
 
         protected override Task CloneCompletedAsync(CloneRepositoryData cloneRepoData)
         {
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"Successfully cloned repository {cloneRepoData.RepositoryName} to {cloneRepoData.LocalPath}", true);
+            _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Successfully cloned repository {cloneRepoData.RepositoryName} to {cloneRepoData.LocalPath}", true).LogExceptionAndForget();
             RecordClone(Result.Succeeded);
             return Task.CompletedTask;
         }
@@ -130,8 +131,8 @@ Recreate access token and retry?");
         protected override Task CloneFailedAsync(CloneRepositoryData cloneRepoData)
         {
             var repositoryName = cloneRepoData?.RepositoryName ?? "(unknown)";
-            _toolkitContext.ToolkitHost.OutputToHostConsole(
-                $"Failed to clone repository: {repositoryName}. See '{SourceControlGitOutputWindowPaneName}' Output window pane and toolkit logs for details.", true);
+            _toolkitContext.ToolkitHost.OutputToHostConsoleAsync(
+                $"Failed to clone repository: {repositoryName}. See '{SourceControlGitOutputWindowPaneName}' Output window pane and toolkit logs for details.", true).LogExceptionAndForget();
             RecordClone(Result.Failed);
             return Task.CompletedTask;
         }

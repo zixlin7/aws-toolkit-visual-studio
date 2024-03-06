@@ -53,7 +53,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
                 {
                     var msg = $"Launching CodeWhisperer Language Server from local override location: {localLspResult.Path}";
                     _logger.Info(msg);
-                    _toolkitContext.ToolkitHost.OutputToHostConsole(msg, true);
+                    _toolkitContext.ToolkitHost.OutputToHostConsoleAsync(msg, true).LogExceptionAndForget();
                     return localLspResult;
                 }
 
@@ -90,7 +90,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Install
 
                 // show install status
                 notifier.ProgressText = notifierMsg;
-                _toolkitContext.ToolkitHost.OutputToHostConsole(notifierMsg, true);
+                _toolkitContext.ToolkitHost.OutputToHostConsoleAsync(notifierMsg, true).LogExceptionAndForget();
                 _logger.Error(statusMsg, ex);
 
                 throw GetException(statusMsg, ex);

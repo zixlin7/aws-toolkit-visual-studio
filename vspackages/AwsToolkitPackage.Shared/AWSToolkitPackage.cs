@@ -338,28 +338,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             return await GetServiceAsync(serviceType);
         }
 
-        internal void OutputToConsole(string message, bool forceVisible)
-        {
-            JoinableTaskFactory.Run(async () =>
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync();
-                try
-                {
-                    if (forceVisible)
-                    {
-                        _toolkitOutputWindow?.Show();
-                    }
-
-                    _toolkitOutputWindow?.WriteText(message);
-                }
-                catch (Exception e)
-                {
-                    LOGGER.ErrorFormat("Caught exception calling IVsOutputWindow.OutputStringThreadSafe.");
-                    LOGGER.ErrorFormat("Exception message: '{0}', original message content '{1}'", e.Message, message);
-                }
-            });
-        }
-
         internal ProjectDeploymentsPersistenceManager LegacyDeploymentsPersistenceManager => _projectDeployments;
 
         internal IAWSCloudFormation AWSCloudFormationPlugin
@@ -445,7 +423,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (ToolkitShellProviderService == null)
                 {
                     LOGGER.Debug("Creating SAWSToolkitShellProvider service");
-                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, hostVersion, productEnvironment);
+                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, _toolkitOutputWindow, hostVersion, productEnvironment);
                 }
             }
         }
@@ -579,7 +557,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 });
 
                 _toolkitOutputWindow = await CreateToolkitOutputWindowAsync();
-                OutputProductDetails(_productEnvironment);
 
                 var hostInfo = DteVersion.AsHostInfo(dteVersion);
                 ThemeUtil.Initialize(dteVersion);
@@ -623,6 +600,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     ToolkitHostInfo = hostInfo
                 };
 
+                OutputProductDetails(_toolkitContext, _productEnvironment);
                 _documentEventWatcher = InitializeDocumentWatcher(_toolkitContext);
 
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
@@ -765,7 +743,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        private void OutputProductDetails(ProductEnvironment productEnvironment)
+        private void OutputProductDetails(ToolkitContext toolkitContext, ProductEnvironment productEnvironment)
         {
             var builder = new StringBuilder();
             builder.AppendLine("AWS Toolkit for Visual Studio");
@@ -774,7 +752,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 $"Visual Studio: {productEnvironment.ParentProduct}, Version: {productEnvironment.ParentProductVersion}");
             builder.AppendLine();
 
-            OutputToConsole(builder.ToString(), false);
+            toolkitContext.ToolkitHost.OutputToHostConsole(builder.ToString(), false);
         }
 
         private async Task<OutputWindow> CreateToolkitOutputWindowAsync()
