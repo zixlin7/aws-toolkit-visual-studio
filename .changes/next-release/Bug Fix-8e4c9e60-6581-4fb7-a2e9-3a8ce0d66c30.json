@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed issue with not building Lambda container image for ARM when function architecture is configured for ARM"
+}
