@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.Publish.Models;
 using Amazon.AWSToolkit.Publish.Models.Configuration;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tasks;
 
 using AWS.Deploy.ServerMode.Client;
 
@@ -243,9 +244,9 @@ namespace Amazon.AWSToolkit.Publish.ViewModels
                     innerMessage = $"Service may not be available in this region. {innerMessage}";
                 }
 
-                _toolkitShell.OutputToHostConsole(
+                _toolkitShell.OutputToHostConsoleAsync(
                     $"Unable to fetch values for {detail.FullDisplayName}: {innerMessage}",
-                    true);
+                    true).LogExceptionAndForget();
             }
 
         }

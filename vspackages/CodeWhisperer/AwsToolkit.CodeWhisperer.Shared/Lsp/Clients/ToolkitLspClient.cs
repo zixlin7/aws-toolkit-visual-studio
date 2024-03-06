@@ -29,6 +29,7 @@ using Newtonsoft.Json.Serialization;
 using StreamJsonRpc;
 using Amazon.AwsToolkit.CodeWhisperer.Telemetry;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 using AwsToolkit.VsSdk.Common.Settings.Proxy;
@@ -173,7 +174,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         {
             if (_toolkitContextProvider.HasToolkitContext())
             {
-                _toolkitContext.ToolkitHost.OutputToHostConsole($"Stopping: {Name}");
+                _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Stopping: {Name}", false).LogExceptionAndForget();
             }
 
             await StopAsync.InvokeAsync(this, EventArgs.Empty);
@@ -245,7 +246,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
             _logger.Info($"Starting set up for language server: {Name}");
             Status = LspClientStatus.SettingUp;
 
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"Initializing: {Name}");
+            _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Initializing: {Name}", false).LogExceptionAndForget();
 
             SetupLspMessageHandler();
 
@@ -422,7 +423,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         {
             try
             {
-                _toolkitContext.ToolkitHost.OutputToHostConsole($"Activating: {Name}");
+                _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Activating: {Name}", false).LogExceptionAndForget();
                 _processWatcher?.Dispose();
                 Status = LspClientStatus.SettingUp;
 
@@ -595,7 +596,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         public async Task OnServerInitializedAsync()
         {
             _logger.Info($"Language server initialization handshake completed: {Name}");
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"Initialized: {Name}");
+            _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Initialized: {Name}", false).LogExceptionAndForget();
             Status = LspClientStatus.Running;
 
             await RaiseInitializedAsync();
@@ -621,10 +622,10 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.Clients
         {
             Status = LspClientStatus.Error;
 
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"Failed to initialize Language Server: {Name}");
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"- Status: {initializationState.Status}");
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"- Status Message: {initializationState.StatusMessage}");
-            _toolkitContext.ToolkitHost.OutputToHostConsole($"- Exception: {initializationState.InitializationException?.Message}");
+            _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Failed to initialize Language Server: {Name}", false).LogExceptionAndForget();
+            _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"- Status: {initializationState.Status}", false).LogExceptionAndForget();
+            _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"- Status Message: {initializationState.StatusMessage}", false).LogExceptionAndForget();
+            _toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"- Exception: {initializationState.InitializationException?.Message}", false).LogExceptionAndForget();
 
             _logger.Error($"Failed to initialize Language Server: {Name}", initializationState.InitializationException);
             _logger.Error($"- Status: {initializationState.Status}");

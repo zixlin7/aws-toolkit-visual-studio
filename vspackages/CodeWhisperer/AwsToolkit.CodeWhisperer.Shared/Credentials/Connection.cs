@@ -16,6 +16,7 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Sono;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
 
@@ -217,7 +218,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     throw new LspConnectionToolkitException(msg, LspConnectionToolkitException.LspConnectionErrorCode.UnexpectedLspCredentialSetError);
                 }
 
-                toolkitContext.ToolkitHost.OutputToHostConsole($"Signed in to CodeWhisperer with {displayName}.");
+                toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Signed in to CodeWhisperer with {displayName}.", false).LogExceptionAndForget();
 
                 if (saveSettings)
                 {
@@ -335,7 +336,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     {
                         InvalidateSsoToken(credentialId);
                     }
-                    toolkitContext.ToolkitHost.OutputToHostConsole($"Signed out of CodeWhisperer with {displayName}.");
+                    toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Signed out of CodeWhisperer with {displayName}.", false).LogExceptionAndForget();
                 }
 
                 if (saveSettings)
@@ -452,7 +453,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
                     return;
                 }
 
-                toolkitContext.ToolkitHost.OutputToHostConsole($"Reconnected to CodeWhisperer with {credentialId.DisplayName}");
+                toolkitContext.ToolkitHost.OutputToHostConsoleAsync($"Reconnected to CodeWhisperer with {credentialId.DisplayName}", false).LogExceptionAndForget();
             }
             catch (Exception e)
             {
@@ -651,8 +652,8 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Credentials
         {
             var toolkitContext = _toolkitContextProvider.GetToolkitContext();
 
-            toolkitContext.ToolkitHost.OutputToHostConsole(
-                "Connection to CodeWhisperer has expired. Sign in to continue using CodeWhisperer features.");
+            toolkitContext.ToolkitHost.OutputToHostConsoleAsync(
+                "Connection to CodeWhisperer has expired. Sign in to continue using CodeWhisperer features.", false).LogExceptionAndForget();
 
             // Move the connection state to Expired, then disconnect.
             Status = ConnectionStatus.Expired; // event handlers react to this

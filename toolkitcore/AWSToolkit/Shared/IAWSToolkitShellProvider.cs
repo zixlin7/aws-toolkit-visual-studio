@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Windows;
+using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.CommonUI.Notifications.Progress;
 using Amazon.AWSToolkit.CommonUI.ToolWindow;
 using Amazon.AWSToolkit.Solutions;
-using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.Telemetry.Model;
-using System.ComponentModel.Design;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Shared
 {
@@ -234,17 +234,18 @@ namespace Amazon.AWSToolkit.Shared
         void BeginExecuteOnUIThread(Action action);
 
         /// <summary>
-        /// 
+        /// OutputToHostConsoleAsync should be used instead, with LogExceptionAndForget
+        /// when called from sync code, and where callers don't need to wait on this to complete.
         /// </summary>
-        /// <param name="message"></param>
         void OutputToHostConsole(string message);
 
         /// <summary>
-        /// 
+        /// OutputToHostConsoleAsync should be used instead, with LogExceptionAndForget
+        /// when called from sync code, and where callers don't need to wait on this to complete.
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="forceVisible"></param>
         void OutputToHostConsole(string message, bool forceVisible);
+
+        Task OutputToHostConsoleAsync(string message, bool forceVisible);
 
         /// <summary>
         /// Attempts to show the output window pane specified by the name

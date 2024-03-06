@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Publish.Services;
 using Amazon.AWSToolkit.Publish.Views;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.VersionInfo;
 
@@ -84,9 +85,9 @@ namespace Amazon.AWSToolkit.Publish.Package
 
                 Logger.Error("Failed to open the Publish document", e);
 
-                _publishContext.ToolkitShellProvider.OutputToHostConsole(
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(
                     $"Unable to open the Publish to AWS dialog: {e.Message}",
-                    true);
+                    true).LogExceptionAndForget();
 
                 ShowStartupError(e.Message);
             }
@@ -131,7 +132,7 @@ namespace Amazon.AWSToolkit.Publish.Package
                               $" You may need to install .NET {MinimumSupportedDotNetVersion} or newer.";
 
                 Logger.Warn(message);
-                _publishContext.ToolkitShellProvider.OutputToHostConsole(message, true);
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(message, true).LogExceptionAndForget();
             }
 
             return Task.CompletedTask;
@@ -251,9 +252,9 @@ namespace Amazon.AWSToolkit.Publish.Package
             catch (OperationCanceledException)
             {
                 // Swallow if the user cancelled. We've broken out of the steps above.
-                _publishContext.ToolkitShellProvider.OutputToHostConsole(
+                _publishContext.ToolkitShellProvider.OutputToHostConsoleAsync(
                     $"Launching the Publish to AWS dialog has been cancelled",
-                    true);
+                    true).LogExceptionAndForget();
 
                 return ShowDialogResult.Cancel;
             }

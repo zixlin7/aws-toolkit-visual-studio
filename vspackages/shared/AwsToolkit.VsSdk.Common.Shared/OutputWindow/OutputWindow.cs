@@ -72,6 +72,9 @@ namespace Amazon.AwsToolkit.VsSdk.Common.OutputWindow
 
         public void Show()
         {
+            // Wait for the pane to be instantiated
+            if (_outputWindowPane == null) { return; }
+
             ThreadHelper.ThrowIfNotOnUIThread();
             _outputWindowPane.Activate();
         }
