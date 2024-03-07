@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 
-using Amazon.AwsToolkit.CodeWhisperer.Lsp.Protocols;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using StreamJsonRpc;
 
 namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
 {
-    internal static class MessageNames
+    internal static class ExecuteCommandNames
     {
-        // TODO: replace with finalized message name
-        public const string RunSecurityScan = "aws/codewhisperer/securityscan";
-        public const string CancelSecurityScan = "aws/codewhisperer/cancelsecurityscan";
+        public const string ExecuteMethod = "workspace/executeCommand";
+        public const string RunSecurityScan = "aws/codewhisperer/runSecurityScan";
+        public const string CancelSecurityScan = "aws/codewhisperer/cancelSecurityScan";
     }
 
     /// <summary>
@@ -18,7 +18,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
     /// </summary>
     public interface ISecurityScans
     {
-        Task RunSecurityScanAsync(SecurityScanParams securityScanParams);
+        Task RunSecurityScanAsync(ExecuteCommandParams securityScanParams);
         Task CancelSecurityScanAsync();
     }
 
@@ -30,16 +30,20 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
             _rpc = rpc;
         }
 
-        public async Task RunSecurityScanAsync(SecurityScanParams securityScanParams)
+        public async Task RunSecurityScanAsync(ExecuteCommandParams securityScanParams)
         {
            await _rpc.InvokeWithParameterObjectAsync(
-                MessageNames.RunSecurityScan, securityScanParams);
+                ExecuteCommandNames.ExecuteMethod, securityScanParams);
         }
 
         public async Task CancelSecurityScanAsync()
         {
+            var request = new ExecuteCommandParams
+            {
+                Command = ExecuteCommandNames.CancelSecurityScan,
+            };
             await _rpc.InvokeAsync(
-                 MessageNames.CancelSecurityScan);
+                 ExecuteCommandNames.ExecuteMethod, request);
         }
     }
 }
