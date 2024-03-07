@@ -68,7 +68,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.SecurityScan
                         Command = ExecuteCommandNames.RunSecurityScan,
                         Arguments = new string[] { json }
                     };
-                    await securityScan.RunSecurityScanAsync(request);
+                    var response = await securityScan.RunSecurityScanAsync(request);
                     ScanState = SecurityScanState.NotRunning;
                 }
             });

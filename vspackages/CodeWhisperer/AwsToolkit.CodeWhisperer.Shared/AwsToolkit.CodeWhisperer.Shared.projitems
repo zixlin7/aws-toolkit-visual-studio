@@ -82,7 +82,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Manifest\Notification\ManifestDeprecationStrategy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\InlineCompletion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Protocols\ProtocolsExtensionMethods.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lsp\protocols\SecurityScan.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\SecurityScans\SecurityScans.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\Suggestions\SuggestionSessionResultsPublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lsp\TypeDefinitions\AwsToolkitCppContentType.cs" />

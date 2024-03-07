@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.CodeWhisperer.SecurityScans.Models;
+
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using StreamJsonRpc;
@@ -13,12 +15,31 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
         public const string CancelSecurityScan = "aws/codewhisperer/cancelSecurityScan";
     }
 
+    public enum SecurityScanStatus
+    {
+        Succeeded,
+        Failed,
+        Cancelled
+    }
+
+    public class SecurityScanResult
+    {
+        public SecurityScanStatus Status { get; }
+        public string ScannedFiles { get; }
+
+    }
+
+    public class SecurityScanResponse
+    {
+        public SecurityScanResult SecurityScanResult { get; }
+        public string Error { get; }
+    }
     /// <summary>
     /// Abstraction for security scan related communications with the language server
     /// </summary>
     public interface ISecurityScans
     {
-        Task RunSecurityScanAsync(ExecuteCommandParams securityScanParams);
+        Task<SecurityScanResponse> RunSecurityScanAsync(ExecuteCommandParams securityScanParams);
         Task CancelSecurityScanAsync();
     }
 
@@ -30,9 +51,9 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
             _rpc = rpc;
         }
 
-        public async Task RunSecurityScanAsync(ExecuteCommandParams securityScanParams)
+        public async Task<SecurityScanResponse> RunSecurityScanAsync(ExecuteCommandParams securityScanParams)
         {
-           await _rpc.InvokeWithParameterObjectAsync(
+           return await _rpc.InvokeWithParameterObjectAsync<SecurityScanResponse>(
                 ExecuteCommandNames.ExecuteMethod, securityScanParams);
         }
 
@@ -42,7 +63,7 @@ namespace Amazon.AwsToolkit.CodeWhisperer.Lsp.SecurityScans
             {
                 Command = ExecuteCommandNames.CancelSecurityScan,
             };
-            await _rpc.InvokeAsync(
+            await _rpc.InvokeWithParameterObjectAsync(
                  ExecuteCommandNames.ExecuteMethod, request);
         }
     }
